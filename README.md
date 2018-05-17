@@ -5,6 +5,19 @@ Going forward, an increasing part of our application business logic will be modu
 
 The jointly developed extensions in this repository will be published by Microsoft to App Source and will be shipped with upcoming releases of [Microsoft Dynamics 365 Business Central](https://dynamics.microsoft.com/en-us/business-central).
 
+## Contributing
+This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+the rights to use your contribution. For details, visit https://cla.microsoft.com.
+
+When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
+a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
+provided by the bot. You will only need to do this once across all repos using our CLA.
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
 ## How to get started
 1. Become familiar with development in AL. For more information, see https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-get-started.  
 2. Choose the sandbox option that's right for you. For more information, see https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-sandbox-overview.  
@@ -24,19 +37,5 @@ The jointly developed extensions in this repository will be published by Microso
 		 
 	   Renumber-NavObjectIds -SourceFolder "C:\...\C52012DataMigration\" -DestinationFolder "C:\...\C52012DataMigrationReID" -RenumberList $RenumberList -Verbose  
        ```
-5. In Visual Studio Code, connect to your sandbox (follow the steps in the documentation that step 1 refers to) and open the C:\...\C52012DataMigrationReID folder. Now you are ready to go: you can modify the code and build your extension as normal.  
+5. In Visual Studio Code, connect to your sandbox (follow the steps in the documentation that step 1 refers to) and open the C:\...\C52012DataMigrationReID folder. Now you are ready to go. You can modify the code and build your extension.  
 6. To submit your changes, create a new branch. Remember to revert the change of IDs, and then create a pull request.  
-
-
-## Contributing
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.microsoft.com.
-
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
