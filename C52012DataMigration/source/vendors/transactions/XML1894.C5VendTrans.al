@@ -5,17 +5,17 @@
 
 xmlport 1894 "C5 VendTrans"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='VendTransDocument';
+            MinOccurs = Zero;
+            XmlName = 'VendTransDocument';
             tableelement(C5VendTrans; "C5 VendTrans")
             {
                 fieldelement(BudgetCode; C5VendTrans.BudgetCode) { }
@@ -25,7 +25,7 @@ xmlport 1894 "C5 VendTrans"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(Date_Text, CopyStr(DateFormatString, 1, 20), C5VendTrans.Date_);
+                        C5HelperFunctions.TryConvertFromStringDate(Date_Text, CopyStr(DateFormatStringTxt, 1, 20), C5VendTrans.Date_);
                     end;
                 }
 
@@ -44,7 +44,7 @@ xmlport 1894 "C5 VendTrans"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(CashDiscDateText, CopyStr(DateFormatString, 1, 20), C5VendTrans.CashDiscDate);
+                        C5HelperFunctions.TryConvertFromStringDate(CashDiscDateText, CopyStr(DateFormatStringTxt, 1, 20), C5VendTrans.CashDiscDate);
                     end;
                 }
 
@@ -52,7 +52,7 @@ xmlport 1894 "C5 VendTrans"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(DueDateText, CopyStr(DateFormatString, 1, 20), C5VendTrans.DueDate);
+                        C5HelperFunctions.TryConvertFromStringDate(DueDateText, CopyStr(DateFormatStringTxt, 1, 20), C5VendTrans.DueDate);
                     end;
                 }
 
@@ -71,7 +71,7 @@ xmlport 1894 "C5 VendTrans"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(ProcessingDateText, CopyStr(DateFormatString, 1, 20), C5VendTrans.ProcessingDate);
+                        C5HelperFunctions.TryConvertFromStringDate(ProcessingDateText, CopyStr(DateFormatStringTxt, 1, 20), C5VendTrans.ProcessingDate);
                     end;
                 }
 
@@ -81,12 +81,19 @@ xmlport 1894 "C5 VendTrans"
                 fieldelement(ExchRateTri; C5VendTrans.ExchRateTri) { }
                 fieldelement(Centre; C5VendTrans.Centre) { }
                 fieldelement(Purpose; C5VendTrans.Purpose) { }
-           }
-       }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5VendTrans.RecId := Counter;
+                    Counter += 1;
+                end;
+            }
+        }
     }
-    
+
     var
         C5HelperFunctions: Codeunit "C5 Helper Functions";
-        DateFormatString: label 'yyyy/MM/dd', locked=true;
+        DateFormatStringTxt: label 'yyyy/MM/dd', locked = true;
+        Counter: Integer;
 }
 

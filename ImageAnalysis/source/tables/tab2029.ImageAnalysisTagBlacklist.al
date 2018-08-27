@@ -5,6 +5,7 @@
 
 table 2029 "MS - Img. Analyzer Blacklist"
 {
+    ReplicateData = false;
 
     fields
     {

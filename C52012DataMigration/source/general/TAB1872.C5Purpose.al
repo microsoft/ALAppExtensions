@@ -5,30 +5,31 @@
 
 table 1872 "C5 Purpose"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;Purpose;Code[10]) 
+        field(3; Purpose; Code[10])
         {
-            Caption='Purpose';
+            Caption = 'Purpose';
         }
-        field(4;Name;Text[30]) 
+        field(4; Name; Text[30])
         {
-            Caption='Name';
+            Caption = 'Name';
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

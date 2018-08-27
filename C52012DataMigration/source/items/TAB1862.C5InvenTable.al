@@ -5,286 +5,287 @@
 
 table 1862 "C5 InvenTable"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;DEL_UserLock;Integer) 
+        field(3; DEL_UserLock; Integer)
         {
-            Caption='Lock';
+            Caption = 'Lock';
         }
-        field(4;ItemNumber;Code[20]) 
+        field(4; ItemNumber; Code[20])
         {
-            Caption='Item number';
+            Caption = 'Item number';
         }
-        field(5;ItemName1;Text[40]) 
+        field(5; ItemName1; Text[40])
         {
-            Caption='Item name';
+            Caption = 'Item name';
         }
-        field(6;ItemName2;Text[40]) 
+        field(6; ItemName2; Text[40])
         {
-            Caption='Suppl. item name 1';
+            Caption = 'Suppl. item name 1';
         }
-        field(7;ItemName3;Text[40]) 
+        field(7; ItemName3; Text[40])
         {
-            Caption='Suppl. item name 2';
+            Caption = 'Suppl. item name 2';
         }
-        field(8;ItemType;Option) 
+        field(8; ItemType; Option)
         {
-            Caption='Item type';
-            OptionMembers=Item,Service,BOM,Kit;
+            Caption = 'Item type';
+            OptionMembers = Item,Service,BOM,Kit;
         }
-        field(9;DiscGroup;Code[10]) 
+        field(9; DiscGroup; Code[10])
         {
-            Caption='Discount group';
+            Caption = 'Discount group';
         }
-        field(10;CostCurrency;Code[3]) 
+        field(10; CostCurrency; Code[3])
         {
-            Caption='Cost currency';
+            Caption = 'Cost currency';
         }
-        field(11;CostPrice;Decimal) 
+        field(11; CostPrice; Decimal)
         {
-            Caption='Cost price';
+            Caption = 'Cost price';
         }
-        field(12;Group;Code[10]) 
+        field(12; Group; Code[10])
         {
-            Caption='Group';
+            Caption = 'Group';
         }
-        field(13;SalesModel;Option) 
+        field(13; SalesModel; Option)
         {
-            Caption='Sales model';
-            OptionMembers="No change","Last sale",Adjust;
+            Caption = 'Sales model';
+            OptionMembers = "No change","Last sale",Adjust;
         }
-        field(14;CostingMethod;Option) 
+        field(14; CostingMethod; Option)
         {
-            Caption='Inven. model';
-            OptionMembers=FIFO,LIFO,"Cost price",Average,"Serial number";
+            Caption = 'Inven. model';
+            OptionMembers = FIFO,LIFO,"Cost price",Average,"Serial number";
         }
-        field(15;PurchSeriesSize;Decimal) 
+        field(15; PurchSeriesSize; Decimal)
         {
-            Caption='Purch. qty';
+            Caption = 'Purch. qty';
         }
-        field(16;PrimaryVendor;Code[10]) 
+        field(16; PrimaryVendor; Code[10])
         {
-            Caption='Primary Vendor';
+            Caption = 'Primary Vendor';
         }
-        field(17;VendItemNumber;Text[20]) 
+        field(17; VendItemNumber; Text[20])
         {
-            Caption='Vendor item no.';
+            Caption = 'Vendor item no.';
         }
-        field(18;Blocked;Option) 
+        field(18; Blocked; Option)
         {
-            Caption='Locked';
-            OptionMembers=No,Yes;
+            Caption = 'Locked';
+            OptionMembers = No,Yes;
         }
-        field(19;Alternative;Option) 
+        field(19; Alternative; Option)
         {
-            Caption='Alternative';
-            OptionMembers=Never,"Not available",Always;
+            Caption = 'Alternative';
+            OptionMembers = Never,"Not available",Always;
         }
-        field(20;AltItemNumber;Code[20]) 
+        field(20; AltItemNumber; Code[20])
         {
-            Caption='Alt. item';
+            Caption = 'Alt. item';
         }
-        field(21;Decimals_;Integer) 
+        field(21; Decimals_; Integer)
         {
-            Caption='Decimals';
+            Caption = 'Decimals';
         }
-        field(22;DEL_SalesDuty;Text[10]) 
+        field(22; DEL_SalesDuty; Text[10])
         {
-            Caption='DELETESalesDuty';
+            Caption = 'DELETESalesDuty';
         }
-        field(23;Commission;Option) 
+        field(23; Commission; Option)
         {
-            Caption='Commission';
-            OptionMembers=No,Yes;
+            Caption = 'Commission';
+            OptionMembers = No,Yes;
         }
-        field(24;ImageFile;Text[250]) 
+        field(24; ImageFile; Text[250])
         {
-            Caption='Image';
+            Caption = 'Image';
         }
-        field(25;NetWeight;Decimal) 
+        field(25; NetWeight; Decimal)
         {
-            Caption='Net weight';
+            Caption = 'Net weight';
         }
-        field(26;Volume;Decimal) 
+        field(26; Volume; Decimal)
         {
-            Caption='Volume';
+            Caption = 'Volume';
         }
-        field(27;TariffNumber;Code[20]) 
+        field(27; TariffNumber; Code[20])
         {
-            Caption='Item CN8 codes';
+            Caption = 'Item CN8 codes';
         }
-        field(28;UnitCode;Code[10]) 
+        field(28; UnitCode; Code[10])
         {
-            Caption='Unit';
+            Caption = 'Unit';
         }
-        field(29;OneTimeItem;Option) 
+        field(29; OneTimeItem; Option)
         {
-            Caption='One-off item';
-            OptionMembers=No,Yes;
+            Caption = 'One-off item';
+            OptionMembers = No,Yes;
         }
-        field(30;CostType;Text[10]) 
+        field(30; CostType; Text[10])
         {
-            Caption='Cost type';
+            Caption = 'Cost type';
         }
-        field(31;ExtraCost;Decimal) 
+        field(31; ExtraCost; Decimal)
         {
-            Caption='Misc. charges';
+            Caption = 'Misc. charges';
         }
-        field(32;PurchCostModel;Option) 
+        field(32; PurchCostModel; Option)
         {
-            Caption='Purch. cost model';
-            OptionMembers="No change","Last purchase",Average;
+            Caption = 'Purch. cost model';
+            OptionMembers = "No change","Last purchase",Average;
         }
-        field(33;MainLocation;Text[10]) 
+        field(33; MainLocation; Text[10])
         {
-            Caption='Main inventory';
+            Caption = 'Main inventory';
         }
-        field(34;InvenLocation;Option) 
+        field(34; InvenLocation; Option)
         {
-            Caption='Location';
-            OptionMembers=No,Yes;
+            Caption = 'Location';
+            OptionMembers = No,Yes;
         }
-        field(35;PurchVat;Code[10]) 
+        field(35; PurchVat; Code[10])
         {
-            Caption='Purch. VAT';
+            Caption = 'Purch. VAT';
         }
-        field(36;RESERVED2;Text[10]) 
+        field(36; RESERVED2; Text[10])
         {
-            Caption='RESERVED2';
+            Caption = 'RESERVED2';
         }
-        field(37;Inventory;Decimal) 
+        field(37; Inventory; Decimal)
         {
-            Caption='Inventory';
+            Caption = 'Inventory';
         }
-        field(38;Delivered;Decimal) 
+        field(38; Delivered; Decimal)
         {
-            Caption='Delivered';
+            Caption = 'Delivered';
         }
-        field(39;Reserved;Decimal) 
+        field(39; Reserved; Decimal)
         {
-            Caption='Reserved';
+            Caption = 'Reserved';
         }
-        field(40;Received;Decimal) 
+        field(40; Received; Decimal)
         {
-            Caption='Received';
+            Caption = 'Received';
         }
-        field(41;Ordered;Decimal) 
+        field(41; Ordered; Decimal)
         {
-            Caption='Ordered';
+            Caption = 'Ordered';
         }
-        field(42;InventoryValue;Decimal) 
+        field(42; InventoryValue; Decimal)
         {
-            Caption='Inventory value in LCY';
+            Caption = 'Inventory value in LCY';
         }
-        field(43;DeliveredValue;Decimal) 
+        field(43; DeliveredValue; Decimal)
         {
-            Caption='Value delivered in LCY';
+            Caption = 'Value delivered in LCY';
         }
-        field(44;ReceivedValue;Decimal) 
+        field(44; ReceivedValue; Decimal)
         {
-            Caption='Value received in LCY';
+            Caption = 'Value received in LCY';
         }
-        field(45;Department;Code[10]) 
+        field(45; Department; Code[10])
         {
-            Caption='Department';
+            Caption = 'Department';
         }
-        field(46;CostPriceUnit;Decimal) 
+        field(46; CostPriceUnit; Decimal)
         {
-            Caption='Cost price unit';
+            Caption = 'Cost price unit';
         }
-        field(47;DEL_PurchDuty;Text[10]) 
+        field(47; DEL_PurchDuty; Text[10])
         {
-            Caption='DELETEPurchDuty';
+            Caption = 'DELETEPurchDuty';
         }
-        field(48;Level;Integer) 
+        field(48; Level; Integer)
         {
-            Caption='Level';
+            Caption = 'Level';
         }
-        field(49;Pulled;Decimal) 
+        field(49; Pulled; Decimal)
         {
-            Caption='Pulled';
+            Caption = 'Pulled';
         }
-        field(50;WarnNegativeInventory;Option) 
+        field(50; WarnNegativeInventory; Option)
         {
-            Caption='Warning';
-            OptionMembers=No,Yes;
+            Caption = 'Warning';
+            OptionMembers = No,Yes;
         }
-        field(51;NegativeInventory;Option) 
+        field(51; NegativeInventory; Option)
         {
-            Caption='Negative';
-            OptionMembers=No,Yes;
+            Caption = 'Negative';
+            OptionMembers = No,Yes;
         }
-        field(52;IgnoreListCode;Option) 
+        field(52; IgnoreListCode; Option)
         {
-            Caption='-Lst';
-            OptionMembers=No,Yes;
+            Caption = '-Lst';
+            OptionMembers = No,Yes;
         }
-        field(53;PayCType;Text[10]) 
+        field(53; PayCType; Text[10])
         {
-            Caption='Payroll CT';
+            Caption = 'Payroll CT';
         }
-        field(54;ItemTracking;Option) 
+        field(54; ItemTracking; Option)
         {
-            Caption='Item tracking';
-            OptionMembers=None,Batch,"Serial number";
+            Caption = 'Item tracking';
+            OptionMembers = None,Batch,"Serial number";
         }
-        field(55;ItemTrackGroup;Text[10]) 
+        field(55; ItemTrackGroup; Text[10])
         {
-            Caption='Tracking group';
+            Caption = 'Tracking group';
         }
-        field(56;ProjCostFactor;Decimal) 
+        field(56; ProjCostFactor; Decimal)
         {
-            Caption='Proj. factor';
+            Caption = 'Proj. factor';
         }
-        field(57;Centre;Code[10]) 
+        field(57; Centre; Code[10])
         {
-            Caption='Cost centre';
+            Caption = 'Cost centre';
         }
-        field(58;Purpose;Code[10]) 
+        field(58; Purpose; Code[10])
         {
-            Caption='Purpose';
+            Caption = 'Purpose';
         }
-        field(59;SupplFactor;Decimal) 
+        field(59; SupplFactor; Decimal)
         {
-            Caption='Suppl. factor';
+            Caption = 'Suppl. factor';
         }
-        field(60;SupplementaryUnits;Text[13]) 
+        field(60; SupplementaryUnits; Text[13])
         {
-            Caption='Supplementary unit';
+            Caption = 'Supplementary unit';
         }
-        field(61;MarkedPhysical;Decimal) 
+        field(61; MarkedPhysical; Decimal)
         {
-            Caption='Mrk. physical';
+            Caption = 'Mrk. physical';
         }
-        field(62;LastMovementDate;Date) 
+        field(62; LastMovementDate; Date)
         {
-            Caption='Latest movement';
+            Caption = 'Latest movement';
         }
-        field(63;VatGroup;Code[10]) 
+        field(63; VatGroup; Code[10])
         {
-            Caption='VAT group';
+            Caption = 'VAT group';
         }
-        field(64;StdItemNumber;Option) 
+        field(64; StdItemNumber; Option)
         {
-            Caption='Default';
-            OptionMembers=No,Yes;
+            Caption = 'Default';
+            OptionMembers = No,Yes;
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
-            Clustered=true;
+            Clustered = true;
         }
     }
 }

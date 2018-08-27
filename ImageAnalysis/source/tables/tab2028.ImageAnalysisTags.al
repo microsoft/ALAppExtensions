@@ -5,6 +5,8 @@
 
 table 2028 "MS - Image Analyzer Tags"
 {
+    ReplicateData = false;
+
     fields
     {
         field(1; "Detected On Item No"; Code[20])
@@ -83,9 +85,9 @@ table 2028 "MS - Image Analyzer Tags"
     var
         ItemAttrPopulate: Codeunit "Item Attr Populate";
         ChooseItemAttributeTxt: Label 'Choose item attribute';
-        SetOnlyOneTagAsItemCategory: Label 'You can choose only one attribute as the item category.';
-        DetailsTextForItemAttribute: Label 'Item attribute: ''%1'' = ''%2''', Comment = '%1 is the item attribute name (ex ''Color''), %2 is the item attribute value (ex ''Blue'')';
-        DetailsTextForItemCategory: Label 'Category: ''%1''', Comment = '%1 is the item attribute category code (ex ''FURNITURE'')';
+        SetOnlyOneTagAsItemCategoryErr: Label 'You can choose only one attribute as the item category.';
+        DetailsTextForItemAttributeTxt: Label 'Item attribute: ''%1'' = ''%2''', Comment = '%1 is the item attribute name (ex ''Color''), %2 is the item attribute value (ex ''Blue'')';
+        DetailsTextForItemCategoryTxt: Label 'Category: ''%1''', Comment = '%1 is the item attribute category code (ex ''FURNITURE'')';
         AttributeAlreadyAssignedErr: Label 'Attribute ''%1'' is already set.', Comment = '%1 is the attribute name (ex ''Color'')';
 
     local procedure OnValidateAction()
@@ -101,7 +103,7 @@ table 2028 "MS - Image Analyzer Tags"
             "Action To Perform"::Category:
                 begin
                     if IsCategoryActionAlreadyChosen then
-                        Error(SetOnlyOneTagAsItemCategory);
+                        Error(SetOnlyOneTagAsItemCategoryErr);
 
                     ShortCategoryCode := CopyStr("Tag Name", 1, MaxStrLen(ShortCategoryCode));
                     if not ItemCategoryManagement.DoesValueExistInItemCategories(ShortCategoryCode, ItemCategory) then begin
@@ -114,12 +116,12 @@ table 2028 "MS - Image Analyzer Tags"
 
             "Action To Perform"::Attribute:
                 begin
-                    if ItemAttributeManagement.DoesValueExistInItemAttributeValues("Tag Name", ItemAttributeValue) then begin
+                    if ItemAttributeManagement.DoesValueExistInItemAttributeValues("Tag Name", ItemAttributeValue) then
                         if not IsAttributeAlreadyAssigned(ItemAttributeValue."Attribute ID") then
                             SetAttributeValue(ItemAttributeValue)
                         else
-                            SelectItemAttribute();
-                    end else
+                            SelectItemAttribute()
+                    else
                         SelectItemAttribute();
                     UpdateValueText();
                 end;
@@ -207,13 +209,13 @@ table 2028 "MS - Image Analyzer Tags"
     begin
         case "Action To Perform" of
             "Action To Perform"::Category:
-                "Details Text" := StrSubstNo(DetailsTextForItemCategory, "Item Category Code");
+                "Details Text" := StrSubstNo(DetailsTextForItemCategoryTxt, "Item Category Code");
 
             "Action To Perform"::Attribute:
                 if "Item Attribute Value Id" = 0 then
                     "Details Text" := ChooseItemAttributeTxt
                 else
-                    "Details Text" := StrSubstNo(DetailsTextForItemAttribute, "Item Attribute Name", "Item Attribute Value Name");
+                    "Details Text" := StrSubstNo(DetailsTextForItemAttributeTxt, "Item Attribute Name", "Item Attribute Value Name");
         end;
     end;
 

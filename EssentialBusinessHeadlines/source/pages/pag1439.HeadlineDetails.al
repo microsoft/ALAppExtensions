@@ -159,10 +159,10 @@ page 1439 "Headline Details"
             exit('');
 
         if (GeneralLedgerSetup."Local Currency Symbol" <> '') then
-            exit(StrSubstNo(LCYParenthesis, GeneralLedgerSetup."Local Currency Symbol"));
+            exit(StrSubstNo(LCYParenthesisTxt, GeneralLedgerSetup."Local Currency Symbol"));
 
         if (GeneralLedgerSetup."LCY Code" <> '') then
-            exit(StrSubstNo(LCYParenthesis, GeneralLedgerSetup."LCY Code"));
+            exit(StrSubstNo(LCYParenthesisTxt, GeneralLedgerSetup."LCY Code"));
 
         exit('');
     end;
@@ -173,6 +173,6 @@ page 1439 "Headline Details"
         ProductType: Option;
         IsHeadlineCustomerRelatedWithAmount: Boolean;
         AmountCaptionToUse: Text;
-        LCYParenthesis: Label ' (%1)', Comment = '%1 is the local currency symbol or code if found', Locked = true;
+        LCYParenthesisTxt: Label ' (%1)', Comment = '%1 is the local currency symbol or code if found', Locked = true;
         AmountCaptionLbl: Label 'Amount';
 }

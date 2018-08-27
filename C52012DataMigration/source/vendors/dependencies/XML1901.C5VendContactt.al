@@ -5,17 +5,17 @@
 
 xmlport 1901 "C5 VendContact"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='VendContactDocument';
+            MinOccurs = Zero;
+            XmlName = 'VendContactDocument';
             tableelement(C5VendContact; "C5 VendContact")
             {
                 fieldelement(Account; C5VendContact.Account) { }
@@ -31,8 +31,17 @@ xmlport 1901 "C5 VendContact"
                 fieldelement(Fax; C5VendContact.Fax) { }
                 fieldelement(LocalNumber; C5VendContact.LocalNumber) { }
                 fieldelement(CellPhone; C5VendContact.CellPhone) { }
-           }
-       }
-   }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5VendContact.RecId := Counter;
+                    Counter += 1;
+                end;
+            }
+        }
+    }
+
+    var
+        Counter: Integer;
 }
 

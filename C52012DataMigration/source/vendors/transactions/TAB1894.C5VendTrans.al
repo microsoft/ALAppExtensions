@@ -5,169 +5,170 @@
 
 table 1894 "C5 VendTrans"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;BudgetCode;Option) 
+        field(3; BudgetCode; Option)
         {
-            Caption='Budget code';
-            OptionMembers = Actual, Budget, "Rev. 1", "Rev. 2", "Rev. 3", "Rev. 4", "Rev. 5", "Rev. 6";
+            Caption = 'Budget code';
+            OptionMembers = Actual,Budget,"Rev. 1","Rev. 2","Rev. 3","Rev. 4","Rev. 5","Rev. 6";
         }
-        field(4;Account;Code[10]) 
+        field(4; Account; Code[10])
         {
-            Caption='Account';
+            Caption = 'Account';
         }
-        field(5;Department;Code[10]) 
+        field(5; Department; Code[10])
         {
-            Caption='Department';
+            Caption = 'Department';
         }
-        field(6;Date_;Date) 
+        field(6; Date_; Date)
         {
-            Caption='Date';
+            Caption = 'Date';
         }
-        field(7;Voucher;Integer) 
+        field(7; Voucher; Integer)
         {
-            Caption='Voucher';
+            Caption = 'Voucher';
         }
-        field(8;Txt;Text[40]) 
+        field(8; Txt; Text[40])
         {
-            Caption='Text';
+            Caption = 'Text';
         }
-        field(9;TransType;Option) 
+        field(9; TransType; Option)
         {
-            Caption='Entry type';
-            OptionMembers = " ", Invoice, "Credit note", Payment, Interest, Difference, Adjustment, "Cash discount", "Packing slip", Project, "Secondary rounding", "Journal difference", "Reminder fee";
+            Caption = 'Entry type';
+            OptionMembers = " ",Invoice,"Credit note",Payment,Interest,Difference,Adjustment,"Cash discount","Packing slip",Project,"Secondary rounding","Journal difference","Reminder fee";
         }
-        field(10;AmountMST;Decimal) 
+        field(10; AmountMST; Decimal)
         {
-            Caption='Amount in LCY';
+            Caption = 'Amount in LCY';
         }
-        field(11;AmountCur;Decimal) 
+        field(11; AmountCur; Decimal)
         {
-            Caption='Amount in currency';
+            Caption = 'Amount in currency';
         }
-        field(12;Currency;Code[3]) 
+        field(12; Currency; Code[3])
         {
-            Caption='Currency';
+            Caption = 'Currency';
         }
-        field(13;Vat;Code[10]) 
+        field(13; Vat; Code[10])
         {
-            Caption='VAT';
+            Caption = 'VAT';
         }
-        field(14;VatAmount;Decimal) 
+        field(14; VatAmount; Decimal)
         {
-            Caption='VAT amount';
+            Caption = 'VAT amount';
         }
-        field(15;Approved;Option) 
+        field(15; Approved; Option)
         {
-            Caption='Approved';
-            OptionMembers = No, Yes;
+            Caption = 'Approved';
+            OptionMembers = No,Yes;
         }
-        field(16;ApprovedBy;Text[10]) 
+        field(16; ApprovedBy; Text[10])
         {
-            Caption='Approved by';
-            DataClassification=EndUserIdentifiableInformation;
+            Caption = 'Approved by';
+            DataClassification = EndUserIdentifiableInformation;
         }
-        field(17;CashDiscAmount;Decimal) 
+        field(17; CashDiscAmount; Decimal)
         {
-            Caption='Cash discount';
+            Caption = 'Cash discount';
         }
-        field(18;CashDiscDate;Date) 
+        field(18; CashDiscDate; Date)
         {
-            Caption='Cash disc. date';
+            Caption = 'Cash disc. date';
         }
-        field(19;DueDate;Date) 
+        field(19; DueDate; Date)
         {
-            Caption='Due';
+            Caption = 'Due';
         }
-        field(20;Open;Option) 
+        field(20; Open; Option)
         {
-            Caption='Open';
-            OptionMembers = No, Yes;
+            Caption = 'Open';
+            OptionMembers = No,Yes;
         }
-        field(21;ExchRate;Decimal) 
+        field(21; ExchRate; Decimal)
         {
-            Caption='Exch. rate';
+            Caption = 'Exch. rate';
         }
-        field(22;RESERVED3;Decimal) 
+        field(22; RESERVED3; Decimal)
         {
-            Caption='RESERVED3';
+            Caption = 'RESERVED3';
         }
-        field(23;RESERVED4;Decimal) 
+        field(23; RESERVED4; Decimal)
         {
-            Caption='RESERVED4';
+            Caption = 'RESERVED4';
         }
-        field(24;PostedDiffAmount;Decimal) 
+        field(24; PostedDiffAmount; Decimal)
         {
-            Caption='Diff. posted';
+            Caption = 'Diff. posted';
         }
-        field(25;InvoiceNumber;Text[20]) 
+        field(25; InvoiceNumber; Text[20])
         {
-            Caption='Invoice';
+            Caption = 'Invoice';
         }
-        field(26;RESERVED1;Option) 
+        field(26; RESERVED1; Option)
         {
-            Caption='RESERVED1';
-            OptionMembers = Cost, Invoice, "On account invoice";
+            Caption = 'RESERVED1';
+            OptionMembers = Cost,Invoice,"On account invoice";
         }
-        field(27;RefRecId;Integer) 
+        field(27; RefRecId; Integer)
         {
-            Caption='RefRecID';
+            Caption = 'RefRecID';
         }
-        field(28;Transaction;Integer) 
+        field(28; Transaction; Integer)
         {
-            Caption='Transaction';
+            Caption = 'Transaction';
         }
-        field(29;RESERVED6;Option) 
+        field(29; RESERVED6; Option)
         {
-            Caption='RESERVED6';
-            OptionMembers = No, Yes;
+            Caption = 'RESERVED6';
+            OptionMembers = No,Yes;
         }
-        field(30;PaymId;Text[20]) 
+        field(30; PaymId; Text[20])
         {
-            Caption='Identification';
+            Caption = 'Identification';
         }
-        field(31;ProcessingDate;Date) 
+        field(31; ProcessingDate; Date)
         {
-            Caption='Processing date';
+            Caption = 'Processing date';
         }
-        field(32;CashDisc;Text[10]) 
+        field(32; CashDisc; Text[10])
         {
-            Caption='Cash discount';
+            Caption = 'Cash discount';
         }
-        field(33;PaymentMode;Text[10]) 
+        field(33; PaymentMode; Text[10])
         {
-            Caption='Paym. method';
+            Caption = 'Paym. method';
         }
-        field(34;PaymSpec;Text[10]) 
+        field(34; PaymSpec; Text[10])
         {
-            Caption='Paym. spec.';
+            Caption = 'Paym. spec.';
         }
-        field(35;ExchRateTri;Decimal) 
+        field(35; ExchRateTri; Decimal)
         {
-            Caption='Tri rate';
+            Caption = 'Tri rate';
         }
-        field(36;Centre;Code[10]) 
+        field(36; Centre; Code[10])
         {
-            Caption='Cost centre';
+            Caption = 'Cost centre';
         }
-        field(37;Purpose;Code[10]) 
+        field(37; Purpose; Code[10])
         {
-            Caption='Purpose';
+            Caption = 'Purpose';
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

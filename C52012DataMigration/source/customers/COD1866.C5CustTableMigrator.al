@@ -19,7 +19,7 @@ codeunit 1866 "C5 CustTable Migrator"
         GeneralJournalBatchNameTxt: Label 'CUSTMIGR', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomer', '', true, true)]
-    procedure OnMigrateCustomer(VAR Sender: Codeunit "Customer Data Migration Facade";RecordIdToMigrate: RecordId)
+    procedure OnMigrateCustomer(VAR Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5CustTable: Record "C5 CustTable";
     begin
@@ -30,7 +30,7 @@ codeunit 1866 "C5 CustTable Migrator"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerDimensions', '', true, true)]
-    procedure OnMigrateCustomerDimensions(VAR Sender: Codeunit "Customer Data Migration Facade";RecordIdToMigrate: RecordId)
+    procedure OnMigrateCustomerDimensions(VAR Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5CustTable: Record "C5 CustTable";
         C5HelperFunctions: Codeunit "C5 Helper Functions";
@@ -57,7 +57,7 @@ codeunit 1866 "C5 CustTable Migrator"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
-    procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade";RecordIdToMigrate: RecordId;ChartOfAccountsMigrated: Boolean)
+    procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         C5CustTable: Record "C5 CustTable";
         C5CustGroup: Record "C5 CustGroup";
@@ -83,7 +83,7 @@ codeunit 1866 "C5 CustTable Migrator"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerTransactions', '', true, true)]
-    procedure OnMigrateCustomerTransactions(var Sender: Codeunit "Customer Data Migration Facade";RecordIdToMigrate: RecordId;ChartOfAccountsMigrated: Boolean)
+    procedure OnMigrateCustomerTransactions(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         C5CustTable: Record "C5 CustTable";
         C5CustGroup: Record "C5 CustGroup";
@@ -124,10 +124,10 @@ codeunit 1866 "C5 CustTable Migrator"
                     C5HelperFunctions.GetDepartmentDimensionDescTxt(),
                     C5CustTrans.Department,
                     C5HelperFunctions.GetDimensionValueName(Database::"C5 Department", C5CustTrans.Department));
-                    Sender.SetGeneralJournalLineDimension(C5HelperFunctions.GetCostCenterDimensionCodeTxt(),
-                    C5HelperFunctions.GetCostCenterDimensionDescTxt(),
-                    C5CustTrans.Centre,
-                    C5HelperFunctions.GetDimensionValueName(Database::"C5 Centre", C5CustTrans.Centre));
+                Sender.SetGeneralJournalLineDimension(C5HelperFunctions.GetCostCenterDimensionCodeTxt(),
+                C5HelperFunctions.GetCostCenterDimensionDescTxt(),
+                C5CustTrans.Centre,
+                C5HelperFunctions.GetDimensionValueName(Database::"C5 Centre", C5CustTrans.Centre));
                 Sender.SetGeneralJournalLineDimension(C5HelperFunctions.GetPurposeDimensionCodeTxt(),
                     C5HelperFunctions.GetPurposeDimensionDescTxt(),
                     C5CustTrans.Purpose,
@@ -135,8 +135,8 @@ codeunit 1866 "C5 CustTable Migrator"
             until C5CustTrans.Next() = 0;
     end;
 
-    local procedure MigrateCustomerDetails(C5CustTable: Record "C5 CustTable";CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
-    var 
+    local procedure MigrateCustomerDetails(C5CustTable: Record "C5 CustTable"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
+    var
         C5HelperFunctions: Codeunit "C5 Helper Functions";
         C5CustContact: Record "C5 CustContact";
         PostCode: Code[20];
@@ -144,42 +144,42 @@ codeunit 1866 "C5 CustTable Migrator"
         CountryRegionCode: Code[10];
     begin
         if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(C5CustTable.Account, C5CustTable.Name) then
-        exit;
+            exit;
 
         CustomerDataMigrationFacade.SetSearchName(C5CustTable.SearchName);
 
         C5HelperFunctions.ExtractPostCodeAndCity(C5CustTable.ZipCity, C5CustTable.Country, PostCode, City, CountryRegionCode);
         CustomerDataMigrationFacade.SetAddress(C5CustTable.Address1, C5CustTable.Address2, CountryRegionCode, PostCode, City);
-        
+
         CustomerDataMigrationFacade.SetPhoneNo(C5CustTable.Phone);
         CustomerDataMigrationFacade.SetEmail(C5CustTable.Email);
         CustomerDataMigrationFacade.SetTelexNo(C5CustTable.CellPhone);
         CustomerDataMigrationFacade.SetCreditLimitLCY(C5CustTable.BalanceMax);
         CustomerDataMigrationFacade.SetCurrencyCode(C5HelperFunctions.FixLCYCode(C5CustTable.Currency)); // assume the currency is already present
         CustomerDataMigrationFacade.SetCustomerPriceGroup(CreateCustomerPriceGroupIfNeeded(C5CustTable.PriceGroup));
-        CustomerDataMigrationFacade.SetLanguageCode(C5HelperFunctions.GetLanguageCodeForC5Language(C5CustTable.Language_)); 
+        CustomerDataMigrationFacade.SetLanguageCode(C5HelperFunctions.GetLanguageCodeForC5Language(C5CustTable.Language_));
         CustomerDataMigrationFacade.SetPaymentTermsCode(CreatePaymentTermsIfNeeded(C5CustTable.Payment));
         CustomerDataMigrationFacade.SetSalespersonCode(CreateSalespersonPurchaserIfNeeded(C5CustTable.SalesRep));
         CustomerDataMigrationFacade.SetShipmentMethodCode(CreateShipmentMethodIfNeeded(C5CustTable.Delivery));
         CustomerDataMigrationFacade.SetInvoiceDiscCode(CreateCustomerDiscountGroupIfNeeded(C5CustTable.DiscGroup));
-        
+
         CustomerDataMigrationFacade.SetBlockedType(ConvertBlocked(C5CustTable));
 
         // reference to another customer
         // to make sure the bill to customer exists
-        if (C5CustTable.InvoiceAccount <> '') and not CustomerDataMigrationFacade.DoesCustomerExist(C5CustTable.InvoiceAccount) then 
+        if (C5CustTable.InvoiceAccount <> '') and not CustomerDataMigrationFacade.DoesCustomerExist(C5CustTable.InvoiceAccount) then
             Error(StrSubstNo(ReferencedCustomerDoesNotExistErr, C5CustTable.Account, C5CustTable.InvoiceAccount));
-        
+
         CustomerDataMigrationFacade.SetBillToCustomerNo(C5CustTable.InvoiceAccount);
 
-        CustomerDataMigrationFacade.SetPaymentMethodCode(CreatePaymentMethodIfNeeded(C5CustTable.PaymentMode)); 
+        CustomerDataMigrationFacade.SetPaymentMethodCode(CreatePaymentMethodIfNeeded(C5CustTable.PaymentMode));
         CustomerDataMigrationFacade.SetFaxNo(C5CustTable.Fax);
         CustomerDataMigrationFacade.SetVATRegistrationNo(C5CustTable.VatNumber);
         CustomerDataMigrationFacade.SetHomePage(C5CustTable.URL);
         CustomerDataMigrationFacade.SetContact(C5CustTable.Attention);
-        
-        C5CustContact.SetRange(Account,C5CustTable.Account);
-        C5CustContact.SetRange(PrimaryContact,C5CustContact.PrimaryContact::No);
+
+        C5CustContact.SetRange(Account, C5CustTable.Account);
+        C5CustContact.SetRange(PrimaryContact, C5CustContact.PrimaryContact::No);
         if C5CustContact.FindSet() then
             repeat
                 C5HelperFunctions.ExtractPostCodeAndCity(C5CustContact.ZipCity, C5CustContact.Country, PostCode, City, CountryRegionCode);
@@ -192,7 +192,7 @@ codeunit 1866 "C5 CustTable Migrator"
         CustomerDataMigrationFacade.ModifyCustomer(true);
     end;
 
-    local procedure CreatePaymentTermsIfNeeded(C5PaymentTxt: Code[10]): Code [10]
+    local procedure CreatePaymentTermsIfNeeded(C5PaymentTxt: Code[10]): Code[10]
     var
         C5Payment: Record "C5 Payment";
         DueDateAsDateFormula: DateFormula;
@@ -202,7 +202,7 @@ codeunit 1866 "C5 CustTable Migrator"
             exit(C5PaymentTxt);
 
         C5Payment.SetRange(Payment, C5PaymentTxt);
-        if not C5Payment.FindFirst() then 
+        if not C5Payment.FindFirst() then
             Error(PaymentNotFoundErr, C5PaymentTxt);
 
         case C5Payment.Method of
@@ -227,24 +227,24 @@ codeunit 1866 "C5 CustTable Migrator"
         end;
         DueDateCalculation := StrSubstNo('<%1>', DueDateCalculation);
         Evaluate(DueDateAsDateFormula, DueDateCalculation);
-        
+
         exit(CustomerDataMigrationFacade.CreatePaymentTermsIfNeeded(
             C5Payment.Payment,
             C5Payment.Txt,
             DueDateAsDateFormula));
     end;
 
-    local procedure CreatePaymentMethodIfNeeded(C5ProcCodeTxt: Text[10]): Code [10]
+    local procedure CreatePaymentMethodIfNeeded(C5ProcCodeTxt: Text[10]): Code[10]
     var
         C5ProcCode: Record "C5 ProcCode";
     begin
         if C5ProcCodeTxt = '' then
             exit(C5ProcCodeTxt);
-        
+
         C5ProcCode.SetRange(Code, C5ProcCodeTxt);
         // only migrates the payment methods for customers
         C5ProcCode.SetRange(Type, C5ProcCode.Type::Customer);
-        if not C5ProcCode.FindFirst() then 
+        if not C5ProcCode.FindFirst() then
             Error(ProcCodeNotFoundErr, C5ProcCode);
 
         exit(CustomerDataMigrationFacade.CreatePaymentMethodIfNeeded(C5ProcCode.Code, C5ProcCode.Name));
@@ -257,9 +257,9 @@ codeunit 1866 "C5 CustTable Migrator"
     begin
         if C5InvenPriceGroupTxt = '' then
             exit(C5InvenPriceGroupTxt);
-            
+
         C5InvenPriceGroup.SetRange(Group, C5InvenPriceGroupTxt);
-        if not C5InvenPriceGroup.FindFirst() then 
+        if not C5InvenPriceGroup.FindFirst() then
             Error(InventPriceGroupNotFoundErr, C5InvenPriceGroup);
 
         exit(CustomerDataMigrationFacade.CreateCustomerPriceGroupIfNeeded(
@@ -274,19 +274,19 @@ codeunit 1866 "C5 CustTable Migrator"
     begin
         if C5EmployeeTxt = '' then
             exit(C5EmployeeTxt);
-        
+
         C5Employee.SetRange(Employee, C5EmployeeTxt);
-        if not C5Employee.FindFirst() then 
+        if not C5Employee.FindFirst() then
             Error(EmployeeNotFoundErr, C5Employee);
 
         exit(CustomerDataMigrationFacade.CreateSalespersonPurchaserIfNeeded(
             C5Employee.Employee,
             C5Employee.Name,
             C5Employee.Phone,
-            C5Employee.Email));        
+            C5Employee.Email));
     end;
 
-    local procedure CreateShipmentMethodIfNeeded(C5DeliveryTxt: Code[10]): Code [10]
+    local procedure CreateShipmentMethodIfNeeded(C5DeliveryTxt: Code[10]): Code[10]
     var
         C5Delivery: Record "C5 Delivery";
     begin
@@ -306,9 +306,9 @@ codeunit 1866 "C5 CustTable Migrator"
     begin
         if C5DiscGroup = '' then
             exit(C5DiscGroup);
-        
+
         C5CustDiscGroup.SetRange(DiscGroup, C5DiscGroup);
-        if not C5CustDiscGroup.FindFirst() then 
+        if not C5CustDiscGroup.FindFirst() then
             Error(CustDiscGroupGroupNotFoundErr, C5DiscGroup);
 
         exit(CustomerDataMigrationFacade.CreateCustomerDiscountGroupIfNeeded(C5CustDiscGroup.DiscGroup, C5CustDiscGroup.Comment));
@@ -316,7 +316,7 @@ codeunit 1866 "C5 CustTable Migrator"
 
     local procedure ConvertBLocked(C5CustTable: Record "C5 CustTable"): Option
     var
-        Blocked: Option " ", Ship, Invoice, All;
+        Blocked: Option " ",Ship,Invoice,All;
     begin
         case C5CustTable.Blocked of
             C5CustTable.Blocked::No:

@@ -17,11 +17,11 @@ page 1869 "C5 Payment"
         {
             group(General)
             {
-                field(Payment;Payment) { ApplicationArea=All; }
-                field(Txt;Txt) { ApplicationArea=All; }
-                field(Method;Method) { ApplicationArea=All; }
-                field(Qty;Qty) { ApplicationArea=All; }
-                field(UnitCode;UnitCode) { ApplicationArea=All; }
+                field(Payment; Payment) { ApplicationArea = All; }
+                field(Txt; Txt) { ApplicationArea = All; }
+                field(Method; Method) { ApplicationArea = All; }
+                field(Qty; Qty) { ApplicationArea = All; }
+                field(UnitCode; UnitCode) { ApplicationArea = All; }
             }
         }
     }

@@ -10,11 +10,11 @@ codeunit 1868 "C5 Data Loader"
         GLAccountProgressTxt: Label 'G/L accounts';
         VendorProgressTxt: Label 'Vendor';
         CustomerProgressTxt: Label 'Customer';
-        ItemProgressTxt : Label 'Item';
-        StagingTablesImportStart: Label 'CSV file import to staging tables started.', Locked=true;
-        StagingTablesImportFinish: Label 'CSV file import to staging tables finished; duration: %1', Locked=true;
+        ItemProgressTxt: Label 'Item';
+        StagingTablesImportStartMsg: Label 'CSV file import to staging tables started.', Locked = true;
+        StagingTablesImportFinishMsg: Label 'CSV file import to staging tables finished; duration: %1', Locked = true;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFillStagingTables', '', false, false)] 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFillStagingTables', '', false, false)]
     procedure FillStagingTables()
     var
         DataMigrationStatus: Record "Data Migration Status";
@@ -27,7 +27,7 @@ codeunit 1868 "C5 Data Loader"
         StartTime: DateTime;
     begin
         StartTime := CurrentDateTime();
-        SendTraceTag('00001HZ', C5MigrDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Normal, StagingTablesImportStart, DataClassification::SystemMetadata);
+        SendTraceTag('00001HZ', C5MigrDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Normal, StagingTablesImportStartMsg, DataClassification::SystemMetadata);
 
         ReadBlobAndExtractZipFile();
 
@@ -89,7 +89,7 @@ codeunit 1868 "C5 Data Loader"
         SendTraceTag('00001I0',
                      C5MigrDashboardMgt.GetC5MigrationTypeTxt(),
                      Verbosity::Normal,
-                     StrSubstNo(StagingTablesImportFinish, DurationAsInt), 
+                     StrSubstNo(StagingTablesImportFinishMsg, DurationAsInt),
                      DataClassification::SystemMetadata);
     end;
 
@@ -428,7 +428,7 @@ codeunit 1868 "C5 Data Loader"
     begin
         if not OpenRecordFileAndProcessSubsts(C5InvenTable, CsvProcessedStream, TempBlob) then
             exit;
-        
+
         C5InvenTableXmlPort.SetSource(CsvProcessedStream);
         C5InvenTableXmlPort.Import();
     end;
@@ -526,7 +526,7 @@ codeunit 1868 "C5 Data Loader"
     begin
         if not OpenRecordFileAndProcessSubsts(C5LedTrans, CsvProcessedStream, TempBlob) then
             exit;
-        
+
         C5LedTransXmlPort.SetSource(CsvProcessedStream);
         C5LedTransXmlPort.Import();
     end;
@@ -540,7 +540,7 @@ codeunit 1868 "C5 Data Loader"
     begin
         if not OpenRecordFileAndProcessSubsts(C5InvenBOM, CsvProcessedStream, TempBlob) then
             exit;
-        
+
         C5InvenBOMXmlPort.SetSource(CsvProcessedStream);
         C5InvenBOMXmlPort.Import();
     end;
@@ -554,7 +554,7 @@ codeunit 1868 "C5 Data Loader"
     begin
         if not OpenRecordFileAndProcessSubsts(C5CustContact, CsvProcessedStream, TempBlob) then
             exit;
-        
+
         C5CustContactXmlPort.SetSource(CsvProcessedStream);
         C5CustContactXmlPort.Import();
     end;
@@ -568,12 +568,12 @@ codeunit 1868 "C5 Data Loader"
     begin
         if not OpenRecordFileAndProcessSubsts(C5VendContact, CsvProcessedStream, TempBlob) then
             exit;
-        
+
         C5VendContactXmlPort.SetSource(CsvProcessedStream);
         C5VendContactXmlPort.Import();
     end;
 
-    local procedure GetFileNameForRecord(RecordVariant: Variant;var FileNameOut: Text)
+    local procedure GetFileNameForRecord(RecordVariant: Variant; var FileNameOut: Text)
     var
         C5SchemaParameters: Record "C5 Schema Parameters";
         DataTypeManagement: Codeunit "Data Type Management";
@@ -613,7 +613,7 @@ codeunit 1868 "C5 Data Loader"
             Database::"C5 InvenTrans":
                 FileNameOut += '/exp00055.kom';
             Database::"C5 InvenLocation":
-                FileNameOut += '/exp00018.kom';      
+                FileNameOut += '/exp00018.kom';
             Database::"C5 InvenPrice":
                 FileNameOut += '/exp00063.kom';
             Database::"C5 InvenPriceGroup":
@@ -660,10 +660,10 @@ codeunit 1868 "C5 Data Loader"
         FileManagement: Codeunit "File Management";
         CsvFile: File;
         Filename: Text;
-        CsvInStream: InStream;    
+        CsvInStream: InStream;
     begin
         GetFileNameForRecord(RecordVariant, Filename);
-        if not FileManagement.ServerFileExists(Filename) then 
+        if not FileManagement.ServerFileExists(Filename) then
             exit(false);
 
         CsvFile.Open(Filename);
@@ -690,10 +690,10 @@ codeunit 1868 "C5 Data Loader"
         ZipFile.Create(ZipFileName);
         ZipFile.CreateOutStream(ZipFileStream);
 
-        if not CopyStream(ZipFileStream, BlobInStream) then 
+        if not CopyStream(ZipFileStream, BlobInStream) then
             StopPendingMigrationsAndSurfaceErrors();
 
-        ZipFile.Close();    
+        ZipFile.Close();
         C5SchemaParameters."Zip File" := CopyStr(ZipFileName, 1, 250);
         C5SchemaParameters.Modify();
         Commit();
@@ -702,7 +702,7 @@ codeunit 1868 "C5 Data Loader"
     end;
 
     local procedure StopPendingMigrationsAndSurfaceErrors()
-    var    
+    var
         DataMigrationStatus: Record "Data Migration Status";
         DataMigrationError: Record "Data Migration Error";
         C5DataMigrDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";

@@ -5,30 +5,31 @@
 
 table 1882 "C5 Delivery"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;Delivery;Code[10]) 
+        field(3; Delivery; Code[10])
         {
-            Caption='Delivery';
+            Caption = 'Delivery';
         }
-        field(4;Name;Text[30]) 
+        field(4; Name; Text[30])
         {
-            Caption='Name';
+            Caption = 'Name';
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

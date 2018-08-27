@@ -5,17 +5,17 @@
 
 xmlport 1867 "C5 Employee"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='EmployeeDocument';
+            MinOccurs = Zero;
+            XmlName = 'EmployeeDocument';
             tableelement(C5Employee; "C5 Employee")
             {
                 fieldelement(Employee; C5Employee.Employee) { }
@@ -37,8 +37,17 @@ xmlport 1867 "C5 Employee"
                 fieldelement(Currency; C5Employee.Currency) { }
                 fieldelement(Language_; C5Employee.Language_) { }
                 fieldelement(CellPhone; C5Employee.CellPhone) { }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5Employee.RecId := Counter;
+                    Counter += 1;
+                end;
             }
         }
     }
+
+    var
+        Counter: Integer;
 }
 

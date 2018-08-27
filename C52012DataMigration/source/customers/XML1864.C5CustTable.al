@@ -5,17 +5,17 @@
 
 xmlport 1864 "C5 CustTable"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='CustTableDocument';
+            MinOccurs = Zero;
+            XmlName = 'CustTableDocument';
             tableelement(C5CustTable; "C5 CustTable")
             {
                 fieldelement(DEL_UserLock; C5CustTable.DEL_UserLock) { }
@@ -63,7 +63,7 @@ xmlport 1864 "C5 CustTable"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(CalculationDateText, CopyStr(DateFormatString, 1, 20), C5CustTable.CalculationDate);
+                        C5HelperFunctions.TryConvertFromStringDate(CalculationDateText, CopyStr(DateFormatStringTxt, 1, 20), C5CustTable.CalculationDate);
                     end;
                 }
 
@@ -90,7 +90,7 @@ xmlport 1864 "C5 CustTable"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(LastInvoiceDateText, CopyStr(DateFormatString, 1, 20), C5CustTable.LastInvoiceDate);
+                        C5HelperFunctions.TryConvertFromStringDate(LastInvoiceDateText, CopyStr(DateFormatStringTxt, 1, 20), C5CustTable.LastInvoiceDate);
                     end;
                 }
 
@@ -98,7 +98,7 @@ xmlport 1864 "C5 CustTable"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(LastPaymentDateText, CopyStr(DateFormatString, 1, 20), C5CustTable.LastPaymentDate);
+                        C5HelperFunctions.TryConvertFromStringDate(LastPaymentDateText, CopyStr(DateFormatStringTxt, 1, 20), C5CustTable.LastPaymentDate);
                     end;
                 }
 
@@ -106,7 +106,7 @@ xmlport 1864 "C5 CustTable"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(LastReminderDateText, CopyStr(DateFormatString, 1, 20), C5CustTable.LastReminderDate);
+                        C5HelperFunctions.TryConvertFromStringDate(LastReminderDateText, CopyStr(DateFormatStringTxt, 1, 20), C5CustTable.LastReminderDate);
                     end;
                 }
 
@@ -114,7 +114,7 @@ xmlport 1864 "C5 CustTable"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(LastInterestDateText, CopyStr(DateFormatString, 1, 20), C5CustTable.LastInterestDate);
+                        C5HelperFunctions.TryConvertFromStringDate(LastInterestDateText, CopyStr(DateFormatStringTxt, 1, 20), C5CustTable.LastInterestDate);
                     end;
                 }
 
@@ -123,12 +123,19 @@ xmlport 1864 "C5 CustTable"
                 fieldelement(VatGroup; C5CustTable.VatGroup) { }
                 fieldelement(StdAccount; C5CustTable.StdAccount) { }
                 fieldelement(VatNumberType; C5CustTable.VatNumberType) { }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5CustTable.RecId := Counter;
+                    Counter += 1;
+                end;
             }
         }
     }
 
     var
         C5HelperFunctions: Codeunit "C5 Helper Functions";
-        DateFormatString: label 'yyyy/MM/dd', locked=true;
+        DateFormatStringTxt: label 'yyyy/MM/dd', locked = true;
+        Counter: Integer;
 }
 

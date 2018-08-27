@@ -5,17 +5,17 @@
 
 xmlport 1886 "C5 Country"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='CountryDocument';
+            MinOccurs = Zero;
+            XmlName = 'CountryDocument';
             tableelement(C5Country; "C5 Country")
             {
                 fieldelement(Country; C5Country.Country) { }
@@ -27,8 +27,17 @@ xmlport 1886 "C5 Country"
                 fieldelement(VatCountryCode; C5Country.VatCountryCode) { }
                 fieldelement(IntrastatCode; C5Country.IntrastatCode) { }
                 fieldelement(ExtCountryName; C5Country.ExtCountryName) { }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5Country.RecId := Counter;
+                    Counter += 1;
+                end;
             }
         }
     }
+
+    var
+        Counter: Integer;
 }
 

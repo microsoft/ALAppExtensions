@@ -5,16 +5,16 @@
 
 xmlport 1893 "C5 VendGroup"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='VendGroupDocument';
+            MinOccurs = Zero;
+            XmlName = 'VendGroupDocument';
             tableelement(C5VendGroup; "C5 VendGroup")
             {
                 fieldelement(Group; C5VendGroup.Group) { }
@@ -27,8 +27,17 @@ xmlport 1893 "C5 VendGroup"
                 fieldelement(GroupAccount; C5VendGroup.GroupAccount) { }
                 fieldelement(CashPayment; C5VendGroup.CashPayment) { }
                 fieldelement(LineDisc; C5VendGroup.LineDisc) { }
-           }
-       }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5VendGroup.RecId := Counter;
+                    Counter += 1;
+                end;
+            }
+        }
     }
+
+    var
+        Counter: Integer;
 }
 

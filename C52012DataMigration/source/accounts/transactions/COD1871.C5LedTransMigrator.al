@@ -6,7 +6,7 @@
 codeunit 1871 "C5 LedTrans Migrator"
 {
     var
-        GeneralJournalBatchCode: Label 'GLACCMIGR', Locked = true;
+        GeneralJournalBatchCodeTok: Label 'GLACCMIGR', Locked = true;
 
     trigger OnRun();
     var
@@ -29,7 +29,7 @@ codeunit 1871 "C5 LedTrans Migrator"
             DataMigrationStatusFacade.IncrementMigratedRecordCount(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), Database::"C5 LedTrans", DataMigrationStatus."Total Number");
             exit;
         end;
-    
+
         DataMigrationStatusFacade.UpdateLineStatus(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), Database::"C5 LedTrans", DataMigrationStatus.Status::"In Progress");
         C5SchemaParameters.GetSingleInstance();
 
@@ -47,21 +47,21 @@ codeunit 1871 "C5 LedTrans Migrator"
                         // Update the DashBoard after each Account balance has been Migrated
                         Commit();
                     end;
-                        
+
                     CurrentAccount := C5LedTrans.Account;
-                    TotalAmount := 0;            
+                    TotalAmount := 0;
                 end;
-                TotalAmount += C5LedTrans.AmountMST;          
+                TotalAmount += C5LedTrans.AmountMST;
             until C5LedTrans.Next() = 0;
             // Insert() last Account
             InsertNewGenJournalLine(GenJournalBatch, TotalAmount, PostingDate, PostingDate, CurrentAccount, 'C5MIGRATE');
         end;
-        
+
         C5LedTrans.SetFilter(Date_, '>=%1', C5SchemaParameters.CurrentPeriod);
         C5LedTrans.SetCurrentKey(Date_, Transaction);
         if C5LedTrans.FindSet() then begin
             CreateGeneralJournalBatchIfNeeded(GenJournalBatch);
-            repeat            
+            repeat
                 InsertNewGenJournalLine(GenJournalBatch, C5LedTrans.AmountMST, C5LedTrans.Date_, C5LedTrans.DueDate, C5LedTrans.Account, Format(C5LedTrans.Voucher));
                 DataMigrationStatusFacade.IncrementMigratedRecordCount(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), Database::"C5 LedTrans", 1);
                 Batch += 1;
@@ -116,17 +116,17 @@ codeunit 1871 "C5 LedTrans Migrator"
     var
         TemplateName: Code[10];
     begin
-        TemplateName := CreateGeneralJournalTemplateIfNeeded(CopyStr(GeneralJournalBatchCode, 1, 10));
+        TemplateName := CreateGeneralJournalTemplateIfNeeded(CopyStr(GeneralJournalBatchCodeTok, 1, 10));
         GenJournalBatch.SetRange("Journal Template Name", TemplateName);
-        GenJournalBatch.SetRange(Name, GeneralJournalBatchCode);
+        GenJournalBatch.SetRange(Name, GeneralJournalBatchCodeTok);
         GenJournalBatch.SetRange("No. Series", '');
         GenJournalBatch.SetRange("Posting No. Series", '');
         if not GenJournalBatch.FindFirst() then begin
             GenJournalBatch.Init();
             GenJournalBatch.Validate("Journal Template Name", TemplateName);
             GenJournalBatch.SetupNewBatch();
-            GenJournalBatch.Validate(Name, GeneralJournalBatchCode);
-            GenJournalBatch.Validate(Description, GeneralJournalBatchCode);
+            GenJournalBatch.Validate(Name, GeneralJournalBatchCodeTok);
+            GenJournalBatch.Validate(Description, GeneralJournalBatchCodeTok);
             GenJournalBatch."No. Series" := '';
             GenJournalBatch."Posting No. Series" := '';
             GenJournalBatch.Insert(true);
@@ -161,6 +161,6 @@ codeunit 1871 "C5 LedTrans Migrator"
 
     procedure GetHardCodedBatchName(): Code[10]
     begin
-        exit(CopyStr(GeneralJournalBatchCode, 1, 10));
+        exit(CopyStr(GeneralJournalBatchCodeTok, 1, 10));
     end;
 }

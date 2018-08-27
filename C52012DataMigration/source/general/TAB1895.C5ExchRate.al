@@ -5,43 +5,44 @@
 
 table 1895 "C5 ExchRate"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;Currency;Code[3]) 
+        field(3; Currency; Code[3])
         {
-            Caption='Currency';
+            Caption = 'Currency';
         }
-        field(4;ExchRate;Decimal) 
+        field(4; ExchRate; Decimal)
         {
-            Caption='Exch. rate';
+            Caption = 'Exch. rate';
         }
-        field(5;FromDate;Date) 
+        field(5; FromDate; Date)
         {
-            Caption='From date';
+            Caption = 'From date';
         }
-        field(6;Comment;Text[50]) 
+        field(6; Comment; Text[50])
         {
-            Caption='Comment';
+            Caption = 'Comment';
         }
-        field(7;Triangulation;Option) 
+        field(7; Triangulation; Option)
         {
-            Caption='Triangulation';
-            OptionMembers = No, Yes;
+            Caption = 'Triangulation';
+            OptionMembers = No,Yes;
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

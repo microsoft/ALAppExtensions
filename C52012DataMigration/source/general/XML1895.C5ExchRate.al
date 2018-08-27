@@ -5,17 +5,17 @@
 
 xmlport 1895 "C5 Exch. Rate"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='ExchRateDocument';
+            MinOccurs = Zero;
+            XmlName = 'ExchRateDocument';
             tableelement(C5ExchRate; "C5 ExchRate")
             {
                 fieldelement(Currency; C5ExchRate.Currency) { }
@@ -24,18 +24,26 @@ xmlport 1895 "C5 Exch. Rate"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(FromDateText, CopyStr(DateFormatString, 1, 20), C5ExchRate.FromDate);
+                        C5HelperFunctions.TryConvertFromStringDate(FromDateText, CopyStr(DateFormatStringTxt, 1, 20), C5ExchRate.FromDate);
                     end;
                 }
 
                 fieldelement(Comment; C5ExchRate.Comment) { }
                 fieldelement(Triangulation; C5ExchRate.Triangulation) { }
-           }
-       }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5ExchRate.RecId := Counter;
+                    Counter += 1;
+                end;
+            }
+        }
     }
 
     var
         C5HelperFunctions: Codeunit "C5 Helper Functions";
-        DateFormatString: label 'yyyy/MM/dd', locked=true;
+        DateFormatStringTxt: label 'yyyy/MM/dd', locked = true;
+
+        Counter: Integer;
 }
 

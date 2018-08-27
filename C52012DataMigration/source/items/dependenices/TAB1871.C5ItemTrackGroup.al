@@ -5,43 +5,44 @@
 
 table 1871 "C5 ItemTrackGroup"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;Group;Code[10]) 
+        field(3; Group; Code[10])
         {
-            Caption='Group';
+            Caption = 'Group';
         }
-        field(4;Prefix;Text[10]) 
+        field(4; Prefix; Text[10])
         {
-            Caption='Prefix';
+            Caption = 'Prefix';
         }
-        field(5;NumberSeries;Text[20]) 
+        field(5; NumberSeries; Text[20])
         {
-            Caption='Voucher series';
+            Caption = 'Voucher series';
         }
-        field(6;PostFix;Text[10]) 
+        field(6; PostFix; Text[10])
         {
-            Caption='Postfix';
+            Caption = 'Postfix';
         }
-        field(7;BOMUpdate;Option) 
+        field(7; BOMUpdate; Option)
         {
-            Caption='Update BOM';
-            OptionMembers = No, Yes;
+            Caption = 'Update BOM';
+            OptionMembers = No,Yes;
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }
