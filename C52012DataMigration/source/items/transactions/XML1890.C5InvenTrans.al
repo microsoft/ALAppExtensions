@@ -5,17 +5,17 @@
 
 xmlport 1890 "C5 InvenTrans"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='InvenTransDocument';
+            MinOccurs = Zero;
+            XmlName = 'InvenTransDocument';
             tableelement(C5InvenTrans; "C5 InvenTrans")
             {
                 fieldelement(ItemNumber; C5InvenTrans.ItemNumber) { }
@@ -25,7 +25,7 @@ xmlport 1890 "C5 InvenTrans"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(Date_Text, CopyStr(DateFormatString, 1, 20), C5InvenTrans.Date_);
+                        C5HelperFunctions.TryConvertFromStringDate(Date_Text, CopyStr(DateFormatStringTxt, 1, 20), C5InvenTrans.Date_);
                     end;
                 }
 
@@ -81,12 +81,19 @@ xmlport 1890 "C5 InvenTrans"
                 fieldelement(TmpFunction; C5InvenTrans.TmpFunction) { }
                 fieldelement(CollectNumber; C5InvenTrans.CollectNumber) { }
                 fieldelement(SkipSettle; C5InvenTrans.SkipSettle) { }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5InvenTrans.RecId := Counter;
+                    Counter += 1;
+                end;
             }
         }
     }
 
     var
         C5HelperFunctions: Codeunit "C5 Helper Functions";
-        DateFormatString: label 'yyyy/MM/dd', locked=true;
+        DateFormatStringTxt: label 'yyyy/MM/dd', locked = true;
+        Counter: Integer;
 }
 

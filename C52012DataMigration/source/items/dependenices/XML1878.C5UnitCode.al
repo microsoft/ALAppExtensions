@@ -5,23 +5,32 @@
 
 xmlport 1878 "C5 UnitCode"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='UnitCodeDocument';
+            MinOccurs = Zero;
+            XmlName = 'UnitCodeDocument';
             tableelement(C5UnitCode; "C5 UnitCode")
             {
                 fieldelement(UnitCode; C5UnitCode.UnitCode) { }
                 fieldelement(Txt; C5UnitCode.Txt) { }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5UnitCode.RecId := Counter;
+                    Counter += 1;
+                end;
             }
         }
     }
+
+    var
+        Counter: Integer;
 }
 

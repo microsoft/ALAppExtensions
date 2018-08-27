@@ -4,22 +4,22 @@
 // ------------------------------------------------------------------------------------------------
 
 codeunit 1867 "C5 Item Migrator"
-{    
-   TableNo = "C5 InvenTable";
+{
+    TableNo = "C5 InvenTable";
 
     var
         UninitializedItemDataMigrationFacade: Codeunit "Item Data Migration Facade";
         ReferencedItemDoesNotExistErr: Label 'Item %1 is related to %2, but we couldn’t find %2. Try migrating again.', Comment = '%1 is the current item number, %2 is the referenced item''s number';
-        SerialNumberTrackingCodeTxt: Label 'SN', Comment='All caps, 10 characters max because Code[10] in baseapp';
+        SerialNumberTrackingCodeTxt: Label 'SN', Comment = 'All caps, 10 characters max because Code[10] in baseapp';
         SerialNumberTrackingDescriptionTxt: Label 'Serial number tracking';
-        BatchTrackingCodeTxt: Label 'BATCH', Comment='All caps, 10 characters max because Code[10] in baseapp';
+        BatchTrackingCodeTxt: Label 'BATCH', Comment = 'All caps, 10 characters max because Code[10] in baseapp';
         BatchTrackingDescriptionTxt: Label 'Batch tracking';
         InventPriceGroupNotFoundErr: Label 'The InventPriceGroup ''%1'' was not found.', Comment = '%1 = invent price group group';
         ItemType: Option Inventory,Service;
         ItemJournalBatchNameTxt: Label 'ITEMMIGR', Locked = true;
         FakeProductPostingGroupPrefixLbl: Label 'MIGRATION', Locked = true;
         UnitOfMeasureNotSpecifiedErr: Label 'A unit of measure is not specified for item %1.', Comment = '%1 is the current item number';
-        ServiceItemInBOMErr: Label 'BOMs cannot include service items in %1. You must remove %2 from the BOM for %3.', Comment='%1=Product name %2=Component item %3 = main item';
+        ServiceItemInBOMErr: Label 'BOMs cannot include service items in %1. You must remove %2 from the BOM for %3.', Comment = '%1=Product name %2=Component item %3 = main item';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
     procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
@@ -46,10 +46,10 @@ codeunit 1867 "C5 Item Migrator"
             Sender.ModifyItem(false);
         end;
     end;
-    
+
     local procedure CreateNavItem(C5InvenTable: Record "C5 InvenTable"; ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
     var
-        C5InvenBom:  Record "C5 InvenBOM";
+        C5InvenBom: Record "C5 InvenBOM";
         BOMComponent: Record "BOM Component";
         C5InvenTableComponent: Record "C5 InvenTable";
         DivideCostBy: Decimal;
@@ -60,7 +60,7 @@ codeunit 1867 "C5 Item Migrator"
                                                           ConvertItemType(C5InvenTable.ItemType))
         then
             exit;
-            
+
         // CostPriceUnit indicates that the cost is for 100 units for example
         if C5InvenTable.CostPriceUnit <> 0 then
             DivideCostBy := C5InvenTable.CostPriceUnit
@@ -68,23 +68,23 @@ codeunit 1867 "C5 Item Migrator"
             DivideCostBy := 1;
         ItemDataMigrationFacade.SetUnitCost(C5InvenTable.CostPrice / DivideCostBy);
         ItemDataMigrationFacade.SetStandardCost(C5InvenTable.CostPrice / DivideCostBy);
-        
+
         ItemDataMigrationFacade.SetVendorItemNo(C5InvenTable.VendItemNumber);
         ItemDataMigrationFacade.SetNetWeight(C5InvenTable.NetWeight);
         ItemDataMigrationFacade.SetUnitVolume(C5InvenTable.Volume);
         ItemDataMigrationFacade.SetBlocked(C5InvenTable.Blocked = C5InvenTable.Blocked::Yes);
         ItemDataMigrationFacade.SetStockoutWarning(C5InvenTable.WarnNegativeInventory = C5InvenTable.WarnNegativeInventory::Yes);
         ItemDataMigrationFacade.SetPreventNegativeInventory(C5InvenTable.NegativeInventory = C5InvenTable.NegativeInventory::Yes);
-        
+
         ItemDataMigrationFacade.SetReorderQuantity(C5InvenTable.PurchSeriesSize);
 
         if C5InvenTable.ItemType in [C5InvenTable.ItemType::BOM, C5InvenTable.ItemType::Kit] then begin
-            C5InvenBom.SetRange(BOMItemNumber,C5InvenTable.ItemNumber);
-            if C5InvenBom.FindSet() then begin
-                repeat 
+            C5InvenBom.SetRange(BOMItemNumber, C5InvenTable.ItemNumber);
+            if C5InvenBom.FindSet() then
+                repeat
                     if not ItemDataMigrationFacade.DoesItemExist(C5InvenBom.ItemNumber) then
                         Error(StrSubstNo(ReferencedItemDoesNotExistErr, C5InvenTable.ItemNumber, C5InvenBom.ItemNumber));
-                    C5InvenTableComponent.SetRange(ItemNumber,C5InvenBom.ItemNumber);
+                    C5InvenTableComponent.SetRange(ItemNumber, C5InvenBom.ItemNumber);
                     if C5InvenTableComponent.FindFirst() then begin
                         if C5InvenTableComponent.ItemType = C5InvenTableComponent.ItemType::Service then
                             Error(StrSubstNo(ServiceItemInBOMErr, ProductName.Short(), C5InvenBom.ItemNumber, C5InvenBom.BOMItemNumber));
@@ -92,19 +92,18 @@ codeunit 1867 "C5 Item Migrator"
                             C5InvenBom.ItemNumber, C5InvenBom.Qty, C5InvenBom.Position, BOMComponent.Type::Item);
                     end;
                 until C5InvenBom.Next() = 0;
-            end;
-        end;        
-        
+        end;
+
         // reference to another item
         // to make sure the alt item exists
-        if (C5InvenTable.AltItemNumber <> '') and not ItemDataMigrationFacade.DoesItemExist(C5InvenTable.AltItemNumber) then 
-           Error(StrSubstNo(ReferencedItemDoesNotExistErr, C5InvenTable.ItemNumber, C5InvenTable.AltItemNumber));
+        if (C5InvenTable.AltItemNumber <> '') and not ItemDataMigrationFacade.DoesItemExist(C5InvenTable.AltItemNumber) then
+            Error(StrSubstNo(ReferencedItemDoesNotExistErr, C5InvenTable.ItemNumber, C5InvenTable.AltItemNumber));
 
         ItemDataMigrationFacade.SetAlternativeItemNo(C5InvenTable.AltItemNumber);
-        
+
         if C5InvenTable.PrimaryVendor <> '' then
             ItemDataMigrationFacade.SetVendorNo(C5InvenTable.PrimaryVendor);
-        
+
         ItemDataMigrationFacade.ModifyItem(true);
     end;
 
@@ -116,7 +115,7 @@ codeunit 1867 "C5 Item Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"C5 InvenTable" then
             exit;
         C5InvenTable.Get(RecordIdToMigrate);
-        
+
         if C5InvenTable.ItemTracking <> C5InvenTable.ItemTracking::None then begin
             Sender.SetItemTrackingCode(GetOrCreateItemTrackingCode(C5InvenTable.ItemTracking));
             Sender.ModifyItem(false);
@@ -132,7 +131,7 @@ codeunit 1867 "C5 Item Migrator"
             exit;
         C5InvenTable.Get(RecordIdToMigrate);
 
-        if C5InvenTable.UnitCode = '' then 
+        if C5InvenTable.UnitCode = '' then
             Error(UnitOfMeasureNotSpecifiedErr, C5InvenTable.ItemNumber);
 
         CreateUnitCodeIfNeeded(C5InvenTable.UnitCode);
@@ -148,12 +147,12 @@ codeunit 1867 "C5 Item Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"C5 InvenTable" then
             exit;
         C5InvenTable.Get(RecordIdToMigrate);
-        
+
         if C5InvenTable.DiscGroup <> '' then begin
             CreateItemDiscGroupIfNeeded(C5InvenTable.DiscGroup);
-            
-           Sender.SetItemDiscGroup(C5InvenTable.DiscGroup);
-           Sender.ModifyItem(false);
+
+            Sender.SetItemDiscGroup(C5InvenTable.DiscGroup);
+            Sender.ModifyItem(false);
         end;
     end;
 
@@ -188,7 +187,7 @@ codeunit 1867 "C5 Item Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"C5 InvenTable" then
             exit;
         C5InvenTable.Get(RecordIdToMigrate);
-       
+
         if C5InvenTable.TariffNumber <> '' then begin
             CreateTariffNoIfNeeded(C5InvenTable.TariffNumber);
             Sender.SetTariffNo(C5InvenTable.TariffNumber);
@@ -205,7 +204,7 @@ codeunit 1867 "C5 Item Migrator"
     begin
         if RecordIdToMigrate.TableNo() <> Database::"C5 InvenTable" then
             exit;
-        
+
         C5InvenTable.Get(RecordIdToMigrate);
         if C5InvenTable.Department <> '' then
             Sender.CreateDefaultDimensionAndRequirementsIfNeeded(
@@ -238,7 +237,7 @@ codeunit 1867 "C5 Item Migrator"
             exit;
         if RecordIdToMigrate.TableNo() <> Database::"C5 InvenTable" then
             exit;
-        
+
         C5InvenTable.Get(RecordIdToMigrate);
         C5InvenItemGroup.SetRange(Group, C5InvenTable.Group);
         C5InvenItemGroup.FindFirst();
@@ -247,8 +246,8 @@ codeunit 1867 "C5 Item Migrator"
         Sender.CreateGeneralProductPostingSetupIfNeeded(C5InvenItemGroup.Group, C5InvenItemGroup.GroupName, '');
         // Create Migration Posting Setup
         Sender.CreateGeneralProductPostingSetupIfNeeded(GetMigrationPostingSetupGroupName(C5InvenItemGroup.Group), C5InvenItemGroup.GroupName, '');
-       
-        if C5InvenItemGroup.InventoryInflowAcc <> '' then begin    
+
+        if C5InvenItemGroup.InventoryInflowAcc <> '' then begin
             Sender.SetInventoryPostingSetupInventoryAccount(
                 C5InvenItemGroup.Group,
                 '',
@@ -278,7 +277,7 @@ codeunit 1867 "C5 Item Migrator"
     procedure OnMigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         C5InvenTable: Record "C5 InvenTable";
-        C5InvenTrans: Record "C5 InvenTrans";        
+        C5InvenTrans: Record "C5 InvenTrans";
         C5InvenItemGroup: Record "C5 InvenItemGroup";
         C5InvenLocation: Record "C5 InvenLocation";
         C5LedTableMigrator: Codeunit "C5 LedTable Migrator";
@@ -290,7 +289,7 @@ codeunit 1867 "C5 Item Migrator"
             exit;
         if RecordIdToMigrate.TableNo() <> Database::"C5 InvenTable" then
             exit;
-        
+
         C5InvenTable.Get(RecordIdToMigrate);
         Sender.CreateItemJournalBatchIfNeeded(GetHardCodedBatchName(), '', '');
         C5InvenItemGroup.SetRange(Group, C5InvenTable.Group);
@@ -325,7 +324,7 @@ codeunit 1867 "C5 Item Migrator"
                                 C5InvenTrans.InvenLocation,
                                 C5LedTableMigrator.FillWithLeadingZeros(C5InvenItemGroup.InventoryInflowAcc));
                 end;
-                
+
                 Sender.CreateItemJournalLine(GetHardCodedBatchName(),
                     CopyStr(Format(C5InvenTrans.Voucher), 1, 20),
                     CopyStr(StrSubstNo('%1 %2', C5InvenTrans.InvoiceNumber, C5InvenTrans.Txt), 1, 50),
@@ -389,7 +388,7 @@ codeunit 1867 "C5 Item Migrator"
     local procedure CreateSalesLineDiscountIfNeeded(C5InvenCustDisc: Record "C5 InvenCustDisc")
     var
         SalesTypeToSet: Option Customer,"Customer Disc. Group","All Customers",Campaign;
-        TypeToSet: Option Item, "Item Disc. Group";
+        TypeToSet: Option Item,"Item Disc. Group";
     begin
         if C5InvenCustDisc.Type <> C5InvenCustDisc.Type::Percent then
             exit;
@@ -398,13 +397,13 @@ codeunit 1867 "C5 Item Migrator"
             C5InvenCustDisc.AccountCode::Specific:
                 SalesTypeToSet := SalesTypeToSet::Customer;
 
-            C5InvenCustDisc.AccountCode::Group: 
-            begin
-                CreateNavCustDiscGroupIfNeeded(C5InvenCustDisc.AccountRelation); // to make sure the group exists
-                SalesTypeToSet := SalesTypeToSet::"Customer Disc. Group";
-            end;
-        else
-            exit;
+            C5InvenCustDisc.AccountCode::Group:
+                begin
+                    CreateNavCustDiscGroupIfNeeded(C5InvenCustDisc.AccountRelation); // to make sure the group exists
+                    SalesTypeToSet := SalesTypeToSet::"Customer Disc. Group";
+                end;
+            else
+                exit;
         end;
 
         case C5InvenCustDisc.ItemCode of
@@ -412,12 +411,12 @@ codeunit 1867 "C5 Item Migrator"
                 TypeToSet := TypeToSet::Item;
 
             C5InvenCustDisc.ItemCode::Group:
-            begin
-                CreateItemDiscGroupIfNeeded(C5InvenCustDisc.ItemRelation); // to make sure the group exists
-                TypeToSet := TypeToSet::"Item Disc. Group";
-            end;
-        else
-            exit;
+                begin
+                    CreateItemDiscGroupIfNeeded(C5InvenCustDisc.ItemRelation); // to make sure the group exists
+                    TypeToSet := TypeToSet::"Item Disc. Group";
+                end;
+            else
+                exit;
         end;
 
         UninitializedItemDataMigrationFacade.CreateSalesLineDiscountIfNeeded(
@@ -442,15 +441,15 @@ codeunit 1867 "C5 Item Migrator"
     local procedure CreateItemDiscGroupIfNeeded(C5DiscountGroupCode: Code[10])
     var
         C5InvenDiscGroup: Record "C5 InvenDiscGroup";
-        GroupDescription: Text[50]; 
+        GroupDescription: Text[50];
     begin
         C5InvenDiscGroup.SetRange(DiscGroup, C5DiscountGroupCode);
         if C5InvenDiscGroup.FindFirst() then
             GroupDescription := C5InvenDiscGroup.Comment;
-        
+
         UninitializedItemDataMigrationFacade.CreateItemDiscGroupIfNeeded(C5DiscountGroupCode, GroupDescription);
     end;
-    
+
     local procedure CreateNavSalesPriceIfNeeded(C5InvenPrice: Record "C5 InvenPrice")
     var
         SalesType: Option Customer,"Customer Price Group","All Customers",Campaign;
@@ -476,9 +475,9 @@ codeunit 1867 "C5 Item Migrator"
     begin
         if C5InvenPriceGroupTxt = '' then
             exit(C5InvenPriceGroupTxt);
-            
+
         C5InvenPriceGroup.SetRange(Group, C5InvenPriceGroupTxt);
-        if not C5InvenPriceGroup.FindFirst() then 
+        if not C5InvenPriceGroup.FindFirst() then
             Error(InventPriceGroupNotFoundErr, C5InvenPriceGroupTxt);
 
         exit(CustomerDataMigrationFacade.CreateCustomerPriceGroupIfNeeded(
@@ -510,7 +509,7 @@ codeunit 1867 "C5 Item Migrator"
         C5UnitCode.SetRange(UnitCode, C5UnitCodeTxt);
         if C5UnitCode.FindFirst() then
             DescriptionToSet := CopyStr(C5UnitCode.Txt, 1, 10);
-        
+
         UninitializedItemDataMigrationFacade.CreateUnitOfMeasureIfNeeded(C5UnitCodeTxt, DescriptionToSet);
     end;
 
@@ -521,16 +520,16 @@ codeunit 1867 "C5 Item Migrator"
                 exit('');
 
             C5OrderTrackingPolicy::Batch:
-            begin
-                UninitializedItemDataMigrationFacade.CreateItemTrackingCodeIfNeeded(BatchTrackingCodeTxt, BatchTrackingDescriptionTxt, true, false);
-                exit(BatchTrackingCodeTxt);
-            end;
+                begin
+                    UninitializedItemDataMigrationFacade.CreateItemTrackingCodeIfNeeded(BatchTrackingCodeTxt, BatchTrackingDescriptionTxt, true, false);
+                    exit(BatchTrackingCodeTxt);
+                end;
 
             C5OrderTrackingPolicy::"Serial number":
-            begin
-                UninitializedItemDataMigrationFacade.CreateItemTrackingCodeIfNeeded(SerialNumberTrackingCodeTxt, SerialNumberTrackingDescriptionTxt, false, true);
-                exit(SerialNumberTrackingCodeTxt);
-            end;    
+                begin
+                    UninitializedItemDataMigrationFacade.CreateItemTrackingCodeIfNeeded(SerialNumberTrackingCodeTxt, SerialNumberTrackingDescriptionTxt, false, true);
+                    exit(SerialNumberTrackingCodeTxt);
+                end;
         end;
     end;
 
@@ -548,7 +547,7 @@ codeunit 1867 "C5 Item Migrator"
 
     local procedure ConvertCostingMethod(C5InvenTable: Record "C5 InvenTable"): Option
     var
-        CostingMethod: Option FIFO, LIFO, Specific, Average, Standard;
+        CostingMethod: Option FIFO,LIFO,Specific,Average,Standard;
     begin
         case C5InvenTable.CostingMethod of
             C5InvenTable.CostingMethod::Average:

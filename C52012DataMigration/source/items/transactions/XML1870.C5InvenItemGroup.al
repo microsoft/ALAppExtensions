@@ -5,17 +5,17 @@
 
 xmlport 1870 "C5 InvenItemGroup"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='InvenItemGroupDocument';
+            MinOccurs = Zero;
+            XmlName = 'InvenItemGroupDocument';
             tableelement(C5InvenItemGroup; "C5 InvenItemGroup")
             {
                 fieldelement(Group; C5InvenItemGroup.Group) { }
@@ -33,8 +33,17 @@ xmlport 1870 "C5 InvenItemGroup"
                 fieldelement(InterimInflowAcc; C5InvenItemGroup.InterimInflowAcc) { }
                 fieldelement(InterimOutflowAcc; C5InvenItemGroup.InterimOutflowAcc) { }
                 fieldelement(PurchDiscAcc; C5InvenItemGroup.PurchDiscAcc) { }
-           }
-       }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5InvenItemGroup.RecId := Counter;
+                    Counter += 1;
+                end;
+            }
+        }
     }
+
+    var
+        Counter: Integer;
 }
 

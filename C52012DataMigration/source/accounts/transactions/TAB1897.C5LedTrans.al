@@ -12,7 +12,6 @@ table 1897 "C5 LedTrans"
         field(1;RecId;Integer) 
         {
             Caption='Row number';
-            AutoIncrement=true;
         }
         field(2;LastChanged;Date) 
         {

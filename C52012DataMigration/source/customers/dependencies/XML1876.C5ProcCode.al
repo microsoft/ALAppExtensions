@@ -5,17 +5,17 @@
 
 xmlport 1876 "C5 ProcCode"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='ProcCodeDocument';
+            MinOccurs = Zero;
+            XmlName = 'ProcCodeDocument';
             tableelement(C5ProcCode; "C5 ProcCode")
             {
                 fieldelement(Type; C5ProcCode.Type) { }
@@ -26,8 +26,17 @@ xmlport 1876 "C5 ProcCode"
                 fieldelement(Int3; C5ProcCode.Int3) { }
                 fieldelement(Int4; C5ProcCode.Int4) { }
                 fieldelement(NoYes1; C5ProcCode.NoYes1) { }
-           }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5ProcCode.RecId := Counter;
+                    Counter += 1;
+                end;
+            }
         }
     }
+
+    var
+        Counter: Integer;
 }
 

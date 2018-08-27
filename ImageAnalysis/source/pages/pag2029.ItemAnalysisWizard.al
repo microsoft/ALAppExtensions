@@ -59,7 +59,7 @@ page 2029 "Image Analyzer Wizard"
 
                                 trigger OnDrillDown()
                                 begin
-                                    Hyperlink(LearnMoreLink);
+                                    Hyperlink(LearnMoreLinkTxt);
                                 end;
                             }
 
@@ -71,7 +71,7 @@ page 2029 "Image Analyzer Wizard"
 
                                 trigger OnDrillDown()
                                 begin
-                                    Hyperlink(CognitiveServicesLink);
+                                    Hyperlink(CognitiveServicesLinkLinkTxt);
                                 end;
                             }
 
@@ -105,11 +105,11 @@ page 2029 "Image Analyzer Wizard"
 
                         trigger OnDrillDown()
                         begin
-                            Hyperlink(ImageAnalyzerDocumentationLink);
+                            Hyperlink(ImageAnalyzerDocumentationLinkTxt);
                         end;
                     }
 
-                    field(TermsPart; TermsPart)
+                    field(TermsPart; TermsPartTxt)
                     {
                         ApplicationArea = Basic, Suite;
                         ShowCaption = false;
@@ -125,7 +125,7 @@ page 2029 "Image Analyzer Wizard"
 
                         trigger OnDrillDown()
                         begin
-                            Hyperlink(OnlineServicesTermLink);
+                            Hyperlink(OnlineServicesTermLinkLinkTxt);
                         end;
                     }
 
@@ -178,7 +178,7 @@ page 2029 "Image Analyzer Wizard"
                         Caption = '';
                         Visible = true;
 
-                        field(HowToPart1; HowToPart1)
+                        field(HowToPart1; HowToPart1Txt)
                         {
                             ApplicationArea = Basic, Suite;
                             ShowCaption = false;
@@ -186,7 +186,7 @@ page 2029 "Image Analyzer Wizard"
                             MultiLine = true;
                         }
 
-                        field(HowToPart2; HowToPart2)
+                        field(HowToPart2; HowToPart2Txt)
                         {
                             ApplicationArea = Basic, Suite;
                             ShowCaption = false;
@@ -307,18 +307,18 @@ page 2029 "Image Analyzer Wizard"
         [InDataSet]
         NextActionEnabled: Boolean;
         LearnMoreStatementLinkTxt: Label 'Computer Vision API documentation';
-        LearnMoreLink: Label 'https://go.microsoft.com/fwlink/?linkid=848400';
+        LearnMoreLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=848400';
         YouCanLearnMoreTxt: Label 'To learn more about Cognitive Services and the Computer Vision API, see the documentation.';
         ConsentTxt: Label 'By enabling the Image Analyzer extension you consent to sharing your data with an external system. For more information, see the documentation.';
         ImageAnalyzerDocumentationTxt: Label 'Image Analyzer technical documentation';
-        ImageAnalyzerDocumentationLink: Label 'https://docs.microsoft.com/en-us/dynamics365/business-central/ui-extensions-image-analyzer';
+        ImageAnalyzerDocumentationLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=850308';
         ChooseFinishTxt: Label 'Choose ''Finish'' to enable Image Analyzer.';
-        HowToPart1: Label 'Image Analyzer automatically detects attributes when you add an image to an item or contact person.';
-        HowToPart2: Label 'To analyze images you''ve already uploaded, go to the item or contact person card, and choose the ''Analyze Picture'' action.';
-        TermsPart: Label 'Your use of the Image Analyzer may be subject to the additional licensing terms in the Microsoft Cognitive Services section of the Online Services Terms.';
-        OnlineServicesTermLink: Label 'https://www.microsoft.com/en-us/licensing/product-licensing/products.aspx', Locked = true;
+        HowToPart1Txt: Label 'Image Analyzer automatically detects attributes when you add an image to an item or contact person.';
+        HowToPart2Txt: Label 'To analyze images you''ve already uploaded, go to the item or contact person card, and choose the ''Analyze Picture'' action.';
+        TermsPartTxt: Label 'Your use of the Image Analyzer may be subject to the additional licensing terms in the Microsoft Cognitive Services section of the Online Services Terms.';
+        OnlineServicesTermLinkLinkTxt: Label 'https://www.microsoft.com/en-us/licensing/product-licensing/products.aspx', Locked = true;
         OnlineServicesTermLinkTxt: Label 'Online Services Terms (OST)';
-        CognitiveServicesLink: Label 'http://go.microsoft.com/fwlink/?LinkID=829046', Locked = true;
+        CognitiveServicesLinkLinkTxt: Label 'http://go.microsoft.com/fwlink/?LinkID=829046', Locked = true;
         CognitiveServicesLinkTxt: Label 'Microsoft Cognitive Services';
         WantToAnalyzeTheCurrentPictureQst: Label 'An image has been added to the chosen item or contact. Want to analyze the image, right after you enable Image Analyzer?';
         IsSetContactToFill: Boolean;

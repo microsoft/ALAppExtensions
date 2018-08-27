@@ -5,254 +5,255 @@
 
 table 1890 "C5 InvenTrans"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;ItemNumber;Text[20]) 
+        field(3; ItemNumber; Text[20])
         {
-            Caption='Item number';
+            Caption = 'Item number';
         }
-        field(4;BudgetCode;Option) 
+        field(4; BudgetCode; Option)
         {
-            Caption='Budget code';
-            OptionMembers = Actual, Budget, "Rev. 1", "Rev. 2", "Rev. 3", "Rev. 4", "Rev. 5", "Rev. 6";
+            Caption = 'Budget code';
+            OptionMembers = Actual,Budget,"Rev. 1","Rev. 2","Rev. 3","Rev. 4","Rev. 5","Rev. 6";
         }
-        field(5;InvenLocation;Text[10]) 
+        field(5; InvenLocation; Text[10])
         {
-            Caption='Location';
+            Caption = 'Location';
         }
-        field(6;Date_;Date) 
+        field(6; Date_; Date)
         {
-            Caption='Date';
+            Caption = 'Date';
         }
-        field(7;Qty;Decimal) 
+        field(7; Qty; Decimal)
         {
-            Caption='Qty';
+            Caption = 'Qty';
         }
-        field(8;DutyAmount;Decimal) 
+        field(8; DutyAmount; Decimal)
         {
-            Caption='Duty amount';
+            Caption = 'Duty amount';
         }
-        field(9;Discount;Decimal) 
+        field(9; Discount; Decimal)
         {
-            Caption='Discount';
+            Caption = 'Discount';
         }
-        field(10;AmountMST;Decimal) 
+        field(10; AmountMST; Decimal)
         {
-            Caption='Amount in LCY';
+            Caption = 'Amount in LCY';
         }
-        field(11;AmountCur;Decimal) 
+        field(11; AmountCur; Decimal)
         {
-            Caption='Amount in currency';
+            Caption = 'Amount in currency';
         }
-        field(12;Currency;Code[3]) 
+        field(12; Currency; Code[3])
         {
-            Caption='Currency';
+            Caption = 'Currency';
         }
-        field(13;Voucher;Integer) 
+        field(13; Voucher; Integer)
         {
-            Caption='Voucher';
+            Caption = 'Voucher';
         }
-        field(14;InvoiceNumber;Text[20]) 
+        field(14; InvoiceNumber; Text[20])
         {
-            Caption='Invoice';
+            Caption = 'Invoice';
         }
-        field(15;Module;Option) 
+        field(15; Module; Option)
         {
-            Caption='Module';
-            OptionMembers = System, GenLedger, Customer, Vendor, Inventory, Sales, Purchase, Project, General, eOrder, Payroll, "Payroll setup";
+            Caption = 'Module';
+            OptionMembers = System,GenLedger,Customer,Vendor,Inventory,Sales,Purchase,Project,General,eOrder,Payroll,"Payroll setup";
         }
-        field(16;Number;Text[10]) 
+        field(16; Number; Text[10])
         {
-            Caption='Number';
+            Caption = 'Number';
         }
-        field(17;Account;Text[10]) 
+        field(17; Account; Text[10])
         {
-            Caption='Account';
+            Caption = 'Account';
         }
-        field(18;Department;Code[10]) 
+        field(18; Department; Code[10])
         {
-            Caption='Department';
+            Caption = 'Department';
         }
-        field(19;Employee;Text[10]) 
+        field(19; Employee; Text[10])
         {
-            Caption='Employee';
+            Caption = 'Employee';
         }
-        field(20;Txt;Text[40]) 
+        field(20; Txt; Text[40])
         {
-            Caption='Text';
+            Caption = 'Text';
         }
-        field(21;InOutflow;Option) 
+        field(21; InOutflow; Option)
         {
-            Caption='Movement';
-            OptionMembers = " ", "Inven. inflow", "Inven. outflow";
+            Caption = 'Movement';
+            OptionMembers = " ","Inven. inflow","Inven. outflow";
         }
-        field(22;CostAmount;Decimal) 
+        field(22; CostAmount; Decimal)
         {
-            Caption='Cost value in LCY';
+            Caption = 'Cost value in LCY';
         }
-        field(23;SerialNumber;Code[20]) 
+        field(23; SerialNumber; Code[20])
         {
-            Caption='Serial/Batch number';
+            Caption = 'Serial/Batch number';
         }
-        field(24;SettledQty;Decimal) 
+        field(24; SettledQty; Decimal)
         {
-            Caption='Settled qty';
+            Caption = 'Settled qty';
         }
-        field(25;SettledAmount;Decimal) 
+        field(25; SettledAmount; Decimal)
         {
-            Caption='Settled amount';
+            Caption = 'Settled amount';
         }
-        field(26;InvestTax;Decimal) 
+        field(26; InvestTax; Decimal)
         {
-            Caption='Invest. duty';
+            Caption = 'Invest. duty';
         }
-        field(27;PostedDiffAmount;Decimal) 
+        field(27; PostedDiffAmount; Decimal)
         {
-            Caption='Adjustment';
+            Caption = 'Adjustment';
         }
-        field(28;Open;Option) 
+        field(28; Open; Option)
         {
-            Caption='Open';
-            OptionMembers = No, Yes;
+            Caption = 'Open';
+            OptionMembers = No,Yes;
         }
-        field(29;InvenTransType;Option) 
+        field(29; InvenTransType; Option)
         {
-            Caption='Entry type';
-            OptionMembers = Adjustment, "Item purchase", "Item sale", "BOM line", BOM, Project, Transfer;
+            Caption = 'Entry type';
+            OptionMembers = Adjustment,"Item purchase","Item sale","BOM line",BOM,Project,Transfer;
         }
-        field(30;RefRecId;Integer) 
+        field(30; RefRecId; Integer)
         {
-            Caption='EntryRef';
+            Caption = 'EntryRef';
         }
-        field(31;Transaction;Integer) 
+        field(31; Transaction; Integer)
         {
-            Caption='Transaction';
+            Caption = 'Transaction';
         }
-        field(32;InvenStatus;Option) 
+        field(32; InvenStatus; Option)
         {
-            Caption='Status';
-            OptionMembers = Invoice, "Packing slip", "On order", "Pro forma", Confirmation, Quotation, "Sub order";
+            Caption = 'Status';
+            OptionMembers = Invoice,"Packing slip","On order","Pro forma",Confirmation,Quotation,"Sub order";
         }
-        field(33;PackingSlip;Text[20]) 
+        field(33; PackingSlip; Text[20])
         {
-            Caption='Packing slip';
+            Caption = 'Packing slip';
         }
-        field(34;InvenItemGroup;Code[10]) 
+        field(34; InvenItemGroup; Code[10])
         {
-            Caption='Item group';
+            Caption = 'Item group';
         }
-        field(35;CustVendGroup;Code[10]) 
+        field(35; CustVendGroup; Code[10])
         {
-            Caption='Cust./Vend. Group';
+            Caption = 'Cust./Vend. Group';
         }
-        field(36;DiscAmount;Decimal) 
+        field(36; DiscAmount; Decimal)
         {
-            Caption='Disc. amount';
+            Caption = 'Disc. amount';
         }
-        field(37;LedgerAccount;Text[10]) 
+        field(37; LedgerAccount; Text[10])
         {
-            Caption='G/L account';
+            Caption = 'G/L account';
         }
-        field(38;CostType;Text[10]) 
+        field(38; CostType; Text[10])
         {
-            Caption='Cost type';
+            Caption = 'Cost type';
         }
-        field(39;CommissionAmount;Decimal) 
+        field(39; CommissionAmount; Decimal)
         {
-            Caption='Commission amount';
+            Caption = 'Commission amount';
         }
-        field(40;CommissionSettled;Option) 
+        field(40; CommissionSettled; Option)
         {
-            Caption='Commission settled';
-            OptionMembers = No, Yes;
+            Caption = 'Commission settled';
+            OptionMembers = No,Yes;
         }
-        field(41;Vat;Code[10]) 
+        field(41; Vat; Code[10])
         {
-            Caption='VAT';
+            Caption = 'VAT';
         }
-        field(42;ProjCostPLPosted;Decimal) 
+        field(42; ProjCostPLPosted; Decimal)
         {
-            Caption='P/L posted in project';
+            Caption = 'P/L posted in project';
         }
-        field(43;ProjCostPLAcc;Text[10]) 
+        field(43; ProjCostPLAcc; Text[10])
         {
-            Caption='Cost P/L a/c';
+            Caption = 'Cost P/L a/c';
         }
-        field(44;COGSAccount;Text[10]) 
+        field(44; COGSAccount; Text[10])
         {
-            Caption='COGS account';
+            Caption = 'COGS account';
         }
-        field(45;InventoryAcc;Text[10]) 
+        field(45; InventoryAcc; Text[10])
         {
-            Caption='Inventory a/c';
+            Caption = 'Inventory a/c';
         }
-        field(46;ProfitLossAmount;Decimal) 
+        field(46; ProfitLossAmount; Decimal)
         {
-            Caption='Loss/Profit';
+            Caption = 'Loss/Profit';
         }
-        field(47;DEL_DutyCode;Text[10]) 
+        field(47; DEL_DutyCode; Text[10])
         {
-            Caption='DELETEDuty';
+            Caption = 'DELETEDuty';
         }
-        field(48;ExchRate;Decimal) 
+        field(48; ExchRate; Decimal)
         {
-            Caption='Exch. rate';
+            Caption = 'Exch. rate';
         }
-        field(49;ExchRateTri;Decimal) 
+        field(49; ExchRateTri; Decimal)
         {
-            Caption='Tri rate';
+            Caption = 'Tri rate';
         }
-        field(50;DELETED;Decimal) 
+        field(50; DELETED; Decimal)
         {
-            Caption='Deleted';
+            Caption = 'Deleted';
         }
-        field(51;Centre;Code[10]) 
+        field(51; Centre; Code[10])
         {
-            Caption='Cost centre';
+            Caption = 'Cost centre';
         }
-        field(52;Purpose;Code[10]) 
+        field(52; Purpose; Code[10])
         {
-            Caption='Purpose';
+            Caption = 'Purpose';
         }
-        field(53;LineNumber;Decimal) 
+        field(53; LineNumber; Decimal)
         {
-            Caption='Orig linenumber';
+            Caption = 'Orig linenumber';
         }
-        field(54;ReversedQty;Decimal) 
+        field(54; ReversedQty; Decimal)
         {
-            Caption='Reversed quantity';
+            Caption = 'Reversed quantity';
         }
-        field(55;ReversedAmount;Decimal) 
+        field(55; ReversedAmount; Decimal)
         {
-            Caption='Reversed amount';
+            Caption = 'Reversed amount';
         }
-        field(56;TmpFunction;Integer) 
+        field(56; TmpFunction; Integer)
         {
-            Caption='Tmp function';
+            Caption = 'Tmp function';
         }
-        field(57;CollectNumber;Text[10]) 
+        field(57; CollectNumber; Text[10])
         {
-            Caption='Collective number';
+            Caption = 'Collective number';
         }
-        field(58;SkipSettle;Option) 
+        field(58; SkipSettle; Option)
         {
-            Caption='Exclude from settlement';
-            OptionMembers = No, Yes;
+            Caption = 'Exclude from settlement';
+            OptionMembers = No,Yes;
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

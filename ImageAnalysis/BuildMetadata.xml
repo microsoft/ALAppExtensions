@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <Countries>W1,US,CA,GB,AU,NZ,NO</Countries>
-  <IncludeInSaaS>Yes</IncludeInSaaS>
-  <IncludeOnPrem>Yes</IncludeOnPrem>
-  <Translate>Yes</Translate>  
-</root>

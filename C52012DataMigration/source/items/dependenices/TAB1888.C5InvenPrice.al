@@ -5,54 +5,55 @@
 
 table 1888 "C5 InvenPrice"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;ItemNumber;Code[20]) 
+        field(3; ItemNumber; Code[20])
         {
-            Caption='Item number';
+            Caption = 'Item number';
         }
-        field(4;Price;Decimal) 
+        field(4; Price; Decimal)
         {
-            Caption='Price';
+            Caption = 'Price';
         }
-        field(5;PriceUnit;Decimal) 
+        field(5; PriceUnit; Decimal)
         {
-            Caption='Unit';
+            Caption = 'Unit';
         }
-        field(6;Currency;Code[3]) 
+        field(6; Currency; Code[3])
         {
-            Caption='Currency';
+            Caption = 'Currency';
         }
-        field(7;PriceGroup;Code[10]) 
+        field(7; PriceGroup; Code[10])
         {
-            Caption='Price group';
+            Caption = 'Price group';
         }
-        field(8;ContributionRatio;Decimal) 
+        field(8; ContributionRatio; Decimal)
         {
-            Caption='Contrib. ratio';
+            Caption = 'Contrib. ratio';
         }
-        field(9;Date_;Date) 
+        field(9; Date_; Date)
         {
-            Caption='Date';
+            Caption = 'Date';
         }
-        field(10;SalesVat;Code[10]) 
+        field(10; SalesVat; Code[10])
         {
-            Caption='Sales VAT';
+            Caption = 'Sales VAT';
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

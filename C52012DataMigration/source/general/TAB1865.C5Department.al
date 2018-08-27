@@ -5,34 +5,35 @@
 
 table 1865 "C5 Department"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;Department;Code[10]) 
+        field(3; Department; Code[10])
         {
-            Caption='Department';
+            Caption = 'Department';
         }
-        field(4;Name;Text[30]) 
+        field(4; Name; Text[30])
         {
-            Caption='Name';
+            Caption = 'Name';
         }
-        field(5;C4Department;Integer) 
+        field(5; C4Department; Integer)
         {
-            Caption='C4 dept.';
+            Caption = 'C4 dept.';
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

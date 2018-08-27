@@ -5,324 +5,325 @@
 
 table 1861 "C5 VendTable"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;DEL_UserLock;Integer) 
+        field(3; DEL_UserLock; Integer)
         {
-            Caption='Lock';
+            Caption = 'Lock';
         }
-        field(4;Account;Code[10]) 
+        field(4; Account; Code[10])
         {
-            TableRelation=Vendor;              
-            ValidateTableRelation=false;
-            Caption='Account';
+            TableRelation = Vendor;
+            ValidateTableRelation = false;
+            Caption = 'Account';
         }
-        field(5;Name;Text[50]) 
+        field(5; Name; Text[50])
         {
-            Caption='Name';
+            Caption = 'Name';
         }
-        field(6;Address1;Text[50]) 
+        field(6; Address1; Text[50])
         {
-            Caption='Address';
+            Caption = 'Address';
         }
-        field(7;Address2;Text[50]) 
+        field(7; Address2; Text[50])
         {
-            Caption='Address';
+            Caption = 'Address';
         }
-        field(8;ZipCity;Text[50]) 
+        field(8; ZipCity; Text[50])
         {
-            Caption='Zip code/City';
+            Caption = 'Zip code/City';
         }
-        field(9;Country;Text[30]) 
+        field(9; Country; Text[30])
         {
-            Caption='Country/region';
+            Caption = 'Country/region';
         }
-        field(10;Attention;Text[30]) 
+        field(10; Attention; Text[30])
         {
-            Caption='Attention';
+            Caption = 'Attention';
         }
-        field(11;Phone;Text[20]) 
+        field(11; Phone; Text[20])
         {
-            Caption='Phone';
+            Caption = 'Phone';
         }
-        field(12;Fax;Text[20]) 
+        field(12; Fax; Text[20])
         {
-            Caption='Fax';
+            Caption = 'Fax';
         }
-        field(13;InvoiceAccount;Text[10]) 
+        field(13; InvoiceAccount; Text[10])
         {
-            Caption='Invoice a/c';
+            Caption = 'Invoice a/c';
         }
-        field(14;Group;Code[10]) 
+        field(14; Group; Code[10])
         {
-            Caption='Group';
+            Caption = 'Group';
         }
-        field(15;FixedDiscPct;Decimal) 
+        field(15; FixedDiscPct; Decimal)
         {
-            Caption='Fixed discount';
+            Caption = 'Fixed discount';
         }
-        field(16;DiscGroup;Code[10]) 
+        field(16; DiscGroup; Code[10])
         {
-            Caption='Discount group';
+            Caption = 'Discount group';
         }
-        field(17;CashDisc;Code[10]) 
+        field(17; CashDisc; Code[10])
         {
-            Caption='Cash discount';
+            Caption = 'Cash discount';
         }
-        field(18;Approved;Option) 
+        field(18; Approved; Option)
         {
-            Caption='Approved';
-            OptionMembers = No, Yes;
+            Caption = 'Approved';
+            OptionMembers = No,Yes;
         }
-        field(19;DEL_ExclDuty;Option) 
+        field(19; DEL_ExclDuty; Option)
         {
-            Caption='Excl. duty';
-            OptionMembers = No, Yes;
+            Caption = 'Excl. duty';
+            OptionMembers = No,Yes;
         }
-        field(20;InclVat;Option) 
+        field(20; InclVat; Option)
         {
-            Caption='Incl. VAT';
-            OptionMembers = No, Yes;
+            Caption = 'Incl. VAT';
+            OptionMembers = No,Yes;
         }
-        field(21;Currency;Code[3]) 
+        field(21; Currency; Code[3])
         {
-            Caption='Currency';
+            Caption = 'Currency';
         }
-        field(22;Language_;Option) 
+        field(22; Language_; Option)
         {
-            Caption='Language';
-            OptionMembers = Default, Danish, English, German, French, Italian, Dutch, Icelandic;
+            Caption = 'Language';
+            OptionMembers = Default,Danish,English,German,French,Italian,Dutch,Icelandic;
         }
-        field(23;Payment;Code[10]) 
+        field(23; Payment; Code[10])
         {
-            Caption='Payment';
+            Caption = 'Payment';
         }
-        field(24;Delivery;Code[10]) 
+        field(24; Delivery; Code[10])
         {
-            Caption='Delivery';
+            Caption = 'Delivery';
         }
-        field(25;Interest;Text[10]) 
+        field(25; Interest; Text[10])
         {
-            Caption='Interest';
+            Caption = 'Interest';
         }
-        field(26;Blocked;Option) 
+        field(26; Blocked; Option)
         {
-            Caption='Locked';
-            OptionMembers = No, Invoicing, Delivery, Yes;
+            Caption = 'Locked';
+            OptionMembers = No,Invoicing,Delivery,Yes;
         }
-        field(27;Purchaser;Code[10]) 
+        field(27; Purchaser; Code[10])
         {
-            Caption='Purchaser';
+            Caption = 'Purchaser';
         }
-        field(28;Vat;Code[10]) 
+        field(28; Vat; Code[10])
         {
-            Caption='VAT';
+            Caption = 'VAT';
         }
-        field(29;DEL_StatType;Option) 
+        field(29; DEL_StatType; Option)
         {
-            Caption='DELETEStatistics';
-            OptionMembers = "Ordinary trade", Samples, "Trade-in deal", "Financial leasing", Returns, Replacement, "Replace non-returns", EU, Authorities, Private, "Production on toll", Repair, "Repair (free of charge)", Leasing, "EU projects", "Building materials", "Misc.";
+            Caption = 'DELETEStatistics';
+            OptionMembers = "Ordinary trade",Samples,"Trade-in deal","Financial leasing",Returns,Replacement,"Replace non-returns",EU,Authorities,Private,"Production on toll",Repair,"Repair (free of charge)",Leasing,"EU projects","Building materials","Misc.";
         }
-        field(30;ESRnumber;Text[10]) 
+        field(30; ESRnumber; Text[10])
         {
-            Caption='Nets no.';
+            Caption = 'Nets no.';
         }
-        field(31;GiroNumber;Text[20]) 
+        field(31; GiroNumber; Text[20])
         {
-            Caption='FIK/Giro';
+            Caption = 'FIK/Giro';
         }
-        field(32;OurAccount;Text[15]) 
+        field(32; OurAccount; Text[15])
         {
-            Caption='Our a/c';
+            Caption = 'Our a/c';
         }
-        field(33;BankAccount;Text[15]) 
+        field(33; BankAccount; Text[15])
         {
-            Caption='Bank a/c';
+            Caption = 'Bank a/c';
         }
-        field(34;VatNumber;Text[25]) 
+        field(34; VatNumber; Text[25])
         {
-            Caption='VAT No.';
+            Caption = 'VAT No.';
         }
-        field(35;Department;Code[10]) 
+        field(35; Department; Code[10])
         {
-            Caption='Department';
+            Caption = 'Department';
         }
-        field(36;OnetimeSupplier;Option) 
+        field(36; OnetimeSupplier; Option)
         {
-            Caption='One-off vendor';
-            OptionMembers = No, Yes;
+            Caption = 'One-off vendor';
+            OptionMembers = No,Yes;
         }
-        field(37;ImageFile;Text[250]) 
+        field(37; ImageFile; Text[250])
         {
-            Caption='Image';
+            Caption = 'Image';
         }
-        field(38;Inventory;Option) 
+        field(38; Inventory; Option)
         {
-            Caption='Inventory';
-            OptionMembers = "No change", Ordered, Received, "Fixed purchase";
+            Caption = 'Inventory';
+            OptionMembers = "No change",Ordered,Received,"Fixed purchase";
         }
-        field(39;EDIAddress;Text[15]) 
+        field(39; EDIAddress; Text[15])
         {
-            Caption='EDI address';
+            Caption = 'EDI address';
         }
-        field(40;Balance;Decimal) 
+        field(40; Balance; Decimal)
         {
-            Caption='Balance';
+            Caption = 'Balance';
         }
-        field(41;Balance30;Decimal) 
+        field(41; Balance30; Decimal)
         {
-            Caption='0-30 days';
+            Caption = '0-30 days';
         }
-        field(42;Balance60;Decimal) 
+        field(42; Balance60; Decimal)
         {
-            Caption='31-60 days';
+            Caption = '31-60 days';
         }
-        field(43;Balance90;Decimal) 
+        field(43; Balance90; Decimal)
         {
-            Caption='61-90 days';
+            Caption = '61-90 days';
         }
-        field(44;Balance120;Decimal) 
+        field(44; Balance120; Decimal)
         {
-            Caption='91-120 days';
+            Caption = '91-120 days';
         }
-        field(45;Balance120Plus;Decimal) 
+        field(45; Balance120Plus; Decimal)
         {
-            Caption='More than 120 days';
+            Caption = 'More than 120 days';
         }
-        field(46;AmountDue;Decimal) 
+        field(46; AmountDue; Decimal)
         {
-            Caption='Due';
+            Caption = 'Due';
         }
-        field(47;CalculationDate;Date) 
+        field(47; CalculationDate; Date)
         {
-            Caption='Calculated';
+            Caption = 'Calculated';
         }
-        field(48;BalanceMax;Decimal) 
+        field(48; BalanceMax; Decimal)
         {
-            Caption='Max. balance';
+            Caption = 'Max. balance';
         }
-        field(49;BalanceMST;Decimal) 
+        field(49; BalanceMST; Decimal)
         {
-            Caption='Balance LCY';
+            Caption = 'Balance LCY';
         }
-        field(50;SearchName;Text[30]) 
+        field(50; SearchName; Text[30])
         {
-            Caption='Search name';
+            Caption = 'Search name';
         }
-        field(51;DEL_Transport;Option) 
+        field(51; DEL_Transport; Option)
         {
-            Caption='DELETETransport';
-            OptionMembers = " ", "Ship/Ferry", Railway, Truck, Air, Entry, Installation, "Own transport";
+            Caption = 'DELETETransport';
+            OptionMembers = " ","Ship/Ferry",Railway,Truck,Air,Entry,Installation,"Own transport";
         }
-        field(52;CashPayment;Option) 
+        field(52; CashPayment; Option)
         {
-            Caption='Cash payment';
-            OptionMembers = No, Yes;
+            Caption = 'Cash payment';
+            OptionMembers = No,Yes;
         }
-        field(53;PaymentMode;Text[10]) 
+        field(53; PaymentMode; Text[10])
         {
-            Caption='Paym. method';
+            Caption = 'Paym. method';
         }
-        field(54;PaymSpec;Text[10]) 
+        field(54; PaymSpec; Text[10])
         {
-            Caption='Paym. spec.';
+            Caption = 'Paym. spec.';
         }
-        field(55;Telex;Text[20]) 
+        field(55; Telex; Text[20])
         {
-            Caption='Telex';
+            Caption = 'Telex';
         }
-        field(56;PaymId;Text[20]) 
+        field(56; PaymId; Text[20])
         {
-            Caption='PaymID';
+            Caption = 'PaymID';
         }
-        field(57;PurchGroup;Code[10]) 
+        field(57; PurchGroup; Code[10])
         {
-            Caption='Purchase group';
+            Caption = 'Purchase group';
         }
-        field(58;TradeCode;Text[10]) 
+        field(58; TradeCode; Text[10])
         {
-            Caption='Transact. type';
+            Caption = 'Transact. type';
         }
-        field(59;TransportCode;Code[10]) 
+        field(59; TransportCode; Code[10])
         {
-            Caption='Transport';
+            Caption = 'Transport';
         }
-        field(60;Email;Text[80]) 
+        field(60; Email; Text[80])
         {
-            Caption='Email';
+            Caption = 'Email';
         }
-        field(61;URL;Text[80]) 
+        field(61; URL; Text[80])
         {
-            Caption='Homepage';
+            Caption = 'Homepage';
         }
-        field(62;CellPhone;Text[20]) 
+        field(62; CellPhone; Text[20])
         {
-            Caption='Cell phone';
+            Caption = 'Cell phone';
         }
-        field(63;KrakNumber;Text[15]) 
+        field(63; KrakNumber; Text[15])
         {
-            Caption='Krak no.';
+            Caption = 'Krak no.';
         }
-        field(64;Centre;Code[10]) 
+        field(64; Centre; Code[10])
         {
-            Caption='Cost centre';
+            Caption = 'Cost centre';
         }
-        field(65;Purpose;Code[10]) 
+        field(65; Purpose; Code[10])
         {
-            Caption='Purpose';
+            Caption = 'Purpose';
         }
-        field(66;LastInvoiceDate;Date) 
+        field(66; LastInvoiceDate; Date)
         {
-            Caption='Invoice date';
+            Caption = 'Invoice date';
         }
-        field(67;LastPaymentDate;Date) 
+        field(67; LastPaymentDate; Date)
         {
-            Caption='Payment';
+            Caption = 'Payment';
         }
-        field(68;LastInvoiceNumber;Text[20]) 
+        field(68; LastInvoiceNumber; Text[20])
         {
-            Caption='Invoice';
+            Caption = 'Invoice';
         }
-        field(69;XMLImport;Option) 
+        field(69; XMLImport; Option)
         {
-            Caption='XML import';
-            OptionMembers = No, Yes;
+            Caption = 'XML import';
+            OptionMembers = No,Yes;
         }
-        field(70;EanNumber;Text[14]) 
+        field(70; EanNumber; Text[14])
         {
-            Caption='EAN';
+            Caption = 'EAN';
         }
-        field(71;VatGroup;Code[10]) 
+        field(71; VatGroup; Code[10])
         {
-            Caption='VAT group';
+            Caption = 'VAT group';
         }
-        field(72;CardType;Text[2]) 
+        field(72; CardType; Text[2])
         {
-            Caption='Card type';
+            Caption = 'Card type';
         }
-        field(73;StdAccount;Option) 
+        field(73; StdAccount; Option)
         {
-            Caption='Default';
-            OptionMembers = No, Yes;
+            Caption = 'Default';
+            OptionMembers = No,Yes;
         }
-        field(74;VatNumberType;Text[10]) 
+        field(74; VatNumberType; Text[10])
         {
-            Caption='VAT number type';
+            Caption = 'VAT number type';
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

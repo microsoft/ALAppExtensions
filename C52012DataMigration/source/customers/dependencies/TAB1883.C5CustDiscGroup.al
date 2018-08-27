@@ -5,30 +5,31 @@
 
 table 1883 "C5 CustDiscGroup"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;DiscGroup;Code[10]) 
+        field(3; DiscGroup; Code[10])
         {
-            Caption='Discount group';
+            Caption = 'Discount group';
         }
-        field(4;Comment;Text[30]) 
+        field(4; Comment; Text[30])
         {
-            Caption='Comment';
+            Caption = 'Comment';
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

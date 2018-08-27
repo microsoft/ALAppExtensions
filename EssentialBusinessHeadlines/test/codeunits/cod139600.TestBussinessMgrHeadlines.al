@@ -24,6 +24,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         HeadlineRcOrderProcessorPage: TestPage "Headline RC Order Processor";
         HeadlineRcAccountantPage: TestPage "Headline RC Accountant";
         LanguageIdToSelect: Integer;
+        IsInitialized: Boolean;
 
     [Test]
     procedure TestMostPopularItemHeadline()
@@ -33,8 +34,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         Item2: Record Item;
         Item3: Record Item;
     begin
-        Bindsubscription(TestEssentialBusHeadlines);
-        Init();
+        Initialize();
         // [WHEN] We run the computation with no data to be found
         EssentialBusHeadlineMgt.HandleMostPopularItemHeadline();
         // [THEN] The headline is hidden
@@ -73,7 +73,6 @@ codeunit 139600 "Test Essential Bus. Headlines"
 
         Assert.AreEqual('The best-selling item was <emphasize>012345678901234567...</emphasize> with <emphasize>111,234,567</emphasize> units sold',
             EssentialBusHeadlineMgt.GetBestItemPayload('0123456789012345678901', '111,234,567'), 'Invalid best item text in truncate case');
-        Unbindsubscription(TestEssentialBusHeadlines);
     end;
 
     [Test]
@@ -84,8 +83,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         Resource2: Record Resource;
         Resource3: Record Resource;
     begin
-        Bindsubscription(TestEssentialBusHeadlines);
-        Init();
+        Initialize();
 
         // [WHEN] We run the computation with not enough data
         EssentialBusHeadlineMgt.HandleBusiestResourceHeadline();
@@ -125,8 +123,6 @@ codeunit 139600 "Test Essential Bus. Headlines"
 
         Assert.AreEqual('<emphasize>01234567890123456789012345678912...</emphasize> was busy, with <emphasize>111,234,567</emphasize> units booked',
             EssentialBusHeadlineMgt.GetBusiestResoucePayload('012345678901234567890123456789123456', '111,234,567'), 'Invalid busiest resource text in truncate case');
-
-        Unbindsubscription(TestEssentialBusHeadlines);
     end;
 
     [Test]
@@ -134,8 +130,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
     var
         HighestAmount: Decimal;
     begin
-        Bindsubscription(TestEssentialBusHeadlines);
-        Init();
+        Initialize();
 
         // [WHEN] We run the computation with not enough data
         EssentialBusHeadlineMgt.HandleLargestOrderHeadline();
@@ -199,8 +194,6 @@ codeunit 139600 "Test Essential Bus. Headlines"
         HeadlineRcAccountantPage.OpenView();
         Assert.IsTrue(HeadlineRcAccountantPage.LargestOrderText.Visible(), 'Expected largest order headline to be visible in the page');
         HeadlineRcAccountantPage.Close();
-
-        Unbindsubscription(TestEssentialBusHeadlines);
     end;
 
     [Test]
@@ -211,8 +204,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         HighestAmount: Decimal;
         CurrentAmount: Decimal;
     begin
-        Bindsubscription(TestEssentialBusHeadlines);
-        Init();
+        Initialize();
 
         // [WHEN] We run the computation with not enought data
         EssentialBusHeadlineMgt.HandleLargestSaleHeadline();
@@ -283,8 +275,6 @@ codeunit 139600 "Test Essential Bus. Headlines"
         HeadlineRcAccountantPage.OpenView();
         Assert.IsTrue(HeadlineRcAccountantPage.LargestSaleText.Visible(), 'Expected largest sale headline to be visible in the page');
         HeadlineRcAccountantPage.Close();
-
-        Unbindsubscription(TestEssentialBusHeadlines);
     end;
 
     [Test]
@@ -294,8 +284,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         Item: Record Item;
         OldWorkDate: Date;
     begin
-        Bindsubscription(TestEssentialBusHeadlines);
-        Init();
+        Initialize();
 
         // [WHEN] We run the computation with not enough data
         EssentialBusHeadlineMgt.HandleSalesIncreaseHeadline();
@@ -347,8 +336,6 @@ codeunit 139600 "Test Essential Bus. Headlines"
         HeadlineRcAccountantPage.OpenView();
         Assert.IsTrue(HeadlineRcAccountantPage.SalesIncreaseText.Visible(), 'Expected sales increase headline to be visible in the page');
         HeadlineRcAccountantPage.Close();
-
-        Unbindsubscription(TestEssentialBusHeadlines);
     end;
 
     [Test]
@@ -356,8 +343,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
     var
         MySettings: TestPage "My Settings";
     begin
-        Bindsubscription(TestEssentialBusHeadlines);
-        Init();
+        Initialize();
 
         // [WHEN] We don't change the date
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::BusiestResource);
@@ -377,8 +363,6 @@ codeunit 139600 "Test Essential Bus. Headlines"
         MySettings.OK().Invoke();
         // [THEN] Headlines are invalidated
         Assert.IsTrue(EssentialBusinessHeadline.IsEmpty(), 'expected the headlines to be deleted when changing workdate');
-
-        UnbindSubscription(TestEssentialBusHeadlines);
     end;
 
     [Test]
@@ -390,8 +374,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         AmountLcy: Decimal;
     begin
-        Bindsubscription(TestEssentialBusHeadlines);
-        Init();
+        Initialize();
 
         // [WHEN] We run the computation with no data to be found
         EssentialBusHeadlineMgt.HandleTopCustomer();
@@ -444,11 +427,9 @@ codeunit 139600 "Test Essential Bus. Headlines"
 
         Assert.AreEqual('Your top customer was <emphasize>0123456789012345678901234...</emphasize>, bought for <emphasize>1,234,567 kr</emphasize>',
             EssentialBusHeadlineMgt.GetTopCustomerPayload('01234567890123456789012345678', '1,234,567 kr'), 'Invalid top customer text in truncate case');
-
-        Unbindsubscription(TestEssentialBusHeadlines);
     end;
 
-    procedure Init()
+    procedure Initialize()
     var
         Item: Record Item;
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -456,6 +437,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         SalesLine: Record "Sales Line";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         EssentialBusinessHeadlines: Record "Essential Business Headline";
+        LibraryERMCountryData: Codeunit "Library - ERM Country Data";
     begin
         EssentialBusinessHeadlines.DeleteAll();
         Item.DeleteAll();
@@ -464,6 +446,14 @@ codeunit 139600 "Test Essential Bus. Headlines"
         SalesHeader.DeleteAll();
         SalesLine.DeleteAll();
         CustLedgerEntry.DeleteAll();
+        if IsInitialized then
+            exit;
+
+        Bindsubscription(TestEssentialBusHeadlines);
+        LibraryERMCountryData.UpdateLocalData();
+        FillInCompanyForCurrentUser();
+
+        IsInitialized := true;
     end;
 
     local procedure CreateInvoice(Customer: Record Customer);
@@ -507,6 +497,15 @@ codeunit 139600 "Test Essential Bus. Headlines"
     begin
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
         LibraryResource.CreateResource(Resource, VATPostingSetup."VAT Bus. Posting Group");
+    end;
+
+    local procedure FillInCompanyForCurrentUser();
+    var
+        UserPersonalization: Record "User Personalization";
+    begin
+        UserPersonalization.Get(UserSecurityId());
+        UserPersonalization.Company := CompanyName();
+        UserPersonalization.Modify(true);
     end;
 
     local procedure GetVisibility(HeadlineName: Option): Boolean

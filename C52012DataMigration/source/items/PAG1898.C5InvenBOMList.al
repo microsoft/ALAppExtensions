@@ -15,19 +15,19 @@ page 1898 "C5 InvenBOM List"
         {
             repeater(General)
             {
-                field(BOMItemNumber;BOMItemNumber) { ApplicationArea=All; }
-                field(ItemNumber;ItemNumber) { ApplicationArea=All; }
-                field(Qty;Qty) 
-                { 
-                    Caption='Quantity';
-                    ApplicationArea=All; 
+                field(BOMItemNumber; BOMItemNumber) { ApplicationArea = All; }
+                field(ItemNumber; ItemNumber) { ApplicationArea = All; }
+                field(Qty; Qty)
+                {
+                    Caption = 'Quantity';
+                    ApplicationArea = All;
                 }
-                field(Position;Position) { ApplicationArea=All; }
-                field(LeadTime;LeadTime) { ApplicationArea=All; }
-                field(Resource;Resource) { ApplicationArea=All; }
-                field(InvenLocation;InvenLocation) { ApplicationArea=All; }
-                field(Comment;Comment) { ApplicationArea=All; }
-                field(PriceGroup;PriceGroup) { ApplicationArea=All; }
+                field(Position; Position) { ApplicationArea = All; }
+                field(LeadTime; LeadTime) { ApplicationArea = All; }
+                field(Resource; Resource) { ApplicationArea = All; }
+                field(InvenLocation; InvenLocation) { ApplicationArea = All; }
+                field(Comment; Comment) { ApplicationArea = All; }
+                field(PriceGroup; PriceGroup) { ApplicationArea = All; }
             }
         }
     }
