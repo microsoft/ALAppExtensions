@@ -1,0 +1,23 @@
+{
+  "id": "d795543c-3bb9-4210-8bf2-b14fd0d18d21",
+  "name": "Turnovers Pack",
+  "publisher": "Dmitry Katson",
+  "brief": "",
+  "description": "",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "ExtensionLogo.png",
+  "capabilities": [],
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "11.0.0.0",
+  "application": "11.0.0.0",
+  "idRange": {
+    "from": 69595,
+    "to": 69599
+  },
+  "runtime": "Latest"
+}
