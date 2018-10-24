@@ -37,5 +37,5 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 		 
 	   Renumber-NavObjectIds -SourceFolder "C:\...\C52012DataMigration\" -DestinationFolder "C:\...\C52012DataMigrationReID" -RenumberList $RenumberList -Verbose  
        ```
-5. In Visual Studio Code, connect to your sandbox (follow the steps in the documentation that step 1 refers to) and open the C:\...\C52012DataMigrationReID folder. Now you are ready to go. You can modify the code and build your extension.  
+5. In Visual Studio Code, connect to your sandbox (follow the steps in the documentation that step 2 refers to) and open the C:\...\C52012DataMigrationReID folder. Now you are ready to go. You can modify the code and build your extension.  
 6. To submit your changes, create a new branch. Remember to revert the change of IDs, and then create a pull request.  
