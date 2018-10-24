@@ -5,17 +5,17 @@
 
 xmlport 1881 "C5 VendTable"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='VendTableDocument';
+            MinOccurs = Zero;
+            XmlName = 'VendTableDocument';
             tableelement(C5VendTable; "C5 VendTable")
             {
                 fieldelement(DEL_UserLock; C5VendTable.DEL_UserLock) { }
@@ -66,7 +66,7 @@ xmlport 1881 "C5 VendTable"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(CalculationDateText, CopyStr(DateFormatString, 1, 20), C5VendTable.CalculationDate);
+                        C5HelperFunctions.TryConvertFromStringDate(CalculationDateText, CopyStr(DateFormatStringTxt, 1, 20), C5VendTable.CalculationDate);
                     end;
                 }
 
@@ -92,7 +92,7 @@ xmlport 1881 "C5 VendTable"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(LastInvoiceDateText, CopyStr(DateFormatString, 1, 20), C5VendTable.LastInvoiceDate);
+                        C5HelperFunctions.TryConvertFromStringDate(LastInvoiceDateText, CopyStr(DateFormatStringTxt, 1, 20), C5VendTable.LastInvoiceDate);
                     end;
                 }
 
@@ -100,7 +100,7 @@ xmlport 1881 "C5 VendTable"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(LastPaymentDateText, CopyStr(DateFormatString, 1, 20), C5VendTable.LastPaymentDate);
+                        C5HelperFunctions.TryConvertFromStringDate(LastPaymentDateText, CopyStr(DateFormatStringTxt, 1, 20), C5VendTable.LastPaymentDate);
                     end;
                 }
 
@@ -111,12 +111,19 @@ xmlport 1881 "C5 VendTable"
                 fieldelement(CardType; C5VendTable.CardType) { }
                 fieldelement(StdAccount; C5VendTable.StdAccount) { }
                 fieldelement(VatNumberType; C5VendTable.VatNumberType) { }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5VendTable.RecId := Counter;
+                    Counter += 1;
+                end;
             }
         }
     }
 
     var
         C5HelperFunctions: Codeunit "C5 Helper Functions";
-        DateFormatString: label 'yyyy/MM/dd', locked=true;
+        DateFormatStringTxt: label 'yyyy/MM/dd', locked = true;
+        Counter: Integer;
 }
 

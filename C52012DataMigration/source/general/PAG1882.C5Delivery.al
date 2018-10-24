@@ -16,8 +16,8 @@ page 1882 "C5 Delivery"
         {
             group(General)
             {
-                field(Delivery;Delivery) { ApplicationArea=All; }
-                field(Name;Name) { ApplicationArea=All; }
+                field(Delivery; Delivery) { ApplicationArea = All; }
+                field(Name; Name) { ApplicationArea = All; }
             }
         }
     }

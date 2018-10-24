@@ -5,101 +5,102 @@
 
 table 1874 "C5 Employee"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;Employee;Code[10]) 
+        field(3; Employee; Code[10])
         {
-            Caption='Employee';
+            Caption = 'Employee';
         }
-        field(4;Name;Text[50]) 
+        field(4; Name; Text[50])
         {
-            Caption='Name';
+            Caption = 'Name';
         }
-        field(5;Address1;Text[50]) 
+        field(5; Address1; Text[50])
         {
-            Caption='Address';
+            Caption = 'Address';
         }
-        field(6;Address2;Text[50]) 
+        field(6; Address2; Text[50])
         {
-            Caption='Address';
+            Caption = 'Address';
         }
-        field(7;ZipCity;Text[50]) 
+        field(7; ZipCity; Text[50])
         {
-            Caption='Zip code/City';
+            Caption = 'Zip code/City';
         }
-        field(8;User;Integer) 
+        field(8; User; Integer)
         {
-            Caption='User';
-            DataClassification=EndUserPseudonymousIdentifiers;
+            Caption = 'User';
+            DataClassification = EndUserPseudonymousIdentifiers;
         }
-        field(9;Phone;Text[20]) 
+        field(9; Phone; Text[20])
         {
-            Caption='Phone';
+            Caption = 'Phone';
         }
-        field(10;LocalNumber;Text[20]) 
+        field(10; LocalNumber; Text[20])
         {
-            Caption='Extension';
+            Caption = 'Extension';
         }
-        field(11;Department;Text[10]) 
+        field(11; Department; Text[10])
         {
-            Caption='Department';
+            Caption = 'Department';
         }
-        field(12;ImageFile;Text[250]) 
+        field(12; ImageFile; Text[250])
         {
-            Caption='Image';
+            Caption = 'Image';
         }
-        field(13;EmployeeType;Option) 
+        field(13; EmployeeType; Option)
         {
-            Caption='Employee type';
-            OptionMembers = Internal, External, "Sales rep.", "Order taker", Purchaser;
+            Caption = 'Employee type';
+            OptionMembers = Internal,External,"Sales rep.","Order taker",Purchaser;
         }
-        field(14;Email;Text[80]) 
+        field(14; Email; Text[80])
         {
-            Caption='Email';
+            Caption = 'Email';
         }
-        field(15;Centre;Code[10]) 
+        field(15; Centre; Code[10])
         {
-            Caption='Cost centre';
+            Caption = 'Cost centre';
         }
-        field(16;Purpose;Code[10]) 
+        field(16; Purpose; Code[10])
         {
-            Caption='Purpose';
+            Caption = 'Purpose';
         }
-        field(17;KrakNumber;Text[15]) 
+        field(17; KrakNumber; Text[15])
         {
-            Caption='Krak no.';
+            Caption = 'Krak no.';
         }
-        field(18;Country;Text[30]) 
+        field(18; Country; Text[30])
         {
-            Caption='Country/region';
+            Caption = 'Country/region';
         }
-        field(19;Currency;Code[3]) 
+        field(19; Currency; Code[3])
         {
-            Caption='Currency code';
+            Caption = 'Currency code';
         }
-        field(20;Language_;Option) 
+        field(20; Language_; Option)
         {
-            Caption='Language';
-            OptionMembers = Default, Danish, English, German, French, Italian, Dutch, Icelandic;
+            Caption = 'Language';
+            OptionMembers = Default,Danish,English,German,French,Italian,Dutch,Icelandic;
         }
-        field(21;CellPhone;Text[20]) 
+        field(21; CellPhone; Text[20])
         {
-            Caption='Cell phone';
+            Caption = 'Cell phone';
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

@@ -5,17 +5,17 @@
 
 xmlport 1897 "C5 LedTrans"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='LedTransDocument';
+            MinOccurs = Zero;
+            XmlName = 'LedTransDocument';
             tableelement(C5LedTrans; "C5 LedTrans")
             {
                 fieldelement(Account; C5LedTrans.Account) { }
@@ -25,7 +25,7 @@ xmlport 1897 "C5 LedTrans"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(Date_Text, CopyStr(DateFormatString, 1, 20), C5LedTrans.Date_);
+                        C5HelperFunctions.TryConvertFromStringDate(Date_Text, CopyStr(DateFormatStringTxt, 1, 20), C5LedTrans.Date_);
                     end;
                 }
 
@@ -42,7 +42,7 @@ xmlport 1897 "C5 LedTrans"
                 {
                     trigger OnAfterAssignVariable()
                     begin
-                        C5HelperFunctions.TryConvertFromStringDate(DueDateText, CopyStr(DateFormatString, 1, 20), C5LedTrans.DueDate);
+                        C5HelperFunctions.TryConvertFromStringDate(DueDateText, CopyStr(DateFormatStringTxt, 1, 20), C5LedTrans.DueDate);
                     end;
                 }
 
@@ -56,11 +56,18 @@ xmlport 1897 "C5 LedTrans"
                 fieldelement(ReconcileNo; C5LedTrans.ReconcileNo) { }
                 fieldelement(VatRepCounter; C5LedTrans.VatRepCounter) { }
                 fieldelement(VatPeriodRecId; C5LedTrans.VatPeriodRecId) { }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5LedTrans.RecId := Counter;
+                    Counter += 1;
+                end;
             }
         }
     }
 
     var
         C5HelperFunctions: Codeunit "C5 Helper Functions";
-        DateFormatString: label 'yyyy/MM/dd', locked=true;
+        DateFormatStringTxt: label 'yyyy/MM/dd', locked = true;
+        Counter: Integer;
 }

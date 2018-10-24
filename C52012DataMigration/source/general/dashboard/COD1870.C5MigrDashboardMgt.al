@@ -9,7 +9,7 @@ codeunit 1870 "C5 Migr. Dashboard Mgt"
         C5MigrationTypeTxt: Label 'C5 2012', Locked = true;
         C5HelptTopicUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=859310', Locked = true;
 
-    procedure InitMigrationStatus(TotalItemNb: Integer;TotalCustomerNb: Integer;TotalVendorNb: Integer;TotalChartOfAccountNb: Integer; TotalLegacyNb: Integer)
+    procedure InitMigrationStatus(TotalItemNb: Integer; TotalCustomerNb: Integer; TotalVendorNb: Integer; TotalChartOfAccountNb: Integer; TotalLegacyNb: Integer)
     var
         DataMigrationStatusFacade: Codeunit "Data Migration Status Facade";
     begin
@@ -25,54 +25,54 @@ codeunit 1870 "C5 Migr. Dashboard Mgt"
         exit(CopyStr(C5MigrationTypeTxt, 1, 250));
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFindBatchForItemTransactions', '', false, false)] 
-    local procedure OnFindBatchForItemTransactions(MigrationType: Text[250];var ItemJournalBatchName: Code[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFindBatchForItemTransactions', '', false, false)]
+    local procedure OnFindBatchForItemTransactions(MigrationType: Text[250]; var ItemJournalBatchName: Code[10])
     var
         C5ItemMigrator: Codeunit "C5 Item Migrator";
     begin
         if MigrationType <> C5MigrationTypeTxt then
             exit;
-        
+
         ItemJournalBatchName := C5ItemMigrator.GetHardCodedBatchName();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFindBatchForCustomerTransactions', '', false, false)] 
-    local procedure OnFindBatchForCustomerTransactions(MigrationType: Text[250];var GenJournalBatchName: Code[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFindBatchForCustomerTransactions', '', false, false)]
+    local procedure OnFindBatchForCustomerTransactions(MigrationType: Text[250]; var GenJournalBatchName: Code[10])
     var
         C5CustTableMigrator: Codeunit "C5 CustTable Migrator";
     begin
         if MigrationType <> C5MigrationTypeTxt then
             exit;
-        
+
         GenJournalBatchName := C5CustTableMigrator.GetHardCodedBatchName();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFindBatchForVendorTransactions', '', false, false)] 
-    local procedure OnFindBatchForVendorTransactions(MigrationType: Text[250];var GenJournalBatchName: Code[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFindBatchForVendorTransactions', '', false, false)]
+    local procedure OnFindBatchForVendorTransactions(MigrationType: Text[250]; var GenJournalBatchName: Code[10])
     var
         C5VendTableMigrator: Codeunit "C5 VendTable Migrator";
     begin
         if MigrationType <> C5MigrationTypeTxt then
             exit;
-        
+
         GenJournalBatchName := C5VendTableMigrator.GetHardCodedBatchName();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFindBatchForAccountTransactions', '', false, false)] 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFindBatchForAccountTransactions', '', false, false)]
     local procedure OnFindBatchForAccountTransactions(DataMigrationStatus: Record "Data Migration Status"; var GenJournalBatchName: Code[10])
     var
         C5LedTransMigrator: Codeunit "C5 LedTrans Migrator";
     begin
         if DataMigrationStatus."Migration Type" <> C5MigrationTypeTxt then
             exit;
-        
+
         if DataMigrationStatus."Destination Table ID" <> Database::"C5 LedTrans" then
             exit;
 
         GenJournalBatchName := C5LedTransMigrator.GetHardCodedBatchName();
     end;
 
-    [EventSubscriber(ObjectType::CodeUnit, CodeUnit::"Data Migration Facade", 'OnSelectRowFromDashboard', '', false, false)] 
+    [EventSubscriber(ObjectType::CodeUnit, CodeUnit::"Data Migration Facade", 'OnSelectRowFromDashboard', '', false, false)]
     local procedure OnSelectRecordSubscriber(var DataMigrationStatus: Record "Data Migration Status")
     var
         C5LedTrans: Record "C5 LedTrans";
@@ -83,49 +83,39 @@ codeunit 1870 "C5 Migr. Dashboard Mgt"
     begin
         if not (DataMigrationStatus."Migration Type" = C5MigrationTypeTxt) then
             exit;
-        
+
         case DataMigrationStatus."Destination Table ID" of
             Database::"C5 LedTrans":
-            begin
                 if not C5LedTrans.IsEmpty() then
                     Page.Run(Page::"C5 LedTrans List");
-            end;
             Database::Customer:
-            begin
                 if not C5CustTable.IsEmpty() then
                     Page.Run(Page::"C5 CustTable List");
-            end;
             Database::"G/L Account":
-            begin
                 if not C5LedTable.IsEmpty() then
                     Page.Run(Page::"C5 LedTable List");
-            end;
             Database::Item:
-            begin
                 if not C5InvenTable.IsEmpty() then
                     Page.Run(Page::"C5 InvenTable List");
-            end;
             Database::Vendor:
-            begin
                 if not C5VendTable.IsEmpty() then
                     Page.Run(Page::"C5 VendTable List");
-            end;
         end;
     end;
 
-    [EventSubscriber(ObjectType::CodeUnit, CodeUnit::"Data Migration Facade" , 'OnGetMigrationHelpTopicUrl', '', false, false)] 
+    [EventSubscriber(ObjectType::CodeUnit, CodeUnit::"Data Migration Facade", 'OnGetMigrationHelpTopicUrl', '', false, false)]
     local procedure OnGetMigrationHelpTopicUrl(MigrationType: Text; var Url: Text)
     begin
         if MigrationType = C5MigrationTypeTxt Then
             Url := C5HelptTopicUrlTxt;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade" , 'OnMigrationCompleted', '', false, false)] 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnMigrationCompleted', '', false, false)]
     local procedure OnAllStepsCompletedSubscriber(DataMigrationStatus: Record "Data Migration Status")
     begin
         if not (DataMigrationStatus."Migration Type" = C5MigrationTypeTxt) then
             exit;
-        
+
         ClearStagingTables();
     end;
 
@@ -201,17 +191,17 @@ codeunit 1870 "C5 Migr. Dashboard Mgt"
         C5VendTrans.DeleteAll();
         C5VendTable.DeleteAll();
     end;
-    
-    [EventSubscriber(ObjectType::CodeUnit, CodeUnit::"Data Migration Facade", 'OnInitDataMigrationError', '', false, false)] 
-    local procedure OnInitDataMigrationError(MigrationType: Text[250]; var BulkFixErrorsButtonEnabled:Boolean)
+
+    [EventSubscriber(ObjectType::CodeUnit, CodeUnit::"Data Migration Facade", 'OnInitDataMigrationError', '', false, false)]
+    local procedure OnInitDataMigrationError(MigrationType: Text[250]; var BulkFixErrorsButtonEnabled: Boolean)
     begin
         if MigrationType <> C5MigrationTypeTxt then
             exit;
         BulkFixErrorsButtonEnabled := true;
     end;
 
-    [EventSubscriber(ObjectType::CodeUnit, CodeUnit::"Data Migration Facade", 'OnBatchEditFromErrorView', '', false, false)] 
-    local procedure OnBatchEditFromErrorView(MigrationType: Text[250]; DestinationTableId:Integer)
+    [EventSubscriber(ObjectType::CodeUnit, CodeUnit::"Data Migration Facade", 'OnBatchEditFromErrorView', '', false, false)]
+    local procedure OnBatchEditFromErrorView(MigrationType: Text[250]; DestinationTableId: Integer)
     var
         C5LedTrans: Record "C5 LedTrans";
         C5CustTable: Record "C5 CustTable";
@@ -219,12 +209,12 @@ codeunit 1870 "C5 Migr. Dashboard Mgt"
         C5InventTable: Record "C5 InvenTable";
         C5VendTable: Record "C5 VendTable";
         DataMigrationError: Record "Data Migration Error";
-        C5LedTransList : Page "C5 LedTrans List";
-        C5CustTableList : Page "C5 CustTable List";
-        C5LedTableList : Page "C5 LedTable List";
-        C5InventTableList : Page "C5 InvenTable List";
-        C5VendTableList : Page "C5 VendTable List";
-    begin      
+        C5LedTransList: Page "C5 LedTrans List";
+        C5CustTableList: Page "C5 CustTable List";
+        C5LedTableList: Page "C5 LedTable List";
+        C5InventTableList: Page "C5 InvenTable List";
+        C5VendTableList: Page "C5 VendTable List";
+    begin
         if MigrationType <> C5MigrationTypeTxt Then
             exit;
 

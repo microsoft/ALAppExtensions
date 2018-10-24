@@ -5,17 +5,17 @@
 
 xmlport 1860 "C5 LedTable"
 {
-    Direction=Import;
-    Format=VariableText;
-    FormatEvaluate=XML;
+    Direction = Import;
+    Format = VariableText;
+    FormatEvaluate = XML;
 
 
     schema
     {
         textelement(root)
         {
-            MinOccurs=Zero;
-            XmlName='LedTableDocument';
+            MinOccurs = Zero;
+            XmlName = 'LedTableDocument';
             tableelement(C5LedTable; "C5 LedTable")
             {
                 fieldelement(DEL_UserLock; C5LedTable.DEL_UserLock) { }
@@ -55,8 +55,17 @@ xmlport 1860 "C5 LedTable"
                 fieldelement(MandPurpose; C5LedTable.MandPurpose) { }
                 fieldelement(VatBlocked; C5LedTable.VatBlocked) { }
                 fieldelement(OpeningAccount; C5LedTable.OpeningAccount) { }
-           }
+
+                trigger OnBeforeInsertRecord();
+                begin
+                    C5LedTable.RecId := Counter;
+                    Counter += 1;
+                end;
+            }
         }
     }
+
+    var
+        Counter: Integer;
 }
 

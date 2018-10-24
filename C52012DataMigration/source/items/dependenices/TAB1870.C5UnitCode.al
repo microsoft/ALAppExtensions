@@ -5,30 +5,31 @@
 
 table 1870 "C5 UnitCode"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;UnitCode;Code[10]) 
+        field(3; UnitCode; Code[10])
         {
-            Caption='Unit';
+            Caption = 'Unit';
         }
-        field(4;Txt;Text[30]) 
+        field(4; Txt; Text[30])
         {
-            Caption='Text';
+            Caption = 'Text';
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

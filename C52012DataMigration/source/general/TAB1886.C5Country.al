@@ -5,60 +5,61 @@
 
 table 1886 "C5 Country"
 {
+    ReplicateData = false;
+
     fields
     {
-        field(1;RecId;Integer) 
+        field(1; RecId; Integer)
         {
-            Caption='Row number';
-            AutoIncrement=true;
+            Caption = 'Row number';
         }
-        field(2;LastChanged;Date) 
+        field(2; LastChanged; Date)
         {
-            Caption='Last changed';
+            Caption = 'Last changed';
         }
-        field(3;Country;Text[30]) 
+        field(3; Country; Text[30])
         {
-            Caption='Country/region';
+            Caption = 'Country/region';
         }
-        field(4;Type;Option) 
+        field(4; Type; Option)
         {
-            Caption='Type';
-            OptionMembers = Domestic, "EU country", "EFTA country", "3. country";
+            Caption = 'Type';
+            OptionMembers = Domestic,"EU country","EFTA country","3. country";
         }
-        field(5;Currency;Code[3]) 
+        field(5; Currency; Code[3])
         {
-            Caption='Currency';
+            Caption = 'Currency';
         }
-        field(6;Language_;Option) 
+        field(6; Language_; Option)
         {
-            Caption='Language';
-            OptionMembers = Default, Danish, English, German, French, Italian, Dutch, Icelandic;
+            Caption = 'Language';
+            OptionMembers = Default,Danish,English,German,French,Italian,Dutch,Icelandic;
         }
-        field(7;PurchVat;Code[10]) 
+        field(7; PurchVat; Code[10])
         {
-            Caption='Purch. VAT';
+            Caption = 'Purch. VAT';
         }
-        field(8;SalesVat;Code[10]) 
+        field(8; SalesVat; Code[10])
         {
-            Caption='Sales VAT';
+            Caption = 'Sales VAT';
         }
-        field(9;VatCountryCode;Code[2]) 
+        field(9; VatCountryCode; Code[2])
         {
-            Caption='Country code';
+            Caption = 'Country code';
         }
-        field(10;IntrastatCode;Code[3]) 
+        field(10; IntrastatCode; Code[3])
         {
-            Caption='Intrastat';
+            Caption = 'Intrastat';
         }
-        field(11;ExtCountryName;Text[50]) 
+        field(11; ExtCountryName; Text[50])
         {
-            Caption='Country name';
+            Caption = 'Country name';
         }
     }
 
     keys
     {
-        key(PK;RecId)
+        key(PK; RecId)
         {
             Clustered = true;
         }

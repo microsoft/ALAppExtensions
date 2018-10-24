@@ -9,16 +9,16 @@ codeunit 1865 "C5 Helper Functions"
         TypeHelper: Codeunit "Type Helper";
         SubstitutionTable: array[130, 2] of Text;
         IsSubstitutionTableInitialized: Boolean;
-        PostCodeOrCityNotFoundErr: Label  'The combination of PostCode ''%1'' and City ''%2'' was not found.', Comment = '%1 = Post code and %2 = City';
+        PostCodeOrCityNotFoundErr: Label 'The combination of PostCode ''%1'' and City ''%2'' was not found.', Comment = '%1 = Post code and %2 = City';
         CountryNotFoundErr: Label 'The country ''%1'' was not found.', Comment = '%1 = country name';
- 	    DepartmentDimensionCodeTxt: Label 'C5DEPARTMENT';
-        DepartmentDimensionDescriptionTxt : Label 'C5 Department Dimension';
+        DepartmentDimensionCodeTxt: Label 'C5DEPARTMENT';
+        DepartmentDimensionDescriptionTxt: Label 'C5 Department Dimension';
         CostCenterDimensionCodeTxt: Label 'C5COSTCENTRE';
         CostCenterDimensionDescriptionTxt: Label 'C5 Cost Centre';
         PurposeDimensionCodeTxt: Label 'C5PURPOSE';
         PurposeDimensionDescriptionTxt: Label 'C5 Purpose';
-        LanguageNotFoundErr: Label 'The language ''%1'' was not found.', Comment='%1 = language name';
-     
+        LanguageNotFoundErr: Label 'The language ''%1'' was not found.', Comment = '%1 = language name';
+
     local procedure InitSubstitutionTable()
     begin
         // Initializing substitution table, which is Codepage 850 with 'C5 encoding -> char' mapping.
@@ -428,7 +428,7 @@ codeunit 1865 "C5 Helper Functions"
     begin
         if DateString = '' then begin
             Date := 0D;
-            exit(true); 
+            exit(true);
             // false means the format is incorrect. Here we don't want to error out.
         end;
 
@@ -438,7 +438,7 @@ codeunit 1865 "C5 Helper Functions"
         Date := TempVariant;
         exit(true);
     end;
-    
+
     procedure ReplaceLettersSubstitutions(String: Text): Text
     var
         Position: Integer;
@@ -450,7 +450,7 @@ codeunit 1865 "C5 Helper Functions"
         while (Position > 0) do begin
             String := DelStr(String, Position, StrLen(SubstitutionTable[SubstitutionIndex, 1]));
             String := InsStr(String, SubstitutionTable[SubstitutionIndex, 2], Position);
-            Position := FindNextSubstitution(String, SubstitutionIndex);            
+            Position := FindNextSubstitution(String, SubstitutionIndex);
         end;
 
         exit(String);
@@ -476,7 +476,7 @@ codeunit 1865 "C5 Helper Functions"
         Line: Text;
     begin
         TempBlob.Init();
-        TempBlob.Blob.CreateOutStream(OutStream);      
+        TempBlob.Blob.CreateOutStream(OutStream);
         while not InStream.EOS() do begin
             InStream.ReadText(Line);
             Line := HelperFunctions.ReplaceLettersSubstitutions(Line);
@@ -487,26 +487,26 @@ codeunit 1865 "C5 Helper Functions"
         TempBlob.Blob.CreateInStream(ProcessedStream);
     end;
 
-    procedure GetDimensionValueName(TableNum: Integer; DimensionValue:Code[10]) DimensionName: Text[30]
+    procedure GetDimensionValueName(TableNum: Integer; DimensionValue: Code[10]) DimensionName: Text[30]
     var
         C5Centre: Record "C5 Centre";
         C5Department: Record "C5 Department";
         C5Purpose: Record "C5 Purpose";
     begin
         case TableNum of
-             Database::"C5 Department":
+            Database::"C5 Department":
                 begin
                     C5Department.SetRange(Department, DimensionValue);
                     if C5Department.FindFirst() then
                         DimensionName := C5Department.Name;
                 end;
-             Database::"C5 Centre":
+            Database::"C5 Centre":
                 begin
                     C5Centre.SetRange(Centre, DimensionValue);
                     if C5Centre.FindFirst() then
                         DimensionName := C5Centre.Name;
                 end;
-             Database::"C5 Purpose":
+            Database::"C5 Purpose":
                 begin
                     C5Purpose.SetRange(Purpose, DimensionValue);
                     if C5Purpose.FindFirst() then
@@ -557,7 +557,7 @@ codeunit 1865 "C5 Helper Functions"
         exit(Currency);
     end;
 
-    procedure ExtractPostCodeAndCity(C5ZipCity: Text[50]; C5Country: Text[30]; var D365PostCode:Code[20]; var D365City: Text[30]; var D365CountryRegionCode: Code[10])
+    procedure ExtractPostCodeAndCity(C5ZipCity: Text[50]; C5Country: Text[30]; var D365PostCode: Code[20]; var D365City: Text[30]; var D365CountryRegionCode: Code[10])
     var
         CompanyInformation: Record "Company Information";
         CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade";
@@ -567,7 +567,7 @@ codeunit 1865 "C5 Helper Functions"
         D365PostCode := '';
         D365City := '';
         D365CountryRegionCode := GetCountry(C5Country);
-        ZipCityTemp := CopyStr(TrimSpaces(C5ZipCity),1 , 50);
+        ZipCityTemp := CopyStr(TrimSpaces(C5ZipCity), 1, 50);
 
         FirstBlankIdx := StrPos(ZipCityTemp, ' ');
         if ZipCityTemp = '' then
@@ -590,7 +590,7 @@ codeunit 1865 "C5 Helper Functions"
             Error(PostCodeOrCityNotFoundErr, ZipCityTemp, '');
     end;
 
-    local procedure GetCountry(C5CountryTxt: Text[30]): Code [10]
+    local procedure GetCountry(C5CountryTxt: Text[30]): Code[10]
     var
         C5Country: Record "C5 Country";
         CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade";
@@ -625,7 +625,7 @@ codeunit 1865 "C5 Helper Functions"
         Right: Text;
     begin
         City := TrimSpaces(City);
-        if City in ['NV','SV','NØ','SØ'] then
+        if City in ['NV', 'SV', 'NØ', 'SØ'] then
             exit(CopyStr(City, 1, 30));
         Pos := StrPos(City, ' ');
         if Pos > 1 then begin
@@ -638,11 +638,11 @@ codeunit 1865 "C5 Helper Functions"
 
     local procedure CreateCounty(CountryCode: Code[10]; Country: Text[50])
     var
-      CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade";
-      AddressFormatToSet: Option "Post Code+City", "City+Post Code", "City+County+Post Code", "Blank Line+Post Code+City";
-      ContactAddressFormatToSet: Option First, "After Company Name", Last;
+        CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade";
+        AddressFormatToSet: Option "Post Code+City","City+Post Code","City+County+Post Code","Blank Line+Post Code+City";
+        ContactAddressFormatToSet: Option First,"After Company Name",Last;
     begin
-      CustomerDataMigrationFacade.CreateCountryIfNeeded(CountryCode, Country, AddressFormatToSet::"Post Code+City", ContactAddressFormatToSet::"After Company Name");
+        CustomerDataMigrationFacade.CreateCountryIfNeeded(CountryCode, Country, AddressFormatToSet::"Post Code+City", ContactAddressFormatToSet::"After Company Name");
     end;
 
     procedure GetLanguageCodeForC5Language(C5Language: Option): Code[10]
@@ -673,7 +673,7 @@ codeunit 1865 "C5 Helper Functions"
             C5VendTable.Language_::Italian:
                 AbbreviatedLanguage := 'ITA';
         end;
-            
+
         if not CustomerDataMigrationFacade.SearchLanguage(AbbreviatedLanguage, ResultCode) then
             Error(LanguageNotFoundErr, Format(C5VendTable.Language_));
         exit(ResultCode);
@@ -689,27 +689,27 @@ codeunit 1865 "C5 Helper Functions"
         GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade";
         C5LedTableMigrator: Codeunit "C5 LedTable Migrator";
         GLAccountNoWithLeadingZeros: Text;
-        AccountType: Option Posting, Heading, Total, "Begin-Total", "End-Total";
+        AccountType: Option Posting,Heading,Total,"Begin-Total","End-Total";
     begin
         GLAccountNoWithLeadingZeros := C5LedTableMigrator.FillWithLeadingZeros(AccountCode);
 
         if not GLAccDataMigrationFacade.CreateGLAccountIfNeeded(CopyStr(GLAccountNoWithLeadingZeros, 1, 20), AccountCode, AccountType::Posting) then
             exit;
 
-        GLAccDataMigrationFacade.SetDirectPosting(true);      
-        GLAccDataMigrationFacade.ModifyGLAccount(true);    
+        GLAccDataMigrationFacade.SetDirectPosting(true);
+        GLAccDataMigrationFacade.ModifyGLAccount(true);
     end;
 
     procedure MigrateExchangeRatesForCurrency(Currency: Code[10])
     var
         C5ExchRates: Record "C5 ExchRate";
         ExchangeRatesMigrationFacade: Codeunit "Ex. Rate Data Migration Facade";
-    begin      
+    begin
         C5ExchRates.SetRange(Currency, Currency);
         if C5ExchRates.FindSet() then
             repeat
                 ExchangeRatesMigrationFacade.CreateSimpleExchangeRateIfNeeded(
-                    Currency, 
+                    Currency,
                     C5ExchRates.FromDate,
                     C5ExchRates.ExchRate,
                     100); // we hard-code ExchRateAmount to 100 since it's always 100 in C5
