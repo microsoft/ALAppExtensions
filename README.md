@@ -3,7 +3,7 @@ The purpose of this repository is to create a collaboration platform between Mic
 
 Going forward, an increasing part of our application business logic will be modularized and extracted into extensions, which will be published onto this repository; this is true for both application add-ons as well as application localizations. The core application thereby becomes thinner, better extensible and better localizable. The extracted modules become open for contributions, are replaceable in the application with substitutes, serve as starting point for verticalizations of the modules or serve as samples for extension development in general.
 
-The jointly developed extensions in this repository will be published by Microsoft to App Source and will be shipped with upcoming releases of [Microsoft Dynamics 365 Business Central](https://dynamics.microsoft.com/en-us/business-central).
+The extensions in this repository will be published by Microsoft to App Source and will be shipped with upcoming releases of [Microsoft Dynamics 365 Business Central](https://dynamics.microsoft.com/en-us/business-central).
 
 ## Contributing
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
