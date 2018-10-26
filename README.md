@@ -1,22 +1,36 @@
 # Microsoft AL application add-on and localization extensions for Microsoft Dynamics 365 Business Central
-The purpose of this repository is to create a collaboration platform between Microsoft and our vibrant partner channel and community for the joint development of application extensions in the AL language.
+Welcome to the ALAppExtension repository!
 
-Going forward, an increasing part of our application business logic will be modularized and extracted into extensions, which will be published onto this repository; this is true for both application add-ons as well as application localizations. The core application thereby becomes thinner, better extensible and better localizable. The extracted modules become open for contributions, are replaceable in the application with substitutes, serve as starting point for verticalizations of the modules or serve as samples for extension development in general.
+This repo is a platform for Microsoft and our vibrant partner channel and community to work together to develop apps in the AL language and enable the general extensibility of Microsoft Dynamics 365 Business Central.
 
-The jointly developed extensions in this repository will be published by Microsoft to App Source and will be shipped with upcoming releases of [Microsoft Dynamics 365 Business Central](https://dynamics.microsoft.com/en-us/business-central).
+We’re working to make the core application thinner, more extensible, and easier to localize by extracting more and more of our application business logic into add-on and localization apps. As we go, we’ll publish the source code for the apps in this repo. The apps are open for contributions and can serve as starting point for verticalizations or just as samples for developing apps.
+
+Microsoft will publish the contributions to the code in this repo on AppSource, and they’ll ship in upcoming releases of [Microsoft Dynamics 365 Business Central](https://dynamics.microsoft.com/en-us/business-central), where you’ll get to enjoy the effect of your contributions.
+
+## Types of engagements
+There are a couple of ways to engage with us here:  
+  
+* You can grab the code and contribute to the published apps. For more information, see the _Contributing_ section below.  
+* If you’re building your own app and need something specific from us, like an event, you can help improve the general extensibility of the business logic. For more information, see the _Extensibility requests_ section below.
+
+### Extensibility requests
+The following are the types of requests you can submit to unblock your app:  
+
+* Add new integration events – Get the event you need to hook-in to a process.  
+* Change function visibility – For example, make a public function external or a similar change so you can call it from your extension and reuse the business logic.  
+* Replace Option with Enum – Replace a specific option with an enum that supports your extension. The new type enum is extensible, but all code was written for non-extensible options.  
+* Extensibility enhancements – Request changes in the application code that will improve extensibility.  
+  
+We’ll have a look at your request, and if we can we’ll implement it asap. If we can’t we’ll let you know and briefly explain why not. When that happens, don’t be discouraged. Go back to the drawing board, see if you can work it out, and then come back and submit another request.
 
 ## Contributing
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+This project welcomes contributions and suggestions.  Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.microsoft.com.
 
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
+When you submit a pull request, a CLA-bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
 provided by the bot. You will only need to do this once across all repos using our CLA.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## How to get started
 1. Become familiar with development in AL. For more information, see https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-get-started.  
@@ -39,3 +53,6 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
        ```
 5. In Visual Studio Code, connect to your sandbox (follow the steps in the documentation that step 2 refers to) and open the C:\...\C52012DataMigrationReID folder. Now you are ready to go. You can modify the code and build your extension.  
 6. To submit your changes, create a new branch. Remember to revert the change of IDs, and then create a pull request.  
+
+## See Also
+[FAQ](FAQ.md)
