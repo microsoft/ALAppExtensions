@@ -43,7 +43,7 @@ We have decided to focus our development efforts on a single, latest version of 
 We use labels for categorizing issues into types and tracking the issue lifecycle. Issues fall into the following types:  
 
 * Enum-request - request an enum  
-* Request-for-exteranl - request to mark a function as external  
+* Request-for-external - request to mark a function as external  
 * Event-request - request for a new event  
 * Extensibility-enhancement - larger suggestion improving extensibility, something we might want to consider in the future  
 
