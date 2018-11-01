@@ -19,6 +19,7 @@ codeunit 1865 "C5 Helper Functions"
         PurposeDimensionDescriptionTxt: Label 'C5 Purpose';
         LanguageNotFoundErr: Label 'The language ''%1'' was not found.', Comment = '%1 = language name';
 
+
     local procedure InitSubstitutionTable()
     begin
         // Initializing substitution table, which is Codepage 850 with 'C5 encoding -> char' mapping.
@@ -716,16 +717,14 @@ codeunit 1865 "C5 Helper Functions"
             until C5ExchRates.Next() = 0;
     end;
 
-    procedure CleanupFiles()
-    var
-        C5SchemaParameters: Record "C5 Schema Parameters";
-        FileManagement: Codeunit "File Management";
+    procedure GetFileContentAsStream(Filename: Text; var NameValueBuffer: Record "Name/Value Buffer"; var FileContentStream: InStream): Boolean
     begin
-        C5SchemaParameters.GetSingleInstance();
-        FileManagement.ServerRemoveDirectory(C5SchemaParameters."Unziped Folder", true);
-        FileManagement.DeleteServerFile(C5SchemaParameters."Zip File");
-        C5SchemaParameters."Unziped Folder" := '';
-        C5SchemaParameters."Zip File" := '';
-        C5SchemaParameters.Modify();
+        NameValueBuffer.SetRange(Name, Filename);
+        if not NameValueBuffer.FindFirst() then
+            exit(false);
+        NameValueBuffer.CalcFields("Value BLOB");
+        NameValueBuffer."Value BLOB".CreateInStream(FileContentStream);
+        exit(true);
     end;
+
 }

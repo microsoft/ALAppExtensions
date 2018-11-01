@@ -3,16 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-table 1439 "Headline Details"
+table 1437 "Headline Details Per User"
 {
     DataClassification = CustomerContent;
 
-    ObsoleteState = Pending;
-    ObsoleteReason = 'Should be per user';
-
     fields
     {
-        field(1; "No."; Code[10])
+        field(1; "No."; Code[20])
         {
 
             DataClassification = CustomerContent;
@@ -44,11 +41,16 @@ table 1439 "Headline Details"
             OptionMembers = Item,Resource,Customer;
             DataClassification = CustomerContent;
         }
+
+        field(7; "User Id"; Guid)
+        {
+            DataClassification = EndUserPseudonymousIdentifiers;
+        }
     }
 
     keys
     {
-        key(PK; "No.")
+        key(PK; "No.", Type, "User Id")
         {
             Clustered = true;
         }

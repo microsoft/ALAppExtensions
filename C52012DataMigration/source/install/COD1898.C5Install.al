@@ -7,7 +7,13 @@ codeunit 1898 "C5 Install"
 {
     Subtype = install;
 
-    trigger OnInstallAppPerCompany();
+    trigger OnInstallAppPerCompany()
+    begin
+        CompanyInitialize();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
+    local procedure CompanyInitialize()
     begin
         ApplyEvaluationClassificationsForPrivacy();
     end;

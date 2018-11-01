@@ -1,11 +1,9 @@
 {
-  "id": "e868ad92-21b8-4e08-af2b-8975a8b06e04",
   "name": "Image Analyzer",
   "publisher": "Microsoft",
   "brief": "Analyze images using Microsoft Cognitive Services.",
   "description": "Uses Microsoft Cognitive Services to analyze images. Analyze images of an item, and assign item attributes and item category based on the results. Analyze images of a contact, and assign age and gender to the a contact profile questionnaire.",
   "version": "1.0.0.4",
-  "compatibilityId": "1.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
   "help": "https://go.microsoft.com/fwlink/?linkid=850308",

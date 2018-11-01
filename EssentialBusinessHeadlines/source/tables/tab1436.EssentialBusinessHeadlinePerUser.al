@@ -3,10 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-table 1438 "Essential Business Headline"
+table 1436 "Ess. Business Headline Per Usr"
 {
-    ObsoleteState = Pending;
-    ObsoleteReason = 'Should be per user';
 
     fields
     {
@@ -14,6 +12,7 @@ table 1438 "Essential Business Headline"
         field(1; "Headline Name"; Option)
         {
             OptionMembers = MostPopularItem,BusiestResource,LargestSale,LargestOrder,SalesIncrease,TopCustomer;
+            DataClassification = SystemMetadata;
         }
 
         field(2; "Headline Text"; Text[250])
@@ -38,11 +37,16 @@ table 1438 "Essential Business Headline"
         {
             DataClassification = SystemMetadata;
         }
+
+        field(7; "User Id"; Guid)
+        {
+            DataClassification = EndUserPseudonymousIdentifiers;
+        }
     }
 
     keys
     {
-        key(PK; "Headline Name")
+        key(PK; "Headline Name", "User Id")
         {
             Clustered = true;
         }
@@ -50,9 +54,11 @@ table 1438 "Essential Business Headline"
 
     procedure GetOrCreateHeadline(HeadlineName: Option)
     begin
-        if not Get(HeadlineName) then begin
+
+        if not Get(HeadlineName, UserSecurityId()) then begin
             Init();
             Validate("Headline Name", HeadlineName);
+            Validate("User Id", UserSecurityId());
             if not Insert() then exit;
         end;
     end;

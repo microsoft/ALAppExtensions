@@ -81,7 +81,7 @@ codeunit 2026 "Item Attr Populate"
             if not ImageAnalysisTagBlacklist.Get(CurrentTagName) then begin // not blacklisted, add it to the buffer
                 ImageAnalysisTags.Init();
                 ImageAnalysisTags."Detected On Item No" := Item."No.";
-                ImageAnalysisTags."Tag Name" := CurrentTagName;
+                ImageAnalysisTags."Tag Name" := CopyStr(CurrentTagName, 1, MaxStrLen(ImageAnalysisTags."Tag Name"));
                 ImageAnalysisTags."Tag Confidence" := CurrentTagConfidencePercent;
                 if (CurrentTagConfidencePercent >= ConfidenceThresholdPercent) and GetFirstMatchingAvailableItemAttributeId(CurrentTagName, ItemAttributeValue) then begin
                     ImageAnalysisTags."Action To Perform" := ImageAnalysisTags."Action To Perform"::Attribute;
@@ -103,7 +103,7 @@ codeunit 2026 "Item Attr Populate"
     var
         ItemCategoryManagement: Codeunit "Item Category Management";
     begin
-        if not ItemCategoryManagement.DoesValueExistInItemCategories(TagName, ItemCategory) then
+        if not ItemCategoryManagement.DoesValueExistInItemCategories(CopyStr(TagName, 1, 20), ItemCategory) then
             exit;
 
         if not FoundItemCategoryToPopulate then begin
@@ -153,7 +153,7 @@ codeunit 2026 "Item Attr Populate"
         ItemAttributeManagement: Codeunit "Item Attribute Management";
     begin
         Clear(ItemAttributeValue);
-        if not ItemAttributeManagement.DoesValueExistInItemAttributeValues(TagName, ItemAttributeValue) then
+        if not ItemAttributeManagement.DoesValueExistInItemAttributeValues(CopyStr(TagName, 1, 250), ItemAttributeValue) then
             exit;
 
         repeat

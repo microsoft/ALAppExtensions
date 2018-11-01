@@ -102,7 +102,7 @@ table 2028 "MS - Image Analyzer Tags"
         case "Action To Perform" of
             "Action To Perform"::Category:
                 begin
-                    if IsCategoryActionAlreadyChosen then
+                    if IsCategoryActionAlreadyChosen() then
                         Error(SetOnlyOneTagAsItemCategoryErr);
 
                     ShortCategoryCode := CopyStr("Tag Name", 1, MaxStrLen(ShortCategoryCode));
@@ -209,13 +209,13 @@ table 2028 "MS - Image Analyzer Tags"
     begin
         case "Action To Perform" of
             "Action To Perform"::Category:
-                "Details Text" := StrSubstNo(DetailsTextForItemCategoryTxt, "Item Category Code");
+                "Details Text" := CopyStr(StrSubstNo(DetailsTextForItemCategoryTxt, "Item Category Code"), 1, MaxStrLen("Details Text"));
 
             "Action To Perform"::Attribute:
                 if "Item Attribute Value Id" = 0 then
                     "Details Text" := ChooseItemAttributeTxt
                 else
-                    "Details Text" := StrSubstNo(DetailsTextForItemAttributeTxt, "Item Attribute Name", "Item Attribute Value Name");
+                    "Details Text" := CopyStr(StrSubstNo(DetailsTextForItemAttributeTxt, "Item Attribute Name", "Item Attribute Value Name"), 1, MaxStrLen("Details Text"));
         end;
     end;
 

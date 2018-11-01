@@ -242,6 +242,8 @@ codeunit 148005 "C5 Item Migrator Test"
         SalesPrice: Record "Sales Price";
         CustomerPriceGroup: Record "Customer Price Group";
         GenJournalLine: Record "Gen. Journal Line";
+        C5InvenBom: Record "C5 InvenBOM";
+        Currency: Record Currency;
     begin
         CleanupStagingTables();
 
@@ -258,6 +260,13 @@ codeunit 148005 "C5 Item Migrator Test"
         SalesPrice.DeleteAll();
         CustomerPriceGroup.DeleteAll();
         GenJournalLine.DeleteAll();
+        C5InvenBom.DeleteAll();
+        Currency.DeleteAll();
+
+        Currency.Init();
+        Currency.Code := 'EUR';
+        Currency.Description := 'EURO';
+        Currency.Insert();
     end;
 
     local procedure CreateC5Purpose()

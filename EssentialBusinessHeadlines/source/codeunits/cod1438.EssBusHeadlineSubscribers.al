@@ -1,13 +1,13 @@
 ﻿// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved. 
-// Licensed under the MIT License. See License.txt in the project root for license information. 
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
 codeunit 1438 "Ess. Bus. Headline Subscribers"
 {
 
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         EssentialBusHeadlineMgt: Codeunit "Essential Bus. Headline Mgt.";
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Headline Management", 'OnInvalidateHeadlines', '', true, true)]
@@ -16,14 +16,15 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
         if not EssentialBusinessHeadline.WritePermission() then
             exit;
 
+        EssentialBusinessHeadline.SetRange("User Id", UserSecurityId());
         EssentialBusinessHeadline.DeleteAll();
     end;
 
     local procedure TransferHeadlineToPage(HeadlineName: Option; var HeadlineText: Text[250]; var HeadlineVisible: Boolean)
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
-        if EssentialBusinessHeadline.Get(HeadlineName) then begin
+        if EssentialBusinessHeadline.Get(HeadlineName, UserSecurityId()) then begin
             HeadlineVisible := EssentialBusinessHeadline."Headline Visible";
             HeadlineText := EssentialBusinessHeadline."Headline Text";
         end else
@@ -47,10 +48,11 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Business Manager", 'OnIsAnyExtensionHeadlineVisible', '', true, true)]
     procedure OnIsAnyExtensionHeadlineVisible(var ExtensionHeadlinesVisible: Boolean)
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         AtLeastOneHeadlineVisible: Boolean;
     begin
         EssentialBusinessHeadline.SetRange("Headline Visible", true);
+        EssentialBusinessHeadline.SetRange("User Id", UserSecurityId());
         EssentialBusinessHeadline.SetFilter("Headline Name", '%1|%2|%3|%4|%5',
             EssentialBusinessHeadline."Headline Name"::LargestOrder,
             EssentialBusinessHeadline."Headline Name"::LargestSale,
@@ -73,7 +75,7 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
                                     var BusiestResourceVisible: Boolean; var BusiestResourceText: Text[250];
                                     var TopCustomerVisible: Boolean; var TopCustomerText: Text[250])
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::MostPopularItem, MostPopularItemText, MostPopularItemVisible);
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::LargestOrder, LargestOrderText, LargestOrderVisible);
@@ -97,10 +99,11 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Order Processor", 'OnIsAnyExtensionHeadlineVisible', '', true, true)]
     procedure OnIsAnyExtensionHeadlineVisibleOrderProcessor(var ExtensionHeadlinesVisible: Boolean)
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         AtLeastOneHeadlineVisible: Boolean;
     begin
         EssentialBusinessHeadline.SetRange("Headline Visible", true);
+        EssentialBusinessHeadline.SetRange("User Id", UserSecurityId());
         EssentialBusinessHeadline.SetFilter("Headline Name", '%1|%2',
             EssentialBusinessHeadline."Headline Name"::LargestOrder,
             EssentialBusinessHeadline."Headline Name"::LargestSale);
@@ -114,7 +117,7 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Order Processor", 'OnSetVisibility', '', true, true)]
     procedure OnSetVisibilityOrderProcessor(var LargestOrderVisible: Boolean; var LargestOrderText: Text[250]; var LargestSaleVisible: Boolean; var LargestSaleText: Text[250])
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::LargestOrder, LargestOrderText, LargestOrderVisible);
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::LargestSale, LargestSaleText, LargestSaleVisible);
@@ -134,10 +137,11 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Accountant", 'OnIsAnyExtensionHeadlineVisible', '', true, true)]
     procedure OnIsAnyExtensionHeadlineVisibleAccountant(var ExtensionHeadlinesVisible: Boolean)
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         AtLeastOneHeadlineVisible: Boolean;
     begin
         EssentialBusinessHeadline.SetRange("Headline Visible", true);
+        EssentialBusinessHeadline.SetRange("User Id", UserSecurityId());
         EssentialBusinessHeadline.SetFilter("Headline Name", '%1|%2|%3',
             EssentialBusinessHeadline."Headline Name"::LargestOrder,
             EssentialBusinessHeadline."Headline Name"::LargestSale,
@@ -154,7 +158,7 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
                                         var LargestSaleVisible: Boolean; var LargestSaleText: Text[250];
                                         var SalesIncreaseVisible: Boolean; var SalesIncreaseText: Text[250])
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::LargestOrder, LargestOrderText, LargestOrderVisible);
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::LargestSale, LargestSaleText, LargestSaleVisible);
@@ -174,10 +178,11 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Relationship Mgt.", 'OnIsAnyExtensionHeadlineVisible', '', true, true)]
     procedure OnIsAnyExtensionHeadlineVisibleRelationshipMgt(var ExtensionHeadlinesVisible: Boolean)
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         AtLeastOneHeadlineVisible: Boolean;
     begin
         EssentialBusinessHeadline.SetRange("Headline Visible", true);
+        EssentialBusinessHeadline.SetRange("User Id", UserSecurityId());
         EssentialBusinessHeadline.SetFilter("Headline Name", '%1',
             EssentialBusinessHeadline."Headline Name"::TopCustomer);
 
@@ -190,7 +195,7 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Relationship Mgt.", 'OnSetVisibility', '', true, true)]
     procedure OnSetVisibilityRelMgt(var TopCustomerVisible: Boolean; var TopCustomerText: Text[250])
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::TopCustomer, TopCustomerText, TopCustomerVisible);
     end;

@@ -16,7 +16,7 @@ page 2029 "Image Analyzer Wizard"
                 Caption = '';
                 Editable = false;
                 Visible = TopBannerVisible;
-                field("MediaResourcesStandard.""Media Reference"""; MediaResourcesStandard."Media Reference")
+                field("MediaResourcesStandard Media Reference"; MediaResourcesStandard."Media Reference")
                 {
                     ApplicationArea = All;
                     Editable = false;

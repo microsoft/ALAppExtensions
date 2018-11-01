@@ -105,7 +105,7 @@ codeunit 139591 "Img. Analyzer Mgt. Test"
         ApplicationAreaSetup.DeleteAll();
         ApplicationAreaSetup."Company Name" := '';
         ApplicationAreaSetup."Profile ID" := '';
-        ApplicationAreaSetup."User ID" := UserId();
+        ApplicationAreaSetup."User ID" := CopyStr(UserId(), 1, MaxStrLen(ApplicationAreaSetup."User ID"));
         ApplicationAreaSetup.Advanced := true;
         ApplicationAreaSetup.Insert();
         // [When]
@@ -128,7 +128,7 @@ codeunit 139591 "Img. Analyzer Mgt. Test"
         ApplicationAreaSetup.DeleteAll();
         ApplicationAreaSetup."Company Name" := '';
         ApplicationAreaSetup."Profile ID" := '';
-        ApplicationAreaSetup."User ID" := UserId();
+        ApplicationAreaSetup."User ID" := CopyStr(UserId(), 1, MaxStrLen(ApplicationAreaSetup."User ID"));
         ApplicationAreaSetup.Basic := true;
         ApplicationAreaSetup."Relationship Mgmt" := true;
         ApplicationAreaSetup.Insert();
@@ -153,7 +153,7 @@ codeunit 139591 "Img. Analyzer Mgt. Test"
         PermissionManager.SetTestabilitySoftwareAsAService(true);
         ApplicationAreaSetup."Company Name" := '';
         ApplicationAreaSetup."Profile ID" := '';
-        ApplicationAreaSetup."User ID" := UserId();
+        ApplicationAreaSetup."User ID" := CopyStr(UserId(), 1, MaxStrLen(ApplicationAreaSetup."User ID"));
         ApplicationAreaSetup.Basic := true;
         ApplicationAreaSetup.Insert();
 

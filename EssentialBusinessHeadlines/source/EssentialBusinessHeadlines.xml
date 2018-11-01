@@ -2,6 +2,26 @@
 <PermissionSet RoleID="EssentialBusinessHeadlines" RoleName="Essential Business Headlines">
     <Permission>
       <ObjectType>TableData</ObjectType>
+      <ObjectID>1436</ObjectID>
+      <ReadPermission>Yes</ReadPermission>
+      <InsertPermission>Yes</InsertPermission>
+      <ModifyPermission>Yes</ModifyPermission>
+      <DeletePermission>Yes</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>TableData</ObjectType>
+      <ObjectID>1437</ObjectID>
+      <ReadPermission>Yes</ReadPermission>
+      <InsertPermission>Yes</InsertPermission>
+      <ModifyPermission>Yes</ModifyPermission>
+      <DeletePermission>Yes</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>TableData</ObjectType>
       <ObjectID>1438</ObjectID>
       <ReadPermission>Yes</ReadPermission>
       <InsertPermission>Yes</InsertPermission>

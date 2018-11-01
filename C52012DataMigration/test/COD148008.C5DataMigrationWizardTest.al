@@ -3,19 +3,19 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
-codeunit 136638 "C5 Data Migr. Wizard Test"
+codeunit 148008 "C5 Data Migr. Wizard Test"
 {
-    EventSubscriberInstance=Manual;
-    Subtype=Test;
+    EventSubscriberInstance = Manual;
+    Subtype = Test;
     TestPermissions = Disabled;
 
     var
         C5DataMigratorDescTxt: Label 'Import from Microsoft Dynamics C5 2012';
-    
+
     trigger OnRun();
     begin
         // [FEATURE] [C5 Data Migration]
-    end;  
+    end;
 
     [Test]
     procedure TestC5DataMigrationWizardFlow()
