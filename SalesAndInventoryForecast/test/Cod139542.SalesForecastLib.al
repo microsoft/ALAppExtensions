@@ -1,3 +1,8 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 139542 "Sales Forecast Lib"
 {
     // version Test,W1,All,Lib
