@@ -98,9 +98,6 @@ codeunit 148001 "C5 Helper Functions Test"
         Assert.AreEqual('AT-2355', PostCode, 'Incorrect post code');
         Assert.AreEqual('Wr. Neudorf', City, 'Incorrect city');
 
-        asserterror C5HelperFunctions.ExtractPostCodeAndCity('2355  ', 'Austria', PostCode, City, CountryRegionCode);
-        Assert.ExpectedError(StrSubstNo(PostCodeOrCityNotFoundErr, '2355', ''));
-
         C5HelperFunctions.ExtractPostCodeAndCity('', 'Austria', PostCode, City, CountryRegionCode);
         Assert.AreEqual('AT', CountryRegionCode, 'Incorrect country');
         Assert.AreEqual('', PostCode, 'Incorrect post code');
@@ -116,11 +113,16 @@ codeunit 148001 "C5 Helper Functions Test"
         Assert.AreEqual('', PostCode, 'Incorrect post code');
         Assert.AreEqual('', City, 'Incorrect city');
 
-        asserterror C5HelperFunctions.ExtractPostCodeAndCity('1100Wien', 'Austria', PostCode, City, CountryRegionCode);
-        Assert.ExpectedError(StrSubstNo(PostCodeOrCityNotFoundErr, '1100Wien', ''));
+        C5Country.DeleteAll();
+        C5Country.Init();
+        C5Country.Country := 'Osterrig';
+        C5Country.IntrastatCode := 'AT';
+        C5Country.Insert();
 
-        asserterror C5HelperFunctions.ExtractPostCodeAndCity('1234 SomeCity', 'Schweisz', PostCode, City, CountryRegionCode);
-        Assert.ExpectedError(StrSubstNo(CountryNotFoundErr, 'Schweisz'));
+        C5HelperFunctions.ExtractPostCodeAndCity('AT-1100 Wien', C5Country.Country, PostCode, City, CountryRegionCode);
+        Assert.AreEqual('AT', CountryRegionCode, 'Incorrect country');
+        Assert.AreEqual('AT-1100', PostCode, 'Incorrect post code');
+        Assert.AreEqual('Wien', City, 'Incorrect city');
 
         C5Country.DeleteAll();
         C5Country.Init();
@@ -133,16 +135,16 @@ codeunit 148001 "C5 Helper Functions Test"
         Assert.AreEqual('AT-1100', PostCode, 'Incorrect post code');
         Assert.AreEqual('Wien', City, 'Incorrect city');
 
-        C5Country.DeleteAll();
-        C5Country.Init();
-        C5Country.Country := 'Osterrig';
-        C5Country.IntrastatCode := 'AT';
-        C5Country.Insert();
+        asserterror C5HelperFunctions.ExtractPostCodeAndCity('2355  ', 'Austria', PostCode, City, CountryRegionCode);
+        Assert.ExpectedError(StrSubstNo(PostCodeOrCityNotFoundErr, '2355', ''));
 
-        C5HelperFunctions.ExtractPostCodeAndCity('AT-1100 Wien', C5Country.Country, PostCode, City, CountryRegionCode);
-        Assert.AreEqual('AT', CountryRegionCode, 'Incorrect country');
-        Assert.AreEqual('AT-1100', PostCode, 'Incorrect post code');
-        Assert.AreEqual('Wien', City, 'Incorrect city');
+        Initialize();
+
+        asserterror C5HelperFunctions.ExtractPostCodeAndCity('1100Wien', 'Austria', PostCode, City, CountryRegionCode);
+        Assert.ExpectedError(StrSubstNo(PostCodeOrCityNotFoundErr, '1100Wien', ''));
+
+        asserterror C5HelperFunctions.ExtractPostCodeAndCity('1234 SomeCity', 'Schweisz', PostCode, City, CountryRegionCode);
+        Assert.ExpectedError(StrSubstNo(CountryNotFoundErr, 'Schweisz'));
     end;
 
     [Test]
@@ -150,6 +152,7 @@ codeunit 148001 "C5 Helper Functions Test"
     var
         C5VendTable: Record "C5 VendTable";
     begin
+        Initialize();
         Assert.AreEqual('', C5HelperFunctions.GetLanguageCodeForC5Language(C5VendTable.Language_::Default), 'Default language is blank');
         Assert.AreEqual('DAN', C5HelperFunctions.GetLanguageCodeForC5Language(C5VendTable.Language_::Danish), 'Language is Danish');
         Assert.AreEqual('ENU', C5HelperFunctions.GetLanguageCodeForC5Language(C5VendTable.Language_::English), 'Language is English');
@@ -157,7 +160,7 @@ codeunit 148001 "C5 Helper Functions Test"
         Assert.AreEqual('FRA', C5HelperFunctions.GetLanguageCodeForC5Language(C5VendTable.Language_::French), 'Language is French');
         Assert.AreEqual('ITA', C5HelperFunctions.GetLanguageCodeForC5Language(C5VendTable.Language_::Italian), 'Language is Italian');
         Assert.AreEqual('NLD', C5HelperFunctions.GetLanguageCodeForC5Language(C5VendTable.Language_::Dutch), 'Language is Dutch');
-        Assert.AreEqual('ISL', C5HelperFunctions.GetLanguageCodeForC5Language(C5VendTable.Language_::Icelandic), 'Llanguage is Icelandic');
+        Assert.AreEqual('ISL', C5HelperFunctions.GetLanguageCodeForC5Language(C5VendTable.Language_::Icelandic), 'Language is Icelandic');
         asserterror C5HelperFunctions.GetLanguageCodeForC5Language(120);
         Assert.ExpectedError(StrSubstNo(LanguageNotFoundErr, FORMAT(120)));
     end;
@@ -265,16 +268,57 @@ codeunit 148001 "C5 Helper Functions Test"
         AreSubstitutionPairsInitialized := True;
     end;
 
-    local procedure Initialize()
+    procedure Initialize()
     var
         CountryRegion: Record "Country/Region";
+        Language: Record "Language";
     begin
         CountryRegion.DeleteAll();
 
         CountryRegion.Init();
         CountryRegion.Validate(Code, 'AT');
         CountryRegion.Validate(Name, 'Austria');
+        CountryRegion.Validate("Intrastat Code", 'AT');
         CountryRegion.Insert();
+
+        Language.DeleteAll();
+        Language.Validate(Code, 'DAN');
+        Language.Validate(Name, 'Danish');
+        Language.Validate("Windows Language ID", 1030);
+        Language.Insert();
+
+
+        Language.Validate(Code, 'ENU');
+        Language.Validate(Name, 'English');
+        Language.Validate("Windows Language ID", 1033);
+        Language.Insert();
+
+        Language.Validate(Code, 'DEU');
+        Language.Validate(Name, 'German');
+        Language.Validate("Windows Language ID", 1031);
+        Language.Insert();
+
+        Language.Validate(Code, 'FRA');
+        Language.Validate(Name, 'French');
+        Language.Validate("Windows Language ID", 1036);
+        Language.Insert();
+
+        Language.Validate(Code, 'ITA');
+        Language.Validate(Name, 'Italian');
+        Language.Validate("Windows Language ID", 1040);
+        Language.Insert();
+
+        Language.Validate(Code, 'NLD');
+        Language.Validate(Name, 'Dutch');
+        Language.Validate("Windows Language ID", 1043);
+        Language.Insert();
+
+        Language.Validate(Code, 'ISL');
+        Language.Validate(Name, 'Icelandic');
+        Language.Validate("Windows Language ID", 1039);
+        Language.Insert();
+
+
     end;
 }
 

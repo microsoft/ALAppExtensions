@@ -36,6 +36,14 @@ codeunit 148003 "C5 CustTable Migrator Tst"
     local procedure Initialize()
     var
         C5CustTable: Record "C5 CustTable";
+        C5CustTrans: Record "C5 CustTrans";
+        C5Payment: Record "C5 Payment";
+        C5InventoryPriceGroup: Record "C5 InvenPriceGroup";
+        C5Employee: Record "C5 Employee";
+        C5Delivery: Record "C5 Delivery";
+        C5CustDiscGroup: Record "C5 CustDiscGroup";
+        C5ProcCode: Record "C5 ProcCode";
+        C5CustContact: Record "C5 CustContact";
         Customer: Record Customer;
         CustomerPriceGroup: Record "Customer Price Group";
         MarketingSetup: Record "Marketing Setup";
@@ -46,9 +54,18 @@ codeunit 148003 "C5 CustTable Migrator Tst"
         PaymentMethod: Record "Payment Method";
         GenJournalLine: Record "Gen. Journal Line";
         CountryRegion: Record "Country/Region";
+        NoSeries: Record "No. Series";
+        NoSeriesLines: Record "No. Series Line";
     begin
         Customer.DeleteAll();
         C5CustTable.DeleteAll();
+        C5InventoryPriceGroup.DeleteAll();
+        C5Employee.DeleteAll();
+        C5Payment.DeleteAll();
+        C5Delivery.DeleteAll();
+        C5CustDiscGroup.DeleteAll();
+        C5ProcCode.DeleteAll();
+        C5CustContact.DeleteAll();
         CustomerPriceGroup.DeleteAll();
         PaymentTerms.DeleteAll();
         ShipmentMethod.DeleteAll();
@@ -56,16 +73,45 @@ codeunit 148003 "C5 CustTable Migrator Tst"
         CustomerDiscountGroup.DeleteAll();
         PaymentMethod.DeleteAll();
         GenJournalLine.DeleteAll();
-
         CountryRegion.DeleteAll();
+        NoSeries.DeleteAll();
+        NoSeriesLines.DeleteAll();
+        C5CustTrans.DeleteAll();
 
         CountryRegion.Init();
         CountryRegion.Validate(Code, 'AT');
         CountryRegion.Validate(Name, 'Austria');
         CountryRegion.Insert();
 
+        NoSeries.Init();
+        NoSeries.Code := 'G000CONT';
+        NoSeries."Default Nos." := true;
+        NoSeries.Insert();
+
+        NoSeriesLines.Init();
+        NoSeriesLines."Series Code" := 'G000CONT';
+        NoSeriesLines."Starting Date" := WorkDate();
+        NoSeriesLines."Starting No." := '8000';
+        NoSeriesLines."Ending No." := '9500';
+        NoSeriesLines.Insert();
+
+        NoSeries.Init();
+        NoSeries.Code := 'CUST';
+        NoSeries."Manual Nos." := true;
+        NoSeries."Default Nos." := true;
+        NoSeries.Insert();
+
+        NoSeriesLines.Init();
+        NoSeriesLines."Series Code" := 'CUST';
+        NoSeriesLines."Starting Date" := WorkDate();
+        NoSeriesLines."Starting No." := '8000';
+        NoSeriesLines."Ending No." := '9500';
+        NoSeriesLines.Insert();
+
         if MarketingSetup.Get() then begin
             MarketingSetup."Autosearch for Duplicates" := false;
+            MarketingSetup."Bus. Rel. Code for Customers" := 'CUST';
+            MarketingSetup."Contact Nos." := 'G000CONT';
             MarketingSetup.Modify();
         end;
     end;
@@ -497,7 +543,7 @@ codeunit 148003 "C5 CustTable Migrator Tst"
             GenJournalLine.FindFirst();
             Assert.AreEqual('CUSTMIGR', GenJournalLine."Journal Batch Name", 'Hard coded batch name incorrect');
             Assert.AreEqual(1000, GenJournalLine.Amount, 'Incorrect amount');
-            Assert.AreEqual(Format(352533), GenJournalLine."Document No.", 'Incorrect document number');
+            Assert.AreEqual('C5MIGRATE', GenJournalLine."Document No.", 'Incorrect document number');
             Assert.AreEqual(DMY2Date(10, 4, 2014), GenJournalLine."Document Date", 'incorrect doc date');
             Assert.AreEqual(DMY2Date(10, 4, 2014), GenJournalLine."Posting Date", 'incorrect posting date');
             Assert.AreEqual(DMY2Date(12, 5, 2014), GenJournalLine."Due Date", 'incorrect due date');

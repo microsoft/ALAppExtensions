@@ -53,8 +53,8 @@ page 1902 "C5 LedTrans List"
     }
 
     var
-        MigrationErrorText : Text[250];
         C5MigrDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
+        MigrationErrorText : Text[250];
 
     trigger OnAfterGetRecord();
     var

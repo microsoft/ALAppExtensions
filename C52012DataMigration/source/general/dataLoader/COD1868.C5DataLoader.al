@@ -6,39 +6,40 @@
 codeunit 1868 "C5 Data Loader"
 {
     var
+        NameValueBuffer: Record "Name/Value Buffer" temporary;
         HelperFunctions: Codeunit "C5 Helper Functions";
-        GLAccountProgressTxt: Label 'G/L accounts';
-        VendorProgressTxt: Label 'Vendor';
-        CustomerProgressTxt: Label 'Customer';
-        ItemProgressTxt: Label 'Item';
-        StagingTablesImportStartMsg: Label 'CSV file import to staging tables started.', Locked = true;
-        StagingTablesImportFinishMsg: Label 'CSV file import to staging tables finished; duration: %1', Locked = true;
+
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFillStagingTables', '', false, false)]
     procedure FillStagingTables()
     var
         DataMigrationStatus: Record "Data Migration Status";
         C5SchemaParameters: Record "C5 Schema Parameters";
-        C5HelperFunctions: Codeunit "C5 Helper Functions";
         C5MigrDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
+        AccountsLoaded: Boolean;
         VendorsLoaded: Boolean;
         CustomersLoaded: Boolean;
         DurationAsInt: BigInteger;
         StartTime: DateTime;
     begin
         StartTime := CurrentDateTime();
-        SendTraceTag('00001HZ', C5MigrDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Normal, StagingTablesImportStartMsg, DataClassification::SystemMetadata);
+        OnFillStagingTablesStarted();
 
-        ReadBlobAndExtractZipFile();
+        if not Codeunit.Run(Codeunit::"C5 Unzip", NameValueBuffer) then
+            StopPendingMigrationsAndSurfaceErrors();
 
         DataMigrationStatus.SetRange("Migration Type", C5MigrDashboardMgt.GetC5MigrationTypeTxt());
         DataMigrationStatus.SetRange(Status, DataMigrationStatus.Status::Pending);
         DataMigrationStatus.SetRange("Destination Table ID", Database::"G/L Account");
-        if DataMigrationStatus.FindFirst() then
+        if DataMigrationStatus.FindFirst() then begin
             LoadC5Accounts();
+            AccountsLoaded := true;
+        end;
 
         DataMigrationStatus.SetRange("Destination Table ID", Database::Vendor);
         if DataMigrationStatus.FindFirst() then begin
+            if not AccountsLoaded then
+                LoadC5Accounts();
             LoadCustomerVendorItemCommonTables();
             LoadCustomerVendorCommonTables();
             LoadVendorRelatedTables();
@@ -50,6 +51,8 @@ codeunit 1868 "C5 Data Loader"
 
         DataMigrationStatus.SetRange("Destination Table ID", Database::Customer);
         if DataMigrationStatus.FindFirst() then begin
+            if not AccountsLoaded then
+                LoadC5Accounts();
             if not VendorsLoaded then begin
                 LoadCustomerVendorCommonTables();
                 LoadCustomerVendorItemCommonTables();
@@ -64,6 +67,8 @@ codeunit 1868 "C5 Data Loader"
 
         DataMigrationStatus.SetRange("Destination Table ID", Database::Item);
         if DataMigrationStatus.FindFirst() then begin
+            if not AccountsLoaded then
+                LoadC5Accounts();
             if not (VendorsLoaded and CustomersLoaded) then
                 LoadCustomerVendorItemCommonTables();
 
@@ -76,21 +81,19 @@ codeunit 1868 "C5 Data Loader"
         end;
 
         DataMigrationStatus.SetRange("Destination Table ID", Database::"C5 LedTrans");
-        if DataMigrationStatus.FindFirst() then
+        if DataMigrationStatus.FindFirst() then begin
+            if not AccountsLoaded then
+                LoadC5Accounts();
             LoadC5LedTrans();
+        end;
 
-        C5HelperFunctions.CleanupFiles();
         // Delete the blob we no longer need it
         C5SchemaParameters.GetSingleInstance();
         Clear(C5SchemaParameters."Zip File Blob");
         C5SchemaParameters.Modify();
 
         DurationAsInt := CurrentDateTime() - StartTime;
-        SendTraceTag('00001I0',
-                     C5MigrDashboardMgt.GetC5MigrationTypeTxt(),
-                     Verbosity::Normal,
-                     StrSubstNo(StagingTablesImportFinishMsg, DurationAsInt),
-                     DataClassification::SystemMetadata);
+        OnFillStagingTablesFinished(DurationAsInt);
     end;
 
     local procedure LoadVendorRelatedTables()
@@ -582,123 +585,90 @@ codeunit 1868 "C5 Data Loader"
         C5SchemaParameters.GetSingleInstance();
         DataTypeManagement.GetRecordRef(RecordVariant, RecRef);
         RecRef.DeleteAll();
-        FileNameOut := C5SchemaParameters."Unziped Folder";
         case RecRef.Number() of
             Database::"C5 Centre":
-                FileNameOut += '/exp00182.kom';
+                FileNameOut := 'exp00182.kom';
             Database::"C5 CN8Code":
-                FileNameOut += '/exp00207.kom';
+                FileNameOut := 'exp00207.kom';
             Database::"C5 Country":
-                FileNameOut += '/exp00007.kom';
+                FileNameOut := 'exp00007.kom';
             Database::"C5 CustDiscGroup":
-                FileNameOut += '/exp00040.kom';
+                FileNameOut := 'exp00040.kom';
             Database::"C5 CustTable":
-                FileNameOut += '/exp00033.kom';
+                FileNameOut := 'exp00033.kom';
             Database::"C5 CustGroup":
-                FileNameOut += '/exp00034.kom';
+                FileNameOut := 'exp00034.kom';
             Database::"C5 CustTrans":
-                FileNameOut += '/exp00037.kom';
+                FileNameOut := 'exp00037.kom';
             Database::"C5 Delivery":
-                FileNameOut += '/exp00019.kom';
+                FileNameOut := 'exp00019.kom';
             Database::"C5 Department":
-                FileNameOut += '/exp00017.kom';
+                FileNameOut := 'exp00017.kom';
             Database::"C5 Employee":
-                FileNameOut += '/exp00011.kom';
+                FileNameOut := 'exp00011.kom';
             Database::"C5 InvenCustDisc":
-                FileNameOut += '/exp00061.kom';
+                FileNameOut := 'exp00061.kom';
             Database::"C5 InvenDiscGroup":
-                FileNameOut += '/exp00060.kom';
+                FileNameOut := 'exp00060.kom';
             Database::"C5 InvenItemGroup":
-                FileNameOut += '/exp00050.kom';
+                FileNameOut := 'exp00050.kom';
             Database::"C5 InvenTrans":
-                FileNameOut += '/exp00055.kom';
+                FileNameOut := 'exp00055.kom';
             Database::"C5 InvenLocation":
-                FileNameOut += '/exp00018.kom';
+                FileNameOut := 'exp00018.kom';
             Database::"C5 InvenPrice":
-                FileNameOut += '/exp00063.kom';
+                FileNameOut := 'exp00063.kom';
             Database::"C5 InvenPriceGroup":
-                FileNameOut += '/exp00064.kom';
+                FileNameOut := 'exp00064.kom';
             Database::"C5 InvenTable":
-                FileNameOut += '/exp00049.kom';
+                FileNameOut := 'exp00049.kom';
             Database::"C5 ItemTrackGroup":
-                FileNameOut += '/exp00181.kom';
+                FileNameOut := 'exp00181.kom';
             Database::"C5 LedTable":
-                FileNameOut += '/exp00025.kom';
+                FileNameOut := 'exp00025.kom';
             Database::"C5 LedTrans":
-                FileNameOut += '/exp00030.kom';
+                FileNameOut := 'exp00030.kom';
             Database::"C5 Payment":
-                FileNameOut += '/exp00021.kom';
+                FileNameOut := 'exp00021.kom';
             Database::"C5 ProcCode":
-                FileNameOut += '/exp00094.kom';
+                FileNameOut := 'exp00094.kom';
             Database::"C5 Purpose":
-                FileNameOut += '/exp00183.kom';
+                FileNameOut := 'exp00183.kom';
             Database::"C5 UnitCode":
-                FileNameOut += '/exp00020.kom';
+                FileNameOut := 'exp00020.kom';
             Database::"C5 VatGroup":
-                FileNameOut += '/exp00201.kom';
+                FileNameOut := 'exp00201.kom';
             Database::"C5 VendDiscGroup":
-                FileNameOut += '/exp00048.kom';
+                FileNameOut := 'exp00048.kom';
             Database::"C5 VendTable":
-                FileNameOut += '/exp00041.kom';
+                FileNameOut := 'exp00041.kom';
             Database::"C5 VendGroup":
-                FileNameOut += '/exp00042.kom';
+                FileNameOut := 'exp00042.kom';
             Database::"C5 VendTrans":
-                FileNameOut += '/exp00045.kom';
+                FileNameOut := 'exp00045.kom';
             Database::"C5 ExchRate":
-                FileNameOut += '/exp00016.kom';
+                FileNameOut := 'exp00016.kom';
             Database::"C5 InvenBOM":
-                FileNameOut += '/exp00059.kom';
+                FileNameOut := 'exp00059.kom';
             Database::"C5 CustContact":
-                FileNameOut += '/exp00177.kom';
+                FileNameOut := 'exp00177.kom';
             Database::"C5 VendContact":
-                FileNameOut += '/exp00178.kom';
+                FileNameOut := 'exp00178.kom';
         end;
     end;
 
     local procedure OpenRecordFileAndProcessSubsts(RecordVariant: Variant; var ProcessedStream: InStream; var TempBlob: Record TempBlob temporary): Boolean
     var
-        FileManagement: Codeunit "File Management";
-        CsvFile: File;
+        HelperFunction: Codeunit "C5 Helper Functions";
         Filename: Text;
-        CsvInStream: InStream;
+        FileContentStream: InStream;
     begin
         GetFileNameForRecord(RecordVariant, Filename);
-        if not FileManagement.ServerFileExists(Filename) then
+        if not HelperFunction.GetFileContentAsStream(Filename, NameValueBuffer, FileContentStream) then
             exit(false);
 
-        CsvFile.Open(Filename);
-        CsvFile.CreateInStream(CsvInStream);
-        HelperFunctions.ProcessStreamForSubstitutions(TempBlob, CsvInStream, ProcessedStream);
-        CsvFile.Close();
+        HelperFunctions.ProcessStreamForSubstitutions(TempBlob, FileContentStream, ProcessedStream);
         exit(true);
-    end;
-
-    local procedure ReadBlobAndExtractZipFile()
-    var
-        C5SchemaParameters: Record "C5 Schema Parameters";
-        NameValueBuffer: Record "Name/Value Buffer" temporary;
-        FileManagement: Codeunit "File Management";
-        BlobInStream: InStream;
-        ZipFileName: Text;
-        ZipFileStream: OutStream;
-        ZipFile: File;
-    begin
-        C5SchemaParameters.GetSingleInstance();
-        C5SchemaParameters.CalcFields("Zip File Blob");
-        C5SchemaParameters."Zip File Blob".CreateInStream(BlobInStream);
-        ZipFileName := FileManagement.ServerTempFileName('zip');
-        ZipFile.Create(ZipFileName);
-        ZipFile.CreateOutStream(ZipFileStream);
-
-        if not CopyStream(ZipFileStream, BlobInStream) then
-            StopPendingMigrationsAndSurfaceErrors();
-
-        ZipFile.Close();
-        C5SchemaParameters."Zip File" := CopyStr(ZipFileName, 1, 250);
-        C5SchemaParameters.Modify();
-        Commit();
-        if not Codeunit.Run(Codeunit::"C5 Unzip", NameValueBuffer) then
-            StopPendingMigrationsAndSurfaceErrors();
     end;
 
     local procedure StopPendingMigrationsAndSurfaceErrors()
@@ -719,4 +689,16 @@ codeunit 1868 "C5 Data Loader"
         Commit();
         Error('');
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFillStagingTablesStarted()
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFillStagingTablesFinished(DurationAsInt: Integer)
+    begin
+    end;
+
+
 }

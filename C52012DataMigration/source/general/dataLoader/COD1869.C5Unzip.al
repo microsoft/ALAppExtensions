@@ -8,48 +8,43 @@ codeunit 1869 "C5 Unzip"
     TableNo = "Name/Value Buffer";
 
     var
-        SomethingWentWrongErr: Label 'Oops, something went wrong.\Please try again later.';  
-        EmptyZipFileErr: Label 'Oops, it seems the zip file does not contain any files.';
-        ZipFileMissingErrorTxt: Label 'There was an error on uploading the zip file.';
+        SomethingWentWrongErr: Label 'Oops, something went wrong.\Please try again later.';
         ZipExtractionErrorTxt: Label 'There was an error on extracting the zip file.';
-        UnzipFileErr: Label 'There was an error on uziping the file. Please try again and if this error persists try creating the zip file again.';
 
     trigger OnRun();
     var
         C5SchemaParameters: Record "C5 Schema Parameters";
-        FileManagement: Codeunit "File Management";
-        UnzipLocation: Text;
+        ZipFileInStream: InStream;
     begin
         C5SchemaParameters.GetSingleInstance();
-        if not FileManagement.ServerFileExists(C5SchemaParameters."Zip File") then begin
-            OnZipFileMissing();
+
+        if not C5SchemaParameters."Zip File Blob".HasValue() then begin
+            OnZipFileBlobMissing();
             Error(SomethingWentWrongErr);
         end;
 
-        UnzipLocation := FileManagement.ServerCreateTempSubDirectory();
-        if not FileManagement.ServerDirectoryExists(UnzipLocation) then begin
-            OnExtractFolderMissing();
-            Error(SomethingWentWrongErr);
-        end;
-
-        if not FileManagement.ExtractZipFile(C5SchemaParameters."Zip File", UnzipLocation) then begin
+        C5SchemaParameters.CalcFields("Zip File Blob");
+        C5SchemaParameters."Zip File Blob".CreateInStream(ZipFileInStream);
+        if not CreateNameValueBuffer(ZipFileInStream, Rec) then begin
             OnUnzipFileError();
-            Error(UnzipFileErr);
-        end;
-
-        FileManagement.GetServerDirectoryFilesListInclSubDirs(Rec, UnzipLocation);
-        if Rec.FindFirst() then begin
-            C5SchemaParameters."Unziped Folder" := CopyStr(FileManagement.GetDirectoryName(Rec.Name), 1, 250);
-            C5SchemaParameters.Modify();
-        end else begin
-            OnEmptyZipFile();
-            Error(EmptyZipFileErr);
+            Error(ZipExtractionErrorTxt);
         end;
     end;
 
-    [IntegrationEvent(false, false)]
-    procedure OnZipFileMissing()
+    /*Create NameValueBuffer where Name is a FileName and Value is the content of it saved as Stream */
+    local procedure CreateNameValueBuffer(var ZipFileInStream: InStream; var NameValueBufferOut: Record "Name/Value Buffer"): Boolean
+    var
+        StreamManagement: Codeunit "Stream Management";
     begin
+        if not StreamManagement.CreateNameValueBufferFromZipFileStream(ZipFileInStream, NameValueBufferOut) then
+            exit(false);
+        exit(true);
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnZipFileBlobMissing()
+    begin
+
     end;
 
     [IntegrationEvent(false, false)]
@@ -61,42 +56,4 @@ codeunit 1869 "C5 Unzip"
     local procedure OnExtractFolderMissing()
     begin
     end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnEmptyZipFile()
-    begin
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"C5 Unzip", 'OnEmptyZipFile', '', false, false)] 
-    local procedure OnEmptyZipFileSubscriber()
-    var
-        C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
-    begin
-        SendTraceTag('00001DF', C5MigrationDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Error, EmptyZipFileErr, DataClassification::SystemMetadata);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"C5 Unzip", 'OnUnzipFileError', '', false, false)] 
-    local procedure OnUnzipFileErrorSubscriber()
-    var
-        C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
-    begin
-        SendTraceTag('00001IL', C5MigrationDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Error, GetLastErrorText(), DataClassification::SystemMetadata);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"C5 Unzip", 'OnZipFileMissing', '', false, false)] 
-    local procedure OnZipFileMissingSubscriber()
-    var
-        C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
-    begin
-        SendTraceTag('00001DD', C5MigrationDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Error, ZipFileMissingErrorTxt, DataClassification::SystemMetadata);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"C5 Unzip", 'OnExtractFolderMissing', '', false, false)] 
-    local procedure OnExtractFolderMissingSubscriber()
-    var
-        C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
-    begin
-        SendTraceTag('00001DE', C5MigrationDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Error, ZipExtractionErrorTxt, DataClassification::SystemMetadata);
-    end;
-
 }

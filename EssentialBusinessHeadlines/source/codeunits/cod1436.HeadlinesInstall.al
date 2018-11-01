@@ -1,13 +1,19 @@
 ﻿// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved. 
-// Licensed under the MIT License. See License.txt in the project root for license information. 
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
 codeunit 1436 "Headlines Install"
 {
     Subtype = install;
 
-    trigger OnInstallAppPerCompany();
+    trigger OnInstallAppPerCompany()
+    begin
+        CompanyInitialize();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
+    local procedure CompanyInitialize()
     begin
         ApplyEvaluationClassificationsForPrivacy();
     end;
@@ -22,8 +28,9 @@ codeunit 1436 "Headlines Install"
             exit;
 
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Essential Business Headline");
-
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Ess. Business Headline Per Usr");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Headline Details");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Headline Details Per User");
     end;
 
 }

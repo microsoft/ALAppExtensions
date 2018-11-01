@@ -1,6 +1,6 @@
 ﻿// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved. 
-// Licensed under the MIT License. See License.txt in the project root for license information. 
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
 codeunit 139600 "Test Essential Bus. Headlines"
@@ -10,7 +10,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
     EventSubscriberInstance = Manual;
 
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         SalesHeader: Record "Sales Header";
         Assert: Codeunit Assert;
         TypeHelper: Codeunit "Type Helper";
@@ -23,7 +23,6 @@ codeunit 139600 "Test Essential Bus. Headlines"
         HeadlineRcRelationshipMgtPage: TestPage "Headline RC Relationship Mgt.";
         HeadlineRcOrderProcessorPage: TestPage "Headline RC Order Processor";
         HeadlineRcAccountantPage: TestPage "Headline RC Accountant";
-        LanguageIdToSelect: Integer;
         IsInitialized: Boolean;
 
     [Test]
@@ -347,7 +346,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
 
         // [WHEN] We don't change the date
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::BusiestResource);
-        // [THEN] Nothing happens       
+        // [THEN] Nothing happens
         Assert.IsFalse(EssentialBusinessHeadline.IsEmpty(), 'expected the headlines not to be deleted when not changing workdate nor language');
 
         // [WHEN] We change the date to the same one
@@ -436,7 +435,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         Resource: Record Resource;
         SalesLine: Record "Sales Line";
         CustLedgerEntry: Record "Cust. Ledger Entry";
-        EssentialBusinessHeadlines: Record "Essential Business Headline";
+        EssentialBusinessHeadlines: Record "Ess. Business Headline Per Usr";
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
     begin
         EssentialBusinessHeadlines.DeleteAll();
@@ -504,23 +503,23 @@ codeunit 139600 "Test Essential Bus. Headlines"
         UserPersonalization: Record "User Personalization";
     begin
         UserPersonalization.Get(UserSecurityId());
-        UserPersonalization.Company := CompanyName();
+        UserPersonalization.Company := CopyStr(CompanyName(), 1, MaxStrLen(UserPersonalization.Company));
         UserPersonalization.Modify(true);
     end;
 
     local procedure GetVisibility(HeadlineName: Option): Boolean
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
-        if EssentialBusinessHeadline.Get(HeadlineName) then
+        if EssentialBusinessHeadline.Get(HeadlineName, UserSecurityId()) then
             exit(EssentialBusinessHeadline."Headline Visible");
     end;
 
     local procedure GetHeadlineText(HeadlineName: Option): Text[250]
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
-        if EssentialBusinessHeadline.Get(HeadlineName) then
+        if EssentialBusinessHeadline.Get(HeadlineName, UserSecurityId()) then
             exit(EssentialBusinessHeadline."Headline Text");
     end;
 

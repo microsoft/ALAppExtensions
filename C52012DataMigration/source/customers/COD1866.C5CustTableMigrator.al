@@ -112,7 +112,7 @@ codeunit 1866 "C5 CustTable Migrator"
 
                 Sender.CreateGeneralJournalLine(
                     GetHardCodedBatchName(),
-                    CopyStr(FORMAT(C5CustTrans.Voucher), 1, 20),
+                    'C5MIGRATE',
                     CopyStr(STRSUBSTNO('%1 %2', C5CustTrans.InvoiceNumber, C5CustTrans.Txt), 1, 50),
                     C5CustTrans.Date_,
                     C5CustTrans.DueDate,
@@ -137,8 +137,8 @@ codeunit 1866 "C5 CustTable Migrator"
 
     local procedure MigrateCustomerDetails(C5CustTable: Record "C5 CustTable"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
     var
-        C5HelperFunctions: Codeunit "C5 Helper Functions";
         C5CustContact: Record "C5 CustContact";
+        C5HelperFunctions: Codeunit "C5 Helper Functions";
         PostCode: Code[20];
         City: Text[30];
         CountryRegionCode: Code[10];

@@ -9,13 +9,13 @@ codeunit 148011 "C5 Bulk-Fix Errors Test"
     TestPermissions = Disabled;
 
     var
+        C5CustTableError1: Record "C5 CustTable";
+        C5CustTableError2: Record "C5 CustTable";
         Assert: Codeunit Assert;
         C5MigrationTypeTxt: Label 'C5 2012', Locked = true;
         Error1Err: Label 'Error 1', Locked = true;
         Error2Err: Label 'Error 2', Locked = true;
         MigrateEntitiesAgainQst: Label 'Do you want to migrate the updated entities?\\If you do, remember to refresh the %1 page so you can follow the progress.', Comment = '%1 = caption of page Data Migration overview';
-        C5CustTableError1: Record "C5 CustTable";
-        C5CustTableError2: Record "C5 CustTable";
 
     trigger OnRun();
     begin

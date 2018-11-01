@@ -166,7 +166,7 @@ codeunit 1864 "C5 VendTable Migrator"
 
                 Sender.CreateGeneralJournalLine(
                     GetHardCodedBatchName(),
-                    CopyStr(Format(C5VendTrans.Voucher), 1, 20),
+                    'C5MIGRATE',
                     CopyStr(STRSUBSTNO('%1 %2', C5VendTrans.InvoiceNumber, C5VendTrans.Txt), 1, 50),
                     C5VendTrans.Date_,
                     C5VendTrans.DueDate,

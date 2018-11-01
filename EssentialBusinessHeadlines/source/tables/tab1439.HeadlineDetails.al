@@ -1,11 +1,14 @@
 ﻿// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved. 
-// Licensed under the MIT License. See License.txt in the project root for license information. 
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
 table 1439 "Headline Details"
 {
     DataClassification = CustomerContent;
+
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Should be per user';
 
     fields
     {
@@ -33,6 +36,12 @@ table 1439 "Headline Details"
 
         field(5; "Amount (LCY)"; Decimal)
         {
+            DataClassification = CustomerContent;
+        }
+
+        field(6; "Type"; Option)
+        {
+            OptionMembers = Item,Resource,Customer;
             DataClassification = CustomerContent;
         }
     }

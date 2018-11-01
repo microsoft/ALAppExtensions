@@ -20,7 +20,7 @@ codeunit 148009 "C5 Custom Schema Test"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestMaxCustomFields()
+    procedure TestImportSuccessfully()
     var
         C5Centre: Record "C5 Centre";
         TempBlob: Record TempBlob temporary;
@@ -28,44 +28,13 @@ codeunit 148009 "C5 Custom Schema Test"
         OutStream: OutStream;
         InStream: InStream;
     begin
-        // [SCENARIO] Maximum amount of custom fields is present in exported CSV file.
+        // [SCENARIO] CSV data is in a valid format.
         // [GIVEN] C5 Data Migration extension is installed
         Initialize();
         TempBlob.Blob.CreateOutStream(OutStream);
-        OutStream.WriteText('"1f1","1f2","cf1","cf2","cf3","cf4","cf5","cf6","cf7","cf8","cf9","cf10","extra40","extra39","extra38","extra37","extra36","extra35","extra34","extra33","extra32","extra31","extra30","extra29","extra28","extra27","extra26","extra25","extra24","extra23","extra22","extra21","extra20","extra19","extra18","extra17","extra16","extra15","extra14","extra13","extra12","extra11","extra10","extra9","extra8","extra7","extra6","extra5","extra4","extra3","extra2","extra1",1,"1991/01/01"' + CRLF);
-        OutStream.WriteText('"2f1","2f2","cf1","cf2","cf3","cf4","cf5","cf6","cf7","cf8","cf9","cf10","extra40","extra39","extra38","extra37","extra36","extra35","extra34","extra33","extra32","extra31","extra30","extra29","extra28","extra27","extra26","extra25","extra24","extra23","extra22","extra21","extra20","extra19","extra18","extra17","extra16","extra15","extra14","extra13","extra12","extra11","extra10","extra9","extra8","extra7","extra6","extra5","extra4","extra3","extra2","extra1",2,"1992/02/02"' + CRLF);
-        OutStream.WriteText('"3f1","3f2","cf1","cf2","cf3","cf4","cf5","cf6","cf7","cf8","cf9","cf10","extra40","extra39","extra38","extra37","extra36","extra35","extra34","extra33","extra32","extra31","extra30","extra29","extra28","extra27","extra26","extra25","extra24","extra23","extra22","extra21","extra20","extra19","extra18","extra17","extra16","extra15","extra14","extra13","extra12","extra11","extra10","extra9","extra8","extra7","extra6","extra5","extra4","extra3","extra2","extra1",3,"1993/03/03"' + CRLF);
-        TempBlob.Blob.CreateInStream(InStream);
-
-        // [WHEN] Importing data from CSV using XML Port
-        CentreXmlPort.SetSource(InStream);
-        CentreXmlPort.Import();
-
-        // [THEN] All data is imported properly; custom fields ignored.
-        Assert.RecordCount(C5Centre, 3);
-        C5Centre.FindFirst();
-        Assert.AreEqual(1, C5Centre.RecId, 'Wrong data');
-        Assert.AreEqual(UpperCase('1f1'), C5Centre.Centre, 'Wrong data'); // Uppercase since it's Code field.
-        Assert.AreEqual('1f2', C5Centre.Name, 'Wrong data');
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestNoCustomFields()
-    var
-        C5Centre: Record "C5 Centre";
-        TempBlob: Record TempBlob temporary;
-        CentreXmlPort: XmlPort "C5 Centre";
-        OutStream: OutStream;
-        InStream: InStream;
-    begin
-        // [SCENARIO] No custom fields are present.
-        // [GIVEN] C5 Data Migration extension is installed
-        Initialize();
-        TempBlob.Blob.CreateOutStream(OutStream);
-        OutStream.WriteText('"1f1","1f2",1,"1991/01/01"' + CRLF);
-        OutStream.WriteText('"2f1","2f2",2,"1992/02/02"' + CRLF);
-        OutStream.WriteText('"3f1","3f2",3,"1993/03/03"' + CRLF);
+        OutStream.WriteText('"1f1","1f2","1991/01/01"' + CRLF);
+        OutStream.WriteText('"2f1","2f2","1992/02/02"' + CRLF);
+        OutStream.WriteText('"3f1","3f2","1993/03/03"' + CRLF);
         TempBlob.Blob.CreateInStream(InStream);
 
         // [WHEN] Importing data from CSV using XML Port
@@ -82,7 +51,7 @@ codeunit 148009 "C5 Custom Schema Test"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestMoreThanSupportedCustomFields()
+    procedure TestDataContainsExtraFields()
     var
         C5Centre: Record "C5 Centre";
         TempBlob: Record TempBlob temporary;
@@ -90,7 +59,7 @@ codeunit 148009 "C5 Custom Schema Test"
         OutStream: OutStream;
         InStream: InStream;
     begin
-        // [SCENARIO] More than supported custom fields are present.
+        // [SCENARIO] CSV data contains extra fields.
         // [GIVEN] C5 Data Migration extension is installed
         Initialize();
         TempBlob.Blob.CreateOutStream(OutStream);
@@ -101,45 +70,22 @@ codeunit 148009 "C5 Custom Schema Test"
 
         // [WHEN] Importing data from CSV using XML Port
         CentreXmlPort.SetSource(InStream);
-        asserterror asserterror CentreXmlPort.Import();
-        Assert.KnownFailure('An error was expected inside an ASSERTERROR statement.', 278515);
+        CentreXmlPort.Import();
 
-        // [THEN] An error is thrown, no data is imported
-        Assert.ExpectedError('Sorry, the data from C5 contains more custom fields than we support. This might be because the data from C5 uses a format that we do not support.');
-        Assert.RecordIsEmpty(C5Centre);
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestLessThanSupportedCustomFields()
-    var
-        C5Centre: Record "C5 Centre";
-        TempBlob: Record TempBlob temporary;
-        CentreXmlPort: XmlPort "C5 Centre";
-        OutStream: OutStream;
-        InStream: InStream;
-    begin
-        // [SCENARIO] Less than supported fields are present.
-        // [GIVEN] C5 Data Migration extension is installed
-        Initialize();
-        TempBlob.Blob.CreateOutStream(OutStream);
-        OutStream.WriteText('"1f1","1f2"' + CRLF);
-        OutStream.WriteText('"2f1","2f2"' + CRLF);
-        OutStream.WriteText('"3f1","3f2"' + CRLF);
-        TempBlob.Blob.CreateInStream(InStream);
-
-        // [WHEN] Importing data from CSV using XML Port
-        CentreXmlPort.SetSource(InStream);
-        asserterror asserterror CentreXmlPort.Import();
-        Assert.KnownFailure('An error was expected inside an ASSERTERROR statement.', 278515);
-
-        // [THEN] An error is thrown, no data is imported
-        Assert.ExpectedError('Sorry, the data from C5 does not contain enough fields. This might be because the data from C5 uses a format that we do not support.');
-        Assert.RecordIsEmpty(C5Centre);
+        // [THEN] All data is imported properly. Extra fields are ignored
+        Assert.RecordCount(C5Centre, 3);
+        C5Centre.FindFirst();
+        Assert.AreEqual(1, C5Centre.RecId, 'Wrong data');
+        Assert.AreEqual(UpperCase('1f1'), C5Centre.Centre, 'Wrong data'); // Uppercase since it's Code field.
+        Assert.AreEqual('1f2', C5Centre.Name, 'Wrong data');
     end;
 
     local procedure Initialize()
+    var
+        C5Center: Record "C5 Centre";
     begin
+        C5Center.DeleteAll();
+
         if IsInitialized then
             exit;
 

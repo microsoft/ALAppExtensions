@@ -1,11 +1,9 @@
 {
-  "id": "3d5b2137-eeeb-4014-8489-41d37f8fd4c3",
   "name": "C5 2012 Data Migration",
   "publisher": "Microsoft",
   "brief": "Migrates Data from Microsoft Dynamics C5 2012.",
   "description": "Migrates Data from Microsoft Dynamics C5 2012.",
   "version": "1.0.0.0",
-  "compatibilityId": "1.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
   "help": "https://go.microsoft.com/fwlink/?linkid=859310",

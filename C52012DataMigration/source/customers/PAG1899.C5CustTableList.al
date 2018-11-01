@@ -99,8 +99,8 @@ page 1899 "C5 CustTable List"
     }
 
     var
-        MigrationErrorText: Text[250];
         C5MigrDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
+        MigrationErrorText: Text[250];
 
     trigger OnAfterGetRecord();
     var

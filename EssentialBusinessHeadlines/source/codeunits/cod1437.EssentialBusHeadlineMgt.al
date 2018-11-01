@@ -1,6 +1,6 @@
 ﻿// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved. 
-// Licensed under the MIT License. See License.txt in the project root for license information. 
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
 codeunit 1437 "Essential Bus. Headline Mgt."
@@ -45,7 +45,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
     procedure HandleMostPopularItemHeadline()
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         Item: Record Item;
         TimePeriods: List of [Integer];
         TimePeriodDays: Integer;
@@ -71,10 +71,11 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline.Modify();
     end;
 
-    local procedure TryHandleMostPopularItem(var EssentialBusinessHeadline: Record "Essential Business Headline"; DaysSearch: Integer): Boolean
+    local procedure TryHandleMostPopularItem(var EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr"; DaysSearch: Integer): Boolean
     var
         Item: Record Item;
         SalesLine: Record "Sales Line";
+        HeadlineDetails: Record "Headline Details Per User";
         BestSoldItemQuery: Query "Best Sold Item Headline";
         BestQty: Decimal;
     begin
@@ -96,6 +97,12 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         then
             exit;
 
+        HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Item);
+        HeadlineDetails.SetRange("User Id", UserSecurityId());
+        HeadlineDetails.DeleteAll();
+
+        InsertHeadlineDetails(BestSoldItemQuery.ProductNo, HeadlineDetails.Type::Item, Item.Description, Item."Base Unit of Measure", BestSoldItemQuery.SumQuantity, 0);
+
         // if there is only one item sold in the time period, do not set to visible
         if BestSoldItemQuery.Read() then
             if BestSoldItemQuery.SumQuantity < BestQty then begin // if there is another resource that is also the best, do not set to visible
@@ -103,6 +110,12 @@ codeunit 1437 "Essential Bus. Headline Mgt."
                 EssentialBusinessHeadline.Validate("Headline Computation Date", CurrentDateTime());
                 EssentialBusinessHeadline.Validate("Headline Computation WorkDate", WorkDate());
                 EssentialBusinessHeadline.Validate("Headline Computation Period", DaysSearch);
+
+                repeat
+                    Item.get(BestSoldItemQuery.ProductNo);
+                    InsertHeadlineDetails(BestSoldItemQuery.ProductNo, HeadlineDetails.Type::Item, Item.Description, Item."Base Unit of Measure", BestSoldItemQuery.SumQuantity, 0);
+                until not BestSoldItemQuery.Read();
+
                 exit(true);
             end;
     end;
@@ -119,18 +132,18 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
     procedure OnDrillDownMostPopularItem()
     var
-        EssentialBusinessHeadlines: Record "Essential Business Headline";
+        EssentialBusinessHeadlines: Record "Ess. Business Headline Per Usr";
         SalesLine: Record "Sales Line";
         HeadlineDetails: Page "Headline Details";
     begin
         EssentialBusinessHeadlines.GetOrCreateHeadline(EssentialBusinessHeadlines."Headline Name"::MostPopularItem);
-        HeadlineDetails.InitProduct(SalesLine.Type::Item, EssentialBusinessHeadlines."Headline Computation Period");
+        HeadlineDetails.InitProduct(SalesLine.Type::Item);
         HeadlineDetails.Run();
     end;
 
     procedure HandleBusiestResourceHeadline()
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         Resource: Record Resource;
         TimePeriods: List of [Integer];
         TimePeriodDays: Integer;
@@ -155,10 +168,11 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline.Modify();
     end;
 
-    local procedure TryHandleBusiestResource(var EssentialBusinessHeadline: Record "Essential Business Headline"; DaysSearch: Integer): Boolean
+    local procedure TryHandleBusiestResource(var EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr"; DaysSearch: Integer): Boolean
     var
         Resource: Record Resource;
         SalesLine: Record "Sales Line";
+        HeadlineDetails: Record "Headline Details Per User";
         BusiestResource: Query "Best Sold Item Headline";
         BestQty: Decimal;
     begin
@@ -179,6 +193,12 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         then
             exit;
 
+        HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Resource);
+        HeadlineDetails.SetRange("User Id", UserSecurityId());
+        HeadlineDetails.DeleteAll();
+
+        InsertHeadlineDetails(BusiestResource.ProductNo, HeadlineDetails.Type::Resource, Resource.Name, Resource."Base Unit of Measure", BusiestResource.SumQuantity, 0);
+
         // if there is only one active resource in the time period, do not set to visible
         if BusiestResource.Read() then
             if BusiestResource.SumQuantity < BestQty then begin // if there is another resource that is also the best, do not set to visible
@@ -186,8 +206,29 @@ codeunit 1437 "Essential Bus. Headline Mgt."
                 EssentialBusinessHeadline.Validate("Headline Computation Date", CurrentDateTime());
                 EssentialBusinessHeadline.Validate("Headline Computation WorkDate", WorkDate());
                 EssentialBusinessHeadline.Validate("Headline Computation Period", DaysSearch);
+
+                repeat
+                    Resource.Get(BusiestResource.ProductNo);
+                    InsertHeadlineDetails(BusiestResource.ProductNo, HeadlineDetails.Type::Resource, Resource.Name, Resource."Base Unit of Measure", BusiestResource.SumQuantity, 0);
+                until not BusiestResource.Read();
+
                 exit(true);
             end;
+    end;
+
+    local procedure InsertHeadlineDetails(No: Code[20]; Type: Option; Name: Text[50]; UnitOfMeasure: Code[10]; Quantity: Decimal; AmountLcy: Decimal)
+    var
+        HeadlineDetails: Record "Headline Details Per User";
+    begin
+        HeadlineDetails.Init();
+        HeadlineDetails.Validate("No.", No);
+        HeadlineDetails.Validate(Type, Type);
+        HeadlineDetails.Validate(Name, Name);
+        HeadlineDetails."Unit of Measure" := UnitOfMeasure;
+        HeadlineDetails.Validate(Quantity, Quantity);
+        HeadlineDetails.Validate("Amount (LCY)", AmountLcy);
+        HeadlineDetails.Validate("User Id", UserSecurityId());
+        HeadlineDetails.Insert();
     end;
 
     procedure GetBusiestResoucePayload(ResourceName: Text[50]; TextQuantity: Text): Text
@@ -202,18 +243,18 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
     procedure OnDrillDownBusiestResource()
     var
-        EssentialBusinessHeadlines: Record "Essential Business Headline";
+        EssentialBusinessHeadlines: Record "Ess. Business Headline Per Usr";
         SalesLine: Record "Sales Line";
         HeadlineDetails: Page "Headline Details";
     begin
         EssentialBusinessHeadlines.GetOrCreateHeadline(EssentialBusinessHeadlines."Headline Name"::BusiestResource);
-        HeadlineDetails.InitProduct(SalesLine.Type::Resource, EssentialBusinessHeadlines."Headline Computation Period");
+        HeadlineDetails.InitProduct(SalesLine.Type::Resource);
         HeadlineDetails.Run();
     end;
 
     procedure HandleLargestOrderHeadline()
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         TimePeriods: List of [Integer];
         TimePeriodDays: Integer;
     begin
@@ -234,7 +275,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline.Modify();
     end;
 
-    local procedure TryHandleLargestOrder(var EssentialBusinessHeadline: Record "Essential Business Headline"; DaysSearch: Integer): Boolean
+    local procedure TryHandleLargestOrder(var EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr"; DaysSearch: Integer): Boolean
     var
         SalesHeader: Record "Sales Header";
         CurrentKeyOk: Boolean;
@@ -266,7 +307,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
     procedure OnDrillDownLargestOrder()
     var
         SalesHeader: Record "Sales Header";
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::LargestOrder);
         SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Order);
@@ -282,7 +323,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
     procedure HandleLargestSaleHeadline()
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         TimePeriods: List of [Integer];
         TimePeriodDays: Integer;
     begin
@@ -303,7 +344,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline.Modify();
     end;
 
-    local procedure TryHandleLargestSale(var EssentialBusinessHeadline: Record "Essential Business Headline"; DaysSearch: Integer): Boolean
+    local procedure TryHandleLargestSale(var EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr"; DaysSearch: Integer): Boolean
     var
         CustomerLedgerEntry: Record "Cust. Ledger Entry";
         CurrentKeyOk: Boolean;
@@ -338,7 +379,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
     procedure OnDrillDownLargestSale()
     var
         CustomerLedgerEntry: Record "Cust. Ledger Entry";
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::LargestSale);
         CustomerLedgerEntry.SetFilter("Posting Date", '>=%1&<=%2',
@@ -356,7 +397,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
     procedure HandleSalesIncreaseHeadline()
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         TimePeriods: List of [Integer];
         TimePeriodDays: Integer;
     begin
@@ -376,7 +417,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline.Modify();
     end;
 
-    local procedure TryHandleSalesIncreaseHeadline(var EssentialBusinessHeadline: Record "Essential Business Headline"; DaysSearch: Integer): Boolean
+    local procedure TryHandleSalesIncreaseHeadline(var EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr"; DaysSearch: Integer): Boolean
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesThisMonth: Integer;
@@ -424,7 +465,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
     procedure OnDrillDownSalesIncrease()
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         DaysSearch: Integer;
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::SalesIncrease);
@@ -445,7 +486,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
     procedure HandleTopCustomer()
     var
-        EssentialBusinessHeadline: Record "Essential Business Headline";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         TimePeriods: List of [Integer];
         TimePeriodDays: Integer;
     begin
@@ -466,9 +507,10 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline.Modify();
     end;
 
-    local procedure TryHandleTopCustomer(var EssentialBusinessHeadline: Record "Essential Business Headline"; DaysSearch: Integer): Boolean
+    local procedure TryHandleTopCustomer(var EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr"; DaysSearch: Integer): Boolean
     var
         Customer: Record Customer;
+        HeadlineDetails: Record "Headline Details Per User";
         TopCustomerHeadlineQuery: Query "Top Customer Headline";
     begin
         TopCustomerHeadlineQuery.SetFilter(PostDate, '>=%1&<=%2',
@@ -489,6 +531,12 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         then
             exit;
 
+
+        HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Customer);
+        HeadlineDetails.SetRange("User Id", UserSecurityId());
+        HeadlineDetails.DeleteAll();
+        InsertHeadlineDetails(TopCustomerHeadlineQuery.No, HeadlineDetails.Type::Customer, TopCustomerHeadlineQuery.CustomerName, '', 0, TopCustomerHeadlineQuery.SumAmountLcy);
+
         // if there is only one customer last month, do not set to visible
         if TopCustomerHeadlineQuery.Read() then begin
             if TopCustomerHeadlineQuery.SumAmountLcy <= 0 then
@@ -497,6 +545,11 @@ codeunit 1437 "Essential Bus. Headline Mgt."
             EssentialBusinessHeadline.Validate("Headline Computation Date", CurrentDateTime());
             EssentialBusinessHeadline.Validate("Headline Computation WorkDate", WorkDate());
             EssentialBusinessHeadline.Validate("Headline Computation Period", DaysSearch);
+
+            repeat
+                InsertHeadlineDetails(TopCustomerHeadlineQuery.No, HeadlineDetails.Type::Customer, TopCustomerHeadlineQuery.CustomerName, '', 0, TopCustomerHeadlineQuery.SumAmountLcy);
+            until not TopCustomerHeadlineQuery.Read();
+
             exit(true);
         end;
     end;
@@ -513,7 +566,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
     procedure OnDrillDownTopCustomer()
     var
-        EssentialBusinessHeadlines: Record "Essential Business Headline";
+        EssentialBusinessHeadlines: Record "Ess. Business Headline Per Usr";
         HeadlineDetails: Page "Headline Details";
     begin
         EssentialBusinessHeadlines.GetOrCreateHeadline(EssentialBusinessHeadlines."Headline Name"::TopCustomer);

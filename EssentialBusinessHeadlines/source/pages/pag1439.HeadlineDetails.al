@@ -1,13 +1,12 @@
 ﻿// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved. 
-// Licensed under the MIT License. See License.txt in the project root for license information. 
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
 page 1439 "Headline Details"
 {
     PageType = List;
-    SourceTable = "Headline Details";
-    SourceTableTemporary = true;
+    SourceTable = "Headline Details Per User";
     InsertAllowed = false;
     ModifyAllowed = false;
     DeleteAllowed = false;
@@ -84,70 +83,37 @@ page 1439 "Headline Details"
     local procedure PopulatePageDataProduct()
     var
         SalesLine: Record "Sales Line";
-        Item: Record Item;
-        Resource: Record Resource;
-        BestSoldItemQuery: Query "Best Sold Item Headline";
     begin
-        BestSoldItemQuery.SetFilter(PostDate, '>=%1&<=%2', CalcDate(StrSubstNo('<-%1D>', DaysSearch), WorkDate()), WorkDate());
-        BestSoldItemQuery.SetRange(ProductType, ProductType);
-        BestSoldItemQuery.Open();
-        while BestSoldItemQuery.Read() do begin
-            Init();
-            case BestSoldItemQuery.ProductType of
-                SalesLine.Type::Item:
-                    begin
-                        Item.get(BestSoldItemQuery.ProductNo);
-                        Validate("Unit of Measure", Item."Base Unit of Measure");
-                        Validate(Name, Item.Description);
-                    end;
+        case ProductType of
+            SalesLine.Type::Item:
+                SetRange(Type, Type::Item);
 
-                SalesLine.Type::Resource:
-                    begin
-                        Resource.Get(BestSoldItemQuery.ProductNo);
-                        "Unit of Measure" := Resource."Base Unit of Measure";
-                        Validate(Name, Resource.Name);
-                    end;
-            end;
-
-            Validate("No.", BestSoldItemQuery.ProductNo);
-            Validate(Quantity, BestSoldItemQuery.SumQuantity);
-            Insert();
+            SalesLine.Type::Resource:
+                SetRange(Type, Type::Resource);
         end;
-        BestSoldItemQuery.Close();
+        SetRange("User Id", UserSecurityId());
         SetCurrentKey(Quantity);
         Ascending(false);
         if FindFirst() then;
     end;
 
     local procedure PopulatePageDataCustomer()
-    var
-        TopCustomerQuery: Query "Top Customer Headline";
     begin
-        TopCustomerQuery.SetFilter(PostDate, '>=%1&<=%2', CalcDate(StrSubstNo('<-%1D>', DaysSearch), WorkDate()), WorkDate());
-        TopCustomerQuery.Open();
-        while TopCustomerQuery.Read() do begin
-            Init();
-            Validate(Name, TopCustomerQuery.CustomerName);
-            Validate("No.", TopCustomerQuery.No);
-            Validate("Amount (LCY)", TopCustomerQuery.SumAmountLcy);
-            Insert();
-        end;
-        TopCustomerQuery.Close();
+        SetRange(Type, Type::Customer);
+        SetRange("User Id", UserSecurityId());
         SetCurrentKey("Amount (LCY)");
         Ascending(false);
         if FindFirst() then;
     end;
 
-    procedure InitProduct(ProductTypeToSet: Option; DaysSearchToSet: Integer)
+    procedure InitProduct(ProductTypeToSet: Option)
     begin
-        DaysSearch := DaysSearchToSet;
         ProductType := ProductTypeToSet;
         IsHeadlineCustomerRelatedWithAmount := false;
     end;
 
     procedure InitCustomer(DaysSearchToSet: Integer)
     begin
-        DaysSearch := DaysSearchToSet;
         IsHeadlineCustomerRelatedWithAmount := true;
     end;
 
@@ -169,7 +135,6 @@ page 1439 "Headline Details"
 
     var
         SalesLine: Record "Sales Line";
-        DaysSearch: Integer;
         ProductType: Option;
         IsHeadlineCustomerRelatedWithAmount: Boolean;
         AmountCaptionToUse: Text;

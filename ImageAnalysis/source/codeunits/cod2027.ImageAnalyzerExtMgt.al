@@ -27,7 +27,6 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         ImageAnalysisEnabledLbl: Label 'Image Analysis enabled.', Locked = true;
         EnableNotificationSentLbl: Label 'Enable notification sent.', Locked = true;
         ImageAnalysisSuccesfulLbl: Label 'Image successfully analyzed.', Locked = true;
-        ImageAnalysisFailureLbl: Label 'Image analysis failed.', Locked = true;
         CategoryAssignedLbl: Label 'Category was assigned.', Locked = true;
         AttributeAssignedLbl: Label 'Attribute was assigned.', Locked = true;
         OpenSetupTxt: Label 'Open setup';
@@ -192,10 +191,10 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
 
         case OnRecord of
             OnRecord::Contact:
-                SetupNotification.SetData(GetContactNoForNotificationData, Format(CodeToSet));
+                SetupNotification.SetData(GetContactNoForNotificationData(), Format(CodeToSet));
 
             OnRecord::Item:
-                SetupNotification.SetData(GetItemNoForNotificationData, Format(CodeToSet));
+                SetupNotification.SetData(GetItemNoForNotificationData(), Format(CodeToSet));
         end;
 
         SetupNotification.AddAction(SetupActionTxt, Codeunit::"Image Analyzer Ext. Mgt.", 'OpenSetupWizard');
@@ -217,10 +216,10 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
 
         case OnRecord of
             OnRecord::Contact:
-                SetupNotification.SetData(GetContactNoForNotificationData, Format(CodeToSet));
+                SetupNotification.SetData(GetContactNoForNotificationData(), Format(CodeToSet));
 
             OnRecord::Item:
-                SetupNotification.SetData(GetItemNoForNotificationData, Format(CodeToSet));
+                SetupNotification.SetData(GetItemNoForNotificationData(), Format(CodeToSet));
         end;
         SetupNotification.AddAction(SetupActionTxt, Codeunit::"Image Analyzer Ext. Mgt.", 'OpenSetupWizard');
         SetupNotification.AddAction(DeactivateActionTxt, Codeunit::"Image Analyzer Ext. Mgt.", 'HandleDeactivateNotification');

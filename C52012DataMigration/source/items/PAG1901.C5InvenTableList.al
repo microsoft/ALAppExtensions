@@ -90,8 +90,8 @@ page 1901 "C5 InvenTable List"
     }
 
     var
-        MigrationErrorText: Text[250];
         C5MigrDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
+        MigrationErrorText: Text[250];
 
     trigger OnAfterGetRecord();
     var

@@ -33,7 +33,13 @@ codeunit 148004 "C5 VendTable Migrator Tst"
 
     local procedure Initialize()
     var
+        C5Payment: Record "C5 Payment";
         C5VendTable: Record "C5 VendTable";
+        C5Employee: Record "C5 Employee";
+        C5Delivery: Record "C5 Delivery";
+        C5VendDiscGroup: Record "C5 VendDiscGroup";
+        C5VendContact: Record "C5 VendContact";
+        C5VendTrans: Record "C5 VendTrans";
         MarketingSetup: Record "Marketing Setup";
         Vendor: Record Vendor;
         SalespersonPurchaser: Record "Salesperson/Purchaser";
@@ -42,7 +48,15 @@ codeunit 148004 "C5 VendTable Migrator Tst"
         VendorInvoiceDisc: Record "Vendor Invoice Disc.";
         GenJournalLine: Record "Gen. Journal Line";
         CountryRegion: Record "Country/Region";
+        NoSeries: Record "No. Series";
+        NoSeriesLines: Record "No. Series Line";
     begin
+        C5Payment.DeleteAll();
+        C5Employee.DeleteAll();
+        C5Delivery.DeleteAll();
+        C5VendDiscGroup.DeleteAll();
+        C5VendContact.DeleteAll();
+        C5VendTrans.DeleteAll();
         Vendor.DeleteAll();
         C5VendTable.DeleteAll();
         SalespersonPurchaser.DeleteAll();
@@ -58,8 +72,34 @@ codeunit 148004 "C5 VendTable Migrator Tst"
         CountryRegion.Validate(Name, 'Austria');
         CountryRegion.Insert();
 
+        NoSeries.Init();
+        NoSeries.Code := 'G000CONT';
+        NoSeries."Default Nos." := true;
+        NoSeries.Insert();
+
+        NoSeriesLines.Init();
+        NoSeriesLines."Series Code" := 'G000CONT';
+        NoSeriesLines."Starting Date" := WorkDate();
+        NoSeriesLines."Starting No." := '8000';
+        NoSeriesLines."Ending No." := '9500';
+        NoSeriesLines.Insert();
+
+        NoSeries.Init();
+        NoSeries.Code := 'VEN';
+        NoSeries."Default Nos." := true;
+        NoSeries.Insert();
+
+        NoSeriesLines.Init();
+        NoSeriesLines."Series Code" := 'VEN';
+        NoSeriesLines."Starting Date" := WorkDate();
+        NoSeriesLines."Starting No." := '8000';
+        NoSeriesLines."Ending No." := '9500';
+        NoSeriesLines.Insert();
+
         if MarketingSetup.Get() then begin
             MarketingSetup."Autosearch for Duplicates" := false;
+            MarketingSetup."Bus. Rel. Code for Vendors" := 'VEN';
+            MarketingSetup."Contact Nos." := 'G000CONT';
             MarketingSetup.Modify();
         end;
     end;
@@ -438,7 +478,7 @@ codeunit 148004 "C5 VendTable Migrator Tst"
             GenJournalLine.FindFirst();
             Assert.AreEqual('VENDMIGR', GenJournalLine."Journal Batch Name", 'Hard coded batch name incorrect');
             Assert.AreEqual(1000, GenJournalLine.Amount, 'Incorrect amount');
-            Assert.AreEqual(Format(352533), GenJournalLine."Document No.", 'Incorrect document number');
+            Assert.AreEqual('C5MIGRATE', GenJournalLine."Document No.", 'Incorrect document number');
             Assert.AreEqual(DMY2Date(10, 4, 2014), GenJournalLine."Document Date", 'incorrect doc date');
             Assert.AreEqual(DMY2Date(10, 4, 2014), GenJournalLine."Posting Date", 'incorrect posting date');
             Assert.AreEqual(DMY2Date(12, 5, 2014), GenJournalLine."Due Date", 'incorrect due date');
