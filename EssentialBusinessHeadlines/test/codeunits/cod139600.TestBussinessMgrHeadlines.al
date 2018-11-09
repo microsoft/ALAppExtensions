@@ -428,6 +428,66 @@ codeunit 99600 "Test Essential Bus. Headlines"
             EssentialBusHeadlineMgt.GetTopCustomerPayload('01234567890123456789012345678', '1,234,567 kr'), 'Invalid top customer text in truncate case');
     end;
 
+
+    [Test]
+    procedure TestRecentlyOverdueInvoiceHeadlineInitialVisibility()
+    begin
+        // [GIVEN] Initial state when no data is present
+        Initialize();
+
+        // [WHEN] We run the computation
+        EssentialBusHeadlineMgt.HandleRecentlyOverdueInvoices();
+
+        // [THEN] The headline is hidden
+        Assert.IsFalse(GetVisibility(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices), 'Expected recently overdue invoices headline not to be visible');
+    end;
+
+    [Test]
+    procedure TestRecentlyOverdueInvoiceHeadlineWithOneInvoice()
+    begin
+        TestRecentlyOverdueInvoiceWithOverdueInvoices(1);
+    end;
+
+    [Test]
+    procedure TestRecentlyOverdueInvoiceHeadlineWithTwoInvoice()
+    begin
+        TestRecentlyOverdueInvoiceWithOverdueInvoices(2);
+    end;
+
+    [Test]
+    procedure TestRecentlyOverdueInvoiceHeadlineWithFiveInvoice()
+    begin
+        TestRecentlyOverdueInvoiceWithOverdueInvoices(5);
+    end;
+
+    local procedure TestRecentlyOverdueInvoiceWithOverdueInvoices(NumberOfNewlyOverdueInvoices: Integer)
+    var
+        OverdueInvoicesTxt: Text;
+        OverdueInvoicesAmountTxt: Text;
+        TotalAmount: Decimal;
+    begin
+
+        // [GIVEN] Initial step with one invoice that was due yesterday
+        Initialize();
+
+
+        OverdueInvoicesTxt := StrSubstNo('Overdue invoices up by <emphasize>%1</emphasize>.', NumberOfNewlyOverdueInvoices);
+        TotalAmount := CreateInvoicesWithDueDateYesterday(NumberOfNewlyOverdueInvoices);
+        OverdueInvoicesAmountTxt := StrSubstNo('You can collect <emphasize>%1</emphasize>', EssentialBusHeadlineMgt.FormatLocalCurrency(TotalAmount));
+        CreateRandomNumberOfOlderOverdueInvoices();
+
+        // [WHEN] We run the computation
+        EssentialBusHeadlineMgt.HandleRecentlyOverdueInvoices();
+
+        // [THEN] The headline is visible and the message is correct
+        EssentialBusinessHeadline.Get(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
+
+        Assert.IsTrue(EssentialBusinessHeadline."Headline Visible", 'Expected recently overdue invoices headline to be visible');
+        Assert.IsTrue(StrPos(EssentialBusinessHeadline."Headline Text", OverdueInvoicesTxt) > 0, 'Wrong number of sales invoices');
+        Assert.IsTrue(StrPos(EssentialBusinessHeadline."Headline Text", OverdueInvoicesAmountTxt) > 0, 'Wrong total amount');
+    end;
+
+
     procedure Initialize()
     var
         Item: Record Item;
@@ -461,6 +521,55 @@ codeunit 99600 "Test Essential Bus. Headlines"
         Clear(SalesHeader);
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");
     end;
+
+    local procedure CreateInvoicesWithDueDateYesterday(NumberOfInvoices: Integer): Decimal
+    var
+        Yesterday: Date;
+        Count: Integer;
+        TotalAmount: Decimal;
+    begin
+        Yesterday := CalcDate('<-1D>', WorkDate());
+        TotalAmount := 0.0;
+        for Count := 1 to NumberOfInvoices do
+            TotalAmount := TotalAmount + CreateInvoiceWithDueDate(Yesterday);
+
+        exit(TotalAmount);
+    end;
+
+    local procedure CreateInvoiceWithDueDate(DueDate: Date): Decimal
+    var
+        SalesHeader: Record "Sales Header";
+        Amount: Decimal;
+    begin
+        LibrarySales.CreateSalesInvoice(SalesHeader);
+        SalesHeader.Validate("Due Date", DueDate);
+        SalesHeader.Modify(true);
+
+        SalesHeader.CalcFields("Amount Including VAT");
+        Amount := SalesHeader."Amount Including VAT";
+
+        LibrarySales.PostSalesDocument(SalesHeader, false, true);
+        exit(Amount);
+    end;
+
+    local procedure CreateRandomNumberOfOlderOverdueInvoices()
+    var
+        DueDate: Date;
+        RandomNumber: Integer;
+        Count: Integer;
+    begin
+        // Get random number between 0 and 5, inclusive
+        RandomNumber := Random(6) - 1;
+
+        // Create Random number of overdue invoices with due date before yesterday
+        for Count := 1 to RandomNumber do begin
+            // Get random date, 1 to 10 days before yesterday
+            DueDate := CalcDate(StrSubstNo('<-%1D>', Format(1 + Random(10))), WorkDate());
+            CreateInvoiceWithDueDate(DueDate);
+        end;
+    end;
+
+
 
     local procedure AddSalesLineItem(Item: Record Item; Quantity: Integer);
     var

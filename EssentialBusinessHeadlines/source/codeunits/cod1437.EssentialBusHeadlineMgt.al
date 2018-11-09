@@ -7,6 +7,7 @@ codeunit 50137 "Essential Bus. Headline Mgt."
 {
     var
         HeadlineManagement: Codeunit "Headline Management";
+        QualifierYesterdayTxt: Label 'Insight from today', MaxLength = 50;
         QualifierWeekTxt: Label 'Insight from last week', MaxLength = 50;
         QualifierMonthTxt: Label 'Insight from last month', MaxLength = 50;
         Qualifier3MonthsTxt: Label 'Insight from the last three months', MaxLength = 50;
@@ -17,6 +18,7 @@ codeunit 50137 "Essential Bus. Headline Mgt."
         LargestSalePayloadTxt: Label 'The largest posted sales invoice was for %1', Comment = ' %1 is the sales amount with currency symbol/name.', MaxLength = 65; // support currencies up to 12 chars: '1,234,567 kr'
         SalesIncreaseComparedToLastYearPayloadTxt: Label 'You closed %1 more deals than in the same period last year', Comment = '%1 is the difference of sales (positive) between this period and the same period the previous year.', MaxLength = 68; // support numbers up to 9 chars: '1,234,567'
         TopCustomerPayloadTxt: Label 'Your top customer was %1, bought for %2', Comment = '%1 is the Customer name, %2 is the sales amount with currency symbol/name.', MaxLength = 47; // support 20 chars for customer and currencies up to 12 chars: '1,234,567 kr'
+        RecentlyOverdueInvoicesPayloadTxt: Label 'Overdue invoices up by %1. You can collect %2', Comment = '%1 is the number of recently overdue invoices, %2 is the total amount of the recently overdue invoices', MaxLength = 60; // support up to 3-digit number of overdue invoices and currencies up to 12 chars: '1,234,567 kr'
 
 
     local procedure NeedToUpdateHeadline(LastComputeDate: DateTime; PeriodBetween2ComputationsInSeconds: Integer; LastComputeWorkdate: Date): Boolean
@@ -484,6 +486,71 @@ codeunit 50137 "Essential Bus. Headline Mgt."
         Page.Run(Page::"Posted Sales Invoices", SalesInvoiceHeader);
     end;
 
+    procedure HandleRecentlyOverdueInvoices()
+    var
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
+        CustomerLedgerEntry: Record "Cust. Ledger Entry";
+        RecentlyOverdueInvoices: Integer;
+        TotalAmount: Decimal;
+    begin
+        EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
+        if not NeedToUpdateHeadline(EssentialBusinessHeadline."Headline Computation Date", 10 * 60, EssentialBusinessHeadline."Headline Computation WorkDate") then
+            exit;
+
+        FindRecentlyOverdueInvoices(CustomerLedgerEntry, WorkDate());
+        RecentlyOverdueInvoices := CustomerLedgerEntry.Count();
+
+        // At least one entry is needed to show the headline
+        if (RecentlyOverdueInvoices = 0) then begin
+            HideHeadLine(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
+            exit;
+        end;
+
+        TotalAmount := 0.0;
+        if CustomerLedgerEntry.FindSet() then
+            repeat
+                CustomerLedgerEntry.CalcFields("Amount (LCY)");
+                TotalAmount := TotalAmount + CustomerLedgerEntry."Amount (LCY)";
+            until CustomerLedgerEntry.Next() = 0;
+
+        if not HeadlineManagement.GetHeadlineText(
+            QualifierYesterdayTxt,
+            StrSubstNo(RecentlyOverdueInvoicesPayloadTxt,
+                HeadlineManagement.Emphasize(Format(RecentlyOverdueInvoices)),
+                HeadlineManagement.Emphasize(FormatLocalCurrency(TotalAmount))),
+            EssentialBusinessHeadline."Headline Text")
+        then begin
+            HideHeadLine(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
+            exit;
+        end;
+
+        EssentialBusinessHeadline.Validate("Headline Visible", true);
+        EssentialBusinessHeadline.Validate("Headline Computation Date", CurrentDateTime());
+        EssentialBusinessHeadline.Validate("Headline Computation WorkDate", WorkDate());
+        EssentialBusinessHeadline.Validate("Headline Computation Period", 1);
+        EssentialBusinessHeadline.Modify(true);
+    end;
+
+    local procedure FindRecentlyOverdueInvoices(var CustomerLedgerEntry: Record "Cust. Ledger Entry"; ComputationDate: Date)
+    begin
+        CustomerLedgerEntry.SetRange(Open, true);
+        CustomerLedgerEntry.SetFilter("Due Date", '=%1', CalcDate('<-1D>', ComputationDate));
+        CustomerLedgerEntry.SetRange("Document Type", CustomerLedgerEntry."Document Type"::Invoice);
+    end;
+
+    procedure OnDrillDownRecentlyOverdueInvoices()
+    var
+        CustomerLedgerEntry: Record "Cust. Ledger Entry";
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
+    begin
+        EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
+
+        FindRecentlyOverdueInvoices(CustomerLedgerEntry, EssentialBusinessHeadline."Headline Computation WorkDate");
+
+        Page.Run(Page::"Customer Ledger Entries", CustomerLedgerEntry);
+    end;
+
+
     procedure HandleTopCustomer()
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
@@ -572,6 +639,16 @@ codeunit 50137 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadlines.GetOrCreateHeadline(EssentialBusinessHeadlines."Headline Name"::TopCustomer);
         HeadlineDetails.InitCustomer(EssentialBusinessHeadlines."Headline Computation Period");
         HeadlineDetails.Run();
+    end;
+
+    procedure HideHeadline(HeadlineName: Option)
+    var
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
+    begin
+        if EssentialBusinessHeadline.Get(HeadlineName) then begin
+            EssentialBusinessHeadline.Validate("Headline Visible", false);
+            EssentialBusinessHeadline.Modify();
+        end;
     end;
 
     procedure FormatCurrency(AmountToFormat: Decimal; CurrencyCode: Code[10]): Text

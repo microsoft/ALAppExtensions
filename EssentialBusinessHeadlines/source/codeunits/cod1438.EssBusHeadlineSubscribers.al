@@ -43,6 +43,8 @@ codeunit 50138 "Ess. Bus. Headline Subscribers"
         EssentialBusHeadlineMgt.HandleBusiestResourceHeadline();
         EssentialBusHeadlineMgt.HandleSalesIncreaseHeadline();
         EssentialBusHeadlineMgt.HandleTopCustomer();
+        EssentialBusHeadlineMgt.HandleRecentlyOverdueInvoices();
+
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Business Manager", 'OnIsAnyExtensionHeadlineVisible', '', true, true)]
@@ -53,13 +55,14 @@ codeunit 50138 "Ess. Bus. Headline Subscribers"
     begin
         EssentialBusinessHeadline.SetRange("Headline Visible", true);
         EssentialBusinessHeadline.SetRange("User Id", UserSecurityId());
-        EssentialBusinessHeadline.SetFilter("Headline Name", '%1|%2|%3|%4|%5',
+        EssentialBusinessHeadline.SetFilter("Headline Name", '%1|%2|%3|%4|%5|%6',
             EssentialBusinessHeadline."Headline Name"::LargestOrder,
             EssentialBusinessHeadline."Headline Name"::LargestSale,
             EssentialBusinessHeadline."Headline Name"::BusiestResource,
             EssentialBusinessHeadline."Headline Name"::MostPopularItem,
             EssentialBusinessHeadline."Headline Name"::SalesIncrease,
-            EssentialBusinessHeadline."Headline Name"::TopCustomer);
+            EssentialBusinessHeadline."Headline Name"::TopCustomer,
+            EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
 
         AtLeastOneHeadlineVisible := not EssentialBusinessHeadline.IsEmpty();
         // only modify the var if this extension is making some headlines visible, setting to false could overrride some other extensions setting the value to true
@@ -73,7 +76,8 @@ codeunit 50138 "Ess. Bus. Headline Subscribers"
                                     var LargestSaleVisible: Boolean; var LargestSaleText: Text[250];
                                     var SalesIncreaseVisible: Boolean; var SalesIncreaseText: Text[250];
                                     var BusiestResourceVisible: Boolean; var BusiestResourceText: Text[250];
-                                    var TopCustomerVisible: Boolean; var TopCustomerText: Text[250])
+                                    var TopCustomerVisible: Boolean; var TopCustomerText: Text[250];
+                                    var RecentlyOverdueInvoicesVisible: Boolean; var RecentlyOverdueInvoicesText: Text[250])
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
@@ -83,6 +87,7 @@ codeunit 50138 "Ess. Bus. Headline Subscribers"
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::SalesIncrease, SalesIncreaseText, SalesIncreaseVisible);
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::BusiestResource, BusiestResourceText, BusiestResourceVisible);
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::TopCustomer, TopCustomerText, TopCustomerVisible);
+        TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices, RecentlyOverdueInvoicesText, RecentlyOverdueInvoicesVisible);
     end;
 
 
