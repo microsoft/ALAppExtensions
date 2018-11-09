@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
-pageextension 50142 "Headlines RC Accountant Ext." extends "Headline RC Accountant"
+pageextension 1442 "Headlines RC Accountant Ext." extends "Headline RC Accountant"
 {
 
     layout

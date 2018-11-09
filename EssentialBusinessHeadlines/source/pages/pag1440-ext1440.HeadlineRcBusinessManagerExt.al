@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
-pageextension 50140 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business Manager"
+pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business Manager"
 {
 
     layout

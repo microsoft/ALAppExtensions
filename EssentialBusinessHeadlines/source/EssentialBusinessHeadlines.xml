@@ -2,7 +2,7 @@
 <PermissionSet RoleID="EssentialBusinessHeadlines" RoleName="Essential Business Headlines">
     <Permission>
       <ObjectType>TableData</ObjectType>
-      <ObjectID>50136</ObjectID>
+      <ObjectID>1436</ObjectID>
       <ReadPermission>Yes</ReadPermission>
       <InsertPermission>Yes</InsertPermission>
       <ModifyPermission>Yes</ModifyPermission>
@@ -12,7 +12,7 @@
     </Permission>
     <Permission>
       <ObjectType>TableData</ObjectType>
-      <ObjectID>50137</ObjectID>
+      <ObjectID>1437</ObjectID>
       <ReadPermission>Yes</ReadPermission>
       <InsertPermission>Yes</InsertPermission>
       <ModifyPermission>Yes</ModifyPermission>
@@ -22,7 +22,7 @@
     </Permission>
     <Permission>
       <ObjectType>TableData</ObjectType>
-      <ObjectID>50138</ObjectID>
+      <ObjectID>1438</ObjectID>
       <ReadPermission>Yes</ReadPermission>
       <InsertPermission>Yes</InsertPermission>
       <ModifyPermission>Yes</ModifyPermission>
@@ -32,7 +32,7 @@
     </Permission>
     <Permission>
       <ObjectType>TableData</ObjectType>
-      <ObjectID>50139</ObjectID>
+      <ObjectID>1439</ObjectID>
       <ReadPermission>Yes</ReadPermission>
       <InsertPermission>Yes</InsertPermission>
       <ModifyPermission>Yes</ModifyPermission>

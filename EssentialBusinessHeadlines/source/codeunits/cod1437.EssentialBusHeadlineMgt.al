@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50137 "Essential Bus. Headline Mgt."
+codeunit 1437 "Essential Bus. Headline Mgt."
 {
     var
         HeadlineManagement: Codeunit "Headline Management";

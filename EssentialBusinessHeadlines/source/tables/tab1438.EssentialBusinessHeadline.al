@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-table 50138 "Essential Business Headline"
+table 1438 "Essential Business Headline"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'Should be per user';

@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
-pageextension 50141 "Headlines RC Order Proc. Ext." extends "Headline RC Order Processor"
+pageextension 1441 "Headlines RC Order Proc. Ext." extends "Headline RC Order Processor"
 {
 
     layout
