@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 1436 "Headlines Install"
+codeunit 50136 "Headlines Install"
 {
     Subtype = install;
 

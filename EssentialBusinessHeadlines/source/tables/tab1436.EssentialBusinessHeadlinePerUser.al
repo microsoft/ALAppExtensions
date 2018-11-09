@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-table 1436 "Ess. Business Headline Per Usr"
+table 50136 "Ess. Business Headline Per Usr"
 {
 
     fields

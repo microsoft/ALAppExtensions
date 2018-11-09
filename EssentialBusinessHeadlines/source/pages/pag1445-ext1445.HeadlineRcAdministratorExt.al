@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
-pageextension 1445 "Headlines RC Admin. Ext." extends "Headline RC Administrator"
+pageextension 50145 "Headlines RC Admin. Ext." extends "Headline RC Administrator"
 {
 
     layout

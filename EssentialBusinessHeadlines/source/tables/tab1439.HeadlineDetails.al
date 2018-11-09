@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-table 1439 "Headline Details"
+table 50139 "Headline Details"
 {
     DataClassification = CustomerContent;
 

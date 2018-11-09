@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
-query 1440 "Best Sold Item Headline"
+query 50140 "Best Sold Item Headline"
 {
     QueryType = Normal;
     OrderBy = descending (SumQuantity);

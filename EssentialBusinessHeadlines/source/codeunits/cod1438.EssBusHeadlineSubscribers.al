@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 1438 "Ess. Bus. Headline Subscribers"
+codeunit 50138 "Ess. Bus. Headline Subscribers"
 {
 
     var

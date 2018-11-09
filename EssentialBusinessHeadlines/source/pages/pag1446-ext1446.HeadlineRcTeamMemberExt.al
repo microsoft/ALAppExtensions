@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
-pageextension 1446 "Headlines RC Team Member Ext." extends "Headline RC Team Member"
+pageextension 50146 "Headlines RC Team Member Ext." extends "Headline RC Team Member"
 {
 
     layout

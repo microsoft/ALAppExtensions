@@ -1,6 +1,7 @@
 {
+  "id": "06d74fe5-a880-403d-a635-f508f291733a",
   "name": "Essential Business Headlines",
-  "publisher": "Microsoft",
+  "publisher": "GitDemo",
   "brief": "Essential business headlines draw facts out of your data. Your people draw the conclusions.",
   "description": "Displays headlines with actionable business insights on Role Center pages. The insights surface interesting facts from your business data so people don't need to go find them.",
   "version": "1.0.0.0",
@@ -12,9 +13,9 @@
   "capabilities": [],
   "dependencies": [],
   "screenshots": [],
-  "platform": "11.0.0.0",
+  "platform": "12.0.0.0",
   "target": "Extension",
-  "application": "11.0.0.0",
-  "test": "11.0.0.0",
+  "application": "12.0.0.0",
+  "test": "12.0.0.0",
   "showMyCode": true
 }
