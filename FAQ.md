@@ -2,8 +2,28 @@
 This topic provides answers to frequently asked questions, and will be updated regularly.
 
 ## How do I getting started as a contributer?
-If you're ready to contribute, have a look at the following articles:  
+1. Become familiar with development in AL. For more information, see https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-get-started.  
+2. Choose the sandbox option that's right for you. For more information, see https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-sandbox-overview.  
+3. Clone the repository where Microsoft extensions are available : https://github.com/Microsoft/ALAppExtensions.  
+4. Objects are in the Microsoft ID range, which means you cannot upload the app to your sandbox. For the app to work you must renumber the object IDs (for more information, see https://blogs.msdn.microsoft.com/nav/2018/04/05/business-central-object-ranges/).  
+    
+    You can renumber objects in several ways. The following steps describe one of them.  
+    
+	1. Get the RenumberNavObjectIds tool from https://github.com/NAVDEMO/RenumberNavObjectIds.  
+    2. Clone the project and open it in Visual Studio 2015. Build the project, and you are off to a good start.  
+    3. Run the following PowerShell Script in PowerShell ISE:  
+       ```
+       Import-module "C:\...\RenumberObjectIds.dll"  
+	   $RenumberList = @{}  
+	   0..1000 | % { $RenumberList += @{ (1800+$_) = (80000+$_) } }  
+	   0..20 | % { $RenumberList += @{ (136630+$_) = (82000+$_) } }  
+		 
+	   Renumber-NavObjectIds -SourceFolder "C:\...\C52012DataMigration\" -DestinationFolder "C:\...\C52012DataMigrationReID" -RenumberList $RenumberList -Verbose  
+       ```
+5. In Visual Studio Code, connect to your sandbox (follow the steps in the documentation that step 2 refers to) and open the C:\...\C52012DataMigration folder. Now you are ready to go. You can modify the code and build your extension.  
+6. To submit your changes, create a new branch. Remember to revert the change of IDs, and then create a pull request. 
 
+Have a look at the following articles for detailed walkthroughs:  
 * https://blogs.msdn.microsoft.com/nav/2018/08/28/become-a-contributor-to-business-central/  
 * https://blogs.msdn.microsoft.com/nav/2018/09/20/git-going-with-extensions/  
 
@@ -56,7 +76,7 @@ The lifecycle for issues is (mix of label + milestone + open/closed state):
 ## How do I report an issue?
 This GitHub repository is dedicated to handling issues with published apps and extensibility requests for the latest release of Business Central. If you run into an issue, open a support case. You can open Support Request to CSS through PartnerSource portal or contact your Service Account Manager (SAM) in the local subsidiary to understand what is included in your contract as of support incident and PAH (Partner Advisory Hours). Your SAM might also step by step direct you how to open a support request or how to get credentials if this is the first time for you or your company.
 
-## How to I offer a suggestion?
+## How do I offer a suggestion?
 Similar to the previous question, issues that aren't related to published apps or extensibility are not what this GitHub repository is intended for. In those cases please register your idea in one of the following resources:  
 
 * For functional improvements, go to [Business Central - Ideas](https://experience.dynamics.com/ideas/list/?forum=e288ef32-82ed-e611-8101-5065f38b21f1)  
