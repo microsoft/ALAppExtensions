@@ -103,6 +103,8 @@ codeunit 1871 "C5 LedTrans Migrator"
             Validate("Journal Batch Name", GenJournalBatch.Name);
             Validate("Account Type", "Account Type"::"G/L Account");
             Validate("Account No.", C5LedTableMigrator.FillWithLeadingZeros(Account));
+            if DocumentNo <> 'C5MIGRATE' then
+              Validate(Description, CopyStr(C5LedTrans.Txt, 1, MaxStrLen(Description)));
             Validate("Document No.", DocumentNo);
             Validate("Line No.", LineNo);
             Validate(Amount, LineAmount);
