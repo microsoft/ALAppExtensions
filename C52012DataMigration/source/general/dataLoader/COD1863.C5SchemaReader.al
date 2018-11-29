@@ -91,7 +91,7 @@ codeunit 1863 "C5 Schema Reader"
 
         repeat
             StreamContent.ReadText(Line);
-            if StrPos(Line, ',') > 0 then begin
+            if (StrPos(Line,',') > 0) AND (SELECTSTR(1, Line) = '11') then begin
                 TableName := SELECTSTR(2, Line);
                 case TableName of
                     '"LedTable"':
