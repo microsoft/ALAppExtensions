@@ -25,7 +25,8 @@ This topic provides answers to frequently asked questions, and will be updated r
 
 Have a look at the following articles for detailed walkthroughs:  
 * https://blogs.msdn.microsoft.com/nav/2018/08/28/become-a-contributor-to-business-central/  
-* https://blogs.msdn.microsoft.com/nav/2018/09/20/git-going-with-extensions/  
+* https://community.dynamics.com/business/b/businesscentraldevitpro/archive/2018/10/26/quot-git-quot-going-with-extensions  
+* https://community.dynamics.com/business/b/businesscentraldevitpro/archive/2018/11/27/walkthrough-contributing-to-an-extension-on-github
 
 ## Can I contribute by submiting my own app?
 Currently we are accepting code contributions for published apps only.
