@@ -1,0 +1,1 @@
+The Sales and Inventory Forecast extension predicts potential sales using historical data and gives a clear overview of expected stock-outs. Based on the forecast, the extension can save you time by helping to create replenishment requests to vendors. For more information, see http://go.microsoft.com/fwlink/?LinkId=808039.
