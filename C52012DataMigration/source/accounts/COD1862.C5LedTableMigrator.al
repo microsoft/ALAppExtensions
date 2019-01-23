@@ -17,13 +17,13 @@ codeunit 1862 "C5 LedTable Migrator"
         VarInteger: Integer;
     begin
         if Evaluate(VarInteger, Value) then begin
-          if MaxAccountLength = 0 then
-            MaxAccountLength := FindMaxAccountLength(); 
-          MaxLength := MaxAccountLength;
+            if MaxAccountLength = 0 then
+                MaxAccountLength := FindMaxAccountLength(); 
+            MaxLength := MaxAccountLength;
 
-          Exit(PADSTR('', MaxLength - StrLen(Value), '0') + Value);      
+            exit(PADSTR('', MaxLength - StrLen(Value), '0') + Value);      
         end else
-          exit(Value);
+            exit(Value);
     end;
 
     procedure RemoveLeadingZeroes(Value: Text): Text
@@ -78,9 +78,9 @@ codeunit 1862 "C5 LedTable Migrator"
     begin
         if C5LedTable.FindSet() then
             repeat
-                if EVALUATE(VarInteger, C5LedTable.Account) then
-                  if StrLen(C5LedTable.Account) > Result then
-                    Result := StrLen(C5LedTable.Account);
+                if Evaluate(VarInteger, C5LedTable.Account) then
+                    if StrLen(C5LedTable.Account) > Result then
+                        Result := StrLen(C5LedTable.Account);
             until C5LedTable.Next() = 0;
     end;
 
