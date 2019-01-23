@@ -43,7 +43,7 @@ codeunit 1871 "C5 LedTrans Migrator"
                 DataMigrationStatusFacade.IncrementMigratedRecordCount(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), Database::"C5 LedTrans", 1);
                 if CurrentAccount <> C5LedTrans.Account then begin
                     if CurrentAccount <> '' then begin
-                        InsertNewGenJournalLine(GenJournalBatch, TotalAmount, PostingDate, PostingDate, CurrentAccount, 'C5MIGRATE');
+                        InsertNewGenJournalLine(GenJournalBatch, TotalAmount, PostingDate, PostingDate, CurrentAccount, 'C5MIGRATE', '');
                         // Update the DashBoard after each Account balance has been Migrated
                         Commit();
                     end;
@@ -54,7 +54,7 @@ codeunit 1871 "C5 LedTrans Migrator"
                 TotalAmount += C5LedTrans.AmountMST;
             until C5LedTrans.Next() = 0;
             // Insert() last Account
-            InsertNewGenJournalLine(GenJournalBatch, TotalAmount, PostingDate, PostingDate, CurrentAccount, 'C5MIGRATE');
+            InsertNewGenJournalLine(GenJournalBatch, TotalAmount, PostingDate, PostingDate, CurrentAccount, 'C5MIGRATE', '');
         end;
 
         C5LedTrans.SetFilter(Date_, '>=%1', C5SchemaParameters.CurrentPeriod);
@@ -62,7 +62,7 @@ codeunit 1871 "C5 LedTrans Migrator"
         if C5LedTrans.FindSet() then begin
             CreateGeneralJournalBatchIfNeeded(GenJournalBatch);
             repeat
-                InsertNewGenJournalLine(GenJournalBatch, C5LedTrans.AmountMST, C5LedTrans.Date_, C5LedTrans.DueDate, C5LedTrans.Account, Format(C5LedTrans.Voucher));
+                InsertNewGenJournalLine(GenJournalBatch, C5LedTrans.AmountMST, C5LedTrans.Date_, C5LedTrans.DueDate, C5LedTrans.Account, Format(C5LedTrans.Voucher), C5LedTrans.Txt);
                 DataMigrationStatusFacade.IncrementMigratedRecordCount(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), Database::"C5 LedTrans", 1);
                 Batch += 1;
                 if Batch = 100 then begin
@@ -85,7 +85,7 @@ codeunit 1871 "C5 LedTrans Migrator"
         DataMigrationStatusFacade.UpdateLineStatus(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), Database::"C5 LedTrans", DataMigrationStatus.Status::Completed);
     end;
 
-    local procedure InsertNewGenJournalLine(GenJournalBatch: Record "Gen. Journal Batch"; LineAmount: Decimal; PostingDate: Date; DueDate: Date; Account: Code[10]; DocumentNo: Text)
+    local procedure InsertNewGenJournalLine(GenJournalBatch: Record "Gen. Journal Batch"; LineAmount: Decimal; PostingDate: Date; DueDate: Date; Account: Code[10]; DocumentNo: Text; DescriptionText: Text)
     var
         GenJournalLine: Record "Gen. Journal Line";
         C5LedTableMigrator: Codeunit "C5 LedTable Migrator";
@@ -103,8 +103,8 @@ codeunit 1871 "C5 LedTrans Migrator"
             Validate("Journal Batch Name", GenJournalBatch.Name);
             Validate("Account Type", "Account Type"::"G/L Account");
             Validate("Account No.", C5LedTableMigrator.FillWithLeadingZeros(Account));
-            if DocumentNo <> 'C5MIGRATE' then
-              Validate(Description, CopyStr(C5LedTrans.Txt, 1, MaxStrLen(Description)));
+            if DescriptionText <> '' then
+                Validate(Description, CopyStr(DescriptionText, 1, MaxStrLen(Description)));
             Validate("Document No.", DocumentNo);
             Validate("Line No.", LineNo);
             Validate(Amount, LineAmount);
