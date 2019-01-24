@@ -14,12 +14,16 @@ codeunit 1862 "C5 LedTable Migrator"
     procedure FillWithLeadingZeros(Value: Text): Code[20]
     var
         MaxLength: Integer;
+        VarInteger: Integer;
     begin
-        if MaxAccountLength = 0 then
-            MaxAccountLength := FindMaxAccountLength();
-        MaxLength := MaxAccountLength;
+        if Evaluate(VarInteger, Value) then begin
+            if MaxAccountLength = 0 then
+                MaxAccountLength := FindMaxAccountLength(); 
+            MaxLength := MaxAccountLength;
 
-        Exit(PADSTR('', MaxLength - StrLen(Value), '0') + Value);
+            exit(PADSTR('', MaxLength - StrLen(Value), '0') + Value);      
+        end else
+            exit(Value);
     end;
 
     procedure RemoveLeadingZeroes(Value: Text): Text
@@ -70,11 +74,13 @@ codeunit 1862 "C5 LedTable Migrator"
     local procedure FindMaxAccountLength() Result: Integer
     var
         C5LedTable: Record "C5 LedTable";
+        VarInteger: Integer;
     begin
         if C5LedTable.FindSet() then
             repeat
-                if StrLen(C5LedTable.Account) > Result then
-                    Result := StrLen(C5LedTable.Account);
+                if Evaluate(VarInteger, C5LedTable.Account) then
+                    if StrLen(C5LedTable.Account) > Result then
+                        Result := StrLen(C5LedTable.Account);
             until C5LedTable.Next() = 0;
     end;
 
