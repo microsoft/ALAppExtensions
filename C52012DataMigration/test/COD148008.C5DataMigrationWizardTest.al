@@ -9,9 +9,6 @@ codeunit 148008 "C5 Data Migr. Wizard Test"
     Subtype = Test;
     TestPermissions = Disabled;
 
-    var
-        C5DataMigratorDescTxt: Label 'Import from Microsoft Dynamics C5 2012';
-
     trigger OnRun();
     begin
         // [FEATURE] [C5 Data Migration]
