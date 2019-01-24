@@ -103,6 +103,7 @@ codeunit 1871 "C5 LedTrans Migrator"
             Validate("Journal Batch Name", GenJournalBatch.Name);
             Validate("Account Type", "Account Type"::"G/L Account");
             Validate("Account No.", C5LedTableMigrator.FillWithLeadingZeros(Account));
+            // Description is filled with the Account Description on the validate above replace it only if not empty
             if DescriptionText <> '' then
                 Validate(Description, CopyStr(DescriptionText, 1, MaxStrLen(Description)));
             Validate("Document No.", DocumentNo);
