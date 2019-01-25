@@ -61,6 +61,8 @@ xmlport 1897 "C5 LedTrans"
                 begin
                     C5LedTrans.RecId := Counter;
                     Counter += 1;
+                    if Counter mod 1000 = 0 then
+                        OnThousandAccountTransactionsRead();
                 end;
             }
         }
@@ -70,4 +72,9 @@ xmlport 1897 "C5 LedTrans"
         C5HelperFunctions: Codeunit "C5 Helper Functions";
         DateFormatStringTxt: label 'yyyy/MM/dd', locked = true;
         Counter: Integer;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnThousandAccountTransactionsRead()
+    begin
+    end;
 }

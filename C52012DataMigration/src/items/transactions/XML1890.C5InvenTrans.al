@@ -86,6 +86,8 @@ xmlport 1890 "C5 InvenTrans"
                 begin
                     C5InvenTrans.RecId := Counter;
                     Counter += 1;
+                    if Counter mod 1000 = 0 then
+                        OnThousandItemTransactionsRead();
                 end;
             }
         }
@@ -95,5 +97,10 @@ xmlport 1890 "C5 InvenTrans"
         C5HelperFunctions: Codeunit "C5 Helper Functions";
         DateFormatStringTxt: label 'yyyy/MM/dd', locked = true;
         Counter: Integer;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnThousandItemTransactionsRead()
+    begin
+    end;
 }
 

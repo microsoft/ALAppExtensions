@@ -15,6 +15,7 @@ codeunit 1868 "C5 Data Loader"
     var
         DataMigrationStatus: Record "Data Migration Status";
         C5SchemaParameters: Record "C5 Schema Parameters";
+        C5DataLoaderStatus: Record "C5 Data Loader Status";
         C5MigrDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
         AccountsLoaded: Boolean;
         VendorsLoaded: Boolean;
@@ -24,6 +25,7 @@ codeunit 1868 "C5 Data Loader"
     begin
         StartTime := CurrentDateTime();
         OnFillStagingTablesStarted();
+        C5SchemaParameters.GetSingleInstance();
 
         if not Codeunit.Run(Codeunit::"C5 Unzip", NameValueBuffer) then
             StopPendingMigrationsAndSurfaceErrors();
@@ -35,6 +37,8 @@ codeunit 1868 "C5 Data Loader"
             LoadC5Accounts();
             AccountsLoaded := true;
         end;
+
+        C5DataLoaderStatus.IncrementProccessedRecords(C5SchemaParameters."Total Accounts");
 
         DataMigrationStatus.SetRange("Destination Table ID", Database::Vendor);
         if DataMigrationStatus.FindFirst() then begin
@@ -48,6 +52,9 @@ codeunit 1868 "C5 Data Loader"
             LoadC5VendorTrans();
             VendorsLoaded := true;
         end;
+
+        C5DataLoaderStatus.IncrementProccessedRecords(C5SchemaParameters."Total Vendors");
+        C5DataLoaderStatus.IncrementProccessedRecords(C5SchemaParameters."Total Vendor Entries" mod 1000);
 
         DataMigrationStatus.SetRange("Destination Table ID", Database::Customer);
         if DataMigrationStatus.FindFirst() then begin
@@ -65,6 +72,9 @@ codeunit 1868 "C5 Data Loader"
             CustomersLoaded := true;
         end;
 
+        C5DataLoaderStatus.IncrementProccessedRecords(C5SchemaParameters."Total Customers");
+        C5DataLoaderStatus.IncrementProccessedRecords(C5SchemaParameters."Total Customer Entries" mod 1000);
+
         DataMigrationStatus.SetRange("Destination Table ID", Database::Item);
         if DataMigrationStatus.FindFirst() then begin
             if not AccountsLoaded then
@@ -80,6 +90,9 @@ codeunit 1868 "C5 Data Loader"
             LoadC5InvenBOM();
         end;
 
+        C5DataLoaderStatus.IncrementProccessedRecords(C5SchemaParameters."Total Items");
+        C5DataLoaderStatus.IncrementProccessedRecords(C5SchemaParameters."Total Item Entries" mod 1000);
+
         DataMigrationStatus.SetRange("Destination Table ID", Database::"C5 LedTrans");
         if DataMigrationStatus.FindFirst() then begin
             if not AccountsLoaded then
@@ -88,12 +101,46 @@ codeunit 1868 "C5 Data Loader"
         end;
 
         // Delete the blob we no longer need it
-        C5SchemaParameters.GetSingleInstance();
         Clear(C5SchemaParameters."Zip File Blob");
         C5SchemaParameters.Modify();
 
+        C5DataLoaderStatus.GetSingleInstance();
+        C5DataLoaderStatus.IncrementProccessedRecords(C5DataLoaderStatus.Total - C5DataLoaderStatus.Proccessed);
+
         DurationAsInt := CurrentDateTime() - StartTime;
         OnFillStagingTablesFinished(DurationAsInt);
+    end;
+
+    [EventSubscriber(ObjectType::XmlPort, XMLPORT::"C5 LedTrans", 'OnThousandAccountTransactionsRead', '', true, true)]
+    local procedure OnThousandRecordsRead()
+    var
+        C5DataLoaderStatus: Record "C5 Data Loader Status";
+    begin
+        C5DataLoaderStatus.IncrementProccessedRecords(1000);
+    end;
+
+    [EventSubscriber(ObjectType::XmlPort, XMLPORT::"C5 CustTrans", 'OnThousandCustomerTransactionsRead', '', true, true)]
+    local procedure OnThousandCustomerTransactionsRead()
+    var
+        C5DataLoaderStatus: Record "C5 Data Loader Status";
+    begin
+        C5DataLoaderStatus.IncrementProccessedRecords(1000);
+    end;
+
+    [EventSubscriber(ObjectType::XmlPort, XMLPORT::"C5 VendTrans", 'OnThousandVendorTransactionsRead', '', true, true)]
+    local procedure OnThousandVendorTransactionsRead()
+    var
+        C5DataLoaderStatus: Record "C5 Data Loader Status";
+    begin
+        C5DataLoaderStatus.IncrementProccessedRecords(1000);
+    end;
+
+    [EventSubscriber(ObjectType::XmlPort, XMLPORT::"C5 InvenTrans", 'OnThousandItemTransactionsRead', '', true, true)]
+    local procedure OnThousandItemTransactionsRead()
+    var
+        C5DataLoaderStatus: Record "C5 Data Loader Status";
+    begin
+        C5DataLoaderStatus.IncrementProccessedRecords(1000);
     end;
 
     local procedure LoadVendorRelatedTables()

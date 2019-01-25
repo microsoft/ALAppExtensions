@@ -172,6 +172,7 @@ table 1894 "C5 VendTrans"
         {
             Clustered = true;
         }
+        key(AccountKey; Account) { }
     }
 }
 

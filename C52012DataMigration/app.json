@@ -12,9 +12,9 @@
   "capabilities": [],
   "dependencies": [],
   "screenshots": [],
-  "platform": "11.0.0.0",
+  "platform": "13.0.0.0",
   "target": "Internal",
-  "application": "11.0.0.0",
-  "test": "11.0.0.0",
+  "application": "13.0.0.0",
+  "test": "13.0.0.0",
   "showMyCode": true
 }

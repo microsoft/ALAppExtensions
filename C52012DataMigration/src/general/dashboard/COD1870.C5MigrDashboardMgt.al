@@ -11,13 +11,28 @@ codeunit 1870 "C5 Migr. Dashboard Mgt"
 
     procedure InitMigrationStatus(TotalItemNb: Integer; TotalCustomerNb: Integer; TotalVendorNb: Integer; TotalChartOfAccountNb: Integer; TotalLegacyNb: Integer)
     var
+        C5SchemaParameters: Record "C5 Schema Parameters";
+        DataMigrationStatus: Record "Data Migration Status";
+        C5DataLoaderStatus: Record "C5 Data Loader Status";
         DataMigrationStatusFacade: Codeunit "Data Migration Status Facade";
+        TotalRecords: Integer;
     begin
         DataMigrationStatusFacade.InitStatusLine(GetC5MigrationTypeTxt(), Database::Item, TotalItemNb, Database::"C5 InvenTable", Codeunit::"C5 Item Migrator");
         DataMigrationStatusFacade.InitStatusLine(GetC5MigrationTypeTxt(), Database::Customer, TotalCustomerNb, Database::"C5 CustTable", Codeunit::"C5 CustTable Migrator");
         DataMigrationStatusFacade.InitStatusLine(GetC5MigrationTypeTxt(), Database::Vendor, TotalVendorNb, Database::"C5 VendTable", Codeunit::"C5 VendTable Migrator");
         DataMigrationStatusFacade.InitStatusLine(GetC5MigrationTypeTxt(), Database::"G/L Account", TotalChartOfAccountNb, Database::"C5 LedTable", Codeunit::"C5 LedTable Migrator");
         DataMigrationStatusFacade.InitStatusLine(GetC5MigrationTypeTxt(), Database::"C5 LedTrans", TotalLegacyNb, 0, Codeunit::"C5 LedTrans Migrator");
+        C5SchemaParameters.GetSingleInstance();
+        TotalRecords := TotalCustomerNb + TotalVendorNb + TotalChartOfAccountNb + TotalLegacyNb + TotalItemNb;
+        if (TotalChartOfAccountNb > 0) or DataMigrationStatus.Get(GetC5MigrationTypeTxt(), Database::"G/L Account") then begin
+            if TotalCustomerNb > 0 then
+                TotalRecords += C5SchemaParameters."Total Customer Entries";
+            if TotalItemNb > 0 then
+                TotalRecords += C5SchemaParameters."Total Item Entries";
+            if TotalVendorNb > 0 then
+                TotalRecords += C5SchemaParameters."Total Vendor Entries";
+        end;
+        C5DataLoaderStatus.Initialize(TotalRecords);
     end;
 
     procedure GetC5MigrationTypeTxt(): Text[250]

@@ -163,6 +163,7 @@ table 1892 "C5 CustTrans"
         {
             Clustered = true;
         }
+        key(AccounttKey; Account) { }
     }
 }
 

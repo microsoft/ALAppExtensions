@@ -257,6 +257,7 @@ table 1890 "C5 InvenTrans"
         {
             Clustered = true;
         }
+        key(ItemNumberKey; ItemNumber) { }
     }
 }
 

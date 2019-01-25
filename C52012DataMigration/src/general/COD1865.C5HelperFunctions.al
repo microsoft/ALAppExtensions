@@ -7,7 +7,7 @@ codeunit 1865 "C5 Helper Functions"
 {
     var
         TypeHelper: Codeunit "Type Helper";
-        SubstitutionTable: array[130, 2] of Text;
+        SubstitutionTable: array[162, 2] of Text;
         IsSubstitutionTableInitialized: Boolean;
         PostCodeOrCityNotFoundErr: Label 'The combination of PostCode ''%1'' and City ''%2'' was not found.', Comment = '%1 = Post code and %2 = City';
         CountryNotFoundErr: Label 'The country ''%1'' was not found.', Comment = '%1 = country name';
@@ -22,6 +22,7 @@ codeunit 1865 "C5 Helper Functions"
 
     local procedure InitSubstitutionTable()
     begin
+        // C5 encodes characters in asccii and in octal form f.x. \235 is asccii character 157 Ø
         // Initializing substitution table, which is Codepage 850 with 'C5 encoding -> char' mapping.
         // First index ([first, _]) represents one table item.
         // Second index ([_, second]) represents individual properties: [_, 1] is string to search, [_, 2] is UTF-8 char. 
@@ -419,6 +420,136 @@ codeunit 1865 "C5 Helper Functions"
             SubstitutionTable[130, 1] := '\"';
             SubstitutionTable[130, 2] := '''';
 
+            // Special Ascii characters for some reason C5 is exporting them
+            // 000 Null character
+            // 001 Start of Header
+            // 002 Start of Text
+            // 003 End of Text
+            // 004 End of Trans.
+            // 005 Enquiry
+            // 006 Acknowledgement
+            // 007 BELL
+            // 008 Backspace
+            // 009 Horizontal tab
+            // 010 Line feed
+            // 011 Vertical Tab
+            // 012 Form feed
+            // 013 Carriage return
+            // 014 Shift Out
+            // 015 Shift In
+            // 016 Data Link Escape
+            // 017 Device Control
+            // 018 Device Control 2
+            // 019 Device Control 3
+            // 020 Device Control 4
+            // 021 Native acknowledgement
+            // 022 Synchronous idle
+            // 023 End of trans. block
+            // 024 Cancel
+            // 025 End of Medium
+            // 026 Substitute
+            // 027 Escape
+            // 028 File Seperator
+            // 029 Group Seperator
+            // 030 Record Separator
+            // 031 Unit Separator
+            // 127 Delete     
+
+            SubstitutionTable[131, 1] := '\001';
+            SubstitutionTable[131, 2] := '';
+
+            SubstitutionTable[132, 1] := '\002';
+            SubstitutionTable[132, 2] := '';
+
+            SubstitutionTable[133, 1] := '\003';
+            SubstitutionTable[133, 2] := '';
+
+            SubstitutionTable[134, 1] := '\004';
+            SubstitutionTable[134, 2] := '';
+
+            SubstitutionTable[135, 1] := '\005';
+            SubstitutionTable[135, 2] := '';
+
+            SubstitutionTable[136, 1] := '\006';
+            SubstitutionTable[136, 2] := '';
+
+            SubstitutionTable[137, 1] := '\007';
+            SubstitutionTable[137, 2] := '';
+
+            SubstitutionTable[138, 1] := '\010';
+            SubstitutionTable[138, 2] := '';
+
+            SubstitutionTable[139, 1] := '\011';
+            SubstitutionTable[139, 2] := '';
+
+            SubstitutionTable[140, 1] := '\012';
+            SubstitutionTable[140, 2] := '';
+
+            SubstitutionTable[141, 1] := '\013';
+            SubstitutionTable[141, 2] := '';
+
+            SubstitutionTable[142, 1] := '\014';
+            SubstitutionTable[142, 2] := '';
+
+            SubstitutionTable[143, 1] := '\015';
+            SubstitutionTable[143, 2] := '';
+
+            SubstitutionTable[144, 1] := '\016';
+            SubstitutionTable[144, 2] := '';
+
+            SubstitutionTable[145, 1] := '\017';
+            SubstitutionTable[145, 2] := '';
+
+            SubstitutionTable[146, 1] := '\020';
+            SubstitutionTable[146, 2] := '';
+
+            SubstitutionTable[147, 1] := '\021';
+            SubstitutionTable[147, 2] := '';
+
+            SubstitutionTable[148, 1] := '\022';
+            SubstitutionTable[148, 2] := '';
+
+            SubstitutionTable[149, 1] := '\023';
+            SubstitutionTable[149, 2] := '';
+
+            SubstitutionTable[150, 1] := '\024';
+            SubstitutionTable[150, 2] := '';
+
+            SubstitutionTable[151, 1] := '\025';
+            SubstitutionTable[151, 2] := '';
+
+            SubstitutionTable[152, 1] := '\026';
+            SubstitutionTable[152, 2] := '';
+
+            SubstitutionTable[153, 1] := '\027';
+            SubstitutionTable[153, 2] := '';
+
+            SubstitutionTable[154, 1] := '\030';
+            SubstitutionTable[154, 2] := '';
+
+            SubstitutionTable[155, 1] := '\031';
+            SubstitutionTable[155, 2] := '';
+
+            SubstitutionTable[156, 1] := '\032';
+            SubstitutionTable[156, 2] := '';
+
+            SubstitutionTable[157, 1] := '\033';
+            SubstitutionTable[157, 2] := '';
+
+            SubstitutionTable[158, 1] := '\034';
+            SubstitutionTable[158, 2] := '';
+
+            SubstitutionTable[159, 1] := '\035';
+            SubstitutionTable[159, 2] := '';
+
+            SubstitutionTable[160, 1] := '\036';
+            SubstitutionTable[160, 2] := '';
+
+            SubstitutionTable[161, 1] := '\037';
+            SubstitutionTable[161, 2] := '';
+
+            SubstitutionTable[162, 1] := '\177';
+            SubstitutionTable[162, 2] := '';
             IsSubstitutionTableInitialized := TRUE;
         end;
     end;

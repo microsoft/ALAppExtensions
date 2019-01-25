@@ -17,7 +17,6 @@ codeunit 1863 "C5 Schema Reader"
     var
         NameValueBuffer: Record "Name/Value Buffer" temporary;
     begin
-
         Codeunit.Run(Codeunit::"C5 Unzip", NameValueBuffer);
         ReadDefinitionFile(NameValueBuffer);
     end;
@@ -77,6 +76,9 @@ codeunit 1863 "C5 Schema Reader"
         VendorsFound: Boolean;
         ItemsFound: Boolean;
         HistoryFound: Boolean;
+        CustomerTransactionsFound: Boolean;
+        ItemTransactionsFound: Boolean;
+        VendorTransactionsFound: Boolean;
         Number: Integer;
         StreamContent: InStream;
     begin
@@ -91,42 +93,68 @@ codeunit 1863 "C5 Schema Reader"
 
         repeat
             StreamContent.ReadText(Line);
-            if (StrPos(Line, ',') > 0) and (SelectStr(1, Line) = '11') then begin
-                TableName := SelectStr(2, Line);
+            if (StrPos(Line, ',') > 0)  and (SelectStr(1, Line) = '11') then begin
+                TableName := SELECTSTR(2, Line);
                 case TableName of
                     '"LedTable"':
-                        begin
+                        if not AccountsFound then begin
                             AccountsFound := true;
                             Evaluate(Number, SelectStr(3, Line));
                             C5SchemaParameters."Total Accounts" := Number;
                         end;
                     '"VendTable"':
-                        begin
+                        if not VendorsFound then begin
                             VendorsFound := true;
                             Evaluate(Number, SelectStr(3, Line));
                             C5SchemaParameters."Total Vendors" := Number;
                         end;
                     '"CustTable"':
-                        begin
+                        if not CustomersFound then begin
                             CustomersFound := true;
                             Evaluate(Number, SelectStr(3, Line));
                             C5SchemaParameters."Total Customers" := Number;
                         end;
                     '"InvenTable"':
-                        begin
+                        if not ItemsFound then begin
                             ItemsFound := true;
                             Evaluate(Number, SelectStr(3, Line));
                             C5SchemaParameters."Total Items" := Number;
                         end;
                     '"LedTrans"':
-                        begin
+                        if not HistoryFound then begin
                             HistoryFound := true;
                             Evaluate(Number, SelectStr(3, Line));
                             C5SchemaParameters."Total Historical Entries" := Number;
                         end;
+                    '"CustTrans"':
+                        if not CustomerTransactionsFound then begin
+                            CustomerTransactionsFound := true;
+                            Evaluate(Number, SelectStr(3, Line));
+                            C5SchemaParameters."Total Customer Entries" := Number;
+                        end;
+                    '"InvenTrans"':
+                        if not ItemTransactionsFound then begin
+                            ItemTransactionsFound := true;
+                            Evaluate(Number, SelectStr(3, Line));
+                            C5SchemaParameters."Total Item Entries" := Number;
+                        end;
+                    '"VendTrans"':
+                        if not VendorTransactionsFound then begin
+                            VendorTransactionsFound := true;
+                            Evaluate(Number, SelectStr(3, Line));
+                            C5SchemaParameters."Total Vendor Entries" := Number;
+                        end;
                 end;
             end;
-        until (StreamContent.EOS()) Or (AccountsFound AND CustomersFound AND VendorsFound AND ItemsFound AND HistoryFound);
+        until (StreamContent.EOS()) Or
+              (AccountsFound and
+               CustomersFound and
+               VendorsFound and
+               ItemsFound and
+               HistoryFound and
+               CustomerTransactionsFound and
+               ItemTransactionsFound and
+               VendorTransactionsFound);
         C5SchemaParameters.Modify();
         Commit();
 

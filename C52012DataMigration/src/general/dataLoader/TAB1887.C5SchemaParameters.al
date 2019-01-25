@@ -49,6 +49,18 @@ table 1887 "C5 Schema Parameters"
         {
             Caption = 'Current Period';
         }
+        field(11; "Total Customer Entries"; Integer)
+        {
+            Caption = 'Total Historical Entries';
+        }
+        field(12; "Total Vendor Entries"; Integer)
+        {
+            Caption = 'Total Historical Entries';
+        }
+        field(13; "Total Item Entries"; Integer)
+        {
+            Caption = 'Total Historical Entries';
+        }
     }
 
     keys
