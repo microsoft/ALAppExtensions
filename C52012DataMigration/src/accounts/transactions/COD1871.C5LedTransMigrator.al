@@ -11,6 +11,7 @@ codeunit 1871 "C5 LedTrans Migrator"
     trigger OnRun();
     var
         C5SchemaParameters: Record "C5 Schema Parameters";
+        GenJournalLine: Record "Gen. Journal Line";
         C5LedTrans: Record "C5 LedTrans";
         GenJournalBatch: Record "Gen. Journal Batch";
         DataMigrationStatus: Record "Data Migration Status";
@@ -43,7 +44,7 @@ codeunit 1871 "C5 LedTrans Migrator"
                 DataMigrationStatusFacade.IncrementMigratedRecordCount(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), Database::"C5 LedTrans", 1);
                 if CurrentAccount <> C5LedTrans.Account then begin
                     if CurrentAccount <> '' then begin
-                        InsertNewGenJournalLine(GenJournalBatch, TotalAmount, PostingDate, PostingDate, CurrentAccount, 'C5MIGRATE', '');
+                        InsertNewGenJournalLine(GenJournalLine, GenJournalBatch, TotalAmount, PostingDate, PostingDate, CurrentAccount, 'C5MIGRATE', '');
                         // Update the DashBoard after each Account balance has been Migrated
                         Commit();
                     end;
@@ -54,7 +55,7 @@ codeunit 1871 "C5 LedTrans Migrator"
                 TotalAmount += C5LedTrans.AmountMST;
             until C5LedTrans.Next() = 0;
             // Insert() last Account
-            InsertNewGenJournalLine(GenJournalBatch, TotalAmount, PostingDate, PostingDate, CurrentAccount, 'C5MIGRATE', '');
+            InsertNewGenJournalLine(GenJournalLine, GenJournalBatch, TotalAmount, PostingDate, PostingDate, CurrentAccount, 'C5MIGRATE', '');
         end;
 
         C5LedTrans.SetFilter(Date_, '>=%1', C5SchemaParameters.CurrentPeriod);
@@ -62,7 +63,8 @@ codeunit 1871 "C5 LedTrans Migrator"
         if C5LedTrans.FindSet() then begin
             CreateGeneralJournalBatchIfNeeded(GenJournalBatch);
             repeat
-                InsertNewGenJournalLine(GenJournalBatch, C5LedTrans.AmountMST, C5LedTrans.Date_, C5LedTrans.DueDate, C5LedTrans.Account, Format(C5LedTrans.Voucher), C5LedTrans.Txt);
+                InsertNewGenJournalLine(GenJournalLine, GenJournalBatch, C5LedTrans.AmountMST, C5LedTrans.Date_, C5LedTrans.DueDate, C5LedTrans.Account, Format(C5LedTrans.Voucher), C5LedTrans.Txt);
+                SetGenJournalLineDimensions(GenJournalLine, C5LedTrans);
                 DataMigrationStatusFacade.IncrementMigratedRecordCount(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), Database::"C5 LedTrans", 1);
                 Batch += 1;
                 if Batch = 100 then begin
@@ -85,9 +87,10 @@ codeunit 1871 "C5 LedTrans Migrator"
         DataMigrationStatusFacade.UpdateLineStatus(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), Database::"C5 LedTrans", DataMigrationStatus.Status::Completed);
     end;
 
-    local procedure InsertNewGenJournalLine(GenJournalBatch: Record "Gen. Journal Batch"; LineAmount: Decimal; PostingDate: Date; DueDate: Date; Account: Code[10]; DocumentNo: Text; DescriptionText: Text)
+
+
+    local procedure InsertNewGenJournalLine(var GenJournalLine: Record "Gen. Journal Line"; GenJournalBatch: Record "Gen. Journal Batch"; LineAmount: Decimal; PostingDate: Date; DueDate: Date; Account: Code[10]; DocumentNo: Text; DescriptionText: Text)
     var
-        GenJournalLine: Record "Gen. Journal Line";
         C5LedTableMigrator: Codeunit "C5 LedTable Migrator";
         LineNo: Integer;
     begin
@@ -113,6 +116,31 @@ codeunit 1871 "C5 LedTrans Migrator"
             Validate("Due Date", DueDate);
             Insert(true);
         end;
+    end;
+
+    local procedure SetGenJournalLineDimensions(var GenJournalLine: Record "Gen. Journal Line"; C5LedTrans: Record "C5 LedTrans")
+    var
+        GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade";
+        C5HelperFunctions: Codeunit "C5 Helper Functions";
+    begin
+        GLAccDataMigrationFacade.SetGeneralJournalLineDimension(
+            GenJournalLine,
+            C5HelperFunctions.GetDepartmentDimensionCodeTxt(),
+            C5HelperFunctions.GetDepartmentDimensionDescTxt(),
+            C5LedTrans.Department,
+            C5HelperFunctions.GetDimensionValueName(Database::"C5 Department", C5LedTrans.Department));
+        GLAccDataMigrationFacade.SetGeneralJournalLineDimension(
+            GenJournalLine,
+            C5HelperFunctions.GetCostCenterDimensionCodeTxt(),
+            C5HelperFunctions.GetCostCenterDimensionDescTxt(),
+            C5LedTrans.Centre,
+            C5HelperFunctions.GetDimensionValueName(Database::"C5 Centre", C5LedTrans.Centre));
+        GLAccDataMigrationFacade.SetGeneralJournalLineDimension(
+            GenJournalLine,
+            C5HelperFunctions.GetPurposeDimensionCodeTxt(),
+            C5HelperFunctions.GetPurposeDimensionDescTxt(),
+            C5LedTrans.Purpose,
+            C5HelperFunctions.GetDimensionValueName(Database::"C5 Purpose", C5LedTrans.Purpose));
     end;
 
     local procedure CreateGeneralJournalBatchIfNeeded(var GenJournalBatch: Record "Gen. Journal Batch")

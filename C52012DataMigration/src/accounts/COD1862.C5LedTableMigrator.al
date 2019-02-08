@@ -18,10 +18,10 @@ codeunit 1862 "C5 LedTable Migrator"
     begin
         if Evaluate(VarInteger, Value) then begin
             if MaxAccountLength = 0 then
-                MaxAccountLength := FindMaxAccountLength(); 
+                MaxAccountLength := FindMaxAccountLength();
             MaxLength := MaxAccountLength;
 
-            exit(PADSTR('', MaxLength - StrLen(Value), '0') + Value);      
+            exit(PADSTR('', MaxLength - StrLen(Value), '0') + Value);
         end else
             exit(Value);
     end;
@@ -47,6 +47,36 @@ codeunit 1862 "C5 LedTable Migrator"
             exit;
         C5LedTable.Get(RecordIdToMigrate);
         MigrateLedgerDetails(C5LedTable, Sender);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccountDimensions', '', true, true)]
+    procedure OnMigrateGlAccountDimensions(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    var
+        C5LedTable: Record "C5 LedTable";
+        C5HelperFunctions: Codeunit "C5 Helper Functions";
+    begin
+        if RecordIdToMigrate.TableNo() <> Database::"C5 LedTable" then
+            exit;
+
+        C5LedTable.Get(RecordIdToMigrate);
+        if C5LedTable.Department <> '' then
+            Sender.CreateDefaultDimensionAndRequirementsIfNeeded(
+                C5HelperFunctions.GetDepartmentDimensionCodeTxt(),
+                C5HelperFunctions.GetDepartmentDimensionDescTxt(),
+                C5LedTable.Department,
+                C5HelperFunctions.GetDimensionValueName(Database::"C5 Department", C5LedTable.Department));
+        if C5LedTable.Centre <> '' then
+            Sender.CreateDefaultDimensionAndRequirementsIfNeeded(
+                C5HelperFunctions.GetCostCenterDimensionCodeTxt(),
+                C5HelperFunctions.GetCostCenterDimensionDescTxt(),
+                C5LedTable.Centre,
+                C5HelperFunctions.GetDimensionValueName(Database::"C5 Centre", C5LedTable.Centre));
+        if C5LedTable.Purpose <> '' then
+            Sender.CreateDefaultDimensionAndRequirementsIfNeeded(
+                C5HelperFunctions.GetPurposeDimensionCodeTxt(),
+                C5HelperFunctions.GetPurposeDimensionDescTxt(),
+                C5LedTable.Purpose,
+                C5HelperFunctions.GetDimensionValueName(Database::"C5 Purpose", C5LedTable.Purpose));
     end;
 
     procedure MigrateLedgerDetails(C5LedTable: Record "C5 LedTable"; GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")

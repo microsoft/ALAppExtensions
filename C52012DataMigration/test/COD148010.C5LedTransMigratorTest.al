@@ -12,6 +12,9 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         Assert: Codeunit Assert;
         GLAccountCodeTok: Label 'GL001', Locked = true;
         GLAccountCode2Tok: Label 'GL002', Locked = true;
+        Department2Txt: Label 'Dep2', Locked = true;
+        CostCentre2Txt: Label 'Centre2', Locked = true;
+        Purpose2Txt: Label 'Purpose2', Locked = true;
 
     trigger OnRun();
     begin
@@ -24,6 +27,7 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         DataMigrationStatus: Record "Data Migration Status";
         GenJournalLine: Record "Gen. Journal Line";
         C5SchemaParameters: Record "C5 Schema Parameters";
+        DimensionSetEntry: Record "Dimension Set Entry";
         C5MigrDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
         CurrentDate: Date;
         FirstTime: Boolean;
@@ -71,7 +75,26 @@ codeunit 148010 "C5 LedTrans Migrator Test"
             end else begin
                 Assert.AreEqual(GLAccountCode2Tok, GenJournalLine."Account No.", 'Account No. was different than expected');
                 CurrentDate := CalcDate('<+1D>', CurrentDate);
+
+                // Check dimensions are created for non-aggregated transactions
+                if (GenJournalLine."Posting Date" >= C5SchemaParameters.CurrentPeriod) then begin
+                    DimensionSetEntry.SetRange("Dimension Set ID", GenJournalLine."Dimension Set ID");
+                    DimensionSetEntry.SetRange("Dimension Code", 'C5DEPARTMENT');
+                    DimensionSetEntry.FindFirst();
+                    Assert.AreEqual(UpperCase(Department2Txt), DimensionSetEntry."Dimension Value Code", 'Incorrect department code');
+
+                    DimensionSetEntry.SetRange("Dimension Set ID", GenJournalLine."Dimension Set ID");
+                    DimensionSetEntry.SetRange("Dimension Code", 'C5COSTCENTRE');
+                    DimensionSetEntry.FindFirst();
+                    Assert.AreEqual(UpperCase(CostCentre2Txt), DimensionSetEntry."Dimension Value Code", 'Incorrect cost centre code');
+
+                    DimensionSetEntry.SetRange("Dimension Set ID", GenJournalLine."Dimension Set ID");
+                    DimensionSetEntry.SetRange("Dimension Code", 'C5Purpose');
+                    DimensionSetEntry.FindFirst();
+                    Assert.AreEqual(UpperCase(Purpose2Txt), DimensionSetEntry."Dimension Value Code", 'Incorrect purpose code');
+                end;
             end;
+
         until GenJournalLine.Next() = 0;
 
         // [THEN] The dashboard shows that the migration is completed and all records have been migrated
@@ -121,10 +144,12 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         GLAccount: Record "G/L Account";
         GenJournalLine: Record "Gen. Journal Line";
         C5LedTrans: Record "C5 LedTrans";
+        C5LedTable: Record "C5 LedTable";
         DataMigrationStatus: Record "Data Migration Status";
     begin
         GLAccount.DeleteAll();
         C5LedTrans.DeleteAll();
+        C5LedTable.DeleteAll();
         GenJournalLine.DeleteAll();
         DataMigrationStatus.DeleteAll();
     end;
@@ -140,6 +165,9 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.AmountCur := 500;
         C5LedTrans.VatAmount := 0;
         C5LedTrans.Date_ := DMY2Date(1, 9, 2016);
+        C5LedTrans.Department := CopyStr(Department2Txt, 1, 10);
+        C5LedTrans.Centre := CopyStr(CostCentre2Txt, 1, 10);
+        C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
 
         C5LedTrans.Init();
@@ -149,6 +177,9 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.AmountCur := 500;
         C5LedTrans.VatAmount := 0;
         C5LedTrans.Date_ := DMY2Date(1, 10, 2016);
+        C5LedTrans.Department := CopyStr(Department2Txt, 1, 10);
+        C5LedTrans.Centre := CopyStr(CostCentre2Txt, 1, 10);
+        C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
 
         C5LedTrans.Init();
@@ -158,6 +189,9 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.AmountCur := 500;
         C5LedTrans.VatAmount := 0;
         C5LedTrans.Date_ := DMY2Date(1, 11, 2016);
+        C5LedTrans.Department := CopyStr(Department2Txt, 1, 10);
+        C5LedTrans.Centre := CopyStr(CostCentre2Txt, 1, 10);
+        C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
 
         C5LedTrans.Init();
@@ -167,6 +201,9 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.AmountCur := 500;
         C5LedTrans.VatAmount := 0;
         C5LedTrans.Date_ := DMY2Date(1, 12, 2016);
+        C5LedTrans.Department := CopyStr(Department2Txt, 1, 10);
+        C5LedTrans.Centre := CopyStr(CostCentre2Txt, 1, 10);
+        C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
 
         C5LedTrans.Init();
@@ -176,6 +213,9 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.AmountCur := 1000;
         C5LedTrans.VatAmount := 0;
         C5LedTrans.Date_ := DMY2Date(1, 1, 2017);
+        C5LedTrans.Department := CopyStr(Department2Txt, 1, 10);
+        C5LedTrans.Centre := CopyStr(CostCentre2Txt, 1, 10);
+        C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
 
         C5LedTrans.Init();
@@ -185,6 +225,9 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.AmountCur := 1000;
         C5LedTrans.VatAmount := 0;
         C5LedTrans.Date_ := DMY2Date(2, 1, 2017);
+        C5LedTrans.Department := CopyStr(Department2Txt, 1, 10);
+        C5LedTrans.Centre := CopyStr(CostCentre2Txt, 1, 10);
+        C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
     end;
 

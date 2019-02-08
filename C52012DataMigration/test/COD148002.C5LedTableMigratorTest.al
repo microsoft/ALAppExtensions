@@ -12,6 +12,9 @@ codeunit 148002 "C5 LedTable Migrator Test"
     var
         Assert: Codeunit Assert;
         GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade";
+        Department1Txt: Label 'Dep1', Locked = true;
+        CostCentre1Txt: Label 'Centre1', Locked = true;
+        Purpose1Txt: Label 'Purpose1', Locked = true;
 
     trigger OnRun();
     begin
@@ -85,6 +88,8 @@ codeunit 148002 "C5 LedTable Migrator Test"
             Assert.AreEqual(C5LedTable.Access = C5LedTable.Access::Locked, GLAccount.Blocked,
                 'Blocked was different than expected.');
 
+            CheckDefaultDimensionExists(GLAccount."No.");
+
             C5LedTable.Next();
         until GLAccount.Next() = 0;
     end;
@@ -153,6 +158,7 @@ codeunit 148002 "C5 LedTable Migrator Test"
         C5LedTableMigrator: Codeunit "C5 LedTable Migrator";
     begin
         C5LedTableMigrator.OnMigrateGlAccount(GLAccDataMigrationFacade, C5LedTable.RecordId());
+        C5LedTableMigrator.OnMigrateGlAccountDimensions(GLAccDataMigrationFacade, C5LedTable.RecordId());
     end;
 
     local procedure CreateLedTableEntries(var C5LedTable: Record "C5 LedTable")
@@ -164,6 +170,9 @@ codeunit 148002 "C5 LedTable Migrator Test"
         C5LedTable.DCproposal := C5LedTable.DCproposal::" ";
         C5LedTable.AccountType := C5LedTable.AccountType::Heading;
         C5LedTable.Access := C5LedTable.Access::Locked;
+        C5LedTable.Department := CopyStr(Department1Txt, 1, 10);
+        C5LedTable.Centre := CopyStr(CostCentre1Txt, 1, 10);
+        c5LedTable.Purpose := CopyStr(Purpose1Txt, 1, 10);
         C5LedTable.Insert();
 
         C5LedTable.Init();
@@ -173,6 +182,9 @@ codeunit 148002 "C5 LedTable Migrator Test"
         C5LedTable.DCproposal := C5LedTable.DCproposal::" ";
         C5LedTable.AccountType := C5LedTable.AccountType::Heading;
         C5LedTable.Access := C5LedTable.Access::Locked;
+        C5LedTable.Department := CopyStr(Department1Txt, 1, 10);
+        C5LedTable.Centre := CopyStr(CostCentre1Txt, 1, 10);
+        C5LedTable.Purpose := CopyStr(Purpose1Txt, 1, 10);
         C5LedTable.Insert();
 
         C5LedTable.Init();
@@ -184,6 +196,9 @@ codeunit 148002 "C5 LedTable Migrator Test"
         C5LedTable.Vat := 'Salg';
         C5LedTable.BalanceMST := 3721.85;
         C5LedTable.Access := C5LedTable.Access::Open;
+        C5LedTable.Department := CopyStr(Department1Txt, 1, 10);
+        C5LedTable.Centre := CopyStr(CostCentre1Txt, 1, 10);
+        C5LedTable.Purpose := CopyStr(Purpose1Txt, 1, 10);
         C5LedTable.Insert();
 
         C5LedTable.Init();
@@ -195,6 +210,9 @@ codeunit 148002 "C5 LedTable Migrator Test"
         C5LedTable.TotalFromAccount := '1000';
         C5LedTable.BalanceMST := 3721.85;
         C5LedTable.Access := C5LedTable.Access::Locked;
+        C5LedTable.Department := CopyStr(Department1Txt, 1, 10);
+        C5LedTable.Centre := CopyStr(CostCentre1Txt, 1, 10);
+        C5LedTable.Purpose := CopyStr(Purpose1Txt, 1, 10);
         C5LedTable.Insert();
 
         C5LedTable.Init();
@@ -206,6 +224,9 @@ codeunit 148002 "C5 LedTable Migrator Test"
         C5LedTable.Vat := 'Køb';
         C5LedTable.BalanceMST := -80;
         C5LedTable.Access := C5LedTable.Access::Open;
+        C5LedTable.Department := CopyStr(Department1Txt, 1, 10);
+        C5LedTable.Centre := CopyStr(CostCentre1Txt, 1, 10);
+        C5LedTable.Purpose := CopyStr(Purpose1Txt, 1, 10);
         C5LedTable.Insert();
 
         C5LedTable.Init();
@@ -216,6 +237,9 @@ codeunit 148002 "C5 LedTable Migrator Test"
         C5LedTable.AccountType := C5LedTable.AccountType::"Balance a/c";
         C5LedTable.BalanceMST := 166379.71;
         C5LedTable.Access := C5LedTable.Access::Open;
+        C5LedTable.Department := CopyStr(Department1Txt, 1, 10);
+        C5LedTable.Centre := CopyStr(CostCentre1Txt, 1, 10);
+        C5LedTable.Purpose := CopyStr(Purpose1Txt, 1, 10);
         C5LedTable.Insert();
 
         C5LedTable.Init();
@@ -227,6 +251,28 @@ codeunit 148002 "C5 LedTable Migrator Test"
         C5LedTable.TotalFromAccount := '1000';
         C5LedTable.BalanceMST := 170021.56;
         C5LedTable.Access := C5LedTable.Access::Locked;
+        C5LedTable.Department := CopyStr(Department1Txt, 1, 10);
+        C5LedTable.Centre := CopyStr(CostCentre1Txt, 1, 10);
+        C5LedTable.Purpose := CopyStr(Purpose1Txt, 1, 10);
         C5LedTable.Insert();
+    end;
+
+    local procedure CheckDefaultDimensionExists(GLAccountNo: Text[10])
+    var
+        DefaultDimension: Record "Default Dimension";
+    begin
+        DefaultDimension.SetRange("Table ID", Database::"G/L Account");
+        DefaultDimension.SetRange("No.", GLAccountNo);
+        DefaultDimension.SetRange("Dimension Code", 'C5DEPARTMENT');
+        Assert.IsTrue(DefaultDimension.FindFirst(), 'Default dimension not found');
+        Assert.AreEqual(Uppercase(Department1Txt), DefaultDimension."Dimension Value Code", 'Incorrect value in department dimension.');
+
+        DefaultDimension.SetRange("Dimension Code", 'C5COSTCENTRE');
+        Assert.IsTrue(DefaultDimension.FindFirst(), 'Default dimension not found');
+        Assert.AreEqual(Uppercase(CostCentre1Txt), DefaultDimension."Dimension Value Code", 'Incorrect value in cost center dimension.');
+
+        DefaultDimension.SetRange("Dimension Code", 'C5PURPOSE');
+        Assert.IsTrue(DefaultDimension.FindFirst(), 'Default dimension not found');
+        Assert.AreEqual(Uppercase(Purpose1Txt), DefaultDimension."Dimension Value Code", 'Incorrect value in purpose dimension.');
     end;
 }
