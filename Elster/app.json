@@ -1,0 +1,20 @@
+{
+  "name": "ELSTER VAT Localization for Germany",
+  "publisher": "Microsoft",
+  "brief": "Create XML file needed to report VAT in Germany.",
+  "description": "With this app it is possible to create a XML file to use for reporting VAT in Germany, making it easy to comply with German VAT requirements.",
+  "version": "1.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+  "help": "https://go.microsoft.com/fwlink/?linkid=865141",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "capabilities": [],
+  "dependencies": [],
+  "screenshots": [],
+  "showMyCode": true,
+  "platform": "11.0.0.0",
+  "application": "11.0.0.0",
+  "test": "11.0.0.0",
+  "target": "Internal"
+}

@@ -1,0 +1,30 @@
+codeunit 10533 "MTD Validate Return"
+{
+    TableNo = "VAT Report Header";
+
+    trigger OnRun()
+    begin
+        Codeunit.Run(Codeunit::"VAT Report Validate", Rec);
+        ValidateVATReport(Rec);
+    end;
+
+    local procedure ValidateVATReport(VATReportHeader: Record "VAT Report Header")
+    var
+        VATReportSetup: Record "VAT Report Setup";
+        CompanyInformation: Record "Company Information";
+        ErrorMessage: Record "Error Message";
+    begin
+        ErrorMessage.SetContext(VATReportHeader);
+        WITH VATReportSetup DO BEGIN
+            Get();
+            ErrorMessage.ClearLogRec(VATReportSetup);
+            ErrorMessage.LogIfEmpty(VATReportSetup, FIELDNO("Report Version"), ErrorMessage."Message Type"::Error);
+        END;
+
+        WITH CompanyInformation DO BEGIN
+            Get();
+            ErrorMessage.ClearLogRec(CompanyInformation);
+            ErrorMessage.LogIfEmpty(CompanyInformation, FIELDNO("VAT Registration No."), ErrorMessage."Message Type"::Error);
+        END;
+    end;
+}

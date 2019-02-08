@@ -1,0 +1,48 @@
+pageextension 13656 "OIOUBL-Reminder" extends Reminder
+{
+    layout
+    {
+        addafter(Contact)
+        {
+            field("OIOUBL-Contact Phone No."; "OIOUBL-Contact Phone No.")
+            {
+                Tooltip = 'Specifies the telephone number of the contact person at the customer.';
+                ApplicationArea = Basic, Suite;
+            }
+            field("OIOUBL-Contact Fax No."; "OIOUBL-Contact Fax No.")
+            {
+                Tooltip = 'Specifies the fax number of the contact person at the customer.';
+                ApplicationArea = Basic, Suite;
+            }
+            field("OIOUBL-Contact E-Mail"; "OIOUBL-Contact E-Mail")
+            {
+                Tooltip = 'Specifies the email address of the contact person at the customer.';
+                ApplicationArea = Basic, Suite;
+            }
+            field("OIOUBL-Contact Role"; "OIOUBL-Contact Role")
+            {
+                Tooltip = 'Specifies the role of the contact person at the customer.';
+                ApplicationArea = Basic, Suite;
+            }
+        }
+
+        addafter("Currency Code")
+        {
+            field("OIOUBL-GLN"; "OIOUBL-GLN")
+            {
+                Tooltip = 'Specifies the GLN location number for the customer.';
+                ApplicationArea = Basic, Suite;
+            }
+            field("OIOUBL-Account Code"; "OIOUBL-Account Code")
+            {
+                Tooltip = 'Specifies the account code of the customer.';
+                ApplicationArea = Basic, Suite;
+
+                trigger OnValidate();
+                begin
+                    CurrPage.ReminderLines.PAGE.UpdateLines(TRUE);
+                end;
+            }
+        }
+    }
+}

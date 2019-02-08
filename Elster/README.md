@@ -1,0 +1,1 @@
+With this extension it is possible to create a XML file to use for reporting VAT in Germany, making it easy to comply with German VAT requirements.
