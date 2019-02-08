@@ -1,3 +1,8 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 tableextension 13645 "OIOUBL-Sales&Receivables Setup" extends "Sales & Receivables Setup"
 {
     fields

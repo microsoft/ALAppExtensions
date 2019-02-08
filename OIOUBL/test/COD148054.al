@@ -1,3 +1,8 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
 {
     Subtype = Test;
