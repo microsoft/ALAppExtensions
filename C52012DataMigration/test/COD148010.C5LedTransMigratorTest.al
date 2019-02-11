@@ -15,6 +15,7 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         Department2Txt: Label 'Dep2', Locked = true;
         CostCentre2Txt: Label 'Centre2', Locked = true;
         Purpose2Txt: Label 'Purpose2', Locked = true;
+        AccDefaultDimensionTxt: Label 'AccDefaultDep', Locked = true;
 
     trigger OnRun();
     begin
@@ -48,6 +49,7 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         DataMigrationStatus."Destination Table ID" := Database::"G/L Account";
         DataMigrationStatus.Insert();
         CreateGLAccount();
+        SetGLAccountDefaultDepartment();
 
         // [GIVEN] The Period Start Day is 1/1/2017
         C5SchemaParameters.GetSingleInstance();
@@ -73,11 +75,10 @@ codeunit 148010 "C5 LedTrans Migrator Test"
                 FirstTime := false;
                 Assert.AreEqual(GLAccountCodeTok, GenJournalLine."Account No.", 'Account No. was different than expected');
             end else begin
-                Assert.AreEqual(GLAccountCode2Tok, GenJournalLine."Account No.", 'Account No. was different than expected');
                 CurrentDate := CalcDate('<+1D>', CurrentDate);
-
-                // Check dimensions are created for non-aggregated transactions
-                if (GenJournalLine."Posting Date" >= C5SchemaParameters.CurrentPeriod) then begin
+                Assert.AreEqual(GLAccountCode2Tok, GenJournalLine."Account No.", 'Account No. was different than expected');
+                if (GenJournalLine."Posting Date" = C5SchemaParameters.CurrentPeriod) then begin
+                    // Check dimensions are migrated for non-aggregated transaction
                     DimensionSetEntry.SetRange("Dimension Set ID", GenJournalLine."Dimension Set ID");
                     DimensionSetEntry.SetRange("Dimension Code", 'C5DEPARTMENT');
                     DimensionSetEntry.FindFirst();
@@ -92,7 +93,10 @@ codeunit 148010 "C5 LedTrans Migrator Test"
                     DimensionSetEntry.SetRange("Dimension Code", 'C5Purpose');
                     DimensionSetEntry.FindFirst();
                     Assert.AreEqual(UpperCase(Purpose2Txt), DimensionSetEntry."Dimension Value Code", 'Incorrect purpose code');
-                end;
+                end else
+                    if (GenJournalLine."Posting Date" > C5SchemaParameters.CurrentPeriod) then
+                        //Check G/L Account's Default Dimension does not override Transaction's empty Dimension 
+                        Assert.AreEqual(0, GenJournalLine."Dimension Set ID", 'Incorrect Dimension Set ID code');
             end;
 
         until GenJournalLine.Next() = 0;
@@ -158,6 +162,7 @@ codeunit 148010 "C5 LedTrans Migrator Test"
     var
         C5LedTrans: Record "C5 LedTrans";
     begin
+        //Begin Aggregate Transactions
         C5LedTrans.Init();
         C5LedTrans.RecId := 1;
         C5LedTrans.Account := CopyStr(GLAccountCodeTok, 1, 10);
@@ -165,9 +170,6 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.AmountCur := 500;
         C5LedTrans.VatAmount := 0;
         C5LedTrans.Date_ := DMY2Date(1, 9, 2016);
-        C5LedTrans.Department := CopyStr(Department2Txt, 1, 10);
-        C5LedTrans.Centre := CopyStr(CostCentre2Txt, 1, 10);
-        C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
 
         C5LedTrans.Init();
@@ -177,9 +179,6 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.AmountCur := 500;
         C5LedTrans.VatAmount := 0;
         C5LedTrans.Date_ := DMY2Date(1, 10, 2016);
-        C5LedTrans.Department := CopyStr(Department2Txt, 1, 10);
-        C5LedTrans.Centre := CopyStr(CostCentre2Txt, 1, 10);
-        C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
 
         C5LedTrans.Init();
@@ -189,9 +188,6 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.AmountCur := 500;
         C5LedTrans.VatAmount := 0;
         C5LedTrans.Date_ := DMY2Date(1, 11, 2016);
-        C5LedTrans.Department := CopyStr(Department2Txt, 1, 10);
-        C5LedTrans.Centre := CopyStr(CostCentre2Txt, 1, 10);
-        C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
 
         C5LedTrans.Init();
@@ -201,11 +197,10 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.AmountCur := 500;
         C5LedTrans.VatAmount := 0;
         C5LedTrans.Date_ := DMY2Date(1, 12, 2016);
-        C5LedTrans.Department := CopyStr(Department2Txt, 1, 10);
-        C5LedTrans.Centre := CopyStr(CostCentre2Txt, 1, 10);
-        C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
+        //End Aggregate Transations
 
+        //Create C5LedTrans with different dimensions than those from Account
         C5LedTrans.Init();
         C5LedTrans.RecId := 5;
         C5LedTrans.Account := CopyStr(GLAccountCode2Tok, 1, 10);
@@ -218,6 +213,7 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
 
+        //Create C5LedTrans with no dimensions
         C5LedTrans.Init();
         C5LedTrans.RecId := 6;
         C5LedTrans.Account := CopyStr(GLAccountCode2Tok, 1, 10);
@@ -225,9 +221,6 @@ codeunit 148010 "C5 LedTrans Migrator Test"
         C5LedTrans.AmountCur := 1000;
         C5LedTrans.VatAmount := 0;
         C5LedTrans.Date_ := DMY2Date(2, 1, 2017);
-        C5LedTrans.Department := CopyStr(Department2Txt, 1, 10);
-        C5LedTrans.Centre := CopyStr(CostCentre2Txt, 1, 10);
-        C5LedTrans.Purpose := CopyStr(Purpose2Txt, 1, 10);
         C5LedTrans.Insert();
     end;
 
@@ -243,12 +236,25 @@ codeunit 148010 "C5 LedTrans Migrator Test"
 
         GLAccount.Init();
         GLAccount."No." := CopyStr(GLAccountCode2Tok, 1, 20);
-        GLAccount.Name := 'Some name';
+        GLAccount.Name := 'AccWithDefaultDepartment';
         GLAccount.Insert();
 
         C5LedTable.Init();
         C5LedTable.Account := CopyStr(GLAccountCodeTok, 1, 10);
         C5LedTable.Insert();
+    end;
+
+    local procedure SetGLAccountDefaultDepartment()
+    var
+        Dimension: Record Dimension;
+        DimensionValue: Record "Dimension Value";
+        DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
+    begin
+        DataMigrationFacadeHelper.GetOrCreateDimension('C5Department', 'C5 Department Description', Dimension);
+        DataMigrationFacadeHelper.GetOrCreateDimensionValue(Dimension.Code, AccDefaultDimensionTxt, AccDefaultDimensionTxt,
+          DimensionValue);
+        DataMigrationFacadeHelper.CreateOnlyDefaultDimensionIfNeeded(Dimension.Code, DimensionValue.Code,
+          DATABASE::"G/L Account", GLAccountCode2Tok);
     end;
 
     local procedure Migrate()

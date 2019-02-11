@@ -123,6 +123,8 @@ codeunit 1871 "C5 LedTrans Migrator"
         GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade";
         C5HelperFunctions: Codeunit "C5 Helper Functions";
     begin
+        //To avoid migrating the Default Dimensions from the G/L Account
+        GenJournalLine."Dimension Set Id" := 0;
         GLAccDataMigrationFacade.SetGeneralJournalLineDimension(
             GenJournalLine,
             C5HelperFunctions.GetDepartmentDimensionCodeTxt(),
