@@ -12,25 +12,4 @@ codeunit 13647 "OIOUBL-Service-Post Subscriber"
     begin
         OIOXMLCheckServiceHeader.Run(PassedServHeader);
     end;
-
-    // TODO
-    // [EventSubscriber(ObjectType::Codeunit,Codeunit::"Service-Post+Print",'OnBeforeExportServiceInvoice','',false,false)]
-    // procedure OnBeforeExportServiceInvoice(var ServiceHeader : Record "Service Header";var ServInvHeader : Record "Service Invoice Header");
-    // var
-    //     OIOXMLExportServiceInvoice : Codeunit "OIOUBL-Export Service Invoice";
-    // begin
-    //     if ServiceHeader."OIOUBL-GLN" <> '' then
-    //         if ServInvHeader.FIND('=') then
-    //             OIOXMLExportServiceInvoice.RUN(ServInvHeader);
-    // end; 
-
-    // [EventSubscriber(ObjectType::Codeunit,Codeunit::"Service-Post+Print",'OnBeforeExportServiceCrMemo','',false,false)]
-    // procedure OnBeforeExportServiceCrMemo(var ServiceHeader : Record "Service Header";var ServCrMemoHeader : Record "Service Cr.Memo Header");
-    // var
-    //     OIOXMLExportServiceCrMemo : Codeunit "OIOUBL-Export Service Cr.Memo";
-    // begin
-    //     if ServiceHeader."OIOUBL-GLN" <> '' then
-    //         if ServCrMemoHeader.FIND('=') then
-    //             OIOXMLExportServiceCrMemo.RUN(ServCrMemoHeader);
-    // end; 
 }
