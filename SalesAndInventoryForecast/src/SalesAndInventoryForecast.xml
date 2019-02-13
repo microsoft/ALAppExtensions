@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <PermissionSets>
   <PermissionSet RoleID="SalesAndInventoryForecast" RoleName="Sales And Inventory Forecast">
     <Permission>
