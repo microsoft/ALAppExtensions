@@ -164,6 +164,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         SalesCrMemoLine: Record 115;
         SalesCrMemoLine2: Record 115;
         OIOUBLProfile: Record "OIOUBL-Profile";
+        OutputBlob: Record TempBlob temporary;
         BillToAddress: Record "Standard Address";
         SellToContact: Record Contact;
         RBMgt: Codeunit 419;
@@ -175,6 +176,8 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         TotalAmount: Decimal;
         TotalInvDiscountAmount: Decimal;
         TotalTaxAmount: Decimal;
+        IsHandled: Boolean;
+        IsExported: Boolean;
         OutputFile: File;
         FileOutstream: Outstream;
     begin
@@ -305,16 +308,29 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
 
         // CreditMemo->CreditMemoLine
         repeat
-            SalesCrMemoLine.TESTFIELD(Description);
+            OnBeforeInsertCrMemoLine(SalesCrMemoLine, XMLCurrNode, IsHandled);
 
-            ExcludeVAT(SalesCrMemoLine, SalesCrMemoHeader."Prices Including VAT");
-            InsertCrMemoLine(XMLCurrNode, SalesCrMemoHeader, SalesCrMemoLine, CurrencyCode);
+            if not IsHandled then begin
+                SalesCrMemoLine.TESTFIELD(Description);
+
+                ExcludeVAT(SalesCrMemoLine, SalesCrMemoHeader."Prices Including VAT");
+                InsertCrMemoLine(XMLCurrNode, SalesCrMemoHeader, SalesCrMemoLine, CurrencyCode);
+            end;
+            OnAfterInsertCrMemoLine(SalesCrMemoLine, XMLCurrNode);
         until SalesCrMemoLine.NEXT() = 0;
 
-        OutputFile.create(FromFile);
-        OutputFile.CreateOutStream(FileOutstream);
+        OutputBlob.Blob.CreateOutStream(FileOutstream);
         XMLdocOut.WriteTo(FileOutstream);
-        OutputFile.Close();
+        if OutputBlob.Insert() then
+            OnBeforeExportFile(OutputBlob, IsExported);
+
+
+        if not IsExported then begin
+            OutputFile.create(FromFile);
+            OutputFile.CreateOutStream(FileOutstream);
+            XMLdocOut.WriteTo(FileOutstream);
+            OutputFile.Close();
+        end;
     end;
 
     procedure ReadCompanyInfo();
@@ -351,6 +367,25 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
             "Inv. Discount Amount" := ROUND("Inv. Discount Amount" / ExclVATFactor, Currency."Amount Rounding Precision");
             "Unit Price" := ROUND("Unit Price" / ExclVATFactor, Currency."Amount Rounding Precision");
         end;
+    end;
+
+
+
+    [BusinessEvent(false)]
+    local procedure OnBeforeInsertCrMemoLine(var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var XMLCurrNode: XmlElement; var IsHandled: Boolean);
+    begin
+    end;
+
+
+
+    [BusinessEvent(false)]
+    local procedure OnAfterInsertCrMemoLine(var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var XMLCurrNode: XmlElement);
+    begin
+    end;
+
+    [BusinessEvent(false)]
+    local procedure OnBeforeExportFile(var OutputBlob: Record TempBlob; var IsExported: Boolean);
+    begin
     end;
 
 }

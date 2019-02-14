@@ -202,23 +202,26 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
 
     local procedure CreateXML(SalesInvoiceHeader: Record "Sales Invoice Header") FromFile: Text[250];
     var
-        SalesInvLine: Record "Sales Invoice Line";
-        SalesInvLine2: Record "Sales Invoice Line";
-        OIOUBLProfile: Record "OIOUBL-Profile";
-        DeliveryAddress: Record "Standard Address";
         BillToAddress: Record "Standard Address";
+        DeliveryAddress: Record "Standard Address";
+        OIOUBLProfile: Record "OIOUBL-Profile";
+        OutputBlob: Record TempBlob temporary;
+        SalesInvLine2: Record "Sales Invoice Line";
+        SalesInvLine: Record "Sales Invoice Line";
         SellToContact: Record Contact;
         RBMgt: Codeunit "File Management";
+        OutputFile: File;
         XMLCurrNode: XmlElement;
         XMLdocOut: XmlDocument;
+        FileOutstream: Outstream;
+        IsExported: Boolean;
+        IsHandled: Boolean;
         CurrencyCode: Code[10];
         TaxableAmount: Decimal;
         TaxAmount: Decimal;
         TotalAmount: Decimal;
         TotalInvDiscountAmount: Decimal;
         TotalTaxAmount: Decimal;
-        OutputFile: File;
-        FileOutstream: Outstream;
     begin
         CODEUNIT.RUN(CODEUNIT::"OIOUBL-Check Sales Invoice", SalesInvoiceHeader);
         ReadGLSetup();
@@ -377,16 +380,27 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
 
         // Invoice->InvoiceLine
         repeat
-            SalesInvLine.TESTFIELD(Description);
+            OnBeforeInsertInvoiceLine(SalesInvLine, XMLCurrNode, IsHandled);
+            if IsHandled then begin
+                SalesInvLine.TESTFIELD(Description);
 
-            ExcludeVAT(SalesInvLine, SalesInvoiceHeader."Prices Including VAT");
-            InsertInvoiceLine(XMLCurrNode, SalesInvoiceHeader, SalesInvLine, CurrencyCode);
+                ExcludeVAT(SalesInvLine, SalesInvoiceHeader."Prices Including VAT");
+                InsertInvoiceLine(XMLCurrNode, SalesInvoiceHeader, SalesInvLine, CurrencyCode);
+            end;
+            OnAfterInsertInvoiceLine(SalesInvLine, XMLCurrNode);
         until SalesInvLine.NEXT() = 0;
 
-        OutputFile.create(FromFile);
-        OutputFile.CreateOutStream(FileOutstream);
+        OutputBlob.Blob.CreateOutStream(FileOutstream);
         XMLdocOut.WriteTo(FileOutstream);
-        OutputFile.Close();
+        if OutputBlob.Insert() then
+            OnBeforeExportFile(OutputBlob, IsExported);
+
+        if not IsExported then begin
+            OutputFile.create(FromFile);
+            OutputFile.CreateOutStream(FileOutstream);
+            XMLdocOut.WriteTo(FileOutstream);
+            OutputFile.Close();
+        end;
     end;
 
     procedure ReadCompanyInfo();
@@ -434,4 +448,20 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         end;
     end;
 
+    [BusinessEvent(false)]
+    local procedure OnBeforeInsertInvoiceLine(var SalesInvoiceLine: Record "Sales Invoice Line"; var XMLCurrNode: XmlElement; var IsHandled: Boolean);
+    begin
+    end;
+
+
+
+    [BusinessEvent(false)]
+    local procedure OnAfterInsertInvoiceLine(var SalesInvoiceLine: Record "Sales Invoice Line"; var XMLCurrNode: XmlElement);
+    begin
+    end;
+
+    [BusinessEvent(false)]
+    local procedure OnBeforeExportFile(var OutputBlob: Record TempBlob; var IsExported: Boolean);
+    begin
+    end;
 }
