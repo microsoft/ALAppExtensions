@@ -381,7 +381,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         // Invoice->InvoiceLine
         repeat
             OnBeforeInsertInvoiceLine(SalesInvLine, XMLCurrNode, IsHandled);
-            if IsHandled then begin
+            if not IsHandled then begin
                 SalesInvLine.TESTFIELD(Description);
 
                 ExcludeVAT(SalesInvLine, SalesInvoiceHeader."Prices Including VAT");
