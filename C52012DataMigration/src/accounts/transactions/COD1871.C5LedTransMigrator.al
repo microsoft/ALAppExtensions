@@ -87,9 +87,7 @@ codeunit 1871 "C5 LedTrans Migrator"
         DataMigrationStatusFacade.UpdateLineStatus(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), Database::"C5 LedTrans", DataMigrationStatus.Status::Completed);
     end;
 
-
-
-    local procedure InsertNewGenJournalLine(var GenJournalLine: Record "Gen. Journal Line"; GenJournalBatch: Record "Gen. Journal Batch"; LineAmount: Decimal; PostingDate: Date; DueDate: Date; Account: Code[10]; DocumentNo: Text; DescriptionText: Text)
+    local procedure InsertNewGenJournalLine(GenJournalBatch: Record "Gen. Journal Batch"; LineAmount: Decimal; PostingDate: Date; DueDate: Date; Account: Code[10]; DocumentNo: Text; DescriptionText: Text)
     var
         C5LedTableMigrator: Codeunit "C5 LedTable Migrator";
         LineNo: Integer;

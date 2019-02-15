@@ -98,7 +98,6 @@ codeunit 148010 "C5 LedTrans Migrator Test"
                         //Check G/L Account's Default Dimension does not override Transaction's empty Dimension 
                         Assert.AreEqual(0, GenJournalLine."Dimension Set ID", 'Incorrect Dimension Set ID code');
             end;
-
         until GenJournalLine.Next() = 0;
 
         // [THEN] The dashboard shows that the migration is completed and all records have been migrated
