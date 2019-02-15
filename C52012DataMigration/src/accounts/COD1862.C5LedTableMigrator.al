@@ -18,10 +18,10 @@ codeunit 1862 "C5 LedTable Migrator"
     begin
         if Evaluate(VarInteger, Value) then begin
             if MaxAccountLength = 0 then
-                MaxAccountLength := FindMaxAccountLength();
+                MaxAccountLength := FindMaxAccountLength(); 
             MaxLength := MaxAccountLength;
 
-            exit(PADSTR('', MaxLength - StrLen(Value), '0') + Value);
+            exit(PADSTR('', MaxLength - StrLen(Value), '0') + Value);      
         end else
             exit(Value);
     end;
