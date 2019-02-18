@@ -176,7 +176,6 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         TotalAmount: Decimal;
         TotalInvDiscountAmount: Decimal;
         TotalTaxAmount: Decimal;
-        IsHandled: Boolean;
         IsExported: Boolean;
         OutputFile: File;
         FileOutstream: Outstream;
@@ -308,29 +307,13 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
 
         // CreditMemo->CreditMemoLine
         repeat
-            OnBeforeInsertCrMemoLine(SalesCrMemoLine, XMLCurrNode, IsHandled);
-
-            if not IsHandled then begin
-                SalesCrMemoLine.TESTFIELD(Description);
-
-                ExcludeVAT(SalesCrMemoLine, SalesCrMemoHeader."Prices Including VAT");
-                InsertCrMemoLine(XMLCurrNode, SalesCrMemoHeader, SalesCrMemoLine, CurrencyCode);
-            end;
-            OnAfterInsertCrMemoLine(SalesCrMemoLine, XMLCurrNode);
+            AddCrMemoLineToDocument(XMLCurrNode, SalesCrMemoHeader, SalesCrMemoLine, CurrencyCode)
         until SalesCrMemoLine.NEXT() = 0;
 
-        OutputBlob.Blob.CreateOutStream(FileOutstream);
+        OutputFile.create(FromFile);
+        OutputFile.CreateOutStream(FileOutstream);
         XMLdocOut.WriteTo(FileOutstream);
-        if OutputBlob.Insert() then
-            OnBeforeExportFile(OutputBlob, IsExported);
-
-
-        if not IsExported then begin
-            OutputFile.create(FromFile);
-            OutputFile.CreateOutStream(FileOutstream);
-            XMLdocOut.WriteTo(FileOutstream);
-            OutputFile.Close();
-        end;
+        OutputFile.Close();
     end;
 
     procedure ReadCompanyInfo();
@@ -367,6 +350,21 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
             "Inv. Discount Amount" := ROUND("Inv. Discount Amount" / ExclVATFactor, Currency."Amount Rounding Precision");
             "Unit Price" := ROUND("Unit Price" / ExclVATFactor, Currency."Amount Rounding Precision");
         end;
+    end;
+
+    local procedure AddCrMemoLineToDocument(var XMLCurrNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header"; SalesCrMemoLine: Record "Sales Cr.Memo Line"; CurrencyCode: Code[10]);
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeInsertCrMemoLine(SalesCrMemoLine, XMLCurrNode, IsHandled);
+
+        if not IsHandled then begin
+            SalesCrMemoLine.TESTFIELD(Description);
+
+            ExcludeVAT(SalesCrMemoLine, SalesCrMemoHeader."Prices Including VAT");
+            InsertCrMemoLine(XMLCurrNode, SalesCrMemoHeader, SalesCrMemoLine, CurrencyCode);
+        end;
+        OnAfterInsertCrMemoLine(SalesCrMemoLine, XMLCurrNode);
     end;
 
 
