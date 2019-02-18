@@ -447,20 +447,20 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
             exit("Inv. Discount Amount" + "Line Discount Amount");
         end;
     end;
-
-    [BusinessEvent(false)]
+    
+    [IntegrationEvent(false,false)]
     local procedure OnBeforeInsertInvoiceLine(var SalesInvoiceLine: Record "Sales Invoice Line"; var XMLCurrNode: XmlElement; var IsHandled: Boolean);
     begin
     end;
 
 
 
-    [BusinessEvent(false)]
+    [IntegrationEvent(false,false)]
     local procedure OnAfterInsertInvoiceLine(var SalesInvoiceLine: Record "Sales Invoice Line"; var XMLCurrNode: XmlElement);
     begin
     end;
 
-    [BusinessEvent(false)]
+    [IntegrationEvent(false,false)]
     local procedure OnBeforeExportFile(var OutputBlob: Record TempBlob; var IsExported: Boolean);
     begin
     end;

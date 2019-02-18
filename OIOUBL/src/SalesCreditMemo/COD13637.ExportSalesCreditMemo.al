@@ -371,19 +371,19 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
 
 
 
-    [BusinessEvent(false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertCrMemoLine(var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var XMLCurrNode: XmlElement; var IsHandled: Boolean);
     begin
     end;
 
 
 
-    [BusinessEvent(false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterInsertCrMemoLine(var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var XMLCurrNode: XmlElement);
     begin
     end;
 
-    [BusinessEvent(false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeExportFile(var OutputBlob: Record TempBlob; var IsExported: Boolean);
     begin
     end;
