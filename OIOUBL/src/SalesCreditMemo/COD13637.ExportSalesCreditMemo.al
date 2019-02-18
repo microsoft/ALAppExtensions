@@ -225,6 +225,8 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         XMLCurrNode.Add(XmlElement.Create('IssueDate', DocNameSpace,
           OIOUBLDocumentEncode.DateToText(SalesCrMemoHeader."Posting Date")));
 
+        OnBeforeAddCrMemoHeaderToDocument(XMLCurrNode, SalesCrMemoHeader);
+
         XMLCurrNode.Add(XmlElement.Create('DocumentCurrencyCode', DocNameSpace, CurrencyCode));
         XMLCurrNode.Add(XmlElement.Create('AccountingCostCode', DocNameSpace, SalesCrMemoHeader."OIOUBL-Account Code"));
 
@@ -305,10 +307,14 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
             until SalesCrMemoLine2.NEXT() = 0;
         OIOUBLXMLGenerator.InsertLegalMonetaryTotal(XMLCurrNode, TaxableAmount, TaxAmount, TotalAmount, TotalInvDiscountAmount, CurrencyCode);
 
+        OnAfterAddCrMemoHeaderToDocument(XMLCurrNode, SalesCrMemoHeader);
+
         // CreditMemo->CreditMemoLine
         repeat
             AddCrMemoLineToDocument(XMLCurrNode, SalesCrMemoHeader, SalesCrMemoLine, CurrencyCode)
         until SalesCrMemoLine.NEXT() = 0;
+
+        OnAfterCreateDocument(XMLCurrNode, SalesCrMemoHeader);
 
         OutputFile.create(FromFile);
         OutputFile.CreateOutStream(FileOutstream);
@@ -367,6 +373,20 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         OnAfterInsertCrMemoLine(SalesCrMemoLine, XMLCurrNode);
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAddCrMemoHeaderToDocument(XMLCurrNode: XmlElement; var SalesCrMemoHeader: Record "Sales Cr.Memo Header");
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterAddCrMemoHeaderToDocument(XMLCurrNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header");
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateDocument(XMLCurrNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header");
+    begin
+    end;
 
 
     [IntegrationEvent(false, false)]

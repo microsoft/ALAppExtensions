@@ -272,6 +272,8 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
           XmlAttribute.Create('listAgencyID', '320'),
           '380'));
 
+        OnBeforeAddInvoiceHeaderToDocument(XMLCurrNode, SalesInvoiceHeader);
+
         XMLCurrNode.Add(XmlElement.Create('DocumentCurrencyCode', DocNameSpace, CurrencyCode));
         XMLCurrNode.Add(XmlElement.Create('AccountingCostCode', DocNameSpace, SalesInvoiceHeader."OIOUBL-Account Code"));
 
@@ -375,12 +377,13 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
             until SalesInvLine2.NEXT() = 0;
 
         OIOUBLXMLGenerator.InsertLegalMonetaryTotal(XMLCurrNode, TaxableAmount, TaxAmount, TotalAmount, TotalInvDiscountAmount, CurrencyCode);
-
+        OnAfterAddInvoiceHeaderToDocument(XMLCurrNode, SalesInvoiceHeader);
         // Invoice->InvoiceLine
         repeat
             AddSalesInvoiceLineToDocument(XMLCurrNode, SalesInvoiceHeader, SalesInvLine, CurrencyCode);
         until SalesInvLine.NEXT() = 0;
 
+        OnAfterCreateDocument(XMLCurrNode, SalesInvoiceHeader);
         OutputFile.create(FromFile);
         OutputFile.CreateOutStream(FileOutstream);
         XMLdocOut.WriteTo(FileOutstream);
@@ -445,6 +448,21 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         end;
         OnAfterInsertInvoiceLine(SalesInvLine, XMLCurrNode);
 
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAddInvoiceHeaderToDocument(XMLCurrNode: XmlElement; var SalesInvoiceHeader: Record "Sales Invoice Header");
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterAddInvoiceHeaderToDocument(XMLCurrNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header");
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateDocument(XMLCurrNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header");
+    begin
     end;
 
     [IntegrationEvent(false, false)]
