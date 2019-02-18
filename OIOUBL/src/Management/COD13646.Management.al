@@ -20,7 +20,7 @@ codeunit 13646 "OIOUBL-Management"
 
         OIOUBLFileEvents.FileCreated(SourceFile);
 
-        if FileManagement.CanRunDotNetOnClient() then begin
+        if not ExportFileFromEvent(SourceFile) and FileManagement.CanRunDotNetOnClient() then begin
             FilePath := FileManagement.DownloadTempFile(SourceFile);
             FileManagement.CopyClientFile(FilePath, STRSUBSTNO('%1\%2', FolderPath, FileName), true);
         end else
@@ -54,5 +54,20 @@ codeunit 13646 "OIOUBL-Management"
           (DocumentSendingProfile."Electronic Format" = 'OIOUBL') OR
           (DocumentSendingProfile."E-Mail Format" = 'OIOUBL') OR
           (DocumentSendingProfile."Disk Format" = 'OIOUBL'));
+    end;
+
+    local procedure ExportFileFromEvent(SourceFile: Text[1024]) IsExported: Boolean;
+    var
+        OutputBlob: Record TempBlob temporary;
+        FileManagement: Codeunit "File Management";
+    begin
+        FileManagement.BLOBImportFromServerFile(OutputBlob, SourceFile);
+        OnBeforeExportFile(OutputBlob, IsExported);
+    end;
+
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeExportFile(var OutputBlob: Record TempBlob; var IsExported: Boolean);
+    begin
     end;
 }
