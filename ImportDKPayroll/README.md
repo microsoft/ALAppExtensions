@@ -1,0 +1,1 @@
+Install payroll services data exchange definitions for Danish service providers: Danloen, Dataloen, Loenservice, Multiloen and Proloen.
