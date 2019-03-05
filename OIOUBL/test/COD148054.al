@@ -7,6 +7,7 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    EventSubscriberInstance = Manual;
 
     trigger OnRun();
     begin
@@ -98,6 +99,106 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
     begin
         // Verify created Electronic Invoice from posted Sales Invoice with Multiple GL and different VAT type and %.
         CreateAndPostSalesDocumentWithMultipleGL(SalesHeader."Document Type"::Invoice);
+    end;
+
+    [Test]
+    procedure ElectronicSalesInvoiceWithNewDescription()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesLine: Record "Sales Line";
+        me: Codeunit "OIOUBL-UT ERM Elec. Doc Sales";
+        OIOUBLExportSalesInvoice: Codeunit "OIOUBL-Export Sales Invoice";
+        DocumentNo: Code[20];
+    begin
+        // [GIVEN] Posted Sales Document with a multiple GL and different VAT type and %.
+        Initialize();
+        BindSubscription(me);
+        CreateSalesDocument(SalesLine, SalesHeader."Document Type"::Invoice, SalesLine.Type::"G/L Account", CreateGLAccount(FindNormalVAT()));
+        SalesHeader.GET(SalesLine."Document Type", SalesLine."Document No.");
+        CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::"G/L Account", CreateGLAccount(FindZeroVAT()));
+        DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        SalesInvoiceHeader.GET(DocumentNo);
+
+        // [WHEN] Electronic Invoice is created and subscriber changes the line description
+        OIOUBLExportSalesInvoice.ExportXML(SalesInvoiceHeader);
+
+        // [THEN] The description on the sales line of the generated xml file should be changed to NewSalesLineDescriptionTxt
+        LibraryXMLReadOnServer.Initialize(OIOUBLNewFileMock.PopFilePath()); // Initialize generated Electronic Invoice.
+        LibraryXMLReadOnServer.VerifyNodeValueInSubtree('cac:InvoiceLine', 'cbc:Amount', NewSalesLineDescriptionTxt);
+
+        UnbindSubscription(me);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"OIOUBL-Export Sales Invoice", 'OnBeforeInsertInvoiceLine', '', false, false)]
+    local procedure OIOUBLExportSalesInvoiceOnBeforeInsertInvoiceLine(var XMLCurrNode: XmlElement; var SalesInvoiceLine: Record "Sales Invoice Line"; var IsHandled: Boolean)
+    begin
+        SalesInvoiceLine.Description := NewSalesLineDescriptionTxt;
+    end;
+
+    [Test]
+    procedure ElectronicSalesCreditMemoWithNewDescription()
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        me: Codeunit "OIOUBL-UT ERM Elec. Doc Sales";
+        OIOUBLExportSalesCrMemo: Codeunit "OIOUBL-Export Sales Cr. Memo";
+        DocumentNo: Code[20];
+    begin
+        // [GIVEN] Posted Sales Document with a multiple GL and different VAT type and %.
+        Initialize();
+        BindSubscription(me);
+        CreateSalesDocument(SalesLine, SalesHeader."Document Type"::Invoice, SalesLine.Type::"G/L Account", CreateGLAccount(FindNormalVAT()));
+        SalesHeader.GET(SalesLine."Document Type", SalesLine."Document No.");
+        CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::"G/L Account", CreateGLAccount(FindZeroVAT()));
+        DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        SalesCrMemoHeader.GET(DocumentNo);
+
+        // [WHEN] Electronic Invoice is created and subscriber changes the line description
+        OIOUBLExportSalesCrMemo.ExportXML(SalesCrMemoHeader);
+
+        // [THEN] The description on the sales line of the generated xml file should be changed to NewSalesLineDescriptionTxt
+        LibraryXMLReadOnServer.Initialize(OIOUBLNewFileMock.PopFilePath()); // Initialize generated Electronic Invoice.
+        LibraryXMLReadOnServer.VerifyNodeValueInSubtree('cac:InvoiceLine', 'cbc:Amount', NewSalesLineDescriptionTxt);
+
+        UnbindSubscription(me);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"OIOUBL-Export Sales Cr. Memo", 'OnBeforeInsertCrMemoLine', '', false, false)]
+    local procedure OIOUBLExportSalesInvoiceOnBeforeInsertCrMemoLine(var XMLCurrNode: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var IsHandled: Boolean)
+    begin
+        SalesCrMemoLine.Description := NewSalesLineDescriptionTxt;
+    end;
+
+
+    procedure CreateAndPostSalesDocumentHandleExport()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesLine: Record "Sales Line";
+        FileManagement: Codeunit "File Management";
+        OIOUBLExportDocument: Codeunit "OIOUBL Export Document";
+        OIOUBLExportSalesInvoice: Codeunit "OIOUBL-Export Sales Invoice";
+        DocumentNo: Code[20];
+    begin
+        BindSubscription(OIOUBLExportDocument);
+        // [GIVEN] Posted Sales Document with a multiple GL and different VAT type and %.
+        Initialize();
+        CreateSalesDocument(SalesLine, SalesHeader."Document Type"::Invoice, SalesLine.Type::"G/L Account", CreateGLAccount(FindNormalVAT()));
+        SalesHeader.GET(SalesLine."Document Type", SalesLine."Document No.");
+        CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::"G/L Account", CreateGLAccount(FindZeroVAT()));
+        DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        SalesInvoiceHeader.GET(DocumentNo);
+
+        // [WHEN] Electronic Invoice is created.
+        OIOUBLExportSalesInvoice.ExportXML(SalesInvoiceHeader);
+
+        // [THEN] The document should not be exported to the server
+        // FileManagement
+        UnbindSubscription(OIOUBLExportDocument);
     end;
 
     local procedure CreateAndPostSalesDocumentWithMultipleGL(DocumentType: Option);
@@ -380,8 +481,7 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
         CLEAR(LibraryVariableStorage);
         UpdateSalesReceivablesSetup();
         UpdateOIOUBLCountryRegionCode();
-        LibraryERM.DisableMyNotifications(CopyStr(USERID(),1,50), SalesHeader.GetModifyCustomerAddressNotificationId());
-
+        LibraryERM.DisableMyNotifications(CopyStr(USERID(), 1, 50), SalesHeader.GetModifyCustomerAddressNotificationId());
         DocumentSendingProfile.DELETEALL();
         DocumentSendingProfile.INIT();
         DocumentSendingProfile.Default := true;
