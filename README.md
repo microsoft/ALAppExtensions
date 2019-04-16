@@ -1,8 +1,3 @@
-# Announcement: Endgame for the Spring Release
-Just a little heads up. For the next few weeks you’ll notice a slow-down, if not complete stops, in our activity here. As much as we’re enjoying our engagements, we’re entering the endgame for the Spring ’19 release and we need to focus on finishing up the exciting things we’re doing there. In the meantime, keep the requests coming, but please be patient with us for the next few weeks. We’ll be back!
-
----
-
 # Microsoft AL application add-on and localization extensions for Microsoft Dynamics 365 Business Central
 Welcome to the ALAppExtension repository!
 
