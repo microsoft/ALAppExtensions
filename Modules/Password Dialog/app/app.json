@@ -5,10 +5,10 @@
   "brief": "Sets and verifies passwords",
   "description": "This module introduces a dialog for the user to enter a password.",
   "version": "1.0.0.0",
-  "privacyStatement": "",
-  "EULA": "",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
   "help": "",
-  "url": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "logo": "",
   "dependencies": [],
   "screenshots": [],
@@ -17,5 +17,5 @@
     "from": 9810,
     "to": 9811
   },
-  "target": "Internal"
+  "target": "OnPrem"
 }

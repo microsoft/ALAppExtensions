@@ -5,10 +5,10 @@
   "brief": "",
   "description": "Tests for Blob Storage module",
   "version": "1.0.0.0",
-  "privacyStatement": "",
-  "EULA": "",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
   "help": "",
-  "url": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "logo": "",
   "dependencies": [
     {
@@ -16,8 +16,8 @@
       "appId": "e31ad830-3d46-472e-afeb-1d3d35247943",
       "publisher": "Microsoft",
       "version": "1.0.0.0"
-	  },
-	  {
+    },
+    {
       "name": "Library Assert",
       "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
       "publisher": "Microsoft",
@@ -26,9 +26,11 @@
   ],
   "screenshots": [],
   "platform": "14.0.0.0",
-  "idRanges": [{
-    "from": 135030,
-    "to": 135032
-  }],
+  "idRanges": [
+    {
+      "from": 135030,
+      "to": 135032
+    }
+  ],
   "target": "OnPrem"
 }

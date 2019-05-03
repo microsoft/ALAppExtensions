@@ -5,10 +5,10 @@
   "brief": "",
   "description": "Helper functions on RecordLinks",
   "version": "1.0.0.0",
-  "privacyStatement": "",
-  "EULA": "",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
   "help": "",
-  "url": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "logo": "",
   "dependencies": [
     {
@@ -16,17 +16,19 @@
       "publisher": "Microsoft",
       "name": "Confirm Management",
       "version": "1.0.0.0"
-    }],
+    }
+  ],
   "screenshots": [],
   "platform": "13.0.0.0",
   "idRanges": [
-   {
+    {
       "from": 447,
       "to": 447
-   },
-   {
+    },
+    {
       "from": 459,
       "to": 459
-   }],
-  "target": "Internal"
+    }
+  ],
+  "target": "OnPrem"
 }
