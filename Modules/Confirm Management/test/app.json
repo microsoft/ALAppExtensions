@@ -5,10 +5,10 @@
   "brief": "",
   "description": "Tests for the Confirm Management module",
   "version": "1.0.0.0",
-  "privacyStatement": "",
-  "EULA": "",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
   "help": "",
-  "url": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "logo": "",
   "dependencies": [
     {
@@ -22,12 +22,15 @@
       "publisher": "Microsoft",
       "name": "Library Assert",
       "version": "1.0.0.0"
-    }], 
+    }
+  ],
   "screenshots": [],
   "platform": "13.0.0.0",
-  "idRanges": [{
-    "from": 132509,
-    "to": 132509
-  }],
+  "idRanges": [
+    {
+      "from": 132509,
+      "to": 132509
+    }
+  ],
   "target": "OnPrem"
 }

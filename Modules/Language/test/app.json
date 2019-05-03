@@ -5,10 +5,10 @@
   "brief": "",
   "description": "Test Module for Language",
   "version": "1.0.0.0",
-  "privacyStatement": "",
-  "EULA": "",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
   "help": "",
-  "url": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "logo": "",
   "dependencies": [
     {
@@ -17,7 +17,7 @@
       "publisher": "Microsoft",
       "version": "1.0.0.0"
     },
-	  {
+    {
       "name": "Library Assert",
       "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
       "publisher": "Microsoft",
@@ -26,9 +26,11 @@
   ],
   "screenshots": [],
   "platform": "13.0.0.0",
-  "idRanges": [{
-    "from": 130043,
-    "to": 130043
-  }],
+  "idRanges": [
+    {
+      "from": 130043,
+      "to": 130043
+    }
+  ],
   "target": "OnPrem"
 }

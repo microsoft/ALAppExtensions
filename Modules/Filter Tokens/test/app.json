@@ -1,35 +1,36 @@
 {
-    "id": "0c848154-92c5-4b73-987b-fc94ae48e2ff",
-    "name": "Filter Tokens Test",
-    "publisher": "Microsoft",
-    "brief": "",
-    "description": "Tests for the Filter Tokens module",
-    "version": "1.0.0.0",
-    "privacyStatement": "",
-    "EULA": "",
-    "help": "",
-    "url": "",
-    "logo": "",
-    "dependencies": [{
-            "appId": "dcfc6d73-8259-4595-ad3e-c2574fe2a197",
-            "publisher": "Microsoft",
-            "name": "Filter Tokens",
-            "version": "1.0.0.0"
-        },
-        {
-            "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-            "publisher": "Microsoft",
-            "name": "Library Assert",
-            "version": "1.0.0.0"
-        }
-    ],
-    "screenshots": [],
-    "platform": "13.0.0.0",
-    "idRanges": [
-        {
-          "from": 135034,
-          "to": 135034
-        }
-      ],
-    "target": "OnPrem"
+  "id": "0c848154-92c5-4b73-987b-fc94ae48e2ff",
+  "name": "Filter Tokens Test",
+  "publisher": "Microsoft",
+  "brief": "",
+  "description": "Tests for the Filter Tokens module",
+  "version": "1.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+  "help": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "",
+  "dependencies": [
+    {
+      "appId": "dcfc6d73-8259-4595-ad3e-c2574fe2a197",
+      "publisher": "Microsoft",
+      "name": "Filter Tokens",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "name": "Library Assert",
+      "version": "1.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "13.0.0.0",
+  "idRanges": [
+    {
+      "from": 135034,
+      "to": 135034
+    }
+  ],
+  "target": "OnPrem"
 }
