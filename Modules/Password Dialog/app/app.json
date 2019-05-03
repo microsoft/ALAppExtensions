@@ -1,0 +1,21 @@
+{
+  "id": "a2ca2793-e1b4-461d-8251-dbe934daec78",
+  "name": "Password Dialog",
+  "publisher": "Microsoft",
+  "brief": "Sets and verifies passwords",
+  "description": "This module introduces a dialog for the user to enter a password.",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "14.0.0.0",
+  "idRange": {
+    "from": 9810,
+    "to": 9811
+  },
+  "target": "Internal"
+}

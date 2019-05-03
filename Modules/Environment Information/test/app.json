@@ -1,0 +1,24 @@
+{
+  "id": "8e422a5f-a5f2-4680-bc98-f6ccc4eb0c0d",
+  "name": "Environment Information Test",
+  "publisher": "Microsoft",
+  "brief": "",
+  "description": "Tests for Enviroment Information module",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [
+    {"appId": "2673d810-273e-402f-9093-2eaef7e03b83","publisher": "Microsoft","name": "Environment Information","version": "1.0.0.0"},
+    {"appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14","publisher": "Microsoft","name": "Library Assert","version": "1.0.0.0"}
+  ],
+  "screenshots": [],
+  "platform": "14.0.0.0",
+  "idRanges": [{
+    "from": 135091,
+    "to": 135091
+  }],
+  "target": "OnPrem"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "a4584a53-9345-458a-af20-d1df2fab7bd8",
+  "name": "Confirm Management",
+  "publisher": "Microsoft",
+  "brief": "Determines whether a confirm dialog displays when logic is run.",
+  "description": "Contains helper methods that either display a confirm dialog when logic is run, or suppresses it if UI is not allowed, such as background sessions or webservice calls.",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "13.0.0.0",
+  "idRanges": [
+    {
+      "from": 27,
+      "to": 27
+    },
+    {
+      "from": 30,
+      "to": 30
+    }
+  ],
+  "target": "OnPrem"
+}

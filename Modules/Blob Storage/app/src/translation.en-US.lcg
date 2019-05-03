@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LCX SchemaVersion="6.0" Name="Please update this value.g" PsrId="63" SrcCul="en-US" TgtCul="en-US" xmlns="http://schemas.microsoft.com/locstudio/2006/6/lcx">
+  <OwnedComments>
+    <Cmt Name="Dev" />
+    <Cmt Name="LcxAdmin" />
+    <Cmt Name="Rccx" />
+  </OwnedComments>
+  <Item ItemId=";Codeunit 4114771133 - NamedType 510615997" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[Object with index %1 does not exist.]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[, Comment='%1=Index of the object']D;]A;(LegacyId=C4109-Q1002-P26171)(LookupHint=Codeunit Temp Blob List Impl. - NamedType ObjectDoesNotExistErr)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Codeunit 4114771133 - NamedType 1642655653" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[There are not enough objects available to fulfill the request.]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=C4109-Q1004-P26171)(LookupHint=Codeunit Temp Blob List Impl. - NamedType InvalidNoObjectsRequestedErr)]]></Cmt>
+    </Cmts>
+  </Item>
+</LCX>

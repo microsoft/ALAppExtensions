@@ -1,0 +1,27 @@
+{
+  "id": "3d7bb555-6ce1-419f-9f11-fd3b351b0991",
+  "name": "Caption Class",
+  "publisher": "Microsoft",
+  "brief": "Defines how the CaptionClass property displays captions.",
+  "description": "Defines how the CaptionClass property displays captions for pages and tables. You can define rules for how captions display.",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "13.0.0.0",
+  "idRanges": [
+    {
+      "from": 42,
+      "to": 42
+    },
+    {
+      "from": 55,
+      "to": 55
+    }
+  ],
+  "target": "OnPrem"
+}
