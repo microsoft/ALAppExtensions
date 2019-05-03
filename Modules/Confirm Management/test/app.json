@@ -1,0 +1,33 @@
+{
+  "id": "96e34a9d-38cc-48a9-9938-d2194d67143d",
+  "name": "Confirm Management Test",
+  "publisher": "Microsoft",
+  "brief": "",
+  "description": "Tests for the Confirm Management module",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [
+    {
+      "appId": "a4584a53-9345-458a-af20-d1df2fab7bd8",
+      "publisher": "Microsoft",
+      "name": "Confirm Management",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "name": "Library Assert",
+      "version": "1.0.0.0"
+    }], 
+  "screenshots": [],
+  "platform": "13.0.0.0",
+  "idRanges": [{
+    "from": 132509,
+    "to": 132509
+  }],
+  "target": "OnPrem"
+}

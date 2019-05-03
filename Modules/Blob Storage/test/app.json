@@ -1,0 +1,34 @@
+{
+  "id": "7ee341f8-c6f1-4676-94ba-8b835fec1f84",
+  "name": "Blob Storage Test",
+  "publisher": "Microsoft",
+  "brief": "",
+  "description": "Tests for Blob Storage module",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [
+    {
+      "name": "Blob Storage",
+      "appId": "e31ad830-3d46-472e-afeb-1d3d35247943",
+      "publisher": "Microsoft",
+      "version": "1.0.0.0"
+	  },
+	  {
+      "name": "Library Assert",
+      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "version": "1.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "14.0.0.0",
+  "idRanges": [{
+    "from": 135030,
+    "to": 135032
+  }],
+  "target": "OnPrem"
+}

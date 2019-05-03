@@ -1,0 +1,34 @@
+{
+  "id": "56cc5306-fd3f-494b-b0b2-72ebae7945dc",
+  "name": "Language Test",
+  "publisher": "Microsoft",
+  "brief": "",
+  "description": "Test Module for Language",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [
+    {
+      "name": "Language",
+      "appId": "5c36f279-480c-451b-b513-c1af8cfb0744",
+      "publisher": "Microsoft",
+      "version": "1.0.0.0"
+    },
+	  {
+      "name": "Library Assert",
+      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "version": "1.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "13.0.0.0",
+  "idRanges": [{
+    "from": 130043,
+    "to": 130043
+  }],
+  "target": "OnPrem"
+}

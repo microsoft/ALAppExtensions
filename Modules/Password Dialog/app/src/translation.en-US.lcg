@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LCX SchemaVersion="6.0" Name="Please update this value.g" PsrId="63" SrcCul="en-US" TgtCul="en-US" xmlns="http://schemas.microsoft.com/locstudio/2006/6/lcx">
+  <OwnedComments>
+    <Cmt Name="Dev" />
+    <Cmt Name="LcxAdmin" />
+    <Cmt Name="Rccx" />
+  </OwnedComments>
+  <Item ItemId=";Codeunit 3991262771 - NamedType 4047091786" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[The passwords that you entered do not match.]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=C9811-Q1003-P26171)(LookupHint=Codeunit Password Dialog Impl. - NamedType PasswordMismatchErr)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Codeunit 3991262771 - NamedType 1260724060" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[The password that you entered does not meet the minimum requirements. It must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=C9811-Q1004-P26171)(LookupHint=Codeunit Password Dialog Impl. - NamedType PasswordTooSimpleErr)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Codeunit 3991262771 - NamedType 1731874155" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[Do you want to exit without entering a password?]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=C9811-Q1008-P26171)(LookupHint=Codeunit Password Dialog Impl. - NamedType ConfirmBlankPasswordQst)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Page 1306929145 - Property 2879900210" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[Enter Password]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=N9810-P8629)(LookupHint=Page Password Dialog - Property Caption)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Page 1306929145 - Control 3538439924 - Property 2879900210" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[Old Password]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=N9810-C4-P8629)(LookupHint=Page Password Dialog - Control OldPassword - Property Caption)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Page 1306929145 - Control 3538439924 - Property 1295455071" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[Specifies the current password, before the user defines a new one.]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=N9810-C4-P8631)(LookupHint=Page Password Dialog - Control OldPassword - Property ToolTip)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Page 1306929145 - Control 2575460289 - Property 2879900210" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[Password]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=N9810-C2-P8629)(LookupHint=Page Password Dialog - Control Password - Property Caption)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Page 1306929145 - Control 2575460289 - Property 1295455071" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[Specifies the password for this task. The password must consist of 8 or more characters, at least one uppercase letter, one lowercase letter, and one number.]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=N9810-C2-P8631)(LookupHint=Page Password Dialog - Control Password - Property ToolTip)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Page 1306929145 - Control 1619357887 - Property 2879900210" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[Confirm Password]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=N9810-C3-P8629)(LookupHint=Page Password Dialog - Control ConfirmPassword - Property Caption)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Page 1306929145 - Control 1619357887 - Property 1295455071" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[Specifies the password repeated.]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=N9810-C3-P8631)(LookupHint=Page Password Dialog - Control ConfirmPassword - Property ToolTip)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Page 1306929145 - NamedType 4047091786" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[The passwords that you entered do not match.]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=N9810-Q1003-P26171)(LookupHint=Page Password Dialog - NamedType PasswordMismatchErr)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Page 1306929145 - NamedType 1260724060" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[The password that you entered does not meet the minimum requirements. It must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=N9810-Q1004-P26171)(LookupHint=Page Password Dialog - NamedType PasswordTooSimpleErr)]]></Cmt>
+    </Cmts>
+  </Item>
+  <Item ItemId=";Report 2448602003 - NamedType 1528036445" ItemType=";" PsrId="63" InstFlg="true" Leaf="true">
+    <Str Cat="Text" CP="DOS">
+      <Val><![CDATA[Your Password has been updated.]]></Val>
+    </Str>
+    <Disp Icon="Str" Expand="true" />
+    <Cmts>
+      <Cmt Name="Dev"><![CDATA[(LegacyId=R9810-Q1000-P26171)(LookupHint=Report Change Password - NamedType PasswordUpdatedMsg)]]></Cmt>
+    </Cmts>
+  </Item>
+</LCX>

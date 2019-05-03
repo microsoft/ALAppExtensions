@@ -1,0 +1,27 @@
+{
+  "id": "e31ad830-3d46-472e-afeb-1d3d35247943",
+  "name": "Blob Storage",
+  "publisher": "Microsoft",
+  "brief": "Stores and manages data in a binary format.",
+  "description": "Provides a way to store various kinds of data. It consists of the TempBlob container to store BLOB data in-memory, the Persistent BLOB Management interface for storing BLOB data between sessions, and the TempBlob List interface for storing sequences of variables, each of which stores BLOB data. Potential uses are storing images, very long texts, PDF files, and so on.",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "14.0.0.0",
+  "idRanges": [
+    {
+      "from": 4100,
+      "to": 4109
+    },
+    { 
+      "from": 99008535,
+      "to": 99008536
+    }
+  ],
+  "target": "OnPrem"
+}
