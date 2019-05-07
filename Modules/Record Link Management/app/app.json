@@ -2,8 +2,8 @@
   "id": "82834e1e-bbf2-4184-b70e-ee44bca1ca10",
   "name": "Record Link Management",
   "publisher": "Microsoft",
-  "brief": "",
-  "description": "Helper functions on RecordLinks",
+  "brief": "Helper functions for RecordLinks",
+  "description": "Record links features allows user to add notes and links to almost any record into the system. The current module provides APIs for developer to deal with records, for example to transfer/copy link from one record to another, transform text input into BLOB format expected by platform, clean up orphaned links.",
   "version": "1.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
@@ -28,6 +28,10 @@
     {
       "from": 459,
       "to": 459
+    },
+    {
+      "from": 4470,
+      "to": 4470
     }
   ],
   "target": "OnPrem"
