@@ -29,7 +29,7 @@ Have a look at the following articles for detailed walkthroughs:
 * https://community.dynamics.com/business/b/businesscentraldevitpro/archive/2018/11/27/walkthrough-contributing-to-an-extension-on-github
 
 ## Can I contribute by submiting my own app?
-Currently we are accepting code contributions for published apps only.
+Currently we are accepting code contributions for published apps and modules only.
  
 ## Some APIs files aren't available in Extensions V2. What to do?
 Code that relies on temporary files must be rewritten to rely on InStream and OutStream data types instead. Code that relied on permanent files must be rewritten to use another form of permanent storage.
@@ -81,4 +81,4 @@ This GitHub repository is dedicated to handling issues with published apps and e
 Similar to the previous question, issues that aren't related to published apps or extensibility are not what this GitHub repository is intended for. In those cases please register your idea in one of the following resources:  
 
 * For functional improvements, go to [Business Central - Ideas](https://experience.dynamics.com/ideas/list/?forum=e288ef32-82ed-e611-8101-5065f38b21f1)  
-* For feature suggestions for AL compiler and developer tools, see [Github.com/Microsoft/AL](https://github.com/Microsoft/AL/issues) for feature suggestions for AL compiler and developer tools  
+* For feature suggestions for AL compiler and developer tools, see [Github.com/Microsoft/AL](https://github.com/Microsoft/AL/issues)  
