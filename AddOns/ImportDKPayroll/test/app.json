@@ -1,0 +1,32 @@
+{
+    "id": "781563f5-54de-45e1-a86b-bdb68d01e97f",
+    "name": "Payroll Data Import Definitions (DK) Tests",
+    "publisher": "Microsoft",
+    "brief": "Tests for the Payroll Data Import Definitions (DK) extension.",
+    "description": "Tests for the Payroll Data Import Definitions (DK) extension.",
+    "version": "1.0.0.0",
+    "privacyStatement": "",
+    "EULA": "",
+    "help": "",
+    "url": "",
+    "logo": "",
+    "dependencies": [
+        {
+            "appId": "a3c8a6e2-834a-4e73-b1f1-79e76b652659",
+            "publisher": "Microsoft",
+            "name": "Payroll Data Import Definitions (DK)",
+            "version": "1.0.0.0"
+        },
+        {
+            "appId": "fdb76c54-d6bc-45e6-9b2b-7288416c3226",
+            "publisher": "Microsoft",
+            "name": "Tests",
+            "version": "15.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "11.0.0.0",
+    "application": "11.0.0.0",
+    "target": "Internal",
+    "showMyCode": false
+}

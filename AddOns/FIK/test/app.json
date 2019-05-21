@@ -1,0 +1,32 @@
+{
+    "id": "a38c4cd2-d11e-4082-9f74-55231e60e03e",
+    "name": "Payment and Reconciliation Formats (DK) Tests",
+    "publisher": "Microsoft",
+    "brief": "Tests for the Payment and Reconciliation Formats (DK) extension.",
+    "description": "Tests for the Payment and Reconciliation Formats (DK) extension.",
+    "version": "1.0.0.0",
+    "privacyStatement": "",
+    "EULA": "",
+    "help": "",
+    "url": "",
+    "logo": "",
+    "dependencies": [
+        {
+            "appId": "644f7e5b-a81c-408a-aaa2-766e655a80a3",
+            "publisher": "Microsoft",
+            "name": "Payment and Reconciliation Formats (DK)",
+            "version": "1.0.0.0"
+        },
+        {
+            "appId": "fdb76c54-d6bc-45e6-9b2b-7288416c3226",
+            "publisher": "Microsoft",
+            "name": "Tests",
+            "version": "15.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "11.0.0.0",
+    "application": "11.0.0.0",
+    "target": "Internal",
+    "showMyCode": false
+}

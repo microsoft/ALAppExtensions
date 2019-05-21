@@ -1,0 +1,32 @@
+{
+    "id": "eda35a8b-a96e-4751-9d1a-49baf22368c7",
+    "name": "Making Tax Digital Localization for United Kingdom Tests",
+    "publisher": "Microsoft",
+    "brief": "Tests for the Making Tax Digital Localization for United Kingdom extension.",
+    "description": "Tests for the Making Tax Digital Localization for United Kingdom extension.",
+    "version": "1.0.0.0",
+    "privacyStatement": "",
+    "EULA": "",
+    "help": "",
+    "url": "",
+    "logo": "",
+    "dependencies": [
+        {
+            "appId": "38fa97fa-ebd1-4862-af24-77c4cee2c6ca",
+            "publisher": "Microsoft",
+            "name": "Making Tax Digital Localization for United Kingdom",
+            "version": "1.0.0.0"
+        },
+        {
+            "appId": "fdb76c54-d6bc-45e6-9b2b-7288416c3226",
+            "publisher": "Microsoft",
+            "name": "Tests",
+            "version": "15.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "11.0.0.0",
+    "application": "11.0.0.0",
+    "target": "Internal",
+    "showMyCode": false
+}

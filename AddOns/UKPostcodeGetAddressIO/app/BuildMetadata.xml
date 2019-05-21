@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <Countries>GB</Countries>
+  <IncludeInSaaS>Yes</IncludeInSaaS>
+  <IncludeOnPrem>Yes</IncludeOnPrem>
+  <Translate>No</Translate>  
+</root>

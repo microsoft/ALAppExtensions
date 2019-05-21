@@ -1,0 +1,19 @@
+{
+    "id": "e97bbbc7-16b6-470b-9428-376baa778970",
+    "name": "Send remittance advice by email",
+    "publisher": "Microsoft",
+    "brief": "Allows to send remittance advice to vendors by email",
+    "description": "Allows to send remittance advice to vendors by email from payment journal and from vendor ledger entries",
+    "version": "1.0.0.0",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "help": "",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo": "ExtensionLogo.png",
+    "dependencies": [],
+    "screenshots": [],
+    "platform": "13.0.0.0",
+    "application": "13.0.0.0",
+    "target": "Internal",
+    "showMyCode": true
+}
