@@ -1,0 +1,32 @@
+{
+    "id": "68488b17-530b-431c-99b2-d672cf7bddfc",
+    "name": "GetAddress.io UK Postcodes Tests",
+    "publisher": "Microsoft",
+    "brief": "Tests for the GetAddress.io UK Postcodes extension.",
+    "description": "Tests for the GetAddress.io UK Postcodes extension.",
+    "version": "1.0.0.0",
+    "privacyStatement": "",
+    "EULA": "",
+    "help": "",
+    "url": "",
+    "logo": "",
+    "dependencies": [
+        {
+            "appId": "f778a784-c01c-4f35-a409-331e7803e69c",
+            "publisher": "Microsoft",
+            "name": "GetAddress.io UK Postcodes",
+            "version": "2.0.0.0"
+        },
+        {
+            "appId": "fdb76c54-d6bc-45e6-9b2b-7288416c3226",
+            "publisher": "Microsoft",
+            "name": "Tests",
+            "version": "15.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "11.0.0.0",
+    "application": "11.0.0.0",
+    "target": "Internal",
+    "showMyCode": false
+}

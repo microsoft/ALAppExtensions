@@ -1,0 +1,32 @@
+{
+    "id": "e80b13df-5007-47d5-8718-715c986894f6",
+    "name": "Tax File Formats (DK) Tests",
+    "publisher": "Microsoft",
+    "brief": "Tests for the Tax File Formats (DK) extension.",
+    "description": "Tests for the Tax File Formats (DK) extension.",
+    "version": "1.0.0.0",
+    "privacyStatement": "",
+    "EULA": "",
+    "help": "",
+    "url": "",
+    "logo": "",
+    "dependencies": [
+        {
+            "appId": "2c97db9b-4aef-41e2-aa3e-03fa892c6815",
+            "publisher": "Microsoft",
+            "name": "Tax File Formats (DK)",
+            "version": "1.0.0.0"
+        },
+        {
+            "appId": "fdb76c54-d6bc-45e6-9b2b-7288416c3226",
+            "publisher": "Microsoft",
+            "name": "Tests",
+            "version": "15.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "11.0.0.0",
+    "application": "11.0.0.0",
+    "target": "Internal",
+    "showMyCode": false
+}

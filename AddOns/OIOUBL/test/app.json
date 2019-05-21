@@ -1,0 +1,32 @@
+{
+    "id": "47806e80-5909-4c49-ac86-0c04f96f540d",
+    "name": "OIOUBL Tests",
+    "publisher": "Microsoft",
+    "brief": "Tests for the OIOUBL extension.",
+    "description": "Tests for the OIOUBL extension.",
+    "version": "1.0.0.0",
+    "privacyStatement": "",
+    "EULA": "",
+    "help": "",
+    "url": "",
+    "logo": "",
+    "dependencies": [
+        {
+            "appId": "ac762be1-e90f-4a72-b519-612a5e3ddc2e",
+            "publisher": "Microsoft",
+            "name": "OIOUBL",
+            "version": "1.0.0.0"
+        },
+        {
+            "appId": "fdb76c54-d6bc-45e6-9b2b-7288416c3226",
+            "publisher": "Microsoft",
+            "name": "Tests",
+            "version": "15.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "11.0.0.0",
+    "application": "11.0.0.0",
+    "target": "Internal",
+    "showMyCode": false
+}
