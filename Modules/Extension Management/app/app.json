@@ -1,0 +1,60 @@
+{
+  "id": "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
+  "name": "Extension Management",
+  "publisher": "Microsoft",
+  "brief": "Provides the tools needed to manage an extension.",
+  "description": "Provides features for installing and uninstalling, downloading and uploading, and publishing extensions and their dependencies. It can also check whether an extension and its dependencies are installed.",
+  "version": "1.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009", 
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010", 
+  "help": "", 
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011", 
+  "logo": "",
+  "dependencies": [
+    {
+      "appId": "2673d810-273e-402f-9093-2eaef7e03b83",
+      "publisher": "Microsoft",
+      "name": "Environment Information",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "e31ad830-3d46-472e-afeb-1d3d35247943",
+      "publisher": "Microsoft",
+      "name": "BLOB Storage",
+      "version": "1.0.0.0"
+    },    
+    {
+      "appId": "1a023056-d6fe-41af-a16e-da7d678cf266",
+      "publisher": "Microsoft",
+      "name": "Server Settings",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "5c36f279-480c-451b-b513-c1af8cfb0744",
+      "publisher": "Microsoft",
+      "name": "Language",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "3a56c7d2-a594-4682-bd90-b10bfb177620",
+      "publisher": "Microsoft",
+      "name": "Azure Key Vault Management",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "a4584a53-9345-458a-af20-d1df2fab7bd8",
+      "publisher": "Microsoft",
+      "name": "Confirm Management",
+      "version": "1.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "14.0.0.0",
+  "idRanges": [
+    {
+      "from": 2500,
+      "to": 25011
+    }
+  ],
+  "target": "OnPrem"
+}

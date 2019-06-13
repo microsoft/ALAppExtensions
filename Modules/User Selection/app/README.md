@@ -1,0 +1,1 @@
+Provides a page where you look up and select one or more registered users. For example, this is useful for assigning a person to things like documents, processes, or items.

@@ -1,0 +1,35 @@
+{
+  "id": "c6d95e6c-4af4-49a7-a2bb-75aac5aea70c",
+  "name": "Auto Format Management Test",
+  "publisher": "Microsoft",
+  "brief": "",
+  "description": "Tests for the Auto Format Management module",
+  "version": "1.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+  "help": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "",
+  "dependencies": [
+    {
+      "appId": "34222918-6f0f-4623-a063-f716575b8529",
+      "publisher": "Microsoft",
+      "name": "Auto Format Management",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "name": "Library Assert",
+      "version": "1.0.0.0"
+    }], 
+  "screenshots": [],
+  "platform": "13.0.0.0",
+  "idRanges": [
+    {
+      "from": 132584,
+      "to": 132584
+    }
+  ],
+  "target": "OnPrem"
+}

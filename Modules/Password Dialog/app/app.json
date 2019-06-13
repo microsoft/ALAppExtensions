@@ -13,9 +13,9 @@
   "dependencies": [],
   "screenshots": [],
   "platform": "14.0.0.0",
-  "idRange": {
+  "idRanges": [{
     "from": 9810,
     "to": 9811
-  },
+  }],
   "target": "OnPrem"
 }
