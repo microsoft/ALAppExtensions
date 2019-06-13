@@ -1,9 +1,0 @@
-{
-    "al.enableCodeAnalysis": true,
-    "al.codeAnalyzers": [
-        "${CodeCop}",
-        "${AppSourceCop}"
-    ],
-    "al.ruleSetPath": "../firstparty.ruleset.json",
-    "editor.formatOnSave": true
-}
