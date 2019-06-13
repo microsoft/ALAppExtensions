@@ -26,9 +26,9 @@
   ],
   "screenshots": [],
   "platform": "14.0.0.0",
-  "idRange": {
+  "idRanges": [{
     "from": 135033,
     "to": 135033
-  },
+  }],
   "target": "OnPrem"
 }

@@ -1,0 +1,80 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+codeunit 6723 "Server Setting"
+{
+    SingleInstance = true;
+
+    trigger OnRun()
+    begin
+    end;
+
+    var
+        ServerSettingImpl: Codeunit "Server Setting Impl.";
+
+    /// <summary>Checks whether online extensions can be installed on the server.</summary>
+    /// <returns>True, if they can be installed; otherwise, false.</returns>
+    /// <remarks>Gets the value of the server setting EnableSaasExtensionInstallConfigSetting.</remarks>
+    [Scope('OnPrem')]
+    procedure GetEnableSaaSExtensionInstallSetting(): Boolean
+    begin
+        exit(ServerSettingImpl.GetEnableSaaSExtensionInstallSetting());
+    end;
+
+    /// <summary>Checks whether Excel add-in is enabled on the server.</summary>
+    /// <returns>True if enabled; otherwise, false.</returns>
+    /// <remarks>Gets the value of the server setting IsSaasExcelAddinEnabled.</remarks>
+    [Scope('OnPrem')]
+    procedure GetIsSaasExcelAddinEnabled(): Boolean
+    begin
+        exit(ServerSettingImpl.GetIsSaasExcelAddinEnabled());
+    end;
+
+    /// <summary>Checks whether the API Services are enabled.</summary>
+    /// <returns>True if enabled; otherwise, false.</returns>
+    /// <remarks>Gets the value of the server setting ApiServicesEnabled.</remarks>
+    [Scope('OnPrem')]
+    procedure GetApiServicesEnabled(): Boolean
+    begin
+        exit(ServerSettingImpl.GetApiServicesEnabled());
+    end;
+
+    /// <summary>Checks whether the API subscriptions are enabled./summary>
+    /// <returns>True if enabled; otherwise, false.</returns>
+    /// <remarks>Gets the value of the server setting ApiSubscriptionsEnabled.</remarks>
+    [Scope('OnPrem')]
+    procedure GetApiSubscriptionsEnabled(): Boolean
+    begin
+        exit(ServerSettingImpl.GetApiSubscriptionsEnabled());
+    end;
+
+    /// <summary>Gets the timeout for the notifications sent by API subscriptions.</summary>
+    /// <returns>The timeout value in milliseconds.</returns>
+    /// <remarks>Gets the value of the server setting ApiSubscriptionSendingNotificationTimeout.</remarks>
+    [Scope('OnPrem')]
+    procedure GetApiSubscriptionSendingNotificationTimeout(): Integer
+    begin
+        exit(ServerSettingImpl.GetApiSubscriptionSendingNotificationTimeout());
+    end;
+
+    /// <summary>Gets the maximum number of notifications that API subscriptions can send.</summary>
+    /// <returns>The maximum number of notifications that can be sent.</returns>
+    /// <remarks>Gets the value of the server setting ApiSubscriptionMaxNumberOfNotifications.</remarks>
+    [Scope('OnPrem')]
+    procedure GetApiSubscriptionMaxNumberOfNotifications(): Integer
+    begin
+        exit(ServerSettingImpl.GetApiSubscriptionMaxNumberOfNotifications());
+    end;
+
+    /// <summary>Gets the delay when starting to process API subscriptions.</summary>
+    /// <returns>The time value in milliseconds.</returns>
+    /// <remarks>Gets the value of the server setting ApiSubscriptionDelayTime.</remarks>
+    [Scope('OnPrem')]
+    procedure GetApiSubscriptionDelayTime(): Integer
+    begin
+        exit(ServerSettingImpl.GetApiSubscriptionDelayTime());
+    end;
+}
+

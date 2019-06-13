@@ -3,34 +3,22 @@
   "name": "Tenant License State Test",
   "publisher": "Microsoft",
   "brief": "",
-  "description": "Tests for the Tenant License State module",
+  "description": "Tests for the tenant license state codeunit",
   "version": "1.0.0.0",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+  "privacyStatement": "",
+  "EULA": "",
   "help": "",
-  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "url": "",
   "logo": "",
   "dependencies": [
-    {
-      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-      "name": "Library Assert",
-      "publisher": "Microsoft",
-      "version": "1.0.0.0"
-    },
-    {
-      "appId": "21566fb3-3c6b-4cac-a70d-052f5d66ac64",
-      "name": "Tenant License State",
-      "publisher": "Microsoft",
-      "version": "1.0.0.0"
-    }
+    { "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14", "name": "Library Assert", "publisher": "Microsoft", "version": "1.0.0.0" },
+    { "appId": "21566fb3-3c6b-4cac-a70d-052f5d66ac64", "name": "Tenant License State", "publisher": "Microsoft", "version": "1.0.0.0" }
   ],
   "screenshots": [],
   "platform": "14.0.0.0",
-  "idRanges": [
-    {
-      "from": 138077,
-      "to": 138077
-    }
-  ],
+  "idRanges": [{
+    "from": 138077,
+    "to": 138077
+  }],
   "target": "OnPrem"
 }

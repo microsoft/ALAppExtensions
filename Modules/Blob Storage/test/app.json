@@ -1,9 +1,9 @@
 {
   "id": "7ee341f8-c6f1-4676-94ba-8b835fec1f84",
-  "name": "Blob Storage Test",
+  "name": "BLOB Storage Test",
   "publisher": "Microsoft",
   "brief": "",
-  "description": "Tests for Blob Storage module",
+  "description": "Tests for the BLOB Storage module",
   "version": "1.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
@@ -12,7 +12,7 @@
   "logo": "",
   "dependencies": [
     {
-      "name": "Blob Storage",
+      "name": "BLOB Storage",
       "appId": "e31ad830-3d46-472e-afeb-1d3d35247943",
       "publisher": "Microsoft",
       "version": "1.0.0.0"

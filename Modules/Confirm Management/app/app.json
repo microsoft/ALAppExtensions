@@ -15,12 +15,8 @@
   "platform": "13.0.0.0",
   "idRanges": [
     {
-      "from": 27,
+      "from": 26,
       "to": 27
-    },
-    {
-      "from": 30,
-      "to": 30
     }
   ],
   "target": "OnPrem"
