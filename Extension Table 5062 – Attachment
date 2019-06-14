@@ -1,0 +1,2 @@
+The"RunAttachment" feature requires a publisher (OnforeRunAttachment). This must have the variables involved in the process (segment line, etc.) as well as an IsHandled parameter.
+ 
