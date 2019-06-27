@@ -1,0 +1,1 @@
+Calculates when the next event will occur. Events can recur daily, weekly, monthly or yearly.

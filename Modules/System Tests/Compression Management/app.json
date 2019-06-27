@@ -1,0 +1,48 @@
+{
+  "id": "3d336e51-d00c-4c13-981d-fda629fd457c",
+  "name": "Compression Management Test",
+  "publisher": "Microsoft",
+  "brief": "Tests the Compression Management module",
+  "description": "Tests for the Compression Management module",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [
+    {
+      "appId": "008c9419-0c3b-4d08-b03e-84e3adca689f",
+      "publisher": "Microsoft",
+      "name": "Compression Management",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "e31ad830-3d46-472e-afeb-1d3d35247943",
+      "publisher": "Microsoft",
+      "name": "BLOB Storage",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "name": "Library Assert",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+      "publisher": "Microsoft",
+      "name": "DotNet Aliases",
+      "version": "1.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "14.0.0.0",
+  "idRanges": [
+    {
+      "from": 139036,
+      "to": 139036
+    }
+  ],
+  "target": "OnPrem"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "3ade8173-2cc2-4727-8c57-eb0754f70cdc",
+  "name": "Translation",
+  "publisher": "Microsoft",
+  "brief": "Gets and stores translations.",
+  "description": "Gets and stores language translations that users specify for values in table fields.",
+  "version": "1.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+  "help": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "",
+  "dependencies": [
+    {
+      "appId": "5c36f279-480c-451b-b513-c1af8cfb0744",
+      "publisher": "Microsoft",
+      "name": "Language",
+      "version": "1.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "13.0.0.0",
+  "idRanges": [
+    {
+      "from": 3711,
+      "to": 3712
+    }
+  ],
+  "target": "OnPrem"
+}

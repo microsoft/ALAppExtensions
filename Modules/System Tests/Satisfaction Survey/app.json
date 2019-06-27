@@ -1,0 +1,64 @@
+{
+  "id": "24440755-c7e5-47af-b95c-971d66b4e2cd",
+  "name": "Satisfaction Survey Test",
+  "publisher": "Microsoft",
+  "brief": "Tests the Satisfaction Survey module",
+  "description": "Tests for the Satisfaction Survey module",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [
+    {
+      "appId": "5d03ef2d-13f0-4132-b941-48387b581434",
+      "publisher": "Microsoft",
+      "name": "Satisfaction Survey",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "name": "Library Assert",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "3a56c7d2-a594-4682-bd90-b10bfb177620",
+      "publisher": "Microsoft",
+      "name": "Azure Key Vault",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
+      "publisher": "Microsoft",
+      "name": "Client Type Management",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "2673d810-273e-402f-9093-2eaef7e03b83",
+      "publisher": "Microsoft",
+      "name": "Environment Information",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "815d5c15-02bd-4d58-a010-b66033de6625",
+      "publisher": "Microsoft",
+      "name": "DotNet Aliases Test",
+      "version": "1.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "15.0.0.0",
+  "idRanges": [
+    {
+      "from": 138074,
+      "to": 138074
+    },
+    {
+      "from": 138078,
+      "to": 138078
+    }
+  ],
+  "target": "OnPrem"
+}

@@ -1,0 +1,34 @@
+{
+    "id": "3a56c7d2-a594-4682-bd90-b10bfb177620",
+    "name": "Azure Key Vault",
+    "publisher": "Microsoft",
+    "brief": "Stores Azure Key Vault secrets for deployments.",
+    "description": "Azure Key Vault stores secrets for deployment. These secrets are not available for apps with \"target\" cloud. ISV solutions that are deployed in their own cluster and have their own key-vault can use this module to read shared secrets. The AKV should contain an \"AllowedApplicationSecrets\" key with a comma separated list of allowed secrets. Only white-listed keys can be read from the code.",
+    "version": "1.0.0.0",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "help": "",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo": "",
+    "dependencies": [    
+      {
+        "appId": "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+        "publisher": "Microsoft",
+        "name": "DotNet Aliases",
+        "version": "1.0.0.0"
+      }
+    ],
+    "screenshots": [],
+    "platform": "13.0.0.0",
+    "idRanges": [
+      {
+        "from": 2200,
+        "to": 2200
+      },
+      {    
+        "from": 2202,
+        "to": 2202
+      }
+    ],
+    "target": "OnPrem"
+  }

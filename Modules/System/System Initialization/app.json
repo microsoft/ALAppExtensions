@@ -1,0 +1,23 @@
+{
+  "id": "2955a828-6c0a-4d51-a1b8-a4cf2a040b9a",
+  "name": "System Initialization",
+  "publisher": "Microsoft",
+  "brief": "Executes non-business logic on user login.",
+  "description": "",
+  "version": "1.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+  "help": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "15.0.0.0",
+  "idRanges": [
+    {
+      "from": 150,
+      "to": 151
+    }
+  ],
+  "target": "OnPrem"
+}
