@@ -1,0 +1,36 @@
+{
+  "id": "eb65d818-4f43-4f81-b20b-f8ff726dc247",
+  "name": "User Login Times Test",
+  "publisher": "Microsoft",
+  "brief": "",
+  "description": "Tests for the User Login Times module",
+  "version": "1.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+  "help": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "",
+  "dependencies": [
+    {
+      "name": "User Login Times",
+      "appId": "959630b2-01c5-48d8-a477-d6d40da855fb",
+      "publisher": "Microsoft",
+      "version": "1.0.0.0"
+    },
+    {
+      "name": "Library Assert",
+      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "version": "1.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "13.0.0.0",
+  "idRanges": [
+	  {
+		"from": 130044,
+		"to": 130044
+	  }
+  ],
+  "target": "OnPrem"
+}

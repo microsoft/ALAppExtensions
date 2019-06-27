@@ -1,0 +1,34 @@
+{
+  "id": "068428d6-9323-45a7-bd7d-8cb5b1d61111",
+  "name": "Record Link Management Test",
+  "publisher": "Microsoft",
+  "brief": "",
+  "description": "Tests for the Record Link Management module",
+  "version": "1.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+  "help": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "",
+  "dependencies": [
+    {
+      "appId": "82834e1e-bbf2-4184-b70e-ee44bca1ca10",
+      "publisher": "Microsoft",
+      "name": "Record Link Management",
+      "version": "1.0.0.0"
+    },
+    {
+      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "name": "Library Assert",
+      "version": "1.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "13.0.0.0",
+  "idRange": {
+    "from": 132508,
+    "to": 132508
+  },
+  "target": "OnPrem"
+}

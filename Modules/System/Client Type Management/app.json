@@ -1,0 +1,25 @@
+{
+  "id": "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
+  "name": "Client Type Management",
+  "publisher": "Microsoft",
+  "brief": "Allows testing of code relying on different client types",
+  "description": "The purpose of this module is to allow testing of units that rely on client type other than the one on which the test executes. This is achieved by using the method GetCurrentClientType in the unit to compare the client type and subscribing to the event OnAfterGetCurrentClientType to alter the client type in the test.",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "13.0.0.0",
+  "idRanges": [{
+    "from": 4030,
+    "to": 4030
+  },
+  {
+    "from": 4032,
+    "to": 4032
+  }],
+  "target": "OnPrem"
+}

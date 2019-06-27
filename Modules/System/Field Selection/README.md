@@ -1,0 +1,1 @@
+Provides a page where you can look up and select one or more fields from one or more tables. For example, this is useful when you want to set up a KPI on a Role Center.

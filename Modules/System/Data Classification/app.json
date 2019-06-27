@@ -1,0 +1,32 @@
+{
+  "id": "370dcef7-9c6d-4a32-94b1-754230578672",
+  "name": "Data Classification",
+  "publisher": "Microsoft",
+  "brief": "Handles data classification for objects that might contain sensitive information.",
+  "description": "Helps you comply with data privacy standards by enabling you to classify data for objects that might contain sensitive information. Classifications for data sensitivity include normal, personal, company confidential, and sensitive.",
+  "version": "1.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+  "help": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "",
+  "capabilities": [],
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "15.0.0.0",
+  "idRanges": [
+	  {
+		"from": 1180,
+		"to": 1181
+	  },
+	  {
+		"from": 1183,
+		"to": 1183
+	  },	 
+	  {
+		"from": 1750,
+		"to": 1754
+	  }  
+  ],
+  "target": "OnPrem"
+}
