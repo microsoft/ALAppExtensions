@@ -1,0 +1,21 @@
+{
+  "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+  "name": "Library Assert",
+  "publisher": "Microsoft",
+  "brief": "Library used in tests to verify if the values are as expected. ",
+  "description": "In test code Library Assert should be used to compare the values and throw errors. TESTFIELD and ERROR must not be used in test code.",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "15.0.0.0",
+  "idRanges": [{
+    "from": 130002,
+    "to": 130002
+  }],
+  "target": "Cloud"
+}
