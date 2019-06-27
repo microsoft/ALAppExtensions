@@ -1,1 +1,0 @@
-Helper functions on RecordLinks.

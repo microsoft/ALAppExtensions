@@ -1,1 +1,0 @@
-Retrieves the current state of the tenant license, such as trial, paid, or suspended, including the start and end dates of the license.
