@@ -1,0 +1,23 @@
+{
+  "id": "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+  "name": "Any",
+  "publisher": "Microsoft",
+  "brief": "Library used to generate any values.",
+  "description": "In test code, Any should be used to generate any values.",
+  "version": "1.0.0.0",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "14.0.0.0",
+  "idRanges": [
+    {
+      "from": 130500,
+      "to": 130500
+    }
+  ],
+  "target": "Cloud"
+}
