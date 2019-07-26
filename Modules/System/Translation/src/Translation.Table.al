@@ -6,6 +6,7 @@
 table 3712 Translation
 {
     Caption = 'Translation';
+    Access = Internal;
 
     fields
     {
@@ -14,9 +15,9 @@ table 3712 Translation
             Caption = 'Language ID';
             TableRelation = Language."Windows Language ID";
         }
-        field(2; "Record ID"; RecordID)
+        field(2; "System ID"; Guid)
         {
-            Caption = 'Record ID';
+            Caption = 'System ID';
             Editable = false;
         }
         field(3; "Table ID"; Integer)
@@ -44,7 +45,7 @@ table 3712 Translation
 
     keys
     {
-        key(Key1; "Language ID", "Record ID", "Field ID")
+        key(Key1; "Language ID", "System ID", "Field ID")
         {
             Clustered = true;
         }

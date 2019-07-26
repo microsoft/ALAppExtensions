@@ -1,30 +1,32 @@
 {
-  "id": "f1d7a28a-e871-4eea-916e-203361cd31d9",
-  "name": "Recurrence Schedule",
-  "publisher": "Microsoft",
-  "brief": "Calculates when the next event will occur.",
-  "description": "Calculates when the next event will occur. Events can recur daily, weekly, monthly or yearly.",
-  "version": "1.0.0.0",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
-  "help": "",
-  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-  "logo": "",
-  "dependencies": [
-    {
-      "appId": "a4584a53-9345-458a-af20-d1df2fab7bd8",
-      "publisher": "Microsoft",
-      "name": "Confirm Management",
-      "version": "1.0.0.0"
-    }
-  ],
-  "screenshots": [],
-  "platform": "14.0.0.0",
-  "idRanges": [
-    {
-      "from": 4690,
-      "to": 4694
-    }
-  ],
-  "target": "OnPrem"
+    "id":  "f1d7a28a-e871-4eea-916e-203361cd31d9",
+    "name":  "Recurrence Schedule",
+    "publisher":  "Microsoft",
+    "brief":  "Calculates when the next event will occur.",
+    "description":  "Calculates when the next event will occur. Events can recur daily, weekly, monthly or yearly.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "a4584a53-9345-458a-af20-d1df2fab7bd8",
+                             "publisher":  "Microsoft",
+                             "name":  "Confirm Management",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  4690,
+                         "to":  4694
+                     }
+                 ],
+    "target":  "OnPrem"
 }

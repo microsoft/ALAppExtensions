@@ -1,21 +1,25 @@
 {
-  "id": "2edca772-d3b5-4cfc-9ed6-b17ce4bd53c9",
-  "name": "Object Selection",
-  "publisher": "Microsoft",
-  "brief": "Look up page for all of the application objects, including objects from installed extensions.",
-  "description": "",
-  "version": "1.0.0.0",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
-  "help": "",
-  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-  "logo": "",
-  "dependencies": [],
-  "screenshots": [],
-  "platform": "13.0.0.0",
-  "idRange": {
-    "from": 358,
-    "to": 358
-  },
-  "target": "OnPrem"
+    "id":  "2edca772-d3b5-4cfc-9ed6-b17ce4bd53c9",
+    "name":  "Object Selection",
+    "publisher":  "Microsoft",
+    "brief":  "Look up page for all of the application objects, including objects from installed extensions.",
+    "description":  "",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRange":  {
+                    "from":  358,
+                    "to":  358
+                },
+    "target":  "OnPrem"
 }

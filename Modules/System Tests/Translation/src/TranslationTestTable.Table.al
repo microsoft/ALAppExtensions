@@ -16,6 +16,10 @@ table 137121 "Translation Test Table"
         {
             Editable = false;
         }
+        field(3; SecondTextField; Text[2048])
+        {
+            Editable = false;
+        }
     }
 
     keys
@@ -29,11 +33,6 @@ table 137121 "Translation Test Table"
     trigger OnDelete()
     begin
         Translation.Delete(Rec);
-    end;
-
-    trigger OnRename()
-    begin
-        Translation.Rename(Rec, xRec.RecordId());
     end;
 
     var

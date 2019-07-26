@@ -1,27 +1,31 @@
 {
-  "id": "e595541f-d183-4e93-910c-3eb99ed23c7b",
-  "name": "Default Role Center",
-  "publisher": "Microsoft",
-  "brief": "Support for the default RoleCenter selection",
-  "description": "Support for the default RoleCenter selection",
-  "version": "1.0.0.0",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
-  "help": "",
-  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-  "logo": "",
-  "dependencies": [],
-  "screenshots": [],
-  "platform": "13.0.0.0",
-  "idRanges": [
-    {
-      "from": 9171,
-      "to": 9172
-    },
-    {
-      "from": 8999,
-      "to": 8999
-    }
-  ],
-  "target": "OnPrem"
+    "id":  "e595541f-d183-4e93-910c-3eb99ed23c7b",
+    "name":  "Default Role Center",
+    "publisher":  "Microsoft",
+    "brief":  "Support for the default RoleCenter selection",
+    "description":  "Support for the default RoleCenter selection",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  9171,
+                         "to":  9172
+                     },
+                     {
+                         "from":  8999,
+                         "to":  8999
+                     }
+                 ],
+    "target":  "OnPrem"
 }

@@ -11,7 +11,6 @@ codeunit 2301 "Tenant License State Impl."
         TenantLicenseStatePeriodProvider: DotNet TenantLicenseStatePeriodProvider;
         TenantLicenseStateProvider: DotNet TenantLicenseStateProvider;
 
-    [Scope('OnPrem')]
     procedure GetPeriod(TenantLicenseState: Enum "Tenant License State"): Integer
     var
         TenantLicenseStateValue: Integer;
@@ -20,7 +19,6 @@ codeunit 2301 "Tenant License State Impl."
         exit(TenantLicenseStatePeriodProvider.ALGetPeriod(TenantLicenseStateValue));
     end;
 
-    [Scope('OnPrem')]
     procedure GetStartDate(): DateTime
     var
         TenantLicenseState: Record "Tenant License State";
@@ -30,7 +28,6 @@ codeunit 2301 "Tenant License State Impl."
         exit(0DT);
     end;
 
-    [Scope('OnPrem')]
     procedure GetEndDate(): DateTime
     var
         TenantLicenseState: Record "Tenant License State";
@@ -40,19 +37,16 @@ codeunit 2301 "Tenant License State Impl."
         exit(0DT);
     end;
 
-    [Scope('OnPrem')]
     procedure IsEvaluationMode(): Boolean
     begin
         exit(GetLicenseState() = "Tenant License State"::Evaluation);
     end;
 
-    [Scope('OnPrem')]
     procedure IsTrialMode(): Boolean
     begin
         exit(GetLicenseState() = "Tenant License State"::Trial);
     end;
 
-    [Scope('OnPrem')]
     procedure IsTrialSuspendedMode(): Boolean
     var
         CurrentState: Enum "Tenant License State";
@@ -63,25 +57,21 @@ codeunit 2301 "Tenant License State Impl."
         exit((CurrentState = "Tenant License State"::Suspended) and (PreviousState = "Tenant License State"::Trial));
     end;
 
-    [Scope('OnPrem')]
     procedure IsTrialExtendedMode(): Boolean
     begin
         exit((GetTrialExtensions() > 1) and IsTrialMode());
     end;
 
-    [Scope('OnPrem')]
     procedure IsTrialExtendedSuspendedMode(): Boolean
     begin
         exit((GetTrialExtensions() > 1) and IsTrialSuspendedMode());
     end;
 
-    [Scope('OnPrem')]
     procedure IsPaidMode(): Boolean
     begin
         exit(GetLicenseState() = "Tenant License State"::Paid);
     end;
 
-    [Scope('OnPrem')]
     procedure IsPaidWarningMode(): Boolean
     var
         CurrentState: Enum "Tenant License State";
@@ -92,7 +82,6 @@ codeunit 2301 "Tenant License State Impl."
         exit((CurrentState = "Tenant License State"::Warning) and (PreviousState = "Tenant License State"::Paid));
     end;
 
-    [Scope('OnPrem')]
     procedure IsPaidSuspendedMode(): Boolean
     var
         CurrentState: Enum "Tenant License State";
@@ -111,13 +100,11 @@ codeunit 2301 "Tenant License State Impl."
         exit(TenantLicenseState.Count());
     end;
 
-    [Scope('OnPrem')]
     procedure ExtendTrialLicense()
     begin
         TenantLicenseStateProvider.ALExtendTrialLicense();
     end;
 
-    [Scope('OnPrem')]
     procedure GetLicenseState(): Enum "Tenant License State"
     var
         TenantLicenseState: Record "Tenant License State";

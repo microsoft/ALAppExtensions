@@ -15,6 +15,7 @@ codeunit 2503 "Extension Operation Impl"
         OperationInvokerHasBeenCreated: Boolean;
         InstallerHasBeenCreated: Boolean;
         ExtensionFileNameTxt: Label '%1_%2_%3.zip', Comment = '%1=Name, %2=Publisher, %3=Version', Locked = true;
+        OperationProgressMsg: Label 'We are installing the extension. You can view the progress on the Status page.';
         CurrentOperationProgressMsg: Label 'Extension deployment is in progress. Please check the Deployment Status page for updates.';
         ScheduledOperationMajorProgressMsg: Label 'Extension deployment has been scheduled for the next major version. Please check the Deployment Status page for updates.';
         ScheduledOperationMinorProgressMsg: Label 'Extension deployment has been scheduled for the next minor version. Please check the Deployment Status page for updates.';
@@ -29,18 +30,23 @@ codeunit 2503 "Extension Operation Impl"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure DeployExtension(PackageId: Guid; lcid: Integer)
+    procedure DeployExtension(PackageId: Guid; lcid: Integer; IsUIEnabled: Boolean)
     var
         NAVApp: Record "NAV App";
     begin
-        if NAVApp.Get(PackageId) then begin
-            InitializeOperationInvoker();
-            DotNetALNavAppOperationInvoker.DeployTarget(NAVApp.ID, Format(lcid));
-        end;
+        if NAVApp.Get(PackageId) then
+            DeployExtensionByAppId(NAVApp.ID, lcid, IsUIEnabled);
     end;
 
-    [Scope('OnPrem')]
+    procedure DeployExtensionByAppId(AppId: GUID; lcid: Integer; IsUIEnabled: Boolean)
+    begin
+        InitializeOperationInvoker();
+        DotNetALNavAppOperationInvoker.DeployTarget(AppId, Format(lcid));
+        if IsUIEnabled then
+            Message(OperationProgressMsg);
+    end;
+
+
     procedure UploadExtension(PackageStream: InStream; lcid: Integer)
     begin
         DotNetALPackageDeploymentSchedule := DotNetALPackageDeploymentSchedule.Immediate;
@@ -48,42 +54,58 @@ codeunit 2503 "Extension Operation Impl"
         DotNetALNavAppOperationInvoker.UploadPackage(PackageStream, DotNetALPackageDeploymentSchedule, Format(lcid));
     end;
 
-    [Scope('OnPrem')]
-    procedure DeployAndUploadExtension(FileStream: InStream; LanguageID: Integer; DeployTo: Option "Current version","Next minor version","Next major version")
+    procedure DeployAndUploadExtension(PackageStream: InStream; lcid: Integer; DeployTo: Option "Current version","Next minor version","Next major version")
     var
         DotNetALPackageDeploymentSchedule: DotNet ALPackageDeploymentSchedule;
     begin
+        InitializeOperationInvoker();
         case DeployTo of
             DeployTo::"Current version":
                 begin
                     DotNetALPackageDeploymentSchedule := DotNetALPackageDeploymentSchedule.Immediate;
-                    UploadExtension(FileStream, LanguageID);
+                    DotNetALNavAppOperationInvoker.UploadPackage(PackageStream, DotNetALPackageDeploymentSchedule, Format(lcid));
                     Message(CurrentOperationProgressMsg);
                 end;
             DeployTo::"Next minor version":
                 begin
                     DotNetALPackageDeploymentSchedule := DotNetALPackageDeploymentSchedule.StageForNextMinorUpdate;
-                    UploadExtension(FileStream, LanguageID);
+                    DotNetALNavAppOperationInvoker.UploadPackage(PackageStream, DotNetALPackageDeploymentSchedule, Format(lcid));
                     Message(ScheduledOperationMinorProgressMsg);
                 end;
             DeployTo::"Next major version":
                 begin
                     DotNetALPackageDeploymentSchedule := DotNetALPackageDeploymentSchedule.StageForNextUpdate;
-                    UploadExtension(FileStream, LanguageID);
+                    DotNetALNavAppOperationInvoker.UploadPackage(PackageStream, DotNetALPackageDeploymentSchedule, Format(lcid));
                     Message(ScheduledOperationMajorProgressMsg);
                 end;
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure UnpublishTenantExtension(PackageID: Guid)
+    procedure UnpublishExtension(PackageID: Guid): Boolean
+    var
+        NavApp: Record "NAV App";
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+    begin
+        if not (NavApp.Get(PackageID)) then
+            exit(false);
+
+        if (NavApp.Scope <> 1) then
+            exit(false);
+
+        if ExtensionInstallationImpl.IsInstalledByPackageId(PackageID) then
+            exit(false);
+
+        UnpublishUninstalledPerTenantExtension(PackageID);
+        exit(true);
+    end;
+
+    procedure UnpublishUninstalledPerTenantExtension(PackageID: Guid)
     begin
         AssertIsInitialized();
         DotNetNavAppALInstaller.ALUnpublishNavTenantApp(PackageID);
     end;
 
-    [Scope('OnPrem')]
-    procedure DownloadExtensionSource(PackageId: Guid)
+    procedure DownloadExtensionSource(PackageId: Guid): Boolean
     var
         NAVApp: Record "NAV App";
         TempBlob: Codeunit "Temp Blob";
@@ -95,7 +117,12 @@ codeunit 2503 "Extension Operation Impl"
         VersionString: Text;
         CleanFileName: Text;
     begin
-        NAVApp.Get(PackageId);
+        if not NAVApp.Get(PackageId) then
+            exit(false);
+
+        if (NavApp.Scope <> 1) then
+            exit(false);
+
         TempBlob.CreateOutStream(NvOutStream);
         VersionString :=
           ExtensionInstallationImpl.GetVersionDisplayString(NAVApp);
@@ -106,10 +133,10 @@ codeunit 2503 "Extension Operation Impl"
 
         TempBlob.CreateInStream(NvInStream);
 
-        DownloadFromStream(NvInStream, DialogTitleTxt, '', '*.*', CleanFileName);
+        exit(DownloadFromStream(NvInStream, DialogTitleTxt, '', '*.*', CleanFileName));
+
     end;
 
-    [Scope('OnPrem')]
     procedure DownloadDeploymentStatusDetails(OperationId: Guid)
     var
         TempBlob: Codeunit "Temp Blob";
@@ -125,14 +152,31 @@ codeunit 2503 "Extension Operation Impl"
         DownloadFromStream(NavInStream, DialogTitleTxt, '', OutExtTxt, DummyToFile);
     end;
 
-    [Scope('OnPrem')]
     procedure RefreshStatus(OperationID: Guid)
     begin
         InitializeOperationInvoker();
         DotNetALNavAppOperationInvoker.RefreshOperationStatus(OperationID);
     end;
 
-    [Scope('OnPrem')]
+    procedure ConfigureExtensionHttpClientRequestsAllowance(PackageId: Text; AreHttpClientRqstsAllowed: Boolean): Boolean
+    var
+        NavApp: Record "NAV App";
+        NavAppSetting: Record "NAV App Setting";
+    begin
+        if not NavApp.Get(PackageId) then
+            exit(false);
+
+        if not NavAppSetting.get(NavApp.ID) then
+            exit(false);
+
+
+        NavAppSetting.Validate("Allow HttpClient Requests", AreHttpClientRqstsAllowed);
+        NavAppSetting.Modify(true);
+
+        exit(true);
+
+    end;
+
     local procedure InitializeOperationInvoker()
     begin
         if not OperationInvokerHasBeenCreated then begin
@@ -141,21 +185,18 @@ codeunit 2503 "Extension Operation Impl"
         end;
     end;
 
-    [Scope('OnPrem')]
     procedure GetDeploymentDetailedStatusMessageAsStream(OperationId: Guid; OutStream: OutStream)
     begin
         InitializeOperationInvoker();
         DotNetALNavAppOperationInvoker.GetOperationDetailedStatusMessageAsStream(OperationId, OutStream);
     end;
 
-    [Scope('OnPrem')]
     procedure GetDeploymentDetailedStatusMessage(OperationId: Guid): Text
     begin
         InitializeOperationInvoker();
         exit(DotNetALNavAppOperationInvoker.GetOperationDetailedStatusMessage(OperationId));
     end;
 
-    [Scope('OnPrem')]
     procedure GetDeployOperationInfo(OperationId: Guid; var Version: Text; var Schedule: Text; var Publisher: Text; var AppName: Text; Description: Text)
     begin
         AppName := GetDeployOperationAppName(OperationId);
@@ -166,42 +207,36 @@ codeunit 2503 "Extension Operation Impl"
         Schedule := GetDeployOperationSchedule(OperationId);
     end;
 
-    [Scope('OnPrem')]
     procedure GetDeployOperationAppName(OperationId: Guid): Text
     begin
         InitializeOperationInvoker();
         exit(DotNetALNavAppOperationInvoker.GetDeployOperationAppName(OperationId));
     end;
 
-    [Scope('OnPrem')]
     procedure GetDeployOperationAppPublisher(OperationId: Guid): Text
     begin
         InitializeOperationInvoker();
         exit(DotNetALNavAppOperationInvoker.GetDeployOperationAppPublisher(OperationId));
     end;
 
-    [Scope('OnPrem')]
     procedure GetDeployOperationAppVersion(OperationId: Guid): Text
     begin
         InitializeOperationInvoker();
         exit(DotNetALNavAppOperationInvoker.GetDeployOperationAppVersion(OperationId));
     end;
 
-    [Scope('OnPrem')]
     procedure GetDeployOperationSchedule(OperationId: Guid): Text
     begin
         InitializeOperationInvoker();
         exit(DotNetALNavAppOperationInvoker.GetDeployOperationSchedule(OperationId));
     end;
 
-    [Scope('OnPrem')]
     procedure GetDeployOperationJobId(OperationId: Guid): Text
     begin
         InitializeOperationInvoker();
         exit(DotNetALNavAppOperationInvoker.GetDeployOperationJobId(OperationId));
     end;
 
-    [Scope('OnPrem')]
     procedure GetLatestVersionPackageIdByAppId(AppId: Guid): Guid
     var
         NavAppTable: Record "NAV App";
@@ -216,7 +251,6 @@ codeunit 2503 "Extension Operation Impl"
         exit(NullGuid);
     end;
 
-    [Scope('OnPrem')]
     procedure GetCurrentInstalledVersionPackageIdByAppId(AppId: Guid): Guid
     var
         NavAppTable: Record "NAV App";
@@ -234,7 +268,6 @@ codeunit 2503 "Extension Operation Impl"
         exit(NullGuid);
     end;
 
-    [Scope('OnPrem')]
     procedure GetSpecificVersionPackageIdByAppId(AppId: Guid; Name: Text; VersionMajor: Integer; VersionMinor: Integer; VersionBuild: Integer; VersionRevision: Integer): Guid
     var
         NavAppTable: Record "NAV App";
@@ -256,6 +289,7 @@ codeunit 2503 "Extension Operation Impl"
 
         if NavAppTable.Count() <> 1 then
             exit(NullGuid);
+
         if NavAppTable.FindFirst() then
             exit(NavAppTable."Package ID");
     end;

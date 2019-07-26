@@ -5,7 +5,7 @@
 
 table 1181 "Data Privacy Records"
 {
-    Access = Internal;
+    Access = Public;
     Caption = 'Data Privacy Records';
 
     fields

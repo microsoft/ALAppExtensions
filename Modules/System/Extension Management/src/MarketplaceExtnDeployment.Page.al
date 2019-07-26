@@ -32,10 +32,10 @@ page 2510 "Marketplace Extn Deployment"
 
                 trigger OnAssistEdit()
                 var
-                    LanguageManagement: Codeunit "Language Management";
+                    Language: Codeunit Language;
                 begin
-                    LanguageManagement.LookupApplicationLanguageId(LanguageID);
-                    LanguageName := LanguageManagement.GetWindowsLanguageNameByLanguageId(LanguageID);
+                    Language.LookupApplicationLanguageId(LanguageID);
+                    LanguageName := Language.GetWindowsLanguageName(LanguageID);
                 end;
             }
         }
@@ -54,7 +54,7 @@ page 2510 "Marketplace Extn Deployment"
 
                 trigger OnAction()
                 begin
-                    ExtensionMarketplaceImpl.InstallMarketplaceExtension(ID, LanguageID);
+                    ExtensionMarketplaceImpl.InstallMarketplaceExtension("ID", LanguageID, true);
 
                     CurrPage.Close();
                     exit;
@@ -65,10 +65,10 @@ page 2510 "Marketplace Extn Deployment"
 
     trigger OnInit()
     var
-        LanguageManagement: Codeunit "Language Management";
+        Language: Codeunit Language;
     begin
         LanguageID := GlobalLanguage();
-        LanguageName := LanguageManagement.GetWindowsLanguageNameByLanguageId(LanguageID);
+        LanguageName := Language.GetWindowsLanguageName(LanguageID);
     end;
 
     var

@@ -46,8 +46,7 @@ codeunit 1433 "Satisfaction Survey Mgt."
     [Scope('OnPrem')]
     procedure TryGetCheckUrl(var CheckUrl: Text): Boolean
     begin
-        CheckUrl := SatisfactionSurveyImpl.GetDisplayUrl();
-        exit(CheckUrl <> '');
+        exit(SatisfactionSurveyImpl.TryGetCheckUrl(CheckUrl));
     end;
 
     /// <summary>
@@ -57,7 +56,7 @@ codeunit 1433 "Satisfaction Survey Mgt."
     [Scope('OnPrem')]
     procedure GetRequestTimeoutAsync(): Integer
     begin
-        SatisfactionSurveyImpl.GetRequestTimeoutAsync();
+        exit(SatisfactionSurveyImpl.GetRequestTimeoutAsync());
     end;
 
     /// <summary>
@@ -83,7 +82,7 @@ codeunit 1433 "Satisfaction Survey Mgt."
     /// <summary>
     /// Activates a try to show the survey for the current user.
     /// </summary>
-    /// <returns>True if the survey is activated for the current user, false otherwise.</returns>
+    /// <returns>True if the survey state has been changed from inactive to active, false otherwise.</returns>
     [Scope('OnPrem')]
     procedure ActivateSurvey(): Boolean
     begin
@@ -93,7 +92,7 @@ codeunit 1433 "Satisfaction Survey Mgt."
     /// <summary>
     /// Deactivates a try to show the survey for the current user.
     /// </summary>
-    /// <returns>True if the survey is deactivated for the current user, false otherwise.</returns>
+    /// <returns>True if the survey state has been changed from active to inactive, false otherwise.</returns>
     [Scope('OnPrem')]
     procedure DeactivateSurvey(): Boolean
     begin

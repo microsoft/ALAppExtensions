@@ -11,25 +11,21 @@ codeunit 3701 "Tenant Settings Impl."
     var
         NavTenantSettingsHelper: DotNet NavTenantSettingsHelper;
 
-    [Scope('OnPrem')]
     procedure GetTenantId() TenantIdValue: Text
     begin
         NavTenantSettingsHelper.TryGetStringTenantSetting('TENANTID', TenantIdValue);
     end;
 
-    [Scope('OnPrem')]
     procedure GetAadTenantId() TenantAadIdValue: Text
     begin
         NavTenantSettingsHelper.TryGetStringTenantSetting('AADTENANTID', TenantAadIdValue);
     end;
 
-    [Scope('OnPrem')]
     procedure GetTenantDisplayName() TenantNameValue: Text
     begin
         NavTenantSettingsHelper.TryGetStringTenantSetting('DISPLAYNAME', TenantNameValue);
     end;
 
-    [Scope('OnPrem')]
     procedure GetApplicationFamily(): Text
     begin
         exit(NavTenantSettingsHelper.GetApplicationFamily());

@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to administer record links related to table records.
 /// </summary>
 codeunit 447 "Record Link Management"
 {

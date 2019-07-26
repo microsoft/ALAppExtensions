@@ -1,36 +1,38 @@
 {
-  "id": "9e3edadc-af00-4623-9762-5a119e41755f",
-  "name": "Caption Class Test",
-  "publisher": "Microsoft",
-  "brief": "",
-  "description": "Tests for the Caption Class module",
-  "version": "1.0.0.0",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
-  "help": "",
-  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-  "logo": "",
-  "dependencies": [
-    {
-      "name": "Caption Class",
-      "appId": "3d7bb555-6ce1-419f-9f11-fd3b351b0991",
-      "publisher": "Microsoft",
-      "version": "1.0.0.0"
-    },
-    {
-      "name": "Library Assert",
-      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-      "publisher": "Microsoft",
-      "version": "1.0.0.0"
-    }
-  ],
-  "screenshots": [],
-  "platform": "13.0.0.0",
-  "idRanges": [
-    {
-      "from": 132577,
-      "to": 132577
-    }
-  ],
-  "target": "OnPrem"
+    "id":  "9e3edadc-af00-4623-9762-5a119e41755f",
+    "name":  "Caption Class Test",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Tests for the Caption Class module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "name":  "Caption Class",
+                             "appId":  "3d7bb555-6ce1-419f-9f11-fd3b351b0991",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "Library Assert",
+                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  132577,
+                         "to":  132577
+                     }
+                 ],
+    "target":  "OnPrem"
 }

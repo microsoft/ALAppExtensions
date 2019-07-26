@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 1877 "Manual Setup Impl."
 {
     Access = Internal;
@@ -13,7 +18,6 @@ codeunit 1877 "Manual Setup Impl."
         ManualSetup.Insert(true);
     end;
 
-    [Scope('OnPrem')]
     procedure Insert(var ManualSetup: Record "Manual Setup"; Name: Text[50]; Description: Text[250]; Keywords: Text[250]; RunPage: Integer; IconName: Text[50])
     var
         EmptyGuid: Guid;
@@ -26,8 +30,7 @@ codeunit 1877 "Manual Setup Impl."
         SetIconOnRecord(ManualSetup, IconName);
     end;
 
-    [Scope('OnPrem')]
-    procedure InsertExtension(var ManualSetup: Record "Manual Setup"; Name: Text[50]; Description: Text[250]; Keywords: Text[250]; RunPage: Integer; ExtensionID: Guid)
+    procedure Insert(var ManualSetup: Record "Manual Setup"; Name: Text[50]; Description: Text[250]; Keywords: Text[250]; RunPage: Integer; ExtensionID: Guid)
     begin
         if ManualSetup.Get(Name) then
             exit;

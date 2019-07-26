@@ -8,7 +8,6 @@ codeunit 26 "Confirm Management Impl."
     Access = Internal;
     SingleInstance = true;
 
-    [Scope('OnPrem')]
     procedure GetResponseOrDefault(ConfirmQuestion: Text; DefaultButton: Boolean): Boolean
     begin
         if not IsGuiAllowed() then
@@ -16,7 +15,6 @@ codeunit 26 "Confirm Management Impl."
         exit(Confirm(ConfirmQuestion, DefaultButton));
     end;
 
-    [Scope('OnPrem')]
     procedure GetResponse(ConfirmQuestion: Text; DefaultButton: Boolean): Boolean
     begin
         if not IsGuiAllowed() then

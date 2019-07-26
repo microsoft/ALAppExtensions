@@ -41,7 +41,7 @@ codeunit 135034 "Filter Tokens Test"
         UNBINDSUBSCRIPTION(FilterTokensTest);
     end;
 
-    local procedure VerifyDateTimeFilter(FilterText: Text[250]; ExpectedText: Text[250])
+    local procedure VerifyDateTimeFilter(FilterText: Text; ExpectedText: Text)
     var
         OrgFilterText: Text[250];
         ExpectedFilterText: Text;
@@ -85,7 +85,7 @@ codeunit 135034 "Filter Tokens Test"
         UNBINDSUBSCRIPTION(FilterTokensTest);
     end;
 
-    local procedure VerifyTimeFilter(FilterText: Text[250]; ExpectedText: Text[250])
+    local procedure VerifyTimeFilter(FilterText: Text; ExpectedText: Text)
     var
         OrgFilterText: Text[250];
         ExpectedFilterText: Text;

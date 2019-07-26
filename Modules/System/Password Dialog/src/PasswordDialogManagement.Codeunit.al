@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to open dialogs for entering passwords with different settings.
 /// </summary>
 codeunit 9810 "Password Dialog Management"
 {
@@ -13,13 +13,13 @@ codeunit 9810 "Password Dialog Management"
     var
         PasswordDialogImpl: Codeunit "Password Dialog Impl.";
 
-        /// <summary>
-        /// Opens a dialog for the user to enter a password and returns the typed password if there is no validation error,
-        /// otherwise an empty text is returned.
-        /// </summary>
-        /// <param name="DisablePasswordValidation">Disables the checks for the password validity. Default value is false.</param>
-        /// <param name="DisablePasswordConfirmation">If set to true the new password is only needed once. Default value is false.</param>
-        /// <returns>The typed password, or empty text if the password validations fail.</returns>
+    /// <summary>
+    /// Opens a dialog for the user to enter a password and returns the typed password if there is no validation error,
+    /// otherwise an empty text is returned.
+    /// </summary>
+    /// <param name="DisablePasswordValidation">Disables the checks for the password validity. Default value is false.</param>
+    /// <param name="DisablePasswordConfirmation">If set to true the new password is only needed once. Default value is false.</param>
+    /// <returns>The typed password, or empty text if the password validations fail.</returns>
     procedure OpenPasswordDialog(DisablePasswordValidation: Boolean; DisablePasswordConfirmation: Boolean): Text
     begin
         exit(PasswordDialogImpl.OpenPasswordDialog(DisablePasswordValidation, DisablePasswordConfirmation));
@@ -31,7 +31,7 @@ codeunit 9810 "Password Dialog Management"
     /// </summary>
     /// <param name="DisablePasswordValidation">Disables the checks for the password validity. Default value is false.</param>
     /// <returns>The typed password, or empty text if the password validations fail.</returns>
-    procedure OpenPasswordDialog2(DisablePasswordValidation: Boolean): Text
+    procedure OpenPasswordDialog(DisablePasswordValidation: Boolean): Text
     begin
         exit(PasswordDialogImpl.OpenPasswordDialog(DisablePasswordValidation, false));
     end;
@@ -41,7 +41,7 @@ codeunit 9810 "Password Dialog Management"
     /// otherwise an empty text is returned.
     /// </summary>
     /// <returns>The typed password, or empty text if the password validations fail.</returns>
-    procedure OpenPasswordDialog3(): Text
+    procedure OpenPasswordDialog(): Text
     begin
         exit(PasswordDialogImpl.OpenPasswordDialog(false, false));
     end;
@@ -63,7 +63,6 @@ codeunit 9810 "Password Dialog Management"
     /// </summary>
     /// <param name="MinPasswordLength">The number of characters to be set as minimum requirement.</param>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnSetMinPasswordLength(var MinPasswordLength: Integer)
     begin
     end;

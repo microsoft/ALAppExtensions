@@ -26,7 +26,6 @@ codeunit 2500 "Extension Installation Impl"
         AlreadyUninstalledMsg: Label 'The extension %1 is not installed.', Comment = '%1=name of app';
         RestartActivityUninstallMsg: Label 'The %1 extension was successfully uninstalled. All active users must sign out and sign in again to see the navigation changes.', Comment = 'Indicates that users need to restart their activity to pick up new menusuite items. %1=Name of Extension';
 
-    [Scope('OnPrem')]
     procedure IsInstalledByPackageId(PackageID: Guid): Boolean
     var
         NAVAppInstalledApp: Record "NAV App Installed App";
@@ -39,7 +38,6 @@ codeunit 2500 "Extension Installation Impl"
         exit(not NAVAppInstalledApp.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
     procedure IsInstalledByAppId(AppID: Guid): Boolean
     var
         NAVAppInstalledApp: Record "NAV App Installed App";
@@ -48,22 +46,25 @@ codeunit 2500 "Extension Installation Impl"
         if (not NAVAppInstalledApp.ReadPermission()) or (not NAVAppInstalledApp.WritePermission()) then
             Error(PermissionErr);
 
-        NAVAppInstalledApp.SetRange("App ID", AppID);
-        exit(NOT NAVAppInstalledApp.IsEmpty());
+        exit(NAVAppInstalledApp.Get(AppID));
     end;
 
-    [Scope('OnPrem')]
     procedure InstallExtension(PackageId: Guid; Lcid: Integer; IsUIEnabled: Boolean): Boolean
+    var
+        NavApp: Record "NAV App";
     begin
         if IsUIEnabled = true then
             exit(InstallExtensionWithConfirmDialog(PackageId, Lcid));
 
+        if not NAVApp.Get(PackageId) then
+            exit(false);
+
         exit(InstallExtensionSilently(PackageId, Lcid));
     end;
 
-    [Scope('OnPrem')]
     procedure InstallExtensionSilently(PackageID: Guid; Lcid: Integer): Boolean
     begin
+
         AssertIsInitialized();
         DotNetNavAppALInstaller.ALInstallNavApp(PackageID, Lcid);
 
@@ -73,7 +74,6 @@ codeunit 2500 "Extension Installation Impl"
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure InstallExtensionWithConfirmDialog(PackageId: Guid; Lcid: Integer): Boolean
     var
         NAVApp: Record "NAV App";
@@ -81,7 +81,8 @@ codeunit 2500 "Extension Installation Impl"
         Dependencies: Text;
         CanChange: Boolean;
     begin
-        NAVApp.Get(PackageId);
+        if not NAVApp.Get(PackageId) then
+            exit(false);
 
         if IsInstalledByPackageId(PackageId) then begin
             Message(StrSubstNo(AlreadyInstalledMsg, NAVApp.Name));
@@ -106,7 +107,6 @@ codeunit 2500 "Extension Installation Impl"
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure GetExtensionInstalledDisplayString(PackageId: Guid): Text
     begin
         if IsInstalledByPackageId(PackageId) then
@@ -115,21 +115,18 @@ codeunit 2500 "Extension Installation Impl"
         exit(NotInstalledTxt);
     end;
 
-    [Scope('OnPrem')]
     procedure GetDependenciesForExtensionToInstall(PackageID: Guid): Text
     begin
         AssertIsInitialized();
         exit(DotNetNavAppALInstaller.ALGetAppDependenciesToInstallString(PackageID));
     end;
 
-    [Scope('OnPrem')]
     procedure GetDependentForExtensionToUninstall(PackageID: Guid): Text
     begin
         AssertIsInitialized();
         exit(DotNetNavAppALInstaller.ALGetDependentAppsToUninstallString(PackageID));
     end;
 
-    [Scope('OnPrem')]
     local procedure AssertIsInitialized()
     begin
         if not InstallerHasBeenCreated then begin
@@ -138,16 +135,19 @@ codeunit 2500 "Extension Installation Impl"
         end;
     end;
 
-    [Scope('OnPrem')]
     procedure UninstallExtension(PackageID: Guid; IsUIEnabled: Boolean): Boolean
+    var
+        NAVApp: Record "NAV App";
     begin
         if IsUIEnabled = true then
             exit(UninstallExtensionWithConfirmDialog(PackageID));
 
+        if not NAVApp.Get(PackageId) then
+            exit(false);
+
         exit(UninstallExtensionSilently(PackageID));
     end;
 
-    [Scope('OnPrem')]
     procedure UninstallExtensionSilently(PackageID: Guid): Boolean
     begin
         AssertIsInitialized();
@@ -159,7 +159,6 @@ codeunit 2500 "Extension Installation Impl"
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure UninstallExtensionWithConfirmDialog(PackageId: Guid): Boolean
     var
         NAVApp: Record "NAV App";
@@ -167,7 +166,8 @@ codeunit 2500 "Extension Installation Impl"
         Dependents: Text;
         CanChange: Boolean;
     begin
-        NAVApp.Get(PackageId);
+        if not NAVApp.Get(PackageId) then
+            exit(false);
 
         if not IsInstalledByPackageId(PackageId) then begin
             Message(StrSubstNo(AlreadyUninstalledMsg, NAVApp.Name));
@@ -195,7 +195,6 @@ codeunit 2500 "Extension Installation Impl"
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure GetVersionDisplayString(NAVApp: Record "NAV App"): Text
     begin
         if NAVApp."Version Build" <= -1 then
@@ -208,7 +207,6 @@ codeunit 2500 "Extension Installation Impl"
             NAVApp."Version Minor", NAVApp."Version Build", NAVApp."Version Revision"));
     end;
 
-    [Scope('OnPrem')]
     procedure IsInstalledNoPermissionCheck(ExtensionName: Text[250]): Boolean
     var
         NAVAppInstalledApp: Record "NAV App Installed App";
@@ -217,14 +215,6 @@ codeunit 2500 "Extension Installation Impl"
         exit(not NAVAppInstalledApp.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
-    procedure UnpublishTenantExtension(PackageID: Guid)
-    begin
-        AssertIsInitialized();
-        DotNetNavAppALInstaller.ALUnpublishNavTenantApp(PackageID);
-    end;
-
-    [Scope('OnPrem')]
     procedure RunExtensionInstallation(NAVApp: Record "NAV App"): Boolean
     var
         ExtensionDetails: Page "Extension Details";

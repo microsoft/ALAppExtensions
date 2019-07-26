@@ -182,44 +182,6 @@ codeunit 130044 "User Login Time Tracker Test"
         LibraryAssert.AreEqual(CurrentDate, PenultimateLoginDateTime, 'The penultimate login date is incorrect.');
     end;
 
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestCreateOrUpdateLoginInfo()
-    var
-        UserLogin: Record "User Login";
-    begin
-        // [GIVEN] The User Login table is empty
-        UserLogin.DeleteAll();
-
-        // [WHEN] Creating or updating the login info of the current user
-        UserLoginTimeTracker.CreateOrUpdateLoginInfo();
-
-        // [THEN] The User Login table should contain a single record
-        LibraryAssert.AreEqual(1, UserLogin.Count(), 'The User Login table should contain a single entry');
-
-        if UserLogin.FindSet() then;
-
-        // [THEN] The fields of the User Login table should be properly assigned	
-        LibraryAssert.AreEqual(UserSecurityId(), UserLogin."User SID", 'The user security ID is incorrect');
-        LibraryAssert.AreNotEqual(0D, UserLogin."First Login Date", 'The first login date should not be empty');
-        LibraryAssert.AreEqual(0DT, UserLogin."Penultimate Login Date", 'The penultimate login date should be 0DT, as the user had only logged in once');
-        LibraryAssert.AreNotEqual(0DT, UserLogin."Last Login Date", 'The last login date should not be empty');
-
-        // [WHEN] Creating or updating the login info of the current user a second time
-        UserLoginTimeTracker.CreateOrUpdateLoginInfo();
-
-        // [THEN] The User Login table should contain a single record
-        LibraryAssert.AreEqual(1, UserLogin.Count(), 'The User Login table should contain a single entry');
-
-        if UserLogin.FindSet() then;
-
-        // [THEN] The fields of the User Login table should be properly assigned	
-        LibraryAssert.AreEqual(UserSecurityId(), UserLogin."User SID", 'The user security ID is incorrect');
-        LibraryAssert.AreNotEqual(0D, UserLogin."First Login Date", 'The first login date should not be empty');
-        LibraryAssert.AreNotEqual(0DT, UserLogin."Penultimate Login Date", 'The penultimate not be empty');
-        LibraryAssert.AreNotEqual(0DT, UserLogin."Last Login Date", 'The last login date not be empty');
-    end;
-
     local procedure InsertUserLogin(UserSecurityId: Guid; LastLoginDateTime: DateTime; PenultimateLoginDateTime: DateTime)
     var
         UserLogin: Record "User Login";

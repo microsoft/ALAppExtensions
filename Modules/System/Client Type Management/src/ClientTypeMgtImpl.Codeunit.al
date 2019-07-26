@@ -8,7 +8,6 @@ codeunit 4032 "Client Type Mgt. Impl."
     Access = Internal;
     SingleInstance = true;
 
-    [Scope('OnPrem')]
     procedure GetCurrentClientType() CurrClientType: ClientType
     var
         ClientTypeManagement: Codeunit "Client Type Management";

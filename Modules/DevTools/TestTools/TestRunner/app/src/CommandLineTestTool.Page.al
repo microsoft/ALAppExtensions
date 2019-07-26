@@ -81,6 +81,16 @@ page 130455 "Command Line Test Tool"
                     FindAndDisableTestMethod();
                 end;
             }
+
+            field(TestResultJson; TestResultsJSONText)
+            {
+                ApplicationArea = All;
+                Caption = 'Test Result JSON';
+                MultiLine = true;
+                Editable = false;
+                ToolTip = 'Specifies the latest execution of the test as JSON';
+            }
+
             repeater(Control1)
             {
                 IndentationControls = Name;
@@ -176,6 +186,50 @@ page 130455 "Command Line Test Tool"
                     CurrPage.Update(true);
                 end;
             }
+
+            action(RunNextTest)
+            {
+                ApplicationArea = All;
+                Caption = 'Run N&ext Test';
+                Image = TestReport;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+
+                trigger OnAction()
+                var
+                    TestMethodLine: Record "Test Method Line";
+                    TestSuiteMgt: Codeunit "Test Suite Mgt.";
+                begin
+                    TestMethodLine.Copy(Rec);
+                    Clear(TestResultsJSONText);
+                    if TestSuiteMgt.RunNextTest(TestMethodLine) then
+                        TestResultsJSONText := TestSuiteMgt.TestResultsToJSON(TestMethodLine)
+                    else
+                        TestResultsJSONText := AllTestsExecutedTxt;
+
+                    if Find() then;
+                    CurrPage.Update(true);
+                end;
+            }
+
+            action(ClearTestResults)
+            {
+                ApplicationArea = All;
+                Caption = 'Clear Test R&esults';
+                Image = ClearLog;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+
+                trigger OnAction()
+                begin
+                    Rec.SetRange("Test Suite", CurrentSuiteName);
+                    Rec.ModifyAll(Result, Rec.Result::" ", true);
+                    Clear(TestResultsJSONText);
+                    CurrPage.Update(true);
+                end;
+            }
         }
     }
 
@@ -215,6 +269,8 @@ page 130455 "Command Line Test Tool"
         StackTrace: Text;
         ExtensionId: Text;
         RemoveTestMethod: Text;
+        TestResultsJSONText: Text;
+        AllTestsExecutedTxt: Label 'All tests executed.', Locked = true;
 
     local procedure ChangeTestSuite()
     var
@@ -307,7 +363,7 @@ page 130455 "Command Line Test Tool"
 
         TestMethodLine.SETRANGE(Name);
         TestMethodLine.SETRANGE(Run, TRUE);
-        if not TestMethodLine.FindFirst() then begin
+        if TestMethodLine.IsEmpty() then begin
             CodeunitTestMethodLine.VALIDATE(Run, FALSE);
             CodeunitTestMethodLine.Modify(TRUE);
         end;

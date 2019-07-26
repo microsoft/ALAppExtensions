@@ -21,7 +21,8 @@ codeunit 137121 "Translation Tests"
     procedure TestGettingAndSettingTranslations()
     var
         TranslationTestTable: Record "Translation Test Table";
-        TranslationRec: Record Translation;
+        Translation1: Text;
+        Translation2: Text;
     begin
         // [SCENARIO] Test the storage and retrieval of translations in different languages
 
@@ -34,25 +35,57 @@ codeunit 137121 "Translation Tests"
 
         // [WHEN] Set the translations in Global and another language
         Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), Text1Txt);
-        Translation.SetForLanguage(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030, Text2Txt);
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030, Text2Txt);
 
         // [THEN] Two records should have been created in the translation table
-        TranslationRec.SetRange("Record ID", TranslationTestTable.RecordId());
-        TranslationRec.SetRange("Field ID", TranslationTestTable.FieldNo(TextField));
-        Assert.AreEqual(2, TranslationRec.Count(), 'Incorrect number of translations stored');
-        TranslationRec.SetRange("Language ID", GlobalLanguage());
-        TranslationRec.FindFirst();
-        Assert.AreEqual(Text1Txt, TranslationRec.Value, 'Incorrect translation stored for global language');
-        TranslationRec.SetRange("Language ID", 1030);
-        TranslationRec.FindFirst();
-        Assert.AreEqual(Text2Txt, TranslationRec.Value, 'Incorrect translation stored for language');
+        Translation1 := Translation.Get(TranslationTestTable, TranslationTestTable.FieldNo(TextField));
+        Translation2 := Translation.Get(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030);
+        Assert.AreEqual(Text1Txt, Translation1, 'Incorrect translation stored for global language');
+        Assert.AreEqual(Text2Txt, Translation2, 'Incorrect translation stored for language');
 
         // [WHEN] Try to get the translations through API
         // [THEN] these should match the ones that were set
-        Assert.AreEqual(Text2Txt, Translation.GetForLanguage(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030),
+        Assert.AreEqual(Text2Txt, Translation.Get(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030),
           'Incorrect translation retrieved for language');
         Assert.AreEqual(Text1Txt, Translation.Get(TranslationTestTable, TranslationTestTable.FieldNo(TextField)),
           'Incorrect translation retrieved for global language');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestSetAndDeleteTranslations()
+    var
+        TranslationTestTable: Record "Translation Test Table";
+    begin
+        // [SCENARIO] Translations can be deleted
+
+        Initialize();
+
+        // [GIVEN] Create a record for which data in fields can be translated
+        TranslationTestTable.Init();
+        TranslationTestTable.PK := 1;
+        TranslationTestTable.Insert();
+
+        // [WHEN] Set the translations in 2 fields
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), Text1Txt);
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030, Text2Txt);
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(SecondTextField), Text3Txt);
+
+        // [WHEN] Delete the the translations for one field
+        Translation.Delete(TranslationTestTable, TranslationTestTable.FieldNo(TextField));
+
+        // [THEN] The translation for the field is deleted and for the second is not
+        Assert.AreEqual('', Translation.Get(TranslationTestTable, TranslationTestTable.FieldNo(TextField)),
+            'The translation should have been deleted');
+        Assert.AreEqual(Text3Txt, Translation.Get(TranslationTestTable, TranslationTestTable.FieldNo(SecondTextField)),
+            'Incorrect translation retrieved for the second text field');
+
+        // [WHEN] Delete the the translations for all the fields
+        Translation.Delete(TranslationTestTable);
+
+        // [THEN] The translation for the other field is deleted too
+        Assert.AreEqual('', Translation.Get(TranslationTestTable, TranslationTestTable.FieldNo(SecondTextField)),
+            'The translation should have been deleted');
     end;
 
     [Test]
@@ -61,9 +94,12 @@ codeunit 137121 "Translation Tests"
     procedure TestRetrivalAndStorageThroughUI()
     var
         TranslationTestTable: Record "Translation Test Table";
-        TranslationRec: Record Translation;
+        Translation: Codeunit Translation;
         TranslationTestPage: TestPage "Translation Test Page";
         TranslationPage: TestPage Translation;
+        Translation2: Text;
+        Translation3: Text;
+        Translation4: Text;
     begin
         // [SCENARIO] Tests if the Translation page shows the correct values stored
 
@@ -76,7 +112,7 @@ codeunit 137121 "Translation Tests"
 
         // [GIVEN] Set the translations in Global and another language
         Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), Text1Txt);
-        Translation.SetForLanguage(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030, Text2Txt);
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030, Text2Txt);
 
         // [WHEN] Record page is opened
         TranslationTestPage.Trap();
@@ -110,18 +146,12 @@ codeunit 137121 "Translation Tests"
         TranslationPage.Next();
 
         // [THEN] Verify translation records
-        TranslationRec.SetRange("Record ID", TranslationTestTable.RecordId());
-        TranslationRec.SetRange("Field ID", TranslationTestTable.FieldNo(TextField));
-        Assert.AreEqual(3, TranslationRec.Count(), 'Incorrect number of translations stored');
-        TranslationRec.SetRange("Language ID", GlobalLanguage());
-        TranslationRec.FindFirst();
-        Assert.AreEqual(Text3Txt, TranslationRec.Value, 'Incorrect translation stored for global language');
-        TranslationRec.SetRange("Language ID", 1030);
-        TranslationRec.FindFirst();
-        Assert.AreEqual(Text2Txt, TranslationRec.Value, 'Incorrect translation stored for DAN language');
-        TranslationRec.SetRange("Language ID", 1036);
-        TranslationRec.FindFirst();
-        Assert.AreEqual(Text4Txt, TranslationRec.Value, 'Incorrect translation stored for FRA language');
+        Translation3 := Translation.Get(TranslationTestTable, TranslationTestTable.FieldNo(TextField));
+        Translation2 := Translation.Get(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030);
+        Translation4 := Translation.Get(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1036);
+        Assert.AreEqual(Text3Txt, Translation3, 'Incorrect translation stored for global language');
+        Assert.AreEqual(Text2Txt, Translation2, 'Incorrect translation stored for DAN language');
+        Assert.AreEqual(Text4Txt, Translation4, 'Incorrect translation stored for FRA language');
     end;
 
     [Test]
@@ -173,34 +203,6 @@ codeunit 137121 "Translation Tests"
         Assert.IsFalse(TranslationPage.Next(), 'No more records should be available.');
     end;
 
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestRenameRecord()
-    var
-        TranslationTestTable: Record "Translation Test Table";
-        TranslationRec: Record Translation;
-        OldRecordID: RecordId;
-    begin
-        // [SCENARIO] Tests if the translations records are updated with the new key once a record is renamed
-
-        Initialize();
-
-        // [GIVEN] Create a record for which data in fields can be translated
-        CreateRecordWithTranslation(TranslationTestTable);
-
-        // [WHEN] Rename the record
-        OldRecordID := TranslationTestTable.RecordId();
-        TranslationTestTable.Rename(9999);
-
-        // [THEN] No translation records with old record ID
-        TranslationRec.SetRange("Record ID", OldRecordID);
-        Assert.IsTrue(TranslationRec.IsEmpty(), 'No records with the old record ID should exist.');
-
-        // [THEN] 2 Translation records with new record ID exist
-        TranslationRec.SetRange("Record ID", TranslationTestTable.RecordId());
-        Assert.AreEqual(2, TranslationRec.Count(), '2 records with the new record ID should exist.');
-    end;
-
     local procedure Initialize()
     var
         TranslationTestTable: Record "Translation Test Table";
@@ -238,7 +240,7 @@ codeunit 137121 "Translation Tests"
         TranslationTestTable.Insert();
         Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField),
           CalculateValue(TranslationTestTable, Text1Txt));
-        Translation.SetForLanguage(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030,
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030,
           CalculateValue(TranslationTestTable, Text2Txt));
     end;
 

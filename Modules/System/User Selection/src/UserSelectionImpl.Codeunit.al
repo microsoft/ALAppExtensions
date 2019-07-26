@@ -10,7 +10,6 @@ codeunit 9844 "User Selection Impl."
     var
         UserNameDoesNotExistErr: Label 'The user name %1 does not exist.', Comment = '%1 username';
 
-    [Scope('OnPrem')]
     procedure HideExternalUsers(var User: Record User)
     var
         EnvironmentInfo: Codeunit "Environment Information";
@@ -23,7 +22,6 @@ codeunit 9844 "User Selection Impl."
         User.FilterGroup(0);
     end;
 
-    [Scope('OnPrem')]
     procedure Open(var SelectedUser: Record User): Boolean
     var
         UserLookup: Page "User Lookup";
@@ -37,7 +35,6 @@ codeunit 9844 "User Selection Impl."
         exit(false);
     end;
 
-    [Scope('OnPrem')]
     procedure ValidateUserName(UserName: Code[50])
     var
         User: Record User;

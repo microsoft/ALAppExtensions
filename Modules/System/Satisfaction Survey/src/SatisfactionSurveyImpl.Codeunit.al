@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -19,8 +19,14 @@ codeunit 1432 "Satisfaction Survey Impl."
         NPSApiUrlEmptyTelemetryTxt: Label 'API URL is empty.', Locked = true;
         NoPermissionTxt: Label 'No permission.', Locked = true;
         NotSupportedTxt: Label 'Survey is not supported.', Locked = true;
+        HttpsTxt: Label 'https://', Locked = true;
+        InvalidCheckUrlTxt: Label 'Check URL is invalid.', Locked = true;
+        ValidCheckUrlTxt: Label 'Check URL is valid.', Locked = true;
+        AlreadyDeactivatedTxt: Label 'Survey is already deactivated.', Locked = true;
+        AlreadyActivatedTxt: Label 'Survey is already activated.', Locked = true;
+        DeactivatedTxt: Label 'Survey is deactivated.', Locked = true;
         ActivatedTxt: Label 'Survey is activated.', Locked = true;
-        ActivatedForPuidTxt: Label 'Survey is activated for PUID %1.', Locked = true;
+        ActivatingForPuidTxt: Label 'Activating survey for PUID %1.', Locked = true;
         RequestFailedWithStatusCodeTxt: Label 'Request failed with status code %1.', Locked = true;
         CannotUseDefaultCredentialsTxt: Label 'Cannot use default credentials.', Locked = true;
         CannotSetRequestUriTxt: Label 'Cannot set request URI.', Locked = true;
@@ -43,11 +49,9 @@ codeunit 1432 "Satisfaction Survey Impl."
         NpsParametersTxt: Label 'NpsParameters', Locked = true;
         SecretNotFoundTxt: Label 'Secret %1 is not found.', Locked = true;
         ParameterNotFoundTxt: Label 'Parameter %1 is not found.', Locked = true;
-        EmptyUrlMsg: Label 'The URL is empty.';
-        TestFailedMsg: Label 'The URL test failed.\URL: %1\Error: %2.', Comment = '%1 - request, %2 - error';
-        TestSuccessfulMsg: Label 'The URL test was successful.\URL: %1\Response: %2.', Comment = '%1 - request, %2 - response';
+        CouldNotInsertSetupRecordTxt: Label 'Inserting of the setup record has failed.', Locked = true;
+        CouldNotModifySetupRecordTxt: Label 'Modification of the setup record has failed.', Locked = true;
 
-    [Scope('OnPrem')]
     procedure TryShowSurvey(): Boolean
     begin
         if not IsActivated() then begin
@@ -70,7 +74,6 @@ codeunit 1432 "Satisfaction Survey Impl."
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure TryShowSurvey(Status: Integer; Response: Text): Boolean
     begin
         DeactivateSurvey();
@@ -88,7 +91,6 @@ codeunit 1432 "Satisfaction Survey Impl."
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure ResetState(): Boolean
     var
         NetPromoterScore: Record "Net Promoter Score";
@@ -100,7 +102,6 @@ codeunit 1432 "Satisfaction Survey Impl."
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure ResetCache(): Boolean
     var
         NetPromoterScoreSetup: Record "Net Promoter Score Setup";
@@ -112,14 +113,14 @@ codeunit 1432 "Satisfaction Survey Impl."
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure ActivateSurvey(): Boolean
     var
         NetPromoterScore: Record "Net Promoter Score";
         Puid: Text;
     begin
         if not IsSupported() then begin
-            SendTraceTag('000098Q', NpsCategoryTxt, VERBOSITY::Normal, NotSupportedTxt, DATACLASSIFICATION::SystemMetadata);
+            if GuiAllowed() then
+                SendTraceTag('000098Q', NpsCategoryTxt, VERBOSITY::Normal, NotSupportedTxt, DATACLASSIFICATION::SystemMetadata);
             exit(false);
         end;
 
@@ -134,42 +135,78 @@ codeunit 1432 "Satisfaction Survey Impl."
             exit(false);
         end;
 
+        SendTraceTag('000098U', NpsCategoryTxt, VERBOSITY::Normal, StrSubstNo(ActivatingForPuidTxt, Puid), DATACLASSIFICATION::CustomerContent);
+
         if not NetPromoterScore.Get(UserSecurityId()) then begin
             NetPromoterScore.Init();
             NetPromoterScore."User SID" := UserSecurityId();
             NetPromoterScore."Last Request Time" := CurrentDateTime();
             NetPromoterScore."Send Request" := true;
-            NetPromoterScore.Insert();
-        end else begin
-            NetPromoterScore."Last Request Time" := CurrentDateTime();
-            NetPromoterScore."Send Request" := true;
-            NetPromoterScore.Modify();
+            if NetPromoterScore.Insert() then begin
+                SendTraceTag('00009FV', NpsCategoryTxt, VERBOSITY::Normal, ActivatedTxt, DATACLASSIFICATION::SystemMetadata);
+                exit(true);
+            end else begin
+                SendTraceTag('00009N4', NpsCategoryTxt, VERBOSITY::Warning, CouldNotInsertSetupRecordTxt, DATACLASSIFICATION::SystemMetadata);
+                exit(false);
+            end;
         end;
 
-        SendTraceTag('000098T', NpsCategoryTxt, VERBOSITY::Normal, ActivatedTxt, DATACLASSIFICATION::SystemMetadata);
-        SendTraceTag('000098U', NpsCategoryTxt, VERBOSITY::Normal, StrSubstNo(ActivatedForPuidTxt, Puid), DATACLASSIFICATION::CustomerContent);
-        exit(true);
+        if not NetPromoterScore."Send Request" then begin
+            SendTraceTag('000098T', NpsCategoryTxt, VERBOSITY::Normal, ActivatedTxt, DATACLASSIFICATION::SystemMetadata);
+            NetPromoterScore."Last Request Time" := CurrentDateTime();
+            NetPromoterScore."Send Request" := true;
+            if NetPromoterScore.Modify() then
+                exit(true)
+            else begin
+                SendTraceTag('00009N5', NpsCategoryTxt, VERBOSITY::Warning, CouldNotModifySetupRecordTxt, DATACLASSIFICATION::SystemMetadata);
+                exit(false);
+            end;
+        end;
+
+        SendTraceTag('00009FW', NpsCategoryTxt, VERBOSITY::Normal, AlreadyActivatedTxt, DATACLASSIFICATION::SystemMetadata);
+        exit(false);
     end;
 
-    [Scope('OnPrem')]
     procedure DeactivateSurvey(): Boolean
     var
         NetPromoterScore: Record "Net Promoter Score";
     begin
-        if not IsSupported() then
+        if not IsSupported() then begin
+            if GuiAllowed() then
+                SendTraceTag('00009FX', NpsCategoryTxt, VERBOSITY::Normal, NotSupportedTxt, DATACLASSIFICATION::SystemMetadata);
             exit(false);
+        end;
 
-        if not NetPromoterScore.WritePermission() then
+        if not NetPromoterScore.WritePermission() then begin
+            SendTraceTag('00009FY', NpsCategoryTxt, VERBOSITY::Warning, NoPermissionTxt, DATACLASSIFICATION::SystemMetadata);
             exit(false);
+        end;
 
-        if not NetPromoterScore.Get(UserSecurityId()) then
+        if not NetPromoterScore.Get(UserSecurityId()) then begin
+            SendTraceTag('00009FZ', NpsCategoryTxt, VERBOSITY::Normal, AlreadyDeactivatedTxt, DATACLASSIFICATION::SystemMetadata);
             exit(false);
+        end;
 
         if NetPromoterScore."Send Request" then begin
             NetPromoterScore."Send Request" := false;
             NetPromoterScore.Modify();
+            SendTraceTag('00009G0', NpsCategoryTxt, VERBOSITY::Normal, DeactivatedTxt, DATACLASSIFICATION::SystemMetadata);
+            exit(true);
         end;
-        exit(true);
+
+        SendTraceTag('00009G1', NpsCategoryTxt, VERBOSITY::Normal, AlreadyDeactivatedTxt, DATACLASSIFICATION::SystemMetadata);
+        exit(false);
+    end;
+
+    procedure TryGetCheckUrl(var CheckUrl: Text): Boolean
+    begin
+        CheckUrl := GetDisplayUrl();
+        if CheckUrl.StartsWith(HttpsTxt) then begin
+            SendTraceTag('00009G2', NpsCategoryTxt, VERBOSITY::Normal, ValidCheckUrlTxt, DATACLASSIFICATION::SystemMetadata);
+            exit(true);
+        end;
+        SendTraceTag('00009G3', NpsCategoryTxt, VERBOSITY::Normal, InvalidCheckUrlTxt, DATACLASSIFICATION::SystemMetadata);
+        exit(false);
     end;
 
     local procedure IsEnabled(): Boolean
@@ -226,7 +263,6 @@ codeunit 1432 "Satisfaction Survey Impl."
         exit(Display);
     end;
 
-    [Scope('OnPrem')]
     procedure IsCloseCallback(CallbackData: Text): Boolean
     var
         MessageType: Text;
@@ -423,8 +459,7 @@ codeunit 1432 "Satisfaction Survey Impl."
         exit('');
     end;
 
-    [Scope('OnPrem')]
-    procedure GetDisplayUrl(): Text
+    local procedure GetDisplayUrl(): Text
     var
         Puid: Text;
         Data: Text;
@@ -438,7 +473,6 @@ codeunit 1432 "Satisfaction Survey Impl."
         exit(FullUrl);
     end;
 
-    [Scope('OnPrem')]
     procedure GetRenderUrl(): Text
     var
         Puid: Text;
@@ -660,7 +694,6 @@ codeunit 1432 "Satisfaction Survey Impl."
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure GetRequestTimeoutAsync(): Integer
     begin
         exit(30000); // 30 seconds

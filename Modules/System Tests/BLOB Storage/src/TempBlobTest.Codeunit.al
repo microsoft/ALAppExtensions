@@ -33,17 +33,17 @@ codeunit 135030 "Temp Blob Test"
         // [SCENARIO] Streams with encoding (InStream and OutStream) can be created and used.
 
         // [GIVEN] Some value in TempBlob.
-        TempBlob.CreateOutStreamWithEncoding(BlobOutStream, TextEncoding::Windows);
+        TempBlob.CreateOutStream(BlobOutStream, TextEncoding::Windows);
         BlobOutStream.WriteText(SampleTxt);
 
         // [WHEN] The correct encoding is used.
-        TempBlob.CreateInStreamWithEncoding(BlobInStream, TextEncoding::Windows);
+        TempBlob.CreateInStream(BlobInStream, TextEncoding::Windows);
         BlobInStream.ReadText(OutputText);
         // [THEN] Correct result.
         Assert.AreEqual(SampleTxt, OutputText, 'Same text was expected.');
 
         // [WHEN] The wrong encoding is used.
-        TempBlob.CreateInStreamWithEncoding(BlobInStream, TextEncoding::UTF16);
+        TempBlob.CreateInStream(BlobInStream, TextEncoding::UTF16);
         BlobInStream.ReadText(OutputText);
         // [THEN] Incorrect result.
         Assert.AreNotEqual(SampleTxt, OutputText, 'Different text was expected.');

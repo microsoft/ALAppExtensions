@@ -78,8 +78,11 @@ page 2508 "Extension Deployment Status"
                 Visible = false;
 
                 trigger OnAction()
+                var
+                    ExtnDeploymentStatusDetail: Page "Extn Deployment Status Detail";
                 begin
-                    PAGE.Run(PAGE::"Extn Deployment Status Detail", Rec);
+                    ExtnDeploymentStatusDetail.SetRecord(Rec);
+                    ExtnDeploymentStatusDetail.Run();
                     CurrPage.Update();
                 end;
             }

@@ -5,7 +5,7 @@
 
 page 1752 "Data Classification Wizard"
 {
-    Extensible = false;
+    Extensible = true;
     Caption = 'Data Classification Assisted Setup Guide';
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -20,19 +20,7 @@ page 1752 "Data Classification Wizard"
     {
         area(content)
         {
-            group(Control42)
-            {
-                Editable = false;
-                ShowCaption = false;
-                Visible = NOT FinishEnabled;
-            }
-            group(Control40)
-            {
-                Editable = false;
-                ShowCaption = false;
-                Visible = FinishEnabled;
-            }
-            group(Control2)
+            group(WelcomePage)
             {
                 ShowCaption = false;
                 Visible = Step = Step::Welcome;
@@ -87,7 +75,7 @@ page 1752 "Data Classification Wizard"
                     end;
                 }
             }
-            group(Control3)
+            group(ChooseModePage)
             {
                 ShowCaption = false;
                 Visible = Step = Step::"Choose Mode";
@@ -112,7 +100,7 @@ page 1752 "Data Classification Wizard"
                         ApplicationArea = All;
                         Caption = '- Importing the classifications from another company.';
                     }
-                    field("<ExportModeSelected>"; ExportModeSelected)
+                    field("ExportModeSelected"; ExportModeSelected)
                     {
                         ApplicationArea = All;
                         Caption = 'Export Classification Data to Excel';
@@ -132,7 +120,7 @@ page 1752 "Data Classification Wizard"
                             SetExpertAndExportMode();
                         end;
                     }
-                    group(Control11)
+                    group(ExpertModeGroup)
                     {
                         InstructionalText = 'You can also view lists of tables and fields and manually classify your data.';
                         ShowCaption = false;
@@ -149,7 +137,7 @@ page 1752 "Data Classification Wizard"
                     }
                 }
             }
-            group(Control33)
+            group(SetRulesPage)
             {
                 ShowCaption = false;
                 Visible = Step = Step::"Set Rules";
@@ -226,7 +214,7 @@ page 1752 "Data Classification Wizard"
                     }
                 }
             }
-            group(Control4)
+            group(ApplyPage)
             {
                 ShowCaption = false;
                 Visible = Step = Step::Apply;
@@ -238,6 +226,7 @@ page 1752 "Data Classification Wizard"
                     {
                         ApplicationArea = All;
                         ShowCaption = false;
+                        Caption = '';
                     }
                     repeater(Control20)
                     {
@@ -260,7 +249,7 @@ page 1752 "Data Classification Wizard"
                     }
                 }
             }
-            group(Control24)
+            group(VerifyIndividualFieldsPage)
             {
                 ShowCaption = false;
                 Visible = Step = Step::Verify;
@@ -308,7 +297,7 @@ page 1752 "Data Classification Wizard"
                     }
                 }
             }
-            group(Control36)
+            group(VerifyRelatedFieldsPage)
             {
                 ShowCaption = false;
                 Visible = Step = Step::"Verify Related Fields";
@@ -345,7 +334,7 @@ page 1752 "Data Classification Wizard"
                     }
                 }
             }
-            group(Control29)
+            group(FinishPage)
             {
                 ShowCaption = false;
                 Visible = (Step = Step::Finish) AND NOT ExportModeSelected;
@@ -360,7 +349,7 @@ page 1752 "Data Classification Wizard"
                     }
                 }
             }
-            group(Control27)
+            group(FinishPageForExportMode)
             {
                 ShowCaption = false;
                 Visible = (Step = Step::Finish) AND ExportModeSelected;
@@ -375,6 +364,35 @@ page 1752 "Data Classification Wizard"
 
     actions
     {
+        area(Processing)
+        {
+            action(ActionBack)
+            {
+                ApplicationArea = All;
+                Caption = 'Back';
+                Enabled = BackEnabled;
+                Image = PreviousRecord;
+                InFooterBar = true;
+
+                trigger OnAction()
+                begin
+                    GoBack();
+                end;
+            }
+            action(ActionFinish)
+            {
+                ApplicationArea = All;
+                Caption = 'Finish';
+                Enabled = FinishEnabled;
+                Image = Approve;
+                InFooterBar = true;
+
+                trigger OnAction()
+                begin
+                    Finish();
+                end;
+            }
+        }
     }
 
     trigger OnAfterGetRecord()
@@ -407,8 +425,10 @@ page 1752 "Data Classification Wizard"
         SetupTablesDefaultClassification: Option Unclassified,Sensitive,Personal,"Company Confidential",Normal;
         TemplatesDefaultClassification: Option Unclassified,Sensitive,Personal,"Company Confidential",Normal;
         ViewFieldsLbl: Label 'View fields';
+        ReviewSimilarFieldsErr: Label 'You must review the classifications for similar fields before you can continue.';
+        ReviewFieldsErr: Label 'You must review the classifications for fields before you can continue.';
 
-    local procedure ResetControls()
+    procedure ResetControls()
     var
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
     begin
@@ -418,13 +438,13 @@ page 1752 "Data Classification Wizard"
         Reset();
 
         if IsEmpty() then
-            DataClassificationMgt.OnGetPrivacyMasterTables(Rec);
+            DataClassificationMgt.RaiseOnGetDataPrivacyEntities(Rec);
 
         case Step of
             Step::Welcome:
                 BackEnabled := false;
             Step::"Choose Mode":
-                NextEnabled := IsNextEnabled();
+                NextEnabled := ShouldEnableNext();
             Step::Verify,
           Step::"Verify Related Fields":
                 SetRange(Include, true);
@@ -501,7 +521,7 @@ page 1752 "Data Classification Wizard"
         CurrPage.Update();
     end;
 
-    local procedure IsNextEnabled(): Boolean
+    procedure ShouldEnableNext(): Boolean
     begin
         exit(ImportModeSelected or ExpertModeSelected or ExportModeSelected);
     end;
@@ -518,7 +538,7 @@ page 1752 "Data Classification Wizard"
             ImportModeSelected := false;
         end;
 
-        NextEnabled := IsNextEnabled();
+        NextEnabled := ShouldEnableNext();
     end;
 
     local procedure SetExpertAndExportMode()
@@ -528,7 +548,7 @@ page 1752 "Data Classification Wizard"
             ExportModeSelected := false;
         end;
 
-        NextEnabled := IsNextEnabled();
+        NextEnabled := ShouldEnableNext();
     end;
 
     local procedure SetImportAndExportMode()
@@ -538,7 +558,115 @@ page 1752 "Data Classification Wizard"
             ExportModeSelected := false;
         end;
 
-        NextEnabled := IsNextEnabled();
+        NextEnabled := ShouldEnableNext();
+    end;
+
+    local procedure GoBack()
+    begin
+        if Step = Step::Verify then
+            Reset();
+        NextStep(true);
+    end;
+
+    procedure NextStep(Backward: Boolean)
+    begin
+        if Backward then begin
+            if (Step = Step::Finish) and (ImportModeSelected or ExportModeSelected) then
+                Step := Step::"Choose Mode"
+            else
+                Step += -1;
+        end else begin
+            CheckMandatoryActions();
+            Step += 1;
+        end;
+
+        ResetControls();
+    end;
+
+    procedure CheckMandatoryActions()
+    begin
+        if Step = Step::"Verify Related Fields" then begin
+            SetRange("Similar Fields Reviewed", false);
+            if FindFirst() then
+                Error(ReviewSimilarFieldsErr);
+        end;
+        if Step = Step::Verify then begin
+            SetRange(Reviewed, false);
+            if FindFirst() then
+                Error(ReviewFieldsErr);
+        end;
+    end;
+
+    local procedure Finish()
+    begin
+        if ShowWorksheet then
+            PAGE.Run(PAGE::"Data Classification Worksheet");
+        CurrPage.Close();
+    end;
+
+    procedure SetBackEnabled(BackEnabledValue: Boolean)
+    begin
+        BackEnabled := BackEnabledValue;
+    end;
+
+    procedure IsNextEnabled(): Boolean
+    begin
+        exit(NextEnabled);
+    end;
+
+    procedure SetNextEnabled(NextEnabledValue: Boolean)
+    begin
+        NextEnabled := NextEnabledValue;
+    end;
+
+    procedure IsFinishEnabled(): Boolean
+    begin
+        exit(FinishEnabled);
+    end;
+
+    procedure SetFinishEnabled(FinishEnabledValue: Boolean)
+    begin
+        FinishEnabled := FinishEnabledValue;
+    end;
+
+    procedure GetStep(): Option
+    begin
+        exit(Step);
+    end;
+
+    procedure SetStep(StepValue: Option)
+    begin
+        Step := StepValue;
+    end;
+
+    procedure IsImportModeSelected(): Boolean
+    begin
+        exit(ImportModeSelected);
+    end;
+
+    procedure IsExportModeSelected(): Boolean
+    begin
+        exit(ExportModeSelected);
+    end;
+
+    procedure IsExpertModeSelected(): Boolean
+    begin
+        exit(ExpertModeSelected);
+    end;
+
+    procedure GetLedgerEntriesDefaultClassification(): Option
+    begin
+        exit(LedgerEntriesDefaultClassification);
+    end;
+
+    procedure GetTemplatesDefaultClassification(): Option
+    begin
+        exit(TemplatesDefaultClassification);
+    end;
+
+    procedure GetSetupTablesDefaultClassification(): Option
+    begin
+        exit(SetupTablesDefaultClassification);
     end;
 }
 

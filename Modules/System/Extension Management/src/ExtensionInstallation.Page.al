@@ -30,9 +30,13 @@ page 2503 "Extension Installation"
     end;
 
     trigger OnOpenPage()
+    var
+        MarketplaceExtnDeployment: Page "Marketplace Extn Deployment";
     begin
         GetDetailsFromFilters();
-        PAGE.Run(PAGE::"Marketplace Extn Deployment", Rec);
+
+        MarketplaceExtnDeployment.SetRecord(Rec);
+        MarketplaceExtnDeployment.Run();
     end;
 
     local procedure GetDetailsFromFilters()

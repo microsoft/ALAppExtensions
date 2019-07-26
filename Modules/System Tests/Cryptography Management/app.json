@@ -1,24 +1,26 @@
 {
-  "id": "96e34a7d-38cc-48a9-9348-d2194d67167d",
-  "name": "Cryptography Management Test",
-  "publisher": "Microsoft",
-  "brief": "",
-  "description": "Tests for the Cryptography Management module",
-  "version": "1.0.0.0",
-  "privacyStatement": "",
-  "EULA": "",
-  "help": "",
-  "url": "",
-  "logo": "", 
-  "dependencies": [
-    {
-      "appId": "a3964a53-9345-458a-af20-d13f7eab7bd7",
-      "name": "Cryptography Management",
-      "publisher": "Microsoft",
-      "version": "1.0.0.0"
-    }	
-  ],
-  "screenshots": [],
-  "platform": "13.0.0.0",
-  "target": "OnPrem"
+    "id":  "96e34a7d-38cc-48a9-9348-d2194d67167d",
+    "name":  "Cryptography Management Test",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Tests for the Cryptography Management module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "a3964a53-9345-458a-af20-d13f7eab7bd7",
+                             "name":  "Cryptography Management",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "target":  "OnPrem"
 }

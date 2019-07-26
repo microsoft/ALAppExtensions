@@ -32,7 +32,7 @@ Codeunit 135033 "Password Dialog Test"
         // [SCENARIO] A valid password must be at least 8 characters long and contain one capital case letter,
         // one lower case letter and one number.
         PasswordToUse := 'Password1';
-        Password := PasswordDialogManagement.OpenPasswordDialog3();
+        Password := PasswordDialogManagement.OpenPasswordDialog();
         Assert.AreEqual('Password1', Password, 'A different Passwword was expected');
     end;
 
@@ -42,7 +42,7 @@ Codeunit 135033 "Password Dialog Test"
     begin
         // [SCENARIO] A password without a numeric character cannot be entered.
         PasswordToUse := 'Password';
-        asserterror PasswordDialogManagement.OpenPasswordDialog3();
+        asserterror PasswordDialogManagement.OpenPasswordDialog();
     end;
 
     [Test]
@@ -51,10 +51,10 @@ Codeunit 135033 "Password Dialog Test"
     begin
         // [SCENARIO] A password without a capital case character cannot be entered.
         PasswordToUse := 'password1';
-        asserterror PasswordDialogManagement.OpenPasswordDialog3();
+        asserterror PasswordDialogManagement.OpenPasswordDialog();
 
         PasswordToUse := 'p@ssword1';
-        asserterror PasswordDialogManagement.OpenPasswordDialog3();
+        asserterror PasswordDialogManagement.OpenPasswordDialog();
     end;
 
     [Test]
@@ -63,7 +63,7 @@ Codeunit 135033 "Password Dialog Test"
     begin
         // [SCENARIO] A password without a lower case character cannot be entered.
         PasswordToUse := 'PASSWORD1';
-        asserterror PasswordDialogManagement.OpenPasswordDialog3();
+        asserterror PasswordDialogManagement.OpenPasswordDialog();
     end;
 
     [Test]
@@ -72,7 +72,7 @@ Codeunit 135033 "Password Dialog Test"
     begin
         // [SCENARIO] A password with length less than 8 characters cannot be entered.
         PasswordToUse := 'Pass1';
-        asserterror PasswordDialogManagement.OpenPasswordDialog3();
+        asserterror PasswordDialogManagement.OpenPasswordDialog();
     end;
 
     [Test]
@@ -86,10 +86,10 @@ Codeunit 135033 "Password Dialog Test"
 
         MinimumPasswordLength := 16;
         PasswordToUse := 'Password1';
-        asserterror PasswordDialogManagement.OpenPasswordDialog3();
+        asserterror PasswordDialogManagement.OpenPasswordDialog();
 
         PasswordToUse := 'PasswordPassword1';
-        Password := PasswordDialogManagement.OpenPasswordDialog3();
+        Password := PasswordDialogManagement.OpenPasswordDialog();
         Assert.AreEqual('PasswordPassword1', Password, 'A different Passwword was expected');
 
         if UnbindSubscription(PasswordDialogTest) then;
@@ -103,7 +103,7 @@ Codeunit 135033 "Password Dialog Test"
         if BindSubscription(PasswordDialogTest) then;
         MinimumPasswordLength := 5;
         PasswordToUse := 'Pass1';
-        asserterror PasswordDialogManagement.OpenPasswordDialog3();
+        asserterror PasswordDialogManagement.OpenPasswordDialog();
 
         if UnbindSubscription(PasswordDialogTest) then;
     end;
@@ -121,20 +121,20 @@ Codeunit 135033 "Password Dialog Test"
 
         // [WHEN] A valid password is given.
         PasswordToUse := ValidPasswordTxt;
-        Password := PasswordDialogManagement.OpenPasswordDialog3();
+        Password := PasswordDialogManagement.OpenPasswordDialog();
         // [THEN] The password is retrieved.
         Assert.AreEqual(ValidPasswordTxt, Password, 'A diferrent password was expected.');
 
         // [WHEN] An invalid password is given.
         PasswordToUse := InValidPasswordTxt;
         // [THEN] An error is thrown if only the password field is filled.
-        asserterror PasswordDialogManagement.OpenPasswordDialog3();
+        asserterror PasswordDialogManagement.OpenPasswordDialog();
 
         // [WHEN] Password and Confirm Password miss match.
         // [THEN] An error is thrown.
         PasswordMissmatch := true;
         PasswordToUse := ValidPasswordTxt;
-        asserterror PasswordDialogManagement.OpenPasswordDialog3();
+        asserterror PasswordDialogManagement.OpenPasswordDialog();
     END;
 
     [Test]

@@ -1,0 +1,49 @@
+{
+    "id":  "f3f75070-7762-41f5-9947-043a50dc9fc7",
+    "name":  "Headlines",
+    "publisher":  "Microsoft",
+    "brief":  "Helps with constructing the text for headlines.",
+    "description":  "The module provides various functions related to headlines functionality. It includes constants for the maximum allowed text length, functionality for truncating text, emphasizing text, determining if the user logged in recently (for greetings) and standard greeting messages.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "name":  "User Login Times",
+                             "appId":  "959630b2-01c5-48d8-a477-d6d40da855fb",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "DotNet Aliases",
+                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "internalsVisibleTo":  [
+                               {
+                                   "name": "Headlines Test",      
+                                   "appId": "4b7bef15-07dc-4b9e-ae9d-81ac1a71d630",
+                                   "publisher": "Microsoft"
+                               }
+                           ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  1439,
+                         "to":  1439
+                     },
+                     {
+                         "from":  1470,
+                         "to":  1470
+                     }
+                 ],
+    "target":  "OnPrem"
+}

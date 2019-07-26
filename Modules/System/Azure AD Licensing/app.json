@@ -1,27 +1,42 @@
 {
-  "id": "b70307d1-2c71-40ec-aeea-5deb7d0434c8",
-  "name": "Azure AD Licensing",
-  "publisher": "Microsoft",
-  "brief": "Access information about the subscribed SKUs and the corresponding service plans.",
-  "description": "Access information about the subscribed SKUs and the corresponding service plans. You can retrieve information such as the SKU Object ID, SKU ID, number of licenses assigned, the license state (enabled, suspended, or warning), and the SKU part number. For the corresponding service plans, you can retrieve the ID, the capability status, or the name.",
-  "version": "1.0.0.0",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
-  "help": "",
-  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-  "logo": "",
-  "dependencies": [],
-  "screenshots": [],
-  "platform": "13.0.0.0",
-  "idRanges": [
-    {
-      "from": 458,
-      "to": 458
-    },
-    {
-      "from": 460,
-      "to": 460
-    }
-  ],
-  "target": "OnPrem"
+    "id":  "b70307d1-2c71-40ec-aeea-5deb7d0434c8",
+    "name":  "Azure AD Licensing",
+    "publisher":  "Microsoft",
+    "brief":  "Access information about the subscribed SKUs and the corresponding service plans.",
+    "description":  "Access information about the subscribed SKUs and the corresponding service plans. You can retrieve information such as the SKU Object ID, SKU ID, number of licenses assigned, the license state (enabled, suspended, or warning), and the SKU part number. For the corresponding service plans, you can retrieve the ID, the capability status, or the name.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "publisher":  "Microsoft",
+                             "name":  "DotNet Aliases",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
+                             "publisher":  "Microsoft",
+                             "name":  "Azure AD Graph",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  458,
+                         "to":  458
+                     },
+                     {
+                         "from":  460,
+                         "to":  460
+                     }
+                 ],
+    "target":  "OnPrem"
 }

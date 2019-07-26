@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to handle the retrieval of azure key vault secrets, along with setting the provider and clear the secrets cache used.
 /// </summary>
 codeunit 2200 "Azure Key Vault"
 {
@@ -14,12 +14,12 @@ codeunit 2200 "Azure Key Vault"
     var
         AzureKeyVaultImpl: Codeunit "Azure Key Vault Impl.";
 
-    /// <summary>
-    /// Retrieves a secret from the key vault.
-    /// </summary>
-    /// <remarks>This is a try function.</remarks>
-    /// <param name="SecretName">The name of the secret to retrieve.</param>
-    /// <param name="Secret">Out parameter that holds the secret that was retrieved from the key vault.</param>
+        /// <summary>
+        /// Retrieves a secret from the key vault.
+        /// </summary>
+        /// <remarks>This is a try function.</remarks>
+        /// <param name="SecretName">The name of the secret to retrieve.</param>
+        /// <param name="Secret">Out parameter that holds the secret that was retrieved from the key vault.</param>
     [TryFunction]
     [Scope('OnPrem')]
     procedure GetAzureKeyVaultSecret(SecretName: Text; var Secret: Text)

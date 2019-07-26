@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to fetch attributes concerning the environment of the service on which the tenant is hosted.
 /// </summary>
 codeunit 457 "Environment Information"
 {
@@ -14,13 +14,23 @@ codeunit 457 "Environment Information"
     var
         EnvironmentInformationImpl: Codeunit "Environment Information Impl.";
 
-        /// <summary>
-        /// Checks if environment type of tenant is Production.
-        /// </summary>
-        /// <returns>True if the environment type is Production, False otherwise.</returns>
+    /// <summary>
+    /// Checks if environment type of tenant is Production.
+    /// </summary>
+    /// <returns>True if the environment type is Production, False otherwise.</returns>
     procedure IsProduction(): Boolean
     begin
         exit(EnvironmentInformationImpl.IsProduction());
+    end;
+
+
+    /// <summary>
+    /// Gets the name of the environment.
+    /// </summary>
+    /// <returns>The name of the environment.</returns>
+    procedure GetEnvironmentName(): Text
+    begin
+        exit(EnvironmentInformationImpl.GetEnvironmentName());
     end;
 
     /// <summary>
@@ -97,11 +107,9 @@ codeunit 457 "Environment Information"
     /// <summary>
     /// An event which asks for the AppId to be filled in by the subscriber.
     /// </summary>
-    /// <remarks>This should be subscribed to only in tests.</remarks>
+    /// <remarks> Do not use this event in a production environment. This should be subscribed to only in tests.</remarks>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnBeforeGetApplicationIdentifier(var AppId: Text)
     begin
     end;
 }
-

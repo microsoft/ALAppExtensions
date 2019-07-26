@@ -1,0 +1,34 @@
+{
+  "id": "1d643b0c-a545-46b1-8514-11196184b38f",
+  "name": "Cues and KPIs",
+  "publisher": "Microsoft",
+  "brief": "Sets up Cues and KPIs",
+  "description": "This module provides setup pages and interface methods to manage cues in Business Central.",
+  "version": "15.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+  "help": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "",
+  "dependencies": [
+      {
+        "appId": "7f850a76-a58c-4ade-a14f-7d7acff97115",
+        "name": "User Selection",
+        "version": "15.0.0.0",
+        "publisher": "Microsoft"
+      },
+      {
+        "appId": "94245fbb-b5b1-416e-b8cf-484306646e82",
+        "name": "Field Selection",
+        "version": "15.0.0.0",
+        "publisher": "Microsoft"
+      }
+  ],
+  "screenshots": [],
+  "platform": "15.0.0.0",
+  "idRanges": [{
+    "from": 9701,
+    "to": 9702
+  }],
+  "target": "OnPrem"
+}

@@ -12,19 +12,16 @@ codeunit 4109 "Temp Blob List Impl."
         ObjectDoesNotExistErr: Label 'Object with index %1 does not exist.', Comment = '%1=Index of the object';
         InvalidNoObjectsRequestedErr: Label 'There are not enough objects available to fulfill the request.';
 
-    [Scope('OnPrem')]
     procedure Exists(Index: Integer): Boolean
     begin
-        exit(TempBlobRec.Get(Index))
+        exit(TempBlobRec.Get(Index));
     end;
 
-    [Scope('OnPrem')]
     procedure "Count"(): Integer
     begin
-        exit(TempBlobRec.Count())
+        exit(TempBlobRec.Count());
     end;
 
-    [Scope('OnPrem')]
     procedure Get(Index: Integer; var TempBlob: Codeunit "Temp Blob")
     begin
         // Not using Exists function from this codeunit as it is a reserved keyword
@@ -34,7 +31,6 @@ codeunit 4109 "Temp Blob List Impl."
         TempBlob.FromRecord(TempBlobRec, TempBlobRec.FieldNo(Blob));
     end;
 
-    [Scope('OnPrem')]
     procedure Set(Index: Integer; TempBlob: Codeunit "Temp Blob"): Boolean
     begin
         if not TempBlobRec.Get(Index) then
@@ -45,7 +41,6 @@ codeunit 4109 "Temp Blob List Impl."
         exit(TempBlobRec.Modify());
     end;
 
-    [Scope('OnPrem')]
     procedure RemoveAt(Index: Integer): Boolean
     var
         TempBlobList: Codeunit "Temp Blob List";
@@ -60,13 +55,11 @@ codeunit 4109 "Temp Blob List Impl."
         exit(AddRange(TempBlobList));
     end;
 
-    [Scope('OnPrem')]
     procedure IsEmpty(): Boolean
     begin
         exit(TempBlobRec.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
     procedure Add(TempBlob: Codeunit "Temp Blob"): Boolean
     begin
         TempBlobRec."Primary Key" := Count() + 1;
@@ -74,7 +67,6 @@ codeunit 4109 "Temp Blob List Impl."
         exit(TempBlobRec.Insert());
     end;
 
-    [Scope('OnPrem')]
     procedure AddRange(TempBlobList: Codeunit "Temp Blob List"): Boolean
     var
         TempBlob: Codeunit "Temp Blob";
@@ -91,7 +83,6 @@ codeunit 4109 "Temp Blob List Impl."
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure GetRange(Index: Integer; ElemCount: Integer; var TempBlobListOut: Codeunit "Temp Blob List")
     var
         TempBlob: Codeunit "Temp Blob";

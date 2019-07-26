@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes data privacy related events.
 /// </summary>
 codeunit 1183 "Data Privacy Event Mgmt."
 {

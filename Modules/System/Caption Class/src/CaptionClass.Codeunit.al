@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes events that can be used to resolve custom CaptionClass properties.
 /// </summary>
 codeunit 42 "Caption Class"
 {
@@ -22,7 +22,6 @@ codeunit 42 "Caption Class"
     /// <param name="Caption">Exit parameter - the resolved caption</param>
     /// <param name="Resolved">Boolean for marking whether the CaptionClass expression was resolved.</param>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnResolveCaptionClass(CaptionArea: Text; CaptionExpr: Text; Language: Integer; var Caption: Text; var Resolved: Boolean)
     begin
     end;
@@ -34,7 +33,6 @@ codeunit 42 "Caption Class"
     /// <param name="CaptionExpression">The original CaptionClass expression.</param>
     /// <param name="Caption">The resolved caption expression.</param>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnAfterCaptionClassResolve(Language: Integer; CaptionExpression: Text; var Caption: Text[1024])
     begin
     end;

@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// The container to store BLOB data in-memory.
 /// </summary>
 codeunit 4100 "Temp Blob"
 {
@@ -13,13 +13,13 @@ codeunit 4100 "Temp Blob"
     var
         TempBlobImpl: Codeunit "Temp Blob Impl.";
 
-        /// <summary>
-        /// Creates an InStream object with default encoding for the TempBlob. This enables you to read data from the TempBlob.
-        /// </summary>
-        /// <param name="InStream">The InStream variable passed as a VAR to which the BLOB content will be attached.</param>
+    /// <summary>
+    /// Creates an InStream object with default encoding for the TempBlob. This enables you to read data from the TempBlob.
+    /// </summary>
+    /// <param name="InStream">The InStream variable passed as a VAR to which the BLOB content will be attached.</param>
     procedure CreateInStream(var InStream: InStream)
     begin
-        TempBlobImpl.CreateInStream(InStream)
+        TempBlobImpl.CreateInStream(InStream);
     end;
 
     /// <summary>
@@ -27,9 +27,9 @@ codeunit 4100 "Temp Blob"
     /// </summary>
     /// <param name="InStream">The InStream variable passed as a VAR to which the BLOB content will be attached.</param>
     /// <param name="Encoding">The text encoding to use.</param>
-    procedure CreateInStreamWithEncoding(var InStream: InStream; Encoding: TextEncoding)
+    procedure CreateInStream(var InStream: InStream; Encoding: TextEncoding)
     begin
-        TempBlobImpl.CreateInStreamWithEncoding(InStream, Encoding)
+        TempBlobImpl.CreateInStream(InStream, Encoding);
     end;
 
     /// <summary>
@@ -38,7 +38,7 @@ codeunit 4100 "Temp Blob"
     /// <param name="OutStream">The OutStream variable passed as a VAR to which the BLOB content will be attached.</param>
     procedure CreateOutStream(var OutStream: OutStream)
     begin
-        TempBlobImpl.CreateOutStream(OutStream)
+        TempBlobImpl.CreateOutStream(OutStream);
     end;
 
     /// <summary>
@@ -46,9 +46,9 @@ codeunit 4100 "Temp Blob"
     /// </summary>
     /// <param name="OutStream">The OutStream variable passed as a VAR to which the BLOB content will be attached.</param>
     /// <param name="Encoding">The text encoding to use.</param>
-    procedure CreateOutStreamWithEncoding(var OutStream: OutStream; Encoding: TextEncoding)
+    procedure CreateOutStream(var OutStream: OutStream; Encoding: TextEncoding)
     begin
-        TempBlobImpl.CreateOutStreamWithEncoding(OutStream, Encoding)
+        TempBlobImpl.CreateOutStream(OutStream, Encoding);
     end;
 
     /// <summary>
@@ -57,7 +57,7 @@ codeunit 4100 "Temp Blob"
     /// <returns>True if the TempBlob has a value.</returns>
     procedure HasValue(): Boolean
     begin
-        exit(TempBlobImpl.HasValue())
+        exit(TempBlobImpl.HasValue());
     end;
 
     /// <summary>
@@ -66,7 +66,7 @@ codeunit 4100 "Temp Blob"
     /// <returns>The number of bytes stored in the BLOB.</returns>
     procedure Length(): Integer
     begin
-        exit(TempBlobImpl.Length())
+        exit(TempBlobImpl.Length());
     end;
 
     /// <summary>
@@ -86,7 +86,7 @@ codeunit 4100 "Temp Blob"
     /// <param name="FieldNo">The field number of the BLOB field to be read.</param>
     procedure FromRecordRef(RecordRef: RecordRef; FieldNo: Integer)
     begin
-        TempBlobImpl.FromRecordRef(RecordRef, FieldNo)
+        TempBlobImpl.FromRecordRef(RecordRef, FieldNo);
     end;
 
     /// <summary>

@@ -4,7 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Provides helper functions for encryption and hashing.
+/// For encryption in an on-premises versions, use it to turn encryption on or off, and import and export the encryption key.
+/// Encryption is always turned on for online versions.
 /// </summary>
 codeunit 1266 "Encryption Management"
 {
@@ -13,11 +15,11 @@ codeunit 1266 "Encryption Management"
     var
         CryptographyManagementImpl: Codeunit "Cryptography Management Impl.";
 
-        /// <summary>
-        /// Returns plain text as an encrypted value.
-        /// </summary>
-        /// <param name="InputString">The value to encrypt.</param>
-        /// <returns>Encrypted value.</returns>
+    /// <summary>
+    /// Returns plain text as an encrypted value.
+    /// </summary>
+    /// <param name="InputString">The value to encrypt.</param>
+    /// <returns>Encrypted value.</returns>
     procedure Encrypt(InputString: Text): Text
     begin
         exit(CryptographyManagementImpl.Encrypt(InputString));
@@ -110,6 +112,29 @@ codeunit 1266 "Encryption Management"
     end;
 
     /// <summary>
+    /// Generates a keyed hash from a string based on provided hash algorithm and key.
+    /// </summary>
+    /// <param name="InputString">Input string.</param>
+    /// <param name="Key">Key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithmType">The available hash algorithms include HMACMD5, HMACSHA1, HMACSHA256, HMACSHA384, and HMACSHA512.</param>
+    /// <returns>Hashed value.</returns>
+    procedure GenerateHash(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
+    begin
+        exit(CryptographyManagementImpl.GenerateHash(InputString, Key, HashAlgorithmType));
+    end;
+
+    /// <summary>
+    /// Generates a hash from a stream based on the provided hash algorithm.
+    /// </summary>
+    /// <param name="InputString">Input string.</param>
+    /// <param name="HashAlgorithmType">The available hash algorithms include HMACMD5, HMACSHA1, HMACSHA256, HMACSHA384, and HMACSHA512.</param>
+    /// <returns>Base64 hashed value.</returns>
+    procedure GenerateHash(InputString: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
+    begin
+        exit(CryptographyManagementImpl.GenerateHash(InputString, HashAlgorithmType));
+    end;
+
+    /// <summary>
     /// Generates a base64 encoded hash from a string based on provided hash algorithm.
     /// </summary>
     /// <param name="InputString">Input string.</param>
@@ -121,27 +146,15 @@ codeunit 1266 "Encryption Management"
     end;
 
     /// <summary>
-    /// Generates a keyed hash from a string based on provided hash algorithm and key.
-    /// </summary>
-    /// <param name="InputString">Input string.</param>
-    /// <param name="Key">Key to use in the hash algorithm.</param>
-    /// <param name="HashAlgorithmType">The available hash algorithms include HMACMD5, HMACSHA1, HMACSHA256, HMACSHA384, and HMACSHA512.</param>
-    /// <returns>Hashed value.</returns>
-    procedure GenerateKeyedHash(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
-    begin
-        exit(CryptographyManagementImpl.GenerateKeyedHash(InputString, Key, HashAlgorithmType));
-    end;
-
-    /// <summary>
     /// Generates a keyed base64 encoded hash from a string based on provided hash algorithm and key.
     /// </summary>
     /// <param name="InputString">Input string.</param>
     /// <param name="Key">Key to use in the hash algorithm.</param>
     /// <param name="HashAlgorithmType">The available hash algorithms include HMACMD5, HMACSHA1, HMACSHA256, HMACSHA384, and HMACSHA512.</param>
     /// <returns>Base64 hashed value.</returns>
-    procedure GenerateKeyedHashAsBase64String(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
+    procedure GenerateHashAsBase64String(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
     begin
-        exit(CryptographyManagementImpl.GenerateKeyedHashAsBase64String(InputString, Key, HashAlgorithmType));
+        exit(CryptographyManagementImpl.GenerateHashAsBase64String(InputString, Key, HashAlgorithmType));
     end;
 
     /// <summary>
@@ -156,15 +169,5 @@ codeunit 1266 "Encryption Management"
         exit(CryptographyManagementImpl.GenerateBase64KeyedHashAsBase64String(InputString, Key, HashAlgorithmType));
     end;
 
-    /// <summary>
-    /// Generates a hash from a stream based on the provided hash algorithm.
-    /// </summary>
-    /// <param name="InputString">Input string.</param>
-    /// <param name="HashAlgorithmType">The available hash algorithms include HMACMD5, HMACSHA1, HMACSHA256, HMACSHA384, and HMACSHA512.</param>
-    /// <returns>Base64 hashed value.</returns>
-    procedure GenerateHashFromStream(InputString: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
-    begin
-        exit(CryptographyManagementImpl.GenerateHashFromStream(InputString, HashAlgorithmType));
-    end;
 }
 

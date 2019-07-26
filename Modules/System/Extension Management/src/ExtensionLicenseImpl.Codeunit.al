@@ -8,13 +8,11 @@ codeunit 2502 "Extension License Impl"
     Access = Internal;
     SingleInstance = false;
 
-    [Scope('OnPrem')]
     procedure LicenseCount(ProductId: Text; SkuId: Text): Integer
     begin
         exit(GetIsvLicenseCount(ProductId, SkuId, ''));
     end;
 
-    [Scope('OnPrem')]
     procedure GetIsvLicenseCount(ProductId: Text; SkuId: Text; IsvPrefix: Text): Integer
     var
         DotNetExtensionLicenseInformationProvider: DotNet ExtensionLicenseInformationProvider;

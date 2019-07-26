@@ -54,10 +54,14 @@ codeunit 130454 "Test Runner - Mgt"
     procedure PlatformBeforeTestRun(CodeunitID: Integer; CodeunitName: Text[30]; FunctionName: Text[128]; FunctionTestPermissions: TestPermissions; TestSuite: Code[10]; LineNoTestFilter: Text): Boolean
     var
         TestMethodLineFunction: Record "Test Method Line";
+        CodeunitTestMethodLine: Record "Test Method Line";
     begin
         // Invoked by the platform before any codeunit is run
-        if (FunctionName = '') or (FunctionName = 'OnRun') then
+        if (FunctionName = '') or (FunctionName = 'OnRun') then begin
+            if GetTestCodeunit(CodeunitTestMethodLine, TestSuite, CodeunitID) then
+                SetStartTimeOnTestLine(CodeunitTestMethodLine);
             exit(true);
+        end;
 
         if not GetTestFunction(TestMethodLineFunction, FunctionName, TestSuite, CodeunitID, LineNoTestFilter) then
             exit(false);
@@ -65,6 +69,7 @@ codeunit 130454 "Test Runner - Mgt"
         if not TestMethodLineFunction.Run then
             exit(false);
 
+        SetStartTimeOnTestLine(TestMethodLineFunction);
         OnBeforeTestMethodRun(TestMethodLineFunction, CodeunitID, CodeunitName, FunctionName, FunctionTestPermissions);
 
         exit(true);
@@ -83,7 +88,7 @@ codeunit 130454 "Test Runner - Mgt"
         GetTestFunction(TestMethodLine, FunctionName, TestSuite, CodeunitID, LineNoTestFilter);
         UpdateTestFunctionLine(TestMethodLine, IsSuccess);
 
-        if GetTestCodeunit(CodeunitTestMethodLine, TestMethodLine) then
+        if GetTestCodeunit(CodeunitTestMethodLine, TestSuite, CodeunitID) then
             UpdateCodeunitLine(CodeunitTestMethodLine, TestMethodLine, IsSuccess);
 
         Commit();
@@ -94,8 +99,8 @@ codeunit 130454 "Test Runner - Mgt"
 
     local procedure UpdateCodeunitLine(var CodeunitTestMethodLine: Record "Test Method Line"; TestMethodLine: Record "Test Method Line"; IsSuccess: Boolean)
     var
-        TestSuiteMgt: Codeunit "Test Suite Mgt.";
         FunctionTestMethodLine: Record "Test Method Line";
+        TestSuiteMgt: Codeunit "Test Suite Mgt.";
         DummyBlankDateTime: DateTime;
     begin
         if IsSuccess then begin
@@ -103,7 +108,7 @@ codeunit 130454 "Test Runner - Mgt"
             FunctionTestMethodLine.SETRANGE("Test Codeunit", CodeunitTestMethodLine."Test Codeunit");
             FunctionTestMethodLine.SETRANGE("Line Type", FunctionTestMethodLine."Line Type"::"Function");
             FunctionTestMethodLine.SETRANGE(Result, FunctionTestMethodLine.Result::Failure);
-            if not FunctionTestMethodLine.FindFirst() then begin
+            if FunctionTestMethodLine.IsEmpty() then begin
                 CodeunitTestMethodLine.Result := CodeunitTestMethodLine.Result::Success;
                 TestSuiteMgt.ClearErrorOnLine(CodeunitTestMethodLine);
             end;
@@ -119,6 +124,14 @@ codeunit 130454 "Test Runner - Mgt"
 
         CodeunitTestMethodLine."Finish Time" := CurrentDateTime();
         CodeunitTestMethodLine.Modify();
+    end;
+
+    local procedure SetStartTimeOnTestLine(var TestMethodLine: Record "Test Method Line")
+    begin
+        TestMethodLine."Start Time" := CurrentDateTime();
+        TestMethodLine."Finish Time" := TestMethodLine."Start Time";
+        TestMethodLine.Result := TestMethodLine.Result::Skipped;
+        TestMethodLine.Modify();
     end;
 
     local procedure UpdateTestFunctionLine(var TestMethodLineFunction: Record "Test Method Line"; IsSuccess: Boolean)
@@ -151,18 +164,13 @@ codeunit 130454 "Test Runner - Mgt"
         if not TestMethodLineFunction.FindFirst() then
             exit(false);
 
-        TestMethodLineFunction."Start Time" := CurrentDateTime();
-        TestMethodLineFunction."Finish Time" := TestMethodLineFunction."Start Time";
-        TestMethodLineFunction.Result := TestMethodLineFunction.Result::Skipped;
-        TestMethodLineFunction.Modify();
-
         exit(true);
     end;
 
-    local procedure GetTestCodeunit(var CodeunitTestMethodLineFunction: Record "Test Method Line"; var TestMethodLineFunction: Record "Test Method Line"): Boolean
+    local procedure GetTestCodeunit(var CodeunitTestMethodLineFunction: Record "Test Method Line"; TestSuite: Code[10]; TestCodeunit: Integer): Boolean
     begin
-        CodeunitTestMethodLineFunction.SetRange("Test Suite", TestMethodLineFunction."Test Suite");
-        CodeunitTestMethodLineFunction.SetRange("Test Codeunit", TestMethodLineFunction."Test Codeunit");
+        CodeunitTestMethodLineFunction.SetRange("Test Suite", TestSuite);
+        CodeunitTestMethodLineFunction.SetRange("Test Codeunit", TestCodeunit);
         CodeunitTestMethodLineFunction.SetRange("Line Type", CodeunitTestMethodLineFunction."Line Type"::Codeunit);
 
         exit(CodeunitTestMethodLineFunction.FindFirst());

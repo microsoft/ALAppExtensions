@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Provides basic functionality to open a search page and validate user information. 
 /// </summary>
 codeunit 9843 "User Selection"
 {

@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to retrieve the current state of the tenant license.
 /// </summary>
 codeunit 2300 "Tenant License State"
 {
@@ -13,11 +13,11 @@ codeunit 2300 "Tenant License State"
     var
         TenantLicenseStateImpl: Codeunit "Tenant License State Impl.";
 
-        /// <summary>
-        /// Returns the default number of days that the tenant license can be in the current state, passed as a parameter.
-        /// </summary>
-        /// <param name="TenantLicenseState">The tenant license state.</param>
-        /// <returns>The default number of days that the tenant license can be in the current state, passed as a parameter or -1 if a default period is not defined for the state.</returns>
+    /// <summary>
+    /// Returns the default number of days that the tenant license can be in the current state, passed as a parameter.
+    /// </summary>
+    /// <param name="TenantLicenseState">The tenant license state.</param>
+    /// <returns>The default number of days that the tenant license can be in the current state, passed as a parameter or -1 if a default period is not defined for the state.</returns>
     procedure GetPeriod(TenantLicenseState: Enum "Tenant License State"): Integer
     begin
         exit(TenantLicenseStateImpl.GetPeriod(TenantLicenseState));
@@ -126,6 +126,7 @@ codeunit 2300 "Tenant License State"
     /// <summary>
     /// Extends the trial license.
     /// </summary>
+    [Scope('OnPrem')]
     procedure ExtendTrialLicense()
     begin
         TenantLicenseStateImpl.ExtendTrialLicense();

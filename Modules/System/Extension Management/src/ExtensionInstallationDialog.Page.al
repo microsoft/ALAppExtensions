@@ -22,6 +22,7 @@ page 2505 "Extension Installation Dialog"
                     //The GridLayout property is only supported on controls of type Grid
                     //GridLayout = Columns;
                     ShowCaption = false;
+                    Caption = '';
                     part(DetailsPart; "Extension Logo Part")
                     {
                         ApplicationArea = All;
@@ -38,6 +39,7 @@ page 2505 "Extension Installation Dialog"
                         {
                             ApplicationArea = All;
                             ShowCaption = false;
+                            Caption = '';
                         }
                         usercontrol(WebView; "Microsoft.Dynamics.Nav.Client.WebPageViewer")
                         {

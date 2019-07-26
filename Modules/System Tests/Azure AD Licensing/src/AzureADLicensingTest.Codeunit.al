@@ -17,6 +17,7 @@ codeunit 138458 "Azure AD Licensing Test"
         AzureADLicensingTest: Codeunit "Azure AD Licensing Test";
         AzureADLicensing: Codeunit "Azure AD Licensing";
         Assert: Codeunit "Library Assert";
+        EnvironmentInfo: Codeunit "Environment Information";
         MockGraphQuery: DotNet MockGraphQuery;
         ServicePlanOneIdTxt: Text;
         ServicePlanTwoIdTxt: Text;
@@ -24,13 +25,10 @@ codeunit 138458 "Azure AD Licensing Test"
         SubscribedSkuOneIdTxt: Text;
         SubscribedSkuTwoIdTxt: Text;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Licensing", 'OnInitialize', '', false, false)]
-    local procedure SetMockGraphQuery(var GraphClient: DotNet GraphQuery)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Graph", 'OnInitialize', '', false, false)]
+    local procedure SetMockGraphQuery(var GraphQuery: DotNet GraphQuery)
     begin
-        MockGraphQuery := MockGraphQuery.MockGraphQuery();
-
-        GraphClient := GraphClient.GraphQuery(MockGraphQuery);
-        Initialize();
+        GraphQuery := GraphQuery.GraphQuery(MockGraphQuery);
     end;
 
     local procedure Initialize()
@@ -48,6 +46,13 @@ codeunit 138458 "Azure AD Licensing Test"
         SubscribedSkuOneId: Guid;
         SubscribedSkuTwoId: Guid;
     begin
+        EnvironmentInfo.SetTestabilitySoftwareAsAService := true;
+
+        Clear(AzureADLicensing);
+        AzureADLicensing.SetTestInProgress(true);
+
+        MockGraphQuery := MockGraphQuery.MockGraphQuery();
+
         ServicePlanOneId := CREATEGUID();
         ServicePlanTwoId := CREATEGUID();
         ServicePlanThreeId := CREATEGUID();
@@ -121,6 +126,8 @@ codeunit 138458 "Azure AD Licensing Test"
     procedure TestSubscribedSKUCapabilityStatus()
     begin
         // [SCENARIO] Capability Status of a subscribed SKU is correctly retrieved
+
+        Initialize();
 
         // [Given] A mock SKU data
         BINDSUBSCRIPTION(AzureADLicensingTest);

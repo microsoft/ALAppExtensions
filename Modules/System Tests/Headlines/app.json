@@ -1,0 +1,44 @@
+{
+    "id":  "4b7bef15-07dc-4b9e-ae9d-81ac1a71d630",
+    "name":  "Headlines Test",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Tests for the Headlines module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "name":  "Headlines",
+                             "appId":  "f3f75070-7762-41f5-9947-043a50dc9fc7",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "User Login Times",
+                             "appId":  "959630b2-01c5-48d8-a477-d6d40da855fb",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "Library Assert",
+                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  139481,
+                         "to":  139481
+                     }
+                 ],
+    "target":  "OnPrem"
+}

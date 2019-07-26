@@ -10,7 +10,6 @@ codeunit 3712 "Translation Implementation"
     var
         NoRecordIdErr: Label 'The variant passed is not a record.';
 
-    [Scope('OnPrem')]
     procedure Any(): Boolean
     var
         Translation: Record Translation;
@@ -18,106 +17,98 @@ codeunit 3712 "Translation Implementation"
         exit(not Translation.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
-    procedure GetForLanguageOrFirst("Record": Variant; FieldId: Integer; LanguageId: Integer; FindAlternative: Boolean): Text
+    procedure Get(RecVariant: Variant; FieldId: Integer; LanguageId: Integer; FallbackToWindows: Boolean): Text
     var
         Translation: Record Translation;
-        RecordId: RecordID;
+        SystemId: Guid;
+        TableNo: Integer;
     begin
-        GetRecordIdFromVariant(Record, RecordId);
-        if Translation.Get(LanguageId, RecordId, FieldId) then
+        GetSystemIdFromVariant(RecVariant, SystemId, TableNo);
+        if Translation.Get(LanguageId, SystemId, FieldId) then
             exit(Translation.Value);
 
-        if FindAlternative then begin
-            Translation.SetRange("Record ID", RecordId);
-            Translation.SetRange("Field ID", FieldId);
-            if Translation.FindFirst() then
+        if FallbackToWindows then
+            if Translation.Get(WindowsLanguage(), SystemId, FieldId) then
                 exit(Translation.Value);
-        end;
+
+        exit('');
     end;
 
-    [Scope('OnPrem')]
-    procedure GetForLanguage("Record": Variant; FieldId: Integer; LanguageId: Integer): Text
+    procedure Get(RecVariant: Variant; FieldId: Integer; LanguageId: Integer): Text
     begin
-        exit(GetForLanguageOrFirst(Record, FieldId, LanguageId, false));
+        exit(Get(RecVariant, FieldId, LanguageId, false));
     end;
 
-    [Scope('OnPrem')]
-    procedure Set("Record": Variant; FieldId: Integer; Value: Text[2048])
+    procedure Set(RecVariant: Variant; FieldId: Integer; Value: Text[2048])
     begin
-        SetForLanguage(Record, FieldId, GlobalLanguage(), Value);
+        Set(RecVariant, FieldId, GlobalLanguage(), Value);
     end;
 
-    [Scope('OnPrem')]
-    procedure SetForLanguage("Record": Variant; FieldId: Integer; LanguageId: Integer; Value: Text[2048])
+    procedure Set(RecVariant: Variant; FieldId: Integer; LanguageId: Integer; Value: Text[2048])
     var
         Translation: Record Translation;
-        RecordId: RecordID;
+        SystemId: Guid;
+        TableNo: Integer;
         Exists: Boolean;
     begin
-        GetRecordIdFromVariant(Record, RecordId);
-        Exists := Translation.Get(LanguageId, RecordId, FieldId);
+        GetSystemIdFromVariant(RecVariant, SystemId, TableNo);
+        Exists := Translation.Get(LanguageId, SystemId, FieldId);
         if Exists then begin
             Translation.Value := Value;
             Translation.Modify(true);
         end else begin
             Translation.Init();
             Translation."Language ID" := LanguageId;
-            Translation."Record ID" := RecordId;
-            Translation."Table ID" := RecordId.TableNo();
+            Translation."System ID" := SystemId;
+            Translation."Table ID" := TableNo;
             Translation."Field ID" := FieldId;
             Translation.Value := Value;
             Translation.Insert(true);
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure Delete("Record": Variant)
+    procedure Delete(RecVariant: Variant)
     var
         Translation: Record Translation;
+    begin
+        DeleteTranslations(RecVariant, Translation);
+    end;
+
+    procedure Delete(RecVariant: Variant; FieldId: Integer)
+    var
+        Translation: Record Translation;
+    begin
+        Translation.SetRange("Field ID", FieldId);
+        DeleteTranslations(RecVariant, Translation);
+    end;
+
+    local procedure DeleteTranslations(RecVariant: Variant; var TranslationWithFilters: Record Translation)
+    var
         RecordRef: RecordRef;
     begin
-        GetRecordRefFromVariant(Record, RecordRef);
+        GetRecordRefFromVariant(RecVariant, RecordRef);
         if RecordRef.IsTemporary() then
             exit;
 
-        Translation.SetRange("Record ID", RecordRef.RecordId());
-        Translation.DeleteAll(true);
+        TranslationWithFilters.SetRange("System ID", GetSystemIdFromRecordRef(RecordRef));
+        TranslationWithFilters.DeleteAll(true);
     end;
 
-    [Scope('OnPrem')]
-    procedure Rename("Record": Variant; OldRecordID: RecordID)
-    var
-        Translation: Record Translation;
-        RecordRef: RecordRef;
-    begin
-        GetRecordRefFromVariant(Record, RecordRef);
-        if RecordRef.IsTemporary() then
-            exit;
-
-        Translation.SetRange("Record ID", OldRecordID);
-        if Translation.FindSet() then
-            repeat
-                Translation.Rename(Translation."Language ID", RecordRef.RecordId(), Translation."Field ID");
-            until Translation.Next() = 0;
-    end;
-
-    [Scope('OnPrem')]
-    procedure Show("Record": Variant; FieldId: Integer)
+    procedure Show(RecVariant: Variant; FieldId: Integer)
     var
         Translation: Record Translation;
         TranslationPage: Page Translation;
-        RecordId: RecordID;
+        SystemID: Guid;
+        TableNo: Integer;
     begin
-        GetRecordIdFromVariant(Record, RecordId);
-        Translation.SetRange("Record ID", RecordId);
+        GetSystemIdFromVariant(RecVariant, SystemID, TableNo);
+        Translation.SetRange("System ID", SystemID);
         Translation.SetRange("Field ID", FieldId);
-        TranslationPage.SetCaption(Format(RecordId));
+        TranslationPage.SetCaption(GetRecordIdCaptionFromVariant(RecVariant));
         TranslationPage.SetTableView(Translation);
         TranslationPage.Run();
     end;
 
-    [Scope('OnPrem')]
     procedure ShowForAllRecords(TableId: Integer; FieldId: Integer)
     var
         Translation: Record Translation;
@@ -127,23 +118,39 @@ codeunit 3712 "Translation Implementation"
         PAGE.Run(PAGE::Translation, Translation);
     end;
 
-    local procedure GetRecordIdFromVariant("Record": Variant; var RecordID: RecordID)
+    local procedure GetRecordIdCaptionFromVariant(RecVariant: Variant): Text
+    var
+        RecordRef: RecordRef;
+        RecordId: RecordId;
+    begin
+        GetRecordRefFromVariant(RecVariant, RecordRef);
+        RecordId := RecordRef.RecordId();
+        exit(Format(RecordId));
+    end;
+
+    local procedure GetSystemIdFromVariant(RecVariant: Variant; var SystemId: Guid; var TableNo: Integer)
     var
         RecordRef: RecordRef;
     begin
-        GetRecordRefFromVariant(Record, RecordRef);
-        RecordID := RecordRef.RecordId();
+        GetRecordRefFromVariant(RecVariant, RecordRef);
+        SystemId := GetSystemIdFromRecordRef(RecordRef);
+        TableNo := RecordRef.Number();
     end;
 
-    local procedure GetRecordRefFromVariant("Record": Variant; var RecordRef: RecordRef)
+    local procedure GetSystemIdFromRecordRef(RecordRef: RecordRef) SystemId: Guid
     begin
-        if Record.IsRecord() then begin
-            RecordRef.GetTable(Record);
+        Evaluate(SystemId, Format(RecordRef.Field(RecordRef.SystemIdNo()).Value())); // TODO: Uptake new method to directly get SystemID from record ref as soon as it is available
+    end;
+
+    local procedure GetRecordRefFromVariant(RecVariant: Variant; var RecordRef: RecordRef)
+    begin
+        if RecVariant.IsRecord() then begin
+            RecordRef.GetTable(RecVariant);
             exit;
         end;
 
-        if Record.IsRecordRef() then begin
-            RecordRef := Record;
+        if RecVariant.IsRecordRef() then begin
+            RecordRef := RecVariant;
             exit;
         end;
 

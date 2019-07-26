@@ -1,0 +1,42 @@
+{
+    "id":  "f2cc2ef8-949f-47d1-85b8-10bd6f8bc61c",
+    "name":  "Azure AD User",
+    "publisher":  "Microsoft",
+    "brief":  "Retrieves a user and its properties from the Azure AD Graph API.",
+    "description":  "Contains functions that retrieve a user from the Azure AD Graph API and allow access to the user\u0027s properties.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "name":  "DotNet Aliases",
+                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
+                             "publisher":  "Microsoft",
+                             "name":  "Azure AD Graph",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  9011,
+                         "to":  9011
+                     },
+                     {
+                         "from":  9024,
+                         "to":  9024
+                     }
+                 ],
+    "target":  "OnPrem"
+}

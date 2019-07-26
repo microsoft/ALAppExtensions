@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to fetch the client type that the user is currently using.
 /// </summary>
 codeunit 4030 "Client Type Management"
 {
@@ -30,7 +30,6 @@ codeunit 4030 "Client Type Management"
     /// This feature is for testing and is subject to a different SLA than production features.
     /// </remarks>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnAfterGetCurrentClientType(var CurrClientType: ClientType)
     begin
     end;

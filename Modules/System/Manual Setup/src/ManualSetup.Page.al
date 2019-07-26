@@ -1,5 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 page 1875 "Manual Setup"
 {
+    Extensible = false;
     AccessByPermission = TableData "Manual Setup" = R;
     ApplicationArea = All;
     Caption = 'Manual Setup';
