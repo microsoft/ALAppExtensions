@@ -22,9 +22,9 @@ page 3712 Translation
 
                     trigger OnAssistEdit()
                     var
-                        LanguageManagement: Codeunit "Language Management";
+                        Language: Codeunit Language;
                     begin
-                        LanguageManagement.LookupWindowsLanguageId("Language ID");
+                        Language.LookupWindowsLanguageId("Language ID");
                         if "Language ID" <> xRec."Language ID" then
                             CalcFields("Language Name");
                     end;

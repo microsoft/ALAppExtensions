@@ -18,15 +18,14 @@ codeunit 134934 "Manual Setup Test"
         TestBusinessSetupNameManualTxt: Label 'TEST Name Manual';
         TestBusinessSetupDescriptionManualTxt: Label 'TEST Description Manual';
         TestBusinessSetupKeywordsManualTxt: Label 'Test1, Test2, Test3, Manual';
-        IsInitialized: Boolean;
 
     [Test]
     [Scope('OnPrem')]
     procedure VerifySubscribedPageExistsOnTheList()
     var
+        BusinessSetupTest: Codeunit "Manual Setup Test";
         ManualSetupPage: TestPage "Manual Setup";
         MyManualSetup: TestPage "My Manual Setup";
-        BusinessSetupTest: Codeunit "Manual Setup Test";
     begin
         BindSubscription(BusinessSetupTest);
 
@@ -63,7 +62,7 @@ codeunit 134934 "Manual Setup Test"
         Sender.Insert(TestBusinessSetupNameTxt, TestBusinessSetupDescriptionTxt,
           TestBusinessSetupKeywordsTxt, page::"My Manual Setup", EmptyGuid);
 
-        Sender.InsertWithIconSharedInMedia(TestBusinessSetupNameManualTxt, TestBusinessSetupDescriptionManualTxt,
+        Sender.Insert(TestBusinessSetupNameManualTxt, TestBusinessSetupDescriptionManualTxt,
           TestBusinessSetupKeywordsManualTxt, page::"My Manual Setup", 'SomeIcon');
     end;
 }

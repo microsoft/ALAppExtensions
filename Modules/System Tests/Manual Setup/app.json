@@ -1,35 +1,38 @@
 {
-  "id": "2a285fe0-13b9-4790-a330-e6a8443bd858",
-  "name": "Manual Setup Test",
-  "publisher": "Microsoft",
-  "brief": "",
-  "description": "Tests for the Manual Setup module",
-  "version": "1.0.0.0",
-  "privacyStatement": "",
-  "EULA": "",
-  "help": "",
-  "url": "",
-  "logo": "",
-  "dependencies": [
-    {
-      "appId": "1e913197-559f-45ad-8075-4f9e4511f50f",
-      "publisher": "Microsoft",
-      "name": "Manual Setup",
-      "version": "1.0.0.0"
-    },
-    {
-      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-      "publisher": "Microsoft",
-      "name": "Library Assert",
-      "version": "1.0.0.0"
-    }], 
-  "screenshots": [],
-  "platform": "14.0.0.0",
-  "idRanges": [
-    {
-      "from": 134934,
-      "to": 134934
-    }
-  ],
-  "target": "OnPrem"
+    "id":  "2a285fe0-13b9-4790-a330-e6a8443bd858",
+    "name":  "Manual Setup Test",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Tests for the Manual Setup module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "1e913197-559f-45ad-8075-4f9e4511f50f",
+                             "publisher":  "Microsoft",
+                             "name":  "Manual Setup",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "publisher":  "Microsoft",
+                             "name":  "Library Assert",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  134934,
+                         "to":  134934
+                     }
+                 ],
+    "target":  "OnPrem"
 }

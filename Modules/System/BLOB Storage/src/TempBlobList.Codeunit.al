@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// The interface for storing sequences of variables, each of which stores BLOB data.
 /// </summary>
 codeunit 4102 "Temp Blob List"
 {
@@ -13,14 +13,14 @@ codeunit 4102 "Temp Blob List"
     var
         TempBlobListImpl: Codeunit "Temp Blob List Impl.";
 
-        /// <summary>
-        /// Check if an element with the given index exists.
-        /// </summary>
-        /// <param name="Index">The index of the TempBlob in the list.</param>
-        /// <returns>True if an element at the given index exists.</returns>
+    /// <summary>
+    /// Check if an element with the given index exists.
+    /// </summary>
+    /// <param name="Index">The index of the TempBlob in the list.</param>
+    /// <returns>True if an element at the given index exists.</returns>
     procedure Exists(Index: Integer): Boolean
     begin
-        exit(TempBlobListImpl.Exists(Index))
+        exit(TempBlobListImpl.Exists(Index));
     end;
 
     /// <summary>
@@ -29,7 +29,7 @@ codeunit 4102 "Temp Blob List"
     /// <returns>The number of elements in the list.</returns>
     procedure "Count"(): Integer
     begin
-        exit(TempBlobListImpl.Count())
+        exit(TempBlobListImpl.Count());
     end;
 
     /// <summary>

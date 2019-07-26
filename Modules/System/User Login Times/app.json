@@ -1,31 +1,40 @@
 {
-  "id": "959630b2-01c5-48d8-a477-d6d40da855fb",
-  "name": "User Login Times",
-  "publisher": "Microsoft",
-  "brief": "Keeps track of when users sign in.",
-  "description": "Records the date when users sign in for the first time, and keeps track of their two most recent sign ins.",
-  "version": "1.0.0.0",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
-  "help": "",
-  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-  "logo": "",
-  "dependencies": [],
-  "screenshots": [],
-  "platform": "13.0.0.0",
-  "idRanges": [
-    {
-      "from": 9008,
-      "to": 9008
-    },    
-    {
-      "from": 9013,
-      "to": 9013
-    },
-    {
-      "from": 9026,
-      "to": 9026
-    }
-  ],
-  "target": "OnPrem"
+    "id":  "959630b2-01c5-48d8-a477-d6d40da855fb",
+    "name":  "User Login Times",
+    "publisher":  "Microsoft",
+    "brief":  "Keeps track of when users sign in.",
+    "description":  "Records the date when users sign in for the first time, and keeps track of their two most recent sign ins.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "name":  "System Initialization",
+                            "appId":  "2955a828-6c0a-4d51-a1b8-a4cf2a040b9a",
+                            "publisher":  "Microsoft",
+                            "version":  "15.0.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  9008,
+                         "to":  9008
+                     },
+                     {
+                         "from":  9013,
+                         "to":  9013
+                     },
+                     {
+                         "from":  9026,
+                         "to":  9026
+                     }
+                 ],
+    "target":  "OnPrem"
 }

@@ -1,42 +1,44 @@
 {
-  "id": "5d03ef2d-13f0-4132-b941-48387b581434",
-  "name": "Satisfaction Survey",
-  "publisher": "Microsoft",
-  "brief": "Shows a satisfaction survey",
-  "description": "The purpose of this module is to show a satisfaction survey.",
-  "version": "1.0.0.0",
-  "privacyStatement": "",
-  "EULA": "",
-  "help": "",
-  "url": "",
-  "logo": "",
-  "dependencies": [
-    {
-      "appId": "3a56c7d2-a594-4682-bd90-b10bfb177620",
-      "publisher": "Microsoft",
-      "name": "Azure Key Vault",
-      "version": "1.0.0.0"
-    },
-    {
-      "appId": "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
-      "publisher": "Microsoft",
-      "name": "Client Type Management",
-      "version": "1.0.0.0"
-    },
-    {
-      "appId": "2673d810-273e-402f-9093-2eaef7e03b83",
-      "publisher": "Microsoft",
-      "name": "Environment Information",
-      "version": "1.0.0.0"
-    }
-  ],
-  "screenshots": [],
-  "platform": "15.0.0.0",
-  "idRanges": [
-    {
-      "from": 1432,
-      "to": 1433
-    }
-  ],
-  "target": "OnPrem"
+    "id":  "5d03ef2d-13f0-4132-b941-48387b581434",
+    "name":  "Satisfaction Survey",
+    "publisher":  "Microsoft",
+    "brief":  "Shows a satisfaction survey",
+    "description":  "The purpose of this module is to show a satisfaction survey.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "3a56c7d2-a594-4682-bd90-b10bfb177620",
+                             "publisher":  "Microsoft",
+                             "name":  "Azure Key Vault",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
+                             "publisher":  "Microsoft",
+                             "name":  "Client Type Management",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "2673d810-273e-402f-9093-2eaef7e03b83",
+                             "publisher":  "Microsoft",
+                             "name":  "Environment Information",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  1432,
+                         "to":  1433
+                     }
+                 ],
+    "target":  "OnPrem"
 }

@@ -89,7 +89,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Timeout := SatisfactionSurveyMgt.GetRequestTimeoutAsync();
 
         // Verify
-        LibraryAssert.IsTrue(Timeout > 0, 'Request timeout is incorrect.');
+        LibraryAssert.IsTrue((Timeout > 0) and (Timeout <= 60000), 'Request timeout is incorrect.');
     end;
 
     [Test]
@@ -611,6 +611,49 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Verify
         VerifySurveyDisabled(IsEnabled);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestActivateSurveyTwice()
+    var
+        Result1: Boolean;
+        Result2: Boolean;
+    begin
+        // Setup
+        InitializeFinancials();
+        SimulatePuidNotEmpty();
+        SimulateApiUrlNotEmpty();
+
+        // Execute
+        Result1 := SatisfactionSurveyMgt.ActivateSurvey();
+        Result2 := SatisfactionSurveyMgt.ActivateSurvey();
+
+        // Verify
+        LibraryAssert.IsTrue(Result1, 'Survey is not activated.');
+        LibraryAssert.IsFalse(Result2, 'Survey is already activated.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestDeractivateSurveyTwice()
+    var
+        Result1: Boolean;
+        Result2: Boolean;
+    begin
+        // Setup
+        InitializeFinancials();
+        SimulatePuidNotEmpty();
+        SimulateApiUrlNotEmpty();
+
+        // Execute
+        ActivateSurvey();
+        Result1 := SatisfactionSurveyMgt.DeactivateSurvey();
+        Result2 := SatisfactionSurveyMgt.DeactivateSurvey();
+
+        // Verify
+        LibraryAssert.IsTrue(Result1, 'Survey is not deactivated.');
+        LibraryAssert.IsFalse(Result2, 'Survey is already deactivated.');
     end;
 
     local procedure InitializeFinancials()

@@ -18,13 +18,11 @@ codeunit 3702 "Environment Information Impl."
         IsSandboxInitialized: Boolean;
         MemberShipEntitlementValueTxt: Label 'Membership Entitlement. IsEmpty returned %1.', Locked = true;
 
-    [Scope('OnPrem')]
     procedure IsProduction(): Boolean
     begin
         exit(NavTenantSettingsHelper.IsProduction())
     end;
 
-    [Scope('OnPrem')]
     procedure IsSandbox(): Boolean
     begin
         if TestabilitySandbox then
@@ -37,19 +35,21 @@ codeunit 3702 "Environment Information Impl."
         exit(IsSandboxConfig);
     end;
 
-    [Scope('OnPrem')]
+    procedure GetEnvironmentName(): Text
+    begin
+        exit(NavTenantSettingsHelper.GetEnvironmentName());
+    end;
+
     procedure SetTestabilitySandbox(EnableSandboxForTest: Boolean)
     begin
         TestabilitySandbox := EnableSandboxForTest;
     end;
 
-    [Scope('OnPrem')]
     procedure SetTestabilitySoftwareAsAService(EnableSoftwareAsAServiceForTest: Boolean)
     begin
         TestabilitySoftwareAsAService := EnableSoftwareAsAServiceForTest;
     end;
 
-    [Scope('OnPrem')]
     procedure IsSaaS(): Boolean
     var
         MembershipEntitlement: Record "Membership Entitlement";
@@ -67,19 +67,16 @@ codeunit 3702 "Environment Information Impl."
         exit(IsSaaSConfig);
     end;
 
-    [Scope('OnPrem')]
     procedure IsOnPrem(): Boolean
     begin
         exit(GetAppId() = 'NAV');
     end;
 
-    [Scope('OnPrem')]
     procedure IsInvoicing(): Boolean
     begin
         exit(GetAppId() = 'INV');
     end;
 
-    [Scope('OnPrem')]
     procedure IsFinancials(): Boolean
     begin
         exit(GetAppId() = 'FIN');

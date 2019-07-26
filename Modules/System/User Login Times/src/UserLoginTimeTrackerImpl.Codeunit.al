@@ -5,7 +5,8 @@
 
 codeunit 9013 "User Login Time Tracker Impl."
 {
-    Permissions = TableData "User Login"=rimd;
+    Access = Internal;
+    Permissions = TableData "User Login" = rimd;
 
     trigger OnRun()
     begin
@@ -27,9 +28,9 @@ codeunit 9013 "User Login Time Tracker Impl."
         UserLogin: Record "User Login";
         FromEventDateTime: DateTime;
     begin
-        FromEventDateTime := CreateDateTime(FromDate,0T);
+        FromEventDateTime := CreateDateTime(FromDate, 0T);
 
-        UserLogin.SetFilter("Last Login Date",'>=%1',FromEventDateTime);
+        UserLogin.SetFilter("Last Login Date", '>=%1', FromEventDateTime);
 
         exit(not UserLogin.IsEmpty());
     end;
@@ -40,7 +41,7 @@ codeunit 9013 "User Login Time Tracker Impl."
         UserLogin: Record "User Login";
     begin
         if not UserLogin.Get(UserSecurityId()) then
-          exit(false);
+            exit(false);
 
         exit(UserLogin."Last Login Date" >= FromDateTime);
     end;
@@ -51,27 +52,33 @@ codeunit 9013 "User Login Time Tracker Impl."
         UserLogin: Record "User Login";
     begin
         if UserLogin.Get(UserSecurityId()) then
-          exit(UserLogin."Penultimate Login Date");
+            exit(UserLogin."Penultimate Login Date");
 
         exit(0DT);
     end;
 
-    [Scope('OnPrem')]
-    procedure CreateOrUpdateLoginInfo()
+    [EventSubscriber(ObjectType::Codeunit, 150, 'OnAfterInitialization', '', false, false)]
+    procedure OnAfterSystemInitializationSubscriber()
+    begin
+        CreateOrUpdateLoginInfo();
+    end;
+
+    local procedure CreateOrUpdateLoginInfo()
     var
         UserLogin: Record "User Login";
     begin
+        UserLogin.LockTable(); // to ensure that the latest version is picked up and the other users logging in wait here,
         if UserLogin.Get(UserSecurityId()) then begin
-          UserLogin."Penultimate Login Date" := UserLogin."Last Login Date";
-          UserLogin."Last Login Date" := CurrentDateTime();
-          UserLogin.Modify(true);
+            UserLogin."Penultimate Login Date" := UserLogin."Last Login Date";
+            UserLogin."Last Login Date" := CurrentDateTime();
+            UserLogin.Modify(true);
         end else begin
-          UserLogin.Init();
-          UserLogin."User SID" := UserSecurityId();
-          UserLogin."First Login Date" := Today();
-          UserLogin."Penultimate Login Date" := 0DT;
-          UserLogin."Last Login Date" := CurrentDateTime();
-          UserLogin.Insert(true);
+            UserLogin.Init();
+            UserLogin."User SID" := UserSecurityId();
+            UserLogin."First Login Date" := Today();
+            UserLogin."Penultimate Login Date" := 0DT;
+            UserLogin."Last Login Date" := CurrentDateTime();
+            UserLogin.Insert(true);
         end
     end;
 }

@@ -1,40 +1,44 @@
 {
-    "id": "ed607db9-af68-4c40-9d42-65fb53785fac",
-    "name": "Azure Key Vault Test",
-    "publisher": "Microsoft",
-    "brief": "",
-    "description": "Tests for the Azure Key Vault module",
-    "version": "1.0.0.0",
-    "privacyStatement": "",
-    "EULA": "",
-    "help": "",
-    "url": "",
-    "logo": "",
-    "dependencies": [
-      {
-        "name": "Azure Key Vault",
-        "appId": "3a56c7d2-a594-4682-bd90-b10bfb177620",
-        "publisher": "Microsoft",
-        "version": "1.0.0.0"
-      },
-      {
-        "name": "Library Assert",
-        "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-        "publisher": "Microsoft",
-        "version": "1.0.0.0"
-      },
-      {
-        "appId": "815d5c15-02bd-4d58-a010-b66033de6625",
-        "publisher": "Microsoft",
-        "name": "DotNet Aliases Test",
-        "version": "1.0.0.0"
-      }
-      ],
-    "screenshots": [],
-    "platform": "15.0.0.0",
-    "idRanges": [{
-      "from": 135205,
-      "to": 135205
-    }],
-    "target": "OnPrem"
-  }
+    "id":  "ed607db9-af68-4c40-9d42-65fb53785fac",
+    "name":  "Azure Key Vault Test",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Tests for the Azure Key Vault module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "name":  "Azure Key Vault",
+                             "appId":  "3a56c7d2-a594-4682-bd90-b10bfb177620",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "Library Assert",
+                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "815d5c15-02bd-4d58-a010-b66033de6625",
+                             "publisher":  "Microsoft",
+                             "name":  "DotNet Aliases Test",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  135205,
+                         "to":  135205
+                     }
+                 ],
+    "target":  "OnPrem"
+}

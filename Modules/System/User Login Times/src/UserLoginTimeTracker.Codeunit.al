@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to retrieve information about the user's first, penultimate and last login times.
 /// </summary>
 codeunit 9026 "User Login Time Tracker"
 {
@@ -56,16 +56,6 @@ codeunit 9026 "User Login Time Tracker"
         UserLoginTimeTrackerImpl: Codeunit "User Login Time Tracker Impl.";
     begin
         exit(UserLoginTimeTrackerImpl.GetPenultimateLoginDateTime());
-    end;
-
-    /// <summary>
-    /// Updates or creates the last login information of the current user (first, last and penultimate login date).
-    /// </summary>
-    procedure CreateOrUpdateLoginInfo()
-    var
-        UserLoginTimeTrackerImpl: Codeunit "User Login Time Tracker Impl.";
-    begin
-        UserLoginTimeTrackerImpl.CreateOrUpdateLoginInfo();
     end;
 }
 

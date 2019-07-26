@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to fetch attributes concerning the current tenant.
 /// </summary>
 codeunit 417 "Tenant Settings"
 {

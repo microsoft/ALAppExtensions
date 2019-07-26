@@ -1,6 +1,6 @@
 page 130451 "AL Test Tool"
 {
-    AccessByPermission = TableData "Test Method Line"=RIMD;
+    AccessByPermission = TableData "Test Method Line" = RIMD;
     ApplicationArea = All;
     AutoSplitKey = true;
     Caption = 'AL Test Tool';
@@ -17,7 +17,7 @@ page 130451 "AL Test Tool"
     {
         area(content)
         {
-            field(CurrentSuiteName;CurrentSuiteName)
+            field(CurrentSuiteName; CurrentSuiteName)
             {
                 ApplicationArea = All;
                 Caption = 'Suite Name';
@@ -28,8 +28,8 @@ page 130451 "AL Test Tool"
                     ALTestSuite: Record "AL Test Suite";
                 begin
                     ALTestSuite.Name := CurrentSuiteName;
-                    if PAGE.RunModal(0,ALTestSuite) <> ACTION::LookupOK then
-                      exit(false);
+                    if PAGE.RunModal(0, ALTestSuite) <> ACTION::LookupOK then
+                        exit(false);
 
                     Text := ALTestSuite.Name;
                     CurrPage.Update(false);
@@ -47,7 +47,7 @@ page 130451 "AL Test Tool"
                 IndentationControls = Name;
                 ShowAsTree = true;
                 ShowCaption = false;
-                field(LineType;"Line Type")
+                field(LineType; "Line Type")
                 {
                     ApplicationArea = All;
                     Caption = 'Line Type';
@@ -55,7 +55,7 @@ page 130451 "AL Test Tool"
                     Style = Strong;
                     StyleExpr = LineTypeEmphasize;
                 }
-                field(TestCodeunit;"Test Codeunit")
+                field(TestCodeunit; "Test Codeunit")
                 {
                     ApplicationArea = All;
                     BlankZero = true;
@@ -64,7 +64,7 @@ page 130451 "AL Test Tool"
                     Style = Strong;
                     StyleExpr = TestCodeunitEmphasize;
                 }
-                field(Name;Name)
+                field(Name; Name)
                 {
                     ApplicationArea = All;
                     Caption = 'Name';
@@ -73,7 +73,7 @@ page 130451 "AL Test Tool"
                     StyleExpr = NameEmphasize;
                     ToolTip = 'Specifies the name of the test tool.';
                 }
-                field(Run;Run)
+                field(Run; Run)
                 {
                     ApplicationArea = All;
                     Caption = 'Run';
@@ -83,7 +83,7 @@ page 130451 "AL Test Tool"
                         CurrPage.Update(true);
                     end;
                 }
-                field(Result;Result)
+                field(Result; Result)
                 {
                     ApplicationArea = All;
                     BlankZero = true;
@@ -92,7 +92,7 @@ page 130451 "AL Test Tool"
                     Style = Favorable;
                     StyleExpr = ResultEmphasize;
                 }
-                field("Error Message";ErrorMessageWithStackTraceTxt)
+                field("Error Message"; ErrorMessageWithStackTraceTxt)
                 {
                     ApplicationArea = All;
                     Caption = 'Error Message';
@@ -107,17 +107,18 @@ page 130451 "AL Test Tool"
                         Message(ErrorMessageWithStackTraceTxt);
                     end;
                 }
-                field(Duration;RunDuration)
+                field(Duration; RunDuration)
                 {
                     ApplicationArea = All;
                     Caption = 'Duration';
+                    Editable = false;
                     ToolTip = 'Specifies the duration of the test run';
                 }
             }
             group(Control14)
             {
                 ShowCaption = false;
-                field(SuccessfulTests;Success)
+                field(SuccessfulTests; Success)
                 {
                     ApplicationArea = All;
                     AutoFormatType = 1;
@@ -125,7 +126,7 @@ page 130451 "AL Test Tool"
                     Editable = false;
                     ToolTip = 'Specifies the number of Successful Tests';
                 }
-                field(FailedTests;Failure)
+                field(FailedTests; Failure)
                 {
                     ApplicationArea = All;
                     AutoFormatType = 1;
@@ -133,7 +134,7 @@ page 130451 "AL Test Tool"
                     Editable = false;
                     ToolTip = 'Specifies the number of Failed Tests';
                 }
-                field(SkippedTests;Skipped)
+                field(SkippedTests; Skipped)
                 {
                     ApplicationArea = All;
                     AutoFormatType = 1;
@@ -141,7 +142,7 @@ page 130451 "AL Test Tool"
                     Editable = false;
                     ToolTip = 'Specifies the number of Skipped Tests';
                 }
-                field(NotExecutedTests;NotExecuted)
+                field(NotExecutedTests; NotExecuted)
                 {
                     ApplicationArea = All;
                     AutoFormatType = 1;
@@ -153,7 +154,7 @@ page 130451 "AL Test Tool"
             group(Control13)
             {
                 ShowCaption = false;
-                field(TestRunner;TestRunnerDisplayName)
+                field(TestRunner; TestRunnerDisplayName)
                 {
                     ApplicationArea = All;
                     Caption = 'Test Runner Codeunit';
@@ -196,7 +197,7 @@ page 130451 "AL Test Tool"
                     begin
                         CurrPage.SetSelectionFilter(TestMethodLine);
                         TestMethodLine.DeleteAll(true);
-                        TestSuiteMgt.CalcTestResults(Rec,Success,Failure,Skipped,NotExecuted);
+                        TestSuiteMgt.CalcTestResults(Rec, Success, Failure, Skipped, NotExecuted);
                     end;
                 }
                 action(GetTestCodeunits)
@@ -293,7 +294,7 @@ page 130451 "AL Test Tool"
                     Caption = 'Select Test R&unner';
                     Image = SetupList;
                     Promoted = true;
-                    PromotedCategory = "Report";
+                    PromotedCategory = Process;
                     PromotedIsBig = true;
                     PromotedOnly = true;
                     ToolTip = 'Specifies the action to select a test runner';
@@ -313,7 +314,7 @@ page 130451 "AL Test Tool"
     var
         TestSuiteMgt: Codeunit "Test Suite Mgt.";
     begin
-        TestSuiteMgt.CalcTestResults(Rec,Success,Failure,Skipped,NotExecuted);
+        TestSuiteMgt.CalcTestResults(Rec, Success, Failure, Skipped, NotExecuted);
         UpdateDisplayPropertiesForLine();
         UpdateCalculatedFields();
     end;
@@ -353,7 +354,7 @@ page 130451 "AL Test Tool"
         CurrPage.SaveRecord();
 
         FilterGroup(2);
-        SetRange("Test Suite",CurrentSuiteName);
+        SetRange("Test Suite", CurrentSuiteName);
         FilterGroup(0);
 
         CurrPage.Update(false);
@@ -368,16 +369,16 @@ page 130451 "AL Test Tool"
         GlobalALTestSuite.SetAutoCalcFields("Tests to Execute");
 
         if not GlobalALTestSuite.Get(CurrentSuiteName) then
-          if (CurrentSuiteName = '') and GlobalALTestSuite.FindFirst() then
-            CurrentSuiteName := GlobalALTestSuite.Name
-          else begin
-            TestSuiteMgt.CreateTestSuite(CurrentSuiteName);
-            Commit();
-            GlobalALTestSuite.Get(CurrentSuiteName);
-          end;
+            if (CurrentSuiteName = '') and GlobalALTestSuite.FindFirst() then
+                CurrentSuiteName := GlobalALTestSuite.Name
+            else begin
+                TestSuiteMgt.CreateTestSuite(CurrentSuiteName);
+                Commit();
+                GlobalALTestSuite.Get(CurrentSuiteName);
+            end;
 
         FilterGroup(2);
-        SetRange("Test Suite",CurrentSuiteName);
+        SetRange("Test Suite", CurrentSuiteName);
         FilterGroup(0);
 
         if Find('-') then;

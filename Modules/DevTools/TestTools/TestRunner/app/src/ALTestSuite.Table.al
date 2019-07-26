@@ -1,54 +1,54 @@
 table 130451 "AL Test Suite"
 {
-    DataCaptionFields = Name,Description;
+    DataCaptionFields = Name, Description;
     LookupPageID = "AL Test Suites";
     ReplicateData = false;
 
     fields
     {
-        field(1;Name;Code[10])
+        field(1; Name; Code[10])
         {
             NotBlank = true;
         }
-        field(2;Description;Text[30])
+        field(2; Description; Text[30])
         {
         }
-        field(3;"Tests to Execute";Integer)
+        field(3; "Tests to Execute"; Integer)
         {
-            CalcFormula = Count("Test Method Line" WHERE ("Test Suite"=FIELD(Name),
-                                                          "Line Type"=CONST(Function),
-                                                          Run=CONST(true)));
+            CalcFormula = Count ("Test Method Line" WHERE("Test Suite" = FIELD(Name),
+                                                          "Line Type" = CONST(Function),
+                                                          Run = CONST(true)));
             Editable = false;
             FieldClass = FlowField;
         }
-        field(4;"Tests not Executed";Integer)
+        field(4; "Tests not Executed"; Integer)
         {
-            CalcFormula = Count("Test Method Line" WHERE ("Test Suite"=FIELD(Name),
-                                                          "Line Type"=CONST(Function),
-                                                          Run=CONST(true),
-                                                          Result=CONST(" ")));
+            CalcFormula = Count ("Test Method Line" WHERE("Test Suite" = FIELD(Name),
+                                                          "Line Type" = CONST(Function),
+                                                          Run = CONST(true),
+                                                          Result = CONST(" ")));
             Editable = false;
             FieldClass = FlowField;
         }
-        field(5;Failures;Integer)
+        field(5; Failures; Integer)
         {
-            CalcFormula = Count("Test Method Line" WHERE ("Test Suite"=FIELD(Name),
-                                                          "Line Type"=CONST(Function),
-                                                          Run=CONST(true),
-                                                          Result=CONST(Failure)));
+            CalcFormula = Count ("Test Method Line" WHERE("Test Suite" = FIELD(Name),
+                                                          "Line Type" = CONST(Function),
+                                                          Run = CONST(true),
+                                                          Result = CONST(Failure)));
             Editable = false;
             FieldClass = FlowField;
         }
-        field(6;"Last Run";DateTime)
+        field(6; "Last Run"; DateTime)
         {
             Editable = false;
         }
-        field(7;"Run Type";Option)
+        field(7; "Run Type"; Option)
         {
             DataClassification = ToBeClassified;
             OptionMembers = " ",All,"Active Codeunit","Active Test";
         }
-        field(8;"Test Runner Id";Integer)
+        field(8; "Test Runner Id"; Integer)
         {
             DataClassification = ToBeClassified;
         }
@@ -56,7 +56,7 @@ table 130451 "AL Test Suite"
 
     keys
     {
-        key(Key1;Name)
+        key(Key1; Name)
         {
             Clustered = true;
         }
@@ -70,7 +70,7 @@ table 130451 "AL Test Suite"
     var
         TestMethodLine: Record "Test Method Line";
     begin
-        TestMethodLine.SetRange("Test Suite",Name);
+        TestMethodLine.SetRange("Test Suite", Name);
         TestMethodLine.DeleteAll(true);
     end;
 
@@ -79,7 +79,7 @@ table 130451 "AL Test Suite"
         TestRunnerMgt: Codeunit "Test Runner - Mgt";
     begin
         if "Test Runner Id" = 0 then
-          "Test Runner Id" := TestRunnerMgt.GetDefautlTestRunner();
+            "Test Runner Id" := TestRunnerMgt.GetDefautlTestRunner();
     end;
 }
 

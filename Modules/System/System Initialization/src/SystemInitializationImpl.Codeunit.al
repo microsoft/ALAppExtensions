@@ -24,7 +24,6 @@ codeunit 151 "System Initialization Impl."
         InitializationInProgress := false;
     end;
 
-    [Scope('OnPrem')]
     procedure IsInProgress(): Boolean
     begin
         exit(InitializationInProgress);

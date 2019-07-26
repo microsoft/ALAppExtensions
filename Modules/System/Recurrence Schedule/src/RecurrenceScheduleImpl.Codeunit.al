@@ -12,7 +12,6 @@ codeunit 4691 "Recurrence Schedule Impl."
         RecurrenceDisplayTxt: Label 'Recurring %1 starting %2', Comment = '%1 = it recurrence pattern like Daily, Weekly, Monthly..., %2 = The date the recurrence starts';
         RecurrenceMaximumCalculateLimitTxt: Label 'Exceeded maximum calculation limit for recurrence. Change start date to be today.';
 
-    [Scope('OnPrem')]
     procedure SetMinDateTime(DateTime: DateTime)
     begin
         MinDateTime := DateTime;
@@ -33,7 +32,6 @@ codeunit 4691 "Recurrence Schedule Impl."
         EXIT(CREATEDATETIME(NextDate, RecurrenceSchedule."Start Time") >= GetMinDateTime());
     end;
 
-    [Scope('OnPrem')]
     procedure CalculateNextOccurrence(RecurrenceID: Guid; LastOccurrence: DateTime): DateTime
     var
         RecurrenceSchedule: Record "Recurrence Schedule";
@@ -240,7 +238,6 @@ codeunit 4691 "Recurrence Schedule Impl."
         EXIT(PlannedDateTime);
     end;
 
-    [Scope('OnPrem')]
     procedure CreateDaily(StartTime: Time; StartDate: Date; EndDate: Date; DaysBetween: Integer): Guid
     var
         RecurrenceSchedule: Record "Recurrence Schedule";
@@ -255,7 +252,6 @@ codeunit 4691 "Recurrence Schedule Impl."
         EXIT(RecurrenceSchedule.ID);
     end;
 
-    [Scope('OnPrem')]
     procedure CreateWeekly(StartTime: Time; StartDate: Date; EndDate: Date; WeeksBetween: Integer; Monday: Boolean; Tuesday: Boolean; Wednesday: Boolean; Thursday: Boolean; Friday: Boolean; Saturday: Boolean; Sunday: Boolean): Guid
     var
         RecurrenceSchedule: Record "Recurrence Schedule";
@@ -277,7 +273,6 @@ codeunit 4691 "Recurrence Schedule Impl."
         EXIT(RecurrenceSchedule.ID);
     end;
 
-    [Scope('OnPrem')]
     procedure CreateMonthlyByDay(StartTime: Time; StartDate: Date; EndDate: Date; MonthsBetween: Integer; DayOfMonth: Integer): Guid
     var
         RecurrenceSchedule: Record "Recurrence Schedule";
@@ -295,7 +290,6 @@ codeunit 4691 "Recurrence Schedule Impl."
         EXIT(RecurrenceSchedule.ID);
     end;
 
-    [Scope('OnPrem')]
     procedure CreateMonthlyByDayOfWeek(StartTime: Time; StartDate: Date; EndDate: Date; MonthsBetween: Integer; InWeek: Enum "Recurrence - Ordinal No."; DayOfWeek: Enum "Recurrence - Day of Week"): Guid
     var
         RecurrenceSchedule: Record "Recurrence Schedule";
@@ -314,7 +308,6 @@ codeunit 4691 "Recurrence Schedule Impl."
         EXIT(RecurrenceSchedule.ID);
     end;
 
-    [Scope('OnPrem')]
     procedure CreateYearlyByDay(StartTime: Time; StartDate: Date; EndDate: Date; YearsBetween: Integer; DayOfMonth: Integer; Month: Enum "Recurrence - Month"): Guid
     var
         RecurrenceSchedule: Record "Recurrence Schedule";
@@ -333,7 +326,6 @@ codeunit 4691 "Recurrence Schedule Impl."
         EXIT(RecurrenceSchedule.ID);
     end;
 
-    [Scope('OnPrem')]
     procedure CreateYearlyByDayOfWeek(StartTime: Time; StartDate: Date; EndDate: Date; YearsBetween: Integer; OrdinalNumber: Enum "Recurrence - Ordinal No."; DayOfWeek: Enum "Recurrence - Day of Week"; Month: Enum "Recurrence - Month"): Guid
     var
         RecurrenceSchedule: Record "Recurrence Schedule";
@@ -353,7 +345,6 @@ codeunit 4691 "Recurrence Schedule Impl."
         EXIT(RecurrenceSchedule.ID);
     end;
 
-    [Scope('OnPrem')]
     procedure OpenRecurrenceSchedule(var RecurrenceID: Guid)
     var
         RecurrenceSchedule: Record "Recurrence Schedule";
@@ -384,7 +375,6 @@ codeunit 4691 "Recurrence Schedule Impl."
         END;
     end;
 
-    [Scope('OnPrem')]
     procedure RecurrenceDisplayText(RecurrenceID: Guid): Text
     var
         RecurrenceSchedule: Record "Recurrence Schedule";

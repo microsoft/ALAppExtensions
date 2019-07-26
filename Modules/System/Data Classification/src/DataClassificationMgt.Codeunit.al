@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to handle data classification tasks.
 /// </summary>
 codeunit 1750 "Data Classification Mgt."
 {
@@ -13,10 +13,10 @@ codeunit 1750 "Data Classification Mgt."
     var
         DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
 
-        /// <summary>
-        /// Creates an entry in the Data Sensitivity table for every field in the database that is classified as Customer Content,
-        /// End User Identifiable Information (EUII), or End User Pseudonymous Identifiers (EUPI).
-        /// </summary>
+    /// <summary>
+    /// Creates an entry in the Data Sensitivity table for every field in the database that is classified as Customer Content,
+    /// End User Identifiable Information (EUII), or End User Pseudonymous Identifiers (EUPI).
+    /// </summary>
     procedure PopulateDataSensitivityTable()
     begin
         DataClassificationMgtImpl.PopulateDataSensitivityTable();
@@ -221,16 +221,6 @@ codeunit 1750 "Data Classification Mgt."
     end;
 
     /// <summary>
-    /// Sets the entity table number on the Data Privacy Wizard page.
-    /// </summary>
-    /// <param name="DataPrivacyEntities">All the existent data privacy entities.</param>
-    /// <param name="EntityTypeText">The name of the entity's table.</param>
-    procedure SetEntityType(var DataPrivacyEntities: Record "Data Privacy Entities"; EntityTypeText: Text[80])
-    begin
-        DataClassificationMgtImpl.SetEntityType(DataPrivacyEntities, EntityTypeText);
-    end;
-
-    /// <summary>
     /// Inserts a new Data Privacy Entity entry in a record.
     /// </summary>
     /// <param name="DataPrivacyEntities">The record that the entry gets inserted into.</param>
@@ -242,17 +232,6 @@ codeunit 1750 "Data Classification Mgt."
     procedure InsertDataPrivacyEntity(var DataPrivacyEntities: Record "Data Privacy Entities"; TableNo: Integer; PageNo: Integer; KeyFieldNo: Integer; EntityFilter: Text; PrivacyBlockedFieldNo: Integer)
     begin
         DataPrivacyEntities.InsertRow(TableNo, PageNo, KeyFieldNo, EntityFilter, PrivacyBlockedFieldNo);
-    end;
-
-    /// <summary>
-    /// Publishes an event that allows subscribers to insert Data Privacy Entities in the DataPrivacyEntities record.
-    /// </summary>
-    /// <param name="DataPrivacyEntities">
-    /// The record that in the end will contain all the Data Privacy Entities that the subscribers have inserted.
-    /// </param>
-    [IntegrationEvent(false, false)]
-    procedure OnGetPrivacyMasterTables(var DataPrivacyEntities: Record "Data Privacy Entities")
-    begin
     end;
 
     /// <summary>
@@ -268,10 +247,32 @@ codeunit 1750 "Data Classification Mgt."
     end;
 
     /// <summary>
+    /// Raises an event that allows subscribers to insert Data Privacy Entities in the DataPrivacyEntities record.
+    /// Throws an error when it is not called with a temporary record.
+    /// </summary>
+    /// <param name="DataPrivacyEntities">
+    /// The record that in the end will contain all the Data Privacy Entities that the subscribers have inserted.
+    /// </param>
+    procedure RaiseOnGetDataPrivacyEntities(var DataPrivacyEntities: Record "Data Privacy Entities")
+    begin
+        DataClassificationMgtImpl.RaiseOnGetDataPrivacyEntities(DataPrivacyEntities);
+    end;
+
+    /// <summary>
+    /// Publishes an event that allows subscribers to insert Data Privacy Entities in the DataPrivacyEntities record.
+    /// </summary>
+    /// <param name="DataPrivacyEntities">
+    /// The record that in the end will contain all the Data Privacy Entities that the subscribers have inserted.
+    /// </param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnGetDataPrivacyEntities(var DataPrivacyEntities: Record "Data Privacy Entities")
+    begin
+    end;
+
+    /// <summary>
     /// Publishes an event that allows subscribers to create evaluation data.
     /// </summary>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnCreateEvaluationData()
     begin
     end;
@@ -281,7 +282,6 @@ codeunit 1750 "Data Classification Mgt."
     /// Data Sensitivity and Field tables.
     /// </summary>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnShowSyncFieldsNotification()
     begin
     end;

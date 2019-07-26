@@ -33,7 +33,7 @@ codeunit 1753 "Data Classification Mgt. Impl."
         DataSensitivity: Record "Data Sensitivity";
     begin
         DataSensitivity.Init();
-        DataSensitivity."Company Name" := CopyStr(CompanyName(), 1, 30);
+        DataSensitivity."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(DataSensitivity."Company Name"));
         DataSensitivity."Table No" := TableNo;
         DataSensitivity."Field No" := FieldNo;
         DataSensitivity."Data Sensitivity" := DataSensitivityOption;
@@ -366,7 +366,7 @@ codeunit 1753 "Data Classification Mgt. Impl."
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
         RecordRef: RecordRef;
     begin
-        DataClassificationMgt.OnGetPrivacyMasterTables(TempDataPrivacyEntities);
+        RaiseOnGetDataPrivacyEntities(TempDataPrivacyEntities);
 
         if TempDataPrivacyEntities.FindSet() then
             repeat
@@ -384,20 +384,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
     begin
         DataSensitivity.SetRange("Company Name", CompanyName());
         exit(DataSensitivity.IsEmpty());
-    end;
-
-    [Scope('OnPrem')]
-    procedure SetEntityType(var DataPrivacyEntities: Record "Data Privacy Entities"; EntityTypeText: Text[80])
-    var
-        DataPrivacyWizard: Page "Data Privacy Wizard";
-        EntityTypeTableNo: Integer;
-    begin
-        DataPrivacyEntities.SetRange("Table Caption", EntityTypeText);
-        if DataPrivacyEntities.FindFirst() then
-            EntityTypeTableNo := DataPrivacyEntities."Table No.";
-        Clear(DataPrivacyEntities);
-        DataPrivacyWizard.SetEntitityType(EntityTypeText, EntityTypeTableNo);
-        DataPrivacyWizard.RunModal();
     end;
 
     [Scope('OnPrem')]
@@ -433,6 +419,16 @@ codeunit 1753 "Data Classification Mgt. Impl."
         end;
 
         exit(FilterText);
+    end;
+
+    procedure RaiseOnGetDataPrivacyEntities(var DataPrivacyEntities: Record "Data Privacy Entities")
+    var
+        DataClassificationMgt: Codeunit "Data Classification Mgt.";
+    begin
+        if not DataPrivacyEntities.IsTemporary() then
+            error('Please call this function with a temporary record.');
+
+        DataClassificationMgt.OnGetDataPrivacyEntities(DataPrivacyEntities);
     end;
 }
 

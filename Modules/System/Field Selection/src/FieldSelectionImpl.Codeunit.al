@@ -7,7 +7,6 @@ codeunit 9807 "Field Selection Impl."
 {
     Access = Internal;
 
-    [Scope('OnPrem')]
     procedure Open(var "Field": Record "Field"): Boolean
     var
         FieldsLookup: Page "Fields Lookup";

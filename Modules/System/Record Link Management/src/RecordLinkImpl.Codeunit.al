@@ -26,7 +26,6 @@ codeunit 4470 "Record Link Impl."
             RecordLink.ModifyAll(Notify, false);
     end;
 
-    [Scope('OnPrem')]
     procedure CopyLinks(FromRecord: Variant; ToRecord: Variant)
     var
         RecRefTo: RecordRef;
@@ -36,7 +35,6 @@ codeunit 4470 "Record Link Impl."
         ResetNotifyOnLinks(RecRefTo);
     end;
 
-    [Scope('OnPrem')]
     procedure WriteNote(var RecordLink: Record "Record Link"; Note: Text)
     var
         BinWriter: DotNet BinaryWriter;
@@ -47,7 +45,6 @@ codeunit 4470 "Record Link Impl."
         BinWriter.Write(Note);
     end;
 
-    [Scope('OnPrem')]
     procedure ReadNote(RecordLink: Record "Record Link") Note: Text
     var
         BinReader: DotNet BinaryReader;
@@ -61,7 +58,6 @@ codeunit 4470 "Record Link Impl."
         Note := BinReader.ReadString();
     end;
 
-    [Scope('OnPrem')]
     procedure RemoveOrphanedLinks()
     var
         ConfirmManagement: Codeunit "Confirm Management";

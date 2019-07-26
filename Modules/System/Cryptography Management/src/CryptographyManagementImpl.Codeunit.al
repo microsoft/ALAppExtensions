@@ -21,7 +21,6 @@ codeunit 1279 "Cryptography Management Impl."
         EncryptionCheckFailErr: Label 'Encryption is either not enabled or the encryption key cannot be found.';
         EncryptionIsNotActivatedQst: Label 'Data encryption is not activated. It is recommended that you encrypt data. \Do you want to open the Data Encryption Management window?';
 
-    [Scope('OnPrem')]
     procedure Encrypt(InputString: Text): Text
     begin
         AssertEncryptionPossible();
@@ -30,7 +29,6 @@ codeunit 1279 "Cryptography Management Impl."
         exit(SYSTEM.Encrypt(InputString));
     end;
 
-    [Scope('OnPrem')]
     procedure Decrypt(EncryptedString: Text): Text
     begin
         AssertEncryptionPossible();
@@ -39,7 +37,6 @@ codeunit 1279 "Cryptography Management Impl."
         exit(SYSTEM.Decrypt(EncryptedString))
     end;
 
-    [Scope('OnPrem')]
     procedure ExportKey()
     var
         PasswordDialogManagement: Codeunit "Password Dialog Management";
@@ -48,7 +45,7 @@ codeunit 1279 "Cryptography Management Impl."
     begin
         AssertEncryptionPossible();
         if Confirm(ExportEncryptionKeyConfirmQst, true) then begin
-            Password := PasswordDialogManagement.OpenPasswordDialog3();
+            Password := PasswordDialogManagement.OpenPasswordDialog();
             if Password = '' then
                 exit;
         end;
@@ -57,7 +54,6 @@ codeunit 1279 "Cryptography Management Impl."
         DownloadEncryptionFileFromStream(TempBlob);
     end;
 
-    [Scope('OnPrem')]
     procedure ExportKeyAsStream(var TempBlob: Codeunit "Temp Blob"; Password: Text)
     begin
         AssertEncryptionPossible();
@@ -95,7 +91,6 @@ codeunit 1279 "Cryptography Management Impl."
                 Error('%1', GetLastErrorText());
     end;
 
-    [Scope('OnPrem')]
     procedure ImportKey()
     var
         PasswordDialogManagement: Codeunit "Password Dialog Management";
@@ -115,7 +110,6 @@ codeunit 1279 "Cryptography Management Impl."
         FILE.Erase(TempKeyFilePath);
     end;
 
-    [Scope('OnPrem')]
     procedure ChangeKey()
     var
         PasswordDialogManagement: Codeunit "Password Dialog Management";
@@ -142,7 +136,6 @@ codeunit 1279 "Cryptography Management Impl."
         FILE.Erase(TempKeyFilePath);
     end;
 
-    [Scope('OnPrem')]
     procedure EnableEncryption(Silent: Boolean)
     var
         PasswordDialogManagement: Codeunit "Password Dialog Management";
@@ -157,7 +150,7 @@ codeunit 1279 "Cryptography Management Impl."
 
         if Confirm(EnableEncryptionConfirmQst, true) then begin
             if Confirm(ExportEncryptionKeyConfirmQst, true) then begin
-                Password := PasswordDialogManagement.OpenPasswordDialog3();
+                Password := PasswordDialogManagement.OpenPasswordDialog();
                 if Password <> '' then
                     ExportKey := true;
             end;
@@ -177,7 +170,6 @@ codeunit 1279 "Cryptography Management Impl."
         CreateEncryptionKey();
     end;
 
-    [Scope('OnPrem')]
     procedure DisableEncryption(Silent: Boolean)
     begin
         // Silent is FALSE when we want the user to take action on if the encryption should be disabled or not. In cases like import key
@@ -190,13 +182,11 @@ codeunit 1279 "Cryptography Management Impl."
         DeleteEncryptionKey();
     end;
 
-    [Scope('OnPrem')]
     procedure IsEncryptionEnabled(): Boolean
     begin
         exit(EncryptionEnabled());
     end;
 
-    [Scope('OnPrem')]
     procedure IsEncryptionPossible(): Boolean
     begin
         // ENCRYPTIONKEYEXISTS checks if the correct key is present, which only works if encryption is enabled
@@ -226,13 +216,11 @@ codeunit 1279 "Cryptography Management Impl."
         Message(EncryptionKeyImportedMsg);
     end;
 
-    [Scope('OnPrem')]
     procedure GetEncryptionIsNotActivatedQst(): Text
     begin
         exit(EncryptionIsNotActivatedQst);
     end;
 
-    [Scope('OnPrem')]
     procedure GenerateHash(InputString: Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
     var
         HashBytes: DotNet Array;
@@ -242,7 +230,6 @@ codeunit 1279 "Cryptography Management Impl."
         exit(ConvertByteHashToString(HashBytes));
     end;
 
-    [Scope('OnPrem')]
     procedure GenerateHashAsBase64String(InputString: Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
     var
         HashBytes: DotNet Array;
@@ -273,8 +260,7 @@ codeunit 1279 "Cryptography Management Impl."
         HashAlgorithm.Dispose();
     end;
 
-    [Scope('OnPrem')]
-    procedure GenerateKeyedHash(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
+    procedure GenerateHash(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
     var
         HashBytes: DotNet Array;
         Encoding: DotNet Encoding;
@@ -284,8 +270,7 @@ codeunit 1279 "Cryptography Management Impl."
         exit(ConvertByteHashToString(HashBytes));
     end;
 
-    [Scope('OnPrem')]
-    procedure GenerateKeyedHashAsBase64String(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
+    procedure GenerateHashAsBase64String(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
     var
         HashBytes: DotNet Array;
         Encoding: DotNet Encoding;
@@ -295,7 +280,6 @@ codeunit 1279 "Cryptography Management Impl."
         exit(ConvertByteHashToBase64String(HashBytes));
     end;
 
-    [Scope('OnPrem')]
     procedure GenerateBase64KeyedHashAsBase64String(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
     var
         HashBytes: DotNet Array;
@@ -348,8 +332,7 @@ codeunit 1279 "Cryptography Management Impl."
         exit(Convert.ToBase64String(HashBytes));
     end;
 
-    [Scope('OnPrem')]
-    procedure GenerateHashFromStream(InStr: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
+    procedure GenerateHash(InStr: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
     var
         MemoryStream: DotNet MemoryStream;
         HashBytes: DotNet Array;

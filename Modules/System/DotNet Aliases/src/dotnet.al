@@ -130,55 +130,55 @@ dotnet
 
     assembly("mscorlib")
     {
-        type("System.Array";"Array")
+        type("System.Array"; "Array")
         {
         }
 
-        type("System.Text.Encoding";"Encoding")
+        type("System.Text.Encoding"; "Encoding")
         {
         }
 
-        type("System.IO.Stream";"Stream")
+        type("System.IO.Stream"; "Stream")
         {
         }
 
-        type("System.Security.Cryptography.HashAlgorithm";"HashAlgorithm")
+        type("System.Security.Cryptography.HashAlgorithm"; "HashAlgorithm")
         {
         }
 
-        type("System.Convert";"Convert")
+        type("System.Convert"; "Convert")
         {
         }
 
-        type("System.Security.Cryptography.KeyedHashAlgorithm";"KeyedHashAlgorithm")
+        type("System.Security.Cryptography.KeyedHashAlgorithm"; "KeyedHashAlgorithm")
         {
         }
 
-        type("System.Byte";"Byte")
+        type("System.Byte"; "Byte")
         {
         }
 
-        type("System.Text.StringBuilder";"StringBuilder")
+        type("System.Text.StringBuilder"; "StringBuilder")
         {
         }
 
-        type("System.IO.MemoryStream";"MemoryStream")
+        type("System.IO.MemoryStream"; "MemoryStream")
         {
         }
 
-        type("System.Collections.Generic.Dictionary`2";"Dictionary_Of_T_U")
+        type("System.Collections.Generic.Dictionary`2"; "Dictionary_Of_T_U")
         {
         }
 
-        type("System.String";"String")
+        type("System.String"; "String")
         {
         }
 
-        type("System.StringComparison";"StringComparison")
+        type("System.StringComparison"; "StringComparison")
         {
         }
 
-        type("System.IO.StreamWriter";"StreamWriter")
+        type("System.IO.StreamWriter"; "StreamWriter")
         {
         }
 
@@ -453,6 +453,14 @@ dotnet
 
     assembly("Newtonsoft.Json")
     {
+        type("Newtonsoft.Json.Linq.JObject"; "JObject")
+        {
+        }
+
+        type("Newtonsoft.Json.Linq.JToken"; "JToken")
+        {
+        }
+
         type("Newtonsoft.Json.Linq.JProperty"; "JProperty")
         {
         }
@@ -487,6 +495,22 @@ dotnet
         Version = '4.0.0.0';
         Culture = 'neutral';
         PublicKeyToken = 'b77a5c561934e089';
+
+        type("System.Net.HttpWebRequest"; "HttpWebRequest")
+        {
+        }
+
+        type("System.Net.HttpWebResponse"; "HttpWebResponse")
+        {
+        }
+
+        type("System.Net.CookieContainer"; "CookieContainer")
+        {
+        }
+
+        type("System.Text.RegularExpressions.Regex"; "Regex")
+        {
+        }
 
         type("System.Net.CredentialCache"; "CredentialCache")
         {
@@ -1072,6 +1096,22 @@ dotnet
         type("Microsoft.Dynamics.Nav.LicensingService.Model.TenantInfo"; "TenantInfo")
         {
         }
+
+        type("Microsoft.Dynamics.Nav.LicensingService.Model.LicenseUnitsInfo"; "LicenseUnitsInfo")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.LicensingService.Model.SkuInfo"; "SkuInfo")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.LicensingService.Model.ServicePlanInfo"; "ServicePlanInfo")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.LicensingService.Model.GroupInfo"; "GroupInfo")
+        {
+        }
     }
 
     assembly("System.Core")
@@ -1322,6 +1362,10 @@ dotnet
         }
 
         type("Microsoft.Dynamics.Nav.OpenXml.Spreadsheet.CellDecorator"; "CellDecorator")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.OpenXml.Spreadsheet.CellPosition"; "CellPosition")
         {
         }
     }
@@ -1835,7 +1879,7 @@ dotnet
         {
         }
     }
-    
+
     assembly("System.IO.Compression.FileSystem")
     {
         Version = '4.0.0.0';
@@ -2025,14 +2069,6 @@ dotnet
         }
     }
 
-    assembly("Microsoft.Dynamics.Nav.Client.CodeViewer")
-    {
-        type("Microsoft.Dynamics.Nav.Client.CodeViewer.CodeViewerControl"; "Microsoft.Dynamics.Nav.Client.CodeViewer")
-        {
-            IsControlAddIn = true;
-        }
-    }
-
     assembly("Microsoft.Dynamics.Nav.Client.DynamicsOnlineConnect")
     {
         type("Microsoft.Dynamics.Nav.Client.DynamicsOnlineConnect.IDynamicsOnlineConnectControlDefinition"; "Microsoft.Dynamics.Nav.Client.DynamicsOnlineConnect")
@@ -2112,8 +2148,8 @@ dotnet
             IsControlAddIn = true;
         }
     }
-	
-	assembly("Microsoft.Dynamics.Nav.AzureADGraphClient")
+
+    assembly("Microsoft.Dynamics.Nav.AzureADGraphClient")
     {
         Culture = 'neutral';
         PublicKeyToken = '31bf3856ad364e35';
@@ -2121,6 +2157,9 @@ dotnet
         type("Microsoft.Dynamics.Nav.AzureADGraphClient.UserInfoPage"; "UserInfoPage")
         {
         }
-    }
 
+        type("Microsoft.Dynamics.Nav.AzureADGraphClient.GraphQuery"; "GraphQuery")
+        {
+        }
+    }
 }

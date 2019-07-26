@@ -198,10 +198,10 @@ page 2501 "Extension Details"
 
                         trigger OnAssistEdit()
                         var
-                            LanguageManagement: Codeunit "Language Management";
+                            Language: Codeunit Language;
                         begin
-                            LanguageManagement.LookupApplicationLanguageId(LanguageID);
-                            LanguageName := LanguageManagement.GetWindowsLanguageNameByLanguageId(LanguageID);
+                            Language.LookupApplicationLanguageId(LanguageID);
+                            LanguageName := Language.GetWindowsLanguageName(LanguageID);
                         end;
                     }
                     group(Control30)
@@ -213,6 +213,7 @@ page 2501 "Extension Details"
                             ApplicationArea = All;
                             Editable = false;
                             ShowCaption = false;
+                            Visible = Legal;
 
                             trigger OnDrillDown()
                             begin
@@ -224,6 +225,7 @@ page 2501 "Extension Details"
                             ApplicationArea = All;
                             Editable = false;
                             ShowCaption = false;
+                            Visible = Legal;
 
                             trigger OnDrillDown()
                             begin
@@ -234,6 +236,7 @@ page 2501 "Extension Details"
                         {
                             ApplicationArea = All;
                             Caption = 'I accept the terms and conditions';
+                            Visible = Legal;
                         }
                     }
                 }
@@ -284,7 +287,7 @@ page 2501 "Extension Details"
                 Enabled = Accepted;
                 Image = Approve;
                 InFooterBar = true;
-                Visible = InstallEnabled;
+                Visible = InstallEnabled AND (not IsInstalled);
 
                 trigger OnAction()
                 begin
@@ -343,7 +346,7 @@ page 2501 "Extension Details"
         HelpLbl: Label 'Help';
         SaaSEULALbl: Label ' https://go.microsoft.com/fwlink/?linkid=834880', Locked = true;
         SaaSPrivacyLbl: Label 'https://go.microsoft.com/fwlink/?linkid=834881', Locked = true;
-        OnPremEULALbl: Label 'https://go.microsoft.com/fwlink/?LinkId=724010', Locked = true;
+        OnPremEULALbl: Label 'https://go.microsoft.com/fwlink/?linkid=2009120', Locked = true;
         OnPremPrivacyLbl: Label 'https://go.microsoft.com/fwlink/?LinkId=724009', Locked = true;
 
     local procedure SetNavAppRecord()
@@ -375,19 +378,18 @@ page 2501 "Extension Details"
     local procedure SetPageConfig()
     begin
         IsInstalled := ExtensionInstallationImpl.IsInstalledByPackageId("Package ID");
-        if IsInstalled then
-            CurrPage.Caption(UninstallationPageCaptionMsg)
-        else
+        if IsInstalled then begin
+            CurrPage.Caption(UninstallationPageCaptionMsg);
+            NextEnabled := false;
+            Step1Enabled := false;
+        end else begin
             CurrPage.Caption(InstallationPageCaptionMsg);
+            NextEnabled := true;
+            Step1Enabled := true;
+        end;
 
         // Any legal info to display
         Legal := ((StrLen("Privacy Statement") <> 0) or (StrLen(EULA) <> 0));
-
-        // Next only enabled if legal info is found
-        NextEnabled := Legal;
-
-        // Step1 enabled if installing
-        Step1Enabled := not IsInstalled;
 
         // Auto accept if no legal info
         Accepted := not Legal;

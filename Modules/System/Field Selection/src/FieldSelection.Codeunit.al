@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to look up fields.
 /// </summary>
 codeunit 9806 "Field Selection"
 {

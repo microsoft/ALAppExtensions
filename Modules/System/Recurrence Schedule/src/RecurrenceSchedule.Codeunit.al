@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Calculates when the next event will occur. Events can recur daily, weekly, monthly or yearly.
 /// </summary>
 codeunit 4690 "Recurrence Schedule"
 {

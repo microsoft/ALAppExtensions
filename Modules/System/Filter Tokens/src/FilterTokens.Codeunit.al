@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality that allow users to specify pre-defined filter tokens that get converted to the correct values for various data types when filtering records.
 /// </summary>
 codeunit 41 "Filter Tokens"
 {
@@ -63,7 +63,6 @@ codeunit 41 "Filter Tokens"
     /// <param name="ToDate">The end date to resolve from DateToken that the filter will use, for example: "31/08/2019". Passed by reference by using VAR keywords.</param>
     /// <param name="Handled">Stores whether the operation was successful.</param>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnResolveDateFilterToken(DateToken: Text; var FromDate: Date; var ToDate: Date; var Handled: Boolean)
     begin
     end;
@@ -76,7 +75,6 @@ codeunit 41 "Filter Tokens"
     /// <param name="TextFilter">The text to translate into a properly formatted text filter.</param>
     /// <param name="Handled">Stores whether the operation was successful.</param>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnResolveTextFilterToken(TextToken: Text; var TextFilter: Text; var Handled: Boolean)
     begin
     end;
@@ -89,7 +87,6 @@ codeunit 41 "Filter Tokens"
     /// <param name="TimeFilter">The text to translate into a properly formatted time filter, for example: "12:00:00".</param>
     /// <param name="Handled">Stores whether the operation was successful.</param>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnResolveTimeFilterToken(TimeToken: Text; var TimeFilter: Time; var Handled: Boolean)
     begin
     end;
@@ -102,7 +99,6 @@ codeunit 41 "Filter Tokens"
     /// <param name="DateFilter">The text to translate into a properly formatted date filter, for example: "25/12/2019".</param>
     /// <param name="Handled">Stores whether the operation was successful.</param>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnResolveDateTokenFromDateTimeFilter(DateToken: Text; var DateFilter: Date; var Handled: Boolean)
     begin
     end;
@@ -115,7 +111,6 @@ codeunit 41 "Filter Tokens"
     /// <param name="TimeFilter">The text to translate into a properly formatted time filter, for example:"12:00:00".</param>
     /// <param name="Handled">Stores whether the operation was successful.</param>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnResolveTimeTokenFromDateTimeFilter(TimeToken: Text; var TimeFilter: Time; var Handled: Boolean)
     begin
     end;

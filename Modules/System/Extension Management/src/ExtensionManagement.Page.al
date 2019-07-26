@@ -48,12 +48,13 @@ page 2500 "Extension Management"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the extension.';
                 }
-                field(Control18; ViewFieldsLbl)
+                label(Control18)
                 {
                     ApplicationArea = All;
                     Enabled = IsSaaS;
                     HideValue = true;
                     ShowCaption = false;
+                    Caption = '';
                     Style = Favorable;
                     StyleExpr = TRUE;
                     ToolTip = 'Specifies a spacer for ''Brick'' view mode.';
@@ -91,11 +92,6 @@ page 2500 "Extension Management"
 
                     trigger OnAction()
                     begin
-                        if ExtensionInstallationImpl.IsInstalledByPackageId("Package ID") then begin
-                            Message(AlreadyInstalledMsg, Name);
-                            exit;
-                        end;
-
                         if ExtensionInstallationImpl.RunExtensionInstallation(Rec) then
                             CurrPage.Update();
                     end;
@@ -113,11 +109,6 @@ page 2500 "Extension Management"
 
                     trigger OnAction()
                     begin
-                        if not ExtensionInstallationImpl.IsInstalledByPackageId("Package ID") then begin
-                            Message(AlreadyUninstalledMsg, Name);
-                            exit;
-                        end;
-
                         if ExtensionInstallationImpl.RunExtensionInstallation(Rec) then
                             CurrPage.Update();
                     end;
@@ -141,7 +132,7 @@ page 2500 "Extension Management"
                             exit;
                         end;
 
-                        ExtensionOperationImpl.UnpublishTenantExtension("Package ID");
+                        ExtensionOperationImpl.UnpublishUninstalledPerTenantExtension("Package ID");
                     end;
                 }
                 action(Configure)
@@ -176,6 +167,7 @@ page 2500 "Extension Management"
                 {
                     ApplicationArea = All;
                     Caption = 'Learn More';
+                    Visible = StrLen(Help) > 0;
                     Enabled = ActionsEnabled;
                     Image = Info;
                     Promoted = true;
@@ -302,9 +294,6 @@ page 2500 "Extension Management"
         IsSaaS: Boolean;
         VersionFormatTxt: Label 'v. %1', Comment = 'v=version abbr, %1=Version string';
         SaaSCaptionTxt: Label 'Installed Extensions', Comment = 'The caption to display when on SaaS';
-        AlreadyInstalledMsg: Label 'The extension %1 is already installed.', Comment = '%1 = name of extension';
-        AlreadyUninstalledMsg: Label 'The extension %1 is not installed.', Comment = '%1 = name of extension.';
-        ViewFieldsLbl: Label 'View fields';
         IsSaaSInstallAllowed: Boolean;
         IsTenantExtension: Boolean;
         CannotUnpublishIfInstalledMsg: Label 'The extension %1 cannot be unpublished because it is installed.', Comment = '%1 = name of extension';

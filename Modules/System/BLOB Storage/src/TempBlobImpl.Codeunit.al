@@ -10,52 +10,44 @@ codeunit 4107 "Temp Blob Impl."
     var
         TempBlob: Record TempBlob temporary;
 
-    [Scope('OnPrem')]
     procedure CreateInStream(var InStream: InStream)
     begin
-        TempBlob.Blob.CreateInStream(InStream)
+        TempBlob.Blob.CreateInStream(InStream);
     end;
 
-    [Scope('OnPrem')]
-    procedure CreateInStreamWithEncoding(var InStream: InStream; Encoding: TextEncoding)
+    procedure CreateInStream(var InStream: InStream; Encoding: TextEncoding)
     begin
-        TempBlob.Blob.CreateInStream(InStream, Encoding)
+        TempBlob.Blob.CreateInStream(InStream, Encoding);
     end;
 
-    [Scope('OnPrem')]
     procedure CreateOutStream(var OutStream: OutStream)
     begin
-        TempBlob.Blob.CreateOutStream(OutStream)
+        TempBlob.Blob.CreateOutStream(OutStream);
     end;
 
-    [Scope('OnPrem')]
-    procedure CreateOutStreamWithEncoding(var OutStream: OutStream; Encoding: TextEncoding)
+    procedure CreateOutStream(var OutStream: OutStream; Encoding: TextEncoding)
     begin
-        TempBlob.Blob.CreateOutStream(OutStream, Encoding)
+        TempBlob.Blob.CreateOutStream(OutStream, Encoding);
     end;
 
-    [Scope('OnPrem')]
     procedure HasValue(): Boolean
     begin
-        exit(TempBlob.Blob.HasValue())
+        exit(TempBlob.Blob.HasValue());
     end;
 
-    [Scope('OnPrem')]
     procedure Length(): Integer
     begin
-        exit(TempBlob.Blob.Length())
+        exit(TempBlob.Blob.Length());
     end;
 
-    [Scope('OnPrem')]
     procedure FromRecord(RecordVariant: Variant; FieldNo: Integer)
     var
         RecordRef: RecordRef;
     begin
         RecordRef.GetTable(RecordVariant);
-        FromRecordRef(RecordRef, FieldNo)
+        FromRecordRef(RecordRef, FieldNo);
     end;
 
-    [Scope('OnPrem')]
     procedure FromRecordRef(RecordRef: RecordRef; FieldNo: Integer)
     var
         BlobFieldRef: FieldRef;
@@ -68,13 +60,12 @@ codeunit 4107 "Temp Blob Impl."
         end
     end;
 
-    [Scope('OnPrem')]
     procedure ToRecordRef(var RecordRef: RecordRef; FieldNo: Integer)
     var
         BlobFieldRef: FieldRef;
     begin
         BlobFieldRef := RecordRef.Field(FieldNo);
-        BlobFieldRef.Value := TempBlob.Blob
+        BlobFieldRef.Value := TempBlob.Blob;
     end;
 }
 

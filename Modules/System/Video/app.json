@@ -1,0 +1,35 @@
+{
+    "id":  "84e448ad-faa5-44c8-835a-ec4b408e8cec",
+    "name":  "Video",
+    "publisher":  "Microsoft",
+    "brief":  "Looks up and plays videos.",
+    "description":  "Provides a page where you look up and select videos. For example, use this to access video tutorials.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  1470,
+                         "to":  1470
+                     },
+                     {
+                         "from":  1821,
+                         "to":  1821
+                     },
+                     {
+                         "from":  3709,
+                         "to":  3710
+                     }
+                 ],
+    "target":  "OnPrem"
+}

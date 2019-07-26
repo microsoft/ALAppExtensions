@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to check whether the system is initializing as well as an event to subscribed to in order to execute logic right after the system has initialized.
 /// </summary>
 codeunit 150 "System Initialization"
 {
@@ -27,7 +27,6 @@ codeunit 150 "System Initialization"
     /// Subscribe to this event in order to execute additional initialization steps.
     /// </summary>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnAfterInitialization()
     begin
     end;

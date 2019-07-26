@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to raise a confirm dialog with a question that is to be asked to the user.
 /// </summary>
 codeunit 27 "Confirm Management"
 {
@@ -42,7 +42,6 @@ codeunit 27 "Confirm Management"
     /// Raises an event to be able to change the return of IsGuiAllowed function. Used for testing.
     /// </summary>
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnBeforeGuiAllowed(var Result: Boolean; var Handled: Boolean)
     begin
     end;

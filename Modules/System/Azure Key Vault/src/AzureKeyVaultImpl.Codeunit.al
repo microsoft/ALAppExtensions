@@ -25,7 +25,6 @@ codeunit 2202 "Azure Key Vault Impl."
         AzureKeyVaultTxt: Label 'Azure Key Vault', Comment = '{LOCKED}';
 
     [TryFunction]
-    [Scope('OnPrem')]
     procedure GetAzureKeyVaultSecret(SecretName: Text; var Secret: Text)
     begin
         // Gets the secret as a Text from the key vault, given a SecretName.
@@ -39,7 +38,6 @@ codeunit 2202 "Azure Key Vault Impl."
         Secret := GetSecretFromClient(SecretName);
     end;
 
-    [Scope('OnPrem')]
     procedure SetAzureKeyVaultSecretProvider(NewAzureKeyVaultSecretProvider: DotNet IAzureKeyVaultSecretProvider)
     begin
         // Sets the secret provider to simulate the vault. Used for testing.
@@ -48,7 +46,6 @@ codeunit 2202 "Azure Key Vault Impl."
         AzureKeyVaultSecretProvider := NewAzureKeyVaultSecretProvider;
     end;
 
-    [Scope('OnPrem')]
     procedure ClearSecrets()
     begin
         Clear(NavAzureKeyVaultClient);

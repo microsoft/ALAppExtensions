@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 134690 "Recurrence Schedule Test"
+codeunit 134691 "Recurrence Schedule Test"
 {
     Subtype = Test;
 
@@ -1061,9 +1061,6 @@ codeunit 134690 "Recurrence Schedule Test"
     procedure TestYearlyFeb31()
     var
         RecurrenceMgt: Codeunit "Recurrence Schedule";
-        RecurrenceOrdinalNo: Enum "Recurrence - Ordinal No.";
-        RecurrenceDayOfWeek: Enum "Recurrence - Day of Week";
-        RecurrenceMonth: Enum "Recurrence - Month";
         RecurrenceID: Guid;
         StartTime: Time;
         StartDay: Date;
@@ -1094,7 +1091,7 @@ codeunit 134690 "Recurrence Schedule Test"
     [Scope('OnPrem')]
     procedure RandTime(): Time
     begin
-        EXIT(000000T + ROUND(Any.RandInt(235959.999T - 000000T + 1) - 1, 10));
+        EXIT(000000T + ROUND(Any.IntegerInRange(235959.999T - 000000T + 1) - 1, 10));
     end;
 }
 

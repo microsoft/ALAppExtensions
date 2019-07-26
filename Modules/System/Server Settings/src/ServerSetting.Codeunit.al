@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// Exposes functionality to fetch some application server settings for the server which hosts the current tenant.
 /// </summary>
 codeunit 6723 "Server Setting"
 {

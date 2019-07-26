@@ -31,7 +31,6 @@ codeunit 2501 "Extension Marketplace"
         MarketplaceDisabledSecretTxt: Label 'extmgmt-marketplace-disable', Locked = true;
         MarketPlaceSuccInstallTxt: Label 'The extension was successfully installed.';
         MarketPlaceUnsuccInstallTxt: Label 'The market place extension installation has failed with the result ''%1''. Error message: ''%2''', Comment = '%1 - OperationResult parameter value, %2 - Error message';
-        OperationProgressMsg: Label 'We are installing the extension. You can view the progress on the Status page.';
         AlreadyInstalledMsg: Label 'The extension %1 is already installed.', Comment = '%1=name of app';
         OperationResult: Option UserNotAuthorized,DeploymentFailedDueToPackage,DeploymentFailed,Successful,UserCancel,UserTimeOut;
         TelemetryUrl: Text;
@@ -59,7 +58,6 @@ codeunit 2501 "Extension Marketplace"
         GlobalPropertyValue := JToken.ToString();
     end;
 
-    [Scope('OnPrem')]
     procedure MapMarketplaceIdToPackageId(ApplicationId: Text): Guid
     var
         GlobalId: Text;
@@ -84,7 +82,6 @@ codeunit 2501 "Extension Marketplace"
         exit(NullGUID);
     end;
 
-    [Scope('OnPrem')]
     procedure GetTelementryUrlFromData(JObject: DotNet JObject): Text
     var
         TempObject: DotNet JObject;
@@ -161,7 +158,6 @@ codeunit 2501 "Extension Marketplace"
         GlobalId := SelectStr(2, CurrentToken);
     end;
 
-    [Scope('OnPrem')]
     procedure MapMarketplaceIdToAppId(ApplicationId: Text): Guid
     var
         GlobalId: Text;
@@ -186,63 +182,58 @@ codeunit 2501 "Extension Marketplace"
         exit(NullGuid);
     end;
 
-    [Scope('OnPrem')]
     procedure MakeMarketplaceTelemetryCallback(OperationResult: Option UserNotAuthorized,DeploymentFailedDueToPackage,DeploymentFailed,Successful,UserCancel,UserTimeOut)
     begin
-        if not TryMakeMarketplaceTelemetryCallback(OperationResult) then begin
+        if not TryMakeMarketplaceTelemetryCallback(OperationResult) then
             if OperationResult = OperationResult::Successful then
                 SendTraceTag('00008LZ', 'Extensions', VERBOSITY::Normal, MarketPlaceSuccInstallTxt)
             else
                 SendTraceTag('00008M0', 'AL Extensions', VERBOSITY::Warning,
                   StrSubstNo(MarketPlaceUnsuccInstallTxt, OperationResult, GetLastErrorText()));
-        end;
     end;
 
-    [Scope('OnPrem')]
-    procedure InstallMarketplaceExtension(AppId: Guid; lcid: Integer)
+    procedure InstallMarketplaceExtension(AppId: Guid; lcid: Integer; IsUIEnabled: Boolean)
     var
         NavAppTable: Record "NAV App";
-        ExtensionManagement: Codeunit "Extension Management";
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+        ExtensionOperationImpl: Codeunit "Extension Operation Impl";
     begin
-        NavAppTable.SetRange(ID, AppId);
 
-        if not NavAppTable.FindFirst() then begin
+        if not NavAppTable.Get(ExtensionOperationImpl.GetLatestVersionPackageIdByAppId(AppId)) then begin
             // If the extension is not found, send the request to the regional service.
-            ExtensionManagement.UnpublishExtension(AppId);
-            Message(OperationProgressMsg);
+            ExtensionOperationImpl.DeployExtensionByAppId(AppId, lcid, IsUIEnabled);
             exit;
         end;
 
-        // If the extension is found then check whether it is a third party or first party extension.
+        // Check if the extension is already installed
         if ExtensionInstallationImpl.IsInstalledByAppId(AppId) then begin
-            Message(StrSubstNo(AlreadyInstalledMsg, NavAppTable.Name));
+            if IsUIEnabled then
+                Message(StrSubstNo(AlreadyInstalledMsg, NavAppTable.Name));
             exit;
         end;
 
         // If it is a first party extension, install it locally
         if IsFirstPartyExtension(NavAppTable) then
-            InstallApp(AppId, lcid)
-        else begin
+            InstallApp(NavAppTable."Package ID", lcid, IsUIEnabled)
+        else
             // If the extension is found and it's from a third party, then send the request to regional service.
-            ExtensionManagement.UnpublishExtension(AppId);
-            Message(OperationProgressMsg);
-        end;
+            ExtensionOperationImpl.DeployExtensionByAppId(AppId, lcid, IsUIEnabled);
     end;
 
     [TryFunction]
-    [Scope('OnPrem')]
     procedure InstallExtension(ApplicationID: Text)
     var
         NAVApp: Record "NAV App";
+        MarketplaceExtnDeployment: Page "Marketplace Extn Deployment";
     begin
         NAVApp.SetRange(ID, MapMarketplaceIdToAppId(ApplicationID));
 
-        if NAVApp.FindFirst() then
-            PAGE.RunModal(PAGE::"Marketplace Extn Deployment", NAVApp);
+        if NAVApp.FindFirst() then begin
+            MarketplaceExtnDeployment.SetRecord(NAVApp);
+            MarketplaceExtnDeployment.RunModal();
+        end;
     end;
 
-    [Scope('OnPrem')]
     procedure IsMarketplaceEnabled(): Boolean
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
@@ -257,7 +248,6 @@ codeunit 2501 "Extension Marketplace"
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure InitializeHTTPRequest(URL: Text)
     var
         EnvironmentInfo: Codeunit "Environment Information";
@@ -298,17 +288,16 @@ codeunit 2501 "Extension Marketplace"
         StreamWriter.Dispose();
     end;
 
-    local procedure InstallApp(AppId: Guid; lcid: Integer)
+    local procedure InstallApp(PackageId: Guid; lcid: Integer; IsUIEnabled: Boolean)
     var
-        NAVAppTable: Record "NAV App";
-        ExtensionOperationImpl: Codeunit "Extension Operation Impl";
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         HasSucceeded: Boolean;
     begin
-        NAVAppTable.SetRange("Package ID", ExtensionOperationImpl.GetLatestVersionPackageIdByAppId(AppId));
-        NAVAppTable.FindFirst();
 
-        HasSucceeded := ExtensionInstallationImpl.InstallExtensionWithConfirmDialog(NAVAppTable."Package ID", lcid);
+        if (IsUIEnabled) then
+            HasSucceeded := ExtensionInstallationImpl.InstallExtensionWithConfirmDialog(PackageId, lcid)
+        else
+            HasSucceeded := ExtensionInstallationImpl.InstallExtensionSilently(PackageId, lcid);
 
         if HasSucceeded = true then
             MakeMarketplaceTelemetryCallback(OperationResult::Successful)
@@ -334,7 +323,6 @@ codeunit 2501 "Extension Marketplace"
     end;
 
     [IntegrationEvent(false, false)]
-    [Scope('OnPrem')]
     internal procedure OnOverrideUrl(var Url: Text)
     begin
         // Provides an option to rewrite URL in non SaaS environments.

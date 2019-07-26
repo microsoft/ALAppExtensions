@@ -8,7 +8,7 @@ function SendRequest(Url, Timeout) {
         request.send(null);
     }
     catch (ex) {
-        Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('ResponseReceived', [0, ex.message]);
+        Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('ResponseReceived', [0, 'Send request failure: ' + ex]);
     }
 
     function responseHandler() {
@@ -23,3 +23,5 @@ function SendRequest(Url, Timeout) {
         }
     }
 }
+
+Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('ControlAddInReady');

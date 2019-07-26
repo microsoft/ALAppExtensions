@@ -16,17 +16,17 @@ codeunit 130450 "Test Runner - Isol. Codeunit"
         CurrentTestMethodLine: Record "Test Method Line";
         TestRunnerMgt: Codeunit "Test Runner - Mgt";
 
-    trigger OnBeforeTestRun(CodeunitID: Integer;CodeunitName: Text;FunctionName: Text;FunctionTestPermissions: TestPermissions): Boolean
+    trigger OnBeforeTestRun(CodeunitID: Integer; CodeunitName: Text; FunctionName: Text; FunctionTestPermissions: TestPermissions): Boolean
     begin
         exit(
           TestRunnerMgt.PlatformBeforeTestRun(
-            CodeunitID,CodeunitName,FunctionName,FunctionTestPermissions,ALTestSuite.Name,CurrentTestMethodLine.GetFilter("Line No.")));
+            CodeunitID, COPYSTR(CodeunitName, 1, 30), COPYSTR(FunctionName, 1, 128), FunctionTestPermissions, ALTestSuite.Name, CurrentTestMethodLine.GetFilter("Line No.")));
     end;
 
-    trigger OnAfterTestRun(CodeunitID: Integer;CodeunitName: Text;FunctionName: Text;FunctionTestPermissions: TestPermissions;IsSuccess: Boolean)
+    trigger OnAfterTestRun(CodeunitID: Integer; CodeunitName: Text; FunctionName: Text; FunctionTestPermissions: TestPermissions; IsSuccess: Boolean)
     begin
         TestRunnerMgt.PlatformAfterTestRun(
-          CodeunitID,CodeunitName,FunctionName,FunctionTestPermissions,IsSuccess,ALTestSuite.Name,
+          CodeunitID, COPYSTR(CodeunitName, 1, 30), COPYSTR(FunctionName, 1, 128), FunctionTestPermissions, IsSuccess, ALTestSuite.Name,
           CurrentTestMethodLine.GetFilter("Line No."));
     end;
 }

@@ -32,10 +32,6 @@ page 2507 "Upload And Deploy Extension"
                     UploadIntoStream(DialogTitleTxt, '', FromFilterTxt, FileName, FileStream);
                 end;
             }
-            label(Control11)
-            {
-                ShowCaption = false;
-            }
             label("Deploy Extension")
             {
                 ApplicationArea = All;
@@ -56,10 +52,10 @@ page 2507 "Upload And Deploy Extension"
 
                 trigger OnAssistEdit()
                 var
-                    LanguageManagement: Codeunit "Language Management";
+                    Language: Codeunit Language;
                 begin
-                    LanguageManagement.LookupApplicationLanguageId(LanguageID);
-                    LanguageName := LanguageManagement.GetWindowsLanguageNameByLanguageId(LanguageID);
+                    Language.LookupApplicationLanguageId(LanguageID);
+                    LanguageName := Language.GetWindowsLanguageName(LanguageID);
                 end;
             }
             field(Disclaimer; DisclaimerLbl)
@@ -91,6 +87,7 @@ page 2507 "Upload And Deploy Extension"
             {
                 ApplicationArea = All;
                 Caption = 'Deploy';
+                Image = ServiceOrderSetup;
                 Enabled = Accepted;
                 InFooterBar = true;
                 Promoted = true;
@@ -126,10 +123,10 @@ page 2507 "Upload And Deploy Extension"
 
     trigger OnOpenPage()
     var
-        LanguageManagement: Codeunit "Language Management";
+        Language: Codeunit Language;
     begin
         LanguageID := GlobalLanguage();
-        LanguageName := LanguageManagement.GetWindowsLanguageNameByLanguageId(LanguageID);
+        LanguageName := Language.GetWindowsLanguageName(LanguageID);
     end;
 
     var
@@ -138,8 +135,8 @@ page 2507 "Upload And Deploy Extension"
         FileName: Text;
         LanguageName: Text;
         LanguageID: Integer;
-        DialogTitleTxt: Label 'ENU=Select .APP';
-        FromFilterTxt: Label 'ENU=Extension Files|*.app';
+        DialogTitleTxt: Label 'Select .APP';
+        FromFilterTxt: Label 'Extension Files|*.app';
         ExtensionNotUploadedMsg: Label 'Please upload an extension file before clicking "Deploy" button.';
         DisclaimerLbl: Label 'Disclaimer';
         DisclaimerMsg: Label 'The creator of this customized extension is responsible for its licensing. The customized extension is subject to the terms and conditions, privacy policy, support and billing offered by the creator, as applicable, and does not create any liability or obligation for Microsoft.\\The publisher of the customized extension must maintain compatibility with new releases of Dynamics 365 Business Central. An extension that is not compatible with a new release within 90 days of the release will be removed and the tenant upgraded.';

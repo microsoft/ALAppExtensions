@@ -5,16 +5,6 @@
 
 dotnet
 {
-    assembly("Microsoft.Dynamics.Nav.AzureADGraphClient")
-    {
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
-
-        type("Microsoft.Dynamics.Nav.AzureADGraphClient.GraphQuery"; "GraphQuery")
-        {
-        }
-    }
-
     assembly("mscorlib")
     {
         Version = '4.0.0.0';
@@ -25,19 +15,4 @@ dotnet
         {
         }
     }
-
-    assembly("Microsoft.Dynamics.Nav.LicensingService.Model")
-    {
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
-
-        type("Microsoft.Dynamics.Nav.LicensingService.Model.SkuInfo"; "SkuInfo")
-        {
-        }
-
-        type("Microsoft.Dynamics.Nav.LicensingService.Model.ServicePlanInfo"; "ServicePlanInfo")
-        {
-        }
-    }
-
 }

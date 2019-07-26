@@ -1,17 +1,21 @@
 {
-  "id": "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
-  "name": "DotNet Aliases",
-  "publisher": "Microsoft",
-  "brief": "Defines aliases for .NET classes.",
-  "description": "Defines aliases for .NET classes so that you do not have to write the full name of the class. For example, rather than having to write \"System.Collections.Queue\", you can just use \"Queue\".",
-  "version": "1.0.0.0",
-  "privacyStatement": "",
-  "EULA": "",
-  "help": "",
-  "url": "",
-  "logo": "",
-  "dependencies": [],
-  "screenshots": [],
-  "platform": "14.0.0.0",
-  "target": "OnPrem"
+    "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+    "name":  "DotNet Aliases",
+    "publisher":  "Microsoft",
+    "brief":  "Defines aliases for .NET classes.",
+    "description":  "Defines aliases for .NET classes so that you do not have to write the full name of the class. For example, rather than having to write \"System.Collections.Queue\", you can just use \"Queue\".",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "target":  "OnPrem"
 }

@@ -1,42 +1,44 @@
 {
-  "id": "c5e777db-554c-4aef-bdfb-a0d4505878ff",
-  "name": "Recurrence Schedule Test",
-  "publisher": "Microsoft",
-  "brief": "",
-  "description": "Tests for the Recurrence Schedule module",
-  "version": "1.0.0.0",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
-  "help": "",
-  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-  "logo": "",
-  "dependencies": [
-    {
-      "name": "Recurrence Schedule",
-      "appId": "f1d7a28a-e871-4eea-916e-203361cd31d9",
-      "publisher": "Microsoft",
-      "version": "1.0.0.0"
-    },
-    {
-      "name": "Library Assert",
-      "appId": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-      "publisher": "Microsoft",
-      "version": "1.0.0.0"
-    },
-    {
-      "name": "Any",
-      "appId": "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
-      "publisher": "Microsoft",
-      "version": "1.0.0.0"
-    }
-  ],
-  "screenshots": [],
-  "platform": "14.0.0.0",
-  "idRanges": [
-    {
-      "from": 134690,
-      "to": 134690
-    }
-  ],
-  "target": "OnPrem"
+    "id":  "c5e777db-554c-4aef-bdfb-a0d4505878ff",
+    "name":  "Recurrence Schedule Test",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Tests for the Recurrence Schedule module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "name":  "Recurrence Schedule",
+                             "appId":  "f1d7a28a-e871-4eea-916e-203361cd31d9",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "Library Assert",
+                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "Any",
+                             "appId":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  134691,
+                         "to":  134691
+                     }
+                 ],
+    "target":  "OnPrem"
 }

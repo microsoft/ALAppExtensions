@@ -20,7 +20,6 @@ codeunit 3703 "Server Setting Impl."
         IsInitialized := true;
     end;
 
-    [Scope('OnPrem')]
     procedure GetEnableSaaSExtensionInstallSetting() EnableSaaSExtensionInstall: Boolean
     begin
         InitializeConfigSettings();
@@ -28,7 +27,6 @@ codeunit 3703 "Server Setting Impl."
         exit(EnableSaaSExtensionInstall);
     end;
 
-    [Scope('OnPrem')]
     procedure GetIsSaasExcelAddinEnabled() SaasExcelAddinEnabled: Boolean
     begin
         InitializeConfigSettings();
@@ -36,7 +34,6 @@ codeunit 3703 "Server Setting Impl."
         exit(SaasExcelAddinEnabled);
     end;
 
-    [Scope('OnPrem')]
     procedure GetApiServicesEnabled() ApiEnabled: Boolean
     begin
         InitializeConfigSettings();
@@ -44,7 +41,6 @@ codeunit 3703 "Server Setting Impl."
         exit(ApiEnabled);
     end;
 
-    [Scope('OnPrem')]
     procedure GetApiSubscriptionsEnabled() ApiSubscriptionsEnabled: Boolean
     begin
         InitializeConfigSettings();
@@ -52,7 +48,6 @@ codeunit 3703 "Server Setting Impl."
         exit(ApiSubscriptionsEnabled);
     end;
 
-    [Scope('OnPrem')]
     procedure GetApiSubscriptionSendingNotificationTimeout() Timeout: Integer
     begin
         InitializeConfigSettings();
@@ -60,7 +55,6 @@ codeunit 3703 "Server Setting Impl."
         exit(Timeout);
     end;
 
-    [Scope('OnPrem')]
     procedure GetApiSubscriptionMaxNumberOfNotifications() MaxNoOfNotifications: Integer
     begin
         InitializeConfigSettings();
@@ -68,7 +62,6 @@ codeunit 3703 "Server Setting Impl."
         exit(MaxNoOfNotifications);
     end;
 
-    [Scope('OnPrem')]
     procedure GetApiSubscriptionDelayTime() DelayTime: Integer
     begin
         InitializeConfigSettings();

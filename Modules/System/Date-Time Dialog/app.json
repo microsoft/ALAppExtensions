@@ -1,21 +1,25 @@
 {
-  "id": "54911257-906e-42e5-b529-735f5b4bb244",
-  "name": "Date-Time Dialog",
-  "publisher": "Microsoft",
-  "brief": "",
-  "description": "Helper page for entering a date-time value",
-  "version": "1.0.0.0",
-  "privacyStatement": "",
-  "EULA": "",
-  "help": "",
-  "url": "",
-  "logo": "",
-  "dependencies": [],
-  "screenshots": [],
-  "platform": "13.0.0.0",
-  "idRange": {
-    "from": 684,
-    "to": 684
-  },
-  "target": "OnPrem"
+    "id":  "54911257-906e-42e5-b529-735f5b4bb244",
+    "name":  "Date-Time Dialog",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Helper page for entering a date-time value",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRange":  {
+                    "from":  684,
+                    "to":  684
+                },
+    "target":  "OnPrem"
 }

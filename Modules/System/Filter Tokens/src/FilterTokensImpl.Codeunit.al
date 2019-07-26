@@ -24,20 +24,17 @@ codeunit 58 "Filter Tokens Impl."
         MeTxt: Label 'ME', Comment = 'Must be uppercase';
         CompanyTxt: Label 'COMPANY', Comment = 'Must be uppercase';
 
-    [Scope('OnPrem')]
     procedure MakeDateFilter(var DateFilter: Text)
     begin
         if not (DateFilter = '''''') then
             MakeFilterExpression(FilterType::Date, DateFilter);
     end;
 
-    [Scope('OnPrem')]
     procedure MakeTimeFilter(var TimeFilter: Text)
     begin
         MakeFilterExpression(FilterType::Time, TimeFilter);
     end;
 
-    [Scope('OnPrem')]
     procedure MakeDateTimeFilter(var DateTimeFilterText: Text)
     var
         FilterText: Text;
@@ -47,7 +44,6 @@ codeunit 58 "Filter Tokens Impl."
         DateTimeFilterText := CopyStr(FilterText, 1, MaxStrLen(DateTimeFilterText));
     end;
 
-    [Scope('OnPrem')]
     procedure MakeTextFilter(var TextFilter: Text)
     var
         Position: Integer;
@@ -415,7 +411,6 @@ codeunit 58 "Filter Tokens Impl."
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure FindText(var PartOfText: Text; Text: Text; Position: Integer): Boolean
     var
         Position2: Integer;
@@ -428,7 +423,6 @@ codeunit 58 "Filter Tokens Impl."
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure GetPositionDifferentCharacter(Character: Text[50]; Text: Text; var Position: Integer)
     var
         Length: Integer;
