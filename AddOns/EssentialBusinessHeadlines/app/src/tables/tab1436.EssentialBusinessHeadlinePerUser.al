@@ -11,7 +11,7 @@ table 1436 "Ess. Business Headline Per Usr"
 
         field(1; "Headline Name"; Option)
         {
-            OptionMembers = MostPopularItem,BusiestResource,LargestSale,LargestOrder,SalesIncrease,TopCustomer,OpenVATReturn,OverdueVATReturn;
+            OptionMembers = MostPopularItem,BusiestResource,LargestSale,LargestOrder,SalesIncrease,TopCustomer,OpenVATReturn,OverdueVATReturn,RecentlyOverdueInvoices;
             DataClassification = SystemMetadata;
         }
 
