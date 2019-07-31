@@ -85,6 +85,7 @@ report 10530 "Get MTD Records"
         StartDate: Date;
         EndDate: Date;
 
+    [Scope('OnPrem')]
     procedure Initialize(NewCaptionOption: Option)
     begin
         CaptionOption := NewCaptionOption;

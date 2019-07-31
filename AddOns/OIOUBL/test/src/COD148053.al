@@ -794,14 +794,12 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     var
         ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
-        with ElectronicDocumentFormat do begin
-            SetRange(Code, Code);
-            DeleteAll();
-            Validate(Code, Code);
-            Validate(Usage, Usage);
-            Validate("Codeunit ID", CodeunitID);
-            Insert(true);
-        end;
+        ElectronicDocumentFormat.SetRange(Code, Code);
+        ElectronicDocumentFormat.DeleteAll();
+        ElectronicDocumentFormat.Validate(Code, Code);
+        ElectronicDocumentFormat.Validate(Usage, Usage);
+        ElectronicDocumentFormat.Validate("Codeunit ID", CodeunitID);
+        ElectronicDocumentFormat.Insert(true);
     end;
 
     local procedure CreateOIOUBLProfile(): Code[10];
@@ -964,7 +962,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     begin
         LibraryXMLReadOnServer.Initialize(OIOUBLNewFileMock.PopFilePath()); // Initialize generated Electronic Invoice and Credit Memo.
         LibraryXMLReadOnServer.VerifyNodeValue(IDTxt, DocumentNo);
-        LibraryXMLReadOnServer.VerifyNodeValue(TaxAmountTxt, FORMAT(ROUND(TaxAmount, LibraryERM.GetAmountRoundingPrecision()), 0, 9));
+        LibraryXMLReadOnServer.VerifyNodeValue(TaxAmountTxt, FORMAT(ROUND(TaxAmount, LibraryERM.GetAmountRoundingPrecision()), 0, '<Precision,2:3><Sign><Integer><Decimals><Comma,.>'));
         LibraryXMLReadOnServer.VerifyNodeValue(BaseQuantityTxt, '1');
     end;
 
@@ -996,7 +994,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         LibraryXMLReadOnServer.VerifyNodeValue(IDTxt, DocumentNo);
         Assert.AreEqual(1, LibraryXMLReadOnServer.GetNodesCount('cbc:AllowanceTotalAmount'), WrongAllowanceTotalAmountErr);
         Assert.AreEqual(2, LibraryXMLReadOnServer.GetNodesCount('cac:InvoiceLine'), WrongInvoiceLineCountErr);
-        LibraryXMLReadOnServer.VerifyNodeValueInSubtree('cac:InvoiceLine', 'cbc:Amount', FORMAT(ExpectedValue, 0, 9));
+        LibraryXMLReadOnServer.VerifyNodeValueInSubtree('cac:InvoiceLine', 'cbc:Amount', FORMAT(ExpectedValue, 0, '<Precision,2:3><Sign><Integer><Decimals><Comma,.>'));
         Assert.AreEqual(2, LibraryXMLReadOnServer.GetNodesCount('cac:AllowanceCharge'), WrongAllowanceChargeErr);
 
         GeneralLedgerSetup.Get();

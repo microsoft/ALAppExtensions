@@ -36,12 +36,14 @@ codeunit 10537 "MTD Connection"
         Error_NOT_FOUND_Txt: Label 'The remote endpoint has indicated that no associated data is found.', Locked = true;
         Error_TOO_MANY_REQ_Txt: Label 'The HMRC service is busy. Try again later.', Locked = true;
 
+    [Scope('OnPrem')]
     procedure InvokeRequest_SubmitVATReturn(var ResponseJson: Text; var RequestJson: Text; var HttpError: Text): Boolean
     begin
         CheckOAuthConfigured(false);
         exit(InvokeRequest('POST', SubmitVATReturnPath(), ResponseJson, RequestJson, HttpError, SubmitVATReturnTxt));
     end;
 
+    [Scope('OnPrem')]
     procedure InvokeRequest_RetrieveVATReturns(PeriodKey: Code[10]; var ResponseJson: Text; ShowMessage: Boolean; var HttpError: Text): Boolean
     var
         RequestJson: Text;
@@ -50,6 +52,7 @@ codeunit 10537 "MTD Connection"
         exit(InvokeRequest('GET', RetrieveVATReturnPath(PeriodKey), ResponseJson, RequestJson, HttpError, RetrieveVATReturnTxt));
     end;
 
+    [Scope('OnPrem')]
     procedure InvokeRequest_RetrieveVATReturnPeriods(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text; OpenOAuthSetup: Boolean): Boolean
     var
         RequestJson: Text;
@@ -58,6 +61,7 @@ codeunit 10537 "MTD Connection"
         exit(InvokeRequest('GET', RetrieveObligationsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATReturnPeriodsTxt));
     end;
 
+    [Scope('OnPrem')]
     procedure InvokeRequest_RetrieveLiabilities(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text): Boolean
     var
         RequestJson: Text;
@@ -66,12 +70,23 @@ codeunit 10537 "MTD Connection"
         exit(InvokeRequest('GET', RetrieveLiabilitiesPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATLiabilitiesTxt));
     end;
 
+    [Scope('OnPrem')]
     procedure InvokeRequest_RetrievePayments(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text): Boolean
     var
         RequestJson: Text;
     begin
         CheckOAuthConfigured(true);
         exit(InvokeRequest('GET', RetrievePaymentsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATPaymentsTxt));
+    end;
+
+    [Scope('OnPrem')]
+    procedure InvokeRequest_RefreshAccessToken(var HttpError: Text): Boolean;
+    var
+        OAuth20Setup: Record "OAuth 2.0 Setup";
+    begin
+        CheckOAuthConfigured(false);
+        OAuth20Setup.GET(GetOAuthSetupCode());
+        exit(OAuth20Setup.RefreshAccessToken(HttpError));
     end;
 
     local procedure CheckOAuthConfigured(OpenSetup: Boolean)
@@ -108,13 +123,14 @@ codeunit 10537 "MTD Connection"
             exit(OAuth20Setup.Status = OAuth20Setup.Status::Enabled);
     end;
 
+    [Scope('OnPrem')]
     procedure GetOAuthSetupCode(): Code[20]
     var
         VATReportSetup: Record "VAT Report Setup";
     begin
         with VATReportSetup do begin
             Get();
-            EXIT(GetMTDOAuthSetupCode());
+            exit(GetMTDOAuthSetupCode());
         end;
     end;
 
@@ -131,11 +147,11 @@ codeunit 10537 "MTD Connection"
         JSONMgt.SetValue('Header.Content-Type', 'application/json');
         JSONMgt.SetValue('URLRequestPath', RequestPath);
         JSONMgt.SetValue('Method', Method);
-        IF RequestJson <> '' then
+        if RequestJson <> '' then
             JSONMgt.AddJson('Content', RequestJson);
 
         VATReportSetup.Get();
-        IF (VATReportSetup."MTD OAuth Setup Option" = VATReportSetup."MTD OAuth Setup Option"::Sandbox) and
+        if (VATReportSetup."MTD OAuth Setup Option" = VATReportSetup."MTD OAuth Setup Option"::Sandbox) and
            (VATReportSetup."MTD Gov Test Scenario" <> '')
         then
             JSONMgt.SetValue('Header.Gov-Test-Scenario', VATReportSetup."MTD Gov Test Scenario");
@@ -166,6 +182,7 @@ codeunit 10537 "MTD Connection"
             end;
     end;
 
+    [Scope('OnPrem')]
     procedure IsError404NotFound(ResponseJson: Text): Boolean
     var
         JSONMgt: Codeunit "JSON Management";
@@ -174,6 +191,17 @@ codeunit 10537 "MTD Connection"
             exit(false);
 
         exit(JSONMgt.HasValue('Error.code', '404'));
+    end;
+
+    [Scope('OnPrem')]
+    procedure IsError408Timeout(ResponseJson: Text): Boolean;
+    var
+        JSONMgt: Codeunit "JSON Management";
+    begin
+        if not JSONMgt.InitializeFromString(ResponseJson) then
+            exit(false);
+
+        exit(JSONMgt.HasValue('Error.code', '408'));
     end;
 
     /*
@@ -290,34 +318,34 @@ codeunit 10537 "MTD Connection"
 
     local procedure SubmitVATReturnPath(): Text
     begin
-        EXIT(STRSUBSTNO('/organisations/vat/%1/returns', GetVATRegNo()));
+        exit(STRSUBSTNO('/organisations/vat/%1/returns', GetVATRegNo()));
     end;
 
     local procedure RetrieveVATReturnPath(PeriodNo: Text): Text
     var
         TypeHelper: Codeunit "Type Helper";
     begin
-        EXIT(STRSUBSTNO('/organisations/vat/%1/returns/%2', GetVATRegNo(), TypeHelper.UrlEncode(PeriodNo)));
+        exit(STRSUBSTNO('/organisations/vat/%1/returns/%2', GetVATRegNo(), TypeHelper.UrlEncode(PeriodNo)));
     end;
 
     local procedure RetrieveObligationsPath(FromDate: Date; ToDate: Date): Text
     begin
-        EXIT(STRSUBSTNO('/organisations/vat/%1/obligations?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
+        exit(STRSUBSTNO('/organisations/vat/%1/obligations?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
     end;
 
     local procedure RetrieveLiabilitiesPath(FromDate: Date; ToDate: Date): Text
     begin
-        EXIT(STRSUBSTNO('/organisations/vat/%1/liabilities?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
+        exit(STRSUBSTNO('/organisations/vat/%1/liabilities?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
     end;
 
     local procedure RetrievePaymentsPath(FromDate: Date; ToDate: Date): Text
     begin
-        EXIT(STRSUBSTNO('/organisations/vat/%1/payments?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
+        exit(STRSUBSTNO('/organisations/vat/%1/payments?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
     end;
 
     local procedure FormatValue(Value: Variant): Text
     begin
-        EXIT(Format(Value, 0, 9));
+        exit(Format(Value, 0, 9));
     end;
 
     local procedure GetVATRegNo(): Text[20]
@@ -326,6 +354,6 @@ codeunit 10537 "MTD Connection"
     begin
         CompanyInformation.Get();
         CompanyInformation.TestField("VAT Registration No.");
-        EXIT(CompanyInformation."VAT Registration No.");
+        exit(CompanyInformation."VAT Registration No.");
     end;
 }

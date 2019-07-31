@@ -640,7 +640,7 @@ codeunit 139540 "Sales Forecast Tests"
 
     [Test]
     [HandlerFunctions('SalesForecastSetupPageHandler')]
-    procedure TestServicePasswordLocked();
+    procedure TestJobQueueInProgressSalesForecastLocked();
     var
         JobQueueEntry: Record "Job Queue Entry";
         ItemList: TestPage "Item List";

@@ -1,1 +1,0 @@
-Accurate addresses are a must if you ship goods or delivering marketing materials. This extension connects to an external service to verify and get the correct address based on a local address database. Whenever you specify a customer, vendor, contact, or any address in the United Kingdom, this extension helps you make verify that you got the right address.

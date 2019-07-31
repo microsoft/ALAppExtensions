@@ -20,6 +20,7 @@ codeunit 148085 "UK MTD Tests - VAT Returns"
         LibraryUtility: Codeunit "Library - Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         Assert: Codeunit Assert;
+        LibraryERM: Codeunit "Library - ERM";
         IsInitialized: Boolean;
         RetrieveReturnsMsg: Label 'Retrieve submitted VAT returns successful';
         RetrieveReturnsErr: Label 'Not possible to retrieve submitted VAT returns.';
@@ -29,6 +30,8 @@ codeunit 148085 "UK MTD Tests - VAT Returns"
         SubmitReturnErr: Label 'Not possible to submit VAT return.';
         SubmitVATReturnTxt: Label 'Submit VAT Return.', Locked = true;
         ConfirmSubmitQst: Label 'When you submit this VAT information you are making a legal declaration that the information is true and complete. A false declaration can result in prosecution. Do you want to continue?';
+        WrongVATSatementSetupErr: Label 'VAT statement template %1 name %2 has a wrong setup. There must be nine rows, each with a value between 1 and 9 for the Box No. field.';
+        PeriodLinkErr: Label 'There is no return period linked to this VAT return.\\Use the Create From VAT Return Period action on the VAT Returns page or the Create VAT Return action on the VAT Return Periods page.';
 
     [Test]
     procedure MTDReturnDetails_DiffersFromReturn()
@@ -499,6 +502,26 @@ codeunit 148085 "UK MTD Tests - VAT Returns"
     end;
 
     [Test]
+    procedure SubmitVATReturns_Timeout()
+    var
+        RequestJson: Text;
+        ResponseJson: Text;
+    begin
+        // [SCENARIO 312780] COD 10530 MTDMgt.SubmitVATReturn() in case of http timeout error (408)
+        Initialize();
+        LibraryMakingTaxDigital.PrepareCustomResponse(false, 'timeout', '', '{"code":"408"}');
+        LibraryMakingTaxDigital.PrepareResponseOnRequestAccessToken(true, '');
+        LibraryMakingTaxDigital.PrepareCustomResponse(true, '', '{"A":"B"}', '');
+
+        SubmitVATReturn(RequestJson, ResponseJson, true);
+
+        VerifySubmitReturnRequestJson();
+        LibraryMakingTaxDigital.VerifyLatestHttpLogForSandbox(
+          true, LibraryMakingTaxDigital.GetInvokeRequestLbl('POST') + ' ' + SubmitVATReturnTxt, '', true);
+        Assert.ExpectedMessage('"A": "B"', ResponseJson);
+    end;
+
+    [Test]
     procedure VATReturnCard_DetailsSubpageRounding()
     var
         VATReturnPeriod: Record "VAT Return Period";
@@ -727,6 +750,144 @@ codeunit 148085 "UK MTD Tests - VAT Returns"
         VerifyArchiveResponseMessage(VATReportHeader);
     end;
 
+    [Test]
+    [HandlerFunctions('VATReportRequestPage_MPH')]
+    procedure VATReturn_SuggestLines_CheckBoxNo_Negative_Less()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATStatementLine: Record "VAT Statement Line";
+    begin
+        // [FEATURE] [Suggest Lines]
+        // [SCENARIO 312780] REP 742 "VAT Report Request Page" checks VAT Statement setup for "Box No." consistency
+        // [SCENARIO 312780] in case of less than 9 "Box No." count
+        Initialize();
+        MockVATReportWithStatementSetup(VATReportHeader);
+
+        VATStatementLine.GET(VATReportHeader."Statement Template Name", VATReportHeader."Statement Name", '10000');
+        VATStatementLine.Delete();
+
+        VerifySuggestLinesCheckBoxNoError(VATReportHeader);
+    end;
+
+    [Test]
+    [HandlerFunctions('VATReportRequestPage_MPH')]
+    procedure VATReturn_SuggestLines_CheckBoxNo_Negative_More()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATStatementName: Record "VAT Statement Name";
+    begin
+        // [FEATURE] [Suggest Lines]
+        // [SCENARIO 312780] REP 742 "VAT Report Request Page" checks VAT Statement setup for "Box No." consistency
+        // [SCENARIO 312780] in case of more than 9 "Box No." count
+        Initialize();
+        MockVATReportWithStatementSetup(VATReportHeader);
+
+        VATStatementName.GET(VATReportHeader."Statement Template Name", VATReportHeader."Statement Name");
+        MockVATStatementLine(VATStatementName, '10');
+
+        VerifySuggestLinesCheckBoxNoError(VATReportHeader);
+    end;
+
+    [Test]
+    [HandlerFunctions('VATReportRequestPage_MPH')]
+    procedure VATReturn_SuggestLines_CheckBoxNo_Negative_Duplicate()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATStatementLine: Record "VAT Statement Line";
+    begin
+        // [FEATURE] [Suggest Lines]
+        // [SCENARIO 312780] REP 742 "VAT Report Request Page" checks VAT Statement setup for "Box No." consistency
+        // [SCENARIO 312780] in case of duplicated "Box No."
+        Initialize();
+        MockVATReportWithStatementSetup(VATReportHeader);
+
+        VATStatementLine.GET(VATReportHeader."Statement Template Name", VATReportHeader."Statement Name", '10000');
+        VATStatementLine."Box No." := '2';
+        VATStatementLine.Modify();
+
+        VerifySuggestLinesCheckBoxNoError(VATReportHeader);
+    end;
+
+    [Test]
+    [HandlerFunctions('VATReportRequestPage_MPH')]
+    procedure VATReturn_SuggestLines_CheckBoxNo_Negative_NonNumeric()
+    var
+        VATReportHeader: Record "VAT Report Header";
+    begin
+        // [FEATURE] [Suggest Lines]
+        // [SCENARIO 312780] REP 742 "VAT Report Request Page" checks VAT Statement setup for "Box No." consistency
+        // [SCENARIO 312780] in case of non-numeric "Box No." value
+        Initialize();
+        MockVATReportWithStatementSetup(VATReportHeader);
+
+        ModifyVATStatementLine(VATReportHeader, 10000, 'box1');
+
+        VerifySuggestLinesCheckBoxNoError(VATReportHeader);
+    end;
+
+    [Test]
+    [HandlerFunctions('VATReportRequestPage_MPH')]
+    procedure VATReturn_SuggestLines_CheckBoxNo_Positive_NumericFormat()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATStatementReportLine: Record "VAT Statement Report Line";
+        i: Integer;
+    begin
+        // [FEATURE] [Suggest Lines]
+        // [SCENARIO 312780] REP 742 "VAT Report Request Page" checks VAT Statement setup for "Box No." consistency
+        // [SCENARIO 312780] in case of "Box No." values in a different numeric format
+        Initialize();
+        MockVATReportWithStatementSetup(VATReportHeader);
+
+        ModifyVATStatementLine(VATReportHeader, 10000, '1 ');
+        ModifyVATStatementLine(VATReportHeader, 20000, ' 2');
+        ModifyVATStatementLine(VATReportHeader, 30000, ' 3 ');
+        ModifyVATStatementLine(VATReportHeader, 40000, '04');
+        ModifyVATStatementLine(VATReportHeader, 50000, '005');
+
+        Commit();
+        Report.RunModal(Report::"VAT Report Request Page", true, false, VATReportHeader);
+
+        VATStatementReportLine.FindSet();
+        for i := 1 to 9 do begin
+            VATStatementReportLine.TESTFIELD("Box No.", Format(i));
+            VATStatementReportLine.Next();
+        end;
+    end;
+
+    [Test]
+    procedure BlockSubmitForWrongPeriodLink()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATReturnPeriod: Record "VAT Return Period";
+        MTDCreateReturnContent: Codeunit "MTD Create Return Content";
+        MTDSubmitReturn: Codeunit "MTD Submit Return";
+        VATReport: TestPage "VAT Report";
+    begin
+        // [SCENARIO 309370] Error is shown on Submit VAT Return in case of blanked or wrong Return Period link
+        InitSubmitReturnScenario(VATReturnPeriod, VATReportHeader, VATReportHeader.Status::Released);
+        VATReportHeader."Return Period No." := LibraryUtility.GenerateGUID();
+        VATReportHeader.Modify();
+
+        // UI PAG 740 "VAT Report"
+        VATReport.OpenEdit();
+        VATReport.GoToRecord(VATReportHeader);
+        asserterror VATReport.Submit.Invoke();
+        VATReport.Close();
+        Assert.ExpectedErrorCode('Dialog');
+        Assert.ExpectedError(PeriodLinkErr);
+
+        // UT COD 10531 "MTD Create Return Content"
+        asserterror MTDCreateReturnContent.Run(VATReportHeader);
+        Assert.ExpectedErrorCode('Dialog');
+        Assert.ExpectedError(PeriodLinkErr);
+
+        // UT COD 10532 "MTD Submit Return"
+        asserterror MTDSubmitReturn.Run(VATReportHeader);
+        Assert.ExpectedErrorCode('Dialog');
+        Assert.ExpectedError(PeriodLinkErr);
+    end;
+
     local procedure Initialize()
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
@@ -851,9 +1012,45 @@ codeunit 148085 "UK MTD Tests - VAT Returns"
         OutStream: OutStream;
         DummyGUID: Guid;
     begin
-        TempBlob.CreateOutStreamWithEncoding(OutStream, TextEncoding::UTF8);
+        TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         Outstream.Write(MessageText);
         VATReportArchive.ArchiveSubmissionMessage(VATReportHeader."VAT Report Config. Code", VATReportHeader."No.", TempBlob, DummyGUID);
+    end;
+
+    local procedure MockVATReportWithStatementSetup(var VATReportHeader: Record "VAT Report Header")
+    var
+        VATStatementName: Record "VAT Statement Name";
+        VATStatementLine: Record "VAT Statement Line";
+        VATStatementReportLine: Record "VAT Statement Report Line";
+        i: Integer;
+    begin
+        VATStatementLine.DeleteAll();
+        VATStatementReportLine.DeleteAll();
+        LibraryERM.CreateVATStatementNameWithTemplate(VATStatementName);
+        for i := 1 to 9 do
+            MockVATStatementLine(VATStatementName, Format(i));
+        VATReportHeader.Init();
+        VATReportHeader."Statement Template Name" := VATStatementName."Statement Template Name";
+        VATReportHeader."Statement Name" := VATStatementName.Name;
+        VATReportHeader.Insert();
+    end;
+
+    local procedure MockVATStatementLine(VATStatementName: Record "VAT Statement Name"; BoxNo: Text[30])
+    var
+        VATStatementLine: Record "VAT Statement Line";
+    begin
+        LibraryERM.CreateVATStatementLine(VATStatementLine, VATStatementName."Statement Template Name", VATStatementName.Name);
+        VATStatementLine."Box No." := BoxNo;
+        VATStatementLine.Modify();
+    end;
+
+    local procedure ModifyVATStatementLine(VATReportHeader: Record "VAT Report Header"; LineNo: Integer; NewBoxNoValue: Text[30])
+    var
+        VATStatementLine: Record "VAT Statement Line";
+    begin
+        VATStatementLine.GET(VATReportHeader."Statement Template Name", VATReportHeader."Statement Name", LineNo);
+        VATStatementLine."Box No." := NewBoxNoValue;
+        VATStatementLine.Modify();
     end;
 
     local procedure GetVATReturnAndShowResultViaPage(DummyMTDReturnDetails: Record "MTD Return Details")
@@ -964,7 +1161,7 @@ codeunit 148085 "UK MTD Tests - VAT Returns"
 
     procedure FormatValue(Value: Variant): Text
     begin
-        EXIT(LibraryMakingTaxDigital.FormatValue(Value));
+        exit(LibraryMakingTaxDigital.FormatValue(Value));
     end;
 
     local procedure VerifyGetReturnRequestJson(DummyMTDReturnDetails: Record "MTD Return Details")
@@ -1083,6 +1280,15 @@ codeunit 148085 "UK MTD Tests - VAT Returns"
         LibraryVariableStorage.AssertEmpty();
     end;
 
+    local procedure VerifySuggestLinesCheckBoxNoError(VATReportHeader: Record "VAT Report Header")
+    begin
+        Commit();
+        asserterror Report.RunModal(Report::"VAT Report Request Page", true, false, VATReportHeader);
+        Assert.ExpectedErrorCode('Dialog');
+        Assert.ExpectedError(
+          STRSUBSTNO(WrongVATSatementSetupErr, VATReportHeader."Statement Template Name", VATReportHeader."Statement Name"));
+    end;
+
     [MessageHandler]
     procedure MessageHandler(Message: Text[1024])
     begin
@@ -1094,5 +1300,11 @@ codeunit 148085 "UK MTD Tests - VAT Returns"
     begin
         LibraryVariableStorage.Enqueue(Question);
         Reply := LibraryVariableStorage.DequeueBoolean();
+    end;
+
+    [RequestPageHandler]
+    procedure VATReportRequestPage_MPH(var VATReportRequestPage: TestRequestPage "VAT Report Request Page");
+    begin
+        VATReportRequestPage.OK().Invoke();
     end;
 }

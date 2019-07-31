@@ -43,9 +43,10 @@ table 10531 "MTD Payment"
     {
     }
 
+    [Scope('OnPrem')]
     procedure DiffersFromPayment(MTDPayment: Record "MTD Payment"): Boolean
     begin
-        EXIT(
+        exit(
           ("Received Date" <> MTDPayment."Received Date") OR
           (Amount <> MTDPayment.Amount));
     end;

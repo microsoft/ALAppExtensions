@@ -41,9 +41,7 @@ codeunit 148006 "C5 Data Loader Tests"
         DataMigrationFacade.OnFillStagingTables();
 
         // [THEN] All Staging Tables are filled
-        VerifyStagingTablesForNotAccounts();
         VerifyStagingTablesForNotCustomers();
-        VerifyStagingTablesForNotAccounts();
         VerifyStagingTablesForNotCustomersAndNotVendors();
         VerifyStagingTablesForNotHistory();
         VerifyStagingTablesForItems();
@@ -66,7 +64,6 @@ codeunit 148006 "C5 Data Loader Tests"
         // [THEN] All Staging Tables are filled
         VerifyStagingTablesForNotItems();
         VerifyStagingTablesForNotCustomers();
-        VerifyStagingTablesForNotAccounts();
         VerifyStagingTablesForNotCustomersAndNotItems();
         VerifyStagingTablesForNotHistory();
         VerifyStagingTablesForVendors();
@@ -89,7 +86,6 @@ codeunit 148006 "C5 Data Loader Tests"
         // [THEN] All Staging Tables are filled
         VerifyStagingTablesForNotItems();
         VerifyStagingTablesForNotVendors();
-        VerifyStagingTablesForNotAccounts();
         VerifyStagingTablesForNotHistory();
         VerifyStagingTablesForCustomers();
     end;
@@ -136,7 +132,6 @@ codeunit 148006 "C5 Data Loader Tests"
         VerifyStagingTablesForNotVendors();
         VerifyStagingTablesForNotCustomers();
         VerifyStagingTablesForNotCustomersAndNotVendorsAndNotItems();
-        VerifyStagingTablesForNotAccounts();
         VerifyStagingTablesForHistory();
     end;
 
@@ -362,13 +357,6 @@ codeunit 148006 "C5 Data Loader Tests"
         Assert.RecordIsEmpty(C5CustDiscGroup);
         Assert.RecordIsEmpty(C5ProcCode);
         Assert.RecordIsEmpty(C5CustTrans);
-    end;
-
-    local procedure VerifyStagingTablesForNotAccounts()
-    var
-        C5LedTable: Record "C5 LedTable";
-    begin
-        // Assert.RecordIsEmpty(C5LedTable);
     end;
 
     local procedure VerifyStagingTablesForAccounts()

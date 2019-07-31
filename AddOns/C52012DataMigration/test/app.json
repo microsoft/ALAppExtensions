@@ -1,32 +1,45 @@
 {
-    "id": "7c7412f7-da1e-41ad-a5b9-d7d503c16f1c",
-    "name": "C5 2012 Data Migration Tests",
-    "publisher": "Microsoft",
-    "brief": "Tests for the C5 2012 Data Migration extension.",
-    "description": "Tests for the C5 2012 Data Migration extension.",
-    "version": "1.0.0.0",
-    "privacyStatement": "",
-    "EULA": "",
-    "help": "",
-    "url": "",
-    "logo": "",
-    "dependencies": [
-        {
-            "appId": "3d5b2137-eeeb-4014-8489-41d37f8fd4c3",
-            "publisher": "Microsoft",
-            "name": "C5 2012 Data Migration",
-            "version": "1.0.0.0"
-        },
-        {
-            "appId": "fdb76c54-d6bc-45e6-9b2b-7288416c3226",
-            "publisher": "Microsoft",
-            "name": "Tests",
-            "version": "15.0.0.0"
-        }
-    ],
-    "screenshots": [],
-    "platform": "11.0.0.0",
-    "application": "11.0.0.0",
-    "target": "Internal",
-    "showMyCode": false
+    "id":  "7c7412f7-da1e-41ad-a5b9-d7d503c16f1c",
+    "name":  "C5 2012 Data Migration Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the C5 2012 Data Migration extension.",
+    "description":  "Tests for the C5 2012 Data Migration extension.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "3d5b2137-eeeb-4014-8489-41d37f8fd4c3",
+                             "publisher":  "Microsoft",
+                             "name":  "C5 2012 Data Migration",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "publisher":  "Microsoft",
+                             "name":  "Tests-TestLibraries",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "BaseApp",
+                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+                             "publisher":  "Microsoft",
+                             "name":  "System Application",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "11.0.0.0",
+    "target":  "OnPrem",
+    "showMyCode":  false
 }

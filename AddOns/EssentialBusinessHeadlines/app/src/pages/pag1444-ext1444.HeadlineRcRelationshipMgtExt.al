@@ -31,7 +31,7 @@ pageextension 1444 "Headlines RC Rel. Mgt. Ext." extends "Headline RC Relationsh
         }
     }
 
-    trigger OnAfterGetRecord()
+    trigger OnOpenPage()
     begin
         OnSetVisibility(TopCustomerVisible, TopCustomerText);
     end;

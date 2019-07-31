@@ -1,1 +1,0 @@
-This extension makes it easy to meet the expectations of public authorities in Denmark for submitting invoices, credit memos, finance charge memos, and reminders for sales and services.

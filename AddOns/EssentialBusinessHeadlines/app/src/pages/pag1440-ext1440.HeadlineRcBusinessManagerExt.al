@@ -165,7 +165,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
         }
     }
 
-    trigger OnAfterGetRecord()
+    trigger OnOpenPage()
     begin
         OnSetVisibility(MostPopularItemVisible, MostPopularItemText,
                         LargestOrderVisible, LargestOrderText,

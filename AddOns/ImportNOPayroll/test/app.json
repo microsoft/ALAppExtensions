@@ -1,0 +1,45 @@
+{
+    "id":  "719a9659-dc48-4511-add6-c884b6cf59d0",
+    "name":  "Payroll Data Import Definition (NO) Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the Payroll Data Import Definition (NO) extension.",
+    "description":  "Tests for the Payroll Data Import Definition (NO) extension.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "B9B38C74-B9CF-48FF-89E5-DDA2109C2CA7",
+                             "publisher":  "Microsoft",
+                             "name":  "Payroll Data Import Definition (NO)",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "publisher":  "Microsoft",
+                             "name":  "Tests-TestLibraries",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "BaseApp",
+                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+                             "publisher":  "Microsoft",
+                             "name":  "System Application",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "11.0.0.0",
+    "target":  "OnPrem",
+    "showMyCode":  false
+}

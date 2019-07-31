@@ -25,6 +25,8 @@ codeunit 10532 "MTD Submit Return"
         ModifiedCount: Integer;
         SubmitSuccess: Boolean;
     begin
+        MTDMgt.CheckReturnPeriodLink(Rec);
+
         if not Confirm(ConfirmSubmitQst) then
             Error('');
 
@@ -32,7 +34,7 @@ codeunit 10532 "MTD Submit Return"
         VATReportArchive.GET("VAT Report Config. Code", "No.", DummyGUID);
         VATReportArchive.CALCFIELDS("Submission Message BLOB");
         TempBlob.FromRecord(VATReportArchive, VATReportArchive.FieldNo("Submission Message BLOB"));
-        TempBlob.CreateInStreamWithEncoding(InStream, TEXTENCODING::UTF8);
+        TempBlob.CreateInStream(InStream, TEXTENCODING::UTF8);
         InStream.Read(RequestJson);
 
         // Perform POST request for VAT Return submission
@@ -40,7 +42,7 @@ codeunit 10532 "MTD Submit Return"
 
         // Combine Submission Request\Response into one Submission Archive
         CLEAR(TempBlob);
-        TempBlob.CreateOutStreamWithEncoding(OutStream, TEXTENCODING::UTF8);
+        TempBlob.CreateOutStream(OutStream, TEXTENCODING::UTF8);
         OutStream.Write(CombineSubmissionRequestResponse(RequestJson, ResponseJson));
         VATReportArchive.Delete();
         VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code", "No.", TempBlob, DummyGUID);
@@ -52,7 +54,7 @@ codeunit 10532 "MTD Submit Return"
 
             // Perform GET request for VAT Return submission. Write Response Json into Response Archive
             if VATReturnPeriod.GET("Return Period No.") then
-                if MTDMgt.RetrieveVATReturns(VATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount, FALSE) then
+                if MTDMgt.RetrieveVATReturns(VATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount, false) then
                     MTDMgt.ArchiveResponseMessage(Rec, ResponseJson);
         end;
     end;
@@ -66,7 +68,7 @@ codeunit 10532 "MTD Submit Return"
     begin
         JSONMgt.AddJson('SubmissionRequest', RequestJson);
         JSONMgt.AddJson('SubmissionResponse', ResponseJson);
-        EXIT(JSONMgt.WriteObjectToString())
+        exit(JSONMgt.WriteObjectToString())
     end;
 
 }

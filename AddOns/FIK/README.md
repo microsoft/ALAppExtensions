@@ -1,1 +1,0 @@
-This extension makes it easy to export payment information to files that you can send to your banks. This speeds up the payment and reconciliation processes, and cuts down on errors that can happen when you manually enter the information on a bank website.

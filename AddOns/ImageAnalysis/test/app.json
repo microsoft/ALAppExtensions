@@ -1,32 +1,45 @@
 {
-    "id": "dab5ad99-6526-4a70-a909-04d33c948314",
-    "name": "Image Analyzer Tests",
-    "publisher": "Microsoft",
-    "brief": "Tests for the Image Analyzer extension.",
-    "description": "Tests for the Image Analyzer extension.",
-    "version": "1.0.0.0",
-    "privacyStatement": "",
-    "EULA": "",
-    "help": "",
-    "url": "",
-    "logo": "",
-    "dependencies": [
-        {
-            "appId": "e868ad92-21b8-4e08-af2b-8975a8b06e04",
-            "publisher": "Microsoft",
-            "name": "Image Analyzer",
-            "version": "1.0.0.4"
-        },
-        {
-            "appId": "fdb76c54-d6bc-45e6-9b2b-7288416c3226",
-            "publisher": "Microsoft",
-            "name": "Tests",
-            "version": "15.0.0.0"
-        }
-    ],
-    "screenshots": [],
-    "platform": "11.0.0.0",
-    "application": "11.0.0.0",
-    "target": "Internal",
-    "showMyCode": false
+    "id":  "dab5ad99-6526-4a70-a909-04d33c948314",
+    "name":  "Image Analyzer Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the Image Analyzer extension.",
+    "description":  "Tests for the Image Analyzer extension.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "e868ad92-21b8-4e08-af2b-8975a8b06e04",
+                             "publisher":  "Microsoft",
+                             "name":  "Image Analyzer",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "publisher":  "Microsoft",
+                             "name":  "Tests-TestLibraries",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "BaseApp",
+                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+                             "publisher":  "Microsoft",
+                             "name":  "System Application",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "11.0.0.0",
+    "target":  "OnPrem",
+    "showMyCode":  false
 }

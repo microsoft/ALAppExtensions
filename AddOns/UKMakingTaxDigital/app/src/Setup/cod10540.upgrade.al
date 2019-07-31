@@ -10,6 +10,7 @@ codeunit 10540 "MTD Upgrade"
     trigger OnUpgradePerCompany()
     begin
         UpgradeVATReportSetup();
+        UpgradeDailyLimit();
     end;
 
     local procedure UpgradeVATReportSetup()
@@ -25,5 +26,13 @@ codeunit 10540 "MTD Upgrade"
                 if IsModify then
                     if Modify() then;
             end;
+    end;
+
+    local procedure UpgradeDailyLimit()
+    var
+        DummyOAuth20Setup: Record "OAuth 2.0 Setup";
+        MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
+    begin
+        MTDOAuth20Mgt.InitOAuthSetup(DummyOAuth20Setup, MTDOAuth20Mgt.GetOAuthPRODSetupCode());
     end;
 }

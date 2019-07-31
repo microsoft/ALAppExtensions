@@ -38,9 +38,12 @@ codeunit 1852 "Sales Forecast Scheduler"
     var
         JobQueueEntry: Record "Job Queue Entry";
         JobQueueManagement: Codeunit "Job Queue Management";
-        PeriodType: Option Day,Week,Month,Quarter,Year,"Accounting Period";
+        UserLoginTimeTracker : Codeunit "User Login Time Tracker";
+        FromDate : Date;
     begin
-        if not AnyUserLoginExistsWithinPeriod(PeriodType::Week, 2) then
+        FromDate := CalcDate('<-2W>');
+
+        if not UserLoginTimeTracker.AnyUserLoggedInSinceDate(FromDate) then
             JobQueueManagement.DeleteJobQueueEntries(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"Sales Forecast Update");
     end;
 
@@ -79,13 +82,6 @@ codeunit 1852 "Sales Forecast Scheduler"
         JobQueueEntry.SetRange("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
         JobQueueEntry.SetRange("Object ID to Run", Codeunit::"Sales Forecast Update");
         exit(not JobQueueEntry.IsEmpty());
-    end;
-
-    local procedure AnyUserLoginExistsWithinPeriod(PeriodType: Option Day,Week,Month,Quarter,Year,"Accounting Period"; NoOfPeriods: Integer): Boolean
-    var
-        LogInManagement: Codeunit LogInManagement;
-    begin
-        exit(LogInManagement.AnyUserLoginExistsWithinPeriod(PeriodType,NoOfPeriods));
     end;
 
     local procedure CreateSetupNotification()

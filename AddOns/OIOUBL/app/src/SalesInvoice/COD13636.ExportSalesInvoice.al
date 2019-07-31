@@ -58,7 +58,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         SalesInvHeader2.MODIFY();
     end;
 
-    local procedure InsertInvoiceTaxTotal(var InvoiceElement: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; TotalTaxAmount: Decimal);
+    local procedure InsertInvoiceTaxTotal(var InvoiceElement: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);
     var
         TaxTotalElement: XmlElement;
         TaxableAmount: Decimal;
@@ -69,7 +69,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
 
         TaxTotalElement.Add(
           XmlElement.Create('TaxAmount', DocNameSpace,
-            XmlAttribute.Create('currencyID', SalesInvoiceHeader."Currency Code"),
+            XmlAttribute.Create('currencyID', CurrencyCode),
             OIOUBLDocumentEncode.DecimalToText(TotalTaxAmount)));
 
         // Invoice->TaxTotal (for ("Normal VAT" AND "VAT %" <> 0) OR "Full VAT")
@@ -87,7 +87,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
                 repeat
                     UpdateTaxAmtAndTaxableAmt(SalesInvoiceLine.Amount, SalesInvoiceLine."Amount Including VAT", TaxableAmount, TaxAmount);
                 until SalesInvoiceLine.NEXT() = 0;
-                OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, SalesInvoiceLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, SalesInvoiceHeader."Currency Code");
+                OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, SalesInvoiceLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
             end;
 
             TaxableAmount := 0;
@@ -99,7 +99,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
                     UpdateTaxAmtAndTaxableAmt(SalesInvoiceLine.Amount, SalesInvoiceLine."Amount Including VAT", TaxableAmount, TaxAmount);
                 until SalesInvoiceLine.NEXT() = 0;
                 // Invoice->TaxTotal->TaxSubtotal
-                OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, SalesInvoiceLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, SalesInvoiceHeader."Currency Code");
+                OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, SalesInvoiceLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
             end;
         end;
 
@@ -113,7 +113,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
             repeat
                 UpdateTaxAmtAndTaxableAmt(SalesInvoiceLine.Amount, SalesInvoiceLine."Amount Including VAT", TaxableAmount, TaxAmount);
             until SalesInvoiceLine.NEXT() = 0;
-            OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, SalesInvoiceLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, SalesInvoiceHeader."Currency Code");
+            OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, SalesInvoiceLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
         end;
 
         InvoiceElement.Add(TaxTotalElement);
@@ -154,7 +154,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
             OIOUBLDocumentEncode.DecimalToText(SalesInvoiceLine.Quantity)));
         InvoiceLineElement.Add(
           XmlElement.Create('LineExtensionAmount', DocNameSpace,
-            XmlAttribute.Create('currencyID', SalesInvoiceHeader."Currency Code"),
+            XmlAttribute.Create('currencyID', CurrencyCode),
             OIOUBLDocumentEncode.DecimalToText(SalesInvoiceLine.Amount + GetDiscountAmount(SalesInvoiceLine))));
         InvoiceLineElement.Add(XmlElement.Create('AccountingCost', DocNameSpace, SalesInvoiceLine."OIOUBL-Account Code"));
         InsertOrderLineReference(InvoiceLineElement, SalesInvoiceHeader, SalesInvoiceLine);
@@ -162,7 +162,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         DiscountAmount := GetDiscountAmount(SalesInvoiceLine);
         if DiscountAmount > 0 then
             OIOUBLXMLGenerator.InsertAllowanceCharge(InvoiceLineElement, 1, 'Rabat', 'ReverseCharge',
-              DiscountAmount, SalesInvoiceHeader."Currency Code", SalesInvoiceLine."Line Discount %");
+              DiscountAmount, CurrencyCode, SalesInvoiceLine."Line Discount %");
 
         // TO-DO move to mapping function
         if SalesInvoiceLine.Type = SalesInvoiceLine.Type::"Charge (Item)" then begin
@@ -182,7 +182,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
 
             OIOUBLXMLGenerator.InsertAllowanceCharge(InvoiceLineElement, 2, AllowanceChargeReason,
               OIOUBLXMLGenerator.GetTaxCategoryID(SalesInvoiceLine."VAT Calculation Type", SalesInvoiceLine."VAT %"),
-              SalesInvoiceLine."Amount Including VAT", SalesInvoiceHeader."Currency Code", SalesInvoiceLine."VAT %");
+              SalesInvoiceLine."Amount Including VAT", CurrencyCode, SalesInvoiceLine."VAT %");
         end;
         OIOUBLXMLGenerator.InsertLineTaxTotal(
           InvoiceLineElement,
@@ -327,7 +327,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         OIOUBLXMLGenerator.InsertPaymentTerms(XMLCurrNode,
           SalesInvoiceHeader."Payment Terms Code",
           SalesInvoiceHeader."Payment Discount %",
-          SalesInvoiceHeader."Currency Code",
+          CurrencyCode,
           SalesInvoiceHeader."Pmt. Discount Date",
           SalesInvoiceHeader."Due Date",
           SalesInvLine2."Amount Including VAT");
@@ -342,7 +342,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         // Invoice->AllowanceCharge
         if TotalInvDiscountAmount > 0 then
             OIOUBLXMLGenerator.InsertAllowanceCharge(XMLCurrNode, 1, 'Rabat', 'ReverseCharge',
-              TotalInvDiscountAmount, SalesInvoiceHeader."Currency Code", 0);
+              TotalInvDiscountAmount, CurrencyCode, 0);
 
         // Invoice->TaxTotal
         SalesInvLine2.RESET();
@@ -357,7 +357,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
             SalesInvLine2.CALCSUMS(Amount, "Amount Including VAT");
             TotalTaxAmount := SalesInvLine2."Amount Including VAT" - SalesInvLine2.Amount;
 
-            InsertInvoiceTaxTotal(XMLCurrNode, SalesInvoiceHeader, SalesInvLine2, TotalTaxAmount);
+            InsertInvoiceTaxTotal(XMLCurrNode, SalesInvoiceHeader, SalesInvLine2, TotalTaxAmount, CurrencyCode);
         end;
 
         // Invoice->LegalMonetaryTotal

@@ -380,7 +380,7 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
         CLEAR(LibraryVariableStorage);
         UpdateSalesReceivablesSetup();
         UpdateOIOUBLCountryRegionCode();
-        LibraryERM.DisableMyNotifications(CopyStr(USERID(),1,50), SalesHeader.GetModifyCustomerAddressNotificationId());
+        LibraryERM.DisableMyNotifications(CopyStr(USERID(), 1, 50), SalesHeader.GetModifyCustomerAddressNotificationId());
 
         DocumentSendingProfile.DELETEALL();
         DocumentSendingProfile.INIT();
@@ -569,7 +569,7 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
     begin
         LibraryXMLReadOnServer.Initialize(OIOUBLNewFileMock.PopFilePath()); // Initialize generated Electronic Invoice and Credit Memo.
         LibraryXMLReadOnServer.VerifyNodeValue(IDTxt, DocumentNo);
-        LibraryXMLReadOnServer.VerifyNodeValue(TaxAmountTxt, FORMAT(ROUND(TaxAmount, LibraryERM.GetAmountRoundingPrecision()), 0, 9));
+        LibraryXMLReadOnServer.VerifyNodeValue(TaxAmountTxt, FORMAT(ROUND(TaxAmount, LibraryERM.GetAmountRoundingPrecision()), 0, '<Precision,2:3><Sign><Integer><Decimals><Comma,.>'));
         LibraryXMLReadOnServer.VerifyNodeValue(BaseQuantityTxt, '1');
     end;
 
@@ -579,7 +579,7 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
         LibraryXMLReadOnServer.VerifyNodeValue(IDTxt, DocumentNo);
         Assert.AreEqual(1, LibraryXMLReadOnServer.GetNodesCount('cbc:AllowanceTotalAmount'), WrongAllowanceTotalAmountErr);
         Assert.AreEqual(2, LibraryXMLReadOnServer.GetNodesCount('cac:InvoiceLine'), WrongInvoiceLineCountErr);
-        LibraryXMLReadOnServer.VerifyNodeValueInSubtree('cac:InvoiceLine', 'cbc:Amount', FORMAT(ExpectedValue, 0, 9));
+        LibraryXMLReadOnServer.VerifyNodeValueInSubtree('cac:InvoiceLine', 'cbc:Amount', FORMAT(ExpectedValue, 0, '<Precision,2:3><Sign><Integer><Decimals><Comma,.>'));
         Assert.AreEqual(2, LibraryXMLReadOnServer.GetNodesCount('cac:AllowanceCharge'), WrongAllowanceChargeErr);
     end;
 

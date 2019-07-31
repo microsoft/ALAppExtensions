@@ -1,1 +1,0 @@
-This extension makes it easy to migrate customers, vendors, items, and your general ledger accounts from Microsoft Dynamcis C5 2012 to Microsoft Dynamics 365 Business Central. You can also migrate historical entries for general ledger accounts. For more information, see https://go.microsoft.com/fwlink/?linkid=859310. 

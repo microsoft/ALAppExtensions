@@ -69,7 +69,7 @@ codeunit 139593 "Contact Pic Analyzer Test"
 
         // [Then] The contact is not populated because of the 2 faces
         Contact.Get(Contact.RecordId());
-        Assert.IsFalse(GetContactCortanaAnswers(Contact, ContactProfileAnswer), 'Expected the contact questionnaire answers not to be populated');
+        Assert.IsFalse(GetContactAzureAIAnswers(Contact, ContactProfileAnswer), 'Expected the contact questionnaire answers not to be populated');
     end;
 
     local procedure Initialize()
@@ -109,7 +109,7 @@ codeunit 139593 "Contact Pic Analyzer Test"
         ProfileQuestionnaireLineAgeQuestion.SetRange(Description, ContactPictureAnalyze.GetAgeProfileQuestionDescription());
         ProfileQuestionnaireLineAgeQuestion.FindFirst();
 
-        if GetContactCortanaAnswers(Contact, ContactProfileAnswer) then
+        if GetContactAzureAIAnswers(Contact, ContactProfileAnswer) then
             repeat
                 ProfileQuestionnaireLineAnswer.SetRange("Profile Questionnaire Code", ContactPictureAnalyze.GetImageAnalyzerQuestionnaireCode());
                 ProfileQuestionnaireLineAnswer.SetRange(Type, ProfileQuestionnaireLineAnswer.Type::Answer);
@@ -123,7 +123,7 @@ codeunit 139593 "Contact Pic Analyzer Test"
         exit(0);
     end;
 
-    local procedure GetContactCortanaAnswers(Contact: Record Contact; var ContactProfileAnswer: Record "Contact Profile Answer"): Boolean
+    local procedure GetContactAzureAIAnswers(Contact: Record Contact; var ContactProfileAnswer: Record "Contact Profile Answer"): Boolean
     var
         ContactPictureAnalyze: Codeunit "Contact Picture Analyze";
     begin
@@ -146,7 +146,7 @@ codeunit 139593 "Contact Pic Analyzer Test"
         ProfileQuestionnaireLineGenderQuestion.SetRange(Description, ContactPictureAnalyze.GetGenderProfileQuestionDescription());
         ProfileQuestionnaireLineGenderQuestion.FindFirst();
 
-        if GetContactCortanaAnswers(Contact, ContactProfileAnswer) then
+        if GetContactAzureAIAnswers(Contact, ContactProfileAnswer) then
             repeat
                 ProfileQuestionnaireLineAnswer.SetRange("Profile Questionnaire Code", ContactPictureAnalyze.GetImageAnalyzerQuestionnaireCode());
                 ProfileQuestionnaireLineAnswer.SetRange(Type, ProfileQuestionnaireLineAnswer.Type::Answer);

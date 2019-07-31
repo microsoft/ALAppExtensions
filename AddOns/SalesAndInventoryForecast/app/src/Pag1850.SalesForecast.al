@@ -8,6 +8,7 @@ page 1850 "Sales Forecast"
     Caption = 'Forecast';
     PageType = CardPart;
     SourceTable = Item;
+    ContextSensitiveHelpPage = 'ui-extensions-sales-forecast';
 
     layout
     {

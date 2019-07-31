@@ -24,7 +24,7 @@ pageextension 1446 "Headlines RC Team Member Ext." extends "Headline RC Team Mem
         }
     }
 
-    trigger OnAfterGetRecord()
+    trigger OnOpenPage()
     begin
         OnSetVisibility(Headline1Visible, Headline1Text);
     end;

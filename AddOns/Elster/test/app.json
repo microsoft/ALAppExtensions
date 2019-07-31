@@ -1,32 +1,45 @@
 {
-    "id": "f84add22-b60f-44e4-a4f1-14a00dc942c6",
-    "name": "ELSTER VAT Localization for Germany Tests",
-    "publisher": "Microsoft",
-    "brief": "Tests for the ELSTER VAT Localization for Germany extension.",
-    "description": "Tests for the ELSTER VAT Localization for Germany extension.",
-    "version": "1.0.0.0",
-    "privacyStatement": "",
-    "EULA": "",
-    "help": "",
-    "url": "",
-    "logo": "",
-    "dependencies": [
-        {
-            "appId": "b0c41a2d-9ebe-4773-a22f-86bd69e75949",
-            "publisher": "Microsoft",
-            "name": "ELSTER VAT Localization for Germany",
-            "version": "1.0.0.0"
-        },
-        {
-            "appId": "fdb76c54-d6bc-45e6-9b2b-7288416c3226",
-            "publisher": "Microsoft",
-            "name": "Tests",
-            "version": "15.0.0.0"
-        }
-    ],
-    "screenshots": [],
-    "platform": "11.0.0.0",
-    "application": "11.0.0.0",
-    "target": "Internal",
-    "showMyCode": false
+    "id":  "f84add22-b60f-44e4-a4f1-14a00dc942c6",
+    "name":  "ELSTER VAT Localization for Germany Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the ELSTER VAT Localization for Germany extension.",
+    "description":  "Tests for the ELSTER VAT Localization for Germany extension.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "b0c41a2d-9ebe-4773-a22f-86bd69e75949",
+                             "publisher":  "Microsoft",
+                             "name":  "ELSTER VAT Localization for Germany",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "publisher":  "Microsoft",
+                             "name":  "Tests-TestLibraries",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "BaseApp",
+                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+                             "publisher":  "Microsoft",
+                             "name":  "System Application",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "11.0.0.0",
+    "target":  "OnPrem",
+    "showMyCode":  false
 }

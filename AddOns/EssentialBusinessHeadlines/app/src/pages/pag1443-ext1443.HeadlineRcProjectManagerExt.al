@@ -24,7 +24,7 @@ pageextension 1443 "Headlines RC Project Mgr. Ext" extends "Headline RC Project 
         }
     }
 
-    trigger OnAfterGetRecord()
+    trigger OnOpenPage()
     begin
         OnSetVisibility(Headline1Visible, Headline1Text);
     end;

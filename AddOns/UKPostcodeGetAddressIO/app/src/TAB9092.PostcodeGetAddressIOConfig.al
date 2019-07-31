@@ -5,7 +5,6 @@
 
 table 9092 "Postcode GetAddress.io Config"
 {
-    Permissions = TableData 1261 = rimd;
     ReplicateData = false;
 
     fields
@@ -20,35 +19,36 @@ table 9092 "Postcode GetAddress.io Config"
         key(Key1; "Primary Key") { }
     }
 
+    [Scope('OnPrem')]
     procedure GetAPIKey(APIKeyGUID: Guid): Text
     var
-        ServicePassword: Record 1261;
+        APIPassword: Text;
     begin
-        IF ISNULLGUID(APIKeyGUID) OR NOT ServicePassword.GET(APIKeyGUID) THEN
+        IF ISNULLGUID(APIKeyGUID) OR NOT IsolatedStorage.Get(APIKeyGUID, Datascope::Company, APIPassword) THEN
             EXIT('');
 
-        EXIT(ServicePassword.GetPassword());
+        EXIT(APIPassword);
     end;
 
+    [Scope('OnPrem')]
     procedure SaveAPIKey(var APIKeyGUID: Guid; APIKeyValue: Text[250])
     var
-        ServicePassword: Record 1261;
     begin
         IF NOT ISNULLGUID(APIKeyGUID) AND (APIKeyValue = '') THEN BEGIN
-            ServicePassword.GET(APIKeyGUID);
+            If IsolatedStorage.Contains(APIKeyGUID, Datascope::Company) then
+                IsolatedStorage.Delete(APIKeyGUID, Datascope::Company);
             CLEAR(APIKey);
-            ServicePassword.DELETE();
-        END ELSE
-            IF ISNULLGUID(APIKey) OR NOT ServicePassword.GET(APIKeyGUID) THEN BEGIN
-                ServicePassword.SavePassword(APIKeyValue);
-                ServicePassword.INSERT(TRUE);
-                APIKey := ServicePassword.Key;
-                MODIFY();
-            END ELSE BEGIN
-                ServicePassword.SavePassword(APIKeyValue);
-                ServicePassword.MODIFY();
-            END;
-        COMMIT();
+        end else begin
+            IF ISNULLGUID(APIKey) OR NOT IsolatedStorage.Contains(APIKeyGUID, Datascope::Company) THEN BEGIN
+                APIKeyGuid := FORMAT(CreateGuid());
+                APIKey := APIKeyGuid;
+            end;
+            IF NOT EncryptionEnabled() THEN
+                IsolatedStorage.Set(APIKeyGUID, APIKeyValue, Datascope::Company)
+            else
+                IsolatedStorage.SetEncrypted(APIKeyGUID, APIKeyValue, Datascope::Company);
+        end;
+        Modify();
     end;
 }
 

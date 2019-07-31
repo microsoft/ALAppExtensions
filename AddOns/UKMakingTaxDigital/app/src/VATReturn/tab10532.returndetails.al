@@ -74,9 +74,10 @@ table 10532 "MTD Return Details"
     {
     }
 
+    [Scope('OnPrem')]
     procedure DiffersFromReturn(MTDReturnDetails: Record "MTD Return Details"): Boolean
     begin
-        EXIT(
+        exit(
           ("Period Key" <> MTDReturnDetails."Period Key") or
           ("VAT Due Sales" <> MTDReturnDetails."VAT Due Sales") or
           ("VAT Due Acquisitions" <> MTDReturnDetails."VAT Due Acquisitions") or

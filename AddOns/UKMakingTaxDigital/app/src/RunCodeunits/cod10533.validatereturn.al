@@ -20,16 +20,16 @@ codeunit 10533 "MTD Validate Return"
         ErrorMessage: Record "Error Message";
     begin
         ErrorMessage.SetContext(VATReportHeader);
-        WITH VATReportSetup DO BEGIN
+        with VATReportSetup do begin
             Get();
             ErrorMessage.ClearLogRec(VATReportSetup);
             ErrorMessage.LogIfEmpty(VATReportSetup, FIELDNO("Report Version"), ErrorMessage."Message Type"::Error);
-        END;
+        end;
 
-        WITH CompanyInformation DO BEGIN
+        with CompanyInformation do begin
             Get();
             ErrorMessage.ClearLogRec(CompanyInformation);
             ErrorMessage.LogIfEmpty(CompanyInformation, FIELDNO("VAT Registration No."), ErrorMessage."Message Type"::Error);
-        END;
+        end;
     end;
 }

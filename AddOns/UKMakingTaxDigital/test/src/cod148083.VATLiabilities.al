@@ -469,7 +469,7 @@ codeunit 148083 "UK MTD Tests - VAT Liabilities"
 
     procedure FormatValue(Value: Variant): Text
     begin
-        EXIT(LibraryMakingTaxDigital.FormatValue(Value));
+        exit(LibraryMakingTaxDigital.FormatValue(Value));
     end;
 
     local procedure VerifyGetLiabilitiesRequestJson(DummyVATLiability: Record "MTD Liability")

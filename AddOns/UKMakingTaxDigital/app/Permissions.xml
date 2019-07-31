@@ -151,6 +151,16 @@
       <SecurityFilter />
     </Permission>
     <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>10541</ObjectID>
+      <ReadPermission>Yes</ReadPermission>
+      <InsertPermission>Yes</InsertPermission>
+      <ModifyPermission>Yes</ModifyPermission>
+      <DeletePermission>Yes</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
       <ObjectType>Page</ObjectType>
       <ObjectID>10530</ObjectID>
       <ReadPermission>Yes</ReadPermission>

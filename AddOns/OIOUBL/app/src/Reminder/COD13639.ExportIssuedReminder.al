@@ -19,7 +19,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
         DocNameSpace: Text[250];
         DocNameSpace2: Text[250];
 
-    local procedure InsertReminderTaxTotal(var ReminderElement: XmlElement; IssuedReminderHeader: Record "Issued Reminder Header"; var IssuedReminderLine: Record "Issued Reminder Line"; TotalTaxAmount: Decimal);
+    local procedure InsertReminderTaxTotal(var ReminderElement: XmlElement; IssuedReminderHeader: Record "Issued Reminder Header"; var IssuedReminderLine: Record "Issued Reminder Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);
     var
         TaxTotalElement: XmlElement;
         TaxableAmount: Decimal;
@@ -30,7 +30,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
 
         TaxTotalElement.Add(
           XmlElement.Create('TaxAmount', DocNameSpace,
-            XmlAttribute.Create('currencyID', IssuedReminderHeader."Currency Code"),
+            XmlAttribute.Create('currencyID', CurrencyCode),
             OIOUBLDocumentEncode.DecimalToText(TotalTaxAmount)));
 
         // Invoice->TaxTotal (for ("Normal VAT" AND "VAT %" <> 0) OR "Full VAT")
@@ -53,7 +53,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
                   TaxableAmount,
                   TaxAmount,
                   VATPercentage,
-                  IssuedReminderHeader."Currency Code");
+                  CurrencyCode);
             end;
 
             TaxableAmount := 0;
@@ -72,7 +72,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
                   TaxableAmount,
                   TaxAmount,
                   VATPercentage,
-                  IssuedReminderHeader."Currency Code");
+                  CurrencyCode);
             end;
         end;
 
@@ -92,7 +92,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
               TaxableAmount,
               TaxAmount,
               VATPercentage,
-              IssuedReminderHeader."Currency Code");
+              CurrencyCode);
         end;
 
         ReminderElement.Add(TaxTotalElement);
@@ -218,7 +218,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
             IssuedReminderLine2.CALCSUMS(Amount, Amount);
             TotalTaxAmount := IssuedReminderLine2.Amount - IssuedReminderLine2.Amount;
 
-            InsertReminderTaxTotal(XMLCurrNode, Rec, IssuedReminderLine2, TotalTaxAmount);
+            InsertReminderTaxTotal(XMLCurrNode, Rec, IssuedReminderLine2, TotalTaxAmount, CurrencyCode);
         end;
 
         // Reminder->LegalMonetaryTotal

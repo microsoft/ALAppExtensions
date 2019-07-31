@@ -8,6 +8,7 @@ page 1851 "Sales Forecast No Chart"
     Caption = 'Forecast';
     PageType = CardPart;
     SourceTable = Item;
+    ContextSensitiveHelpPage = 'ui-extensions-sales-forecast';
 
     layout
     {

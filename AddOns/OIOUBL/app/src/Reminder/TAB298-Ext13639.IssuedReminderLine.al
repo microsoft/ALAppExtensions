@@ -18,7 +18,7 @@ tableextension 13639 "OIOUBL-Issued Reminder Line" extends "Issued Reminder Line
 
     procedure GetDescription(CurrencyCode: Code[10]): Text[1024];
     var
-        AutoFormatManagement: Codeunit AutoFormatManagement;
+        AutoFormat: Codeunit "Auto Format";
     begin
         case Type of
             Type::" ":
@@ -26,7 +26,7 @@ tableextension 13639 "OIOUBL-Issued Reminder Line" extends "Issued Reminder Line
             Type::"G/L Account":
                 exit(
                   STRSUBSTNO('%1: %2; ', FIELDCAPTION(Description), Description) +
-                  STRSUBSTNO('%1: %2; ', FIELDCAPTION(Amount), FORMAT(Amount, 0, AutoFormatManagement.AutoFormatTranslate(1, CurrencyCode))) +
+                  STRSUBSTNO('%1: %2; ', FIELDCAPTION(Amount), FORMAT(Amount, 0, AutoFormat.ResolveAutoFormat(1, CurrencyCode))) +
                   CrLf());
             Type::"Customer Ledger Entry":
                 exit(
@@ -35,9 +35,9 @@ tableextension 13639 "OIOUBL-Issued Reminder Line" extends "Issued Reminder Line
                   STRSUBSTNO('%1: %2; ', FIELDCAPTION("Document No."), FORMAT("Document No.")) +
                   STRSUBSTNO('%1: %2; ', FIELDCAPTION("Due Date"), FORMAT("Due Date")) +
                   STRSUBSTNO('%1: %2; ', FIELDCAPTION("Original Amount"),
-                  FORMAT("Original Amount", 0, AutoFormatManagement.AutoFormatTranslate(1, CurrencyCode))) +
+                  FORMAT("Original Amount", 0, AutoFormat.ResolveAutoFormat(1, CurrencyCode))) +
                   STRSUBSTNO('%1: %2; ', FIELDCAPTION("Remaining Amount"),
-                  FORMAT("Remaining Amount", 0, AutoFormatManagement.AutoFormatTranslate(1, CurrencyCode))) +
+                  FORMAT("Remaining Amount", 0, AutoFormat.ResolveAutoFormat(1, CurrencyCode))) +
                   CrLf());
         end;
     end;

@@ -193,7 +193,7 @@ Codeunit 148034 "TestFIKImp.Pmt. Rec. Jnl."
         ParsedText: Text;
     BEGIN
         SourceTempBlob.CreateInStream(InStreamObj);
-        DestinationTempBlob.CreateOutStreamWithEncoding(OutStreamObj, TextEncoding::Windows);
+        DestinationTempBlob.CreateOutStream(OutStreamObj, TextEncoding::Windows);
 
         WHILE NOT InStreamObj.EOS() DO begin
             InStreamObj.ReadText(ParsedText);

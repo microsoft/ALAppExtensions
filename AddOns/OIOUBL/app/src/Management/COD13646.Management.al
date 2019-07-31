@@ -14,11 +14,16 @@ codeunit 13646 "OIOUBL-Management"
         OIOUBLFileEvents: Codeunit "OIOUBL-File Events";
         FilePath: Text;
         FileName: Text;
+        IsHandled: Boolean;
     begin
         FileName := STRSUBSTNO('%1.xml', DocNo);
         FolderPath := DelChr(FolderPath, '>', '\');
 
         OIOUBLFileEvents.FileCreated(SourceFile);
+
+        OnExportXMLFileOnBeforeDownload(DocNo, SourceFile, FolderPath, IsHandled);
+        if IsHandled then
+            exit;
 
         if FileManagement.IsLocalFileSystemAccessible() then begin
             FilePath := FileManagement.DownloadTempFile(SourceFile);
@@ -85,5 +90,10 @@ codeunit 13646 "OIOUBL-Management"
             SegManagement.LogDocument(
                             6, "No.", 0, 0, DATABASE::Customer, "Sell-to Customer No.", "Salesperson Code",
                             "Campaign No.", "Posting Description", '');
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnExportXMLFileOnBeforeDownload(DocNo: Code[20]; SourceFile: Text; FolderPath: Text; var IsHandled: Boolean)
+    begin
     end;
 }

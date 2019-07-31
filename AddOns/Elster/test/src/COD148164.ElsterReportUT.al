@@ -37,7 +37,7 @@ codeunit 148164 "Elster Report UT"
         // [SCENARIO 283574] Purpose of the test is to validate Sales VAT Advance Notification - OnPostDataItem of Report Create XML File VAT Adv. Notif. for XML Create option of Create and Transmit.
         Initialize();
         if not EncryptionManagement.IsEncryptionEnabled() then
-            EncryptionManagement.EnableEncryption();
+            EncryptionManagement.EnableEncryption(FALSE);
         OnPostDataItemXMLOptionCreateXMLFileVATAdvNotif();
     end;
 
