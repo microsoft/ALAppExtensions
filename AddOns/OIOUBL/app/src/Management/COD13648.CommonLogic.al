@@ -524,7 +524,7 @@ codeunit 13648 "OIOUBL-Common Logic"
         ItemElement.Add(SellersItemIdElement);
     end;
 
-    procedure InsertItem(var RootElement: XmlElement; Description: Text[50]; LineNo: Code[20]);
+    procedure InsertItem(var RootElement: XmlElement; Description: Text[100]; LineNo: Code[20]);
     var
         ItemElement: XmlElement;
     begin
@@ -611,8 +611,8 @@ codeunit 13648 "OIOUBL-Common Logic"
                 exit('StandardRated');
             Type::"Reverse Charge VAT":
                 exit('ReverseCharge');
-        else
-        exit('ZeroRated');
+            else
+                exit('ZeroRated');
         end;
     end;
 

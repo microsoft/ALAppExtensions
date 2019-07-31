@@ -791,7 +791,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
 
     local procedure VerifyOverdueVATReturnPeriodHeadlineIsVisible(DueDate: Date; DaysCount: Integer)
     var
-        HeadlineMgt: Codeunit "Headline Management";
+        HeadlineMgt: Codeunit Headlines;
     begin
         Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::OverdueVATReturn), 'OverdueVATReturn headline should be visible');
         Assert.AreEqual(
@@ -818,7 +818,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
 
     local procedure VerifyUpcomingVATReturnPeriodHeadlineIsVisible(DueDate: Date; DaysCount: Integer)
     var
-        HeadlineMgt: Codeunit "Headline Management";
+        HeadlineMgt: Codeunit Headlines;
     begin
         Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::OpenVATReturn), 'OpenVATReturn headline should be visible');
         Assert.AreEqual(
@@ -849,11 +849,4 @@ codeunit 139600 "Test Essential Bus. Headlines"
         VerifyOverdueVATReturnPeriodHeadlineIsNotVisible();
         VerifyUpcomingVATReturnPeriodHeadlineIsNotVisible();
     end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Headline Management", 'OnBeforeScheduleTask', '', true, true)]
-    local procedure OnBeforeScheduleTask(CodeunitId: Integer)
-    begin
-        Codeunit.Run(CodeunitId);
-    end;
-
 }

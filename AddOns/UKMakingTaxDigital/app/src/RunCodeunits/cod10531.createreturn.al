@@ -12,16 +12,19 @@ codeunit 10531 "MTD Create Return Content"
     var
         VATReportArchive: Record "VAT Report Archive";
         TempBlob: Codeunit "Temp Blob";
+        MTDMgt: Codeunit "MTD Mgt.";
         OutStream: OutStream;
         DummyGUID: Guid;
         RequestJson: Text;
     begin
-        IF VATReportArchive.GET("VAT Report Config. Code", "No.", DummyGUID) THEN
+        MTDMgt.CheckReturnPeriodLink(Rec);
+
+        if VATReportArchive.GET("VAT Report Config. Code", "No.", DummyGUID) then
             VATReportArchive.Delete();
 
         RequestJson := CreateReturnContent(Rec);
 
-        TempBlob.CreateOutStreamWithEncoding(OutStream, TEXTENCODING::UTF8);
+        TempBlob.CreateOutStream(OutStream, TEXTENCODING::UTF8);
         OutStream.WriteText(RequestJson);
         VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code", "No.", TempBlob, DummyGUID);
     end;
@@ -50,7 +53,7 @@ codeunit 10531 "MTD Create Return Content"
     var
         JSONMgt: Codeunit "JSON Management";
     begin
-        WITH MTDReturnDetails DO BEGIN
+        with MTDReturnDetails do begin
             JSONMgt.SetValue('periodKey', "Period Key");
             JSONMgt.SetValue('vatDueSales', "VAT Due Sales");
             JSONMgt.SetValue('vatDueAcquisitions', "VAT Due Acquisitions");
@@ -62,7 +65,7 @@ codeunit 10531 "MTD Create Return Content"
             JSONMgt.SetValue('totalValueGoodsSuppliedExVAT', "Total Value Goods Suppl. ExVAT");
             JSONMgt.SetValue('totalAcquisitionsExVAT', "Total Acquisitions Excl. VAT");
             JSONMgt.SetValue('finalised', Finalised);
-        END;
+        end;
         exit(JSONMgt.WriteObjectToString());
     end;
 
@@ -70,13 +73,13 @@ codeunit 10531 "MTD Create Return Content"
     var
         VATStatementReportLine: Record "VAT Statement Report Line";
     begin
-        WITH VATStatementReportLine DO BEGIN
-            SETRANGE("VAT Report Config. Code", VATReportHeader."VAT Report Config. Code");
-            SETRANGE("VAT Report No.", VATReportHeader."No.");
-            SETRANGE("Box No.", BoxNo);
-            IF FindFirst() THEN
-                EXIT(Amount);
-        END;
+        with VATStatementReportLine do begin
+            SetRange("VAT Report Config. Code", VATReportHeader."VAT Report Config. Code");
+            SetRange("VAT Report No.", VATReportHeader."No.");
+            SetRange("Box No.", BoxNo);
+            if FindFirst() then
+                exit(Amount);
+        end;
     end;
 }
 

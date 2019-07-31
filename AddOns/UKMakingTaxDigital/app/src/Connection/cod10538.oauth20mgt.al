@@ -25,20 +25,29 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         PRODAzureClientSecretTxt: Label 'UKHMRC-MTDVAT-PROD-ClientSecret', Locked = true;
         SandboxAzureClientIDTxt: Label 'UKHMRC-MTDVAT-Sandbox-ClientID', Locked = true;
         SandboxAzureClientSecretTxt: Label 'UKHMRC-MTDVAT-Sandbox-ClientSecret', Locked = true;
+        RedirectURLTxt: Label 'urn:ietf:wg:oauth:2.0:oob', Locked = true;
+        ScopeTxt: Label 'write:vat read:vat', Locked = true;
+        AuthorizationURLPathTxt: Label '/oauth/authorize', Locked = true;
+        AccessTokenURLPathTxt: Label '/oauth/token', Locked = true;
+        RefreshTokenURLPathTxt: Label '/oauth/token', Locked = true;
+        AuthorizationResponseTypeTxt: Label 'code', Locked = true;
 
+    [Scope('OnPrem')]
     procedure GetOAuthPRODSetupCode() Result: Code[20]
     begin
         Result := CopyStr(OAuthPRODSetupLbl, 1, MaxStrLen(Result))
     end;
 
+    [Scope('OnPrem')]
     procedure GetOAuthSandboxSetupCode() Result: Code[20]
     begin
         Result := CopyStr(OAuthSandboxSetupLbl, 1, MaxStrLen(Result))
     end;
 
+    [Scope('OnPrem')]
     procedure InitOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup"; OAuthSetupCode: Code[20])
     begin
-        WITH OAuth20Setup DO BEGIN
+        with OAuth20Setup do begin
             if not Get(OAuthSetupCode) then begin
                 Code := OAuthSetupCode;
                 Status := Status::Disabled;
@@ -51,15 +60,16 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
                 "Service URL" := CopyStr(ServiceURLSandboxTxt, 1, MaxStrLen("Service URL"));
                 Description := CopyStr(OAuthsandboxSetupDescriptionLbl, 1, MaxStrLen(Description));
             end;
-            "Redirect URL" := 'urn:ietf:wg:oauth:2.0:oob';
-            Scope := 'write:vat read:vat';
-            "Authorization URL Path" := '/oauth/authorize';
-            "Access Token URL Path" := '/oauth/token';
-            "Refresh Token URL Path" := '/oauth/token';
-            "Authorization Response Type" := 'code';
+            "Redirect URL" := RedirectURLTxt;
+            Scope := ScopeTxt;
+            "Authorization URL Path" := AuthorizationURLPathTxt;
+            "Access Token URL Path" := AccessTokenURLPathTxt;
+            "Refresh Token URL Path" := RefreshTokenURLPathTxt;
+            "Authorization Response Type" := AuthorizationResponseTypeTxt;
             "Token DataScope" := "Token DataScope"::Company;
+            "Daily Limit" := 1000;
             Modify();
-        END;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeDeleteEvent', '', true, true)]
@@ -91,7 +101,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         if OAuthSetupCode = '' then
             exit;
 
-        IF not OAuth20Setup.Get(OAuthSetupCode) then
+        if not OAuth20Setup.Get(OAuthSetupCode) then
             InitOAuthSetup(OAuth20Setup, OAuthSetupCode);
         ServiceConnection.Status := OAuth20Setup.Status;
 
@@ -111,6 +121,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
             exit;
         Processed := true;
 
+        CheckOAuthConsistencySetup(OAuth20Setup);
         UpdateClientTokens(OAuth20Setup);
         Hyperlink(OAuth20Mgt.GetAuthorizationURL(OAuth20Setup, GetToken(OAuth20Setup."Client ID", OAuth20Setup.GetTokenDataScope())));
     end;
@@ -118,6 +129,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRequestAccessToken', '', true, true)]
     local procedure OnBeforeRequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
+        RequestJSON: Text;
         AccessToken: Text;
         RefreshToken: Text;
         TokenDataScope: DataScope;
@@ -125,12 +137,16 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
             exit;
         Processed := true;
+
+        CheckOAuthConsistencySetup(OAuth20Setup);
+        AddFraudPreventionHeaders(RequestJSON);
+
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
 
         UpdateClientTokens(OAuth20Setup);
         Result :=
-            OAuth20Mgt.RequestAccessToken(
-                OAuth20Setup, MessageText, AuthorizationCode,
+            OAuth20Mgt.RequestAccessTokenWithGivenRequestJson(
+                OAuth20Setup, RequestJSON, MessageText, AuthorizationCode,
                 GetToken(OAuth20Setup."Client ID", TokenDataScope),
                 GetToken(OAuth20Setup."Client Secret", TokenDataScope),
                 AccessToken, RefreshToken);
@@ -155,6 +171,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRefreshAccessToken', '', true, true)]
     local procedure OnBeforeRefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
+        RequestJSON: Text;
         AccessToken: Text;
         RefreshToken: Text;
         TokenDataScope: DataScope;
@@ -162,12 +179,19 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
             exit;
         Processed := true;
+
+        CheckOAuthConsistencySetup(OAuth20Setup);
+        AddFraudPreventionHeaders(RequestJSON);
+
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
         RefreshToken := GetToken(OAuth20Setup."Refresh Token", TokenDataScope);
 
         Result :=
-            OAuth20Mgt.RefreshAccessToken(
-                OAuth20Setup, MessageText, GetToken(OAuth20Setup."Client ID", TokenDataScope), GetToken(OAuth20Setup."Client Secret", TokenDataScope), AccessToken, RefreshToken);
+            OAuth20Mgt.RefreshAccessTokenWithGivenRequestJson(
+                OAuth20Setup, RequestJSON, MessageText,
+                GetToken(OAuth20Setup."Client ID", TokenDataScope),
+                GetToken(OAuth20Setup."Client Secret", TokenDataScope),
+                AccessToken, RefreshToken);
 
         if Result then
             SaveTokens(OAuth20Setup, TokenDataScope, AccessToken, RefreshToken);
@@ -188,37 +212,17 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
             exit;
         Processed := true;
 
+        CheckOAuthConsistencySetup(OAuth20Setup);
+        AddFraudPreventionHeaders(RequestJSON);
+
         Result :=
             OAuth20Mgt.InvokeRequest(
                 OAuth20Setup, RequestJSON, ResponseJSON, HttpError,
                 GetToken(OAuth20Setup."Access Token", OAuth20Setup.GetTokenDataScope()), RetryOnCredentialsFailure);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Encryption Management", 'OnBeforeDecryptDataInAllCompaniesOnPrem', '', true, true)]
-    local procedure OnBeforeDecryptDataInAllCompaniesOnPrem()
-    var
-        OAuth20Setup: Record "OAuth 2.0 Setup";
-    begin
-        if FindMTDOAuthPRODSetup(OAuth20Setup) then
-            DecryptDataInAllCompaniesOnPrem(OAuth20Setup);
-
-        if FindMTDOAuthSandboxSetup(OAuth20Setup) then
-            DecryptDataInAllCompaniesOnPrem(OAuth20Setup);
-    end;
-
-    local procedure DecryptDataInAllCompaniesOnPrem(OAuth20Setup: Record "OAuth 2.0 Setup")
-    var
-        TokenDataScope: DataScope;
-    begin
-        TokenDataScope := OAuth20Setup.GetTokenDataScope();
-        IsolatedStorage_Set(OAuth20Setup."Client ID", GetToken(OAuth20Setup."Client ID", TokenDataScope), TokenDataScope);
-        IsolatedStorage_Set(OAuth20Setup."Client Secret", GetToken(OAuth20Setup."Client Secret", TokenDataScope), TokenDataScope);
-        IsolatedStorage_Set(OAuth20Setup."Access Token", GetToken(OAuth20Setup."Access Token", TokenDataScope), TokenDataScope);
-        IsolatedStorage_Set(OAuth20Setup."Refresh Token", GetToken(OAuth20Setup."Refresh Token", TokenDataScope), TokenDataScope);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Encryption Management", 'OnBeforeEncryptDataInAllCompaniesOnPrem', '', true, true)]
-    local procedure OnBeforeEncryptDataInAllCompaniesOnPrem()
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Encryption Management", 'OnBeforeEnableEncryptionOnPrem', '', true, true)]
+    local procedure OnBeforeEnableEncryptionOnPrem()
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
     begin
@@ -242,7 +246,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
 
     local procedure UpdateClientTokens(var OAuth20Setup: Record "OAuth 2.0 Setup")
     var
-        AzureKeyVaultMgt: Codeunit "Azure Key Vault Management";
+        AzureKeyVault: Codeunit "Azure Key Vault";
         AzureClientIDTxt: Text;
         AzureClientSecretTxt: Text;
         KeyValue: Text;
@@ -255,10 +259,10 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
             AzureClientSecretTxt := SandboxAzureClientSecretTxt;
         end;
 
-        if AzureKeyVaultMgt.GetAzureKeyVaultSecret(KeyValue, AzureClientIDTxt) then
+        if AzureKeyVault.GetAzureKeyVaultSecret(AzureClientIDTxt, KeyValue) then
             if KeyValue <> '' then
                 SetToken(OAuth20Setup."Client ID", KeyValue, OAuth20Setup.GetTokenDataScope());
-        if AzureKeyVaultMgt.GetAzureKeyVaultSecret(KeyValue, AzureClientSecretTxt) then
+        if AzureKeyVault.GetAzureKeyVaultSecret(AzureClientSecretTxt, KeyValue) then
             if KeyValue <> '' then
                 SetToken(OAuth20Setup."Client Secret", KeyValue, OAuth20Setup.GetTokenDataScope());
         OAuth20Setup.Modify();
@@ -266,12 +270,13 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
 
     local procedure IsolatedStorage_Set(var TokenKey: GUID; TokenValue: Text; TokenDataScope: DataScope)
     begin
-        IF IsNullGuid(TokenKey) THEN
+        if IsNullGuid(TokenKey) then
             TokenKey := CreateGuid();
 
         IsolatedStorage.Set(TokenKey, TokenValue, TokenDataScope);
     end;
 
+    [Scope('OnPrem')]
     procedure SetToken(var TokenKey: GUID; TokenValue: Text; TokenDataScope: DataScope)
     begin
         IsolatedStorage_Set(TokenKey, OAuth20Mgt.EncryptForOnPrem(TokenValue), TokenDataScope);
@@ -280,7 +285,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     local procedure IsolatedStorage_Get(TokenKey: GUID; TokenDataScope: DataScope) TokenValue: Text
     begin
         TokenValue := '';
-        IF NOT HasToken(TokenKey, TokenDataScope) THEN
+        if not HasToken(TokenKey, TokenDataScope) then
             exit;
 
         IsolatedStorage.Get(TokenKey, TokenDataScope, TokenValue);
@@ -293,7 +298,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
 
     local procedure DeleteToken(TokenKey: GUID; TokenDataScope: DataScope)
     begin
-        IF NOT HasToken(TokenKey, TokenDataScope) THEN
+        if not HasToken(TokenKey, TokenDataScope) then
             exit;
 
         IsolatedStorage.DELETE(TokenKey, TokenDataScope);
@@ -301,7 +306,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
 
     local procedure HasToken(TokenKey: GUID; TokenDataScope: DataScope): Boolean
     begin
-        exit(NOT IsNullGuid(TokenKey) AND IsolatedStorage.Contains(TokenKey, TokenDataScope));
+        exit(not IsNullGuid(TokenKey) AND IsolatedStorage.Contains(TokenKey, TokenDataScope));
     end;
 
     local procedure FindMTDOAuthPRODSetup(var OAuth20Setup: Record "OAuth 2.0 Setup"): Boolean
@@ -314,6 +319,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         exit(OAuth20Setup.get(GetOAuthSandboxSetupCode()));
     end;
 
+    [Scope('OnPrem')]
     procedure IsMTDOAuthSetup(OAuth20Setup: Record "OAuth 2.0 Setup"): Boolean
     var
         VATReportSetup: Record "VAT Report Setup";
@@ -322,5 +328,34 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         if VATReportSetup.Get() then
             OAuthSetupCode := VATReportSetup.GetMTDOAuthSetupCode();
         exit((OAuthSetupCode <> '') and (OAuthSetupCode = OAuth20Setup.Code));
+    end;
+
+    local procedure CheckOAuthConsistencySetup(OAuth20Setup: Record "OAuth 2.0 Setup")
+    begin
+        with OAuth20Setup do begin
+            case Code of
+                GetOAuthPRODSetupCode():
+                    TestField("Service URL", CopyStr(ServiceURLPRODTxt, 1, MaxStrLen("Service URL")));
+                GetOAuthSandboxSetupCode():
+                    TestField("Service URL", CopyStr(ServiceURLSandboxTxt, 1, MaxStrLen("Service URL")));
+                else
+                    TestField("Service URL", '');
+            end;
+
+            TestField("Redirect URL", RedirectURLTxt);
+            TestField(Scope, ScopeTxt);
+            TestField("Authorization URL Path", AuthorizationURLPathTxt);
+            TestField("Access Token URL Path", AccessTokenURLPathTxt);
+            TestField("Refresh Token URL Path", RefreshTokenURLPathTxt);
+            TestField("Authorization Response Type", AuthorizationResponseTypeTxt);
+            TestField("Daily Limit", 1000);
+        end;
+    end;
+
+    local procedure AddFraudPreventionHeaders(var RequestJSON: Text)
+    var
+        FraudPreventionMgt: Codeunit "MTD Fraud Prevention Mgt.";
+    begin
+        FraudPreventionMgt.AddFraudPreventionHeaders(RequestJSON);
     end;
 }

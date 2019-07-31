@@ -13,6 +13,7 @@ page 1853 "Sales Forecast Setup Card"
     SourceTable = "MS - Sales Forecast Setup";
     UsageCategory = Administration;
     ApplicationArea = Basic, Suite;
+    ContextSensitiveHelpPage = 'ui-extensions-sales-forecast';
 
     layout
     {
@@ -157,7 +158,7 @@ page 1853 "Sales Forecast Setup Card"
             action("Open Cortana Intelligence Gallery")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Open Cortana Intelligence Gallery';
+                Caption = 'Open Azure AI Gallery';
                 Gesture = None;
                 Image = LinkWeb;
                 Promoted = true;
@@ -188,12 +189,12 @@ page 1853 "Sales Forecast Setup Card"
 
     local procedure GetMLTotalProcessingTime(): Decimal
     var
-        CortanaIntelligenceUsage: Record "Cortana Intelligence Usage";
+        AzureAIUsage: Record "Azure AI Usage";
     begin
-        if not CortanaIntelligenceUsage.Get(CortanaIntelligenceUsage.Service::"Machine Learning") then
+        if not AzureAIUsage.Get(AzureAIUsage.Service::"Machine Learning") then
             exit(0);
 
-        exit(Round(CortanaIntelligenceUsage."Total Resource Usage", 1));
+        exit(Round(AzureAIUsage."Total Resource Usage", 1));
     end;
 }
 

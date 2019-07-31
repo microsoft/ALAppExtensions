@@ -15,6 +15,19 @@ codeunit 10539 "MTD Install"
         VATReturnPeriodEndTxt: Label 'VATPER-9999', Locked = true;
 
     trigger OnInstallAppPerCompany()
+    begin
+        OnCompanyInitialize();
+
+        if InitializeDone() then
+            exit;
+
+        MoveTableMTDLiability();
+        MoveTableMTDPayment();
+        MoveTableMTDReturnDetails();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
+    local procedure OnCompanyInitialize()
     var
         DummyOAuth20Setup: Record "OAuth 2.0 Setup";
         MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
@@ -27,12 +40,6 @@ codeunit 10539 "MTD Install"
 
         InitVATReportSetup(VATReportLabelText);
         ApplyEvaluationClassificationsForPrivacy();
-        if InitializeDone() then
-            exit;
-
-        MoveTableMTDLiability();
-        MoveTableMTDPayment();
-        MoveTableMTDReturnDetails();
     end;
 
     local procedure InitializeDone(): boolean
@@ -177,7 +184,7 @@ codeunit 10539 "MTD Install"
         NoSeries.Init();
         NoSeries.Code := Code;
         NoSeries.Description := Description;
-        NoSeries."Default Nos." := TRUE;
+        NoSeries."Default Nos." := true;
         NoSeries."Manual Nos." := ManualNos;
         NoSeries.Insert();
 
@@ -187,14 +194,15 @@ codeunit 10539 "MTD Install"
         NoSeriesLine.VALIDATE("Starting No.", StartingNo);
         NoSeriesLine.VALIDATE("Ending No.", EndingNo);
         NoSeriesLine.VALIDATE("Last No. Used", LastNumberUsed);
-        IF WarningNo <> '' THEN
+        if WarningNo <> '' then
             NoSeriesLine.VALIDATE("Warning No.", WarningNo);
         NoSeriesLine.VALIDATE("Increment-by No.", IncrementByNo);
-        NoSeriesLine.INSERT(TRUE);
+        NoSeriesLine.Insert(true);
 
         SeriesCode := Code;
     end;
 
+    [Scope('OnPrem')]
     procedure InitProductionMode(var VATReportSetup: Record "VAT Report Setup"): Boolean
     begin
         with VATReportSetup do begin
@@ -207,6 +215,7 @@ codeunit 10539 "MTD Install"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure InitPeriodReminderCalculation(var VATReportSetup: Record "VAT Report Setup"): Boolean
     var
         DateFormulaText: Text;

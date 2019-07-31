@@ -52,8 +52,8 @@ codeunit 13640 ImportPayrollDataExchDef
         FileDataOutStream: OutStream;
         DataExchDefinStream: InStream;
     begin
-        TempBlob.CreateOutStreamWithEncoding(FileDataOutStream, TextEncoding::UTF8);
-        TempBlob.CreateInStreamWithEncoding(DataExchDefinStream, TextEncoding::UTF8);
+        TempBlob.CreateOutStream(FileDataOutStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DataExchDefinStream, TextEncoding::UTF8);
 
         FileDataOutStream.WriteText(DataExchDefData);
         CopyStream(FileDataOutStream, DataExchDefinStream);

@@ -52,7 +52,7 @@ pageextension 1441 "Headlines RC Order Proc. Ext." extends "Headline RC Order Pr
         }
     }
 
-    trigger OnAfterGetRecord()
+    trigger OnOpenPage()
     begin
         OnSetVisibility(LargestOrderVisible, LargestOrderText, LargestSaleVisible, LargestSaleText);
     end;

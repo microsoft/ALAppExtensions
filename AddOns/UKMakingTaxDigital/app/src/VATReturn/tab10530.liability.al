@@ -48,9 +48,10 @@ table 10530 "MTD Liability"
     {
     }
 
+    [Scope('OnPrem')]
     procedure DiffersFromLiability(MTDLiability: Record "MTD Liability"): Boolean
     begin
-        EXIT(
+        exit(
           (Type <> MTDLiability.Type) OR
           ("Original Amount" <> MTDLiability."Original Amount") OR
           ("Outstanding Amount" <> MTDLiability."Outstanding Amount") OR

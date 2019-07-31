@@ -108,7 +108,7 @@ codeunit 1850 "Sales Forecast Handler"
     [Scope('Internal')]
     procedure InitializeTimeseries(var TimeSeriesManagement: Codeunit "Time Series Management"; MSSalesForecastSetup: Record "MS - Sales Forecast Setup"): Boolean
     var
-        CortanaIntelligenceUsage: Record "Cortana Intelligence Usage";
+        AzureAIUsage: Record "Azure AI Usage";
         APIURI: Text[250];
         APIKey: Text[200];
         LimitType: Option;
@@ -118,7 +118,7 @@ codeunit 1850 "Sales Forecast Handler"
         if IsNullGuid(MSSalesForecastSetup."API Key ID") then begin
             TimeSeriesManagement.GetMLForecastCredentials(APIURI, APIKey, LimitType, Limit);
             TimeSeriesManagement.Initialize(APIURI, APIKey, MSSalesForecastSetup."Timeout (seconds)", true);
-            if CortanaIntelligenceUsage.IsAzureMLLimitReached(CortanaIntelligenceUsage.Service::"Machine Learning", Limit) then begin
+            if AzureAIUsage.IsAzureMLLimitReached(AzureAIUsage.Service::"Machine Learning", Limit) then begin
                 Status := Status::"Out of limit";
                 exit(false);
             end;
@@ -267,13 +267,13 @@ codeunit 1850 "Sales Forecast Handler"
         exit(true);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Business Setup", 'OnRegisterBusinessSetup', '', false, false)]
-    local procedure HandleRegisterBusinessSetup(var TempBusinessSetup: Record "Business Setup" temporary)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
+    local procedure HandleRegisterBusinessSetup(var Sender: Codeunit "Manual Setup")
     begin
-        TempBusinessSetup.InsertExtensionBusinessSetup(
-          TempBusinessSetup, SalesForecastNameTxt, SalesForecastBusinessSetupDescriptionTxt,
-          SalesForecastBusinessSetupKeywordsTxt, TempBusinessSetup.Area::Service,
-          Page::"Sales Forecast Setup Card", SalesForecastNameTxt);
+        Sender.InsertForExtension(
+          SalesForecastNameTxt, SalesForecastBusinessSetupDescriptionTxt,
+          SalesForecastBusinessSetupKeywordsTxt,
+          Page::"Sales Forecast Setup Card", 'c526b3e9-b8ca-4683-81ba-fcd5f6b1472a');
     end;
 
     [IntegrationEvent(false, false)]

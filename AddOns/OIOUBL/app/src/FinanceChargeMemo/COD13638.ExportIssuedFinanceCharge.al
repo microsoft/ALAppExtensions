@@ -20,7 +20,7 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
         DocNameSpace: Text[250];
         DocNameSpace2: Text[250];
 
-    local procedure InsertReminderTaxTotal(var ReminderElement: XmlElement; IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header"; var IssuedFinChargeMemoLineLocal: Record "Issued Fin. Charge Memo Line"; TotalTaxAmount: Decimal);
+    local procedure InsertReminderTaxTotal(var ReminderElement: XmlElement; IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header"; var IssuedFinChargeMemoLineLocal: Record "Issued Fin. Charge Memo Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);
     var
         TaxTotalElement: XmlElement;
         TaxableAmount: Decimal;
@@ -31,7 +31,7 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
 
         TaxTotalElement.Add(
           XmlElement.Create('TaxAmount', DocNameSpace,
-            XmlAttribute.Create('currencyID', IssuedFinChargeMemoHeader."Currency Code"),
+            XmlAttribute.Create('currencyID', CurrencyCode),
             OIOUBLDocumentEncode.DecimalToText(TotalTaxAmount)));
 
         // Invoice->TaxTotal (for ("Normal VAT" AND "VAT %" <> 0) OR "Full VAT")
@@ -48,7 +48,7 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
                 repeat
                     UpdateTaxAmtAndTaxableAmt(IssuedFinChargeMemoLineLocal.Amount, IssuedFinChargeMemoLineLocal."VAT Amount", TaxableAmount, TaxAmount);
                 until IssuedFinChargeMemoLineLocal.NEXT() = 0;
-                OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, IssuedFinChargeMemoHeader."Currency Code");
+                OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
             end;
         end;
 
@@ -62,7 +62,7 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
                 UpdateTaxAmtAndTaxableAmt(IssuedFinChargeMemoLineLocal.Amount, IssuedFinChargeMemoLineLocal."VAT Amount", TaxableAmount, TaxAmount);
             until IssuedFinChargeMemoLineLocal.NEXT() = 0;
             // Invoice->TaxTotal->TaxSubtotal
-            OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, IssuedFinChargeMemoHeader."Currency Code");
+            OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
         end;
 
         // Invoice->TaxTotal (for "Reverse Charge VAT")
@@ -75,7 +75,7 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
             repeat
                 UpdateTaxAmtAndTaxableAmt(IssuedFinChargeMemoLineLocal.Amount, IssuedFinChargeMemoLineLocal."VAT Amount", TaxableAmount, TaxAmount);
             until IssuedFinChargeMemoLineLocal.NEXT() = 0;
-            OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, IssuedFinChargeMemoHeader."Currency Code");
+            OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
         end;
 
         ReminderElement.Add(TaxTotalElement);
@@ -193,7 +193,7 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
             IssuedFinChargeMemoLine2.CALCSUMS(Amount, Amount);
             TotalTaxAmount := IssuedFinChargeMemoLine2.Amount - IssuedFinChargeMemoLine2.Amount;
 
-            InsertReminderTaxTotal(XMLCurrNode, Rec, IssuedFinChargeMemoLine2, TotalTaxAmount);
+            InsertReminderTaxTotal(XMLCurrNode, Rec, IssuedFinChargeMemoLine2, TotalTaxAmount, CurrencyCode);
         end;
 
         // FinCharge->LegalMonetaryTotal

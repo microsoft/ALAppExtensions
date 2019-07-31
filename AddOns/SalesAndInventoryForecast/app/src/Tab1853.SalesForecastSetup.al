@@ -5,7 +5,6 @@
 
 table 1853 "MS - Sales Forecast Setup"
 {
-    Permissions = TableData "Service Password" = rimd;
     ReplicateData = false;
 
     fields
@@ -165,7 +164,7 @@ table 1853 "MS - Sales Forecast Setup"
         EncryptionManagement: Codeunit "Encryption Management";
     begin
         if not EncryptionManagement.IsEncryptionEnabled() then
-            EncryptionManagement.EnableEncryption();
+            EncryptionManagement.EnableEncryption(FALSE);
     end;
 
     procedure URIOrKeyEmpty(): Boolean
@@ -182,19 +181,21 @@ table 1853 "MS - Sales Forecast Setup"
         exit((((H * 60) + M) * 60 + S) * 1000);
     end;
 
+    [Scope('OnPrem')]
     procedure GetUserDefinedAPIKey(): Text[250]
     begin
         // If the user has defined the API Key in the page UI, then retrieve it from
-        // the encrypted Service Password table
+        // the encrypted Isolated Storage table
         if IsNullGuid("API Key ID") then
             exit('');
 
         exit(TryReadAPICredential("API Key ID"));
     end;
 
+    [Scope('OnPrem')]
     procedure SetUserDefinedAPIKey(UserDefinedAPIKey: Text[250])
     begin
-        // Store the user-defined API Key in Service Password and remember its GUID in "API Key ID"
+        // Store the user-defined API Key in the Isolated Storage and save its GUID in the "API Key ID"
         if UserDefinedAPIKey = '' then begin
             DeleteAPICredential("API Key ID");
             exit;
@@ -223,38 +224,43 @@ table 1853 "MS - Sales Forecast Setup"
 
     local procedure TryReadAPICredential(CredentialGUID: Guid): Text[250]
     var
-        ServicePassword: Record "Service Password";
+        CredentialValue: Text;
     begin
         if IsNullGuid(CredentialGUID) then
             exit('');
 
-        if not ServicePassword.Get(CredentialGUID) then
+        if not IsolatedStorage.Contains(CredentialGUID, Datascope::Company) then
             exit('');
 
-        exit(CopyStr(ServicePassword.GetPassword(), 1, 250));
+        IsolatedStorage.Get(CredentialGUID, Datascope::Company, CredentialValue);
+        exit(CopyStr(CredentialValue, 1, 250));
     end;
 
     local procedure InsertAPICredential(NewValue: Text[250]): Guid
     var
-        ServicePassword: Record "Service Password";
+        NewKey: Text;
     begin
-        ServicePassword.Init();
-        ServicePassword.SavePassword(NewValue);
-        ServicePassword.Insert(true);
-        exit(ServicePassword.Key)
+        NewKey := FORMAT(CreateGuid());
+
+        IF NOT EncryptionEnabled() THEN
+            IsolatedStorage.Set(NewKey, NewValue, Datascope::Company)
+        else
+            IsolatedStorage.SetEncrypted(NewKey, NewValue, Datascope::Company);
+        exit(NewKey)
     end;
 
     local procedure DeleteAPICredential(KeyId: Guid)
     var
-        ServicePassword: Record "Service Password";
     begin
         // Clear the local key id
         Clear("API Key ID");
         Modify();
 
-        // Delete the stored API Key from Service Password table
-        if ServicePassword.Get(KeyId) then
-            ServicePassword.Delete();
+        // Delete the stored API Key from Isolated Storage table
+        IF NOT IsolatedStorage.Contains(KeyId, Datascope::Company) THEN
+            exit;
+
+        IsolatedStorage.Delete(KeyId, Datascope::Company);
     end;
 }
 

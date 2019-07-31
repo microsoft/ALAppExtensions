@@ -71,7 +71,7 @@ pageextension 1442 "Headlines RC Accountant Ext." extends "Headline RC Accountan
         }
     }
 
-    trigger OnAfterGetRecord()
+    trigger OnOpenPage()
     begin
         OnSetVisibility(LargestOrderVisible, LargestOrderText,
                         LargestSaleVisible, LargestSaleText,

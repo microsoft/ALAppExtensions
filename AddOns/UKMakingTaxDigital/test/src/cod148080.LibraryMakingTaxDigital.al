@@ -20,14 +20,16 @@ codeunit 148080 "Library - Making Tax Digital"
         OAuthSandboxSetupLbl: Label 'HMRC VAT Sandbox', Locked = true;
         OAuthPRODSetupLbl: Label 'HMRC VAT', Locked = true;
         IncludingLbl: Label 'including %1 new and %2 modified records.', Comment = '%1, %2 - records count';
-        ReasonLbl: Label 'Reason: ';
+        ReasonLbl: Label 'Reason from the HMRC server: ';
         InvokeRequestLbl: Label 'Invoke %1 request.', Locked = true;
 
+    [Scope('OnPrem')]
     procedure CreateEnabledOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup")
     begin
         CreateOAuthSetup(OAuth20Setup, OAuth20Setup.Status::Enabled);
     end;
 
+    [Scope('OnPrem')]
     procedure CreateDisbaledOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup")
     begin
         CreateOAuthSetup(OAuth20Setup, OAuth20Setup.Status::Disabled);
@@ -43,15 +45,16 @@ codeunit 148080 "Library - Making Tax Digital"
             end;
             Status := NewStatus;
             Description := LibraryUtility.GenerateGUID();
-            "Service URL" := 'https://TestServiceURL';
-            "Redirect URL" := 'https://TestRedirectURL';
-            Scope := LibraryUtility.GenerateGUID();
-            "Authorization URL Path" := '/TestAuthorizationURLPath';
-            "Access Token URL Path" := '/TestAccessTokenURLPath';
-            "Refresh Token URL Path" := '/TestRefreshTokenURLPath';
-            "Authorization Response Type" := LibraryUtility.GenerateGUID();
+            "Service URL" := 'https://test-api.service.hmrc.gov.uk';
+            "Redirect URL" := 'urn:ietf:wg:oauth:2.0:oob';
+            Scope := 'write:vat read:vat';
+            "Authorization URL Path" := '/oauth/authorize';
+            "Access Token URL Path" := '/oauth/token';
+            "Refresh Token URL Path" := '/oauth/token';
+            "Authorization Response Type" := 'code';
             "Token DataScope" := "Token DataScope"::Company;
             SetOAuthSetupTestTokens(OAuth20Setup);
+            "Daily Limit" := 1000;
             Modify(true);
         end;
     end;
@@ -76,6 +79,7 @@ codeunit 148080 "Library - Making Tax Digital"
         exit(JSONMgt.WriteObjectToString());
     end;
 
+    [Scope('OnPrem')]
     procedure MockVATPayment(var MTDPayment: Record "MTD Payment"; StartDate: Date; EndDate: Date; EntryNo: Integer; ReceivedDate: Date; NewAmount: Decimal)
     begin
         with MTDPayment do begin
@@ -89,6 +93,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure MockVATLiability(var MTDLiability: Record "MTD Liability"; StartDate: Date; EndDate: Date; NewType: Option; OriginalAmount: Decimal; OutstandingAmount: Decimal; DueDate: Date)
     begin
         with MTDLiability do begin
@@ -103,6 +108,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure MockVATReturnPeriod(var VATReturnPeriod: Record "VAT Return Period"; StartDate: Date; EndDate: Date; DueDate: Date; PeriodKey: Code[10]; NewStatus: Option; ReceivedDate: Date)
     begin
         with VATReturnPeriod do begin
@@ -118,6 +124,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure MockVATReturnDetail(var MTDReturnDetails: Record "MTD Return Details"; StartDate: Date; EndDate: Date; PeriodKey: Code[10]; VATDueSales: Decimal; VATDueAcquisitions: Decimal; TotalVATDue: Decimal; VATReclaimedCurrPeriod: Decimal; NetVATDue: Decimal; TotalValueSalesExclVAT: Decimal; TotalValuePurchasesExclVAT: Decimal; TotalValueGoodsSupplExVAT: Decimal; TotalAcquisitionsExclVAT: Decimal; NewFinalised: Boolean)
     begin
         with MTDReturnDetails do begin
@@ -139,6 +146,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure MockLinkedVATReturnHeader(var VATReportHeader: Record "VAT Report Header"; var VATReturnPeriod: Record "VAT Return Period")
     begin
         with VATReportHeader do begin
@@ -152,6 +160,7 @@ codeunit 148080 "Library - Making Tax Digital"
         VATReturnPeriod.Modify();
     end;
 
+    [Scope('OnPrem')]
     procedure MockLinkedVATReturnHeader(var VATReportHeader: Record "VAT Report Header"; var VATReturnPeriod: Record "VAT Return Period"; NewStatus: Option)
     begin
         MockLinkedVATReturnHeader(VATReportHeader, VATReturnPeriod);
@@ -159,6 +168,7 @@ codeunit 148080 "Library - Making Tax Digital"
         VATReportHeader.Modify();
     end;
 
+    [Scope('OnPrem')]
     procedure MockVATStatementReportLine(VATReportHeader: Record "VAT Report Header"; LineNo: Integer; BoxNo: Text[30]; NewAmount: Decimal)
     var
         VATStatementReportLine: Record "VAT Statement Report Line";
@@ -174,6 +184,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure MockVATStatementReportLinesWithRandomValues(VATReportHeader: Record "VAT Report Header")
     var
         i: Integer;
@@ -182,11 +193,13 @@ codeunit 148080 "Library - Making Tax Digital"
             MockVATStatementReportLine(VATReportHeader, i, Format(i), LibraryRandom.RandDecInRange(10000, 20000, 2));
     end;
 
+    [Scope('OnPrem')]
     procedure PrepareResponseOnRequestAccessToken(Result: Boolean; HttpError: Text)
     begin
         PrepareCustomResponse(Result, HttpError, CreateAccessTokenResponseJson(), '');
     end;
 
+    [Scope('OnPrem')]
     procedure PrepareCustomResponse(Result: Boolean; HttpError: Text; ContentJson: Text; ErrorJson: Text)
     var
         JSONMgt: Codeunit "JSON Management";
@@ -199,6 +212,7 @@ codeunit 148080 "Library - Making Tax Digital"
         SetNameValueBuffer_JsonResponse(JSONMgt.WriteObjectToString());
     end;
 
+    [Scope('OnPrem')]
     procedure UpdateCompanyInformation()
     var
         CompanyInformation: Record "Company Information";
@@ -278,6 +292,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure GetNameValueBuffer_JsonRequest() Result: Text
     var
         NameValueBuffer: Record "Name/Value Buffer";
@@ -290,31 +305,37 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure GetOAuthSandboxSetupCode(): Code[20]
     begin
         exit(CopyStr(OAuthSandboxSetupLbl, 1, 20));
     end;
 
+    [Scope('OnPrem')]
     procedure GetOAuthProdSetupCode(): Code[20]
     begin
         exit(CopyStr(OAuthPRODSetupLbl, 1, 20));
     end;
 
+    [Scope('OnPrem')]
     procedure GetResonLbl(): Text
     begin
         exit(ReasonLbl);
     end;
 
+    [Scope('OnPrem')]
     procedure GetIncludingLbl(): Text
     begin
         exit(IncludingLbl);
     end;
 
+    [Scope('OnPrem')]
     procedure GetInvokeRequestLbl(Method: Text): Text
     begin
         exit(StrSubstNo(InvokeRequestLbl, Method));
     end;
 
+    [Scope('OnPrem')]
     procedure GetVATStatementReportLineAmount(VATReportHeader: Record "VAT Report Header"; BoxNo: Text[30]): Decimal
     var
         VATStatementReportLine: Record "VAT Statement Report Line";
@@ -323,6 +344,7 @@ codeunit 148080 "Library - Making Tax Digital"
         exit(VATStatementReportLine.Amount);
     end;
 
+    [Scope('OnPrem')]
     procedure FindVATStatementReportLine(var VATStatementReportLine: Record "VAT Statement Report Line"; VATReportHeader: Record "VAT Report Header"; BoxNo: Text[30])
     begin
         with VATStatementReportLine do begin
@@ -333,6 +355,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure GetVATReportSubmissionText(VATReportHeader: Record "VAT Report Header"): Text
     var
         VATReportArchive: Record "VAT Report Archive";
@@ -346,9 +369,10 @@ codeunit 148080 "Library - Making Tax Digital"
         VATReportArchive.CalcFields("Submission Message BLOB");
         TempBlob.FromRecord(VATReportArchive, VATReportArchive.FieldNo("Submission Message BLOB"));
         TempBlob.CreateInstream(InStream);
-        exit(TypeHelper.ReadAsTextWithSeparator(InStream,''));
+        exit(TypeHelper.ReadAsTextWithSeparator(InStream, ''));
     end;
 
+    [Scope('OnPrem')]
     procedure GetVATReportResponseText(VATReportHeader: Record "VAT Report Header"): Text
     var
         VATReportArchive: Record "VAT Report Archive";
@@ -362,7 +386,7 @@ codeunit 148080 "Library - Making Tax Digital"
         VATReportArchive.CalcFields("Response Message BLOB");
         TempBlob.FromRecord(VATReportArchive, VATReportArchive.FieldNo("Response Message BLOB"));
         TempBlob.CreateInstream(InStream);
-        exit(TypeHelper.ReadAsTextWithSeparator(InStream,''));
+        exit(TypeHelper.ReadAsTextWithSeparator(InStream, ''));
     end;
 
     local procedure SetOAuthSetupTestTokens(var OAuth20Setup: Record "OAuth 2.0 Setup")
@@ -375,6 +399,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure SetOAuthSetupSandbox(IsSandbox: Boolean)
     var
         VATReportSetup: Record "VAT Report Setup";
@@ -389,11 +414,13 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure FormatValue(Value: Variant): Text
     begin
-        EXIT(Format(Value, 0, 9));
+        exit(Format(Value, 0, 9));
     end;
 
+    [Scope('OnPrem')]
     procedure ParseVATReturnDetailsJson(var MTDReturnDetails: Record "MTD Return Details"; JsonString: Text)
     var
         JsonMgt: Codeunit "JSON Management";
@@ -402,7 +429,7 @@ codeunit 148080 "Library - Making Tax Digital"
         Assert.IsTrue(JsonMgt.InitializeFromString(JsonString), 'JsonMgt.InitializeFromString');
 
         RecordRef.GetTable(MTDReturnDetails);
-        WITH MTDReturnDetails DO BEGIN
+        with MTDReturnDetails do begin
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'periodKey', FIELDNO("Period Key"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'vatDueSales', FIELDNO("VAT Due Sales"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'vatDueAcquisitions', FIELDNO("VAT Due Acquisitions"));
@@ -413,10 +440,11 @@ codeunit 148080 "Library - Making Tax Digital"
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalValuePurchasesExVAT', FIELDNO("Total Value Purchases Excl.VAT"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalValueGoodsSuppliedExVAT', FIELDNO("Total Value Goods Suppl. ExVAT"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalAcquisitionsExVAT', FIELDNO("Total Acquisitions Excl. VAT"));
-        END;
+        end;
         RecordRef.SetTable(MTDReturnDetails);
     end;
 
+    [Scope('OnPrem')]
     procedure VerifyLatestHttpLogForSandbox(ExpectedResult: Boolean; ExpectedDescription: Text; ExpectedMessage: Text; HasDetails: Boolean)
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
@@ -424,9 +452,9 @@ codeunit 148080 "Library - Making Tax Digital"
         ExpectedStatus: Option;
     begin
         OAuth20Setup.Get(OAuthSandboxSetupLbl);
-        IF ExpectedResult THEN
+        if ExpectedResult then
             ExpectedStatus := ActivityLog.Status::Success
-        ELSE
+        else
             ExpectedStatus := ActivityLog.Status::Failed;
 
         with ActivityLog do begin
@@ -439,6 +467,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure VerifyRequestJson(ExpectedMethod: Text; ExpectedURLRequestPath: Text)
     var
         JSONMgt: Codeunit "JSON Management";
@@ -462,7 +491,7 @@ codeunit 148080 "Library - Making Tax Digital"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Http Web Request Mgt.", 'OnBeforeInvokeTestJSONRequest', '', true, true)]
-    local procedure OnBeforeInvokeTestJSONRequest(VAR Result: Boolean; RequestJson: Text; VAR ResponseJson: Text; VAR HttpError: Text)
+    local procedure OnBeforeInvokeTestJSONRequest(var Result: Boolean; RequestJson: Text; var ResponseJson: Text; var HttpError: Text)
     begin
         SetNameValueBuffer_JsonRequest(RequestJson);
         EVALUATE(Result, GetNameValueBuffer_Result());

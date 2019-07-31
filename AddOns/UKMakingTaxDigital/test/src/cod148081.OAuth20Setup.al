@@ -48,6 +48,9 @@ codeunit 148081 "UK MTD Tests - OAuth 2.0 Setup"
         Error_CLIENT_OR_AGENT_NOT_AUTHORISED_Txt: Label 'The client and/or agent is not authorised.', Locked = true;
         Error_NOT_FOUND_Txt: Label 'The remote endpoint has indicated that no associated data is found.', Locked = true;
         Error_TOO_MANY_REQ_Txt: Label 'The HMRC service is busy. Try again later.', Locked = true;
+        RefreshSuccessfulTxt: Label 'Refresh token successful.';
+        RefreshFailedTxt: Label 'Refresh token failed.';
+        ReasonTxt: Label 'Reason: ';
 
     [Test]
     [HandlerFunctions('OAuth20Setup_MPH')]
@@ -419,16 +422,150 @@ codeunit 148081 "UK MTD Tests - OAuth 2.0 Setup"
             true);
     end;
 
+    [Test]
+    procedure MTDConnection_InvokeRequest_RefreshAccessToken_Negative()
+    var
+        OAuth20Setup: Record 1140;
+        LibraryMakingTaxDigitalLcl: Codeunit "Library - Making Tax Digital";
+        MTDConnection: Codeunit "MTD Connection";
+        ActualMessage: Text;
+        HttpError: Text;
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 312780] COD 10537 "MTD Connection".InvokeRequest_RefreshAccessToken() in case of negative response
+        Initialize();
+        LibraryMakingTaxDigital.CreateEnabledOAuthSetup(OAuth20Setup);
+        HttpError := LibraryUtility.GenerateGUID();
+        LibraryMakingTaxDigital.PrepareResponseOnRequestAccessToken(false, HttpError);
+
+        BindSubscription(LibraryMakingTaxDigitalLcl);
+        Assert.IsFalse(MTDConnection.InvokeRequest_RefreshAccessToken(ActualMessage), '');
+
+        Assert.AreEqual(STRSUBSTNO('%1\%2%3', RefreshFailedTxt, ReasonTxt, HttpError), ActualMessage, '');
+    end;
+
+    [Test]
+    procedure MTDConnection_InvokeRequest_RefreshAccessToken_Positive()
+    var
+        OAuth20Setup: Record "OAuth 2.0 Setup";
+        LibraryMakingTaxDigitalLcl: Codeunit "Library - Making Tax Digital";
+        MTDConnection: Codeunit "MTD Connection";
+        ActualMessage: Text;
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 312780] COD 10537 "MTD Connection".InvokeRequest_RefreshAccessToken() in case of positive response
+        Initialize();
+        LibraryMakingTaxDigital.CreateEnabledOAuthSetup(OAuth20Setup);
+        LibraryMakingTaxDigital.PrepareResponseOnRequestAccessToken(true, '');
+
+        BindSubscription(LibraryMakingTaxDigitalLcl);
+        Assert.IsTrue(MTDConnection.InvokeRequest_RefreshAccessToken(ActualMessage), '');
+
+        Assert.AreEqual(RefreshSuccessfulTxt, ActualMessage, '');
+    end;
+
+    [Test]
+    procedure MTDConnection_IsError408Timeout()
+    var
+        MTDConnection: Codeunit "MTD Connection";
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 312780] COD 10537 "MTD Connection".IsError408Timeout()
+        Assert.IsFalse(MTDConnection.IsError408Timeout(''), '');
+        Assert.IsFalse(MTDConnection.IsError408Timeout('{"Error":{"code":"401"}}'), '');
+        Assert.IsTrue(MTDConnection.IsError408Timeout('{"Error":{"code":"408"}}'), '');
+    end;
+
+    [Test]
+    procedure CheckOAuthSetupForConsistencyServiceURL()
+    var
+        OAuth20Setup: Record "OAuth 2.0 Setup";
+        MTDConnection: Codeunit "MTD Connection";
+        ResponseJson: Text;
+        HttpError: Text;
+    begin
+        // [SCENARIO 316966] OAuth 2.0 Setup is checked for consistency each http request (Service URL field)
+        Initialize();
+        LibraryMakingTaxDigital.CreateEnabledOAuthSetup(OAuth20Setup);
+
+        OAuth20Setup."Service URL" := 'test';
+        OAuth20Setup.Modify();
+
+        asserterror MTDConnection.InvokeRequest_RetrieveVATReturnPeriods(WorkDate(), WorkDate(), ResponseJson, HttpError, false);
+
+        Assert.ExpectedErrorCode('TestField');
+        Assert.ExpectedError(OAuth20Setup.FieldName("Service URL"));
+    end;
+
+    [Test]
+    procedure CheckOAuthSetupForConsistencyDailyLimit()
+    var
+        OAuth20Setup: Record "OAuth 2.0 Setup";
+        MTDConnection: Codeunit "MTD Connection";
+        ResponseJson: Text;
+        HttpError: Text;
+    begin
+        // [SCENARIO 316966] OAuth 2.0 Setup is checked for consistency each http request (Daily Limit field)
+        Initialize();
+        LibraryMakingTaxDigital.CreateEnabledOAuthSetup(OAuth20Setup);
+
+        OAuth20Setup."Daily Limit" := 0;
+        OAuth20Setup.Modify();
+
+        asserterror MTDConnection.InvokeRequest_RetrieveVATReturnPeriods(WorkDate(), WorkDate(), ResponseJson, HttpError, false);
+
+        Assert.ExpectedErrorCode('TestField');
+        Assert.ExpectedError(OAuth20Setup.FieldName("Daily Limit"));
+    end;
+
+    [Test]
+    procedure FraudPreventionHeaders()
+    var
+        OAuth20Setup: Record "OAuth 2.0 Setup";
+        ActivityLog: Record "Activity Log";
+        LibraryMakingTaxDigitalLcl: Codeunit "Library - Making Tax Digital";
+        MTDConnection: Codeunit "MTD Connection";
+        TempBlob: Codeunit "Temp Blob";
+        JSONMgt: Codeunit "JSON Management";
+        Instream: InStream;
+        ResponseJson: Text;
+        HttpError: Text;
+        LogText: Text;
+    begin
+        // [FEATURE] [Fraud Prevention]
+        // [SCENARIO 316966] Fraud Prevention Headers are sent each http request
+        Initialize();
+        LibraryMakingTaxDigital.CreateEnabledOAuthSetup(OAuth20Setup);
+        LibraryMakingTaxDigital.PrepareResponseOnRequestAccessToken(true, '');
+
+        BindSubscription(LibraryMakingTaxDigitalLcl);
+        Assert.IsTrue(MTDConnection.InvokeRequest_RetrieveVATReturnPeriods(WorkDate(), WorkDate(), ResponseJson, HttpError, false), '');
+
+        OAuth20Setup.Find();
+        ActivityLog.Get(OAuth20Setup."Activity Log ID");
+        ActivityLog.CalcFields("Detailed Info");
+        TempBlob.FromRecord(ActivityLog, ActivityLog.FieldNo("Detailed Info"));
+        TempBlob.CreateInStream(InStream);
+        InStream.Read(LogText);
+        JSONMgt.InitializeFromString(LogText);
+        Assert.ExpectedMessage('***', JSONMgt.GetValue('Request.Header.Gov-Client-Connection-Method'));
+        Assert.ExpectedMessage('***', JSONMgt.GetValue('Request.Header.Gov-Client-User-IDs'));
+        Assert.ExpectedMessage('***', JSONMgt.GetValue('Request.Header.Gov-Client-Timezone'));
+        Assert.ExpectedMessage('***', JSONMgt.GetValue('Request.Header.Gov-Client-User-Agent'));
+        Assert.ExpectedMessage('***', JSONMgt.GetValue('Request.Header.Gov-Vendor-Version'));
+        Assert.ExpectedMessage('***', JSONMgt.GetValue('Request.Header.Gov-Vendor-License-IDs'));
+    end;
+
     local procedure Initialize()
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
         MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
-		LibraryAzureKVMockMgmt: Codeunit 131021;
+        LibraryAzureKVMockMgmt: Codeunit 131021;
     begin
         LibraryVariableStorage.Clear();
         LibraryMakingTaxDigital.SetOAuthSetupSandbox(true);
         LibraryAzureKVMockMgmt.InitMockAzureKeyvaultSecretProvider();
-		LibraryAzureKVMockMgmt.EnsureSecretNameIsAllowed('SmtpSetup');
+        LibraryAzureKVMockMgmt.EnsureSecretNameIsAllowed('SmtpSetup');
 
         if IsInitialized then
             exit;

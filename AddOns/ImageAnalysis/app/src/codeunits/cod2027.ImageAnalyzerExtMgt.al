@@ -22,7 +22,6 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         SetupActionTxt: Label 'Enable';
         GotItTxt: Label 'Got it';
         NeverShowAgainTxt: Label 'Don''t tell me again';
-        SuperRoleTxt: Label 'SUPER', Locked = true;
         ImageAnalysisCategoryLbl: Label 'Image Analysis', Locked = true;
         ImageAnalysisEnabledLbl: Label 'Image Analysis enabled.', Locked = true;
         EnableNotificationSentLbl: Label 'Enable notification sent.', Locked = true;
@@ -263,8 +262,9 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
     var
         MyNotifications: Record "My Notifications";
         ImageAnalyzerSetup: Record "Image Analysis Setup";
+        UserPermissions: Codeunit "User Permissions";
     begin
-        if not IsCurrentUserAdmin() then
+        if not UserPermissions.IsSuper(UserSecurityId) then
             exit(false);
 
         if not MyNotifications.IsEnabled(GetSetupNotificationId()) then
@@ -275,19 +275,6 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
             exit(false);
 
         exit(true);
-    end;
-
-    procedure IsCurrentUserAdmin(): Boolean;
-    var
-        AccessControl: Record "Access Control";
-    begin
-        if AccessControl.IsEmpty() then
-            exit(true);
-
-        AccessControl.SetRange("Role ID", SuperRoleTxt);
-        AccessControl.SetRange("User Security ID", UserSecurityId());
-        AccessControl.SetFilter("Company Name", '%1|%2', '', CompanyName());
-        exit(not AccessControl.IsEmpty());
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]

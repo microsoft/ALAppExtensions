@@ -570,7 +570,7 @@ codeunit 148028 "Test Bank Imp. Bank Rec. Line"
         ParsedText: Text;
     BEGIN
         SourceTempBlob.CreateInStream(InStreamObj);
-        DestinationTempBlob.CreateOutStreamWithEncoding(OutStreamObj, TextEncoding::Windows);
+        DestinationTempBlob.CreateOutStream(OutStreamObj, TextEncoding::Windows);
 
         WHILE NOT InStreamObj.EOS() DO begin
             InStreamObj.ReadText(ParsedText);

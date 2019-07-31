@@ -15,7 +15,7 @@ table 1437 "Headline Details Per User"
             DataClassification = CustomerContent;
         }
 
-        field(2; Name; Text[50])
+        field(2; Name; Text[100])
         {
 
             DataClassification = CustomerContent;

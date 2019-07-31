@@ -21,8 +21,9 @@ codeunit 10530 "MTD Mgt."
         RetrievePaymentsErr: Label 'Not possible to retrieve VAT payments.';
         RetrieveReturnsErr: Label 'Not possible to retrieve submitted VAT returns.';
         SubmitReturnErr: Label 'Not possible to submit VAT return.';
-        ReasonTxt: Label 'Reason: ';
+        ReasonTxt: Label 'Reason from the HMRC server: ';
         NoSubmittedReturnsMsg: Label 'The remote endpoint has indicated that there is no submitted VAT returns for the specified period.';
+        PeriodLinkErr: Label 'There is no return period linked to this VAT return.\\Use the Create From VAT Return Period action on the VAT Returns page or the Create VAT Return action on the VAT Return Periods page.';
 
     [EventSubscriber(ObjectType::Page, Page::"VAT Report", 'OnAfterInitPageControllers', '', true, true)]
     local procedure OnAfterInitVATReportPageControllers(VATReportHeader: Record "VAT Report Header"; var SubmitControllerStatus: Boolean; var MarkAsSubmitControllerStatus: Boolean)
@@ -31,7 +32,7 @@ codeunit 10530 "MTD Mgt."
             exit;
 
         SubmitControllerStatus := VATReportHeader.Status = VATReportHeader.Status::Released;
-        MarkAsSubmitControllerStatus := FALSE;
+        MarkAsSubmitControllerStatus := false;
     end;
 
     local procedure MarkSubmittedVATReturnAsAccepted(VATReturnNo: Code[20]; ResponseJson: Text)
@@ -59,12 +60,21 @@ codeunit 10530 "MTD Mgt."
                 end;
     end;
 
+    [Scope('OnPrem')]
     procedure SubmitVATReturn(var RequestJson: Text; var ResponseJson: Text) Result: Boolean
     var
         HttpError: Text;
         ErrorMsg: Text;
+        OriginalRequestJson: Text;
     begin
+        OriginalRequestJson := RequestJson;
         Result := MTDConnection.InvokeRequest_SubmitVATReturn(ResponseJson, RequestJson, HttpError);
+
+        if not Result and MTDConnection.IsError408Timeout(ResponseJson) then begin
+            Result := MTDConnection.InvokeRequest_RefreshAccessToken(HttpError);
+            if Result then
+                Result := MTDConnection.InvokeRequest_SubmitVATReturn(ResponseJson, OriginalRequestJson, HttpError);
+        end;
 
         if not Result then begin
             ErrorMsg := SubmitReturnErr;
@@ -76,11 +86,12 @@ codeunit 10530 "MTD Mgt."
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure RetrieveVATReturns(VATReturnPeriod: Record "VAT Return Period"; var ResponseJson: Text; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean) Result: Boolean
     var
         HttpError: Text;
     begin
-        IF MTDConnection.InvokeRequest_RetrieveVATReturns(VATReturnPeriod."Period Key", ResponseJson, ShowMessage, HttpError) THEN
+        if MTDConnection.InvokeRequest_RetrieveVATReturns(VATReturnPeriod."Period Key", ResponseJson, ShowMessage, HttpError) then
             Result := ParseVATReturns(VATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount);
         if Result then
             MarkSubmittedVATReturnAsAccepted(VATReturnPeriod."VAT Return No.", ResponseJson);
@@ -95,36 +106,39 @@ codeunit 10530 "MTD Mgt."
                 Result, ShowMessage, HttpError, NewCount, ModifiedCount);
     end;
 
+    [Scope('OnPrem')]
     procedure RetrieveVATReturnPeriods(StartDate: Date; EndDate: Date; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean; OpenOAuthSetup: Boolean) Result: Boolean
     var
         ResponseJson: Text;
         HttpError: Text;
     begin
-        IF MTDConnection.InvokeRequest_RetrieveVATReturnPeriods(StartDate, EndDate, ResponseJson, HttpError, OpenOAuthSetup) THEN
+        if MTDConnection.InvokeRequest_RetrieveVATReturnPeriods(StartDate, EndDate, ResponseJson, HttpError, OpenOAuthSetup) then
             Result := ParseObligations(ResponseJson, TotalCount, NewCount, ModifiedCount);
         RetrieveRecordSummaryMessage(
             RetrievePeriodsUpToDateMsg, RetrievePeriodsMsg, RetrievePeriodsErr,
             Result, ShowMessage, HttpError, NewCount, ModifiedCount);
     end;
 
+    [Scope('OnPrem')]
     procedure RetrieveLiabilities(StartDate: Date; EndDate: Date; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean) Result: Boolean
     var
         ResponseJson: Text;
         HttpError: Text;
     begin
-        IF MTDConnection.InvokeRequest_RetrieveLiabilities(StartDate, EndDate, ResponseJson, HttpError) THEN
+        if MTDConnection.InvokeRequest_RetrieveLiabilities(StartDate, EndDate, ResponseJson, HttpError) then
             Result := ParseLiabilities(ResponseJson, TotalCount, NewCount, ModifiedCount);
         RetrieveRecordSummaryMessage(
             RetrieveLiabilitiesUpToDateMsg, RetrieveLiabilitiesMsg, RetrieveLiabilitiesErr,
             Result, ShowMessage, HttpError, NewCount, ModifiedCount);
     end;
 
+    [Scope('OnPrem')]
     procedure RetrievePayments(StartDate: Date; EndDate: Date; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean) Result: Boolean
     var
         ResponseJson: Text;
         HttpError: Text;
     begin
-        IF MTDConnection.InvokeRequest_RetrievePayments(StartDate, EndDate, ResponseJson, HttpError) THEN
+        if MTDConnection.InvokeRequest_RetrievePayments(StartDate, EndDate, ResponseJson, HttpError) then
             Result := ParsePayments(ResponseJson, StartDate, EndDate, TotalCount, NewCount, ModifiedCount);
         RetrieveRecordSummaryMessage(
             RetrievePaymentsUpToDateMsg, RetrievePaymentsMsg, RetrievePaymentsErr,
@@ -141,19 +155,19 @@ codeunit 10530 "MTD Mgt."
         NewCount := 0;
         ModifiedCount := 0;
 
-        IF NOT JSONMgt.InitializeFromString(ResponseJson) THEN
-            EXIT(FALSE);
+        if not JSONMgt.InitializeFromString(ResponseJson) then
+            exit(false);
 
-        IF NOT JSONMgt.SelectTokenFromRoot('Content.obligations') THEN
-            EXIT(FALSE);
+        if not JSONMgt.SelectTokenFromRoot('Content.obligations') then
+            exit(false);
 
         TotalCount := JSONMgt.GetCount();
-        FOR i := 0 TO TotalCount - 1 DO
-            IF JSONMgt.SelectItemFromRoot('Content.obligations', i) THEN
-                IF ParseObligation(TempVATReturnPeriod, JSONMgt.WriteObjectToString()) THEN
+        FOR i := 0 TO TotalCount - 1 do
+            if JSONMgt.SelectItemFromRoot('Content.obligations', i) then
+                if ParseObligation(TempVATReturnPeriod, JSONMgt.WriteObjectToString()) then
                     InsertObligation(TempVATReturnPeriod, NewCount, ModifiedCount);
 
-        EXIT(TRUE);
+        exit(true);
     end;
 
     local procedure ParseObligation(var VATReturnPeriod: Record "VAT Return Period"; Json: Text): Boolean
@@ -161,10 +175,10 @@ codeunit 10530 "MTD Mgt."
         JSONMgt: Codeunit "JSON Management";
         RecordRef: RecordRef;
     begin
-        IF NOT JSONMgt.InitializeFromString(Json) THEN
-            EXIT(FALSE);
+        if not JSONMgt.InitializeFromString(Json) then
+            exit(false);
 
-        WITH VATReturnPeriod DO BEGIN
+        with VATReturnPeriod do begin
             CLEAR(VATReturnPeriod);
             RecordRef.GETTABLE(VATReturnPeriod);
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'start', FIELDNO("Start Date"));
@@ -179,21 +193,21 @@ codeunit 10530 "MTD Mgt."
                 'F':
                     Status := Status::Closed;
             end;
-        END;
+        end;
 
-        EXIT(TRUE);
+        exit(true);
     end;
 
     local procedure InsertObligation(TempVATReturnPeriod: Record "VAT Return Period" temporary; var NewCount: Integer; var ModifiedCount: Integer)
     var
         VATReturnPeriod: Record "VAT Return Period";
     begin
-        IF NOT VATReturnPeriod.FindVATReturnPeriod(VATReturnPeriod, TempVATReturnPeriod."Start Date", TempVATReturnPeriod."End Date") THEN BEGIN
+        if not VATReturnPeriod.FindVATReturnPeriod(VATReturnPeriod, TempVATReturnPeriod."Start Date", TempVATReturnPeriod."End Date") then begin
             VATReturnPeriod := TempVATReturnPeriod;
             VATReturnPeriod.Insert(true);
             NewCount += 1;
-        END ELSE
-            IF VATReturnPeriod.DiffersFromVATReturnPeriod(TempVATReturnPeriod) THEN BEGIN
+        end else
+            if VATReturnPeriod.DiffersFromVATReturnPeriod(TempVATReturnPeriod) then begin
                 if (VATReturnPeriod.Status = VATReturnPeriod.Status::Open) and
                    (TempVATReturnPeriod.Status = TempVATReturnPeriod.Status::Closed)
                 then
@@ -201,7 +215,7 @@ codeunit 10530 "MTD Mgt."
                 CopyFromObligation(VATReturnPeriod, TempVATReturnPeriod);
                 VATReturnPeriod.Modify();
                 ModifiedCount += 1;
-            END;
+            end;
     end;
 
     local procedure CopyFromObligation(var VATReturnPeriodTo: Record "VAT Return Period"; VATReturnPeriodFrom: Record "VAT Return Period"): Boolean
@@ -223,20 +237,20 @@ codeunit 10530 "MTD Mgt."
         NewCount := 0;
         ModifiedCount := 0;
 
-        IF NOT JSONMgt.InitializeFromString(ResponseJson) THEN
-            EXIT(FALSE);
+        if not JSONMgt.InitializeFromString(ResponseJson) then
+            exit(false);
 
-        IF NOT JSONMgt.SelectTokenFromRoot('Content') THEN
-            EXIT(FALSE);
+        if not JSONMgt.SelectTokenFromRoot('Content') then
+            exit(false);
 
         TotalCount := 1;
         TempMTDReturnDetails."Start Date" := VATReturnPeriod."Start Date";
         TempMTDReturnDetails."End Date" := VATReturnPeriod."End Date";
         TempMTDReturnDetails.Finalised := true;
-        IF ParseVATReturn(TempMTDReturnDetails, JSONMgt.WriteObjectToString()) THEN
+        if ParseVATReturn(TempMTDReturnDetails, JSONMgt.WriteObjectToString()) then
             InsertVATReturn(TempMTDReturnDetails, NewCount, ModifiedCount);
 
-        EXIT(TRUE);
+        exit(true);
     end;
 
     local procedure ParseVATReturn(var MTDReturnDetails: Record "MTD Return Details"; Json: Text): Boolean
@@ -244,11 +258,11 @@ codeunit 10530 "MTD Mgt."
         JSONMgt: Codeunit "JSON Management";
         RecordRef: RecordRef;
     begin
-        IF NOT JSONMgt.InitializeFromString(Json) THEN
-            EXIT(FALSE);
+        if not JSONMgt.InitializeFromString(Json) then
+            exit(false);
 
         RecordRef.GETTABLE(MTDReturnDetails);
-        WITH MTDReturnDetails DO BEGIN
+        with MTDReturnDetails do begin
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'periodKey', FIELDNO("Period Key"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'vatDueSales', FIELDNO("VAT Due Sales"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'vatDueAcquisitions', FIELDNO("VAT Due Acquisitions"));
@@ -259,26 +273,26 @@ codeunit 10530 "MTD Mgt."
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalValuePurchasesExVAT', FIELDNO("Total Value Purchases Excl.VAT"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalValueGoodsSuppliedExVAT', FIELDNO("Total Value Goods Suppl. ExVAT"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalAcquisitionsExVAT', FIELDNO("Total Acquisitions Excl. VAT"));
-        END;
+        end;
         RecordRef.SETTABLE(MTDReturnDetails);
 
-        EXIT(TRUE);
+        exit(true);
     end;
 
     local procedure InsertVATReturn(TempMTDReturnDetails: Record "MTD Return Details" temporary; var NewCount: Integer; var ModifiedCount: Integer)
     var
         MTDReturnDetails: Record "MTD Return Details";
     begin
-        IF NOT MTDReturnDetails.GET(TempMTDReturnDetails.RecordId()) THEN BEGIN
+        if not MTDReturnDetails.GET(TempMTDReturnDetails.RecordId()) then begin
             MTDReturnDetails := TempMTDReturnDetails;
             MTDReturnDetails.Insert();
             NewCount += 1;
-        END ELSE
-            IF MTDReturnDetails.DiffersFromReturn(TempMTDReturnDetails) THEN BEGIN
+        end else
+            if MTDReturnDetails.DiffersFromReturn(TempMTDReturnDetails) then begin
                 MTDReturnDetails := TempMTDReturnDetails;
                 MTDReturnDetails.Modify();
                 ModifiedCount += 1;
-            END;
+            end;
     end;
 
     local procedure ParseLiabilities(LiabilitiesJson: Text; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer): Boolean
@@ -291,19 +305,19 @@ codeunit 10530 "MTD Mgt."
         NewCount := 0;
         ModifiedCount := 0;
 
-        IF NOT JSONMgt.InitializeFromString(LiabilitiesJson) THEN
-            EXIT(FALSE);
+        if not JSONMgt.InitializeFromString(LiabilitiesJson) then
+            exit(false);
 
-        IF NOT JSONMgt.SelectTokenFromRoot('Content.liabilities') THEN
-            EXIT(FALSE);
+        if not JSONMgt.SelectTokenFromRoot('Content.liabilities') then
+            exit(false);
 
         TotalCount := JSONMgt.GetCount();
-        FOR i := 0 TO TotalCount - 1 DO
-            IF JSONMgt.SelectItemFromRoot('Content.liabilities', i) THEN
-                IF ParseLiability(TempMTDLiability, JSONMgt.WriteObjectToString()) THEN
+        FOR i := 0 TO TotalCount - 1 do
+            if JSONMgt.SelectItemFromRoot('Content.liabilities', i) then
+                if ParseLiability(TempMTDLiability, JSONMgt.WriteObjectToString()) then
                     InsertLiability(TempMTDLiability, NewCount, ModifiedCount);
 
-        EXIT(TRUE);
+        exit(true);
     end;
 
     local procedure ParseLiability(var MTDLiability: Record "MTD Liability"; Json: Text): Boolean
@@ -311,37 +325,37 @@ codeunit 10530 "MTD Mgt."
         JSONMgt: Codeunit "JSON Management";
         RecordRef: RecordRef;
     begin
-        IF NOT JSONMgt.InitializeFromString(Json) THEN
-            EXIT(FALSE);
+        if not JSONMgt.InitializeFromString(Json) then
+            exit(false);
 
         RecordRef.GETTABLE(MTDLiability);
-        WITH MTDLiability DO BEGIN
+        with MTDLiability do begin
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'taxPeriod.from', FIELDNO("From Date"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'taxPeriod.to', FIELDNO("To Date"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'type', FIELDNO(Type));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'originalAmount', FIELDNO("Original Amount"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'outstandingAmount', FIELDNO("Outstanding Amount"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'due', FIELDNO("Due Date"));
-        END;
+        end;
         RecordRef.SETTABLE(MTDLiability);
 
-        EXIT(TRUE);
+        exit(true);
     end;
 
     local procedure InsertLiability(TempMTDLiability: Record "MTD Liability" temporary; var NewCount: Integer; var ModifiedCount: Integer)
     var
         MTDLiability: Record "MTD Liability";
     begin
-        IF NOT MTDLiability.GET(TempMTDLiability.RecordId()) THEN BEGIN
+        if not MTDLiability.GET(TempMTDLiability.RecordId()) then begin
             MTDLiability := TempMTDLiability;
             MTDLiability.Insert();
             NewCount += 1;
-        END ELSE
-            IF MTDLiability.DiffersFromLiability(TempMTDLiability) THEN BEGIN
+        end else
+            if MTDLiability.DiffersFromLiability(TempMTDLiability) then begin
                 MTDLiability := TempMTDLiability;
                 MTDLiability.Modify();
                 ModifiedCount += 1;
-            END;
+            end;
     end;
 
     local procedure ParsePayments(PaymentsJson: Text; StartDate: Date; EndDate: Date; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer): Boolean
@@ -354,22 +368,22 @@ codeunit 10530 "MTD Mgt."
         NewCount := 0;
         ModifiedCount := 0;
 
-        IF NOT JSONMgt.InitializeFromString(PaymentsJson) THEN
-            EXIT(FALSE);
+        if not JSONMgt.InitializeFromString(PaymentsJson) then
+            exit(false);
 
-        IF NOT JSONMgt.SelectTokenFromRoot('Content.payments') THEN
-            EXIT(FALSE);
+        if not JSONMgt.SelectTokenFromRoot('Content.payments') then
+            exit(false);
 
         TotalCount := JSONMgt.GetCount();
         TempMTDPayment."Entry No." := 0;
         TempMTDPayment."Start Date" := StartDate;
         TempMTDPayment."End Date" := EndDate;
-        FOR i := 0 TO TotalCount - 1 DO
-            IF JSONMgt.SelectItemFromRoot('Content.payments', i) THEN
-                IF ParsePayment(TempMTDPayment, JSONMgt.WriteObjectToString()) THEN
+        FOR i := 0 TO TotalCount - 1 do
+            if JSONMgt.SelectItemFromRoot('Content.payments', i) then
+                if ParsePayment(TempMTDPayment, JSONMgt.WriteObjectToString()) then
                     InsertPayment(TempMTDPayment, NewCount, ModifiedCount);
 
-        EXIT(TRUE);
+        exit(true);
     end;
 
     local procedure ParsePayment(var MTDPayment: Record "MTD Payment"; Json: Text): Boolean
@@ -377,36 +391,36 @@ codeunit 10530 "MTD Mgt."
         JSONMgt: Codeunit "JSON Management";
         RecordRef: RecordRef;
     begin
-        IF NOT JSONMgt.InitializeFromString(Json) THEN
-            EXIT(FALSE);
+        if not JSONMgt.InitializeFromString(Json) then
+            exit(false);
 
-        WITH MTDPayment DO BEGIN
+        with MTDPayment do begin
             "Entry No." += 1;
             "Received Date" := 0D;
             Amount := 0;
             RecordRef.GETTABLE(MTDPayment);
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'received', FIELDNO("Received Date"));
             JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'amount', FIELDNO(Amount));
-        END;
+        end;
         RecordRef.SETTABLE(MTDPayment);
 
-        EXIT(TRUE);
+        exit(true);
     end;
 
     local procedure InsertPayment(TempMTDPayment: Record "MTD Payment" temporary; var NewCount: Integer; var ModifiedCount: Integer)
     var
         MTDPayment: Record "MTD Payment";
     begin
-        IF NOT MTDPayment.GET(TempMTDPayment.RecordId()) THEN BEGIN
+        if not MTDPayment.GET(TempMTDPayment.RecordId()) then begin
             MTDPayment := TempMTDPayment;
             MTDPayment.Insert();
             NewCount += 1;
-        END ELSE
-            IF MTDPayment.DiffersFromPayment(TempMTDPayment) THEN BEGIN
+        end else
+            if MTDPayment.DiffersFromPayment(TempMTDPayment) then begin
                 MTDPayment := TempMTDPayment;
                 MTDPayment.Modify();
                 ModifiedCount += 1;
-            END;
+            end;
     end;
 
     local procedure RetrieveRecordSummaryMessage(UpToDateMsg: Text; SuccessMsg: Text; ErrorMsg: Text; Result: Boolean; ShowMessage: Boolean; HttpError: Text; NewCount: Integer; ModifiedCount: Integer)
@@ -455,6 +469,7 @@ codeunit 10530 "MTD Mgt."
             end;
     end;
 
+    [Scope('OnPrem')]
     procedure ArchiveResponseMessage(VATReportHeader: Record "VAT Report Header"; MessageText: Text)
     var
         VATReportArchive: Record "VAT Report Archive";
@@ -462,8 +477,17 @@ codeunit 10530 "MTD Mgt."
         OutStream: OutStream;
         DummyGUID: Guid;
     begin
-        TempBlob.CreateOutStreamWithEncoding(OutStream, TEXTENCODING::UTF8);
+        TempBlob.CreateOutStream(OutStream, TEXTENCODING::UTF8);
         OutStream.WriteText(MessageText);
         VATReportArchive.ArchiveResponseMessage(VATReportHeader."VAT Report Config. Code", VATReportHeader."No.", TempBlob, DummyGUID);
+    end;
+
+    [Scope('OnPrem')]
+    procedure CheckReturnPeriodLink(VATReportHeader: Record "VAT Report Header")
+    var
+        VATReturnPeriod: Record "VAT Return Period";
+    begin
+        if not VATReturnPeriod.Get(VATReportHeader."Return Period No.") then
+            Error(PeriodLinkErr);
     end;
 }

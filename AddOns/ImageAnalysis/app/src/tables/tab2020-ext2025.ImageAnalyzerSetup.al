@@ -24,9 +24,9 @@ tableextension 2025 "MS - Image Analyzer Setup" extends "Image Analysis Setup"
 
     trigger OnBeforeModify()
     var
-        ImageAnalyzerExtMgt: Codeunit "Image Analyzer Ext. Mgt.";
+        UserPermissions: Codeunit "User Permissions";
     begin
-        if (rec."Image-Based Attribute Recognition Enabled" and not ImageAnalyzerExtMgt.IsCurrentUserAdmin()) then
+        if (rec."Image-Based Attribute Recognition Enabled" and not UserPermissions.IsSuper(UserSecurityId)) then
             Error(NotAdminErr);
     end;
 

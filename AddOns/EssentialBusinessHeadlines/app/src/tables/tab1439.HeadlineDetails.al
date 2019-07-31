@@ -18,7 +18,7 @@ table 1439 "Headline Details"
             DataClassification = CustomerContent;
         }
 
-        field(2; Name; Text[50])
+        field(2; Name; Text[100])
         {
 
             DataClassification = CustomerContent;

@@ -343,45 +343,19 @@ codeunit 148084 "UK MTD Tests - VAT Periods"
 
     [Test]
     [HandlerFunctions('MessageHandler')]
-    procedure GetVATPeriods_AutoReceiveJob_NegativeSecondResponse()
-    var
-        DummyVATReturnPeriod: array[2] of Record "VAT Return Period";
-    begin
-        // [SCENARIO 258181] COD 10535 "MTD Auto Receive Period" in case of negative response on the second request
-        Initialize();
-        LibraryMakingTaxDigital.PrepareCustomResponse(true, '', CreateOnePeriodJsonResponse(DummyVATReturnPeriod[1], DummyVATReturnPeriod[1].Status::Open), '');
-        LibraryMakingTaxDigital.PrepareCustomResponse(false, '', '', '');
-
-        asserterror GetVATReturnPeriodsAutoJob();
-
-        VerifyGetVATReturnPeriodsRequestJsonForAutoJob();
-
-        VerifyOnePeriod(DummyVATReturnPeriod[1]);
-        Assert.ExpectedMessage(RetrievePeriodsMsg, LibraryVariableStorage.DequeueText());
-        LibraryVariableStorage.AssertEmpty();
-
-        Assert.ExpectedErrorCode('Dialog');
-        Assert.ExpectedError(RetrievePeriodsErr);
-        VerifyLatestHttpLogFailure(RetrievePeriodsErr);
-    end;
-
-    [Test]
-    [HandlerFunctions('MessageHandler')]
     procedure GetVATPeriods_AutoReceiveJob_Positive()
     var
-        DummyVATReturnPeriod: array[2] of Record "VAT Return Period";
+        DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10535 "MTD Auto Receive Period" in case of positive response
         Initialize();
-        LibraryMakingTaxDigital.PrepareCustomResponse(true, '', CreateOnePeriodJsonResponse(DummyVATReturnPeriod[1], DummyVATReturnPeriod[1].Status::Open), '');
-        LibraryMakingTaxDigital.PrepareCustomResponse(true, '', CreateOnePeriodJsonResponse(DummyVATReturnPeriod[2], DummyVATReturnPeriod[2].Status::Open), '');
+        LibraryMakingTaxDigital.PrepareCustomResponse(true, '', CreateOnePeriodJsonResponse(DummyVATReturnPeriod, DummyVATReturnPeriod.Status::Open), '');
 
         GetVATReturnPeriodsAutoJob();
 
         VerifyGetVATReturnPeriodsRequestJsonForAutoJob();
 
-        VerifyTwoPeriods(DummyVATReturnPeriod);
-        Assert.ExpectedMessage(GetRetrievePeriodsMsg(1, 0), LibraryVariableStorage.DequeueText());
+        VerifyOnePeriod(DummyVATReturnPeriod);
         Assert.ExpectedMessage(GetRetrievePeriodsMsg(1, 0), LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
         VerifyLatestHttpLogSucess(GetRetrievePeriodsMsg(1, 0));
@@ -564,7 +538,7 @@ codeunit 148084 "UK MTD Tests - VAT Periods"
 
     procedure FormatValue(Value: Variant): Text
     begin
-        EXIT(LibraryMakingTaxDigital.FormatValue(Value));
+        exit(LibraryMakingTaxDigital.FormatValue(Value));
     end;
 
     local procedure VerifyGetVATReturnPeriodsRequestJson(DummyVATReturnPeriod: Record "VAT Return Period")
@@ -588,10 +562,6 @@ codeunit 148084 "UK MTD Tests - VAT Periods"
     begin
         DummyVATReturnPeriod."Start Date" := CalcDate('<-CY>', WorkDate());
         DummyVATReturnPeriod."End Date" := CalcDate('<CY>', WorkDate());
-        VerifyGetVATReturnPeriodsRequestJson(DummyVATReturnPeriod);
-
-        DummyVATReturnPeriod."Start Date" := CalcDate('<1Y>', DummyVATReturnPeriod."Start Date");
-        DummyVATReturnPeriod."End Date" := CalcDate('<1Y>', DummyVATReturnPeriod."End Date");
         VerifyGetVATReturnPeriodsRequestJson(DummyVATReturnPeriod);
     end;
 

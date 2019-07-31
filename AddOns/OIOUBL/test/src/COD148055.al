@@ -685,9 +685,12 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceInvoiceHeader: Record "Service Invoice Header";
         DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Invoice in case OIOUBL profile is selected.
         Initialize();
+        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
+
 
         // [GIVEN] Service Invoice.
         CreateServiceDocument(
@@ -715,10 +718,12 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceInvoiceHeader: Record "Service Invoice Header";
         DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
         PostedDocNo: Code[20];
     begin
         // [SCENARIO 299031] Send Posted Service Invoice in case OIOUBL profile is selected.
         Initialize();
+        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Posted Service Invoice.
         CreateServiceDocument(
@@ -749,10 +754,12 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceInvoiceHeader: Record "Service Invoice Header";
         DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Invoice in case non-OIOUBL profile is selected.
         Initialize();
         UpdateCompanySwiftCode();
+        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Service Invoice.
         CreateServiceDocument(
@@ -780,9 +787,11 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceInvoiceHeader: Record "Service Invoice Header";
         DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Invoice in case Disk = No in Document Sending Profile.
         Initialize();
+        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Service Invoice.
         CreateServiceDocument(
@@ -810,9 +819,11 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Credit Memo in case OIOUBL profile is selected.
         Initialize();
+        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Service Credit Memo.
         CreateServiceDocument(
@@ -840,10 +851,12 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
         PostedDocNo: Code[20];
     begin
         // [SCENARIO 299031] Send Posted Service Credit Memo in case OIOUBL profile is selected.
         Initialize();
+        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Posted Service Credit Memo.
         CreateServiceDocument(
@@ -874,10 +887,12 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Credit Memo in case non-OIOUBL profile is selected.
         Initialize();
         UpdateCompanySwiftCode();
+        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Service Credit Memo.
         CreateServiceDocument(
@@ -905,9 +920,11 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Credit Memo in case Disk = No in Document Sending Profile.
         Initialize();
+        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Service Credit Memo.
         CreateServiceDocument(
@@ -1229,7 +1246,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         if TaxAmount = 0 then
             LibraryXMLReadOnServer.VerifyNodeValue(TaxAmountCapTxt, '0.00')  // Formating Tax Amount value upto 4 digit and Format String for two decimal points.
         else
-            LibraryXMLReadOnServer.VerifyNodeValue(TaxAmountCapTxt, FORMAT(TaxAmount, 0, 9));  // Formating Tax Amount value upto 4 digit and Format String for two decimal points.
+            LibraryXMLReadOnServer.VerifyNodeValue(TaxAmountCapTxt, FORMAT(TaxAmount, 0, '<Precision,2:3><Sign><Integer><Decimals><Comma,.>'));  // Formating Tax Amount value upto 4 digit and Format String for two decimal points.
     end;
 
     local procedure VerifyElectronicServiceDocument(DocumentNo: Code[20]; AccountCode: Text[30]);
@@ -1257,6 +1274,18 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceMgtSetup.VALIDATE("OIOUBL-Service Cr. Memo Path", TEMPORARYPATH());
         ServiceMgtSetup.VALIDATE("OIOUBL-Service Invoice Path", TEMPORARYPATH());
         ServiceMgtSetup.MODIFY(true);
+    end;
+
+    local procedure CreateElectronicDocumentFormat(Code: Code[20]; Usage: Option; CodeunitID: Integer);
+    var
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+    begin
+        ElectronicDocumentFormat.SetRange(Code, Code);
+        ElectronicDocumentFormat.DeleteAll();
+        ElectronicDocumentFormat.Validate(Code, Code);
+        ElectronicDocumentFormat.Validate(Usage, Usage);
+        ElectronicDocumentFormat.Validate("Codeunit ID", CodeunitID);
+        ElectronicDocumentFormat.Insert(true);
     end;
 
     local procedure UpdateServiceLineUnitOfMeasure(ServiceLine: Record "Service Line");

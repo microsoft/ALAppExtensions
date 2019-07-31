@@ -538,7 +538,7 @@ codeunit 148082 "UK MTD Tests - VAT Payments"
 
     procedure FormatValue(Value: Variant): Text
     begin
-        EXIT(LibraryMakingTaxDigital.FormatValue(Value));
+        exit(LibraryMakingTaxDigital.FormatValue(Value));
     end;
 
     local procedure VerifyGetPaymentRequestJson(DummyMTDPayment: Record "MTD Payment")

@@ -25,7 +25,7 @@ pageextension 1854 ItemCardForecastExtension extends "Item Card"
     }
     actions
     {
-        addafter("F&unctions")
+        addafter(Functions)
         {
             group(Forecast)
             {

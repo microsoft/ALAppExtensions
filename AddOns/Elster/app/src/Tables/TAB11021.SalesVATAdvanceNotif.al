@@ -46,6 +46,7 @@ table 11021 "Sales VAT Advance Notif."
         {
             DataClassification = CustomerContent;
             OptionMembers = Month,Quarter;
+            OptionCaption = 'Month,Quarter';
 
             trigger OnValidate()
             begin
@@ -99,6 +100,7 @@ table 11021 "Sales VAT Advance Notif."
         {
             DataClassification = CustomerContent;
             OptionMembers = Open,Closed,"Open and Closed";
+            OptionCaption = 'Open,Closed,Open and Closed';
 
             trigger OnValidate()
             begin
@@ -109,6 +111,7 @@ table 11021 "Sales VAT Advance Notif."
         {
             DataClassification = CustomerContent;
             OptionMembers = "Before and Within Period","Within Period";
+            OptionCaption = 'Before and Within Period,Within Period';
 
             trigger OnValidate()
             begin

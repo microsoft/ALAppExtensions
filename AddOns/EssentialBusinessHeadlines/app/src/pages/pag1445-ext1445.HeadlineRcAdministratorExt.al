@@ -24,7 +24,7 @@ pageextension 1445 "Headlines RC Admin. Ext." extends "Headline RC Administrator
         }
     }
 
-    trigger OnAfterGetRecord()
+    trigger OnOpenPage()
     begin
         OnSetVisibility(Headline1Visible, Headline1Text);
     end;

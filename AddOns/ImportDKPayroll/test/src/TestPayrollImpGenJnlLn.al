@@ -448,7 +448,7 @@ codeunit 148045 "Test Payroll Imp. Gen. Jnl. Ln"
         EncodedText: Text;
     BEGIN
         SourceTempBlob.CreateInStream(InStream);
-        DestinationTempBlob.CreateOutStreamWithEncoding(OutStream, TextEncoding::Windows);
+        DestinationTempBlob.CreateOutStream(OutStream, TextEncoding::Windows);
 
         while 0 <> InStream.READTEXT(EncodedText) do begin
             OutStream.WriteText(EncodedText);

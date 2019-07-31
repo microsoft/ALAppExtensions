@@ -11,12 +11,18 @@ codeunit 11021 "Elster - Initialize"
         XVATADVANCENOTIFICATIONTxt: Label 'VAT Advance Notification';
 
     trigger OnInstallAppPerCompany()
-    var
-        ElsterDataMigration: Codeunit "Elster - Data Migration";
     begin
         if not InitializeDone() then
             exit;
 
+        CompanyInitialize();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
+    local procedure CompanyInitialize()
+    var
+        ElsterDataMigration: Codeunit "Elster - Data Migration";
+    begin
         UpdateElecVATDeclSetupSalesVATAdvNotifNos();
         UpdateVATStatementName();
         ApplyEvaluationClassificationsForPrivacy();

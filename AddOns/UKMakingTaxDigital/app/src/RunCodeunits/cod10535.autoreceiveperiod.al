@@ -30,13 +30,5 @@ codeunit 10535 "MTD Auto Receive Period"
             SendTraceTag(
               '00008WO', TraceCategoryLbl, VERBOSITY::Normal,
               STRSUBSTNO(TraceExecuteMessageLbl, TotalCount, NewCount, ModifiedCount), DataClassification::SystemMetadata);
-
-        // Get VAT Return periods for next year
-        StartDate := CalcDate('<1Y>', StartDate);
-        EndDate := CalcDate('<1Y>', EndDate);
-        if MTDMgt.RetrieveVATReturnPeriods(StartDate, EndDate, TotalCount, NewCount, ModifiedCount, true, false) then
-            SendTraceTag(
-              '00008WP', TraceCategoryLbl, VERBOSITY::Normal,
-              STRSUBSTNO(TraceExecuteMessageLbl, TotalCount, NewCount, ModifiedCount), DataClassification::SystemMetadata);
     end;
 }

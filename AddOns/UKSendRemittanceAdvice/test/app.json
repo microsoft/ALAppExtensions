@@ -1,32 +1,45 @@
 {
-    "id": "86277afc-effb-4b73-be8e-d4ed275c6b17",
-    "name": "Send remittance advice by email Tests",
-    "publisher": "Microsoft",
-    "brief": "Tests for the Send remittance advice by email extension.",
-    "description": "Tests for the Send remittance advice by email extension.",
-    "version": "1.0.0.0",
-    "privacyStatement": "",
-    "EULA": "",
-    "help": "",
-    "url": "",
-    "logo": "",
-    "dependencies": [
-        {
-            "appId": "e97bbbc7-16b6-470b-9428-376baa778970",
-            "publisher": "Microsoft",
-            "name": "Send remittance advice by email",
-            "version": "1.0.0.0"
-        },
-        {
-            "appId": "fdb76c54-d6bc-45e6-9b2b-7288416c3226",
-            "publisher": "Microsoft",
-            "name": "Tests",
-            "version": "15.0.0.0"
-        }
-    ],
-    "screenshots": [],
-    "platform": "11.0.0.0",
-    "application": "11.0.0.0",
-    "target": "Internal",
-    "showMyCode": false
+    "id":  "86277afc-effb-4b73-be8e-d4ed275c6b17",
+    "name":  "Send remittance advice by email Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the Send remittance advice by email extension.",
+    "description":  "Tests for the Send remittance advice by email extension.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "e97bbbc7-16b6-470b-9428-376baa778970",
+                             "publisher":  "Microsoft",
+                             "name":  "Send remittance advice by email",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "publisher":  "Microsoft",
+                             "name":  "Tests-TestLibraries",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "name":  "BaseApp",
+                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+                             "publisher":  "Microsoft",
+                             "name":  "System Application",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "11.0.0.0",
+    "target":  "OnPrem",
+    "showMyCode":  false
 }
