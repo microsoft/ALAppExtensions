@@ -8,6 +8,6 @@
 /// </summary>
 profile "Default Profile"
 {
-    Description = 'Default Profile';
+    ProfileDescription = 'Default Profile';
     RoleCenter = "Default Role Center";
 }

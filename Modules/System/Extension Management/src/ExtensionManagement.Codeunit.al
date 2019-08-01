@@ -181,5 +181,15 @@ codeunit 2504 "Extension Management"
         exit(ExtensionOperationImpl.GetSpecificVersionPackageIdByAppId(AppId, Name,
             VersionMajor, VersionMinor, VersionBuild, VersionRevision));
     end;
+
+    /// <summary>
+    /// Gets the logo of an extenstion.
+    /// </summary>
+    /// <param name="AppId">The App ID of the extenstion.</param>
+    /// <param name="Logo">Out parameter holding the logo of the extension.</param> 
+    procedure GetExtensionLogo(AppId: Guid; var Logo: Codeunit "Temp Blob")
+    begin
+        ExtensionOperationImpl.GetExtensionLogo(AppId, Logo);
+    end;
 }
 

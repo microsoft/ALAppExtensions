@@ -13,11 +13,17 @@
     "dependencies":  [
                          {
                              "appId":  "a4584a53-9345-458a-af20-d1df2fab7bd8",
-                             "publisher":  "Microsoft",
                              "name":  "Confirm Management",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
-                         }
-                     ],
+                         },
+                         {
+                            "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                            "publisher":  "Microsoft",
+                            "name":  "DotNet Aliases",
+                            "version":  "15.0.0.0"
+                        }
+                    ],
     "screenshots":  [
 
                     ],

@@ -13,14 +13,14 @@
     "dependencies":  [
                          {
                              "appId":  "2673d810-273e-402f-9093-2eaef7e03b83",
-                             "publisher":  "Microsoft",
                              "name":  "Environment Information",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-                             "publisher":  "Microsoft",
                              "name":  "Library Assert",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          }
                      ],

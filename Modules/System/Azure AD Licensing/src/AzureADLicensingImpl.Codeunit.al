@@ -18,7 +18,7 @@ codeunit 460 "Azure AD Licensing Impl."
 
     procedure ResetSubscribedSKU()
     var
-        SubscribedSkus: DotNet IEnumerable_Of_T;
+        SubscribedSkus: DotNet GenericIEnumerable1;
     begin
 
         if IsNull(SubscribedSkuEnumerator) then begin

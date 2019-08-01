@@ -7,11 +7,11 @@ codeunit 1877 "Manual Setup Impl."
 {
     Access = Internal;
 
-    local procedure InsertBase(var ManualSetup: Record "Manual Setup"; Name: Text[50]; AppID: GUID; Description: Text[250]; Keywords: Text[250]; RunPage: Integer)
+    local procedure InsertBase(var ManualSetup: Record "Manual Setup"; Name: Text[50]; ExtensionId: GUID; Description: Text[250]; Keywords: Text[250]; RunPage: Integer)
     begin
         ManualSetup.Init();
         ManualSetup.Name := Name;
-        ManualSetup."App ID" := AppID;
+        ManualSetup."App ID" := ExtensionId;
         ManualSetup.Description := Description;
         ManualSetup.Keywords := Keywords;
         ManualSetup."Setup Page ID" := RunPage;
@@ -30,31 +30,30 @@ codeunit 1877 "Manual Setup Impl."
         SetIconOnRecord(ManualSetup, IconName);
     end;
 
-    procedure Insert(var ManualSetup: Record "Manual Setup"; Name: Text[50]; Description: Text[250]; Keywords: Text[250]; RunPage: Integer; ExtensionID: Guid)
+    procedure Insert(var ManualSetup: Record "Manual Setup"; Name: Text[50]; Description: Text[250]; Keywords: Text[250]; RunPage: Integer; ExtensionId: Guid)
     begin
         if ManualSetup.Get(Name) then
             exit;
 
-        InsertBase(ManualSetup, Name, ExtensionID, Description, Keywords, RunPage);
+        InsertBase(ManualSetup, Name, ExtensionId, Description, Keywords, RunPage);
 
-        AddExtensionIcon(ManualSetup, ExtensionID);
+        AddExtensionIcon(ManualSetup, ExtensionId);
     end;
 
-    local procedure AddExtensionIcon(var ManualSetup: Record "Manual Setup"; ExtensionID: Guid);
+    local procedure AddExtensionIcon(var ManualSetup: Record "Manual Setup"; ExtensionId: Guid);
     var
         BusinessSetupIcon: Record "Business Setup Icon";
-        NAVApp: Record "NAV App";
-        Media: Record "Media";
+        ExtensionManagement: Codeunit "Extension Management";
+        LogoBlob: Codeunit "Temp Blob";
         IconInStream: InStream;
     begin
         if not BusinessSetupIcon.Get(ManualSetup.Name) then begin
-            if not NAVApp.Get(ExtensionID) then
+            ExtensionManagement.GetExtensionLogo(ExtensionId, LogoBlob);
+
+            if not LogoBlob.HasValue() then
                 exit;
-            Media.SetRange(ID, NAVApp.Logo.MediaId());
-            if not Media.FindFirst() then
-                exit;
-            Media.CalcFields(Content);
-            Media.Content.CreateInStream(IconInStream);
+
+            LogoBlob.CreateInStream(IconInStream);
 
             BusinessSetupIcon.Init();
             BusinessSetupIcon."Business Setup Name" := ManualSetup.Name;

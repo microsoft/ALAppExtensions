@@ -6,11 +6,11 @@
 codeunit 4108 "Persistent Blob Impl."
 {
     Access = Internal;
-    Permissions = TableData PersistentBlob = rimd;
+    Permissions = TableData "Persistent Blob" = rimd;
 
     procedure Create() "Key": BigInteger
     var
-        PersistentBlob: Record PersistentBlob;
+        PersistentBlob: Record "Persistent Blob";
     begin
         PersistentBlob.Insert();
         Key := PersistentBlob."Primary Key";
@@ -18,7 +18,7 @@ codeunit 4108 "Persistent Blob Impl."
 
     procedure Exists("Key": BigInteger): Boolean
     var
-        PersistentBlob: Record PersistentBlob;
+        PersistentBlob: Record "Persistent Blob";
     begin
         PersistentBlob.SetRange("Primary Key", Key);
         exit(not PersistentBlob.IsEmpty());
@@ -26,7 +26,7 @@ codeunit 4108 "Persistent Blob Impl."
 
     procedure Delete("Key": BigInteger): Boolean
     var
-        PersistentBlob: Record PersistentBlob;
+        PersistentBlob: Record "Persistent Blob";
     begin
         if PersistentBlob.Get(Key) then
             exit(PersistentBlob.Delete());
@@ -34,7 +34,7 @@ codeunit 4108 "Persistent Blob Impl."
 
     procedure CopyFromInStream("Key": BigInteger; Source: InStream): Boolean
     var
-        PersistentBlob: Record PersistentBlob;
+        PersistentBlob: Record "Persistent Blob";
         Destination: OutStream;
     begin
         if not PersistentBlob.Get(Key) then
@@ -48,7 +48,7 @@ codeunit 4108 "Persistent Blob Impl."
 
     procedure CopyToOutStream("Key": BigInteger; Destination: OutStream): Boolean
     var
-        PersistentBlob: Record PersistentBlob;
+        PersistentBlob: Record "Persistent Blob";
         Source: InStream;
     begin
         if not PersistentBlob.Get(Key) then

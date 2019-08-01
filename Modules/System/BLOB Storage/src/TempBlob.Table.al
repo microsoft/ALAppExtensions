@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-table 99008535 TempBlob
+table 4150 "Temp Blob"
 {
 
     Access = Internal;

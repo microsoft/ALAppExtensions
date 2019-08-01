@@ -1,40 +1,42 @@
 {
-  "id": "008c9419-0c3b-4d08-b03e-84e3adca689f",
-  "name": "Data Compression",
-  "publisher": "Microsoft",
-  "brief": "Compresses and uncompresses data in a binary format.",
-  "description": "The purpose of this module is to provide ability to create, update, read and dispose a binary data compression archive.",
-  "version": "15.0.0.0",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
-  "help": "",
-  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-  "logo": "",
-  "dependencies": [
-    {
-      "appId": "e31ad830-3d46-472e-afeb-1d3d35247943",
-      "publisher": "Microsoft",
-      "name": "BLOB Storage",
-      "version": "15.0.0.0"
-    },
-    {
-      "appId": "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
-      "publisher": "Microsoft",
-      "name": "DotNet Aliases",
-      "version": "15.0.0.0"
-    }
-  ],
-  "screenshots": [],
-  "platform": "15.0.0.0",
-  "idRanges": [
-    {
-      "from": 421,
-      "to": 421
-    },
-    {
-      "from": 425,
-      "to": 425
-    }
-  ],
-  "target": "OnPrem"
+    "id":  "008c9419-0c3b-4d08-b03e-84e3adca689f",
+    "name":  "Data Compression",
+    "publisher":  "Microsoft",
+    "brief":  "Compresses and uncompresses data in a binary format.",
+    "description":  "The purpose of this module is to provide ability to create, update, read and dispose a binary data compression archive.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "e31ad830-3d46-472e-afeb-1d3d35247943",
+                             "name":  "BLOB Storage",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "name":  "DotNet Aliases",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  421,
+                         "to":  421
+                     },
+                     {
+                         "from":  425,
+                         "to":  425
+                     }
+                 ],
+    "target":  "OnPrem"
 }

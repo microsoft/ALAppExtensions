@@ -13,14 +13,14 @@
     "dependencies":  [
                          {
                              "appId":  "82834e1e-bbf2-4184-b70e-ee44bca1ca10",
-                             "publisher":  "Microsoft",
                              "name":  "Record Link Management",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-                             "publisher":  "Microsoft",
                              "name":  "Library Assert",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          }
                      ],

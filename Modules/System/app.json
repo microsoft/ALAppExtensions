@@ -15,8 +15,8 @@
                      ],
     "internalsVisibleTo":  [
         {
-            "name": "System Application Test",      
             "appId": "0d60b215-6ee1-4789-8e53-866cfa50c23c",
+            "name": "System Application Test",      
             "publisher": "Microsoft"
         }
     ],

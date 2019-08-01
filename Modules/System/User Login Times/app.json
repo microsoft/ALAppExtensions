@@ -11,12 +11,12 @@
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "",
     "dependencies":  [
-                        {
-                            "name":  "System Initialization",
-                            "appId":  "2955a828-6c0a-4d51-a1b8-a4cf2a040b9a",
-                            "publisher":  "Microsoft",
-                            "version":  "15.0.0.0"
-                        }
+                         {
+                             "appId":  "2955a828-6c0a-4d51-a1b8-a4cf2a040b9a",
+                             "name":  "System Initialization",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
                      ],
     "screenshots":  [
 
