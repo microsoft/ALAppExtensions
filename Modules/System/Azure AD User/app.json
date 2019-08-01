@@ -12,15 +12,15 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "name":  "DotNet Aliases",
                              "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
-                             "publisher":  "Microsoft",
                              "name":  "Azure AD Graph",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          }
                      ],

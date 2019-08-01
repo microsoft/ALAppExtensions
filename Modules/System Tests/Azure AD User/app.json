@@ -12,20 +12,20 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "name":  "Azure AD User",
                              "appId":  "f2cc2ef8-949f-47d1-85b8-10bd6f8bc61c",
+                             "name":  "Azure AD User",
                              "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
-                             "publisher":  "Microsoft",
                              "name":  "Azure AD Graph",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
-                             "name":  "Library Assert",
                              "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "name":  "Library Assert",
                              "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
@@ -36,14 +36,14 @@
                              "version":  "15.0.0.0"
                          },
                          {
-                             "name":  "DotNet Aliases",
                              "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
-                             "name":  "DotNet Aliases Test",
                              "appId":  "815d5c15-02bd-4d58-a010-b66033de6625",
+                             "name":  "DotNet Aliases Test",
                              "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          }

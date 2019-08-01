@@ -1,28 +1,32 @@
 {
-  "id": "c56e3ef4-7ab0-4636-ae87-013a62f12213",
-  "name": "User Permissions",
-  "publisher": "Microsoft",
-  "brief": "Checks whether users are assigned to the SUPER permission set in one or more companies.",
-  "description": "Checks whether users are assigned to the SUPER permission set in one or more companies. You can check all users, or only users who are enabled. You can also remove the SUPER permission set from a user.",
-  "version": "15.0.0.0",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
-  "help": "",
-  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-  "logo": "",
-  "dependencies": [
-    {
-      "appId": "2673d810-273e-402f-9093-2eaef7e03b83",
-      "name": "Environment Information",
-      "publisher": "Microsoft",
-      "version": "15.0.0.0"
-    }
-  ],
-  "screenshots": [],
-  "platform": "15.0.0.0",
-  "idRanges": [{
-    "from": 152,
-    "to": 153
-  }],
-  "target": "OnPrem"
+    "id":  "c56e3ef4-7ab0-4636-ae87-013a62f12213",
+    "name":  "User Permissions",
+    "publisher":  "Microsoft",
+    "brief":  "Checks whether users are assigned to the SUPER permission set in one or more companies.",
+    "description":  "Checks whether users are assigned to the SUPER permission set in one or more companies. You can check all users, or only users who are enabled. You can also remove the SUPER permission set from a user.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "2673d810-273e-402f-9093-2eaef7e03b83",
+                             "name":  "Environment Information",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  152,
+                         "to":  153
+                     }
+                 ],
+    "target":  "OnPrem"
 }

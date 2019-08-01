@@ -16,21 +16,21 @@ codeunit 2202 "Azure Key Vault Impl."
         NavAzureKeyVaultClient: DotNet AzureKeyVaultClientHelper;
         AzureKeyVaultSecretProvider: DotNet IAzureKeyVaultSecretProvider;
         SecretNotFoundErr: Label '%1 is not an application secret.', Comment = '%1 = Secret Name.';
-        CachedSecretsDictionary: DotNet Dictionary_Of_T_U;
+        CachedSecretsDictionary: DotNet GenericDictionary2;
         AllowedApplicationSecretsSecretNameTxt: Label 'AllowedApplicationSecrets', Locked = true;
         AllowedSecretNamesArray: DotNet Array;
         IsKeyVaultClientInitialized: Boolean;
         NoSecretsErr: Label 'The key vault did not have any secrets that are allowed to be fetched.';
         AllowedApplicationSecretsSecretNotFetchedMsg: Label 'The list of allowed secret names could not be fetched.', Locked = true;
         AzureKeyVaultTxt: Label 'Azure Key Vault', Comment = '{LOCKED}';
+        InitializeAllowedSecretNamesFailed: Label 'Initialization of allowed secret names failed.';
 
-    [TryFunction]
     procedure GetAzureKeyVaultSecret(SecretName: Text; var Secret: Text)
     begin
         // Gets the secret as a Text from the key vault, given a SecretName.
 
         if not InitializeAllowedSecretNames() then
-            exit;
+            Error(InitializeAllowedSecretNamesFailed);
 
         if not IsSecretNameAllowed(SecretName) then
             Error(SecretNotFoundErr, SecretName);
@@ -41,7 +41,7 @@ codeunit 2202 "Azure Key Vault Impl."
     procedure SetAzureKeyVaultSecretProvider(NewAzureKeyVaultSecretProvider: DotNet IAzureKeyVaultSecretProvider)
     begin
         // Sets the secret provider to simulate the vault. Used for testing.
-        
+
         ClearSecrets();
         AzureKeyVaultSecretProvider := NewAzureKeyVaultSecretProvider;
     end;

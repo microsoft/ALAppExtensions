@@ -208,7 +208,7 @@
     procedure TestGetUserAssignedPlans()
     var
         UserInfo: DotNet UserInfo;
-        UserAssignedPlans: DotNet List_Of_T;
+        UserAssignedPlans: DotNet GenericList1;
         AssignedPlan: DotNet ServicePlanInfo;
         UserId: Guid;
         UserPrincipalName: Text;
@@ -268,7 +268,7 @@
     procedure TestGetUserRoles()
     var
         UserInfo: DotNet UserInfo;
-        UserRoles: DotNet List_Of_T;
+        UserRoles: DotNet GenericList1;
         Role: DotNet RoleInfo;
         UserId: Guid;
         UserPrincipalName: Text;
@@ -285,11 +285,13 @@
         AzureADGraphTest.AddAndReturnGraphUser(UserInfo, UserId, '', '', UserPrincipalName);
 
         // [WHEN] Trying to get the user's roles
-        AzureADGraph.GetUserRoles(UserInfo, UserRoles);
+        if not Isnull(UserInfo.Roles()) then begin
+            UserRoles := UserInfo.Roles();
 
-        // [THEN] The user should not have any roles, as none have been inserted yet
-        LibraryAssert.AreEqual(0, UserRoles.Count(), 'There should not be any roles');
-
+            // [THEN] The user should not have any roles, as none have been inserted yet
+            LibraryAssert.AreEqual(0, UserRoles.Count(), 'There should not be any roles');
+        end;
+        
         // [GIVEN] A role is inserted for the given user
         RoleTemplateId := 'template id';
         RoleDescription := 'description';
@@ -298,7 +300,7 @@
         AzureADGraphTest.AddUserRole(UserId, RoleTemplateId, RoleDescription, RoleDisplayName, RoleIsSystem);
 
         // [WHEN] Getting the user's roles
-        AzureADGraph.GetUserRoles(UserInfo, UserRoles);
+        UserRoles := UserInfo.Roles();
 
         // [THEN] There should only be one role
         LibraryAssert.AreEqual(1, UserRoles.Count(), 'There should be exactly one role assigned to this user');
@@ -316,7 +318,7 @@
         AzureADGraphTest.AddUserRole(UserId, 'template id 3', '', '', true);
 
         // [WHEN] Getting the user's roles
-        AzureADGraph.GetUserRoles(UserInfo, UserRoles);
+        UserRoles := UserInfo.Roles();
 
         // [THEN] The user should have three roles
         LibraryAssert.AreEqual(3, UserRoles.Count(), 'There should be exactly three roles');
@@ -328,7 +330,7 @@
     [Scope('OnPrem')]
     procedure TestGetDirectorySubscribedSkus()
     var
-        DirectorySubscribedSkus: DotNet List_Of_T;
+        DirectorySubscribedSkus: DotNet GenericList1;
         Sku: DotNet SkuInfo;
         Plan: DotNet ServicePlanInfo;
         SkuId: Guid;
@@ -385,7 +387,7 @@
     [Scope('OnPrem')]
     procedure TestGetDirectoryRoles()
     var
-        DirectoryRoles: DotNet List_Of_T;
+        DirectoryRoles: DotNet GenericList1;
         Role: DotNet RoleInfo;
         RoleTemplateId: Text;
         RoleDescription: Text;

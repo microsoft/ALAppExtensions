@@ -25,8 +25,8 @@
                          },
                          {
                              "appId":  "5c36f279-480c-451b-b513-c1af8cfb0744",
-                             "publisher":  "Microsoft",
                              "name":  "Language",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          }
                      ],

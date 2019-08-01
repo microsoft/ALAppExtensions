@@ -293,5 +293,28 @@ codeunit 2503 "Extension Operation Impl"
         if NavAppTable.FindFirst() then
             exit(NavAppTable."Package ID");
     end;
+
+    procedure GetExtensionLogo(AppId: Guid; var Logo: Codeunit "Temp Blob")
+    var
+        Extension: Record "NAV App";
+        Media: Record Media;
+        LogoInStream: Instream;
+        LogoOutStream: Outstream;
+    begin
+        Extension.SetRange(ID, AppId);
+
+        if Extension.FindFirst() then begin
+            Media.SetRange(ID, Extension.Logo.MediaId());
+
+            if not Media.FindFirst() then
+                exit;
+
+            Media.CalcFields(Content);
+            Media.Content.CreateInStream(LogoInStream);
+
+            Logo.CreateOutstream(LogoOutStream);
+            CopyStream(LogoOutStream, LogoInStream);
+        end;
+    end;
 }
 

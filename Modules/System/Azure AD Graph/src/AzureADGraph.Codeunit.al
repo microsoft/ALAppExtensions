@@ -74,7 +74,7 @@ codeunit 9012 "Azure AD Graph"
     /// <param name="UserInfo">The user.</param>
     /// <param name="UserAssignedPlans">The assigned plans for the user.</param>
     [Scope('OnPrem')]
-    procedure GetUserAssignedPlans(UserInfo: DotNet UserInfo; var UserAssignedPlans: DotNet List_Of_T)
+    procedure GetUserAssignedPlans(UserInfo: DotNet UserInfo; var UserAssignedPlans: DotNet GenericList1)
     begin
         AzureADGraphImpl.GetUserAssignedPlans(UserInfo, UserAssignedPlans);
     end;
@@ -85,7 +85,7 @@ codeunit 9012 "Azure AD Graph"
     /// <param name="UserInfo">The user for whom to retrieve the roles.</param>
     /// <param name="UserRoles">The user's roles.</param>
     [Scope('OnPrem')]
-    procedure GetUserRoles(UserInfo: DotNet UserInfo; var UserRoles: DotNet IEnumerable_Of_T)
+    procedure GetUserRoles(UserInfo: DotNet UserInfo; var UserRoles: DotNet GenericIEnumerable1)
     begin
         AzureADGraphImpl.GetUserRoles(UserInfo, UserRoles);
     end;
@@ -95,7 +95,7 @@ codeunit 9012 "Azure AD Graph"
     /// </summary>
     /// <param name="DirectorySubscribedSkus">The list of subscriptions to return.</param>
     [Scope('OnPrem')]
-    procedure GetDirectorySubscribedSkus(var DirectorySubscribedSkus: DotNet IEnumerable_Of_T)
+    procedure GetDirectorySubscribedSkus(var DirectorySubscribedSkus: DotNet GenericIEnumerable1)
     begin
         AzureADGraphImpl.GetDirectorySubscribedSkus(DirectorySubscribedSkus);
     end;
@@ -105,7 +105,7 @@ codeunit 9012 "Azure AD Graph"
     /// </summary>
     /// <param name="DirectoryRoles">The directory roles to return.</param>
     [Scope('OnPrem')]
-    procedure GetDirectoryRoles(var DirectoryRoles: DotNet IEnumerable_Of_T)
+    procedure GetDirectoryRoles(var DirectoryRoles: DotNet GenericIEnumerable1)
     begin
         AzureADGraphImpl.GetDirectoryRoles(DirectoryRoles);
     end;

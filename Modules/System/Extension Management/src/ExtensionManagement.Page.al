@@ -167,7 +167,7 @@ page 2500 "Extension Management"
                 {
                     ApplicationArea = All;
                     Caption = 'Learn More';
-                    Visible = StrLen(Help) > 0;
+                    Visible = HelpActionVisible;
                     Enabled = ActionsEnabled;
                     Image = Info;
                     Promoted = true;
@@ -272,6 +272,11 @@ page 2500 "Extension Management"
         SetAdditionalInfoProperties();
     end;
 
+    trigger OnAfterGetCurrRecord()
+    begin
+        HelpActionVisible := StrLen(Help) > 0;
+    end;
+
     trigger OnOpenPage()
     begin
         DetermineEnvironmentConfigurations();
@@ -281,6 +286,8 @@ page 2500 "Extension Management"
 
         // Temporary disable the page actions until extension is loaded/selected (OnAfterGetRecord)
         ActionsEnabled := false;
+
+        HelpActionVisible := false;
     end;
 
     var
@@ -306,6 +313,8 @@ page 2500 "Extension Management"
         InstallAllowed: Boolean;
         InfoText: Text;
         InfoStyle: Boolean;
+        [InDataSet]
+        HelpActionVisible: Boolean;
 
     local procedure SetExtensionManagementFilter()
     begin

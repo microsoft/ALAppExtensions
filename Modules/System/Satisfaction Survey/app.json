@@ -13,23 +13,29 @@
     "dependencies":  [
                          {
                              "appId":  "3a56c7d2-a594-4682-bd90-b10bfb177620",
-                             "publisher":  "Microsoft",
                              "name":  "Azure Key Vault",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
-                             "publisher":  "Microsoft",
                              "name":  "Client Type Management",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "2673d810-273e-402f-9093-2eaef7e03b83",
-                             "publisher":  "Microsoft",
                              "name":  "Environment Information",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
-                         }
-                     ],
+                         },
+                         {
+                            "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                            "publisher":  "Microsoft",
+                            "name":  "DotNet Aliases",
+                            "version":  "15.0.0.0"
+                        }
+                    ],
     "screenshots":  [
 
                     ],

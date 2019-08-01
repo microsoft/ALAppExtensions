@@ -13,8 +13,8 @@
     "dependencies":  [
                          {
                              "appId":  "a4584a53-9345-458a-af20-d1df2fab7bd8",
-                             "publisher":  "Microsoft",
                              "name":  "Confirm Management",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          }
                      ],

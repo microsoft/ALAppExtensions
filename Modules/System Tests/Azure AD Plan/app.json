@@ -1,0 +1,50 @@
+{
+    "id":  "7058ad04-f167-49f0-8f48-2c3b0bd31010",
+    "name":  "Azure AD Plan Test",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Tests for the Azure AD Plan module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "c1d53fcd-ec4f-4ac5-ba49-af91a1dea38c",
+                             "name":  "Azure AD Plan",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "name":  "Library Assert",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "name":  "DotNet Aliases",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "815d5c15-02bd-4d58-a010-b66033de6625",
+                             "name":  "DotNet Aliases Test",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  132912,
+                         "to":  132912
+                     }
+                 ],
+    "target":  "OnPrem"
+}

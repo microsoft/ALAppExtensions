@@ -13,8 +13,8 @@
     "dependencies":  [
                          {
                              "appId":  "7f850a76-a58c-4ade-a14f-7d7acff97115",
-                             "publisher":  "Microsoft",
                              "name":  "User Selection",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
@@ -25,8 +25,8 @@
                          },
                          {
                              "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-                             "publisher":  "Microsoft",
                              "name":  "Library Assert",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          }
                      ],

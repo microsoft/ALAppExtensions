@@ -44,25 +44,25 @@ codeunit 9014 "Azure AD Graph Impl."
             exit(GraphQuery.TryGetUserByObjectId(ObjectId, UserInfo));
     end;
 
-    procedure GetUserAssignedPlans(UserInfo: DotNet UserInfo; var UserAssignedPlans: DotNet List_Of_T)
+    procedure GetUserAssignedPlans(UserInfo: DotNet UserInfo; var UserAssignedPlans: DotNet GenericList1)
     begin
         if CanQueryGraph() then
             UserAssignedPlans := GraphQuery.GetUserAssignedPlans(UserInfo);
     end;
 
-    procedure GetUserRoles(UserInfo: DotNet UserInfo; var UserRoles: DotNet IEnumerable_Of_T)
+    procedure GetUserRoles(UserInfo: DotNet UserInfo; var UserRoles: DotNet GenericIEnumerable1)
     begin
         if CanQueryGraph() then
-            UserRoles := GraphQuery.GetUserRoles(UserInfo);
+            UserRoles := UserInfo.Roles();
     end;
 
-    procedure GetDirectorySubscribedSkus(var DirectorySubscribedSkus: DotNet IEnumerable_Of_T)
+    procedure GetDirectorySubscribedSkus(var DirectorySubscribedSkus: DotNet GenericIEnumerable1)
     begin
         if CanQueryGraph() then
             DirectorySubscribedSkus := GraphQuery.GetDirectorySubscribedSkus();
     end;
 
-    procedure GetDirectoryRoles(var DirectoryRoles: DotNet IEnumerable_Of_T)
+    procedure GetDirectoryRoles(var DirectoryRoles: DotNet GenericIEnumerable1)
     begin
         if CanQueryGraph() then
             DirectoryRoles := GraphQuery.GetDirectoryRoles();

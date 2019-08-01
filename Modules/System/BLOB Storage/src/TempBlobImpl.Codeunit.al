@@ -8,7 +8,7 @@ codeunit 4107 "Temp Blob Impl."
     Access = Internal;
 
     var
-        TempBlob: Record TempBlob temporary;
+        TempBlob: Record "Temp Blob" temporary;
 
     procedure CreateInStream(var InStream: InStream)
     begin

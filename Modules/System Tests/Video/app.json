@@ -13,14 +13,14 @@
     "dependencies":  [
                          {
                              "appId":  "84e448ad-faa5-44c8-835a-ec4b408e8cec",
-                             "publisher":  "Microsoft",
                              "name":  "Video",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-                             "publisher":  "Microsoft",
                              "name":  "Library Assert",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          }
                      ],

@@ -13,38 +13,38 @@
     "dependencies":  [
                          {
                              "appId":  "5d03ef2d-13f0-4132-b941-48387b581434",
-                             "publisher":  "Microsoft",
                              "name":  "Satisfaction Survey",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-                             "publisher":  "Microsoft",
                              "name":  "Library Assert",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "3a56c7d2-a594-4682-bd90-b10bfb177620",
-                             "publisher":  "Microsoft",
                              "name":  "Azure Key Vault",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
-                             "publisher":  "Microsoft",
                              "name":  "Client Type Management",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "2673d810-273e-402f-9093-2eaef7e03b83",
-                             "publisher":  "Microsoft",
                              "name":  "Environment Information",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },
                          {
                              "appId":  "815d5c15-02bd-4d58-a010-b66033de6625",
-                             "publisher":  "Microsoft",
                              "name":  "DotNet Aliases Test",
+                             "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          }
                      ],
