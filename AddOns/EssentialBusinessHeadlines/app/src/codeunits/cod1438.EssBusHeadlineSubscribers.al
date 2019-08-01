@@ -68,6 +68,7 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
                     EssentialBusHeadlineMgt.HandleTopCustomer();
                     EssentialBusHeadlineMgt.HandleOpenVATReturn();
                     EssentialBusHeadlineMgt.HandleOverdueVATReturn();
+                    EssentialBusHeadlineMgt.HandleRecentlyOverdueInvoices();
                 end;
             Page::"Headline RC Order Processor":
                 begin
@@ -102,7 +103,7 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
 
         case RoleCenterPageID of
             Page::"Headline RC Business Manager":
-                EssentialBusinessHeadline.SetFilter("Headline Name", '%1|%2|%3|%4|%5|%6|%7',
+                EssentialBusinessHeadline.SetFilter("Headline Name", '%1|%2|%3|%4|%5|%6|%7|%8|%9',
                     EssentialBusinessHeadline."Headline Name"::LargestOrder,
                     EssentialBusinessHeadline."Headline Name"::LargestSale,
                     EssentialBusinessHeadline."Headline Name"::BusiestResource,
@@ -110,7 +111,8 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
                     EssentialBusinessHeadline."Headline Name"::SalesIncrease,
                     EssentialBusinessHeadline."Headline Name"::TopCustomer,
                     EssentialBusinessHeadline."Headline Name"::OpenVATReturn,
-                    EssentialBusinessHeadline."Headline Name"::OverdueVATReturn);
+                    EssentialBusinessHeadline."Headline Name"::OverdueVATReturn,
+                    EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
             Page::"Headline RC Order Processor":
                 EssentialBusinessHeadline.SetFilter("Headline Name", '%1|%2',
                     EssentialBusinessHeadline."Headline Name"::LargestOrder,
@@ -133,11 +135,12 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
 
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Business Manager", 'OnSetVisibility', '', true, true)]
     procedure OnSetVisibilityBusinessManager(var MostPopularItemVisible: Boolean; var MostPopularItemText: Text[250];
-                                    var LargestOrderVisible: Boolean; var LargestOrderText: Text[250];
-                                    var LargestSaleVisible: Boolean; var LargestSaleText: Text[250];
-                                    var SalesIncreaseVisible: Boolean; var SalesIncreaseText: Text[250];
-                                    var BusiestResourceVisible: Boolean; var BusiestResourceText: Text[250];
-                                    var TopCustomerVisible: Boolean; var TopCustomerText: Text[250])
+                                             var LargestOrderVisible: Boolean; var LargestOrderText: Text[250];
+                                             var LargestSaleVisible: Boolean; var LargestSaleText: Text[250];
+                                             var SalesIncreaseVisible: Boolean; var SalesIncreaseText: Text[250];
+                                             var BusiestResourceVisible: Boolean; var BusiestResourceText: Text[250];
+                                             var TopCustomerVisible: Boolean; var TopCustomerText: Text[250];
+                                             var RecentlyOverdueInvoicesVisible: Boolean; var RecentlyOverdueInvoicesText: Text[250])
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
@@ -152,6 +155,7 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::SalesIncrease, SalesIncreaseText, SalesIncreaseVisible);
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::BusiestResource, BusiestResourceText, BusiestResourceVisible);
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::TopCustomer, TopCustomerText, TopCustomerVisible);
+        TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices, RecentlyOverdueInvoicesText, RecentlyOverdueInvoicesVisible);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Business Manager", 'OnSetVisibilityOpenVATReturn', '', true, true)]

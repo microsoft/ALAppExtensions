@@ -162,6 +162,24 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                     end;
                 }
             }
+            group(RecentlyOverdueInvoices)
+            {
+                Visible = RecentlyOverdueInvoicesVisible;
+                ShowCaption = false;
+                Editable = false;
+
+                field(RecentlyOverdueInvoicesText; RecentlyOverdueInvoicesText)
+                {
+                    ApplicationArea = Basic, Suite;
+
+                    trigger OnDrillDown()
+                    var
+                        EssentialBusHeadlineMgt: Codeunit "Essential Bus. Headline Mgt.";
+                    begin
+                        EssentialBusHeadlineMgt.OnDrillDownRecentlyOverdueInvoices();
+                    end;
+                }
+            }
         }
     }
 
@@ -172,7 +190,8 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                         LargestSaleVisible, LargestSaleText,
                         SalesIncreaseVisible, SalesIncreaseText,
                         BusiestResourceVisible, BusiestResourceText,
-                        TopCustomerVisible, TopCustomerText);
+                        TopCustomerVisible, TopCustomerText,
+                        RecentlyOverdueInvoicesVisible, RecentlyOverdueInvoicesText);
         OnSetVisibilityOpenVATReturn(OpenVATReturnVisible, OpenVATReturnText);
         OnSetVisibilityOverdueVATReturn(OverdueVATReturnVisible, OverdueVATReturnText);
     end;
@@ -183,7 +202,8 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                                     var LargestSaleVisible: Boolean; var LargestSaleText: Text[250];
                                     var SalesIncreaseVisible: Boolean; var SalesIncreaseText: Text[250];
                                     var BusiestResourceVisible: Boolean; var BusiestResourceText: Text[250];
-                                    var TopCustomerVisible: Boolean; var TopCustomerText: Text[250])
+                                    var TopCustomerVisible: Boolean; var TopCustomerText: Text[250];
+                                    var RecentlyOverdueInvoicesVisible: Boolean; var RecentlyOverdueInvoicesText: Text[250])
     begin
     end;
 
@@ -237,4 +257,9 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
         OverdueVATReturnVisible: Boolean;
         [InDataSet]
         OverdueVATReturnText: Text[250];
+
+        [InDataSet]
+        RecentlyOverdueInvoicesVisible: Boolean;
+        [InDataSet]
+        RecentlyOverdueInvoicesText: Text[250];
 }
