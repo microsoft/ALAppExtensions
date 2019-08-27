@@ -23,14 +23,15 @@ codeunit 1750 "Data Classification Mgt."
     end;
 
     /// <summary>
-    /// Updates the Data Sensitivity entries corresponding to the fields in the DataPrivacyEntities variable. The Data Sensitivity table
-    /// is updated by setting the value of the "Data Sensitivity" field to the value of the "Default Data Sensitivity" field of the
-    /// DataPrivacyEntities variable.
+    /// Updates the Data Sensitivity table with the default data sensitivities for all the fields of all the tables
+    /// in the DataPrivacyEntities record.
     /// </summary>
     /// <param name="DataPrivacyEntities">The variable that is used to update the Data Sensitivity table.</param>
-    procedure SetTableClassifications(var DataPrivacyEntities: Record "Data Privacy Entities")
+    procedure SetDefaultDataSensitivity(var DataPrivacyEntities: Record "Data Privacy Entities")
+    var
+        DataPrivacyEntitiesMgt: Codeunit "Data Privacy Entities Mgt.";
     begin
-        DataClassificationMgtImpl.SetTableClassifications(DataPrivacyEntities);
+        DataPrivacyEntitiesMgt.SetDefaultDataSensitivity(DataPrivacyEntities);
     end;
 
     /// <summary>
@@ -44,41 +45,6 @@ codeunit 1750 "Data Classification Mgt."
     end;
 
     /// <summary>
-    /// Filters the Data Sensitivity table using the "Table No." and "Field Caption" fields as criteria. The "Table No." field
-    /// must be the ID of a table that is related to one of the tables in the DataSensitivity variable. The "Field Caption" field
-    /// must be identical to, or contain the name of, one of the fields in the DataSensitivity variable.
-    /// </summary>
-    /// <param name="DataSensitivity">
-    /// A record that includes all the fields for which fields with similar names from related tables should be found.
-    /// After the function is run the variable will contain the fields with similar names from related tables.
-    /// </param>
-    procedure FindSimilarFieldsInRelatedTables(var DataSensitivity: Record "Data Sensitivity")
-    begin
-        DataClassificationMgtImpl.FindSimilarFieldsInRelatedTables(DataSensitivity);
-    end;
-
-    /// <summary>
-    /// Populates the TempDataPrivacyEntities record with all the tables that have relationships to the table with the ID TableNo.
-    /// </summary>
-    /// <param name="TempDataPrivacyEntities">
-    /// A temporary record that contains a row for each table that has a relationship to the table with the ID TableNo.
-    /// </param>
-    /// <param name="TableNo">The ID of the table whose relationships are retrieved.</param>
-    procedure GetRelatedTablesForTable(var TempDataPrivacyEntities: Record "Data Privacy Entities" temporary; TableNo: Integer)
-    begin
-        DataClassificationMgtImpl.GetRelatedTablesForTable(TempDataPrivacyEntities, TableNo);
-    end;
-
-    /// <summary>
-    /// Gets a filter that includes the table IDs of all tables that have the "Name" string in their name.
-    /// </summary>
-    /// <param name="Name">The substring that the names of the tables in the filter should contain.</param>
-    procedure GetTableNoFilterForTablesWhoseNameContains(Name: Text): Text
-    begin
-        exit(DataClassificationMgtImpl.GetTableNoFilterForTablesWhoseNameContains(Name));
-    end;
-
-    /// <summary>
     /// Synchronizes the Data Sensitivity table with the Field table. It inserts new values in the Data Sensitivity table for the
     /// fields that the Field table contains and the Data Sensitivity table does not and it deletes the unclassified fields from
     /// the Data Sensitivity table that the Field table does not contain.
@@ -86,17 +52,6 @@ codeunit 1750 "Data Classification Mgt."
     procedure SyncAllFields()
     begin
         DataClassificationMgtImpl.SyncAllFields();
-    end;
-
-    /// <summary>
-    /// Synchronizes the Data Sensitivity table with the Field variable. It inserts new values in the Data Sensitivity table for the
-    /// fields that the Field variable contains and the Data Sensitivity table does not and it deletes the unclassified fields from
-    /// the Data Sensitivity table that the Field variable does not contain.
-    /// </summary>
-    /// <param name="Field">The record that the Data Sensitivity table is synchronized with.</param>
-    procedure RunSync("Field": Record "Field")
-    begin
-        DataClassificationMgtImpl.RunSync(Field);
     end;
 
     /// <summary>
@@ -108,17 +63,6 @@ codeunit 1750 "Data Classification Mgt."
     procedure GetDataSensitivityOptionString(): Text
     begin
         exit(DataClassificationMgtImpl.GetDataSensitivityOptionString());
-    end;
-
-    /// <summary>
-    /// Gets the legal disclaimer for data classification.
-    /// </summary>
-    /// <returns>
-    /// A Text value representing the legal disclaimer for data classification.
-    /// </returns>
-    procedure GetLegalDisclaimerTxt(): Text
-    begin
-        exit(DataClassificationMgtImpl.GetLegalDisclaimerTxt());
     end;
 
     /// <summary>
@@ -176,8 +120,10 @@ codeunit 1750 "Data Classification Mgt."
     /// </summary>
     /// <returns>True if there are any entries and false otherwise.</returns>
     procedure DataPrivacyEntitiesExist(): Boolean
+    var
+        DataPrivacyEntitiesMgt: Codeunit "Data Privacy Entities Mgt.";
     begin
-        exit(DataClassificationMgtImpl.DataPrivacyEntitiesExist());
+        exit(DataPrivacyEntitiesMgt.DataPrivacyEntitiesExist());
     end;
 
     /// <summary>
@@ -230,20 +176,21 @@ codeunit 1750 "Data Classification Mgt."
     /// <param name="EntityFilter">The entity's ID.</param>
     /// <param name="PrivacyBlockedFieldNo">If the entity has a Privacy Blocked field, then the field's ID; otherwise 0.</param>
     procedure InsertDataPrivacyEntity(var DataPrivacyEntities: Record "Data Privacy Entities"; TableNo: Integer; PageNo: Integer; KeyFieldNo: Integer; EntityFilter: Text; PrivacyBlockedFieldNo: Integer)
+    var
+        DataPrivacyEntitiesMgt: Codeunit "Data Privacy Entities Mgt.";
     begin
-        DataPrivacyEntities.InsertRow(TableNo, PageNo, KeyFieldNo, EntityFilter, PrivacyBlockedFieldNo);
+        DataPrivacyEntitiesMgt.InsertDataPrivacyEntitity(DataPrivacyEntities, TableNo, PageNo, KeyFieldNo, EntityFilter, PrivacyBlockedFieldNo);
     end;
 
     /// <summary>
-    /// Inserts a new row in the Field Content Buffer table with the first 250 characters of the value in the FieldRef
-    /// variable.
+    /// Gets the last date when the Data Sensitivity and Field tables where synchronized.
     /// </summary>
-    /// <param name="FieldRef">A field reference to the field that is used to populate the Field Content Buffer table.</param>
-    /// <param name="FieldContentBuffer">A Field Content Buffer record</param>
-    [Scope('OnPrem')]
-    procedure PopulateFieldValue(FieldRef: FieldRef; var FieldContentBuffer: Record "Field Content Buffer")
+    /// <returns>The last date when the Data Sensitivity and Field tables where synchronized.</returns>
+    procedure GetLastSyncStatusDate(): DateTime
+    var
+        FieldsSyncStatusManagement: Codeunit "Fields Sync Status Management";
     begin
-        DataClassificationMgtImpl.PopulateFieldValue(FieldRef, FieldContentBuffer);
+        exit(FieldsSyncStatusManagement.GetLastSyncStatusDate());
     end;
 
     /// <summary>
@@ -254,8 +201,10 @@ codeunit 1750 "Data Classification Mgt."
     /// The record that in the end will contain all the Data Privacy Entities that the subscribers have inserted.
     /// </param>
     procedure RaiseOnGetDataPrivacyEntities(var DataPrivacyEntities: Record "Data Privacy Entities")
+    var
+        DataPrivacyEntitiesMgt: Codeunit "Data Privacy Entities Mgt.";
     begin
-        DataClassificationMgtImpl.RaiseOnGetDataPrivacyEntities(DataPrivacyEntities);
+        DataPrivacyEntitiesMgt.RaiseOnGetDataPrivacyEntities(DataPrivacyEntities);
     end;
 
     /// <summary>
@@ -286,4 +235,3 @@ codeunit 1750 "Data Classification Mgt."
     begin
     end;
 }
-

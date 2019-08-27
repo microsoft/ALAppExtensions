@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,11 +8,14 @@ codeunit 9013 "User Login Time Tracker Impl."
     Access = Internal;
     Permissions = TableData "User Login" = rimd;
 
+    var
+        UserLoginTelemetryCategoryLbl: Label 'User Login', Locked = true;
+        ChildSessionLoginInfoNotUpdatedTelemetryTxt: Label 'User Login information was not updated for user %1 as it is in a child session.', Locked = true;
+
     trigger OnRun()
     begin
     end;
 
-    [Scope('OnPrem')]
     procedure IsFirstLogin(UserSecurityID: Guid): Boolean
     var
         UserLogin: Record "User Login";
@@ -22,7 +25,6 @@ codeunit 9013 "User Login Time Tracker Impl."
         exit(UserLogin.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
     procedure AnyUserLoggedInSinceDate(FromDate: Date): Boolean
     var
         UserLogin: Record "User Login";
@@ -35,7 +37,6 @@ codeunit 9013 "User Login Time Tracker Impl."
         exit(not UserLogin.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
     procedure UserLoggedInSinceDateTime(FromDateTime: DateTime): Boolean
     var
         UserLogin: Record "User Login";
@@ -46,7 +47,6 @@ codeunit 9013 "User Login Time Tracker Impl."
         exit(UserLogin."Last Login Date" >= FromDateTime);
     end;
 
-    [Scope('OnPrem')]
     procedure GetPenultimateLoginDateTime(): DateTime
     var
         UserLogin: Record "User Login";
@@ -57,16 +57,17 @@ codeunit 9013 "User Login Time Tracker Impl."
         exit(0DT);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 150, 'OnAfterInitialization', '', false, false)]
-    procedure OnAfterSystemInitializationSubscriber()
-    begin
-        CreateOrUpdateLoginInfo();
-    end;
-
-    local procedure CreateOrUpdateLoginInfo()
+    procedure CreateOrUpdateLoginInfo()
     var
         UserLogin: Record "User Login";
+        UserLoginTimeTracker: Codeunit "User Login Time Tracker";
     begin
+        if CurrentClientType() = ClientType::ChildSession then begin
+            SendTraceTag('00009V1', UserLoginTelemetryCategoryLbl, Verbosity::Warning,
+              StrSubstNo(ChildSessionLoginInfoNotUpdatedTelemetryTxt, UserSecurityId()), DataClassification::AccountData);
+            exit;
+        end;
+
         UserLogin.LockTable(); // to ensure that the latest version is picked up and the other users logging in wait here,
         if UserLogin.Get(UserSecurityId()) then begin
             UserLogin."Penultimate Login Date" := UserLogin."Last Login Date";
@@ -79,7 +80,9 @@ codeunit 9013 "User Login Time Tracker Impl."
             UserLogin."Penultimate Login Date" := 0DT;
             UserLogin."Last Login Date" := CurrentDateTime();
             UserLogin.Insert(true);
-        end
+        end;
+
+        UserLoginTimeTracker.OnAfterCreateorUpdateLoginInfo(UserSecurityId());
     end;
 }
 

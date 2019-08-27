@@ -30,12 +30,12 @@
                              "version":  "15.0.0.0"
                          },
                          {
-                            "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
-                            "publisher":  "Microsoft",
-                            "name":  "DotNet Aliases",
-                            "version":  "15.0.0.0"
-                        }
-                    ],
+                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "publisher":  "Microsoft",
+                             "name":  "DotNet Aliases",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
     "screenshots":  [
 
                     ],

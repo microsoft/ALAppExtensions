@@ -14,13 +14,13 @@ codeunit 27 "Confirm Management"
     var
         ConfirmManagementImpl: Codeunit "Confirm Management Impl.";
 
-        /// <summary>
-        /// Raises a confirm dialog with a question and the default response on which the cursor is shown.
-        /// If UI is not allowed, the default response is returned.
-        /// </summary>
-        /// <param name="ConfirmQuestion">The question to be asked to the user.</param>
-        /// <param name="DefaultButton">The default response expected.</param>
-        /// <returns>The response of the user or the default response passed if no UI is allowed.</returns>
+    /// <summary>
+    /// Raises a confirm dialog with a question and the default response on which the cursor is shown.
+    /// If UI is not allowed, the default response is returned.
+    /// </summary>
+    /// <param name="ConfirmQuestion">The question to be asked to the user.</param>
+    /// <param name="DefaultButton">The default response expected.</param>
+    /// <returns>The response of the user or the default response passed if no UI is allowed.</returns>
     procedure GetResponseOrDefault(ConfirmQuestion: Text; DefaultButton: Boolean): Boolean
     begin
         exit(ConfirmManagementImpl.GetResponseOrDefault(ConfirmQuestion, DefaultButton));
@@ -36,14 +36,6 @@ codeunit 27 "Confirm Management"
     procedure GetResponse(ConfirmQuestion: Text; DefaultButton: Boolean): Boolean
     begin
         exit(ConfirmManagementImpl.GetResponse(ConfirmQuestion, DefaultButton));
-    end;
-
-    /// <summary>
-    /// Raises an event to be able to change the return of IsGuiAllowed function. Used for testing.
-    /// </summary>
-    [IntegrationEvent(false, false)]
-    internal procedure OnBeforeGuiAllowed(var Result: Boolean; var Handled: Boolean)
-    begin
     end;
 }
 

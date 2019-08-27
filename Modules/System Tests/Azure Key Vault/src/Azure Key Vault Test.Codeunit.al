@@ -16,6 +16,7 @@ codeunit 135205 "Azure Key Vault Test"
     var
         Assert: Codeunit "Library Assert";
         SecretNotFoundErr: Label '%1 is not an application secret.', Comment = '%1 = Secret Name.';
+        SecretNotInitialized: Label 'Initialization of allowed secret names failed';
         AllowedApplicationSecretsSecretNameTxt: Label 'AllowedApplicationSecrets', Locked = true;
 
     [Test]
@@ -24,6 +25,7 @@ codeunit 135205 "Azure Key Vault Test"
     procedure GetAzureKeyVaultSecretTest()
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
+        AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
         MockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
         Secret: Text;
     begin
@@ -33,7 +35,7 @@ codeunit 135205 "Azure Key Vault Test"
         MockAzureKeyvaultSecretProvider := MockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
         MockAzureKeyvaultSecretProvider.AddSecretMapping(AllowedApplicationSecretsSecretNameTxt, 'some-secret,');
         MockAzureKeyvaultSecretProvider.AddSecretMapping('some-secret', 'SecretFromKeyVault');
-        AzureKeyVault.SetAzureKeyVaultSecretProvider(MockAzureKeyvaultSecretProvider);
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(MockAzureKeyvaultSecretProvider);
 
         // [WHEN] The key vault is called
         AzureKeyVault.GetAzureKeyVaultSecret('some-secret', Secret);
@@ -48,6 +50,7 @@ codeunit 135205 "Azure Key Vault Test"
     procedure GetAzureKeyVaultSecretChangeProviderTest()
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
+        AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
         FirstMockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
         SecondMockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
         Secret: Text;
@@ -58,7 +61,7 @@ codeunit 135205 "Azure Key Vault Test"
         FirstMockAzureKeyvaultSecretProvider := FirstMockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
         FirstMockAzureKeyvaultSecretProvider.AddSecretMapping(AllowedApplicationSecretsSecretNameTxt, 'some-secret');
         FirstMockAzureKeyvaultSecretProvider.AddSecretMapping('some-secret', 'AnotherSecretFromTheKeyVault');
-        AzureKeyVault.SetAzureKeyVaultSecretProvider(FirstMockAzureKeyvaultSecretProvider);
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(FirstMockAzureKeyvaultSecretProvider);
 
         // [WHEN] The key vault is called
         AzureKeyVault.GetAzureKeyVaultSecret('some-secret', Secret);
@@ -70,7 +73,7 @@ codeunit 135205 "Azure Key Vault Test"
         SecondMockAzureKeyvaultSecretProvider := SecondMockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
         SecondMockAzureKeyvaultSecretProvider.AddSecretMapping(AllowedApplicationSecretsSecretNameTxt, 'some-secret');
         SecondMockAzureKeyvaultSecretProvider.AddSecretMapping('some-secret', 'SecretFromKeyVault');
-        AzureKeyVault.SetAzureKeyVaultSecretProvider(SecondMockAzureKeyvaultSecretProvider);
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(SecondMockAzureKeyvaultSecretProvider);
         AzureKeyVault.GetAzureKeyVaultSecret('some-secret', Secret);
 
         // [THEN] The cache is cleared and the value is retrieved
@@ -82,6 +85,7 @@ codeunit 135205 "Azure Key Vault Test"
     procedure GetAzureKeyVaultSecretMissingSecretTest()
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
+        AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
         MockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
         Secret: Text;
     begin
@@ -91,7 +95,7 @@ codeunit 135205 "Azure Key Vault Test"
         MockAzureKeyvaultSecretProvider := MockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
         MockAzureKeyvaultSecretProvider.AddSecretMapping(AllowedApplicationSecretsSecretNameTxt, 'somesecret');
         MockAzureKeyvaultSecretProvider.AddSecretMapping('somesecret', 'AnotherSecretFromTheKeyVault');
-        AzureKeyVault.SetAzureKeyVaultSecretProvider(MockAzureKeyvaultSecretProvider);
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(MockAzureKeyvaultSecretProvider);
 
         // [WHEN] The key vault is called with an unknown key
         asserterror AzureKeyVault.GetAzureKeyVaultSecret('somekeythatdoesnotexist', Secret);
@@ -105,6 +109,7 @@ codeunit 135205 "Azure Key Vault Test"
     procedure ClearSecretsTest()
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
+        AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
         MockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
         Secret: Text;
     begin
@@ -114,7 +119,7 @@ codeunit 135205 "Azure Key Vault Test"
         MockAzureKeyvaultSecretProvider := MockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
         MockAzureKeyvaultSecretProvider.AddSecretMapping(AllowedApplicationSecretsSecretNameTxt, 'somesecret');
         MockAzureKeyvaultSecretProvider.AddSecretMapping('somesecret', 'SecretFromKeyVault');
-        AzureKeyVault.SetAzureKeyVaultSecretProvider(MockAzureKeyvaultSecretProvider);
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(MockAzureKeyvaultSecretProvider);
 
         // [WHEN] The key vault is called with a key
         AzureKeyVault.GetAzureKeyVaultSecret('somesecret', Secret);
@@ -123,10 +128,10 @@ codeunit 135205 "Azure Key Vault Test"
         Assert.AreEqual('SecretFromKeyVault', Secret, 'The returned secret does not match.');
 
         // [WHEN] The key vault secrets are cleared and the same secret is retrieved
-        AzureKeyVault.ClearSecrets();
+        AzureKeyVaultTestLibrary.ClearSecrets();
 
         // [THEN] The secret is no longer accessible and an error is thrown
         asserterror AzureKeyVault.GetAzureKeyVaultSecret('somesecret', Secret);
-        Assert.ExpectedError(StrSubstNo(SecretNotFoundErr, 'somesecret'));
+        Assert.ExpectedError(StrSubstNo(SecretNotInitialized, 'somesecret'));
     end;
 }

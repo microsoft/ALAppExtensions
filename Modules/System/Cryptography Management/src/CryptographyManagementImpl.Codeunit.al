@@ -8,7 +8,7 @@ codeunit 1279 "Cryptography Management Impl."
     Access = Internal;
 
     var
-        EncryptionManagement: Codeunit "Encryption Management";
+        CryptographyManagement: Codeunit "Cryptography Management";
         ExportEncryptionKeyFileDialogTxt: Label 'Choose the location where you want to save the encryption key.';
         ExportEncryptionKeyConfirmQst: Label 'The encryption key file must be protected by a password and stored in a safe location.\\Do you want to save the encryption key?';
         FileImportCaptionMsg: Label 'Select a key file to import.';
@@ -166,7 +166,7 @@ codeunit 1279 "Cryptography Management Impl."
     local procedure CreateEncryptionKeys()
     begin
         // no user interaction on webservices
-        EncryptionManagement.OnBeforeEnableEncryptionOnPrem();
+        CryptographyManagement.OnBeforeEnableEncryptionOnPrem();
         CreateEncryptionKey();
     end;
 
@@ -178,7 +178,7 @@ codeunit 1279 "Cryptography Management Impl."
             if not Confirm(DisableEncryptionConfirmQst, true) then
                 exit;
 
-        EncryptionManagement.OnBeforeDisableEncryptionOnPrem();
+        CryptographyManagement.OnBeforeDisableEncryptionOnPrem();
         DeleteEncryptionKey();
     end;
 

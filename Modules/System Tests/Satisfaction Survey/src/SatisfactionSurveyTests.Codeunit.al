@@ -18,8 +18,8 @@ codeunit 138074 "Satisfaction Survey Tests"
         LibraryAssert: Codeunit "Library Assert";
         SatisfactionSurveyMgt: Codeunit "Satisfaction Survey Mgt.";
         EnvironmentInfo: Codeunit "Environment Information";
-        SatisfactionSurveyEvents: Codeunit "Satisfaction Survey Events";
-        MillisecondsPerDay: BigInteger;
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+        TestClientTypeSubscriber: Codeunit "Test Client Type Subscriber";
         IsInitialized: Boolean;
         TestApiUrlTxt: Label 'https://localhost:8080/', Locked = true;
         DisplayDataTxt: Label 'display/%1/?puid=%2', Locked = true;
@@ -30,40 +30,48 @@ codeunit 138074 "Satisfaction Survey Tests"
         CacheLifeTimeTxt: Label 'NpsCacheLifeTime', Locked = true;
         ParametersTxt: Label 'NpsParameters', Locked = true;
         AllowedApplicationSecretsTxt: Label 'AllowedApplicationSecrets', Locked = true;
+        InvoiceTok: Label 'INV', Locked = true;
+        FinacialsTok: Label 'FIN', Locked = true;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestResetCache()
     var
-        ExpectedUrlBefore: Text;
-        ExpectedUrlAfter: Text;
-        ActualUrlBefore: Text;
-        ActualUrlAfter: Text;
+        ApiUrlBefore: Text;
+        ApiUrlAfter: Text;
+        ExpectedCheckUrlBefore: Text;
+        ExpectedCheckUrlAfter: Text;
+        ActualCheckUrlBefore: Text;
+        ActualCheckUrlAfter: Text;
+        ResultBefore: Boolean;
+        ResultAfter: Boolean;
     begin
         // Setup
         InitializeFinancials();
         SimulatePuidNotEmpty();
 
         // Execute
-        ExpectedUrlBefore := TestApiUrlTxt + 'before';
-        ExpectedUrlAfter := TestApiUrlTxt + 'after';
-        SetSurveyParameters(ExpectedUrlBefore, 1, 10000);
-        SatisfactionSurveyMgt.TryGetCheckUrl(ActualUrlBefore);
+        ApiUrlBefore := TestApiUrlTxt + 'before/';
+        ApiUrlAfter := TestApiUrlTxt + 'after/';
+        ExpectedCheckUrlBefore := ApiUrlBefore + StrSubstNo(DisplayDataTxt, FinancialsUriSegmentTxt, GetPuid());
+        ExpectedCheckUrlAfter := ApiUrlAfter + StrSubstNo(DisplayDataTxt, FinancialsUriSegmentTxt, GetPuid());
+        SetSurveyParameters(ApiUrlBefore, 1, 10000);
+        ResultBefore := SatisfactionSurveyMgt.TryGetCheckUrl(ActualCheckUrlBefore);
         ResetCache();
-        SetSurveyParameters(ExpectedUrlAfter, 1, 10000);
-        SatisfactionSurveyMgt.TryGetCheckUrl(ActualUrlAfter);
+        SetSurveyParameters(ApiUrlAfter, 1, 10000);
+        ResultAfter := SatisfactionSurveyMgt.TryGetCheckUrl(ActualCheckUrlAfter);
 
         // Verify
-        LibraryAssert.AreEqual(ExpectedUrlBefore, ActualUrlBefore, 'API URL before cache reset is invalid.');
-        LibraryAssert.AreEqual(ExpectedUrlAfter, ActualUrlAfter, 'API URL after cache reset is invalid.');
-        LibraryAssert.AreNotEqual(ActualUrlBefore, ActualUrlAfter, 'API URL is not updated after cache reset.');
+        LibraryAssert.IsTrue(ResultBefore, 'Cannot get API URL before cache reset.');
+        LibraryAssert.IsTrue(ResultAfter, 'Cannot get API URL after cache reset.');
+        LibraryAssert.AreEqual(LowerCase(ExpectedCheckUrlBefore), LowerCase(ActualCheckUrlBefore), 'API URL before cache reset is invalid.');
+        LibraryAssert.AreEqual(LowerCase(ExpectedCheckUrlAfter), LowerCase(ActualCheckUrlAfter), 'API URL after cache reset is invalid.');
+        LibraryAssert.AreNotEqual(LowerCase(ActualCheckUrlBefore), LowerCase(ActualCheckUrlAfter), 'API URL is not updated after cache reset.');
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestResetState()
-    var
-        IsEnabled: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -73,10 +81,9 @@ codeunit 138074 "Satisfaction Survey Tests"
         // Execute
         ActivateSurvey();
         ResetState();
-        IsEnabled := IsSurveyEnabled();
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated();
     end;
 
     [Test]
@@ -97,7 +104,7 @@ codeunit 138074 "Satisfaction Survey Tests"
     [Scope('OnPrem')]
     procedure TestTryShowSurveyStatusOKDisplayTrue()
     var
-        IsEnabled: Boolean;
+        IsPresented: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -106,17 +113,17 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         ActivateSurvey();
-        IsEnabled := SatisfactionSurveyMgt.TryShowSurvey(200, '{"display":true}');
+        IsPresented := SatisfactionSurveyMgt.TryShowSurvey(200, '{"display":true}');
 
         // Verify
-        VerifySurveyEnabled(IsEnabled);
+        VerifySurveyPresented(IsPresented);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestTryShowSurveyStatusOKDisplayFalse()
     var
-        IsEnabled: Boolean;
+        IsPresented: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -125,17 +132,17 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         ActivateSurvey();
-        IsEnabled := SatisfactionSurveyMgt.TryShowSurvey(200, '{"display":false}');
+        IsPresented := SatisfactionSurveyMgt.TryShowSurvey(200, '{"display":false}');
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyNotPresented(not IsPresented);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestTryShowSurveyStatusOKMissingDisplay()
     var
-        IsEnabled: Boolean;
+        IsPresented: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -144,17 +151,17 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         ActivateSurvey();
-        IsEnabled := SatisfactionSurveyMgt.TryShowSurvey(200, '{}');
+        IsPresented := SatisfactionSurveyMgt.TryShowSurvey(200, '{}');
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyNotPresented(not IsPresented);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestTryShowSurveyStatusOKInvalidJson()
     var
-        IsEnabled: Boolean;
+        IsPresented: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -163,17 +170,17 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         ActivateSurvey();
-        IsEnabled := SatisfactionSurveyMgt.TryShowSurvey(200, ':}invalid json{"');
+        IsPresented := SatisfactionSurveyMgt.TryShowSurvey(200, ':}invalid json{"');
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyNotPresented(not IsPresented);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestTryShowSurveyStatusNotFound()
     var
-        IsEnabled: Boolean;
+        IsPresented: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -182,10 +189,10 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         ActivateSurvey();
-        IsEnabled := SatisfactionSurveyMgt.TryShowSurvey(404, '{"display":true}');
+        IsPresented := SatisfactionSurveyMgt.TryShowSurvey(404, '{"display":true}');
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyNotPresented(not IsPresented);
     end;
 
     [Test]
@@ -243,11 +250,11 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         Result := SatisfactionSurveyMgt.TryGetCheckUrl(ActualUrl);
-        ExpectedUrl := LowerCase(TestApiUrlTxt + StrSubstNo(DisplayDataTxt, FinancialsUriSegmentTxt, GetPuid()));
+        ExpectedUrl := TestApiUrlTxt + StrSubstNo(DisplayDataTxt, FinancialsUriSegmentTxt, GetPuid());
 
         // Verify
         LibraryAssert.IsTrue(Result, 'API URL is not returned.');
-        LibraryAssert.AreEqual(ExpectedUrl, ActualUrl, 'API URL is incorrect.');
+        LibraryAssert.AreEqual(LowerCase(ExpectedUrl), LowerCase(ActualUrl), 'API URL is incorrect.');
     end;
 
     [Test]
@@ -265,11 +272,11 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         Result := SatisfactionSurveyMgt.TryGetCheckUrl(ActualUrl);
-        ExpectedUrl := LowerCase(TestApiUrlTxt + StrSubstNo(DisplayDataTxt, InvoicingUriSegmentTxt, GetPuid()));
+        ExpectedUrl := TestApiUrlTxt + StrSubstNo(DisplayDataTxt, InvoicingUriSegmentTxt, GetPuid());
 
         // Verify
         LibraryAssert.IsTrue(Result, 'API URL is not returned.');
-        LibraryAssert.AreEqual(ExpectedUrl, ActualUrl, 'API URL is incorrect.');
+        LibraryAssert.AreEqual(LowerCase(ExpectedUrl), LowerCase(ActualUrl), 'API URL is incorrect.');
     end;
 
     [Test]
@@ -277,21 +284,18 @@ codeunit 138074 "Satisfaction Survey Tests"
     procedure TestFinancialsSurveyDisabledInSandbox()
     var
         IsActivated: Boolean;
-        IsEnabled: Boolean;
     begin
         // Setup
         InitializeFinancials();
-        EnvironmentInfo.SetTestabilitySandbox(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(true);
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
         // Execute
         IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
-        IsEnabled := IsSurveyEnabled();
 
         // Verify
-        VerifySurveyDeactivated(IsActivated);
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated(not IsActivated);
     end;
 
     [Test]
@@ -299,21 +303,18 @@ codeunit 138074 "Satisfaction Survey Tests"
     procedure TestInvocingSurveyDisabledInSandbox()
     var
         IsActivated: Boolean;
-        IsEnabled: Boolean;
     begin
         // Setup
         InitializeInvoicing();
-        EnvironmentInfo.SetTestabilitySandbox(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(true);
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
         // Execute
         IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
-        IsEnabled := IsSurveyEnabled();
 
         // Verify
-        VerifySurveyDeactivated(IsActivated);
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated(not IsActivated);
     end;
 
     [Test]
@@ -321,21 +322,18 @@ codeunit 138074 "Satisfaction Survey Tests"
     procedure TestFinancialsSurveyDisabledOnMobileDevice()
     var
         IsActivated: Boolean;
-        IsEnabled: Boolean;
     begin
         // Setup
         InitializeFinancials();
-        SatisfactionSurveyEvents.SetPhoneClientType();
+        TestClientTypeSubscriber.SetClientType(CLIENTTYPE::Phone);
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
         // Execute
         IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
-        IsEnabled := IsSurveyEnabled();
 
         // Verify
-        VerifySurveyDeactivated(IsActivated);
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated(not IsActivated);
     end;
 
     [Test]
@@ -343,7 +341,6 @@ codeunit 138074 "Satisfaction Survey Tests"
     procedure TestFinancialsSurveyDisabledOnPrem()
     var
         IsActivated: Boolean;
-        IsEnabled: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -353,11 +350,9 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
-        IsEnabled := IsSurveyEnabled();
 
         // Verify
-        VerifySurveyDeactivated(IsActivated);
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated(not IsActivated);
     end;
 
     [Test]
@@ -365,7 +360,6 @@ codeunit 138074 "Satisfaction Survey Tests"
     procedure TestInvocingSurveyDisabledOnPrem()
     var
         IsActivated: Boolean;
-        IsEnabled: Boolean;
     begin
         // Setup
         InitializeInvoicing();
@@ -375,18 +369,16 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
-        IsEnabled := IsSurveyEnabled();
 
         // Verify
-        VerifySurveyDeactivated(IsActivated);
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated(not IsActivated);
     end;
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestFinancialsSurveyDisabledWhenDeactivated()
+    procedure TestFinancialsSurveyDeactivated()
     var
-        IsEnabled: Boolean;
+        IsDeactivated: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -395,18 +387,17 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         ActivateSurvey();
-        DeactivateSurvey();
-        IsEnabled := IsSurveyEnabled();
+        IsDeactivated := SatisfactionSurveyMgt.DeactivateSurvey();
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated(IsDeactivated);
     end;
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestInvocingSurveyDisabledWhenDeactivated()
+    procedure TestInvocingSurveyDeactivated()
     var
-        IsEnabled: Boolean;
+        IsDeactivated: Boolean;
     begin
         // Setup
         InitializeInvoicing();
@@ -415,18 +406,17 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         ActivateSurvey();
-        DeactivateSurvey();
-        IsEnabled := IsSurveyEnabled();
+        IsDeactivated := SatisfactionSurveyMgt.DeactivateSurvey();
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated(IsDeactivated);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestFinancialsSurveyDisabledWhenPuidEmpty()
     var
-        IsEnabled: Boolean;
+        IsActivated: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -434,18 +424,17 @@ codeunit 138074 "Satisfaction Survey Tests"
         SimulateApiUrlNotEmpty();
 
         // Execute
-        ActivateSurvey();
-        IsEnabled := IsSurveyEnabled();
+        IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated(not IsActivated);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestInvocingSurveyDisabledWhenPuidEmpty()
     var
-        IsEnabled: Boolean;
+        IsActivated: Boolean;
     begin
         // Setup
         InitializeInvoicing();
@@ -453,18 +442,17 @@ codeunit 138074 "Satisfaction Survey Tests"
         SimulateApiUrlNotEmpty();
 
         // Execute
-        ActivateSurvey();
-        IsEnabled := IsSurveyEnabled();
+        IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated(not IsActivated);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestFinancialsSurveyDisabledWhenApiUrlEmpty()
     var
-        IsEnabled: Boolean;
+        IsPresented: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -473,17 +461,18 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         ActivateSurvey();
-        IsEnabled := IsSurveyEnabled();
+        IsPresented := SatisfactionSurveyMgt.TryShowSurvey();
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifyRequestNotSent();
+        VerifySurveyNotPresented(not IsPresented);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestInvocingSurveyDisabledWhenApiUrlEmpty()
     var
-        IsEnabled: Boolean;
+        IsPresented: Boolean;
     begin
         // Setup
         InitializeInvoicing();
@@ -492,10 +481,11 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         ActivateSurvey();
-        IsEnabled := IsSurveyEnabled();
+        IsPresented := SatisfactionSurveyMgt.TryShowSurvey();
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifyRequestNotSent();
+        VerifySurveyNotPresented(not IsPresented);
     end;
 
 
@@ -503,7 +493,7 @@ codeunit 138074 "Satisfaction Survey Tests"
     [Scope('OnPrem')]
     procedure TestFinancialsSurveyEnabledWhenApiUrlNotEmpty()
     var
-        IsEnabled: Boolean;
+        IsActivated: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -511,18 +501,17 @@ codeunit 138074 "Satisfaction Survey Tests"
         SimulateApiUrlNotEmpty();
 
         // Execute
-        ActivateSurvey();
-        IsEnabled := IsSurveyEnabled();
+        IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
 
         // Verify
-        VerifySurveyEnabled(IsEnabled);
+        VerifySurveyActivated(IsActivated);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestInvocingSurveyEnabledWhenApiUrlNotEmpty()
     var
-        IsEnabled: Boolean;
+        IsActivated: Boolean;
     begin
         // Setup
         InitializeInvoicing();
@@ -530,16 +519,17 @@ codeunit 138074 "Satisfaction Survey Tests"
         SimulateApiUrlNotEmpty();
 
         // Execute
-        ActivateSurvey();
-        IsEnabled := IsSurveyEnabled();
+        IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
 
         // Verify
-        VerifySurveyEnabled(IsEnabled);
+        VerifySurveyActivated(IsActivated);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestFinancialsSurveyErrorWhenNoConnection()
+    var
+        IsPresented: Boolean;
     begin
         // Setup
         InitializeFinancials();
@@ -548,15 +538,18 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         ActivateSurvey();
-        SatisfactionSurveyMgt.TryShowSurvey();
+        IsPresented := SatisfactionSurveyMgt.TryShowSurvey();
 
         // Verify
-        LibraryAssert.AreNotEqual('', GetLastErrorText(), 'Error is expected.');
+        VerifyRequestFailed();
+        VerifySurveyNotPresented(not IsPresented);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestInvocingSurveyErrorWhenNoConnection()
+    var
+        IsPresented: Boolean;
     begin
         // Setup
         InitializeInvoicing();
@@ -565,17 +558,16 @@ codeunit 138074 "Satisfaction Survey Tests"
 
         // Execute
         ActivateSurvey();
-        SatisfactionSurveyMgt.TryShowSurvey();
+        IsPresented := SatisfactionSurveyMgt.TryShowSurvey();
 
         // Verify
-        LibraryAssert.AreNotEqual('', GetLastErrorText(), 'Error is expected.');
+        VerifyRequestFailed();
+        VerifySurveyNotPresented(not IsPresented);
     end;
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestFinancialsSurveyDisabledAfterPresenting()
-    var
-        IsEnabled: Boolean;
+    procedure TestFinancialsSurveyDeactivatedAfterBasePresenting()
     begin
         // Setup
         InitializeFinancials();
@@ -585,18 +577,14 @@ codeunit 138074 "Satisfaction Survey Tests"
         // Execute
         ActivateSurvey();
         SatisfactionSurveyMgt.TryShowSurvey();
-        ClearLastError();
-        IsEnabled := IsSurveyEnabled();
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated();
     end;
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestInvocingSurveyDisabledAfterPresenting()
-    var
-        IsEnabled: Boolean;
+    procedure TestInvocingSurveyDeactivatedAfterBasePresenting()
     begin
         // Setup
         InitializeInvoicing();
@@ -606,11 +594,51 @@ codeunit 138074 "Satisfaction Survey Tests"
         // Execute
         ActivateSurvey();
         SatisfactionSurveyMgt.TryShowSurvey();
-        ClearLastError();
-        IsEnabled := IsSurveyEnabled();
 
         // Verify
-        VerifySurveyDisabled(IsEnabled);
+        VerifySurveyDeactivated();
+    end;
+
+    [Test]
+    [HandlerFunctions('HandleSurveyPage')]
+    [Scope('OnPrem')]
+    procedure TestFinancialsSurveyDeactivatedAfterForcePresenting()
+    var
+        IsPresented: Boolean;
+    begin
+        // Setup
+        InitializeFinancials();
+        SimulatePuidNotEmpty();
+        SimulateApiUrlNotEmpty();
+
+        // Execute
+        ActivateSurvey();
+        IsPresented := SatisfactionSurveyMgt.TryShowSurvey(200, '{"display":true}');
+
+        // Verify
+        VerifySurveyPresented(IsPresented);
+        VerifySurveyDeactivated();
+    end;
+
+    [Test]
+    [HandlerFunctions('HandleSurveyPage')]
+    [Scope('OnPrem')]
+    procedure TestInvocingSurveyDeactivatedAfterForcePresenting()
+    var
+        IsPresented: Boolean;
+    begin
+        // Setup
+        InitializeInvoicing();
+        SimulatePuidNotEmpty();
+        SimulateApiUrlNotEmpty();
+
+        // Execute
+        ActivateSurvey();
+        IsPresented := SatisfactionSurveyMgt.TryShowSurvey(200, '{"display":true}');
+
+        // Verify
+        VerifySurveyPresented(IsPresented);
+        VerifySurveyDeactivated();
     end;
 
     [Test]
@@ -636,7 +664,7 @@ codeunit 138074 "Satisfaction Survey Tests"
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestDeractivateSurveyTwice()
+    procedure TestDeactivateSurveyTwice()
     var
         Result1: Boolean;
         Result2: Boolean;
@@ -670,26 +698,28 @@ codeunit 138074 "Satisfaction Survey Tests"
     begin
         ClearLastError();
         EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
-        EnvironmentInfo.SetTestabilitySandbox(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
         SatisfactionSurveyMgt.ResetCache();
-        SatisfactionSurveyEvents.SetWebClientType();
+        TestClientTypeSubscriber.SetClientType(CLIENTTYPE::Web);
+        SatisfactionSurveyMgt.ResetState();
         if IsInvoicing then
-            SatisfactionSurveyEvents.SetInvoicingAppId()
+            EnvironmentInfoTestLibrary.SetAppId(InvoiceTok)
         else
-            SatisfactionSurveyEvents.SetFinancialsAppId();
+            EnvironmentInfoTestLibrary.SetAppId(FinacialsTok);
 
         if IsInitialized then
             exit;
 
-        BindSubscription(SatisfactionSurveyEvents);
+        BindSubscription(TestClientTypeSubscriber);
+        BindSubscription(EnvironmentInfoTestLibrary);
         GlobalLanguage := 1033; // mock service supports only this language
-        MillisecondsPerDay := 86400000;
         IsInitialized := true;
     end;
 
     local procedure SetSurveyParameters(ApiUrl: Text; RequestTimeoutMilliseconds: Integer; CacheLifeTimeMinutes: Integer)
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
+        AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
         JObject: JsonObject;
         MockAzureKeyVaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
         ParametersValue: Text;
@@ -701,7 +731,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         MockAzureKeyvaultSecretProvider := MockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
         MockAzureKeyvaultSecretProvider.AddSecretMapping(AllowedApplicationSecretsTxt, ParametersTxt);
         MockAzureKeyvaultSecretProvider.AddSecretMapping(ParametersTxt, ParametersValue);
-        AzureKeyVault.SetAzureKeyVaultSecretProvider(MockAzureKeyVaultSecretProvider);
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(MockAzureKeyVaultSecretProvider);
     end;
 
     local procedure SimulatePuidEmpty()
@@ -736,29 +766,41 @@ codeunit 138074 "Satisfaction Survey Tests"
 
     local procedure VerifySurveyActivated(IsActivated: Boolean)
     begin
-        LibraryAssert.IsTrue(IsActivated, 'Survey is deactivated.');
-        LibraryAssert.AreEqual('', GetLastErrorText(), 'Unexpected error.');
+        LibraryAssert.IsTrue(IsActivated, 'Survey is not activated.');
     end;
 
-    local procedure VerifySurveyDisabled(IsEnabled: Boolean)
+    local procedure VerifySurveyDeactivated(IsDeactivated: Boolean)
     begin
-        LibraryAssert.IsFalse(IsEnabled, 'Survey is enabled.');
-        LibraryAssert.AreEqual('', GetLastErrorText(), 'Unexpected error.');
+        LibraryAssert.IsTrue(IsDeactivated, 'Survey is activated.');
     end;
 
-    local procedure VerifySurveyDeactivated(IsActivated: Boolean)
-    begin
-        LibraryAssert.IsFalse(IsActivated, 'Survey is activated.');
-        LibraryAssert.AreEqual('', GetLastErrorText(), 'Unexpected error.');
-    end;
-
-    local procedure IsSurveyEnabled(): Boolean
+    local procedure VerifySurveyDeactivated()
     var
-        IsEnabled: Boolean;
+        IsAlreadyDeactivated: Boolean;
     begin
-        IsEnabled := SatisfactionSurveyMgt.TryShowSurvey(200, '{"display":true}');
-        LibraryAssert.AreEqual('', GetLastErrorText(), 'Unexpected error.');
-        exit(IsEnabled);
+        IsAlreadyDeactivated := not SatisfactionSurveyMgt.DeactivateSurvey();
+        LibraryAssert.IsTrue(IsAlreadyDeactivated, 'Survey is activated.');
+    end;
+
+    local procedure VerifySurveyPresented(Presented: Boolean)
+    begin
+        LibraryAssert.IsTrue(Presented, 'Survey is not presented.');
+    end;
+
+    local procedure VerifySurveyNotPresented(IsNotPresented: Boolean)
+    begin
+        LibraryAssert.IsTrue(IsNotPresented, 'Survey is presented.');
+    end;
+
+
+    local procedure VerifyRequestFailed()
+    begin
+        LibraryAssert.ExpectedError('Request failed');
+    end;
+
+    local procedure VerifyRequestNotSent()
+    begin
+        LibraryAssert.IsFalse(StrPos(GetLastErrorText(), 'Request failed') > 0, 'Request is sent.');
     end;
 
     local procedure GetPuid(): Text
@@ -783,7 +825,7 @@ codeunit 138074 "Satisfaction Survey Tests"
     var
         Result: Boolean;
     begin
-        Result := not SatisfactionSurveyMgt.DeactivateSurvey();
+        Result := SatisfactionSurveyMgt.DeactivateSurvey();
         VerifySurveyDeactivated(Result);
     end;
 
@@ -793,7 +835,6 @@ codeunit 138074 "Satisfaction Survey Tests"
     begin
         Result := SatisfactionSurveyMgt.ResetState();
         LibraryAssert.IsTrue(Result, 'State is not reset.');
-        LibraryAssert.AreEqual('', GetLastErrorText(), 'Unexpected error.');
     end;
 
     local procedure ResetCache()
@@ -802,13 +843,6 @@ codeunit 138074 "Satisfaction Survey Tests"
     begin
         Result := SatisfactionSurveyMgt.ResetCache();
         LibraryAssert.IsTrue(Result, 'Cache is not reset.');
-        LibraryAssert.AreEqual('', GetLastErrorText(), 'Unexpected error.');
-    end;
-
-    local procedure VerifySurveyEnabled(IsEnabled: Boolean)
-    begin
-        LibraryAssert.IsTrue(IsEnabled, 'Survey is disabled.');
-        LibraryAssert.AreEqual('', GetLastErrorText(), 'Unexpected error.');
     end;
 
     [ModalPageHandler]

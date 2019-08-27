@@ -1,0 +1,32 @@
+{
+    "id":  "cc441290-a967-4601-9a7d-b4209339415b",
+    "name":  "Environment Information Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Library functions to initialize test data for Azure Key Vault module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "2673d810-273e-402f-9093-2eaef7e03b83",
+                             "name":  "Environment Information",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                        "from":  135094,
+                        "to":  135094
+                     }
+                 ],
+    "target":  "OnPrem"
+}

@@ -17,19 +17,21 @@ codeunit 132912 "Azure AD Plan Tests"
     procedure TestIsPlanAssigned()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
-        GraphUser: DotNet UserInfo;
-        PlanId: Guid;
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        PlanID: Guid;
     begin
+        DeleteAllFromTablePlanAndUserPlan();
+
         //[GIVEN] A specific plan with at least one user assigned to it
-        PlanId := CreateGuid();
-        PopulateTablesPlanAndUserPlan(PlanId, 'TestPlan', CreateGuid());
+        PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlanAssigned');
+        AzureADPlanTestLibraries.AssignUserToPlan(CreateGuid(), PlanID);
 
         //[WHEN] checking if the plan is assigned to at least one user
         //[THEN] the result should be true
         LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssigned(PlanID), 'The Plan should be assigned to at least one user');
 
         // //[GIVEN] A specific plan with no user assigned to it
-        PlanId := CreateGuid();
+        PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlanNotAssigned');
 
         //[WHEN] checking if the plan is assigned to at least one user
         //[THEN] the result should be false
@@ -42,19 +44,21 @@ codeunit 132912 "Azure AD Plan Tests"
     procedure TestIsPlanAssignedToUser()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
-        GraphUser: DotNet UserInfo;
-        PlanId: Guid;
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        PlanID: Guid;
     begin
+        DeleteAllFromTablePlanAndUserPlan();
+
         //[GIVEN] A specific plan which is assigned to the current user
-        PlanId := CreateGuid();
-        PopulateTablesPlanAndUserPlan(PlanId, 'TestPlan', UserSecurityId());
+        PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlanAssigned');
+        AzureADPlanTestLibraries.AssignUserToPlan(UserSecurityId(), PlanID);
 
         // [WHEN] checking if the plan is assigned to the current user
         // [THEN] the result should be true
-        LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssigned(PlanId), 'The Plan should be assigned to the current user');
+        LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssigned(PlanID), 'The Plan should be assigned to the current user');
 
         //[GIVEN] A specific plan which is NOT assigned to the current user
-        PlanID := CreateGuid();
+        PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlanNotAssigned');
 
         // [WHEN] checking if the plan is assigned to the current user
         // [THEN] the result should be false
@@ -67,15 +71,18 @@ codeunit 132912 "Azure AD Plan Tests"
     procedure TestIsGraphUserEntitledFromServicePlan()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
         GraphUser: DotNet UserInfo;
-        UserId: Guid;
+        UserID: Guid;
+        PlanID: Guid;
     begin
-        AzureADPlan.SetTestInProgress(true);
+        DeleteAllFromTablePlanAndUserPlan();
 
-        // [GIVEN] a service plan and a user who is entitled to this plan 
+        // [GIVEN] a service plan and a user who is entitled to a plan 
         UserId := CreateGuid();
         CreateGraphUser(GraphUser, UserId);
-        PopulateTablePlanUsingMockGraph(GraphUser, CreateGuid(), 'TestPlan', UserId);
+        PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlan');
+        PopulateMockGraph(GraphUser, PlanID, 'TestPlan', UserId);
 
         // [WHEN] checking if the user is entitled to a service plan
         // [THEN] the result should be true
@@ -92,31 +99,64 @@ codeunit 132912 "Azure AD Plan Tests"
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
-    procedure TestIsPlanAssignedToSpecificUser()
+    procedure TestUpdateUserPlans()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
         GraphUser: DotNet UserInfo;
-        PlanId: Guid;
-        UserId: Guid;
+        UserID: Guid;
+        PlanID: Guid;
+    begin
+        DeleteAllFromTablePlanAndUserPlan();
+        AzureADPlan.SetTestInProgress(true);
+
+        // [GIVEN] a User and a GraphUser with a Plan which is not in the table Plan and a user
+        UserId := CreateGuid();
+        CreateGraphUser(GraphUser, UserId);
+        PlanID := CreateGuid();
+        PopulateMockGraph(GraphUser, PlanID, 'TestPlan', UserId);
+
+        LibraryAssert.AreEqual(false, AzureADPlan.DoesPlanExist(PlanID), 'The new Plan should not exist in the table Plan');
+        LibraryAssert.AreEqual(false, AzureADPlan.IsPlanAssignedToUser(PlanID, UserID), 'The new Plan should not be assigned to the user');
+
+        // [WHEN] updating the User Plans from the GraphUser
+        AzureADPlan.UpdateUserPlans(UserID, GraphUser);
+
+        // [THEN] the new Plan should exist and the User should have the new Plan assigned to him
+        LibraryAssert.AreEqual(true, AzureADPlan.DoesPlanExist(PlanID), 'The new Plan should exist in the table Plan');
+        LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssignedToUser(PlanID, UserID), 'The new Plan should be assigned to the user');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure TestIsPlanAssignedToSpecificUser()
+    var
+        AzureADPlan: Codeunit "Azure AD Plan";
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        PlanID: Guid;
+        UserID: Guid;
     begin
         //[GIVEN] A specific plan which is assigned to a specific user
-        PlanId := CreateGuid();
-        UserId := CreateGuid();
-        PopulateTablesPlanAndUserPlan(PlanId, 'TestPlan', UserId);
+        DeleteAllFromTablePlanAndUserPlan();
+
+        //[GIVEN] A specific plan which is assigned to the current user
+        UserID := CreateGuid();
+        PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlan');
+        AzureADPlanTestLibraries.AssignUserToPlan(UserID, PlanID);
 
         // [WHEN] checking if the plan is assigned to the current user
         // [THEN] the result should be true
-        LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssignedToUser(PlanId, UserId), 'The Plan should be assigned to a user');
+        LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssignedToUser(PlanID, UserID), 'The Plan should be assigned to a user');
 
         //[GIVEN] A specific plan which is NOT assigned to a specific user
         // [WHEN] checking if the plan is assigned to the user
         // [THEN] the result should be false
-        LibraryAssert.AreEqual(false, AzureADPlan.IsPlanAssignedToUser(PlanId, CreateGuid()), 'The Plan should not be assigned to a user');
+        LibraryAssert.AreEqual(false, AzureADPlan.IsPlanAssignedToUser(PlanID, CreateGuid()), 'The Plan should not be assigned to a user');
 
         //[GIVEN] A specific user who doesn't have the specific plan
         // [WHEN] checking if the specific user has the plan assigned
         // [THEN] the result should be false
-        LibraryAssert.AreEqual(false, AzureADPlan.IsPlanAssignedToUser(CreateGuid(), UserId), 'The Plan should not be assigned to a user');
+        LibraryAssert.AreEqual(false, AzureADPlan.IsPlanAssignedToUser(CreateGuid(), UserID), 'The Plan should not be assigned to a user');
     end;
 
     [Test]
@@ -125,10 +165,20 @@ codeunit 132912 "Azure AD Plan Tests"
     procedure TestDoPlansExist()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
     begin
-        PopulateTablesPlanAndUserPlan(CreateGuid(), 'TestPlan', CreateGuid());
+        DeleteAllFromTablePlanAndUserPlan();
 
-        LibraryAssert.AreEqual(false, AzureADPlan.DoPlansExist(), 'The table Plan should not be empty');
+        // [GIVEN] no Plans in the table Plan
+        // [WHEN] invoking DoPlansExist
+        // [THEN] The table Plan should be empty
+        LibraryAssert.AreEqual(false, AzureADPlan.DoPlansExist(), 'The table Plan should be empty');
+
+        // [GIVEN] Plans inside the table Plan
+        AzureADPlanTestLibraries.CreatePlan('TestPlan');
+        // [WHEN] invoking DoPlansExist
+        // [THEN] The table Plan should not be empty
+        LibraryAssert.AreEqual(true, AzureADPlan.DoPlansExist(), 'The table Plan should not be empty');
     end;
 
     [Test]
@@ -137,10 +187,20 @@ codeunit 132912 "Azure AD Plan Tests"
     procedure TestDoUserPlansExist()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
     begin
-        PopulateTablesPlanAndUserPlan(CreateGuid(), 'TestPlan', CreateGuid());
+        DeleteAllFromTablePlanAndUserPlan();
 
-        LibraryAssert.AreEqual(false, AzureADPlan.DoUserPlansExist(), 'The table User Plan should not be empty');
+        // [GIVEN] Users who doesnt have any Plans assigned
+        // [WHEN] invoking DoUserPlansExist
+        // [THEN] The table User Plan should be empty
+        LibraryAssert.AreEqual(false, AzureADPlan.DoUserPlansExist(), 'The table User Plan should be empty');
+
+        // [GIVEN] Users who have Plans assigned
+        AzureADPlanTestLibraries.AssignUserToPlan(CreateGuid(), CreateGuid());
+        // [WHEN] invoking DoUserPlansExist
+        // [THEN] The table User Plan should not be empty
+        LibraryAssert.AreEqual(true, AzureADPlan.DoUserPlansExist(), 'The table User Plan should not be empty');
     end;
 
     [Test]
@@ -149,14 +209,21 @@ codeunit 132912 "Azure AD Plan Tests"
     procedure TestDoesPlanExist()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
-        PlanId: Guid;
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        PlanID: Guid;
     begin
-        LibraryAssert.AreEqual(false, AzureADPlan.DoesPlanExist(CreateGuid()), 'The given Plan should exist');
+        DeleteAllFromTablePlanAndUserPlan();
 
-        PlanId := CreateGuid();
-        PopulateTablesPlanAndUserPlan(PlanId, 'TestPlan', CreateGuid());
+        // [GIVEN] A Plan which doesnt exist
+        // [WHEN] invoking DoesPlanExist
+        // [THEN] The result should be false
+        LibraryAssert.AreEqual(false, AzureADPlan.DoesPlanExist(CreateGuid()), 'The given Plan should not exist');
 
-        LibraryAssert.AreEqual(true, AzureADPlan.DoesPlanExist(PlanId), 'The given Plan should not exist');
+        // [GIVEN] A Plan which exists
+        PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlan');
+        // [WHEN] invoking DoesPlanExist
+        // [THEN] The result should be true
+        LibraryAssert.AreEqual(true, AzureADPlan.DoesPlanExist(PlanID), 'The given Plan should exist');
     end;
 
     [Test]
@@ -165,52 +232,63 @@ codeunit 132912 "Azure AD Plan Tests"
     procedure TestDoesUserHavePlans()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
-        UserId: Guid;
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        UserID: Guid;
+        PlanID: Guid;
     begin
-        UserId := CreateGuid();
+        DeleteAllFromTablePlanAndUserPlan();
 
-        LibraryAssert.AreEqual(false, AzureADPlan.DoesUserHavePlans(UserId), 'The user should not have any Plan assigned');
+        // [GIVEN] A User with  no Plan assigned
+        // [WHEN] invoking DoesUserHavePlans
+        // [THEN] The result should be false
+        UserID := CreateGuid();
+        LibraryAssert.AreEqual(false, AzureADPlan.DoesUserHavePlans(UserID), 'The user should not have any Plan assigned');
 
-        PopulateTablesPlanAndUserPlan(CreateGuid(), 'TestPlan', UserId);
-
-        LibraryAssert.AreEqual(true, AzureADPlan.DoesUserHavePlans(UserId), 'The user should have at least one Plan assigned');
+        // [GIVEN] A User with at least one Plan assigned
+        PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlan');
+        AzureADPlanTestLibraries.AssignUserToPlan(UserID, PlanID);
+        // [WHEN] invoking DoesUserHavePlans
+        // [THEN] The result should be true
+        LibraryAssert.AreEqual(true, AzureADPlan.DoesUserHavePlans(UserID), 'The user should have at least one Plan assigned');
     end;
 
-    procedure PopulateTablesPlanAndUserPlan(PlanId: Guid; PlanName: Text; UserId: Guid)
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure GetAvailablePlansCount()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
-        GraphUser: DotNet UserInfo;
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
     begin
-        CreateGraphUser(GraphUser, UserId);
-        PopulateTablePlanUsingMockGraph(GraphUser, PlanId, PlanName, UserId);
+        DeleteAllFromTablePlanAndUserPlan();
+
+        // [GIVEN] An empty Plan table
+        // [WHEN] invoking GetAvailablePlansCount
+        // [THEN] The result should be 0
+        LibraryAssert.AreEqual(0, AzureADPlan.GetAvailablePlansCount(), 'The Plan table should be empty');
+
+        // [GIVEN] An the Plan table with 1 Plan
+        AzureADPlanTestLibraries.CreatePlan('TestPlanAssigned');
+        // [WHEN] invoking GetAvailablePlansCount
+        // [THEN] The result should be 1
+        LibraryAssert.AreEqual(1, AzureADPlan.GetAvailablePlansCount(), 'The Plan table should have only 1 Plan');
     end;
 
-    local procedure PopulateTablePlanUsingMockGraph(GraphUser: DotNet UserInfo; PlanId: Guid;
-                                                                   PlanName: Text;
-                                                                   UserId: Guid)
-    var
-        AzureADPlan: Codeunit "Azure AD Plan";
-    begin
-        AddGraphUser(GraphUser, PlanId, PlanName);
-
-        AzureADPlan.SetTestInProgress(true);
-        AzureADPlan.UpdateUserPlans(UserId, GraphUser);
-    end;
-
-    local procedure CreateGraphUser(var GraphUser: DotNet UserInfo; UserId: Guid)
-    begin
-        GraphUser := GraphUser.UserInfo();
-        GraphUser.ObjectId := UserId;
-    end;
-
-    local procedure AddGraphUser(var GraphUser: DotNet UserInfo; PlanId: Guid;
-                                                    PlanName: Text)
+    local procedure PopulateMockGraph(GraphUser: DotNet UserInfo; PlanId: Guid;
+                                                     PlanName: Text;
+                                                     UserId: Guid)
     var
         MockGraphQuery: DotNet MockGraphQuery;
     begin
         MockGraphQuery := MockGraphQuery.MockGraphQuery();
         MockGraphQuery.AddUser(GraphUser);
         AddUserPlan(MockGraphQuery, GraphUser, PlanId, PlanName);
+    end;
+
+    local procedure CreateGraphUser(var GraphUser: DotNet UserInfo; UserId: Guid)
+    begin
+        GraphUser := GraphUser.UserInfo();
+        GraphUser.ObjectId := UserId;
     end;
 
     local procedure AddUserPlan(var MockGraphQuery: DotNet MockGraphQuery; GraphUser: DotNet UserInfo;
@@ -225,5 +303,13 @@ codeunit 132912 "Azure AD Plan Tests"
         AssignedPlan.CapabilityStatus := 'Enabled';
 
         MockGraphQuery.AddAssignedPlanToUser(GraphUser, AssignedPlan);
+    end;
+
+    local procedure DeleteAllFromTablePlanAndUserPlan()
+    var
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+    begin
+        AzureADPlanTestLibraries.DeleteAllPlans();
+        AzureADPlanTestLibraries.DeleteAllUserPlan();
     end;
 }

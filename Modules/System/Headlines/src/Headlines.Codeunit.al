@@ -21,7 +21,7 @@ codeunit 1439 Headlines
     /// </summary>
     /// <param name="TextToTruncate">Text that be shortened in order to fit on the headline.</param>
     /// <param name="MaxLength">The maximal length of the string. Usually obtained through
-    /// <cref="GetMaxQualifierLength"/> or <cref="GetMaxPayloadLength"/> function.</param>
+    /// <see cref="GetMaxQualifierLength"/> or <see cref="GetMaxPayloadLength"/> function.</param>
     /// <returns>The truncated text</returns>
     procedure Truncate(TextToTruncate: Text; MaxLength: Integer): Text;
     begin
@@ -43,9 +43,9 @@ codeunit 1439 Headlines
     /// text. This text is usually assigned to Expression property on the HeadlinePart page.
     /// </summary>
     /// <param name="Qualifier">The text to be displayed on the qualifier (smaller text above the main one)
-    /// of the headline (parts of it can be emphasized, see <cref="Emphasize"/>).</param>
+    /// of the headline (parts of it can be emphasized, see <see cref="Emphasize"/>).</param>
     /// <param name="Payload">The text to be displayed on the payload (the main text of the headline)
-    /// of the headline (parts of it can be emphasized, see <cref="Emphasize"/>).</param>
+    /// of the headline (parts of it can be emphasized, see <see cref="Emphasize"/>).</param>
     /// <param name="ResultText">Output parameter. Contains the combined text, ready to be assigned to
     /// the Expression property, if the function returns 'true', the unchanged value otherwise.</param>
     /// <returns>'false' if payload is empty, or payload is too long, or qualifier is too long,

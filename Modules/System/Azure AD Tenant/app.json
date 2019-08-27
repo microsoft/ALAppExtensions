@@ -1,0 +1,42 @@
+{
+    "id":  "95025170-61fc-4808-9505-4ba1fe1d05d9",
+    "name":  "Azure AD Tenant",
+    "publisher":  "Microsoft",
+    "brief":  "Gets information about the Azure AD tenant.",
+    "description":  "Contains helper methods for getting information about the Azure AD Tenant, such as getting aad tenant id and domain name.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "appId":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
+                            "publisher":  "Microsoft",
+                            "name":  "Azure AD Graph",
+                            "version":  "15.0.0.0"
+                        },
+                        {
+                            "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                            "name":  "DotNet Aliases",
+                            "publisher":  "Microsoft",
+                            "version":  "15.0.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "target":  "OnPrem",
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  433,
+                         "to":  433
+                     },
+                     {
+                         "from":  3705,
+                         "to":  3705
+                     }
+                 ]
+}

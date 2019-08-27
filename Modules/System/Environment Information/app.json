@@ -11,8 +11,20 @@
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "",
     "dependencies":  [
-
+                        {
+                            "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                            "name":  "DotNet Aliases",
+                            "publisher":  "Microsoft",
+                            "version":  "15.0.0.0"
+                        }
                      ],
+    "internalsVisibleTo":  [
+                                {
+									"appId":  "cc441290-a967-4601-9a7d-b4209339415b",
+                                    "name":  "Environment Information Test Library",
+                                    "publisher":  "Microsoft"
+                                }
+                           ],
     "screenshots":  [
 
                     ],
@@ -24,12 +36,12 @@
                          "to":  417
                      },
                      {
-                         "from":  457,
-                         "to":  457
-                     },
-                     {
                          "from":  3701,
                          "to":  3702
-                     }
+                     },
+                     {
+                         "from": 457,
+                         "to": 457
+                     }         
                  ]
 }

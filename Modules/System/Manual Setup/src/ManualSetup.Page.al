@@ -38,6 +38,11 @@ page 1875 "Manual Setup"
                     ApplicationArea = All;
                     ToolTip = 'Specifies a description of the manual setup.';
                 }
+                field(Category; Category)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the category enum to which the setup belongs';
+                }
                 field(Keywords; Keywords)
                 {
                     ApplicationArea = All;

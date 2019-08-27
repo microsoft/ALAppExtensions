@@ -71,7 +71,7 @@ page 1752 "Data Classification Wizard"
 
                     trigger OnDrillDown()
                     begin
-                        OpenHelpUrl();
+                        HyperLink(HelpUrlTxt);
                     end;
                 }
             }
@@ -107,7 +107,7 @@ page 1752 "Data Classification Wizard"
 
                         trigger OnValidate()
                         begin
-                            SetExpertAndImportMode();
+                            DisableOtherModes(ExportModeSelected, ExpertModeSelected, ImportModeSelected);
                         end;
                     }
                     field(ImportModeSelected; ImportModeSelected)
@@ -117,7 +117,7 @@ page 1752 "Data Classification Wizard"
 
                         trigger OnValidate()
                         begin
-                            SetExpertAndExportMode();
+                            DisableOtherModes(ImportModeSelected, ExportModeSelected, ExpertModeSelected);
                         end;
                     }
                     group(ExpertModeGroup)
@@ -131,7 +131,7 @@ page 1752 "Data Classification Wizard"
 
                             trigger OnValidate()
                             begin
-                                SetImportAndExportMode();
+                                DisableOtherModes(ExpertModeSelected, ImportModeSelected, ExportModeSelected);
                             end;
                         }
                     }
@@ -169,8 +169,10 @@ page 1752 "Data Classification Wizard"
                             StyleExpr = TRUE;
 
                             trigger OnDrillDown()
+                            var
+                                DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
                             begin
-                                RunDataClassificationWorksheetForTableWhoseNameContains('Entry');
+                                DataClassificationMgtImpl.RunDataClassificationWorksheetForTableWhoseNameContains('Entry');
                             end;
                         }
                         field(TemplatesDefaultClassification; TemplatesDefaultClassification)
@@ -188,8 +190,10 @@ page 1752 "Data Classification Wizard"
                             StyleExpr = TRUE;
 
                             trigger OnDrillDown()
+                            var
+                                DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
                             begin
-                                RunDataClassificationWorksheetForTableWhoseNameContains('Template');
+                                DataClassificationMgtImpl.RunDataClassificationWorksheetForTableWhoseNameContains('Template');
                             end;
                         }
                         field(SetupTablesDefaultClassification; SetupTablesDefaultClassification)
@@ -207,8 +211,10 @@ page 1752 "Data Classification Wizard"
                             StyleExpr = TRUE;
 
                             trigger OnDrillDown()
+                            var
+                                DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
                             begin
-                                RunDataClassificationWorksheetForTableWhoseNameContains('Setup');
+                                DataClassificationMgtImpl.RunDataClassificationWorksheetForTableWhoseNameContains('Setup');
                             end;
                         }
                     }
@@ -376,7 +382,9 @@ page 1752 "Data Classification Wizard"
 
                 trigger OnAction()
                 begin
-                    GoBack();
+                    if Step = Step::Verify then
+                        Reset();
+                    NextStep(true);
                 end;
             }
             action(ActionFinish)
@@ -389,7 +397,9 @@ page 1752 "Data Classification Wizard"
 
                 trigger OnAction()
                 begin
-                    Finish();
+                    if ShowWorksheet then
+                        PAGE.Run(PAGE::"Data Classification Worksheet");
+                    CurrPage.Close();
                 end;
             }
         }
@@ -397,15 +407,26 @@ page 1752 "Data Classification Wizard"
 
     trigger OnAfterGetRecord()
     begin
-        SetStatusStyle();
-        SetSimilarFieldsStatusStyle();
+        if Status = Status::"Review Needed" then
+            StatusStyle := 'UnFavorable'
+        else
+            StatusStyle := 'Favorable';
+
+        if "Status 2" = "Status 2"::"Review Needed" then
+            SimilarFieldsStatusStyle := 'UnFavorable'
+        else
+            SimilarFieldsStatusStyle := 'Favorable';
     end;
 
     trigger OnOpenPage()
     begin
         ResetControls();
+
         ShowWorksheet := true;
-        SetDefaultClassifications();
+
+        LedgerEntriesDefaultClassification := LedgerEntriesDefaultClassification::"Company Confidential";
+        TemplatesDefaultClassification := TemplatesDefaultClassification::Normal;
+        SetupTablesDefaultClassification := SetupTablesDefaultClassification::Normal;
     end;
 
     var
@@ -456,47 +477,12 @@ page 1752 "Data Classification Wizard"
         end;
     end;
 
-    local procedure SetDefaultClassifications()
-    begin
-        LedgerEntriesDefaultClassification := LedgerEntriesDefaultClassification::"Company Confidential";
-        TemplatesDefaultClassification := TemplatesDefaultClassification::Normal;
-        SetupTablesDefaultClassification := SetupTablesDefaultClassification::Normal;
-    end;
-
-    local procedure SetStatusStyle()
-    begin
-        if Status = Status::"Review Needed" then
-            StatusStyle := 'UnFavorable'
-        else
-            StatusStyle := 'Favorable';
-    end;
-
-    local procedure SetSimilarFieldsStatusStyle()
-    begin
-        if "Status 2" = "Status 2"::"Review Needed" then
-            SimilarFieldsStatusStyle := 'UnFavorable'
-        else
-            SimilarFieldsStatusStyle := 'Favorable';
-    end;
-
-    local procedure RunDataClassificationWorksheetForTableWhoseNameContains(TableNoFilter: Text)
-    var
-        DataSensitivity: Record "Data Sensitivity";
-        DataClassificationMgt: Codeunit "Data Classification Mgt.";
-    begin
-        DataSensitivity.SetRange("Company Name", CompanyName());
-        DataSensitivity.SetFilter("Table No", DataClassificationMgt.GetTableNoFilterForTablesWhoseNameContains(TableNoFilter));
-        PAGE.Run(PAGE::"Data Classification Worksheet", DataSensitivity);
-    end;
-
     local procedure RunDataClassificationWorksheetForTable()
     var
         DataSensitivity: Record "Data Sensitivity";
+        DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
     begin
-        DataSensitivity.SetRange("Company Name", CompanyName());
-        DataSensitivity.FilterGroup(2);
-        DataSensitivity.SetRange("Table No", "Table No.");
-        PAGE.RunModal(PAGE::"Data Classification Worksheet", DataSensitivity);
+        DataClassificationMgtImpl.RunDataClassificationWorksheetForTable("Table No.");
 
         Reviewed := true;
         Status := Status::Reviewed;
@@ -506,15 +492,9 @@ page 1752 "Data Classification Wizard"
     local procedure RunDataClassificationWorksheetForPersonalAndSensitiveDataInTable()
     var
         DataSensitivity: Record "Data Sensitivity";
-        DataClassificationMgt: Codeunit "Data Classification Mgt.";
+        DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
     begin
-        DataSensitivity.SetRange("Company Name", CompanyName());
-        DataSensitivity.SetRange("Table No", "Table No.");
-        DataSensitivity.SetFilter("Data Sensitivity", StrSubstNo('%1|%2',
-            DataSensitivity."Data Sensitivity"::Personal,
-            DataSensitivity."Data Sensitivity"::Sensitive));
-        DataClassificationMgt.FindSimilarFieldsInRelatedTables(DataSensitivity);
-        PAGE.RunModal(PAGE::"Data Classification Worksheet", DataSensitivity);
+        DataClassificationMgtImpl.RunDataClassificationWorksheetForPersonalAndSensitiveDataInTable("Table No.");
 
         "Similar Fields Reviewed" := true;
         "Status 2" := "Status 2"::Reviewed;
@@ -526,46 +506,14 @@ page 1752 "Data Classification Wizard"
         exit(ImportModeSelected or ExpertModeSelected or ExportModeSelected);
     end;
 
-    local procedure OpenHelpUrl()
+    local procedure DisableOtherModes(IsModeSelected: Boolean; Mode1ToDisable: Boolean; Mode2ToDisable: Boolean)
     begin
-        HyperLink(HelpUrlTxt);
-    end;
-
-    local procedure SetExpertAndImportMode()
-    begin
-        if ExportModeSelected = true then begin
-            ExpertModeSelected := false;
-            ImportModeSelected := false;
+        if IsModeSelected then begin
+            Mode1ToDisable := false;
+            Mode2ToDisable := false;
         end;
 
         NextEnabled := ShouldEnableNext();
-    end;
-
-    local procedure SetExpertAndExportMode()
-    begin
-        if ImportModeSelected = true then begin
-            ExpertModeSelected := false;
-            ExportModeSelected := false;
-        end;
-
-        NextEnabled := ShouldEnableNext();
-    end;
-
-    local procedure SetImportAndExportMode()
-    begin
-        if ExpertModeSelected = true then begin
-            ImportModeSelected := false;
-            ExportModeSelected := false;
-        end;
-
-        NextEnabled := ShouldEnableNext();
-    end;
-
-    local procedure GoBack()
-    begin
-        if Step = Step::Verify then
-            Reset();
-        NextStep(true);
     end;
 
     procedure NextStep(Backward: Boolean)
@@ -597,36 +545,9 @@ page 1752 "Data Classification Wizard"
         end;
     end;
 
-    local procedure Finish()
-    begin
-        if ShowWorksheet then
-            PAGE.Run(PAGE::"Data Classification Worksheet");
-        CurrPage.Close();
-    end;
-
-    procedure SetBackEnabled(BackEnabledValue: Boolean)
-    begin
-        BackEnabled := BackEnabledValue;
-    end;
-
     procedure IsNextEnabled(): Boolean
     begin
         exit(NextEnabled);
-    end;
-
-    procedure SetNextEnabled(NextEnabledValue: Boolean)
-    begin
-        NextEnabled := NextEnabledValue;
-    end;
-
-    procedure IsFinishEnabled(): Boolean
-    begin
-        exit(FinishEnabled);
-    end;
-
-    procedure SetFinishEnabled(FinishEnabledValue: Boolean)
-    begin
-        FinishEnabled := FinishEnabledValue;
     end;
 
     procedure GetStep(): Option

@@ -61,7 +61,7 @@ codeunit 58 "Filter Tokens Impl."
                 CopyStr('COMPANY', 1, StrLen(TextToken)), CopyStr(CompanyTxt, 1, StrLen(TextToken)):
                     TextFilter := CompanyName();
                 else
-                    FilterTokens.OnResolveTextFilterToken(TextFilter, TextFilter, Handled);
+                    FilterTokens.OnResolveTextFilterToken(TextToken, TextFilter, Handled);
             end;
     end;
 

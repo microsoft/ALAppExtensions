@@ -11,13 +11,24 @@ codeunit 151 "System Initialization Impl."
     var
         InitializationInProgress: Boolean;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000003, 'OnCompanyOpen', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company Triggers", 'OnCompanyOpen', '', false, false)]
     local procedure Init()
     var
         SystemInitialization: Codeunit "System Initialization";
+        UserLoginTimeTracker: Codeunit "User Login Time Tracker";
     begin
         InitializationInProgress := true;
-        // Initialization logic goes heres
+        // Initialization logic goes here
+
+        // This needs to be the very first thing to run before company open
+        CODEUNIT.Run(CODEUNIT::"Azure AD User Management");
+
+        if not (Session.CurrentClientType() in [ClientType::Background, ClientType::ChildSession]) then begin
+            UserLoginTimeTracker.CreateOrUpdateLoginInfo();
+
+            // This commit needs to be performed before the password modal dialog is displayed, otherwise an error occurs
+            Commit();
+        end;
 
         SystemInitialization.OnAfterInitialization();
 

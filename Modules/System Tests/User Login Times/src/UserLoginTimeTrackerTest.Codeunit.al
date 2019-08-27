@@ -17,16 +17,18 @@ codeunit 130044 "User Login Time Tracker Test"
     var
         LibraryAssert: Codeunit "Library Assert";
         UserLoginTimeTracker: Codeunit "User Login Time Tracker";
+        UserLoginTestLibrary: Codeunit "User Login Test Library";
 
     [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure TestIsFirstLogin()
     var
         User: Record "User";
         UserSecId: Guid;
         IsFirstLogin: Boolean;
-    begin	
-	// [GIVEN] A new user
+    begin
+        // [GIVEN] A new user
         UserSecId := CreateGuid();
 
         User.Init();
@@ -34,7 +36,7 @@ codeunit 130044 "User Login Time Tracker Test"
         User.Insert();
 
         if User.Get(UserSecId) then;
-	
+
         // [WHEN] Checking whether the current user has logged in before
         IsFirstLogin := UserLoginTimeTracker.IsFirstLogin(User."User Security ID");
 
@@ -42,7 +44,7 @@ codeunit 130044 "User Login Time Tracker Test"
         LibraryAssert.IsTrue(IsFirstLogin, 'The user has never logged in before');
 
         // [GIVEN] A User Login record corresponding to the new User
-        InsertUserLogin(UserSecId, CurrentDateTime(), 0DT);
+        UserLoginTestLibrary.InsertUserLogin(UserSecId, 0D, CurrentDateTime(), 0DT);
 
         // [WHEN] Checking whether the current user has logged in before
         IsFirstLogin := UserLoginTimeTracker.IsFirstLogin(User."User Security ID");
@@ -52,6 +54,7 @@ codeunit 130044 "User Login Time Tracker Test"
     end;
 
     [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure TestAnyUserLoggedInSinceDate()
     var
@@ -76,7 +79,7 @@ codeunit 130044 "User Login Time Tracker Test"
         LibraryAssert.IsFalse(AnyUserLoggedInSinceDate, 'No user has logged in so far.');
 
         // [GIVEN] An entry in the User Login table with the "Last Login Date" set to the current date
-        InsertUserLogin(UserSecurityId(), CreateDateTime(CurrentDate, 0T), 0DT);
+        UserLoginTestLibrary.InsertUserLogin(UserSecurityId(), 0D, CreateDateTime(CurrentDate, 0T), 0DT);
 
         // [WHEN] Checking if any user has logged in since the past date
         AnyUserLoggedInSinceDate := UserLoginTimeTracker.AnyUserLoggedInSinceDate(PastDate);
@@ -98,6 +101,7 @@ codeunit 130044 "User Login Time Tracker Test"
     end;
 
     [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure TestUserLoggedInSinceDateTime()
     var
@@ -123,7 +127,7 @@ codeunit 130044 "User Login Time Tracker Test"
 
         // [GIVEN] An entry in the User Login table with the "Last Login Date" 
         // set to the past date and the user security different from the one of the current user's
-        InsertUserLogin(CreateGuid(), PastDateTime, 0DT);
+        UserLoginTestLibrary.InsertUserLogin(CreateGuid(), 0D, PastDateTime, 0DT);
 
         // [WHEN] Checking if the current user has logged in since the past date
         UserLoggedInSinceDateTime := UserLoginTimeTracker.UserLoggedInSinceDateTime(PastDateTime);
@@ -133,7 +137,7 @@ codeunit 130044 "User Login Time Tracker Test"
 
         // [WHEN] Inserting a new entry in the User Login table for the current user, with the 
         // "Last Login Date" set to the current date
-        InsertUserLogin(UserSecurityId(), CurrentDateTime, 0DT);
+        UserLoginTestLibrary.InsertUserLogin(UserSecurityId(), 0D, CurrentDateTime, 0DT);
 
         // [WHEN] Checking if the current user has logged in today
         UserLoggedInSinceDateTime := UserLoginTimeTracker.UserLoggedInSinceDateTime(CurrentDateTime);
@@ -155,6 +159,7 @@ codeunit 130044 "User Login Time Tracker Test"
     end;
 
     [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure TestGetPenultimateLoginDateTime()
     var
@@ -173,7 +178,7 @@ codeunit 130044 "User Login Time Tracker Test"
 
         // [GIVEN] The User Login contains an entry with the Penultimate Login Date as the current date 
         CurrentDate := CurrentDateTime();
-        InsertUserLogin(UserSecurityId(), 0DT, CurrentDate);
+        UserLoginTestLibrary.InsertUserLogin(UserSecurityId(), 0D, 0DT, CurrentDate);
 
         // [WHEN] Getting the penultimate login date of the current user
         PenultimateLoginDateTime := UserLoginTimeTracker.GetPenultimateLoginDateTime();
@@ -182,14 +187,42 @@ codeunit 130044 "User Login Time Tracker Test"
         LibraryAssert.AreEqual(CurrentDate, PenultimateLoginDateTime, 'The penultimate login date is incorrect.');
     end;
 
-    local procedure InsertUserLogin(UserSecurityId: Guid; LastLoginDateTime: DateTime; PenultimateLoginDateTime: DateTime)
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestCreateOrUpdateLoginInfo()
     var
         UserLogin: Record "User Login";
+        UserLoginTimeTracker: Codeunit "User Login Time Tracker";
     begin
-        UserLogin.Init();
-        UserLogin."User SID" := UserSecurityId;
-        UserLogin."Last Login Date" := LastLoginDateTime;
-        UserLogin."Penultimate Login Date" := PenultimateLoginDateTime;
-        UserLogin.Insert();
+        // [GIVEN] The User Login table is empty
+        UserLogin.DeleteAll();
+
+        // [WHEN] Calling CreateOrUpdateLoginInfo
+        UserLoginTimeTracker.CreateOrUpdateLoginInfo();
+
+        // [THEN] The User Login table should contain a single record (the one for the current test user)
+        LibraryAssert.AreEqual(1, UserLogin.Count(), 'The User Login table should contain a single entry');
+
+        if UserLogin.FindSet() then;
+
+        // [THEN] The fields of the User Login table should be properly assigned	
+        LibraryAssert.AreEqual(UserSecurityId(), UserLogin."User SID", 'The user security ID is incorrect');
+        LibraryAssert.AreNotEqual(0D, UserLogin."First Login Date", 'The first login date should not be empty');
+        LibraryAssert.AreEqual(0DT, UserLogin."Penultimate Login Date", 'The penultimate login date should be 0DT, as the user had only logged in once');
+        LibraryAssert.AreNotEqual(0DT, UserLogin."Last Login Date", 'The last login date should not be empty');
+
+        // [WHEN] Calling CreateOrUpdateLoginInfo
+        UserLoginTimeTracker.CreateOrUpdateLoginInfo();
+
+        // [THEN] The User Login table should still contain a single record
+        LibraryAssert.AreEqual(1, UserLogin.Count(), 'The User Login table should contain a single entry');
+
+        if UserLogin.FindSet() then;
+
+        // [THEN] The fields of the User Login table should be properly assigned	
+        LibraryAssert.AreEqual(UserSecurityId(), UserLogin."User SID", 'The user security ID is incorrect');
+        LibraryAssert.AreNotEqual(0D, UserLogin."First Login Date", 'The first login date should not be empty');
+        LibraryAssert.AreNotEqual(0DT, UserLogin."Penultimate Login Date", 'The penultimate not be empty');
+        LibraryAssert.AreNotEqual(0DT, UserLogin."Last Login Date", 'The last login date not be empty');
     end;
 }

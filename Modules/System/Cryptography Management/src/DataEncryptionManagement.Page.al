@@ -50,7 +50,7 @@ page 9905 "Data Encryption Management"
 
                 trigger OnAction()
                 begin
-                    EncryptionManagement.EnableEncryption(false);
+                    CryptographyManagement.EnableEncryption(false);
                     RefreshEncryptionStatus();
                 end;
             }
@@ -120,7 +120,7 @@ page 9905 "Data Encryption Management"
 
                 trigger OnAction()
                 begin
-                    EncryptionManagement.DisableEncryption(false);
+                    CryptographyManagement.DisableEncryption(false);
                     RefreshEncryptionStatus();
                 end;
             }
@@ -140,7 +140,7 @@ page 9905 "Data Encryption Management"
     end;
 
     var
-        EncryptionManagement: Codeunit "Encryption Management";
+        CryptographyManagement: Codeunit "Cryptography Management";
         CryptographyManagementImpl: Codeunit "Cryptography Management Impl.";
         EncryptionEnabledState: Boolean;
         EncryptionKeyExistsState: Boolean;

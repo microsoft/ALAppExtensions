@@ -24,13 +24,20 @@ codeunit 26 "Confirm Management Impl."
 
     local procedure IsGuiAllowed() GuiIsAllowed: Boolean
     var
-        ConfirmManagement: Codeunit "Confirm Management";
         Handled: Boolean;
     begin
-        ConfirmManagement.OnBeforeGuiAllowed(GuiIsAllowed, Handled);
+        OnBeforeGuiAllowed(GuiIsAllowed, Handled);
         if Handled then
             exit;
         exit(GuiAllowed());
+    end;
+
+    /// <summary>
+    /// Raises an event to be able to change the return of IsGuiAllowed function. Used for testing.
+    /// </summary>
+    [IntegrationEvent(false, false)]
+    procedure OnBeforeGuiAllowed(var Result: Boolean; var Handled: Boolean)
+    begin
     end;
 }
 

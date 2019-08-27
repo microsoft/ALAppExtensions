@@ -1,0 +1,32 @@
+{
+    "id":  "d4dcc3bc-265b-48fc-99e2-3262a6130236",
+    "name":  "Confirm Management Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Library functions to initialize test data for Confirm Management module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "a4584a53-9345-458a-af20-d1df2fab7bd8",
+                             "name":  "Confirm Management",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                        "from":  132513,
+                        "to":  132513
+                     }
+                 ],
+    "target":  "OnPrem"
+}

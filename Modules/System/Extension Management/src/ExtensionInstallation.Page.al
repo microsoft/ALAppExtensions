@@ -31,12 +31,14 @@ page 2503 "Extension Installation"
 
     trigger OnOpenPage()
     var
+        ExtensionMarketplace: Codeunit "Extension Marketplace";
         MarketplaceExtnDeployment: Page "Marketplace Extn Deployment";
     begin
         GetDetailsFromFilters();
 
-        MarketplaceExtnDeployment.SetRecord(Rec);
-        MarketplaceExtnDeployment.Run();
+        MarketplaceExtnDeployment.RunModal();
+        if MarketplaceExtnDeployment.GetInstalledSelected() then
+            ExtensionMarketplace.InstallMarketplaceExtension(ID, ResponseURL, MarketplaceExtnDeployment.GetLanguageId());
     end;
 
     local procedure GetDetailsFromFilters()

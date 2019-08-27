@@ -13,6 +13,13 @@
     "dependencies":  [
 
                      ],
+    "internalsVisibleTo":  [
+                                {
+								    "appId":  "d4dcc3bc-265b-48fc-99e2-3262a6130236",
+                                    "name":  "Confirm Management Test Library",
+                                    "publisher":  "Microsoft"
+                                }
+                           ],
     "screenshots":  [
 
                     ],

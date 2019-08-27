@@ -42,6 +42,11 @@ table 3700 "Manual Setup"
             CalcFormula = Lookup ("NAV App".Name where(ID = FIELD("App ID")));
             Editable = false;
         }
+        field(8; Category; Enum "Manual Setup Category")
+        {
+            Caption = 'Category';
+            Editable = false;
+        }
     }
 
     keys
@@ -54,7 +59,7 @@ table 3700 "Manual Setup"
 
     fieldgroups
     {
-        fieldgroup(Brick; Description, Name, Icon)
+        fieldgroup(Brick; Description, Name, Icon, Category)
         {
         }
     }

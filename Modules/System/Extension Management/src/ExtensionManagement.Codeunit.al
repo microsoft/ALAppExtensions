@@ -14,13 +14,12 @@ codeunit 2504 "Extension Management"
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
         ExtensionMarketplace: Codeunit "Extension Marketplace";
-        AppsourceEmbedRelativeTxt: Label 'https://appsource.microsoft.com/embed/en-us/marketplace?product=dynamics-365-business-central', Locked = true;
 
 
     /// <summary>
     /// Installs an extension, based on its PackageId and Locale Identifier.
     /// </summary>
-    /// <param name="PackageId">The ID of the NAVApp extension package.</param>
+    /// <param name="PackageId">The ID of the extension package.</param>
     /// <param name="lcid">The Locale Identifier.</param>
     /// <param name="IsUIEnabled">Indicates whether the install operation is invoked through the UI.</param>
     procedure InstallExtension(PackageId: Guid; lcid: Integer; IsUIEnabled: Boolean): Boolean
@@ -31,7 +30,7 @@ codeunit 2504 "Extension Management"
     /// <summary>
     /// Uninstalls an extension, based on its PackageId.
     /// </summary>
-    /// <param name="PackageId">The ID of the NAVApp extension package.</param>
+    /// <param name="PackageId">The ID of the extension package.</param>
     /// <param name="IsUIEnabled">Indicates if the uninstall operation is invoked through the UI.</param>
     procedure UninstallExtension(PackageId: Guid; IsUIEnabled: Boolean): Boolean
     begin
@@ -40,6 +39,7 @@ codeunit 2504 "Extension Management"
 
     /// <summary>
     /// Uploads an extension, using a File Stream and based on the Locale Identifier.
+    /// This method is only applicable in SaaS environment.
     /// </summary>
     /// <param name="FileStream">The File Stream containing the extension to be uploaded.</param>
     /// <param name="lcid">The Locale Identifier.</param>
@@ -50,20 +50,21 @@ codeunit 2504 "Extension Management"
 
     /// <summary>
     /// Deploys an extension, based on its PackageId and Locale Identifier.
+    /// This method is only applicable in SaaS environment.
     /// </summary>
-    /// <param name="PackageId">The PackageId of the NAVApp extension to be deployed.</param>
+    /// <param name="AppId">The AppId of the extension.</param>
     /// <param name="lcid">The Locale Identifier.</param>
     /// <param name="IsUIEnabled">Indicates whether the install operation is invoked through the UI.</param>
-    procedure DeployExtension(PackageId: Guid; lcid: Integer; IsUIEnabled: Boolean)
+    procedure DeployExtension(AppId: Guid; lcid: Integer; IsUIEnabled: Boolean)
     begin
-        ExtensionOperationImpl.DeployExtension(PackageId, lcid, IsUIEnabled);
+        ExtensionOperationImpl.DeployExtension(AppId, lcid, IsUIEnabled);
     end;
 
     /// <summary>
     /// Unpublishes an extension, based on its PackageId. 
     /// An extension can only be unpublished, if it is a per-tenant one and it has been uninstalled first.
     /// </summary>
-    /// <param name="PackageId">The PackageId of the NAVApp extension to be deployed.</param>
+    /// <param name="PackageId">The PackageId of the extension.</param>
     procedure UnpublishExtension(PackageId: Guid): Boolean
     begin
         exit(ExtensionOperationImpl.UnpublishExtension(PackageId));
@@ -72,7 +73,7 @@ codeunit 2504 "Extension Management"
     /// <summary>
     /// Downloads the source of an extension, based on its PackageId.
     /// </summary>
-    /// <param name="NAVApp">The NAVApp extension for which to download the source.</param>
+    /// <param name="PackageId">The PackageId of the extension.</param>
     procedure DownloadExtensionSource(PackageId: Guid): Boolean
     begin
         exit(ExtensionOperationImpl.DownloadExtensionSource(PackageId));
@@ -81,7 +82,7 @@ codeunit 2504 "Extension Management"
     /// <summary>
     /// Checks whether an extension is installed, based on its PackageId.
     /// </summary>
-    /// <param name="PackageId">The ID of the NAVApp extension package.</param>
+    /// <param name="PackageId">The ID of the extension package.</param>
     /// <returns>The result of checking whether an extension is installed.</returns>
     procedure IsInstalledByPackageId(PackageId: Guid): Boolean
     begin
@@ -91,11 +92,20 @@ codeunit 2504 "Extension Management"
     /// <summary>
     /// Checks whether an extension is installed, based on its AppId.
     /// </summary>
-    /// <param name="AppId">The AppId of the NAVApp extension.</param>
+    /// <param name="AppId">The AppId of the extension.</param>
     /// <returns>The result of checking whether an extension is installed.</returns>
     procedure IsInstalledByAppId(AppId: Guid): Boolean
     begin
         exit(ExtensionInstallationImpl.IsInstalledByAppId(AppId));
+    end;
+
+    /// <summary>
+    /// Retrieves a list of all the Deployment Status Entries
+    /// </summary>
+    /// <param name="NavAppTenantOperation">Gets the list of all the Deployment Status Entries.</param>
+    procedure GetAllExtensionDeploymentStatusEntries(var NavAppTenantOperation: Record "NAV App Tenant Operation")
+    begin
+        ExtensionOperationImpl.GetAllExtensionDeploymentStatusEntries(NavAppTenantOperation);
     end;
 
     /// <summary>
@@ -122,25 +132,6 @@ codeunit 2504 "Extension Management"
     end;
 
     /// <summary>
-    /// Installs a Marketplace extension based on its AppId and locale identifier
-    /// </summary>
-    /// <param name="AppId">The AppId of the extension.</param>
-    /// <param name="lcid">The Locale Identifier.</param>
-    /// <param name="IsUIEnabled">Indicates whether the install operation is invoked through the UI.</param>
-    procedure InstallMarketplaceExtension(AppId: Guid; lcid: Integer; IsUIEnabled: Boolean)
-    begin
-        ExtensionMarketplace.InstallMarketplaceExtension(AppId, lcid, IsUIEnabled);
-    end;
-
-    /// <summary>
-    /// Returns the URL to the library of the embed apps for Business Central on AppSoruce.
-    /// </summary>
-    procedure GetMarketplaceEmbeddedUrl(): Text
-    begin
-        exit(AppsourceEmbedRelativeTxt);
-    end;
-
-    /// <summary>
     /// Allows or disallows Http Client requests against the specified extension.
     /// </summary>
     /// <param name="PackageId">The Id of the extension to configure.</param>
@@ -162,9 +153,9 @@ codeunit 2504 "Extension Management"
     /// Returns the PackageId of the latest version of the extension by the extension's AppId.
     /// </summary>
     /// <param name="AppId">The AppId of the installed extension.</param>
-    procedure GetCurrentInstalledVersionPackageIdByAppId(AppId: Guid): Guid
+    procedure GetCurrentlyInstalledVersionPackageIdByAppId(AppId: Guid): Guid
     begin
-        exit(ExtensionOperationImpl.GetCurrentInstalledVersionPackageIdByAppId(AppId));
+        exit(ExtensionOperationImpl.GetCurrentlyInstalledVersionPackageIdByAppId(AppId));
     end;
 
     /// <summary>

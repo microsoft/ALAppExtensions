@@ -5,7 +5,7 @@
 
 table 1180 "Data Privacy Entities"
 {
-    Access = Public; // TODO: Evaluate proper access modifier.
+    Access = Public;
     Caption = 'Data Subjects';
 
     fields
@@ -104,35 +104,5 @@ table 1180 "Data Privacy Entities"
     fieldgroups
     {
     }
-
-    var
-        SimilarFieldsLbl: Label 'Classify Similar Fields for %1', Comment = '%1=Table Caption';
-
-    [Scope('OnPrem')]
-    procedure InsertRow(TableNo: Integer; PageNo: Integer; KeyFieldNo: Integer; EntityFilter: Text; PrivacyBlockedFieldNo: Integer)
-    var
-        OutStream: OutStream;
-    begin
-        if Get(TableNo) then
-            exit;
-
-        Init();
-        Include := true;
-        "Table No." := TableNo;
-        "Key Field No." := KeyFieldNo;
-        "Privacy Blocked Field No." := PrivacyBlockedFieldNo;
-
-        if EntityFilter <> '' then begin
-            "Entity Filter".CreateOutStream(OutStream);
-            OutStream.WriteText(EntityFilter);
-        end;
-
-        "Default Data Sensitivity" := "Default Data Sensitivity"::Personal;
-        CalcFields("Table Caption");
-        "Similar Fields Label" := StrSubstNo(SimilarFieldsLbl, "Table Caption");
-        "Page No." := PageNo;
-
-        Insert();
-    end;
 }
 

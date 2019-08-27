@@ -2,7 +2,7 @@
     "id":  "eb65d818-4f43-4f81-b20b-f8ff726dc247",
     "name":  "User Login Times Test",
     "publisher":  "Microsoft",
-    "brief":  "",
+    "brief":  "Tests for the User Login Times module",
     "description":  "Tests for the User Login Times module",
     "version":  "15.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -14,6 +14,12 @@
                          {
                              "appId":  "959630b2-01c5-48d8-a477-d6d40da855fb",
                              "name":  "User Login Times",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "9761c0ac-e4ea-4c14-8918-2f4ded158b12",
+                             "name":  "User Login Times Test Library",
                              "publisher":  "Microsoft",
                              "version":  "15.0.0.0"
                          },

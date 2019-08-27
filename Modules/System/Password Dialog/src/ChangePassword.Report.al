@@ -5,9 +5,7 @@
 
 report 9810 "Change Password"
 {
-    ApplicationArea = All;
     ProcessingOnly = true;
-    UsageCategory = Tasks;
     UseRequestPage = false;
 
     dataset

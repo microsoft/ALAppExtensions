@@ -86,6 +86,6 @@ codeunit 135038 "Video Test"
     [ModalPageHandler]
     procedure HandleVideoLink(var VideoLink: TestPage "Video link")
     begin
-        VideoLink.Close();
+        Assert.AreEqual(GetLastErrorText(), '', 'No error should occur when opening the video link page');
     end;
 }

@@ -1,0 +1,32 @@
+{
+    "id":  "47397d83-32ba-4ef0-8988-ef72539bfe36",
+    "name":  "Client Type Management Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Library functions to initialize test data for Client Type Management module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
+                             "name":  "Client Type Management",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  130018,
+                         "to":  130018
+                     }
+                 ],
+    "target":  "OnPrem"
+}

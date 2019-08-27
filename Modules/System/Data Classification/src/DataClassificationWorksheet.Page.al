@@ -65,6 +65,7 @@ page 1751 "Data Classification Worksheet"
                     Style = Standard;
                     StyleExpr = TRUE;
                     ToolTip = 'Specifies the type of the affected field.';
+                    Visible = false;
                 }
                 field("Data Sensitivity"; "Data Sensitivity")
                 {
@@ -74,7 +75,9 @@ page 1751 "Data Classification Worksheet"
 
                     trigger OnValidate()
                     begin
-                        ValidateAndSetModified();
+                        Validate("Last Modified By", UserSecurityId());
+                        Validate("Last Modified", CurrentDateTime());
+                        SetLastModifiedBy();
                     end;
                 }
                 field("Data Classification"; "Data Classification")
@@ -83,7 +86,6 @@ page 1751 "Data Classification Worksheet"
                     Editable = false;
                     Enabled = false;
                     ToolTip = 'Specifies the classification of the data. Open Help to lean more.';
-                    Visible = false;
                 }
                 field(LastModifiedBy; LastModifiedBy)
                 {
@@ -124,7 +126,7 @@ page 1751 "Data Classification Worksheet"
 
                     trigger OnAction()
                     begin
-                        RunDataClassificationWizard();
+                        PAGE.Run(PAGE::"Data Classification Wizard");
                     end;
                 }
                 action("Find New Fields")
@@ -139,8 +141,10 @@ page 1751 "Data Classification Worksheet"
                     ToolTip = 'Search for new fields and add them in the data classification worksheet.';
 
                     trigger OnAction()
+                    var
+                        DataClassificationMgt: Codeunit "Data Classification Mgt.";
                     begin
-                        SyncAllFields();
+                        DataClassificationMgt.SyncAllFields();
                     end;
                 }
                 action("Set as Sensitive")
@@ -223,8 +227,14 @@ page 1751 "Data Classification Worksheet"
                     ToolTip = 'View the fields of the related records that have similar name with one of the fields selected.';
 
                     trigger OnAction()
+                    var
+                        DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
                     begin
-                        ViewSimilarFields();
+                        CurrPage.SetSelectionFilter(Rec);
+                        if not FindSet() then
+                            Error(NoRecordsErr);
+                        DataClassificationMgtImpl.FindSimilarFieldsInRelatedTables(Rec);
+                        CurrPage.Update();
                     end;
                 }
                 action("View Unclassified")
@@ -315,7 +325,9 @@ page 1751 "Data Classification Worksheet"
 
                     trigger OnAction()
                     begin
-                        ViewAllData();
+                        Reset();
+                        SetRange("Company Name", CompanyName());
+                        SetFilter("Field Caption", '<>%1', '');
                     end;
                 }
                 action("Show Field Content")
@@ -340,8 +352,13 @@ page 1751 "Data Classification Worksheet"
     }
 
     trigger OnAfterGetCurrRecord()
+    var
+        DataSensitivity: Record "Data Sensitivity";
+        Field: Record Field;
     begin
-        IsFieldContentEnabled();
+        CurrPage.SetSelectionFilter(DataSensitivity);
+        FieldContentEnabled := (("Field Type" = Field.Type::Code) or ("Field Type" = Field.Type::Text))
+            and (DataSensitivity.Count() = 1);
     end;
 
     trigger OnAfterGetRecord()
@@ -404,10 +421,10 @@ page 1751 "Data Classification Worksheet"
 
     local procedure SendLegalDisclaimerNotification()
     var
-        DataClassificationMgt: Codeunit "Data Classification Mgt.";
+        DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
         Notification: Notification;
     begin
-        Notification.Message := DataClassificationMgt.GetLegalDisclaimerTxt();
+        Notification.Message := DataClassificationMgtImpl.GetLegalDisclaimerTxt();
         Notification.Send();
     end;
 
@@ -426,52 +443,16 @@ page 1751 "Data Classification Worksheet"
                 DataClassificationMgt.PopulateDataSensitivityTable();
     end;
 
-    local procedure ValidateAndSetModified()
-    begin
-        Validate("Last Modified By", UserSecurityId());
-        Validate("Last Modified", CurrentDateTime());
-        SetLastModifiedBy();
-    end;
-
-    local procedure IsFieldContentEnabled()
-    var
-        DataSensitivity: Record "Data Sensitivity";
-    begin
-        CurrPage.SetSelectionFilter(DataSensitivity);
-        FieldContentEnabled :=
-          (("Field Type" = "Field Type"::Code) or
-           ("Field Type" = "Field Type"::Text)) and
-          (DataSensitivity.Count() = 1);
-    end;
-
-    local procedure ViewSimilarFields()
-    var
-        DataClassificationMgt: Codeunit "Data Classification Mgt.";
-    begin
-        CurrPage.SetSelectionFilter(Rec);
-        if not FindSet() then
-            Error(NoRecordsErr);
-        DataClassificationMgt.FindSimilarFieldsInRelatedTables(Rec);
-        CurrPage.Update();
-    end;
-
     local procedure ViewDataWithSensitivity(Sensitivity: Option)
     begin
         SetRange("Data Sensitivity", Sensitivity);
         CurrPage.Update();
     end;
 
-    local procedure ViewAllData()
-    begin
-        Reset();
-        SetRange("Company Name", CompanyName());
-        SetFilter("Field Caption", '<>%1', '');
-    end;
-
     local procedure ShowFieldContent()
     var
         TempFieldContentBuffer: Record "Field Content Buffer" temporary;
-        DataClassificationMgt: Codeunit "Data Classification Mgt.";
+        DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
         RecordRef: RecordRef;
         FieldRef: FieldRef;
     begin
@@ -479,21 +460,9 @@ page 1751 "Data Classification Worksheet"
         if RecordRef.FindSet() then
             repeat
                 FieldRef := RecordRef.Field("Field No");
-                DataClassificationMgt.PopulateFieldValue(FieldRef, TempFieldContentBuffer);
+                DataClassificationMgtImpl.PopulateFieldValue(FieldRef, TempFieldContentBuffer);
             until RecordRef.Next() = 0;
         PAGE.RunModal(PAGE::"Field Content Buffer", TempFieldContentBuffer);
-    end;
-
-    local procedure RunDataClassificationWizard()
-    begin
-        PAGE.Run(PAGE::"Data Classification Wizard");
-    end;
-
-    local procedure SyncAllFields()
-    var
-        DataClassificationMgt: Codeunit "Data Classification Mgt.";
-    begin
-        DataClassificationMgt.SyncAllFields();
     end;
 }
 

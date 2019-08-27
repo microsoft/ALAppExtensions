@@ -1,0 +1,32 @@
+{
+    "id":  "901cbabc-1217-4d4a-922f-77b4d4ef3dcf",
+    "name":  "Azure Key Vault Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Library functions to initialize test data for Azure Key Vault module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "3a56c7d2-a594-4682-bd90-b10bfb177620",
+                             "name":  "Azure Key Vault",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                        "from":  135210,
+                        "to":  135210
+                     }
+                 ],
+    "target":  "OnPrem"
+}

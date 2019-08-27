@@ -9,7 +9,7 @@ page 130452 "Select Tests By Range"
             group(Control1)
             {
                 ShowCaption = false;
-                field("Selection Filter";SelectionFilter)
+                field("Selection Filter"; SelectionFilter)
                 {
                     ApplicationArea = All;
                     Caption = 'Selection Filter';
@@ -25,7 +25,6 @@ page 130452 "Select Tests By Range"
     var
         SelectionFilter: Text;
 
-    [Scope('OnPrem')]
     procedure GetRange(): Text
     begin
         exit(SelectionFilter);
