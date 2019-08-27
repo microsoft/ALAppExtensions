@@ -1,0 +1,32 @@
+{
+    "id":  "e63749f1-a7a5-4557-a943-0ae4745616bd",
+    "name":  "Azure AD Plan Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Library function to initialize test data for Azure AD Plan module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "c1d53fcd-ec4f-4ac5-ba49-af91a1dea38c",
+                             "name":  "Azure AD Plan",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  132916,
+                         "to":  132916
+                     }
+                 ],
+    "target":  "OnPrem"
+}

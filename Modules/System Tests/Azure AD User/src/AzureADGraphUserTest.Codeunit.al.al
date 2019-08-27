@@ -18,10 +18,24 @@ codeunit 132911 "Azure AD Graph User Test"
         NewAADUserIdLbl: Label '6D59EA6C-BD8c-4694-A839-FE5C70089021';
         AADUserIdWithEmptyObjectIdLbl: Label '28E0F872-F014-4EA4-B47D-6AF6F13B3FE1';
         AADUserWithEmptySurnameUserIdLbl: Label 'A0F61055-D58F-4D6D-B96B-7A147B0D131A';
+        UserToUpdate1IdLbl: Label '6D59EA6C-BD8c-4694-A839-FE5C70089022';
+        UserToUpdate2IdLbl: Label '6D59EA6C-BD8c-4694-A839-FE5C70089023';
+        UserToUpdate3IdLbl: Label '6D59EA6C-BD8c-4694-A839-FE5C70089024';
+        UserToUpdate4IdLbl: Label '6D59EA6C-BD8c-4694-A839-FE5C70089025';
+        UserToUpdate5IdLbl: Label '6D59EA6C-BD8c-4694-A839-FE5C70089026';
+        UserToUpdate6IdLbl: Label '6D59EA6C-BD8c-4694-A839-FE5C70089027';
+        UserToUpdate7IdLbl: Label '6D59EA6C-BD8c-4694-A839-FE5C70089028';
 
         NewAADUserObjectIdLbl: Label 'New AAD User Object Id';
         CurrentUserObjectIdLbl: Label 'Current User Object Id';
         AADUserWithEmptySurnameObjectIdLbl: Label 'Empty Surname User Object Id';
+        UpdatedUser1ObjectIdLbl: Label 'New AAD User Object Id 1';
+        UpdatedUser2ObjectIdLbl: Label 'New AAD User Object Id 2';
+        UpdatedUser3ObjectIdLbl: Label 'New AAD User Object Id 3';
+        UpdatedUser4ObjectIdLbl: Label 'New AAD User Object Id 4';
+        UpdatedUser5ObjectIdLbl: Label 'New AAD User Object Id 5';
+        UpdatedUser6ObjectIdLbl: Label 'New AAD User Object Id 6';
+        UpdatedUser7ObjectIdLbl: Label 'New AAD User Object Id 7';
 
         CurrentUserSurnameLbl: Label 'Current User Surname';
         NewAADUserSurnameLbl: Label 'New User Surname';
@@ -34,6 +48,13 @@ codeunit 132911 "Azure AD Graph User Test"
 
         CurrentUserPrincipalNameLbl: Label 'Current User Principal Name';
         NewAADUserPrincipalNameLbl: Label 'principal@microsoft.com';
+        UpdatedUser1PrincipalNameLbl: Label 'principal1@microsoft.com';
+        UpdatedUser2PrincipalNameLbl: Label 'principal2@microsoft.com';
+        UpdatedUser3PrincipalNameLbl: Label 'principal3@microsoft.com';
+        UpdatedUser4PrincipalNameLbl: Label 'principal4@microsoft.com';
+        UpdatedUser5PrincipalNameLbl: Label 'principal5@microsoft.com';
+        UpdatedUser6PrincipalNameLbl: Label 'principal6@microsoft.com';
+        UpdatedUser7PrincipalNameLbl: Label 'principal7@microsoft.com';
 
         CurrentUserGivenNameLbl: Label 'Current User Given Name';
         NewAADUserGivenNameLbl: Label 'New User Given Name';
@@ -87,6 +108,21 @@ codeunit 132911 "Azure AD Graph User Test"
         CreateAzureADUser(UserInfo, AADUserIdWithEmptyObjectIdLbl, '', '', '', '', '', '', '', false);
         CreateAzureADUser(UserInfo, AADUserWithEmptySurnameUserIdLbl, AADUserWithEmptySurnameObjectIdLbl, '', '', '', '',
             AADUserGivenNameForUserWithEmptySurnameLbl, '', false);
+
+        CreateAzureADUser(UserInfo, UserToUpdate1IdLbl, UpdatedUser1ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+            NewAADUserEmailLbl, UpdatedUser1PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
+        CreateAzureADUser(UserInfo, UserToUpdate2IdLbl, UpdatedUser2ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+            NewAADUserEmailLbl, UpdatedUser2PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
+        CreateAzureADUser(UserInfo, UserToUpdate3IdLbl, UpdatedUser3ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+            NewAADUserEmailLbl, UpdatedUser3PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
+        CreateAzureADUser(UserInfo, UserToUpdate4IdLbl, UpdatedUser4ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+            NewAADUserEmailLbl, UpdatedUser4PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
+        CreateAzureADUser(UserInfo, UserToUpdate5IdLbl, UpdatedUser5ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+            NewAADUserEmailLbl, UpdatedUser5PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
+        CreateAzureADUser(UserInfo, UserToUpdate6IdLbl, UpdatedUser6ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+            NewAADUserEmailLbl, UpdatedUser6PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
+        CreateAzureADUser(UserInfo, UserToUpdate7IdLbl, UpdatedUser7ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+            NewAADUserEmailLbl, UpdatedUser7PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
     end;
 
     [Normal]
@@ -148,20 +184,35 @@ codeunit 132911 "Azure AD Graph User Test"
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
-    procedure TestSetGraphUserForTheCurrentUser()
+    procedure TestGetGraphUserForTheCurrentUser()
     var
-        IsGraphUserNull: Boolean;
+        GraphUser: DotNet UserInfo;
     begin
         Initialize();
 
-        // [WHEN] Trying to set the graph user as the current user
-        AzureADGraphUser.SetGraphUser(UserSecurityId());
+        // [WHEN] Retrieving the graph user for the current user's security id
+        AzureADGraphUser.GetGraphUser(UserSecurityId(), GraphUser);
 
-        // [WHEN] Checking whether the graph user is null
-        IsGraphUserNull := AzureADGraphUser.IsGraphUserNull();
+        // [THEN] The graph user should not be null
+        LibraryAssert.IsFalse(IsNull(GraphUser), 'The graph user should not be null');
 
-        // [THEN] The result should be false
-        LibraryAssert.IsFalse(IsGraphUserNull, 'The graph user should not be null');
+        // [THEN] The graph user's properties are assigned correctly
+        LibraryAssert.AreEqual(CurrentUserObjectIdLbl, GraphUser.ObjectId(),
+            'The object id of the graph user is incorect');
+        LibraryAssert.AreEqual(CurrentUserSurnameLbl, GraphUser.Surname(),
+            'The surname of the graph user is incorect');
+        LibraryAssert.AreEqual(CurrentUserDisplayNameLbl, GraphUser.DisplayName(),
+            'The display name of the graph user is incorect');
+        LibraryAssert.AreEqual(CurrentUserEmailLbl, GraphUser.Mail(),
+            'The email of the graph user is incorect');
+        LibraryAssert.AreEqual(CurrentUserPrincipalNameLbl, GraphUser.UserPrincipalName(),
+            'The user principal name of the graph user is incorect');
+        LibraryAssert.AreEqual(CurrentUserGivenNameLbl, GraphUser.GivenName(),
+            'The given name of the graph user is incorect');
+        LibraryAssert.AreEqual(CurrentUserPreferredLanguageLbl, GraphUser.PreferredLanguage(),
+            'The preferred language of the graph user is incorect');
+        LibraryAssert.AreEqual(false, GraphUser.AccountEnabled(),
+            'The account enabled flag of the graph user is set incorectly');
 
         TearDown();
     end;
@@ -169,21 +220,15 @@ codeunit 132911 "Azure AD Graph User Test"
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
-    procedure TestSetGraphUserrForAnInexistentUser()
+    procedure TestGetGraphUserForAnInexistentUser()
     var
-        IsGraphUserNull: Boolean;
+        GraphUser: DotNet UserInfo;
     begin
         Initialize();
 
-        // [WHEN] Trying to set the graph user as an inexistent user
+        // [WHEN] Retrieving the graph user for an inexistent user
         // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(CreateGuid());
-
-        // [WHEN] Checking whether the graph user is null
-        IsGraphUserNull := AzureADGraphUser.IsGraphUserNull();
-
-        // [THEN] The result should be true
-        LibraryAssert.IsTrue(IsGraphUserNull, 'The graph user should be null');
+        asserterror AzureADGraphUser.GetGraphUser(CreateGuid(), GraphUser);
 
         TearDown();
     end;
@@ -191,20 +236,35 @@ codeunit 132911 "Azure AD Graph User Test"
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
-    procedure TestSetGraphUserForANewUserWithNonEmptyObjectId()
+    procedure TestGetGraphUserForANewUserWithValidObjectId()
     var
-        IsGraphUserNull: Boolean;
+        GraphUser: DotNet UserInfo;
     begin
         Initialize();
 
-        // [WHEN] Trying to set the graph user as the newly created user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
+        // [WHEN] Retrieving the graph user for a newly inserted Azure AD Graph user with a valid object id
+        AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUser);
 
-        // [WHEN] Checking whether the graph user is null
-        IsGraphUserNull := AzureADGraphUser.IsGraphUserNull();
+        // [THEN] The user should not be null
+        LibraryAssert.IsFalse(IsNull(GraphUser), 'The graph user should not be null');
 
-        // [THEN] The result should be false
-        LibraryAssert.IsFalse(IsGraphUserNull, 'The graph user should not be null');
+        // [THEN] The graph user's properties are assigned correctly
+        LibraryAssert.AreEqual(NewAADUserObjectIdLbl, GraphUser.ObjectId(),
+            'The object id of the graph user is incorect');
+        LibraryAssert.AreEqual(NewAADUserSurnameLbl, GraphUser.Surname(),
+            'The surname of the graph user is incorect');
+        LibraryAssert.AreEqual(NewAADUserDisplayNameLbl, GraphUser.DisplayName(),
+            'The display name of the graph user is incorect');
+        LibraryAssert.AreEqual(NewAADUserEmailLbl, GraphUser.Mail(),
+            'The email of the graph user is incorect');
+        LibraryAssert.AreEqual(NewAADUserPrincipalNameLbl, GraphUser.UserPrincipalName(),
+            'The user principal name of the graph user is incorect');
+        LibraryAssert.AreEqual(NewAADUserGivenNameLbl, GraphUser.GivenName(),
+            'The given name of the graph user is incorect');
+        LibraryAssert.AreEqual(NewAADUserPreferredLanguageLbl, GraphUser.PreferredLanguage(),
+            'The preferred language of the graph user is incorect');
+        LibraryAssert.AreEqual(true, GraphUser.AccountEnabled(),
+            'The account enabled flag of the graph user is set incorectly');
 
         TearDown();
     end;
@@ -212,21 +272,15 @@ codeunit 132911 "Azure AD Graph User Test"
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
-    procedure TestSetGraphUserForANewUserWithEmptyObjectId()
+    procedure TestGetGraphUserForANewUserWithInvalidObjectId()
     var
-        IsGraphUserNull: Boolean;
+        GraphUser: DotNet UserInfo;
     begin
         Initialize();
 
-        // [WHEN] Trying to set the graph user as a user with an empty object id
+        // [WHEN] Retrieving the graph user for a newly inserted Azure AD Graph user with an invalid object id
         // [THEN] An error should occur
-        asserterror AzureADGraphUser.SetGraphUser(AADUserIdWithEmptyObjectIdLbl);
-
-        // [WHEN] Checking whether the graph user is null
-        IsGraphUserNull := AzureADGraphUser.IsGraphUserNull();
-
-        // [THEN] The result should be true
-        LibraryAssert.IsTrue(IsGraphUserNull, 'The graph user should be null');
+        asserterror AzureADGraphUser.GetGraphUser(AADUserIdWithEmptyObjectIdLbl, GraphUser);
 
         TearDown();
     end;
@@ -240,11 +294,8 @@ codeunit 132911 "Azure AD Graph User Test"
     begin
         Initialize();
 
-        // [WHEN] Trying to set the graph user as the current user
-        AzureADGraphUser.SetGraphUser(UserSecurityId());
-
         // [WHEN] Getting the object id of the graph user
-        GraphUserObjectId := AzureADGraphUser.GetObjectId();
+        GraphUserObjectId := AzureADGraphUser.GetObjectId(UserSecurityId());
 
         // [THEN] The object id should not be the empty string
         LibraryAssert.AreEqual(CurrentUserObjectIdLbl, GraphUserObjectId, 'The object id is incorrect');
@@ -256,20 +307,12 @@ codeunit 132911 "Azure AD Graph User Test"
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure TestGetObjectIdForAnInexistentUser()
-    var
-        ObjectId: Text;
     begin
         Initialize();
 
-        // [WHEN] Trying to set the graph user as an inexistent user
-        // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(CreateGuid());
-
         // [WHEN] Getting the object id of the graph user
-        ObjectId := AzureADGraphUser.GetObjectId();
-
-        // [THEN] The object id should be the empty string
-        LibraryAssert.AreEqual('', ObjectId, 'The object id is incorrect');
+        // [THEN] An error should occur, as the user does not exist
+        asserterror AzureADGraphUser.GetObjectId(CreateGuid());
 
         TearDown();
     end;
@@ -283,11 +326,8 @@ codeunit 132911 "Azure AD Graph User Test"
     begin
         Initialize();
 
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
-
         // [WHEN] Getting the object id of the graph user
-        GraphObjectId := AzureADGraphUser.GetObjectId();
+        GraphObjectId := AzureADGraphUser.GetObjectId(NewAADUserIdLbl);
 
         // [THEN] The object id should be the id of the new user
         LibraryAssert.AreEqual(NewAADUserObjectIdLbl, GraphObjectId, 'The object id is incorrect');
@@ -298,20 +338,13 @@ codeunit 132911 "Azure AD Graph User Test"
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
-    procedure TestIsAccountDisabledForCurrentUser()
-    var
-        IsAccountDisabled: Boolean;
+    procedure TestGetUserAuthenticationObjectIdForAnInexistentUser()
     begin
         Initialize();
 
-        // [WHEN] Trying to set the graph user as the current user
-        AzureADGraphUser.SetGraphUser(UserSecurityId());
-
-        // [WHEN] Checking whether the account is disabled for the user
-        IsAccountDisabled := AzureADGraphUser.IsAccountDisabled();
-
-        // [THEN] The result should be true
-        LibraryAssert.IsTrue(IsAccountDisabled, 'The account should be disabled');
+        // [WHEN] Trying to get the user authentication object ID for an inexistent user
+        // [THEN] An error should occur
+        asserterror AzureADGraphUser.GetUserAuthenticationObjectId(CreateGuid());
 
         TearDown();
     end;
@@ -319,623 +352,59 @@ codeunit 132911 "Azure AD Graph User Test"
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
-    procedure TestIsAccountDisabledForAnInexistentUser()
-    var
-        IsAccountDisabled: Boolean;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as an inexistent user
-        // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(CreateGuid());
-
-        // [WHEN] Checking whether the account is disabled for the user
-        IsAccountDisabled := AzureADGraphUser.IsAccountDisabled();
-
-        // [THEN] The result should be false, as the user does not exist
-        LibraryAssert.IsFalse(IsAccountDisabled, 'The user does not exist');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestIsAccountDisabledForANewUser()
-    var
-        IsAccountDisabled: Boolean;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
-
-        // [WHEN] Checking whether the account is disabled for the user
-        IsAccountDisabled := AzureADGraphUser.IsAccountDisabled();
-
-        // [THEN] The result should be false
-        LibraryAssert.IsFalse(IsAccountDisabled, 'The account should not be disabled');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestIsAccountEnabledForCurrentUser()
-    var
-        IsAccountEnabled: Boolean;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the current user
-        AzureADGraphUser.SetGraphUser(UserSecurityId());
-
-        // [WHEN] Checking whether the account is enabled for the user
-        IsAccountEnabled := AzureADGraphUser.IsAccountEnabled();
-
-        // [THEN] The result should be false
-        LibraryAssert.IsFalse(IsAccountEnabled, 'The account should not be enabled');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestIsAccountEnabledForAnInexistentUser()
-    var
-        IsAccountEnabled: Boolean;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as an inexistent user
-        // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(CreateGuid());
-
-        // [WHEN] Checking whether the account is enabled for the user
-        IsAccountEnabled := AzureADGraphUser.IsAccountEnabled();
-
-        // [THEN] The result should be false, as the user does not exist
-        LibraryAssert.IsFalse(IsAccountEnabled, 'The user does not exist');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestIsAccountEnabledForANewUser()
-    var
-        IsAccountEnabled: Boolean;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
-
-        // [WHEN] Checking whether the account is enabled for the user
-        IsAccountEnabled := AzureADGraphUser.IsAccountEnabled();
-
-        // [THEN] The result should be true
-        LibraryAssert.IsTrue(IsAccountEnabled, 'The account should be enabled');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetSurnameForCurrentUser()
-    var
-        Surname: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the current user
-        AzureADGraphUser.SetGraphUser(UserSecurityId());
-
-        // [WHEN] Getting the surname for the user
-        Surname := AzureADGraphUser.GetSurname();
-
-        // [THEN] The result should be the current user's surname
-        LibraryAssert.AreEqual(CurrentUserSurnameLbl, Surname, 'The surname is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetSurnameForAnInexistentUser()
-    var
-        Surname: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as an inexistent user
-        // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(CreateGuid());
-
-        // [WHEN] Getting the surname for the user
-        Surname := AzureADGraphUser.GetSurname();
-
-        // [THEN] The result should be the empty string
-        LibraryAssert.AreEqual('', Surname, 'The surname is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetSurnameForANewUser()
-    var
-        Surname: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
-
-        // [WHEN] Getting the surname for the user
-        Surname := AzureADGraphUser.GetSurname();
-
-        // [THEN] The result should be the new user's surname
-        LibraryAssert.AreEqual(NewAADUserSurnameLbl, Surname, 'The surname is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetDisplayNameForCurrentUser()
-    var
-        DisplayName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the current user
-        AzureADGraphUser.SetGraphUser(UserSecurityId());
-
-        // [WHEN] Getting the display name for the user
-        DisplayName := AzureADGraphUser.GetDisplayName();
-
-        // [THEN] The result should be the current user's display name
-        LibraryAssert.AreEqual(CurrentUserDisplayNameLbl, DisplayName, 'The display name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetDisplayNameForAnInexistentUser()
-    var
-        DisplayName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as an inexistent user
-        // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(CreateGuid());
-
-        // [WHEN] Getting the display name for the user
-        DisplayName := AzureADGraphUser.GetDisplayName();
-
-        // [THEN] The result should be the empty string
-        LibraryAssert.AreEqual('', DisplayName, 'The display name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetDisplayNameForANewUser()
-    var
-        DisplayName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
-
-        // [WHEN] Getting the display name for the user
-        DisplayName := AzureADGraphUser.GetDisplayName();
-
-        // [THEN] The result should be the display name of the new user
-        LibraryAssert.AreEqual(NewAADUserDisplayNameLbl, DisplayName, 'The display name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetEmailForCurrentUser()
-    var
-        Email: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the current user
-        AzureADGraphUser.SetGraphUser(UserSecurityId());
-
-        // [WHEN] Getting the email for the user
-        Email := AzureADGraphUser.GetEmail();
-
-        // [THEN] The result should be the current user's email
-        LibraryAssert.AreEqual(CurrentUserEmailLbl, Email, 'The email is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetEmailForAnInexistentUser()
-    var
-        Email: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as an inexistent user
-        // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(CreateGuid());
-
-        // [WHEN] Getting the email for the user
-        Email := AzureADGraphUser.GetEmail();
-
-        // [THEN] The result should be the empty string
-        LibraryAssert.AreEqual('', Email, 'The email is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetEmailForANewUser()
-    var
-        Email: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
-
-        // [WHEN] Getting the email for the user
-        Email := AzureADGraphUser.GetEmail();
-
-        // [THEN] The result should be the new user's email
-        LibraryAssert.AreEqual(NewAADUserEmailLbl, Email, 'The email is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetUserPrincipalNameForCurrentUser()
-    var
-        UserPrincipalName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the current user
-        AzureADGraphUser.SetGraphUser(UserSecurityId());
-
-        // [WHEN] Getting the user principal name for the user
-        UserPrincipalName := AzureADGraphUser.GetUserPrincipalName();
-
-        // [THEN] The result should be the current user's user principal name
-        LibraryAssert.AreEqual(CurrentUserPrincipalNameLbl, UserPrincipalName,
-            'The user principal name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetUserPrincipalNameForAnInexistentUser()
-    var
-        UserPrincipalName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as an inexistent user
-        // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(CreateGuid());
-
-        // [WHEN] Getting the user principal name for the user
-        UserPrincipalName := AzureADGraphUser.GetUserPrincipalName();
-
-        // [THEN] The result should be the empty string
-        LibraryAssert.AreEqual('', UserPrincipalName, 'The user principal name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetUserPrincipalNameForANewUser()
-    var
-        UserPrincipalName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
-
-        // [WHEN] Getting the user principal name for the user
-        UserPrincipalName := AzureADGraphUser.GetUserPrincipalName();
-
-        // [THEN] The result should be the new user's user principal name
-        LibraryAssert.AreEqual(NewAADUserPrincipalNameLbl, UserPrincipalName,
-            'The user principal name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetUserGivenNameForCurrentUser()
-    var
-        UserGivenName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the current user
-        AzureADGraphUser.SetGraphUser(UserSecurityId());
-
-        // [WHEN] Getting the given name for the user
-        UserGivenName := AzureADGraphUser.GetGivenName();
-
-        // [THEN] The result should be the current user's given name
-        LibraryAssert.AreEqual(CurrentUserGivenNameLbl, UserGivenName, 'The given name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetUserGivenNameForAnInexistentUser()
-    var
-        UserGivenName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as an inexistent user
-        // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(CreateGuid());
-
-        // [WHEN] Getting the given name for the user
-        UserGivenName := AzureADGraphUser.GetGivenName();
-
-        // [THEN] The result should be the empty string
-        LibraryAssert.AreEqual('', UserGivenName, 'The given name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetUserGivenNameForANewUser()
-    var
-        UserGivenName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
-
-        // [WHEN] Getting the given name for the user
-        UserGivenName := AzureADGraphUser.GetGivenName();
-
-        // [THEN] The result should be the new user's given name
-        LibraryAssert.AreEqual(NewAADUserGivenNameLbl, UserGivenName, 'The given name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetPreferredLanguageForCurrentUser()
-    var
-        PreferredLanguage: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the current user
-        AzureADGraphUser.SetGraphUser(UserSecurityId());
-
-        // [WHEN] Getting the preferred language for the user
-        PreferredLanguage := AzureADGraphUser.GetPreferredLanguage();
-
-        // [THEN] The result should be the current user's preferred language
-        LibraryAssert.AreEqual(CurrentUserPreferredLanguageLbl, PreferredLanguage,
-            'The preferred language is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetPreferredLanguageForAnInexistentUser()
-    var
-        PreferredLanguage: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as an inexistent user
-        // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(CreateGuid());
-
-        // [WHEN] Getting the preferred language for the user
-        PreferredLanguage := AzureADGraphUser.GetPreferredLanguage();
-
-        // [THEN] The result should be the empty string
-        LibraryAssert.AreEqual('', PreferredLanguage, 'The preferred language is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetPreferredLanguageForANewUser()
-    var
-        PreferredLanguage: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
-
-        // [WHEN] Getting the preferred language for the user
-        PreferredLanguage := AzureADGraphUser.GetPreferredLanguage();
-
-        // [THEN] The result should be the new user's preferred language
-        LibraryAssert.AreEqual(NewAADUserPreferredLanguageLbl, PreferredLanguage,
-            'The preferred language is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetUserFullNameForCurrentUser()
-    var
-        UserFullName: Text;
-        AzureADFullName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the current user
-        AzureADGraphUser.SetGraphUser(UserSecurityId());
-
-        // [WHEN] Getting the full name for the user
-        UserFullName := AzureADGraphUser.GetUserFullName();
-
-        // [THEN] The result should be the current user's full name
-        AzureADFullName := StrSubstNo('%1 %2', CurrentUserGivenNameLbl, CurrentUserSurnameLbl);
-        LibraryAssert.AreEqual(AzureADFullName, UserFullName, 'The full name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetUserFullNameForAnInexistentUser()
-    var
-        UserFullName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as an inexistent user
-        // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(CreateGuid());
-
-        // [WHEN] Getting the full name for the user
-        UserFullName := AzureADGraphUser.GetUserFullName();
-
-        // [THEN] The result should be the empty string
-        LibraryAssert.AreEqual('', UserFullName, 'The full name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetUserFullNameForANewUser()
-    var
-        UserFullName: Text;
-        AzureADFullName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
-
-        // [WHEN] Getting the full name for the user
-        UserFullName := AzureADGraphUser.GetUserFullName();
-
-        // [THEN] The result should be the new user's full name
-        AzureADFullName := StrSubstNo('%1 %2', NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
-        LibraryAssert.AreEqual(AzureADFullName, UserFullName, 'The full name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestGetUserFullNameForAUserWithEmptySurname()
-    var
-        UserFullName: Text;
-    begin
-        Initialize();
-
-        // [WHEN] Trying to set the graph user as the user with empty surname
-        AzureADGraphUser.SetGraphUser(AADUserWithEmptySurnameUserIdLbl);
-
-        // [WHEN] Getting the full name for the user
-        UserFullName := AzureADGraphUser.GetUserFullName();
-
-        // [THEN] The result should be the new user's full name
-        LibraryAssert.AreEqual(AADUserGivenNameForUserWithEmptySurnameLbl, UserFullName, 'The full name is incorrect');
-
-        TearDown();
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestUpdateUserFromAzureGraphForAnInexistentAADUser()
+    procedure TestGetUserAuthenticationObjectIdForAnInexistentUserProperty()
     var
         User: Record User;
-        UserSecurityId: Guid;
-        UserFullName: Text;
-        UserContactEmail: Text;
-        UserAuthenticationEmail: Text;
-        UserName: Text;
-        IsUserModified: Boolean;
+        UserId: Guid;
+        UserAuthenticationObjectId: Text;
     begin
         Initialize();
 
-        // [GIVEN] A user security id, full name, contact email and authentication email
-        UserSecurityId := CreateGuid();
-        UserFullName := 'user full name 123';
-        UserContactEmail := 'contact_email@microsoft.com';
-        UserAuthenticationEmail := 'authentication_email@microsoft.com';
-        UserName := 'username';
+        // [GIVEN] A user
+        UserId := CreateGuid();
+        InsertUser(User, UserId, false, '', '', 'email@email.com', 'username');
 
-        // [GIVEN] A new user
-        User.DeleteAll();
-        InsertUser(User, UserSecurityId, true, UserFullName, UserContactEmail,
-            UserAuthenticationEmail, UserName);
+        // [WHEN] Trying to get the user authentication object ID for the user
+        UserAuthenticationObjectId := AzureADGraphUser.GetUserAuthenticationObjectId(UserId);
 
-        // [WHEN] Trying to set the graph user as an inexistent AAD user
-        // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.SetGraphUser(UserSecurityId);
+        // [THEN] The authentication object id should be the empty string
+        LibraryAssert.AreEqual('', UserAuthenticationObjectId, 'The user authentication object id is incorrect');
 
-        // [WHEN] Updating the user from the Azure Graph
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User);
+        TearDown();
+    end;
 
-        // [THEN] IsUserModified should be false, as the user does not exist in the Azure Graph
-        LibraryAssert.IsFalse(IsUserModified, 'The user should not exist in the Azure Graph');
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure TestGetUserAuthenticationObjectIdForTheCurrentUser()
+    var
+        UserAuthenticationObjectId: Text;
+    begin
+        Initialize();
+
+        // [WHEN] Trying to get the user authentication object ID for the current user
+        UserAuthenticationObjectId := AzureADGraphUser.GetUserAuthenticationObjectId(UserSecurityId());
+
+        // [THEN] The authentication object id should be the empty string
+        LibraryAssert.AreEqual(CurrentUserObjectIdLbl, UserAuthenticationObjectId, 'The user authentication object id is incorrect');
+
+        TearDown();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure TestGetUserAuthenticationObjectIdForANewUser()
+    var
+        UserAuthenticationObjectId: Text;
+    begin
+        Initialize();
+
+        // [WHEN] Trying to get the user authentication object ID for a new user
+        UserAuthenticationObjectId := AzureADGraphUser.GetUserAuthenticationObjectId(NewAADUserIdLbl);
+
+        // [THEN] The authentication object id should be the empty string
+        LibraryAssert.AreEqual(NewAADUserObjectIdLbl, UserAuthenticationObjectId, 'The user authentication object id is incorrect');
 
         TearDown();
     end;
@@ -946,27 +415,23 @@ codeunit 132911 "Azure AD Graph User Test"
     procedure TestUpdateUserFromAzureGraphForAValidUserWithoutUpdates()
     var
         User: Record User;
-        UserSecurityId: Guid;
+        GraphUser: DotNet UserInfo;
         UserFullName: Text;
         UserName: Text;
         IsUserModified: Boolean;
     begin
         Initialize();
 
-        // [GIVEN] A user security id, full name, contact email and authentication email
-        UserSecurityId := CreateGuid();
+        // [GIVEN] A user's full name, contact email and authentication email
         UserFullName := StrSubstNo('%1 %2', NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
         UserName := 'username';
 
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
-
         // [GIVEN] A new user
-        User.DeleteAll();
         InsertUser(User, NewAADUserIdLbl, true, UserFullName, NewAADUserEmailLbl, NewAADUserPrincipalNameLbl, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User);
+        AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUser);
+        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
 
         // [THEN] IsUserModified should be false, as the user does not require updates
         LibraryAssert.IsFalse(IsUserModified, 'The user does not require any updates');
@@ -980,7 +445,7 @@ codeunit 132911 "Azure AD Graph User Test"
             'The authentication email of the user is incorrect');
 
         // [THEN] The database user should remain unchanged, as it does not require updates
-        if User.Get(UserSecurityId) then;
+        if User.Get(NewAADUserIdLbl) then;
 
         LibraryAssert.AreEqual(User.State::Enabled, User.State, 'The state of the user is incorrect');
         LibraryAssert.AreEqual(UserFullName, User."Full Name", 'The full name of the user is incorrect');
@@ -993,12 +458,11 @@ codeunit 132911 "Azure AD Graph User Test"
     end;
 
     [Test]
-    // [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure TestUpdateUserFromAzureGraphForAValidUserWithUpdatedState()
     var
         User: Record User;
-        UserSecurityId: Guid;
+        GraphUser: DotNet UserInfo;
         UserFullName: Text;
         UserName: Text;
         ContactEmail: Text;
@@ -1008,22 +472,18 @@ codeunit 132911 "Azure AD Graph User Test"
     begin
         Initialize();
 
-        // [GIVEN] A user security id, full name, contact email and authentication email
-        UserSecurityId := CreateGuid();
-        UserFullName := 'full name 123';
-        UserName := 'username';
+        // [GIVEN] A user's full name, contact email and authentication email
+        UserFullName := 'full name1 123';
+        UserName := 'username1';
         ContactEmail := 'contact_email1@microsoft.com';
-        AuthenticationEmail := 'authentication_email@microsoft.com';
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
+        AuthenticationEmail := 'authentication_email1@microsoft.com';
 
         // [GIVEN] A new user
-        User.DeleteAll();
         InsertUser(User, NewAADUserIdLbl, false, UserFullName, ContactEmail, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User);
+        AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUser);
+        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
 
         // [THEN] IsUserModified should be true, as the user requires updates
         LibraryAssert.IsTrue(IsUserModified, 'The user requires updates');
@@ -1039,7 +499,7 @@ codeunit 132911 "Azure AD Graph User Test"
             'The authentication email of the user is incorrect');
 
         // [THEN] The database user should be updated
-        if User.Get(UserSecurityId) then;
+        if User.Get(NewAADUserIdLbl) then;
 
         LibraryAssert.AreEqual(User.State::Enabled, User.State, 'The state of the user is incorrect');
         LibraryAssert.AreEqual(AADUserFullName, User."Full Name", 'The full name of the user is incorrect');
@@ -1052,12 +512,11 @@ codeunit 132911 "Azure AD Graph User Test"
     end;
 
     [Test]
-    // [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure TestUpdateUserFromAzureGraphForAValidUserWithUpdatedFullName()
     var
         User: Record User;
-        UserSecurityId: Guid;
+        GraphUser: DotNet UserInfo;
         UserFullName: Text;
         UserName: Text;
         ContactEmail: Text;
@@ -1067,22 +526,18 @@ codeunit 132911 "Azure AD Graph User Test"
     begin
         Initialize();
 
-        // [GIVEN] A user security id, full name, contact email and authentication email
-        UserSecurityId := CreateGuid();
-        UserFullName := 'full name 123';
-        UserName := 'username';
-        ContactEmail := 'contact_email1@microsoft.com';
-        AuthenticationEmail := 'authentication_email@microsoft.com';
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
+        // [GIVEN] A user's full name, contact email and authentication email
+        UserFullName := 'full name2 123';
+        UserName := 'username2';
+        ContactEmail := 'contact_email2@microsoft.com';
+        AuthenticationEmail := 'authentication_email2@microsoft.com';
 
         // [GIVEN] A new user
-        User.DeleteAll();
-        InsertUser(User, NewAADUserIdLbl, true, UserFullName, ContactEmail, AuthenticationEmail, UserName);
+        InsertUser(User, UserToUpdate1IdLbl, true, UserFullName, ContactEmail, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User);
+        AzureADGraphUser.GetGraphUser(UserToUpdate1IdLbl, GraphUser);
+        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
 
         // [THEN] IsUserModified should be true, as the user requires updates
         LibraryAssert.IsTrue(IsUserModified, 'The user requires updates');
@@ -1094,29 +549,28 @@ codeunit 132911 "Azure AD Graph User Test"
         LibraryAssert.AreEqual(AADUserFullName, User."Full Name", 'The full name of the user is incorrect');
         LibraryAssert.AreEqual(NewAADUserEmailLbl, User."Contact Email",
             'The contact email of the user is incorrect');
-        LibraryAssert.AreEqual(NewAADUserPrincipalNameLbl, User."Authentication Email",
+        LibraryAssert.AreEqual(UpdatedUser1PrincipalNameLbl, User."Authentication Email",
             'The authentication email of the user is incorrect');
 
         // [THEN] The database user should be updated
-        if User.Get(UserSecurityId) then;
+        if User.Get(UserToUpdate3IdLbl) then;
 
         LibraryAssert.AreEqual(User.State::Enabled, User.State, 'The state of the user is incorrect');
         LibraryAssert.AreEqual(AADUserFullName, User."Full Name", 'The full name of the user is incorrect');
         LibraryAssert.AreEqual(NewAADUserEmailLbl, User."Contact Email",
             'The contact email of the user is incorrect');
-        LibraryAssert.AreEqual(NewAADUserPrincipalNameLbl, User."Authentication Email",
+        LibraryAssert.AreEqual(UpdatedUser1PrincipalNameLbl, User."Authentication Email",
             'The authentication email of the user is incorrect');
 
         TearDown();
     end;
 
     [Test]
-    // [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure TestUpdateUserFromAzureGraphForAValidUserWithUpdatedContactEmail()
     var
         User: Record User;
-        UserSecurityId: Guid;
+        GraphUser: DotNet UserInfo;
         UserFullName: Text;
         UserName: Text;
         ContactEmail: Text;
@@ -1125,22 +579,18 @@ codeunit 132911 "Azure AD Graph User Test"
     begin
         Initialize();
 
-        // [GIVEN] A user security id, full name, contact email and authentication email
-        UserSecurityId := CreateGuid();
+        // [GIVEN] A user's full name, contact email and authentication email
         UserFullName := StrSubstNo('%1 %2', NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
-        UserName := 'username';
-        ContactEmail := 'contact_email1@microsoft.com';
-        AuthenticationEmail := 'authentication_email@microsoft.com';
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
+        UserName := 'username3';
+        ContactEmail := 'contact_email3@microsoft.com';
+        AuthenticationEmail := 'authentication_email3@microsoft.com';
 
         // [GIVEN] A new user
-        User.DeleteAll();
-        InsertUser(User, NewAADUserIdLbl, true, UserFullName, ContactEmail, AuthenticationEmail, UserName);
+        InsertUser(User, UserToUpdate2IdLbl, true, UserFullName, ContactEmail, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User);
+        AzureADGraphUser.GetGraphUser(UserToUpdate2IdLbl, GraphUser);
+        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
 
         // [THEN] IsUserModified should be true, as the user requires updates
         LibraryAssert.IsTrue(IsUserModified, 'The user requires updates');
@@ -1151,29 +601,28 @@ codeunit 132911 "Azure AD Graph User Test"
         LibraryAssert.AreEqual(UserFullName, User."Full Name", 'The full name of the user is incorrect');
         LibraryAssert.AreEqual(NewAADUserEmailLbl, User."Contact Email",
             'The contact email of the user is incorrect');
-        LibraryAssert.AreEqual(NewAADUserPrincipalNameLbl, User."Authentication Email",
+        LibraryAssert.AreEqual(UpdatedUser2PrincipalNameLbl, User."Authentication Email",
             'The authentication email of the user is incorrect');
 
         // [THEN] The database user should be updated
-        if User.Get(UserSecurityId) then;
+        if User.Get(UserToUpdate2IdLbl) then;
 
         LibraryAssert.AreEqual(User.State::Enabled, User.State, 'The state of the user is incorrect');
         LibraryAssert.AreEqual(UserFullName, User."Full Name", 'The full name of the user is incorrect');
         LibraryAssert.AreEqual(NewAADUserEmailLbl, User."Contact Email",
             'The contact email of the user is incorrect');
-        LibraryAssert.AreEqual(NewAADUserPrincipalNameLbl, User."Authentication Email",
+        LibraryAssert.AreEqual(UpdatedUser2PrincipalNameLbl, User."Authentication Email",
             'The authentication email of the user is incorrect');
 
         TearDown();
     end;
 
     [Test]
-    // [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure TestUpdateUserFromAzureGraphForAValidUserWithUpdatedAuthenticationEmail()
     var
         User: Record User;
-        UserSecurityId: Guid;
+        GraphUser: DotNet UserInfo;
         UserFullName: Text;
         UserName: Text;
         AuthenticationEmail: Text;
@@ -1181,21 +630,17 @@ codeunit 132911 "Azure AD Graph User Test"
     begin
         Initialize();
 
-        // [GIVEN] A user security id, full name, contact email and authentication email
-        UserSecurityId := CreateGuid();
+        // [GIVEN] A user's full name, contact email and authentication email
         UserFullName := StrSubstNo('%1 %2', NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
-        UserName := 'username';
-        AuthenticationEmail := 'authentication_email@microsoft.com';
-
-        // [WHEN] Trying to set the graph user as the new user
-        AzureADGraphUser.SetGraphUser(NewAADUserIdLbl);
+        UserName := 'username4';
+        AuthenticationEmail := 'authentication_email4@microsoft.com';
 
         // [GIVEN] A new user
-        User.DeleteAll();
-        InsertUser(User, NewAADUserIdLbl, true, UserFullName, NewAADUserEmailLbl, AuthenticationEmail, UserName);
+        InsertUser(User, UserToUpdate3IdLbl, true, UserFullName, NewAADUserEmailLbl, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User);
+        AzureADGraphUser.GetGraphUser(UserToUpdate3IdLbl, GraphUser);
+        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
 
         // [THEN] IsUserModified should be true, as the user requires updates
         LibraryAssert.IsTrue(IsUserModified, 'The user requires updates');
@@ -1206,63 +651,79 @@ codeunit 132911 "Azure AD Graph User Test"
         LibraryAssert.AreEqual(UserFullName, User."Full Name", 'The full name of the user is incorrect');
         LibraryAssert.AreEqual(NewAADUserEmailLbl, User."Contact Email",
             'The contact email of the user is incorrect');
-        LibraryAssert.AreEqual(NewAADUserPrincipalNameLbl, User."Authentication Email",
+        LibraryAssert.AreEqual(UpdatedUser3PrincipalNameLbl, User."Authentication Email",
             'The authentication email of the user is incorrect');
 
         // [THEN] The database user should be updated
-        if User.Get(UserSecurityId) then;
+        if User.Get(UserToUpdate3IdLbl) then;
 
         LibraryAssert.AreEqual(User.State::Enabled, User.State, 'The state of the user is incorrect');
         LibraryAssert.AreEqual(UserFullName, User."Full Name", 'The full name of the user is incorrect');
         LibraryAssert.AreEqual(NewAADUserEmailLbl, User."Contact Email",
             'The contact email of the user is incorrect');
-        LibraryAssert.AreEqual(NewAADUserPrincipalNameLbl, User."Authentication Email",
+        LibraryAssert.AreEqual(UpdatedUser3PrincipalNameLbl, User."Authentication Email",
             'The authentication email of the user is incorrect');
 
         TearDown();
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
-    procedure TestSetAndGetGraphUser()
+    procedure TestEnsureAuthenticationEmailIsNotInUse()
     var
-        UserInfo: DotNet UserInfo;
-        UserInfo2: DotNet UserInfo;
-        ObjectId: Text;
-        Surname: Text;
-        DisplayName: Text;
-        Email: Text;
-        PrincipalName: Text;
-        GivenName: Text;
-        PreferredLanguage: Text;
-        AccountEnabled: Boolean;
-        AreUsersIdentical: Boolean;
+        User: Record User;
+        GraphUser: DotNet UserInfo;
     begin
         Initialize();
 
-        // [GIVEN] A UserInfo object
-        ObjectId := CreateGuid();
-        Surname := 'surname 123';
-        DisplayName := 'display name 123abc';
-        Email := 'abc@gmail.com';
-        PrincipalName := 'principal principal';
-        GivenName := 'given name abc';
-        PreferredLanguage := 'language 123';
-        AccountEnabled := true;
+        // [GIVEN] 4 new users - all of them have corresponding users in the Azure AD Graph API, 
+        // but their addresses don't correspond to the ones in the graph 
+        InsertUser(User, UserToUpdate4IdLbl, true, '', 'email1@microsoft.com', UpdatedUser5PrincipalNameLbl, 'username10');
+        InsertUser(User, UserToUpdate5IdLbl, true, '', 'email2@microsoft.com', UpdatedUser7PrincipalNameLbl, 'username20');
+        InsertUser(User, UserToUpdate6IdLbl, true, '', 'email3@microsoft.com', UpdatedUser4PrincipalNameLbl, 'username30');
+        InsertUser(User, UserToUpdate7IdLbl, true, '', 'email4@microsoft.com', UpdatedUser6PrincipalNameLbl, 'username40');
 
-        CreateUserInfo(UserInfo, ObjectId, Surname, DisplayName, Email, PrincipalName,
-            GivenName, PreferredLanguage, AccountEnabled);
+        // [WHEN] Calling EnsureAuthenticationEmailIsNotInUse on one of the email addresses
+        AzureADGraphUser.EnsureAuthenticationEmailIsNotInUse(UserToUpdate4IdLbl);
 
-        // [WHEN] Setting the Graph User to UserInfo
-        AzureADGraphUser.SetGraphUser(UserInfo);
+        // [THEN] None of the 4 users' authentication emails are updated
+        if User.Get(UserToUpdate4IdLbl) then;
+        LibraryAssert.AreEqual(UpdatedUser5PrincipalNameLbl, User."Authentication Email",
+            'The authentication email should not have been updated');
 
-        // [WHEN] Getting the Graph User
-        AzureADGraphUser.GetGraphUser(UserInfo2);
+        if User.Get(UserToUpdate5IdLbl) then;
+        LibraryAssert.AreEqual(UpdatedUser7PrincipalNameLbl, User."Authentication Email",
+            'The authentication email should not have been updated');
 
-        // [THEN] UserInfo and UserInfo2 should be identical
-        AreUsersIdentical := UserInfo.Equals(UserInfo2);
-        LibraryAssert.IsTrue(AreUsersIdentical, 'The users should be identical');
+        if User.Get(UserToUpdate6IdLbl) then;
+        LibraryAssert.AreEqual(UpdatedUser4PrincipalNameLbl, User."Authentication Email",
+            'The authentication email should not have been updated');
+
+        if User.Get(UserToUpdate7IdLbl) then;
+        LibraryAssert.AreEqual(UpdatedUser6PrincipalNameLbl, User."Authentication Email",
+            'The authentication email should not have been updated');
+
+        // [WHEN] Calling UpdateUserFromAzureGraph on the first user 
+        if User.Get(UserToUpdate4IdLbl) then;
+        AzureADGraphUser.GetGraphUser(User."User Security ID", GraphUser);
+        AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
+
+        // [THEN] The email addresses should be updated according to the ones in the graph
+        if User.Get(UserToUpdate4IdLbl) then;
+        LibraryAssert.AreEqual(UpdatedUser4PrincipalNameLbl, User."Authentication Email",
+            'The authentication email should have been updated');
+
+        if User.Get(UserToUpdate5IdLbl) then;
+        LibraryAssert.AreEqual(UpdatedUser5PrincipalNameLbl, User."Authentication Email",
+            'The authentication email should have been updated');
+
+        if User.Get(UserToUpdate6IdLbl) then;
+        LibraryAssert.AreEqual(UpdatedUser6PrincipalNameLbl, User."Authentication Email",
+            'The authentication email should have been updated');
+
+        if User.Get(UserToUpdate7IdLbl) then;
+        LibraryAssert.AreEqual(UpdatedUser7PrincipalNameLbl, User."Authentication Email",
+            'The authentication email should have been updated');
 
         TearDown();
     end;

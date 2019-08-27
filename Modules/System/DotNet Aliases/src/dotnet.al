@@ -112,7 +112,6 @@ dotnet
         type("DocumentFormat.OpenXml.Spreadsheet.DataBinding"; "DataBinding")
         {
         }
-
         type("DocumentFormat.OpenXml.Spreadsheet.Fill"; "Fill")
         {
         }
@@ -318,6 +317,10 @@ dotnet
         type("Microsoft.Dynamics.Nav.AzureMLWrapper.AzureMLRequest"; "AzureMLRequest")
         {
         }
+
+        type("Microsoft.Dynamics.Nav.AzureMLWrapper.AzureMLHelper"; "AzureMLHelper")
+        {
+        }
     }
 
     assembly("Microsoft.Dynamics.Nav.Client.BusinessChart")
@@ -366,21 +369,6 @@ dotnet
         }
 
         type("Microsoft.Dynamics.Nav.Client.BusinessChart.QueryMetadataReader"; "QueryMetadataReader")
-        {
-        }
-    }
-
-    assembly("Microsoft.Dynamics.Nav.Client.CodeViewerTypes")
-    {
-        Version = '15.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
-
-        type("Microsoft.Dynamics.Nav.Client.CodeViewerTypes.BreakpointCollection"; "BreakpointCollection")
-        {
-        }
-
-        type("Microsoft.Dynamics.Nav.Client.CodeViewerTypes.VariableCollection"; "VariableCollection")
         {
         }
     }
@@ -697,6 +685,10 @@ dotnet
         PublicKeyToken = '31bf3856ad364e35';
 
         type("Microsoft.Dynamics.Nav.NavDocumentService.NavDocumentServiceHelper"; "NavDocumentServiceHelper")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.NavUserAccount.NavTenantSettingsHelper";"NavTenantSettingsHelper")
         {
         }
 
@@ -1108,6 +1100,10 @@ dotnet
         type("System.Array"; "Array")
         {
         }
+		
+		type("System.Base64FormattingOptions"; "Base64FormattingOptions")
+        {
+        }
 
         type("System.BitConverter"; "BitConverter")
         {
@@ -1414,6 +1410,10 @@ dotnet
         }
 
         type("System.Threading.Thread"; "Thread")
+        {
+        }
+	
+	    type("System.Threading.CancellationToken"; "CancellationToken")
         {
         }
 
@@ -2051,6 +2051,10 @@ dotnet
         {
         }
 
+        type("System.Xml.XmlDateTimeSerializationMode"; "XmlDateTimeSerializationMode")
+        {
+        }
+
         type("System.Xml.XmlElement"; "XmlElement")
         {
         }
@@ -2139,6 +2143,72 @@ dotnet
         PublicKeyToken = 'b77a5c561934e089';
 
         type("System.Xml.Linq.XDocument"; "XDocument")
+        {
+        }
+    }
+
+    assembly("MailKit")
+    {
+        Version = '2.2.0.0';
+        Culture = 'neutral';
+        PublicKeyToken = '4e064fe7c44a8f1b';
+
+        type("MailKit.Net.Smtp.SmtpClient"; "SmtpClient")
+        {
+        }
+
+        type("MailKit.ITransferProgress"; "ITransferProgress")
+        {
+        }
+
+        type("MailKit.CommandException"; "CommandException")
+        {
+        }
+
+        type("MailKit.Net.Smtp.SmtpCommandException"; "SmtpCommandException")
+        {
+        }
+
+        type("MailKit.Security.SecureSocketOptions"; "SecureSocketOptions")
+        {
+        }
+    }
+
+    assembly("MimeKit")
+    {
+        Version = '2.2.0.0';
+        Culture = 'neutral';
+        PublicKeyToken = 'bede1c8a46c66814';
+
+        type("MimeKit.BodyBuilder"; "MimeBodyBuilder")
+        {
+        }
+
+        type("MimeKit.MimeMessage"; "MimeMessage")
+        {
+        }
+
+        type("MimeKit.MailboxAddress"; "MimeMailboxAddress")
+        {
+        }
+
+        type("MimeKit.InternetAddressList"; "InternetAddressList")
+        {
+        }
+
+        type("MimeKit.InternetAddress"; "InternetAddress")
+        {
+        }
+
+        type("MimeKit.MimeEntity"; "MimeEntity")
+        {
+        }
+
+        type("MimeKit.Utils.MimeUtils"; "MimeUtils")
+        {
+        }
+
+        type("MimeKit.ContentType"; "MimeContentType")
         {
         }
     }

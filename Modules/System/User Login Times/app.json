@@ -11,12 +11,7 @@
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "",
     "dependencies":  [
-                         {
-                             "appId":  "2955a828-6c0a-4d51-a1b8-a4cf2a040b9a",
-                             "name":  "System Initialization",
-                             "publisher":  "Microsoft",
-                             "version":  "15.0.0.0"
-                         }
+
                      ],
     "screenshots":  [
 
@@ -36,5 +31,17 @@
                          "to":  9026
                      }
                  ],
+    "internalsVisibleTo":  [
+                               {
+                                   "appId":  "eb65d818-4f43-4f81-b20b-f8ff726dc247",
+                                   "name":  "User Login Times Test",
+                                   "publisher":  "Microsoft"
+                               },
+                               {
+                                   "appId":  "9761c0ac-e4ea-4c14-8918-2f4ded158b12",
+                                   "name":  "User Login Times Test Library",
+                                   "publisher":  "Microsoft"
+                               }
+                           ],
     "target":  "OnPrem"
 }

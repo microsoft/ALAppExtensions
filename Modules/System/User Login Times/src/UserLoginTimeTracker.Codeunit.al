@@ -57,5 +57,25 @@ codeunit 9026 "User Login Time Tracker"
     begin
         exit(UserLoginTimeTrackerImpl.GetPenultimateLoginDateTime());
     end;
+
+    /// <summary>
+    /// Updates or creates the last login information of the current user (first, last and penultimate login date).
+    /// </summary>
+    [Scope('OnPrem')]
+    procedure CreateOrUpdateLoginInfo()
+    var
+        UserLoginTimeTrackerImpl: Codeunit "User Login Time Tracker Impl.";
+    begin
+        UserLoginTimeTrackerImpl.CreateOrUpdateLoginInfo();
+    end;
+
+    /// <summary>
+    /// Publishes an event that is fired whenever a user's login information is created or updated.
+    /// </summary>
+    /// <param name="UserSecurityID">The User Security ID of the user that is being created or updated.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterCreateorUpdateLoginInfo(UserSecurityId: Guid)
+    begin
+    end;
 }
 

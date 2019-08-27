@@ -8,7 +8,6 @@ page 2510 "Marketplace Extn Deployment"
     Extensible = false;
     Caption = 'Extension Installation';
     PageType = NavigatePage;
-    SourceTable = "NAV App";
 
     layout
     {
@@ -54,7 +53,7 @@ page 2510 "Marketplace Extn Deployment"
 
                 trigger OnAction()
                 begin
-                    ExtensionMarketplaceImpl.InstallMarketplaceExtension("ID", LanguageID, true);
+                    InstallSelected := true;
 
                     CurrPage.Close();
                     exit;
@@ -63,17 +62,31 @@ page 2510 "Marketplace Extn Deployment"
         }
     }
 
+
+    internal procedure GetLanguageId(): Integer
+    begin
+        exit(LanguageID);
+    end;
+
+    internal procedure GetInstalledSelected(): Boolean
+    begin
+        exit(InstallSelected);
+    end;
+
+
     trigger OnInit()
     var
         Language: Codeunit Language;
     begin
         LanguageID := GlobalLanguage();
         LanguageName := Language.GetWindowsLanguageName(LanguageID);
+        clear(InstallSelected);
     end;
 
     var
         ExtensionMarketplaceImpl: Codeunit "Extension Marketplace";
         LanguageName: Text;
         LanguageID: Integer;
+        InstallSelected: Boolean;
 }
 

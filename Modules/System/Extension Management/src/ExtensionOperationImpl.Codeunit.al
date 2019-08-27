@@ -30,15 +30,9 @@ codeunit 2503 "Extension Operation Impl"
         end;
     end;
 
-    procedure DeployExtension(PackageId: Guid; lcid: Integer; IsUIEnabled: Boolean)
+    procedure DeployExtension(AppId: GUID; lcid: Integer; IsUIEnabled: Boolean)
     var
-        NAVApp: Record "NAV App";
-    begin
-        if NAVApp.Get(PackageId) then
-            DeployExtensionByAppId(NAVApp.ID, lcid, IsUIEnabled);
-    end;
-
-    procedure DeployExtensionByAppId(AppId: GUID; lcid: Integer; IsUIEnabled: Boolean)
+        NavApp: Record "NAV App";
     begin
         InitializeOperationInvoker();
         DotNetALNavAppOperationInvoker.DeployTarget(AppId, Format(lcid));
@@ -123,6 +117,9 @@ codeunit 2503 "Extension Operation Impl"
         if (NavApp.Scope <> 1) then
             exit(false);
 
+        if (NAVApp."Show My Code" = false) then
+            exit(false);
+
         TempBlob.CreateOutStream(NvOutStream);
         VersionString :=
           ExtensionInstallationImpl.GetVersionDisplayString(NAVApp);
@@ -183,6 +180,11 @@ codeunit 2503 "Extension Operation Impl"
             DotNetALNavAppOperationInvoker := DotNetALNavAppOperationInvoker.ALNavAppOperationInvoker();
             OperationInvokerHasBeenCreated := true;
         end;
+    end;
+
+    procedure GetAllExtensionDeploymentStatusEntries(var NavAppTenantOperation: Record "NAV App Tenant Operation")
+    begin
+        NavAppTenantOperation.FindSet();
     end;
 
     procedure GetDeploymentDetailedStatusMessageAsStream(OperationId: Guid; OutStream: OutStream)
@@ -251,20 +253,15 @@ codeunit 2503 "Extension Operation Impl"
         exit(NullGuid);
     end;
 
-    procedure GetCurrentInstalledVersionPackageIdByAppId(AppId: Guid): Guid
+    procedure GetCurrentlyInstalledVersionPackageIdByAppId(AppId: Guid): Guid
     var
-        NavAppTable: Record "NAV App";
+        NavAppInstalledApp: Record "NAV App Installed App";
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         NullGuid: Guid;
     begin
-        NavAppTable.SetRange(ID, AppId);
-        NavAppTable.SetCurrentKey(Name, "Version Major", "Version Minor", "Version Build", "Version Revision");
-        NavAppTable.Ascending(false);
-        if NavAppTable.FindSet() then
-            repeat
-                if ExtensionInstallationImpl.IsInstalledByPackageId(NavAppTable."Package ID") then
-                    exit(NavAppTable."Package ID");
-            until NavAppTable.Next() = 0;
+        if NavAppInstalledApp.Get(AppId) then
+            exit(NavAppInstalledApp."Package ID");
+
         exit(NullGuid);
     end;
 

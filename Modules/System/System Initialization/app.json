@@ -11,7 +11,18 @@
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "",
     "dependencies":  [
-
+                         {
+                             "appId":  "959630b2-01c5-48d8-a477-d6d40da855fb",
+                             "name":  "User Login Times",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "574d5c26-62d4-4541-bc36-0fbbaed0072a",
+                             "name":  "Azure AD User Management",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
                      ],
     "screenshots":  [
 

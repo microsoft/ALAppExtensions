@@ -68,6 +68,12 @@ table 1470 "Product Video Buffer"
             CalcFormula = Lookup ("NAV App".Name where("Package ID" = FIELD("App ID")));
             Editable = false;
         }
+        field(10; Category; Enum "Video Category")
+        {
+            Caption = 'Category';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
     }
 
     keys

@@ -1,0 +1,32 @@
+{
+    "id":  "ada16eaa-a28b-4f01-baf9-4e46a6a06097",
+    "name":  "System Initialization Test",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the System Initialization module",
+    "description":  "Tests for the System Initialization module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "a2ca2793-e1b4-461d-8251-dbe934daec78",
+                             "name":  "Password Dialog",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  130045,
+                         "to":  130045
+                     }
+                 ],
+    "target":  "OnPrem"
+}

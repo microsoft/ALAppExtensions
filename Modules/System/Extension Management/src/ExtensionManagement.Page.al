@@ -7,7 +7,6 @@ page 2500 "Extension Management"
 {
     Extensible = false;
     AdditionalSearchTerms = 'app,add-in,customize,plug-in';
-    ApplicationArea = All;
     DeleteAllowed = false;
     Editable = false;
     InsertAllowed = false;
@@ -20,7 +19,6 @@ page 2500 "Extension Management"
                       ORDER(Ascending)
                       WHERE(Name = FILTER(<> '_Exclude_*'),
                             "Package Type" = FILTER(= 0 | 2));
-    UsageCategory = Administration;
 
     layout
     {
@@ -38,10 +36,10 @@ page 2500 "Extension Management"
                 field(AdditionalInfo; InfoText)
                 {
                     ApplicationArea = All;
-                    Caption = 'AdditionalInfo';
+                    Caption = 'Description';
                     Style = Favorable;
                     StyleExpr = InfoStyle;
-                    ToolTip = 'Specifies the person or company that created the extension.';
+                    ToolTip = 'Specifies, in case of on-premises, either the person or company who provided the extension and, in case of SaaS, whether the extension is installed or not.';
                 }
                 field(Name; Name)
                 {
@@ -82,10 +80,10 @@ page 2500 "Extension Management"
                 {
                     ApplicationArea = All;
                     Caption = 'Install';
-                    Enabled = ActionsEnabled AND IsOnPremDisplay AND (NOT IsInstalled);
+                    Enabled = ActionsEnabled AND (NOT IsInstalled);
                     Image = NewRow;
                     Promoted = true;
-                    PromotedCategory = Category4;
+                    PromotedCategory = Category5;
                     Scope = Repeater;
                     ToolTip = 'Install the extension for the current tenant.';
                     Visible = IsInstallAllowed;

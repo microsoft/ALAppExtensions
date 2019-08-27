@@ -1,0 +1,21 @@
+{
+    "id":  "815d5c15-02bd-4d58-a010-b66033de6625",
+    "name":  "DotNet Aliases Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Defines aliases for .NET classes for tests.",
+    "description":  "Defines aliases for .NET classes so that you do not have to write the full name of the class. For example, rather than having to write \"System.Collections.Queue\", you can just use \"Queue\".",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "target":  "OnPrem"
+}

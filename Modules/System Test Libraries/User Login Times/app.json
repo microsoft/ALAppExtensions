@@ -1,0 +1,32 @@
+{
+    "id":  "9761c0ac-e4ea-4c14-8918-2f4ded158b12",
+    "name":  "User Login Times Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Library function to initialize test data for User Login Times module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "959630b2-01c5-48d8-a477-d6d40da855fb",
+                             "name":  "User Login Times",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  138049,
+                         "to":  138049
+                     }
+                 ],
+    "target":  "OnPrem"
+}

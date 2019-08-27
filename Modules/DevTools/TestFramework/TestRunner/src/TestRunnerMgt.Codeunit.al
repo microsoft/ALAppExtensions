@@ -5,7 +5,6 @@ codeunit 130454 "Test Runner - Mgt"
     begin
     end;
 
-    [Scope('OnPrem')]
     procedure RunTests(var NewTestMethodLine: Record "Test Method Line")
     var
         TestMethodLine: Record "Test Method Line";
@@ -32,25 +31,21 @@ codeunit 130454 "Test Runner - Mgt"
         OnAfterRunTestSuite(TestMethodLine);
     end;
 
-    [Scope('OnPrem')]
     procedure GetDefautlTestRunner(): Integer
     begin
         exit(GetCodeIsolationTestRunner());
     end;
 
-    [Scope('OnPrem')]
     procedure GetIsolationDisabledTestRunner(): Integer
     begin
         exit(CODEUNIT::"Test Runner - Isol. Disabled");
     end;
 
-    [Scope('OnPrem')]
     procedure GetCodeIsolationTestRunner(): Integer
     begin
         exit(CODEUNIT::"Test Runner - Isol. Codeunit");
     end;
 
-    [Scope('OnPrem')]
     procedure PlatformBeforeTestRun(CodeunitID: Integer; CodeunitName: Text[30]; FunctionName: Text[128]; FunctionTestPermissions: TestPermissions; TestSuite: Code[10]; LineNoTestFilter: Text): Boolean
     var
         TestMethodLineFunction: Record "Test Method Line";
@@ -75,7 +70,6 @@ codeunit 130454 "Test Runner - Mgt"
         exit(true);
     end;
 
-    [Scope('OnPrem')]
     procedure PlatformAfterTestRun(CodeunitID: Integer; CodeunitName: Text[30]; FunctionName: Text[128]; FunctionTestPermissions: TestPermissions; IsSuccess: Boolean; TestSuite: Code[10]; LineNoTestFilter: Text)
     var
         TestMethodLine: Record "Test Method Line";

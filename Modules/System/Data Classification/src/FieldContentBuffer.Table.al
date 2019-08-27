@@ -5,7 +5,7 @@
 
 table 1754 "Field Content Buffer"
 {
-    Access = Public; // TODO: Tests are using this codeunit. Test will have to be refactored not to depend on this codeunit.
+    Access = Internal;
 
     fields
     {

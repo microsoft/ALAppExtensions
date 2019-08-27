@@ -146,29 +146,23 @@ codeunit 139481 "Headlines Test"
     end;
 
     [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestShouldUserGreetingBeVisible()
     var
-        UserLogin: Record "User Login";
+        UserLoginTestLibrary: Codeunit "User Login Test Library";
     begin
         // [FEATURE] [User Greeting]
 
-        if not UserLogin.Get(UserSecurityId()) then begin
-            UserLogin.Init();
-            UserLogin."User SID" := UserSecurityId();
-            UserLogin."Last Login Date" := CurrentDateTime();
-            UserLogin.Insert();
-        end;
+        UserLoginTestLibrary.DeleteAllLoginInformation(UserSecurityId());
 
         // [WHEN] The user has logged in less than 10 minutes ago
-        UserLogin."Last Login Date" := CurrentDateTime() - (9 * 60 * 1000);
-        UserLogin.Modify();
+        UserLoginTestLibrary.InsertUserLogin(UserSecurityId(), 0D, CurrentDateTime() - (9 * 60 * 1000), 0DT);
 
         // [THEN] User greeting should be shown
         Assert.IsTrue(Headlines.ShouldUserGreetingBeVisible(), 'User logged in within 9 minutes from now.');
 
         // [WHEN] The user has logged in more than 10 minutes ago
-        UserLogin."Last Login Date" := CurrentDateTime() - (11 * 60 * 1000);
-        UserLogin.Modify();
+        UserLoginTestLibrary.UpdateUserLogin(UserSecurityId(), 0D, CurrentDateTime() - (11 * 60 * 1000), 0DT);
 
         // [THEN] No greeting should be shown
         Assert.IsFalse(Headlines.ShouldUserGreetingBeVisible(), 'User logged in at least 11 minutes minutes ago.');

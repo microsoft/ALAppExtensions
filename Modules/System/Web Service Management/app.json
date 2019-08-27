@@ -1,0 +1,42 @@
+{
+  "id": "9bc20107-0927-405d-abec-ed877f67c2a3",
+  "name": "Web Service Management",
+  "publisher": "Microsoft",
+  "brief": "Provides the tools needed to manage web services.",
+  "description": "Provides methods for creating and modifying web services, accessing web service URLs, getting and setting web service filters and clauses.",
+  "version": "15.0.0.0",
+  "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help":  "",
+  "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo":  "",
+  "dependencies":  [
+                         {
+                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "name":  "DotNet Aliases",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+  "screenshots": [],
+  "platform": "15.0.0.0",
+  "idRanges":  [
+      {
+        "from":  810,
+        "to":  810
+    },
+    {
+        "from":  6710,
+        "to":  6712
+    },
+    {
+        "from":  9900,
+        "to":  9900
+    },
+    {
+        "from":  9750,
+        "to":  9751
+    }
+],
+  "target":  "OnPrem"
+}

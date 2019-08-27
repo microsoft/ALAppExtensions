@@ -12,7 +12,6 @@ codeunit 130456 "Test Suite Mgt."
         SelectCodeunitsToRunQst: Label '&All,Active &Codeunit', Locked = true;
         DefaultTestSuiteNameTxt: Label 'DEFAULT', Locked = true;
 
-    [Scope('OnPrem')]
     procedure RunTestSuiteSelection(var TestMethodLine: Record "Test Method Line")
     var
         ALTestSuite: Record "AL Test Suite";
@@ -39,7 +38,6 @@ codeunit 130456 "Test Suite Mgt."
         RunTests(CurrentTestMethodLine, ALTestSuite);
     end;
 
-    [Scope('OnPrem')]
     procedure RunAllTests(var TestMethodLine: Record "Test Method Line")
     var
         ALTestSuite: Record "AL Test Suite";
@@ -129,7 +127,6 @@ codeunit 130456 "Test Suite Mgt."
         exit(ResultsJsonText);
     end;
 
-    [Scope('OnPrem')]
     procedure RunSelectedTests(var TestMethodLine: Record "Test Method Line")
     var
         ALTestSuite: Record "AL Test Suite";
@@ -167,7 +164,6 @@ codeunit 130456 "Test Suite Mgt."
         RunTests(TestMethodLine, ALTestSuite);
     end;
 
-    [Scope('OnPrem')]
     procedure SelectTestMethods(var ALTestSuite: Record "AL Test Suite")
     var
         AllObjWithCaption: Record AllObjWithCaption;
@@ -180,7 +176,6 @@ codeunit 130456 "Test Suite Mgt."
         end;
     end;
 
-    [Scope('OnPrem')]
     procedure LookupTestMethodsByRange(var ALTestSuite: Record "AL Test Suite")
     var
         SelectTestsByRange: Page "Select Tests By Range";
@@ -191,7 +186,6 @@ codeunit 130456 "Test Suite Mgt."
             SelectTestMethodsByRange(ALTestSuite, SelectTestsByRange.GetRange());
     end;
 
-    [Scope('OnPrem')]
     procedure SelectTestMethodsByRange(var ALTestSuite: Record "AL Test Suite"; TestCodeunitFilter: Text)
     var
         AllObjWithCaption: Record AllObjWithCaption;
@@ -202,23 +196,21 @@ codeunit 130456 "Test Suite Mgt."
         GetTestMethods(ALTestSuite, AllObjWithCaption);
     end;
 
-    [Scope('OnPrem')]
     procedure SelectTestMethodsByExtension(var ALTestSuite: Record "AL Test Suite"; ExtensionID: Text)
     var
         AllObjWithCaption: Record AllObjWithCaption;
-        NAVApp: Record "NAV App";
+        NAVAppInstalledApp: Record "NAV App Installed App";
         AppExtensionId: Guid;
     begin
         Evaluate(AppExtensionId, ExtensionID);
-        NAVApp.SetRange(ID, AppExtensionId);
-        NAVApp.FindFirst();
-        AllObjWithCaption.SetRange("App Package ID", NAVApp."Package ID");
+        NAVAppInstalledApp.SetRange("App ID", AppExtensionId);
+        NAVAppInstalledApp.FindFirst();
+        AllObjWithCaption.SetRange("App Package ID", NAVAppInstalledApp."Package ID");
         AllObjWithCaption.SetRange("Object Type", AllObjWithCaption."Object Type"::Codeunit);
         AllObjWithCaption.SetRange("Object Subtype", GetTestObjectSubtype());
         GetTestMethods(ALTestSuite, AllObjWithCaption);
     end;
 
-    [Scope('OnPrem')]
     procedure LookupTestRunner(var ALTestSuite: Record "AL Test Suite")
     var
         AllObjWithCaption: Record AllObjWithCaption;
@@ -231,14 +223,12 @@ codeunit 130456 "Test Suite Mgt."
         end;
     end;
 
-    [Scope('OnPrem')]
     procedure ChangeTestRunner(var ALTestSuite: Record "AL Test Suite"; NewTestRunnerId: Integer)
     begin
         ALTestSuite.Validate("Test Runner Id", NewTestRunnerId);
         ALTestSuite.Modify(true);
     end;
 
-    [Scope('OnPrem')]
     procedure CreateTestSuite(var TestSuiteName: Code[10])
     var
         ALTestSuite: Record "AL Test Suite";
@@ -250,7 +240,6 @@ codeunit 130456 "Test Suite Mgt."
         ALTestSuite.Insert(true);
     end;
 
-    [Scope('OnPrem')]
     procedure GetTestMethods(var ALTestSuite: Record "AL Test Suite"; var AllObjWithCaption: Record AllObjWithCaption)
     var
         TestLineNo: Integer;
@@ -308,7 +297,6 @@ codeunit 130456 "Test Suite Mgt."
         end;
     end;
 
-    [Scope('OnPrem')]
     procedure GetLastTestLineNo(ALTestSuite: Record "AL Test Suite"): Integer
     var
         TestMethodLine: Record "Test Method Line";
@@ -342,7 +330,6 @@ codeunit 130456 "Test Suite Mgt."
         exit('Test');
     end;
 
-    [Scope('OnPrem')]
     procedure DeleteAllMethods(var ALTestSuite: Record "AL Test Suite")
     var
         TestMethodLine: Record "Test Method Line";
@@ -351,13 +338,11 @@ codeunit 130456 "Test Suite Mgt."
         TestMethodLine.DeleteAll(true);
     end;
 
-    [Scope('OnPrem')]
     procedure RunTests(var TestMethodLine: Record "Test Method Line"; ALTestSuite: Record "AL Test Suite")
     begin
         CODEUNIT.Run(ALTestSuite."Test Runner Id", TestMethodLine);
     end;
 
-    [Scope('OnPrem')]
     procedure GetTestRunnerDisplayName(ALTestSuite: Record "AL Test Suite"): Text
     var
         AllObjWithCaption: Record AllObjWithCaption;
@@ -368,7 +353,6 @@ codeunit 130456 "Test Suite Mgt."
         exit(StrSubstNo('%1 - %2', ALTestSuite."Test Runner Id", AllObjWithCaption."Object Name"));
     end;
 
-    [Scope('OnPrem')]
     procedure UpdateRunValueOnChildren(var TestMethodLine: Record "Test Method Line")
     var
         BackupTestMethodLine: Record "Test Method Line";
@@ -388,7 +372,6 @@ codeunit 130456 "Test Suite Mgt."
         TestMethodLine.Copy(BackupTestMethodLine);
     end;
 
-    [Scope('OnPrem')]
     procedure DeleteChildren(var TestMethodLine: Record "Test Method Line")
     var
         BackupTestMethodLine: Record "Test Method Line";
@@ -410,7 +393,6 @@ codeunit 130456 "Test Suite Mgt."
         TestMethodLine.Copy(BackupTestMethodLine);
     end;
 
-    [Scope('OnPrem')]
     procedure CalcTestResults(CurrentTestMethodLine: Record "Test Method Line"; var Success: Integer; var Fail: Integer; var Skipped: Integer; var NotExecuted: Integer)
     var
         TestMethodLine: Record "Test Method Line";
@@ -442,7 +424,6 @@ codeunit 130456 "Test Suite Mgt."
         end;
     end;
 
-    [Scope('OnPrem')]
     procedure SetLastErrorOnLine(var TestMethodLine: Record "Test Method Line")
     begin
         TestMethodLine."Error Code" := CopyStr(GetLastErrorCode(), 1, MaxStrLen(TestMethodLine."Error Code"));
@@ -451,7 +432,6 @@ codeunit 130456 "Test Suite Mgt."
         SetErrorCallStack(TestMethodLine, GetLastErrorCallstack());
     end;
 
-    [Scope('OnPrem')]
     procedure ClearErrorOnLine(var TestMethodLine: Record "Test Method Line")
     begin
         Clear(TestMethodLine."Error Call Stack");
@@ -460,7 +440,6 @@ codeunit 130456 "Test Suite Mgt."
         Clear(TestMethodLine."Error Message Preview");
     end;
 
-    [Scope('OnPrem')]
     procedure GetFullErrorMessage(var TestMethodLine: Record "Test Method Line"): Text
     var
         ErrorMessageInStream: InStream;
@@ -484,7 +463,6 @@ codeunit 130456 "Test Suite Mgt."
         TestMethodLine.Modify(true);
     end;
 
-    [Scope('OnPrem')]
     procedure GetErrorCallStack(var TestMethodLine: Record "Test Method Line"): Text
     var
         ErrorCallStackInStream: InStream;
@@ -513,7 +491,6 @@ codeunit 130456 "Test Suite Mgt."
         exit(TEXTENCODING::UTF16);
     end;
 
-    [Scope('OnPrem')]
     procedure GetErrorMessageWithStackTrace(var TestMethodLine: Record "Test Method Line"): Text
     var
         FullErrorMessage: Text;
@@ -530,7 +507,6 @@ codeunit 130456 "Test Suite Mgt."
         exit(FullErrorMessage);
     end;
 
-    [Scope('OnPrem')]
     procedure ValidateTestMethodLineType(var TestMethodLine: Record "Test Method Line")
     begin
         case TestMethodLine."Line Type" of
@@ -544,7 +520,6 @@ codeunit 130456 "Test Suite Mgt."
         TestMethodLine.Level := GetLineLevel(TestMethodLine);
     end;
 
-    [Scope('OnPrem')]
     procedure ValidateTestMethodTestCodeunit(var TestMethodLine: Record "Test Method Line")
     var
         AllObjWithCaption: Record AllObjWithCaption;
@@ -558,7 +533,6 @@ codeunit 130456 "Test Suite Mgt."
         TestMethodLine.Level := GetLineLevel(TestMethodLine);
     end;
 
-    [Scope('OnPrem')]
     procedure ValidateTestMethodName(var TestMethodLine: Record "Test Method Line")
     var
         TestUnitNo: Integer;
@@ -575,7 +549,6 @@ codeunit 130456 "Test Suite Mgt."
         end;
     end;
 
-    [Scope('OnPrem')]
     procedure ValidateTestMethodFunction(var TestMethodLine: Record "Test Method Line")
     begin
         if TestMethodLine."Line Type" <> TestMethodLine."Line Type"::"Function" then begin
@@ -587,7 +560,6 @@ codeunit 130456 "Test Suite Mgt."
         TestMethodLine.Name := TestMethodLine."Function";
     end;
 
-    [Scope('OnPrem')]
     procedure ValidateTestMethodRun(var CurrentTestMethodLine: Record "Test Method Line")
     var
         TestMethodLine: Record "Test Method Line";

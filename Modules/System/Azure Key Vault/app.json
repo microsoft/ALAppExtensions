@@ -18,6 +18,13 @@
                              "version":  "15.0.0.0"
                          }
                      ],
+    "internalsVisibleTo":  [
+                                {
+                                    "appId":  "901cbabc-1217-4d4a-922f-77b4d4ef3dcf",
+                                    "name":  "Azure Key Vault Test Library",
+                                    "publisher":  "Microsoft"
+                                }
+                           ],
     "screenshots":  [
 
                     ],

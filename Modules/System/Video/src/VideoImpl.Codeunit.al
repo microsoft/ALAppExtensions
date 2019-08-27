@@ -9,8 +9,17 @@ codeunit 3709 "Video Impl."
 
     procedure InsertIntoBuffer(var ProductVideoBuffer: Record "Product Video Buffer"; AppID: Guid; Title: Text[250]; VideoUrl: Text[2048]; TableNum: Integer; SystemId: Guid)
     var
+        ProductVideoBuff: Record "Product Video Buffer";
         EntryNo: Integer;
     begin
+        if VideoUrl = '' then
+            exit;
+
+        ProductVideoBuff.SetRange("Video Url", VideoUrl);
+        if not ProductVideoBuff.IsEmpty() then
+            exit;
+
+        ProductVideoBuff.Reset();
         if ProductVideoBuffer.FindLast() then
             EntryNo := ProductVideoBuffer.ID;
         EntryNo += 1;

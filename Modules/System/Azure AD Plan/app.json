@@ -2,8 +2,8 @@
     "id":  "c1d53fcd-ec4f-4ac5-ba49-af91a1dea38c",
     "name":  "Azure AD Plan",
     "publisher":  "Microsoft",
-    "brief":  "Retrieve plans in Azure AD and Manage plans",
-    "description":  "Retrieve plans in Azure AD and Manage plans",
+    "brief":  "Retrieve plans in Azure AD and manage plans",
+    "description":  "Retrieve plans in Azure AD and manage plans",
     "version":  "15.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
@@ -75,8 +75,24 @@
                      },
                      {
                          "from":  9822,
-                         "to":  9824
+                         "to":  9825
+                     },
+                     {
+                         "from":  9056,
+                         "to":  9056
                      }
                  ],
-    "target":  "OnPrem"
+    "target":  "OnPrem",
+    "internalsVisibleTo":  [
+                               {
+                                   "name":  "Azure AD Plan Test",
+                                   "appId":  "7058ad04-f167-49f0-8f48-2c3b0bd31010",
+                                   "publisher":  "Microsoft"
+                               },
+                               {
+                                   "name":  "Azure AD Plan Test Library",
+                                   "appId":  "e63749f1-a7a5-4557-a943-0ae4745616bd",
+                                   "publisher":  "Microsoft"
+                               }
+                           ]
 }

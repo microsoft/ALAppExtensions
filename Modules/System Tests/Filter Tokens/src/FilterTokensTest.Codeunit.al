@@ -175,7 +175,7 @@ codeunit 135034 "Filter Tokens Test"
 
         VerifyTextFilter('ME', USERID());
         VerifyTextFilter('COMPANY', COMPANYNAME());
-        VerifyTextFilter('MyFilter', 'Custom Filter');
+        VerifyTextFilter('MyFilter', 'MyFilter');
 
         UNBINDSUBSCRIPTION(FilterTokensTest);
     end;

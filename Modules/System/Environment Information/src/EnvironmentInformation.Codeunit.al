@@ -79,16 +79,11 @@ codeunit 457 "Environment Information"
     end;
 
     /// <summary>
-    /// Sets the testability sandbox flag.
+    /// Gets the application family.
     /// </summary>
-    /// <remarks>
-    /// This functions should only be used for testing purposes.
-    /// </remarks>
-    /// <param name="EnableSandboxForTest">The value to be set to the testability sandbox flag.</param>
-    [Scope('OnPrem')]
-    procedure SetTestabilitySandbox(EnableSandboxForTest: Boolean)
+    procedure GetApplicationFamily(): Text
     begin
-        EnvironmentInformationImpl.SetTestabilitySandbox(EnableSandboxForTest);
+        exit(EnvironmentInformationImpl.GetApplicationFamily());
     end;
 
     /// <summary>
@@ -102,14 +97,5 @@ codeunit 457 "Environment Information"
     procedure SetTestabilitySoftwareAsAService(EnableSoftwareAsAServiceForTest: Boolean)
     begin
         EnvironmentInformationImpl.SetTestabilitySoftwareAsAService(EnableSoftwareAsAServiceForTest);
-    end;
-
-    /// <summary>
-    /// An event which asks for the AppId to be filled in by the subscriber.
-    /// </summary>
-    /// <remarks> Do not use this event in a production environment. This should be subscribed to only in tests.</remarks>
-    [IntegrationEvent(false, false)]
-    internal procedure OnBeforeGetApplicationIdentifier(var AppId: Text)
-    begin
     end;
 }

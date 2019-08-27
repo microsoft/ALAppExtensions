@@ -1,0 +1,32 @@
+{
+    "id":  "cc58a557-79ae-473d-9fef-3045a2289c00",
+    "name":  "Azure AD User Management Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Library function to initialize test data for Azure AD User Management module",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "574d5c26-62d4-4541-bc36-0fbbaed0072a",
+                             "name":  "Azure AD User Management",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  132914,
+                         "to":  132914
+                     }
+                 ],
+    "target":  "OnPrem"
+}

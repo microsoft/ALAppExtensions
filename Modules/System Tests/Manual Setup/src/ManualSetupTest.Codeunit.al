@@ -19,7 +19,7 @@ codeunit 134934 "Manual Setup Test"
         TestBusinessSetupKeywordsTxt: Text;
         TestBusinessSetupDescriptionManualTxt: Text;
         TestBusinessSetupKeywordsManualTxt: Text;
-        Id: Guid;
+        AppId: Guid;
 
     [Test]
     [Scope('OnPrem')]
@@ -34,7 +34,7 @@ codeunit 134934 "Manual Setup Test"
 
         // [Given] Two sunscribers that register a manual setup and randomly initialized values
         Initialize();
-        Id := AddExtenstion();
+        AppId := AddExtension();
 
         // [When] Invoke the event subscription by opening page
         ManualSetupPage.OpenView();
@@ -53,15 +53,6 @@ codeunit 134934 "Manual Setup Test"
         MyManualSetup.Trap();
         ManualSetupPage."Open Manual Setup".Invoke();
         MyManualSetup.Close();
-
-        // [Then] Verify that the second manual setup is present on the page
-        ManualSetupPage.FILTER.SetFilter(Name, TestBusinessSetupNameManualTxt);
-        ManualSetupPage.First();
-
-        Assert.AreEqual(TestBusinessSetupNameManualTxt, Format(ManualSetupPage.Name), 'Manual page setup not found');
-        Assert.AreEqual(TestBusinessSetupDescriptionManualTxt, Format(ManualSetupPage.Description), 'Manual Setup page description is not correct');
-        Assert.AreEqual(TestBusinessSetupKeywordsManualTxt, Format(ManualSetupPage.Keywords), 'Manual Setup page keywords are not correct');
-        Assert.AreEqual('', Format(ManualSetupPage.ExtensionName), 'Extension name should be empty in Manual Setup page');
 
         if UnbindSubscription(ManualSetupTest) then;
     end;
@@ -85,31 +76,26 @@ codeunit 134934 "Manual Setup Test"
         TestBusinessSetupKeywordsManualTxt := Keywords[2] + ', ' + Keywords[3] + ', ' + Keywords[4] + ', ' + Keywords[5];
     end;
 
-    local procedure AddExtenstion() ExtenstionID: Guid
+    local procedure AddExtension() ExtensionID: Guid
     var
         Extension: Record "NAV App";
     begin
-        ExtenstionID := CreateGuid();
+        ExtensionID := CreateGuid();
 
         Extension.Init();
-        Extension.ID := ExtenstionID;
-        Extension.Name := TestExtensionName;
+        Extension.ID := ExtensionID;
+        Extension.Name := CopyStr(TestExtensionName, 1, 250);
         Extension.Insert();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
     [Scope('OnPrem')]
     procedure HandleOnRegisterManualSetup(var Sender: Codeunit "Manual Setup")
+    var
+        ManualSetupCategory: Enum "Manual Setup Category";
     begin
-        // [Given] Add the icon to be used
-        Sender.ClearAllIcons();
-        Sender.AddIcon('SomeIcon', '');
-
-        Sender.InsertForExtension(TestBusinessSetupNameTxt, TestBusinessSetupDescriptionTxt,
-          TestBusinessSetupKeywordsTxt, Page::"My Manual Setup", Id);
-
-        Sender.Insert(TestBusinessSetupNameManualTxt, TestBusinessSetupDescriptionManualTxt,
-          TestBusinessSetupKeywordsManualTxt, Page::"My Manual Setup", 'SomeIcon');
+        Sender.Insert(CopyStr(TestBusinessSetupNameTxt, 1, 50), CopyStr(TestBusinessSetupDescriptionTxt, 1, 250),
+          CopyStr(TestBusinessSetupKeywordsTxt, 1, 250), Page::"My Manual Setup", AppId, ManualSetupCategory::Uncategorized);
     end;
 }
 

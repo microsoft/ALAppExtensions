@@ -13,7 +13,6 @@ codeunit 9014 "Azure AD Graph Impl."
         IsTestInProgress: Boolean;
         IsGraphInitialized: Boolean;
 
-
     procedure GetUser(UserPrincipalName: Text; var UserInfo: DotNet UserInfo)
     begin
         if CanQueryGraph() then

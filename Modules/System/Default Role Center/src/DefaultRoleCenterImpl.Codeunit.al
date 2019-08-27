@@ -21,12 +21,12 @@ codeunit 9171 "Default Role Center Impl."
         DefaultRoleCenter.OnBeforeGetDefaultRoleCenter(RoleCenterId, Handled);
 
         if not IsValidRoleCenterId(RoleCenterId) then
-            RoleCenterId := PAGE::"Default Role Center";
+            RoleCenterId := PAGE::"Blank Role Center";
 
         exit(RoleCenterId);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000006, 'GetDefaultRoleCenterID', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetDefaultRoleCenterID', '', false, false)]
     local procedure OnGetDefaultRoleCenterId(var ID: Integer)
     begin
         ID := GetDefaultRoleCenterId();

@@ -5,7 +5,7 @@
 
 table 9008 "User Login"
 {
-    Access = Public; // TODO: Evaluate proper access modifier.
+    Access = Internal;
     ReplicateData = false;
 
     fields

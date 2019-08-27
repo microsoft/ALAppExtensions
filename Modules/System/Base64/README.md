@@ -1,0 +1,1 @@
+The module provides functionality to convert the text to and from base 64. It may be used for dealing with large XML files, pictures etc.

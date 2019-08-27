@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 9027 "Plan Ids"
 {
 
@@ -11,7 +16,6 @@ codeunit 9027 "Plan Ids"
         EssentialPlanGUIDTxt: Label '{920656a2-7dd8-4c83-97b6-a356414dbd36}', Locked = true;
         PremiumPlanGUIDTxt: Label '{8e9002c0-a1d8-4465-b952-817d2948e6e2}', Locked = true;
         InvoicingPlanGUIDTxt: Label '{39b5c996-467e-4e60-bd62-46066f572726}', Locked = true;
-
         ViralSignupPlanGUIDTxt: Label '{3F2AFEED-6FB5-4BF9-998F-F2912133AEAD}', Locked = true;
         ExternalAccountantPlanGUIDTxt: Label '{170991d7-b98e-41c5-83d4-db2052e1795f}', Locked = true;
         DelegatedAdminGUIDTxt: Label '{00000000-0000-0000-0000-000000000007}', Locked = true;
@@ -20,11 +24,12 @@ codeunit 9027 "Plan Ids"
         EssentialISVPlanGUIDTxt: Label '{8bb56cea-3f11-4647-854a-212e2b05306a}', Locked = true;
         PremiumISVPlanGUIDTxt: Label '{4c52d56d-5121-425a-91a5-dd0de136ca17}', Locked = true;
         DeviceISVPlanGUIDTxt: Label '{a98d0c4a-a52f-4771-a609-e20366102d2a}', Locked = true;
+        DevicePlanGUIDTxt: Label '{100e1865-35d4-4463-aaff-d38eee3a1116}', Locked = true;
 
-        // <summary>
-        // Returns the Basic plan GUID.
-        // </summary>
-        // <returns>the Basic plan GUID</returns>
+    // <summary>
+    // Returns the Basic plan GUID.
+    // </summary>
+    // <returns>the Basic plan GUID</returns>
     procedure GetBasicPlanId(): Guid
     begin
         EXIT(BasicPlanGUIDTxt);
@@ -136,6 +141,15 @@ codeunit 9027 "Plan Ids"
     procedure GetDeviceISVPlanId(): Guid
     begin
         exit(DeviceISVPlanGUIDTxt);
+    end;
+
+    // <summary>
+    // Returns the Device plan GUID.
+    // </summary>
+    // <returns>the Device plan GUID</returns>
+    procedure GetDevicePlanId(): Guid
+    begin
+        exit(DevicePlanGUIDTxt);
     end;
 }
 

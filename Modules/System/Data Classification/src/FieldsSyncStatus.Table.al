@@ -5,7 +5,7 @@
 
 table 1750 "Fields Sync Status"
 {
-    Access = Public; // TODO: Refactor BaseApp not to access table.
+    Access = Internal;
 
     fields
     {

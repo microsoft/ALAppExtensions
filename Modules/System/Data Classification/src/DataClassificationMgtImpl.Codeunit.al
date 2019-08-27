@@ -5,17 +5,17 @@
 
 codeunit 1753 "Data Classification Mgt. Impl."
 {
-    Access = Public; // TODO: Tests are using this codeunit. Test will have to be refactored not to depend on this codeunit.
+    Access = Internal;
 
     var
         DataSensitivityOptionStringTxt: Label 'Unclassified,Sensitive,Personal,Company Confidential,Normal', Comment = 'It needs to be translated as the field Data Sensitivity on Page 1751 Data Classification WorkSheet and field Data Sensitivity of Table 1180 Data Sensitivity Entities';
         LegalDisclaimerTxt: Label 'Microsoft is providing this Data Classification feature as a matter of convenience only. It''s your responsibility to classify the data appropriately and comply with any laws and regulations that are applicable to you. Microsoft disclaims all responsibility towards any claims related to your classification of the data.';
 
-    [Scope('OnPrem')]
     procedure PopulateDataSensitivityTable()
     var
         "Field": Record "Field";
         DataSensitivity: Record "Data Sensitivity";
+        FieldsSyncStatusManagement: Codeunit "Fields Sync Status Management";
     begin
         GetEnabledSensitiveFields(Field);
 
@@ -24,10 +24,9 @@ codeunit 1753 "Data Classification Mgt. Impl."
                 InsertDataSensitivityForField(Field.TableNo, Field."No.", DataSensitivity."Data Sensitivity"::Unclassified);
             until Field.Next() = 0;
 
-        SetLastSyncDateTimeForField();
+        FieldsSyncStatusManagement.SetLastSyncDate();
     end;
 
-    [Scope('OnPrem')]
     procedure InsertDataSensitivityForField(TableNo: Integer; FieldNo: Integer; DataSensitivityOption: Option)
     var
         DataSensitivity: Record "Data Sensitivity";
@@ -40,39 +39,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
         DataSensitivity.Insert();
     end;
 
-    local procedure SetLastSyncDateTimeForField()
-    var
-        FieldsSyncStatus: Record "Fields Sync Status";
-    begin
-        if FieldsSyncStatus.Get() then begin
-            FieldsSyncStatus."Last Sync Date Time" := CurrentDateTime();
-            FieldsSyncStatus.Modify();
-        end else begin
-            FieldsSyncStatus."Last Sync Date Time" := CurrentDateTime();
-            FieldsSyncStatus.Insert();
-        end;
-    end;
-
-    [Scope('OnPrem')]
-    procedure SetTableClassifications(var DataPrivacyEntities: Record "Data Privacy Entities")
-    begin
-        DataPrivacyEntities.SetRange(Include, true);
-        if DataPrivacyEntities.FindSet() then
-            repeat
-                SetFieldsClassifications(DataPrivacyEntities."Table No.", DataPrivacyEntities."Default Data Sensitivity");
-            until DataPrivacyEntities.Next() = 0;
-    end;
-
-    local procedure SetFieldsClassifications(TableNo: Integer; Class: Option)
-    var
-        DataSensitivity: Record "Data Sensitivity";
-    begin
-        DataSensitivity.SetRange("Company Name", CompanyName());
-        DataSensitivity.SetRange("Table No", TableNo);
-        SetSensitivities(DataSensitivity, Class);
-    end;
-
-    [Scope('OnPrem')]
     procedure SetSensitivities(var DataSensitivity: Record "Data Sensitivity"; Sensitivity: Option)
     var
         Now: DateTime;
@@ -89,7 +55,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
             until DataSensitivity.Next() = 0;
     end;
 
-    [Scope('OnPrem')]
     procedure FindSimilarFieldsInRelatedTables(var DataSensitivity: Record "Data Sensitivity")
     var
         TempDataPrivacyEntities: Record "Data Privacy Entities" temporary;
@@ -144,15 +109,16 @@ codeunit 1753 "Data Classification Mgt. Impl."
         until DataSensitivity.Next() = 0;
     end;
 
-    [Scope('OnPrem')]
     procedure GetRelatedTablesForTable(var TempDataPrivacyEntitiesOut: Record "Data Privacy Entities" temporary; TableNo: Integer)
     var
         TableRelationsMetadata: Record "Table Relations Metadata";
+        DataPrivacyEntitiesMgt: Codeunit "Data Privacy Entities Mgt.";
     begin
         TableRelationsMetadata.SetRange("Related Table ID", TableNo);
         if TableRelationsMetadata.FindSet() then
             repeat
-                TempDataPrivacyEntitiesOut.InsertRow(TableRelationsMetadata."Table ID", 0, 0, '', 0);
+                DataPrivacyEntitiesMgt.InsertDataPrivacyEntitity(TempDataPrivacyEntitiesOut,
+                    TableRelationsMetadata."Table ID", 0, 0, '', 0);
             until TableRelationsMetadata.Next() = 0;
     end;
 
@@ -163,7 +129,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
         DataSensitivity.SetFilter("Field Caption", FieldCaptionFilter);
     end;
 
-    [Scope('OnPrem')]
     procedure GetTableNoFilterForTablesWhoseNameContains(Name: Text): Text
     var
         "Field": Record "Field";
@@ -177,7 +142,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
         exit(GetFilterTextForFieldValuesInTable(RecRef, Field.FieldNo(TableNo)));
     end;
 
-    [Scope('OnPrem')]
     procedure PopulateFieldValue(FieldRef: FieldRef; var FieldContentBuffer: Record "Field Content Buffer")
     var
         FieldValueText: Text;
@@ -201,18 +165,11 @@ codeunit 1753 "Data Classification Mgt. Impl."
         exit(OptionVar = OptionVar::FlowField);
     end;
 
-    [Scope('OnPrem')]
     procedure SyncAllFields()
     var
         "Field": Record "Field";
-    begin
-        RunSync(Field);
-    end;
-
-    [Scope('OnPrem')]
-    procedure RunSync("Field": Record "Field")
-    var
         DataSensitivity: Record "Data Sensitivity";
+        FieldsSyncStatusManagement: Codeunit "Fields Sync Status Management";
     begin
         DataSensitivity.SetRange("Company Name", CompanyName());
         if DataSensitivity.IsEmpty() then begin
@@ -225,7 +182,7 @@ codeunit 1753 "Data Classification Mgt. Impl."
 
         UpdateDataSensitivityTable(Field);
 
-        SetLastSyncDateTimeForField();
+        FieldsSyncStatusManagement.SetLastSyncDate();
     end;
 
     local procedure UpdateDataSensitivityTable("Field": Record "Field")
@@ -276,7 +233,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
             until TempDataSensitivity.Next() = 0;
     end;
 
-    [Scope('OnPrem')]
     procedure AreAllFieldsClassified(): Boolean
     var
         DataSensitivity: Record "Data Sensitivity";
@@ -290,19 +246,16 @@ codeunit 1753 "Data Classification Mgt. Impl."
         exit(DataSensitivity.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
     procedure GetDataSensitivityOptionString(): Text
     begin
         exit(DataSensitivityOptionStringTxt);
     end;
 
-    [Scope('OnPrem')]
     procedure GetLegalDisclaimerTxt(): Text
     begin
         exit(LegalDisclaimerTxt);
     end;
 
-    [Scope('OnPrem')]
     procedure SetTableFieldsToNormal(TableNumber: Integer)
     var
         "Field": Record "Field";
@@ -316,7 +269,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
             until Field.Next() = 0;
     end;
 
-    [Scope('OnPrem')]
     procedure SetFieldToPersonal(TableNo: Integer; FieldNo: Integer)
     var
         DataSensitivity: Record "Data Sensitivity";
@@ -324,7 +276,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
         SetDataSensitivityForField(TableNo, FieldNo, DataSensitivity."Data Sensitivity"::Personal);
     end;
 
-    [Scope('OnPrem')]
     procedure SetFieldToSensitive(TableNo: Integer; FieldNo: Integer)
     var
         DataSensitivity: Record "Data Sensitivity";
@@ -332,7 +283,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
         SetDataSensitivityForField(TableNo, FieldNo, DataSensitivity."Data Sensitivity"::Sensitive);
     end;
 
-    [Scope('OnPrem')]
     procedure SetFieldToCompanyConfidential(TableNo: Integer; FieldNo: Integer)
     var
         DataSensitivity: Record "Data Sensitivity";
@@ -340,7 +290,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
         SetDataSensitivityForField(TableNo, FieldNo, DataSensitivity."Data Sensitivity"::"Company Confidential");
     end;
 
-    [Scope('OnPrem')]
     procedure SetFieldToNormal(TableNo: Integer; FieldNo: Integer)
     var
         DataSensitivity: Record "Data Sensitivity";
@@ -359,25 +308,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
             InsertDataSensitivityForField(TableNo, FieldNo, DataSensitivityOption);
     end;
 
-    [Scope('OnPrem')]
-    procedure DataPrivacyEntitiesExist(): Boolean
-    var
-        TempDataPrivacyEntities: Record "Data Privacy Entities" temporary;
-        DataClassificationMgt: Codeunit "Data Classification Mgt.";
-        RecordRef: RecordRef;
-    begin
-        RaiseOnGetDataPrivacyEntities(TempDataPrivacyEntities);
-
-        if TempDataPrivacyEntities.FindSet() then
-            repeat
-                RecordRef.Open(TempDataPrivacyEntities."Table No.");
-                if (not RecordRef.IsEmpty()) and (TempDataPrivacyEntities."Table No." <> DATABASE::User) then
-                    exit(true);
-                RecordRef.Close();
-            until TempDataPrivacyEntities.Next() = 0;
-    end;
-
-    [Scope('OnPrem')]
     procedure IsDataSensitivityEmptyForCurrentCompany(): Boolean
     var
         DataSensitivity: Record "Data Sensitivity";
@@ -386,7 +316,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
         exit(DataSensitivity.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
     procedure GetEnabledSensitiveFields(var "Field": Record "Field")
     begin
         Field.SetRange(Enabled, true);
@@ -394,7 +323,6 @@ codeunit 1753 "Data Classification Mgt. Impl."
         GetSensitiveFields(Field);
     end;
 
-    [Scope('OnPrem')]
     procedure GetSensitiveFields(var "Field": Record "Field")
     begin
         Field.SetFilter(
@@ -421,14 +349,38 @@ codeunit 1753 "Data Classification Mgt. Impl."
         exit(FilterText);
     end;
 
-    procedure RaiseOnGetDataPrivacyEntities(var DataPrivacyEntities: Record "Data Privacy Entities")
+    procedure RunDataClassificationWorksheetForTableWhoseNameContains(TableNoFilter: Text)
     var
-        DataClassificationMgt: Codeunit "Data Classification Mgt.";
+        DataSensitivity: Record "Data Sensitivity";
+        DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
     begin
-        if not DataPrivacyEntities.IsTemporary() then
-            error('Please call this function with a temporary record.');
+        DataSensitivity.SetRange("Company Name", CompanyName());
+        DataSensitivity.SetFilter("Table No", DataClassificationMgtImpl.GetTableNoFilterForTablesWhoseNameContains(TableNoFilter));
+        PAGE.Run(PAGE::"Data Classification Worksheet", DataSensitivity);
+    end;
 
-        DataClassificationMgt.OnGetDataPrivacyEntities(DataPrivacyEntities);
+    procedure RunDataClassificationWorksheetForPersonalAndSensitiveDataInTable(TableNo: Integer)
+    var
+        DataSensitivity: Record "Data Sensitivity";
+        DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
+    begin
+        DataSensitivity.SetRange("Company Name", CompanyName());
+        DataSensitivity.SetRange("Table No", TableNo);
+        DataSensitivity.SetFilter("Data Sensitivity", StrSubstNo('%1|%2',
+            DataSensitivity."Data Sensitivity"::Personal,
+            DataSensitivity."Data Sensitivity"::Sensitive));
+        DataClassificationMgtImpl.FindSimilarFieldsInRelatedTables(DataSensitivity);
+        PAGE.RunModal(PAGE::"Data Classification Worksheet", DataSensitivity);
+    end;
+
+    procedure RunDataClassificationWorksheetForTable(TableNo: Integer)
+    var
+        DataSensitivity: Record "Data Sensitivity";
+    begin
+        DataSensitivity.SetRange("Company Name", CompanyName());
+        DataSensitivity.FilterGroup(2);
+        DataSensitivity.SetRange("Table No", TableNo);
+        PAGE.RunModal(PAGE::"Data Classification Worksheet", DataSensitivity);
     end;
 }
 

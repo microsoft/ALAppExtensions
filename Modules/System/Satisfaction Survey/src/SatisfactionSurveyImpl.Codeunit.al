@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ codeunit 1432 "Satisfaction Survey Impl."
         if not NetPromoterScoreSetup.WritePermission() then
             exit(false);
 
-        NetPromoterScoreSetup.ModifyAll("Expire Time", CurrentDateTime());
+        NetPromoterScoreSetup.ModifyAll("Expire Time", CurrentDateTime() - 1000);
         exit(true);
     end;
 
@@ -371,7 +371,7 @@ codeunit 1432 "Satisfaction Survey Impl."
         ClearLastError();
         Client.Clear();
         Client.DefaultRequestHeaders().Clear();
-        Client.Timeout := TimeoutInMilliseconds() * 1000;
+        Client.Timeout := TimeoutInMilliseconds();
 
         if not Client.UseDefaultNetworkWindowsAuthentication() then begin
             ErrorMessage := CannotUseDefaultCredentialsTxt;

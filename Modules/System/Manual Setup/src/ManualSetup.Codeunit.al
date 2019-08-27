@@ -15,50 +15,16 @@ codeunit 1875 "Manual Setup"
         TempManualSetup: Record "Manual Setup" temporary;
         ManualSetupImpl: Codeunit "Manual Setup Impl.";
 
-    /// <summary>Insert a manual setup page that requires a shared icon.</summary>
-    /// <param name="Name">The name of the setup.</param>
-    /// <param name="Description">The description of the setup.</param>
-    /// <param name="Keywords">The keywords related to the setup.</param>
-    /// <param name="RunPage">The page ID of the setup page to be run.</param>
-    /// <param name="IconName">The icon file name of the setup that is part of the shared media repository.</param>
-    [Scope('OnPrem')]
-    procedure Insert(Name: Text[50]; Description: Text[250]; Keywords: Text[250]; RunPage: Integer; IconName: Text[50])
-    begin
-        ManualSetupImpl.Insert(TempManualSetup, Name, Description, Keywords, RunPage, IconName);
-    end;
-
     /// <summary>Insert a manual setup page for an extension./summary>
     /// <param name="Name">The name of the setup.</param>
     /// <param name="Description">The description of the setup.</param>
     /// <param name="Keywords">The keywords related to the setup.</param>
     /// <param name="RunPage">The page ID of the setup page to be run<./param>
     /// <param name="ExtensionId">The ID of the extension that the caller is in. This is used to fetch the icon for the setup.</param>
-    procedure InsertForExtension(Name: Text[50]; Description: Text[250]; Keywords: Text[250]; RunPage: Integer; ExtensionId: GUID)
+    /// <param name="Category">The category that this manual setup belongs to.</param>
+    procedure Insert(Name: Text[50]; Description: Text[250]; Keywords: Text[250]; RunPage: Integer; ExtensionId: GUID; Category: Enum "Manual Setup Category")
     begin
-        ManualSetupImpl.Insert(TempManualSetup, Name, Description, Keywords, RunPage, ExtensionId);
-    end;
-
-    /// <summary>
-    /// Clears all icons to be used for manual setups.
-    /// </summary>
-    /// <remarks>
-    /// This is called when initializing the icons and typically followed by calls to add icons.
-    /// </remarks>
-    [Scope('OnPrem')]
-    procedure ClearAllIcons()
-    begin
-        ManualSetupImpl.ClearAllIcons();
-    end;
-
-    /// <summary>
-    /// Add an icon to be used for one or more manual setups.
-    /// </summary>
-    /// <param name="Name">The name of the icon.</param>
-    /// <param name="MediaRef">The media reference for the icon.</param>
-    [Scope('OnPrem')]
-    procedure AddIcon(Name: Text[50]; MediaRef: Code[50])
-    begin
-        ManualSetupImpl.AddIcon(Name, MediaRef);
+        ManualSetupImpl.Insert(TempManualSetup, Name, Description, Keywords, RunPage, ExtensionId, Category);
     end;
 
     /// <summary>

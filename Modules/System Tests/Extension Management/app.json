@@ -1,0 +1,38 @@
+{
+    "id":  "21e86311-7256-43e5-a0d1-2f4798ba5ca9",
+    "name":  "Extension Management Test",
+    "publisher":  "Microsoft",
+    "brief":  "Tests the Extension Management module.",
+    "description":  "Provides tests for installing and uninstalling extensions and their dependencies. Tests the tooling for retrieving different versions of the extensions.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
+                             "publisher":  "Microsoft",
+                             "name":  "Extension Management",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "publisher":  "Microsoft",
+                             "name":  "Library Assert",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "14.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  133100,
+                         "to":  133100
+                     }
+                 ],
+    "target":  "OnPrem"
+}

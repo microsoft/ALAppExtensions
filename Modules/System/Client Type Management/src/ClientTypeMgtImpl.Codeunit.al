@@ -9,11 +9,17 @@ codeunit 4032 "Client Type Mgt. Impl."
     SingleInstance = true;
 
     procedure GetCurrentClientType() CurrClientType: ClientType
-    var
-        ClientTypeManagement: Codeunit "Client Type Management";
     begin
         CurrClientType := CurrentClientType();
-        ClientTypeManagement.OnAfterGetCurrentClientType(CurrClientType);
+        OnAfterGetCurrentClientType(CurrClientType);
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnAfterGetCurrentClientType(var CurrClientType: ClientType)
+    begin
+        // Subscribe to this event from tests if you need to verify a different flow.
+        // This feature is for testing and is subject to a different SLA than production features.
+        // Do not use this event in a production environment. This should be subscribed to only in tests.
     end;
 }
 

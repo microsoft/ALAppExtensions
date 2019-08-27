@@ -25,7 +25,7 @@ codeunit 9016 "Azure AD Plan"
     /// <summary>
     /// Checks if the plan is assigned to the current user.
     /// </summary>
-    /// <param name="PlanGUID">the Plan GUID.</param>
+    /// <param name="PlanGUID">the plan GUID.</param>
     /// <returns>true if the given plan is assigned to the current user.</returns>
     [Scope('OnPrem')]
     procedure IsPlanAssignedToUser(PlanGUID: Guid): Boolean
@@ -34,10 +34,10 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Checks if the plan is assigned to specific user.
+    /// Checks if the plan is assigned to a specific user.
     /// </summary>
-    /// <param name="PlanGUID">the Plan GUID.</param>
-    /// <param name="UserGUID">the User GUID.</param>
+    /// <param name="PlanGUID">the plan GUID.</param>
+    /// <param name="UserGUID">the user GUID.</param>
     /// <returns>true if the given plan is assigned to the given user.</returns>
     [Scope('OnPrem')]
     procedure IsPlanAssignedToUser(PlanGUID: Guid; UserGUID: Guid): Boolean
@@ -59,6 +59,8 @@ codeunit 9016 "Azure AD Plan"
     /// <summary>
     /// Updates plans for user.
     /// </summary>
+    /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
+    /// <raises>OnUpdateUserAccessForSaaS</raises>
     /// <param name="UserSecurityId">The user to update.</param>
     /// <param name="GraphUser">The graph user corresponding to the user to update, and containing the information about the plans assigned to the user.</param>
     [Scope('OnPrem')]
@@ -68,8 +70,22 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
+    /// Updates plans for user.
+    /// </summary>
+    /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
+    /// <raises>OnUpdateUserAccessForSaaS</raises>
+    /// <param name="UserSecurityId">The user to update.</param>
+    [Scope('OnPrem')]
+    procedure UpdateUserPlans(UserSecurityId: Guid)
+    begin
+        AzureAdPlanImpl.UpdateUserPlans(UserSecurityId);
+    end;
+
+    /// <summary>
     /// Updates plans for all users.
     /// </summary>
+    /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
+    /// <raises>OnUpdateUserAccessForSaaS</raises>
     [Scope('OnPrem')]
     procedure UpdateUserPlans()
     begin
@@ -77,18 +93,10 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Updates plans for user.
-    /// </summary>
-    /// <param name="UserSecurityId">The user to update.</param>
-    [Scope('OnPrem')]
-    procedure UpdateUserPlans(UserSecurityId: Guid)
-    begin
-        AzureAdPlanImpl.UpdateUserPlans();
-    end;
-
-    /// <summary>
     /// Refreshes the user plans assigned to the given user.
     /// </summary>
+    /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
+    /// <raises>OnUpdateUserAccessForSaaS</raises>
     /// <param name="UserSecurityId">The user to update.</param>
     [Scope('OnPrem')]
     procedure RefreshUserPlanAssignments(UserSecurityId: Guid)
@@ -97,10 +105,10 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Returns the Plan RoleCenterID for the given user.
+    /// Returns the plan roleCenterID for the given user.
     /// </summary>
-    /// <param name="RoleCenterID">The reference to the variable where to save the RoleCenterID.</param>
-    /// <param name="UserSecurityId">The User ID.</param>
+    /// <param name="RoleCenterID">The roleCenterID to return.</param>
+    /// <param name="UserSecurityId">The user GUID.</param>
     [Scope('OnPrem')]
     [TryFunction]
     procedure TryGetAzureUserPlanRoleCenterId(var RoleCenterID: Integer; UserSecurityId: Guid)
@@ -109,9 +117,9 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Returns true if the table Plan is empty.
+    /// Returns true if at least one plan exists.
     /// </summary>
-    /// <returns>Returns true if the table Plan is empty.</returns>
+    /// <returns>Returns true if at least one plan exist.</returns>
     [Scope('OnPrem')]
     procedure DoPlansExist(): Boolean
     begin
@@ -119,9 +127,9 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Returns true if the table User Plan is empty.
+    /// Returns true if at least one user is assigned to a plan.
     /// </summary>
-    /// <returns>Returns true if the table User Plan is empty.</returns>
+    /// <returns>Returns true if at least one user is assigned to a plan.</returns>
     [Scope('OnPrem')]
     procedure DoUserPlansExist(): Boolean
     begin
@@ -129,9 +137,10 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Returns true if the given Plan exists.
+    /// Returns true if the given plan exists.
     /// </summary>
-    /// <returns>Returns true if the given Plan exists.</returns>
+    /// <param name="PlanGUID">The plan GUID.</param>
+    /// <returns>Returns true if the given plan exists.</returns>
     [Scope('OnPrem')]
     procedure DoesPlanExist(PlanGUID: Guid): Boolean
     begin
@@ -139,9 +148,10 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Returns true if the given User has at least one Plan.
+    /// Returns true if the given user has at least one plan.
     /// </summary>
-    /// <returns>Returns true if the given User has at least one Plan.</returns>
+    /// <param name="UserSecurityId">The user GUID.</param>
+    /// <returns>Returns true if the given user has at least one plan.</returns>
     [Scope('OnPrem')]
     procedure DoesUserHavePlans(UserSecurityId: Guid): Boolean
     begin
@@ -149,22 +159,29 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Returns the total number of available Plans.
+    /// Returns the total number of available plans.
     /// </summary>
-    /// <returns>Returns the total number of available Plans.</returns>
+    /// <returns>Returns the total number of available plans.</returns>
     [Scope('OnPrem')]
     procedure GetAvailablePlansCount(): Integer
     begin
         exit(AzureAdPlanImpl.GetAvailablePlansCount());
     end;
 
-    //-----------------------------------------------------------------------------
+    /// <summary>
+    /// Checks if mixed plans are correctly set.
+    /// </summary>
+    /// <raises>OnCanCurrentUserManagePlansAndGroups</raises>
     [Scope('OnPrem')]
     procedure CheckMixedPlans()
     begin
         AzureAdPlanImpl.CheckMixedPlans();
     end;
 
+    /// <summary>
+    /// Returns true if a mixed plan exists. 
+    /// </summary>
+    /// <returns>Returns true if a mixed plan exists.</returns>
     [Scope('OnPrem')]
     procedure MixedPlansExist(): Boolean
     begin
@@ -174,7 +191,7 @@ codeunit 9016 "Azure AD Plan"
     /// <summary>
     /// Sets this codeunit in test mode (for running unit tests).
     /// </summary>
-    /// <param name="EnableTestability">true to enable the test mode.</param>
+    /// <param name="EnableTestability">True to enable the test mode.</param>
     [Scope('OnPrem')]
     procedure SetTestInProgress(EnableTestability: Boolean)
     begin
@@ -182,31 +199,37 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Integration event to remove related user groups from the user
+    /// Integration event, raised from <see cref="UpdateUserPlans"/>.
+    /// Subscribe to this event to remove related user groups from the user.
     /// </summary>
-    /// <param name="PlanID">The plan to remove</param>
-    /// <param name="UserSecurityID">The user to remove</param>
+    /// <param name="PlanID">The plan to remove.</param>
+    /// <param name="UserSecurityID">The user to remove.</param>
     [IntegrationEvent(false, false)]
     [Scope('OnPrem')]
     internal procedure OnRemoveUserGroupsForUserAndPlan(PlanID: Guid; UserSecurityID: Guid)
     begin
     end;
 
-    //------------------------------------------------------------------------------------------------s
     /// <summary>
-    /// 
+    /// Integration event, raised from <see cref="UpdateUserPlans"/>.
+    /// Subscribe to this event to update the user groups
     /// </summary>
-    /// <param name="  "></param>
+    /// <param name="UserSecurityID">The user to update.</param>
+    /// <param name="UserGroupsAdded">Whether the user groups were updated</param>
     [IntegrationEvent(false, false)]
     [Scope('OnPrem')]
     internal procedure OnUpdateUserAccessForSaaS(UserSecurityID: Guid; var UserGroupsAdded: Boolean)
     begin
     end;
 
+    /// <summary>
+    /// Integration event, raised from <see cref="CheckMixedPlans"/>.
+    /// Subscribe to this event to check whether the user can manage plans and groups
+    /// </summary>
+    /// <param name="CanManage">Whether the user can manage plans and groups</param>
     [IntegrationEvent(false, false)]
     [Scope('OnPrem')]
     internal procedure OnCanCurrentUserManagePlansAndGroups(var CanManage: Boolean);
     begin
     end;
 }
-

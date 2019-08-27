@@ -1,0 +1,84 @@
+{
+    "id":  "574d5c26-62d4-4541-bc36-0fbbaed0072a",
+    "name":  "Azure AD User Management",
+    "publisher":  "Microsoft",
+    "brief":  "Manages Azure Active Directory users in Business Central.",
+    "description":  "Manages the creation and synchronization of Azure Active Directory users in Business Central.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "2673d810-273e-402f-9093-2eaef7e03b83",
+                             "name":  "Environment Information",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "959630b2-01c5-48d8-a477-d6d40da855fb",
+                             "name":  "User Login Times",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
+                             "name":  "Client Type Management",
+                             "publisher":  "Microsoft",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "publisher":  "Microsoft",
+                             "name":  "DotNet Aliases",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "f2cc2ef8-949f-47d1-85b8-10bd6f8bc61c",
+                             "publisher":  "Microsoft",
+                             "name":  "Azure AD User",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
+                             "publisher":  "Microsoft",
+                             "name":  "Azure AD Graph",
+                             "version":  "15.0.0.0"
+                         },
+                         {
+                             "appId":  "c1d53fcd-ec4f-4ac5-ba49-af91a1dea38c",
+                             "publisher":  "Microsoft",
+                             "name":  "Azure AD Plan",
+                             "version":  "15.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  9010,
+                         "to":  9010
+                     },
+                     {
+                         "from":  9017,
+                         "to":  9017
+                     }
+                 ],
+    "internalsVisibleTo":  [
+                               {
+                                   "appId":  "aec6c18d-2ed2-48d3-9368-e136d9dc4fc4",
+                                   "name":  "Azure AD User Management Test",
+                                   "publisher":  "Microsoft"
+                               },
+                               {
+                                   "appId":  "cc58a557-79ae-473d-9fef-3045a2289c00",
+                                   "name":  "Azure AD User Management Test Library",
+                                   "publisher":  "Microsoft"
+                               }
+                           ],
+    "target":  "OnPrem"
+}

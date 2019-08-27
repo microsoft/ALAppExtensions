@@ -17,18 +17,126 @@ codeunit 9011 "Azure AD Graph User Impl."
         UserDoesNotObjectIdSetErr: Label 'The user with the security ID %1 does not have a valid object ID in Azure Active Directory.', Comment = '%1 =  The specified User Security ID';
         CouldNotFindGraphUserErr: Label 'An Azure Active Directory user with the object ID %1 was not found.', Comment = '%1 = The specified object id';
 
-    procedure GetGraphUser(var GraphUserOut: DotNet UserInfo)
+    [TryFunction]
+    procedure GetGraphUser(UserSecurityId: Guid; var GraphUserOut: DotNet UserInfo)
     begin
+        InitializeGraphUser(UserSecurityId);
         GraphUserOut := GraphUser;
     end;
 
-    procedure SetGraphUser(GraphUserParam: DotNet UserInfo)
+    procedure GetObjectId(UserSecurityID: Guid): Text
     begin
-        GraphUser := GraphUserParam;
+        InitializeGraphUser(UserSecurityID);
+
+        if IsNull(GraphUser) then
+            exit;
+
+        exit(GraphUser.ObjectId());
+    end;
+
+    procedure GetUserAuthenticationObjectId(UserSecurityId: Guid): Text
+    var
+        UserProperty: Record "User Property";
+    begin
+        if not UserProperty.Get(UserSecurityId) then
+            Error(UserDoesNotObjectIdSetErr, UserSecurityId);
+
+        exit(UserProperty."Authentication Object ID");
+    end;
+
+    procedure UpdateUserFromAzureGraph(var User: Record User; var GraphUser: DotNet UserInfo): Boolean
+    var
+        ModifyUser: Boolean;
+        IsUserModified: Boolean;
+        TempString: Text;
+    begin
+        if IsNull(GraphUser) then
+            exit;
+
+        if not CheckUpdateUserRequired(User, GraphUser) then
+            exit;
+
+        User.LockTable();
+        if not User.Get(User."User Security ID") then begin
+            Commit();
+            exit;
+        end;
+
+        SetUserLanguage(GraphUser.PreferredLanguage());
+
+        if GraphUser.AccountEnabled() and (User.State = User.State::Disabled) then begin
+            User.State := User.State::Enabled;
+            ModifyUser := true;
+        end;
+
+        if (not GraphUser.AccountEnabled()) and (User.State = User.State::Enabled) then begin
+            User.State := User.State::Disabled;
+            ModifyUser := true;
+        end;
+
+        TempString := CopyStr(GetUserFullName(User."User Security ID"), 1, MaxStrLen(User."Full Name"));
+        if LowerCase(User."Full Name") <> LowerCase(TempString) then begin
+            User."Full Name" := CopyStr(TempString, 1, MaxStrLen(User."Full Name"));
+            ModifyUser := true;
+        end;
+
+        TempString := CopyStr(Format(GraphUser.Mail()), 1, MaxStrLen(User."Contact Email"));
+        if LowerCase(User."Contact Email") <> LowerCase(TempString) then begin
+            User."Contact Email" := CopyStr(TempString, 1, MaxStrLen(User."Contact Email"));
+            ModifyUser := true;
+        end;
+
+        TempString := CopyStr(Format(GraphUser.UserPrincipalName()), 1, MaxStrLen(User."Authentication Email"));
+        if LowerCase(User."Authentication Email") <> LowerCase(TempString) then begin
+            // Clear current authentication mail
+            User."Authentication Email" := '';
+            User.Modify();
+
+            ModifyUser := false;
+            IsUserModified := true;
+
+            EnsureAuthenticationEmailIsNotInUse(TempString);
+            UpdateAuthenticationEmail(User, GraphUser);
+        end;
+
+        if ModifyUser then
+            User.Modify();
+
+        Commit();
+        exit(ModifyUser or IsUserModified);
+    end;
+
+    procedure EnsureAuthenticationEmailIsNotInUse(AuthenticationEmail: Text)
+    var
+        User: Record User;
+        GraphUser: DotNet UserInfo;
+        ModifiedUser: Record User;
+        UserSecurityId: Guid;
+        GraphUserExists: Boolean;
+    begin
+        // Clear all duplicate authentication email.
+        User.SetRange("Authentication Email", CopyStr(AuthenticationEmail, 1, MaxStrLen(User."Authentication Email")));
+        if not User.FindSet() then
+            exit;
+        repeat
+            UserSecurityId := User."User Security ID";
+
+            GraphUserExists := GetGraphUser(UserSecurityId, GraphUser);
+
+            User."Authentication Email" := '';
+            User.Modify();
+
+            if GraphUserExists then begin
+                // Cascade changes to authentication email, terminates at the first time an authentication email is not found.
+                EnsureAuthenticationEmailIsNotInUse(GraphUser.UserPrincipalName());
+                if ModifiedUser.Get(UserSecurityId) then
+                    UpdateAuthenticationEmail(ModifiedUser, GraphUser);
+            end;
+        until User.Next() = 0;
     end;
 
     [TryFunction]
-    procedure SetGraphUser(UserSecurityID: Guid)
+    local procedure InitializeGraphUser(UserSecurityID: Guid)
     var
         UserObjectID: Text;
     begin
@@ -49,234 +157,107 @@ codeunit 9011 "Azure AD Graph User Impl."
             Error(CouldNotFindGraphUserErr, UserObjectID);
     end;
 
-    procedure IsGraphUserNull(): Boolean
-    begin
-        exit(IsNull(GraphUser));
-    end;
-
-    procedure GetObjectId(): Text
-    begin
-        if IsGraphUserNull() then
-            exit;
-
-        exit(GraphUser.ObjectId());
-    end;
-
-    procedure IsAccountDisabled(): Boolean
-    begin
-        if IsGraphUserNull() then
-            exit;
-
-        exit(not GraphUser.AccountEnabled());
-    end;
-
-    procedure IsAccountEnabled(): Boolean
-    begin
-        if IsGraphUserNull() then
-            exit;
-
-        exit(GraphUser.AccountEnabled());
-    end;
-
-    procedure GetSurname(): Text
-    begin
-        if IsGraphUserNull() then
-            exit;
-
-        exit(GraphUser.Surname());
-    end;
-
-    procedure GetDisplayName(): Text
-    begin
-        if IsGraphUserNull() then
-            exit;
-
-        exit(GraphUser.DisplayName());
-    end;
-
-    procedure GetEmail(): Text
-    begin
-        if IsGraphUserNull() then
-            exit;
-
-        exit(GraphUser.Mail());
-    end;
-
-    procedure GetUserPrincipalName(): Text
-    begin
-        if IsGraphUserNull() then
-            exit;
-
-        exit(GraphUser.UserPrincipalName());
-    end;
-
-    procedure GetGivenName(): Text
-    begin
-        if IsGraphUserNull() then
-            exit;
-
-        exit(GraphUser.GivenName());
-    end;
-
-    procedure GetPreferredLanguage(): Text
-    begin
-        if IsGraphUserNull() then
-            exit;
-
-        exit(GraphUser.PreferredLanguage());
-    end;
-
-    procedure GetUserFullName(): Text
+    local procedure GetUserFullName(UserSecurityID: Guid): Text
     var
         FullUserName: Text;
     begin
-        if IsGraphUserNull() then
+        if IsNull(GraphUser) then
             exit;
 
-        FullUserName := GetGivenName();
-        if GetSurname() <> '' then
+        FullUserName := Format(GraphUser.GivenName());
+        if Format(GraphUser.Surname()) <> '' then
             FullUserName := FullUserName + ' ';
-        FullUserName := FullUserName + GetSurname();
+        FullUserName := FullUserName + Format(GraphUser.Surname());
         exit(FullUserName);
     end;
 
-    procedure GetUserAuthenticationObjectId(UserSecurityId: Guid): Text
-    var
-        UserProperty: Record "User Property";
-    begin
-        if not UserProperty.Get(UserSecurityId) then
-            Error(UserDoesNotObjectIdSetErr, UserSecurityId);
-
-        exit(UserProperty."Authentication Object ID");
-    end;
-
-    procedure UpdateUserFromAzureGraph(var User: Record User): Boolean
-    var
-        ModifyUser: Boolean;
-        IsUserModified: Boolean;
-        TempString: Text;
-    begin
-        if IsGraphUserNull() then
-            exit;
-
-        if not CheckUpdateUserRequired(User) then
-            exit;
-
-        User.LockTable();
-        if not User.Get(User."User Security ID") then begin
-            Commit();
-            exit;
-        end;
-
-        if IsAccountEnabled() and (User.State = User.State::Disabled) then begin
-            User.State := User.State::Enabled;
-            ModifyUser := true;
-        end;
-
-        if IsAccountDisabled() and (User.State = User.State::Enabled) then begin
-            User.State := User.State::Disabled;
-            ModifyUser := true;
-        end;
-
-        TempString := CopyStr(GetUserFullName(), 1, MaxStrLen(User."Full Name"));
-        if LowerCase(User."Full Name") <> LowerCase(TempString) then begin
-            User."Full Name" := CopyStr(TempString, 1, MaxStrLen(User."Full Name"));
-            ModifyUser := true;
-        end;
-
-        TempString := CopyStr(GetEmail(), 1, MaxStrLen(User."Contact Email"));
-        if LowerCase(User."Contact Email") <> LowerCase(TempString) then begin
-            User."Contact Email" := CopyStr(TempString, 1, MaxStrLen(User."Contact Email"));
-            ModifyUser := true;
-        end;
-
-        TempString := CopyStr(GetUserPrincipalName(), 1, MaxStrLen(User."Authentication Email"));
-        if LowerCase(User."Authentication Email") <> LowerCase(TempString) then begin
-            // Clear current authentication mail
-            User."Authentication Email" := '';
-            User.Modify();
-            IsUserModified := true;
-
-            EnsureAuthenticationEmailIsNotInUse(TempString);
-            UpdateAuthenticationEmail(User);
-        end;
-
-        if IsUserModified then
-            User.Modify();
-
-        Commit();
-        exit(ModifyUser or IsUserModified);
-    end;
-
-    local procedure CheckUpdateUserRequired(var User: Record User): Boolean
+    local procedure CheckUpdateUserRequired(var User: Record User; var GraphUser: DotNet UserInfo): Boolean
     var
         TempString: Text;
     begin
-        if IsGraphUserNull() then
-            exit;
-
         if not User.Get(User."User Security ID") then
             exit(false);
 
-        if IsAccountEnabled() and (User.State = User.State::Disabled) then
+        if GraphUser.AccountEnabled() and (User.State = User.State::Disabled) then
             exit(true);
 
-        if IsAccountDisabled() and (User.State = User.State::Enabled) then
+        if (not GraphUser.AccountEnabled()) and (User.State = User.State::Enabled) then
             exit(true);
 
-        TempString := CopyStr(GetUserFullName(), 1, MaxStrLen(User."Full Name"));
+        TempString := CopyStr(GetUserFullName(User."User Security ID"), 1, MaxStrLen(User."Full Name"));
         if LowerCase(User."Full Name") <> LowerCase(TempString) then
             exit(true);
 
-        TempString := CopyStr(GetEmail(), 1, MaxStrLen(User."Contact Email"));
+        TempString := CopyStr(Format(GraphUser.Mail()), 1, MaxStrLen(User."Contact Email"));
         if LowerCase(User."Contact Email") <> LowerCase(TempString) then
             exit(true);
 
-        TempString := CopyStr(GetUserPrincipalName(), 1, MaxStrLen(User."Authentication Email"));
+        TempString := CopyStr(Format(GraphUser.UserPrincipalName()), 1, MaxStrLen(User."Authentication Email"));
         if LowerCase(User."Authentication Email") <> LowerCase(TempString) then
             exit(true);
 
         exit(false);
     end;
 
-    procedure EnsureAuthenticationEmailIsNotInUse(AuthenticationEmail: Text)
-    var
-        User: Record User;
-        ModifiedUser: Record User;
-        UserSecurityId: Guid;
-    begin
-        if IsGraphUserNull() then
-            exit;
-
-        // Clear all duplicate authentication email.
-        User.SetRange("Authentication Email", CopyStr(AuthenticationEmail, 1, MaxStrLen(User."Authentication Email")));
-        if not User.FindSet() then
-            exit;
-        repeat
-            UserSecurityId := User."User Security ID";
-            // Modifying the user authentication email breaks the connection to AD by clearing the Authentication Object Id
-            User."Authentication Email" := '';
-            User.Modify();
-
-            // Cascade changes to authentication email, terminates at the first time an authentication email is not found.
-            if SetGraphUser(UserSecurityId) then begin
-                EnsureAuthenticationEmailIsNotInUse(GetUserPrincipalName());
-                if ModifiedUser.Get(UserSecurityId) then
-                    UpdateAuthenticationEmail(ModifiedUser);
-            end;
-        until User.Next() <> 0;
-    end;
-
-    local procedure UpdateAuthenticationEmail(var User: Record User)
+    local procedure UpdateAuthenticationEmail(var User: Record User; var GraphUser: DotNet UserInfo)
     var
         NavUserAuthenticationHelper: DotNet NavUserAccountHelper;
     begin
-        if IsGraphUserNull() then
+        if IsNull(GraphUser) then
             exit;
 
-        User."Authentication Email" := CopyStr(GetUserPrincipalName(), 1, MaxStrLen(User."Authentication Email"));
-        User.Modify();
-        NavUserAuthenticationHelper.SetAuthenticationObjectId(User."User Security ID", GetObjectId());
+        User."Authentication Email" := CopyStr(Format(GraphUser.UserPrincipalName()), 1, MaxStrLen(User."Authentication Email"));
+        if User.Modify() then
+            NavUserAuthenticationHelper.SetAuthenticationObjectId(User."User Security ID", GraphUser.ObjectId());
+    end;
+
+    local procedure SetUserLanguage(PreferredLanguage: Text)
+    var
+        Language: Record Language;
+        UserPersonalization: Record "User Personalization";
+        LanguageManagement: Codeunit Language;
+        EnvironmentInfo: Codeunit "Environment Information";
+        LanguageCode: Code[10];
+        LanguageId: Integer;
+        NonDefaultLanguageId: Integer;
+    begin
+        if not EnvironmentInfo.IsInvoicing() then
+            exit;
+
+        LanguageId := LanguageManagement.GetDefaultApplicationLanguageId();
+
+        // We will use default application language if the PreferredLanguage is blank or en-us
+        // (i.e. don't spend time trying to lookup the code)
+        if not (LowerCase(PreferredLanguage) in ['', 'en-us']) then
+            if TryGetLanguageCode(PreferredLanguage, LanguageCode) then;
+
+        // If we support the language, get the language id
+        // If we don't, we keep the current value (default application language)
+        NonDefaultLanguageId := LanguageManagement.GetLanguageId(LanguageCode);
+        if NonDefaultLanguageId <> 0 then
+            LanguageId := NonDefaultLanguageId;
+
+        if not UserPersonalization.Get(UserSecurityId()) then
+            exit;
+
+        // Only lock the table if there is a change
+        if UserPersonalization."Language ID" = LanguageId then
+            exit; // No changes required
+
+        UserPersonalization.LockTable();
+        UserPersonalization.Get(UserSecurityId());
+        UserPersonalization.Validate("Language ID", LanguageId);
+        UserPersonalization.Validate("Locale ID", LanguageId);
+        UserPersonalization.Modify(true);
+    end;
+
+    [TryFunction]
+    local procedure TryGetLanguageCode(CultureName: Text; var CultureCode: Code[10])
+    var
+        CultureInfo: DotNet CultureInfo;
+    begin
+        CultureInfo := CultureInfo.CultureInfo(CultureName);
+        CultureCode := CultureInfo.ThreeLetterWindowsLanguageName();
     end;
 
     procedure SetTestInProgress(TestInProgress: Boolean)

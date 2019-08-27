@@ -18,14 +18,14 @@
                     ],
     "platform":  "15.0.0.0",
     "idRanges":  [
-        {
-            "from":  4100,
-            "to":  4109
-        },
-        {
-            "from":  4150,
-            "to":  4151
-        }
-    ],
-"target":  "OnPrem"
+                     {
+                         "from":  4100,
+                         "to":  4109
+                     },
+                     {
+                         "from":  4150,
+                         "to":  4151
+                     }
+                 ],
+    "target":  "OnPrem"
 }

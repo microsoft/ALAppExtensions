@@ -13,6 +13,7 @@ page 1470 "Product Videos"
     PageType = NavigatePage;
     SourceTable = "Product Video Buffer";
     SourceTableTemporary = true;
+    UsageCategory = Administration;
 
     layout
     {
@@ -35,6 +36,12 @@ page 1470 "Product Videos"
                         Video.Play("Video Url");
                         Video.OnVideoPlayed("Table Num", "System ID");
                     end;
+                }
+                field(Category; Category)
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    ToolTip = 'Specifies the video category.';
                 }
                 field("App ID"; "App ID")
                 {

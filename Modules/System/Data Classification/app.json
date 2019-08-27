@@ -23,16 +23,23 @@
     "idRanges":  [
                      {
                          "from":  1180,
-                         "to":  1181
-                     },
-                     {
-                         "from":  1183,
-                         "to":  1183
+                         "to":  1180
                      },
                      {
                          "from":  1750,
                          "to":  1754
+                     },
+                     {
+                         "from":  1757,
+                         "to":  1758
                      }
                  ],
-    "target":  "OnPrem"
+    "target":  "OnPrem",
+    "internalsVisibleTo":  [
+                               {
+                                   "name":  "Data Classification Test",
+                                   "appId":  "e63c534d-667d-4764-9d34-0b10dcb52e98",
+                                   "publisher":  "Microsoft"
+                               }
+                           ]
 }

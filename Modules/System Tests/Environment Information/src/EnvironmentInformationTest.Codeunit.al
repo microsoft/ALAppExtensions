@@ -11,6 +11,7 @@ codeunit 135091 "Environment Information Test"
     var
         Assert: Codeunit "Library Assert";
         EnvironmentInformation: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
 
     [Test]
     [Scope('OnPrem')]
@@ -19,7 +20,7 @@ codeunit 135091 "Environment Information Test"
         // [Scenario] Set the testability to true. IsSandBox returns correct values.
 
         // [Given] Set the testability sandbox to True
-        EnvironmentInformation.SetTestabilitySandbox(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(true);
 
         // [When] Poll for IsSandbox
         // [Then] Should return true
@@ -33,7 +34,7 @@ codeunit 135091 "Environment Information Test"
         // [Scenario] Set the testability to false. IsSandBox returns correct values.
 
         // [Given] Set the testability sandbox to false
-        EnvironmentInformation.SetTestabilitySandbox(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
 
         // [When] Poll for IsSandbox
         // [Then] Should return false

@@ -17,6 +17,8 @@ codeunit 3702 "Environment Information Impl."
         IsSandboxConfig: Boolean;
         IsSandboxInitialized: Boolean;
         MemberShipEntitlementValueTxt: Label 'Membership Entitlement. IsEmpty returned %1.', Locked = true;
+        DefaultSandboxEnvironmentNameTxt: Label 'Sandbox', Locked = true;
+        DefaultProductionEnvironmentNameTxt: Label 'Production', Locked = true;
 
     procedure IsProduction(): Boolean
     begin
@@ -36,8 +38,17 @@ codeunit 3702 "Environment Information Impl."
     end;
 
     procedure GetEnvironmentName(): Text
+    var
+        EnvironmentName: Text;
     begin
-        exit(NavTenantSettingsHelper.GetEnvironmentName());
+        EnvironmentName := NavTenantSettingsHelper.GetEnvironmentName();
+        if EnvironmentName <> '' then
+            exit(EnvironmentName);
+
+        if IsProduction() then
+            exit(DefaultProductionEnvironmentNameTxt);
+
+        exit(DefaultSandboxEnvironmentNameTxt);
     end;
 
     procedure SetTestabilitySandbox(EnableSandboxForTest: Boolean)
@@ -82,13 +93,25 @@ codeunit 3702 "Environment Information Impl."
         exit(GetAppId() = 'FIN');
     end;
 
+    procedure GetApplicationFamily(): Text
+    begin
+        exit(NavTenantSettingsHelper.GetApplicationFamily());
+    end;
+
     local procedure GetAppId() AppId: Text
     var
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-        EnvironmentInformation.OnBeforeGetApplicationIdentifier(AppId);
+        OnBeforeGetApplicationIdentifier(AppId);
         if AppId = '' then
             AppId := ApplicationIdentifier();
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnBeforeGetApplicationIdentifier(var AppId: Text)
+    begin
+        // An event which asks for the AppId to be filled in by the subscriber.
+        // Do not use this event in a production environment. This should be subscribed to only in tests.
     end;
 }
 

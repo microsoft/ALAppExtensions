@@ -1,0 +1,31 @@
+{
+    "id":  "93b83ef6-9666-4c1d-b130-c232f4047621",
+    "name":  "Upgrade Tags",
+    "publisher":  "Microsoft",
+    "brief":  "Stores Upgrade Tags to track which methods were executed.",
+    "description":  "Upgrade Tags are used within upgrade codeunits to know which upgrade methods have been run and to prevent executing the same upgrade code twice. They can also be used to skip the uprade methods on a specific company or to fix the upgrade that vent wrong.",
+    "version":  "15.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  9996,
+                         "to":  9996
+                     },
+                     {
+                         "from":  9999,
+                         "to":  9999
+                     }
+                 ],
+    "target":  "Cloud"
+}
