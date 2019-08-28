@@ -88,14 +88,17 @@ The breaking changes are currently being identified. We will update this site wi
 ---
 
 ## Extension Management Module
-**Error**: _'Extension Installation Impl' is inaccessible due to its protection level_
+**Error**: _'Extension Installation Impl' is inaccessible due to its protection level_\
 **Error**: _Codeunit 'NavExtensionInstallationMgmt' is missing_
 
 **Solution**: Access the codeunit through the facade APIs, `codeunit 2504 "Extension Management"`.
 
 **Error**: _'Extension Management' does not contain a definition for 'GetLatestVersionPackageId'_
+
 **Solution**: Function has been renamed, function `GetLatestVersionPackageIdByAppId`.
+
 **Error**: _Record Language' does not contain a definition for 'InstallNavExtension'_
+
 **Solution**: Function has been renamed, function `InstallExtension`. Notice additional parameter IsUIEnabled that indicates whether the install operation is invoked through the UI.
 	
 ---
