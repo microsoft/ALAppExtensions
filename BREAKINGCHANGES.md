@@ -35,7 +35,7 @@ The breaking changes are currently being identified. We will update this site wi
 
 ---
 
-## Client Type Management
+## Client Type Management Module
 **Error**: _Codeunit 'ClientTypeManagement' is missing_\
 **Error**: _Codeunit '4' is missing_
 
