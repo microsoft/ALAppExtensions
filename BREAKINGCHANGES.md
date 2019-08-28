@@ -97,7 +97,7 @@ The breaking changes are currently being identified. We will update this site wi
 
 **Solution**: Function has been renamed, function `GetLatestVersionPackageIdByAppId`.
 
-**Error**: _Record Language' does not contain a definition for 'InstallNavExtension'_
+**Error**: _'Extension Management' does not contain a definition for 'InstallNavExtension'_
 
 **Solution**: Function has been renamed, function `InstallExtension`. Notice additional parameter IsUIEnabled that indicates whether the install operation is invoked through the UI.
 	
@@ -167,7 +167,7 @@ The breaking changes are currently being identified. We will update this site wi
 ## Tenant Settings Module
 **Error**: _Codeunit 'Tenant Management' is missing_
 
-**Solution**: Codeunit was split into `codeunit 417 "Tenant Settings"` and `codeunit 457 "Environment Information"` and `codeunit 433 "Azure AD Tenant"'.
+**Solution**: Codeunit was split into `codeunit 417 "Tenant Settings"` and `codeunit 457 "Environment Information"` and `codeunit 433 "Azure AD Tenant"`.
 
 **Error**: _'Codeunit "Identity Management"' does not contain a definition for 'GetAadTenantId'_
 
