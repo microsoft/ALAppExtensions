@@ -95,11 +95,11 @@ The breaking changes are currently being identified. We will update this site wi
 
 **Error**: _'Extension Management' does not contain a definition for 'GetLatestVersionPackageId'_
 
-**Solution**: Function has been renamed, function `GetLatestVersionPackageIdByAppId`.
+**Solution**: Function has been renamed to function `GetLatestVersionPackageIdByAppId`.
 
 **Error**: _'Extension Management' does not contain a definition for 'InstallNavExtension'_
 
-**Solution**: Function has been renamed, function `InstallExtension`. Notice additional parameter IsUIEnabled that indicates whether the install operation is invoked through the UI.
+**Solution**: Function has been renamed to function `InstallExtension`. Notice additional parameter IsUIEnabled that indicates whether the install operation is invoked through the UI.
 	
 ---
 
@@ -189,7 +189,47 @@ The breaking changes are currently being identified. We will update this site wi
 
 **Error**: _'Codeunit "User Management"' does not contain a definition for 'LookupUserID'_
 
-**Solution**: Function has been moved to `codeunit 9843 "User Selection"`, function `Open` and returns the User record.
+**Solution**: Function has been removed. Reason: the TableRelation property enables lookup logic on platform level.
+
+
+**Design details**
+The TableRelation property makes onLookup trigger redundant. However the ValidateTableRelation property requires validation logic in OnValidate trigger.
+
+```
+field(1; "User ID"; Code[50])
+{
+    Caption = 'User ID';
+    DataClassification = EndUserIdentifiableInformation;
+    NotBlank = true;
+    TableRelation = User."User Name";
+    ValidateTableRelation = false;
+
+    trigger OnValidate()
+    var
+        UserSelection: Codeunit "User Selection";
+    begin
+        UserSelection.ValidateUserName("User ID");
+    end;
+}
+```
+
+If you want to enable DrillDown for non-editable page, you need to use `DisplayUserInformation` from Codeunit "User Management"  
+```
+field("User ID"; "User ID")
+{
+    ApplicationArea = Jobs;
+    ToolTip = 'Specifies the ID of the user who posted the entry, to be used, for example, in the change log.';
+
+    trigger OnDrillDown()
+    var
+        UserMgt: Codeunit "User Management";
+    begin
+        UserMgt.DisplayUserInformation("User ID");
+    end;
+} 
+```
+If you prefer platform support vote for the https://experience.dynamics.com/ideas/idea/?ideaid=4075b3be-5ba8-e811-b96f-0003ff68a2af.
+
 
 ---
 
