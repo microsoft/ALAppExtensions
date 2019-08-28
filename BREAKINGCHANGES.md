@@ -164,15 +164,23 @@ The breaking changes are currently being identified. We will update this site wi
 
 ---
 
-## Tenant Settings Module
+## Azure AD Tenant Module
 **Error**: _Codeunit 'Tenant Management' is missing_
 
 **Solution**: Codeunit was split into `codeunit 417 "Tenant Settings"` and `codeunit 457 "Environment Information"` and `codeunit 433 "Azure AD Tenant"`.
 
 **Error**: _'Codeunit "Identity Management"' does not contain a definition for 'GetAadTenantId'_
 
-**Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantIds`.
+**Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantId`.
 
+**Error**: _'Codeunit "Tenant Management"' does not contain a definition for 'GetAadTenantId'_
+
+**Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantId`.
+
+**Error**: _'Codeunit "Tenant Management"' does not contain a definition for 'GetAadTenantDomainName'_
+
+**Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantDomainName`.
+ 
 ---
 
 ## User Permissions Module
