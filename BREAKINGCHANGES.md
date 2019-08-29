@@ -9,6 +9,12 @@ The breaking changes are currently being identified. We will update this site wi
 We’re working hard to make this a comprehensive list, but there’s always a chance that something is missing. If you can’t what you’re looking for here, we suggest that you engage with other members of the Business Central community on Yammer, or reach out to us on GitHub to let us know.
 
 # Modules
+## Auto Format Module
+**Error**: _Codeunit 'AutoFormatManagement' is missing_
+
+**Solution**: Codeunit has been renamed to `codeunit 45 "Auto Format"`.
+ 
+---
 
 ## Azure AD Tenant Module
 **Error**: _Codeunit 'Tenant Management' is missing_
@@ -26,13 +32,6 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 **Error**: _'Codeunit "Tenant Management"' does not contain a definition for 'GetAadTenantDomainName'_
 
 **Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantDomainName`.
- 
----
-
-## Auto Format Module
-**Error**: _Codeunit 'AutoFormatManagement' is missing_
-
-**Solution**: Codeunit has been renamed to `codeunit 45 "Auto Format"`.
 
 ---
 
@@ -207,6 +206,39 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 **Error**: _Codeunit 'Server Config. Setting Handler' is missing_
 
 **Solution**: Codeunit has been renamed to `codeunit 6723 "Server Setting"`.
+
+---
+
+## System Initialization Module
+**Error**: _Codeunit 'Logon Management' is missing_\
+
+**Solution**: Codeunit has been renamed to `codeunit 150 "System Initialization"`.
+
+**Error**: _'Codeunit "System Initialization"' does not contain a definition for 'IsLogonInProgress'_\
+
+**Solution**: Function has been moved to `codeunit 150 "System Initialization"`, function `IsInProgress`.
+
+**Error**: _'Codeunit "System Initialization"' does not contain a definition for 'SetLogonInProgress'_
+
+**Solution**: Function has been removed.
+
+---
+
+## Upgrade Tags Module
+**Error**: _Codeunit 'Upgrade Tag Mgt' is missing_
+
+**Solution**: Codeunit has been renamed to `codeunit 9999 "Upgrade Tag"`.
+
+---
+
+## User Login Times Module
+**Error**: _'Codeunit "Permission Manager"' does not contain a definition for 'IsFirstLogin'_
+
+**Solution**: Function has been moved to `codeunit 9026 "User Login Time Tracker"`, function `IsFirstLogin`.
+
+**Error**: _'Table "User Login"' does not contain a definition for 'UserLoggedInAtOrAfter'_
+
+**Solution**: Function has been moved to `codeunit 9026 "User Login Time Tracker"`, function `UserLoggedInSinceDateTime`.
 
 ---
 
