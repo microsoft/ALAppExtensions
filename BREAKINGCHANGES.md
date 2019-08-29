@@ -6,7 +6,7 @@ In this help document, you will find a list of known breaking changes which were
 The breaking changes are currently being identified. We will update this site with more help on this topic very soon.
 
 # Can’t find what you’re looking for?
-We’re working hard to make this a comprehensive list, but there’s always a chance that something is missing. If you can’t what you’re looking for here, we suggest that you engage with other members of the Business Central community on Yammer, or reach out to us on GitHub to let us know.
+We’re working hard to make this a comprehensive list, but there’s always a chance that something is missing. If you can’t find what you’re looking for here, we suggest that you engage with other members of the Business Central community on Yammer, or reach out to us on GitHub to let us know.
 
 # Modules
 ## Auto Format Module
