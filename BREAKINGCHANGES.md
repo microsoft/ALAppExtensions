@@ -5,7 +5,29 @@ In this help document, you will find a list of known breaking changes which were
 # Work in progress
 The breaking changes are currently being identified. We will update this site with more help on this topic very soon.
 
+# Can’t find what you’re looking for?
+We’re working hard to make this a comprehensive list, but there’s always a chance that something is missing. If you can’t what you’re looking for here, we suggest that you engage with other members of the Business Central community on Yammer, or reach out to us on GitHub to let us know.
+
 # Modules
+
+## Azure AD Tenant Module
+**Error**: _Codeunit 'Tenant Management' is missing_
+
+**Solution**: Codeunit was split into `codeunit 417 "Tenant Settings"` and `codeunit 457 "Environment Information"` and `codeunit 433 "Azure AD Tenant"`.
+
+**Error**: _'Codeunit "Identity Management"' does not contain a definition for 'GetAadTenantId'_
+
+**Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantId`.
+
+**Error**: _'Codeunit "Tenant Management"' does not contain a definition for 'GetAadTenantId'_
+
+**Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantId`.
+
+**Error**: _'Codeunit "Tenant Management"' does not contain a definition for 'GetAadTenantDomainName'_
+
+**Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantDomainName`.
+ 
+---
 
 ## Auto Format Module
 **Error**: _Codeunit 'AutoFormatManagement' is missing_
@@ -32,6 +54,10 @@ The breaking changes are currently being identified. We will update this site wi
 **Error**: _'Codeunit' does not contain a definition for 'CaptionManagement'_
 
 **Solution**: Events have been moved to `codeunit 42 "Caption Class"`.
+
+**Error**: _The event 'OnAfterCaptionClassTranslate' is not found in the target_
+
+**Solution**: Event has been moved to `codeunit 42 "Caption Class"`, function `OnAfterCaptionClassResolve`.
 
 ---
 
@@ -157,30 +183,31 @@ The breaking changes are currently being identified. We will update this site wi
 
 ---
 
+## Password Dialog Module
+**Error**: _The target Page "Set Password" for the extension object is not found_\
+**Error**: _The target Page "Change Password" for the extension object is not found_
+
+**Solution**: Page has been renamed to `page 9810 "Password Dialog"`, but is not extensible.
+
+---
+
+## Satisfaction Survey Module
+**Error**: _'Net Promoter Score' is inaccessible due to its protection level_
+**Error**: _'Net Promoter Score Setup' is inaccessible due to its protection level_
+
+**Solution**: Table is neither customizable nor accessible.
+
+**Error**: _The target Page "Net Promoter Score Setup" for the extension object is not found_
+
+**Solution**: Page is neither customizable nor accessible.
+
+---
+
 ## Server Settings Module
 **Error**: _Codeunit 'Server Config. Setting Handler' is missing_
 
 **Solution**: Codeunit has been renamed to `codeunit 6723 "Server Setting"`.
 
----
-
-## Azure AD Tenant Module
-**Error**: _Codeunit 'Tenant Management' is missing_
-
-**Solution**: Codeunit was split into `codeunit 417 "Tenant Settings"` and `codeunit 457 "Environment Information"` and `codeunit 433 "Azure AD Tenant"`.
-
-**Error**: _'Codeunit "Identity Management"' does not contain a definition for 'GetAadTenantId'_
-
-**Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantId`.
-
-**Error**: _'Codeunit "Tenant Management"' does not contain a definition for 'GetAadTenantId'_
-
-**Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantId`.
-
-**Error**: _'Codeunit "Tenant Management"' does not contain a definition for 'GetAadTenantDomainName'_
-
-**Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantDomainName`.
- 
 ---
 
 ## User Permissions Module
@@ -198,7 +225,6 @@ The breaking changes are currently being identified. We will update this site wi
 **Error**: _'Codeunit "User Management"' does not contain a definition for 'LookupUserID'_
 
 **Solution**: Function has been removed. Reason: the TableRelation property enables lookup logic on platform level.
-
 
 **Design details**
 The TableRelation property makes onLookup trigger redundant. However the ValidateTableRelation property requires validation logic in OnValidate trigger.
@@ -242,7 +268,8 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 ---
 
 ## Video Module
-**Error**: _'Product Video Buffer' is inaccessible due to its protection level_
+**Error**: _'Product Video Buffer' is inaccessible due to its protection level_\
+**Error**: _'SetURL(Text)' is inaccessible due to its protection level_
 
 **Solution**: Access the table through the facade APIs, `codeunit 3710 Video`.
 
@@ -252,7 +279,7 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 
 ---
 
-## BaseApp
+## Base Application
 **Error**: _'Codeunit' does not contain a definition for 'Headline RC Order Processor'_\
 **Error**: _'Codeunit' does not contain a definition for 'Headline RC Accountant'_\
 **Error**: _'Codeunit' does not contain a definition for 'Headline RC Business Manager'_\
@@ -278,6 +305,10 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 
 **Solution**: Tables were combined into `table 1458 "RC Headlines User Data"`.
 
+**Error**: _The event 'OnIsAnyExtensionHeadlineVisible' is not found in the target_
+
+**Solution**: Event has been moved to `codeunit 1440 "RC Headlines Page Common"`, function `OnIsAnyExtensionHeadlineVisible`.
+
 **Error**:  _Codeunit "Item Tracking Management" does not contain a definition for 'CopyItemTracking2'_
 
 **Solution**: Function is now an overload, function `CopyItemTracking`.
@@ -291,21 +322,65 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 
 **Solution**: Function is now an overload, function `EditDimensionSet`.
 
+**Error**: _The event 'OnMoveGenJournalLine' is not found in the target_
+
+**Solution**: Event has been moved to `codeunit 12 "Gen. Jnl.-Post Line"`, function `OnMoveGenJournalLine`.
+
+**Error**: _Table 'Cortana Intelligence Usage' is removed. Reason: Renamed to Azure AI Usage_
+
+**Solution**: Table has been renamed to `table 2004 "Azure AI Usage"`.
+
+**Error**: _Table 'Cortana Intelligence' is removed. Reason: Renamed to Cash Flow Azure AI Buffer_
+
+**Solution**: Table has been renamed to `table 852 "Cash Flow Azure AI Buffer"`.
+
+**Error**: _'Codeunit "Calendar Management"' does not contain a definition for 'CheckCustomizedDateStatus'_
+
+**Solution**: Function has been replaced, function `IsNonworkingDay`.
+
+**Error**: _'Codeunit "Calendar Management"' does not contain a definition for 'CustomizedCalendarExistText'_
+
+**Solution**: Function has been removed. Replacement function call `Format(CalendarMgmt.CustomizedChangesExist(Rec))`.
+
+---
+
+## Removed Functionality
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'WriteBlob'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ReadBlob'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'GetBlobString'_
+
+**Solution**: Use stream functions directly.
+
 **Error**: _'Codeunit "File Management"' does not contain a definition for 'IsWebClient'_
 
 **Solution**: Use ClientType options directly.
 
----
-
-## Removed Functions
-**Error**: _Codeunit "Type Helper"' does not contain a definition for 'WriteBlob'_
-
-**Solution**: Use stream functions directly.
-
-**Error**: _Codeunit "Type Helper"' does not contain a definition for 'ReadBlob'_
-
-**Solution**: Use stream functions directly.
-
 **Error**:  _Record "Job Queue Log Entry" does not contain a definition for 'GetErrorMessage'_
 
 **Solution**: Use the "Error Message" field directly.
+
+**Error**: _The object Page '%1' is not extensible_
+
+**Solution**: If you need to extend a page, contact us through Yammer or GitHub. Include the use case, and we will decide whether to open things up for it.
+
+**Error**: _The control '%1' is not found in the target_
+
+**Solution**: The anchor control has been renamed or deleted. Update or change to a new anchor.
+
+**Error**: _The action '%1' is not found in the target_
+
+**Solution**: The anchor action has been renamed or deleted. Update or change to a new action.
+
+**Error**: _The event 'OnOpenBusinessSetupPage' is not found in the target_
+**Error**: _The event 'OnInitializeProfiles' is not found in the target_
+
+**Solution**: Event has been removed.
+
+**Error**: _Table 'Service Password' is removed. Reason: The suggested way to store the secrets is Isolated Storage, therefore Service Password will be removed._\
+**Error**: _Table 'Encrypted Key/Value' is removed. Reason: The suggested way to store the secrets is Isolated Storage, therefore Encrypted Key/Value will be removed._
+
+**Solution**: Table has been removed. Secrets should now be stored using [Isolated Storage](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-isolated-storage]).
+
+**Error**: _Codeunit 'Getting Started Mgt.' is missing_
+
+**Solution**: Codeunit has been removed.
