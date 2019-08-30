@@ -374,6 +374,33 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 
 **Solution**: Function has been removed. Replacement function call `Format(CalendarMgmt.CustomizedChangesExist(Rec))`.
 
+**Error**: _No overload for method CalendarMgt.'CustomizedChangesExist' takes 4 arguments_
+
+**Solution**: Function parameters have changed. It now takes a variant record parameter. 
+
+**Error**: _No overload for method CalendarMgt.'CheckDateStatus' takes 3 arguments_
+
+**Solution**: Function parameters have changed. It now takes a "Customized Calendar Change" record parameter.
+
+**Error**: _'Codeunit "SMTP Mail"' does not contain a definition for 'TrySend'_
+
+**Solution**: Function has been renamed, function `Send`. If you were using `Send` before, that has been renamed to `SendShowError`.
+
+**Error**: _SMTPMail.AddRecipients cannot convert from 'Text' to 'List of [Text]'_\
+**Error**: _SMTPMail.AddCC cannot convert from 'Text' to 'List of [Text]'_\
+**Error**: _SMTPMail.AddBCC, cannot convert from 'Text' to 'List of [Text]'_
+
+**Solution**: Create a List of [Text] with the recipient(s).
+```
+procedure Adding()
+var
+    Recipients: List of [Text];
+begin
+    Recipients.Add('Email');
+    SMTPMail.AddRecipients(Recipients);
+end;
+```
+
 ---
 
 ## Removed Functionality
@@ -416,3 +443,7 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 **Error**: _Codeunit 'Getting Started Mgt.' is missing_
 
 **Solution**: Codeunit has been removed.
+
+**Error**: _'"System Indicator"' does not contain a definition for 'Company+Database'_
+
+**Solution**: Option has been removed. You may use the 'Custom' option and include 4 characters in "Custom System Indicator Text".
