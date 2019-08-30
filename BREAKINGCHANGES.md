@@ -386,9 +386,9 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 
 **Solution**: Function has been renamed, function `Send`. If you were using `Send` before, that has been renamed to `SendShowError`.
 
-**Error**: _SMTPMail.AddRecipients cannot convert from 'Text' to 'List of [Text]'_\
-**Error**: _SMTPMail.AddCC cannot convert from 'Text' to 'List of [Text]'_\
-**Error**: _SMTPMail.AddBCC, cannot convert from 'Text' to 'List of [Text]'_
+**Error**: _SMTPMail.AddRecipients parameter cannot convert from 'Text' to 'List of [Text]'_\
+**Error**: _SMTPMail.AddCC parameter cannot convert from 'Text' to 'List of [Text]'_\
+**Error**: _SMTPMail.AddBCC parameter cannot convert from 'Text' to 'List of [Text]'_
 
 **Solution**: Create a List of [Text] with the recipient(s).
 ```
