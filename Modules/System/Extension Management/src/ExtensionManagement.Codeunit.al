@@ -16,12 +16,12 @@ codeunit 2504 "Extension Management"
         ExtensionMarketplace: Codeunit "Extension Marketplace";
 
 
-        /// <summary>
-        /// Installs an extension, based on its PackageId and Locale Identifier.
-        /// </summary>
-        /// <param name="PackageId">The ID of the extension package.</param>
-        /// <param name="lcid">The Locale Identifier.</param>
-        /// <param name="IsUIEnabled">Indicates whether the install operation is invoked through the UI.</param>
+    /// <summary>
+    /// Installs an extension, based on its PackageId and Locale Identifier.
+    /// </summary>
+    /// <param name="PackageId">The ID of the extension package.</param>
+    /// <param name="lcid">The Locale Identifier.</param>
+    /// <param name="IsUIEnabled">Indicates whether the install operation is invoked through the UI.</param>
     procedure InstallExtension(PackageId: Guid; lcid: Integer; IsUIEnabled: Boolean): Boolean
     begin
         exit(ExtensionInstallationImpl.InstallExtension(PackageId, lcid, IsUIEnabled));

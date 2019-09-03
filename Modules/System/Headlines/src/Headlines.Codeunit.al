@@ -15,14 +15,14 @@ codeunit 1439 Headlines
     var
         HeadlinesImpl: Codeunit "Headlines Impl.";
 
-        /// <summary>
-        /// Truncate the text from the end for its length to be no more than MaxLength.
-        /// If the text has to be shortened, "..." is be added at the end.
-        /// </summary>
-        /// <param name="TextToTruncate">Text that be shortened in order to fit on the headline.</param>
-        /// <param name="MaxLength">The maximal length of the string. Usually obtained through
-        /// <see cref="GetMaxQualifierLength"/> or <see cref="GetMaxPayloadLength"/> function.</param>
-        /// <returns>The truncated text</returns>
+    /// <summary>
+    /// Truncate the text from the end for its length to be no more than MaxLength.
+    /// If the text has to be shortened, "..." is be added at the end.
+    /// </summary>
+    /// <param name="TextToTruncate">Text that be shortened in order to fit on the headline.</param>
+    /// <param name="MaxLength">The maximal length of the string. Usually obtained through
+    /// <see cref="GetMaxQualifierLength"/> or <see cref="GetMaxPayloadLength"/> function.</param>
+    /// <returns>The truncated text</returns>
     procedure Truncate(TextToTruncate: Text; MaxLength: Integer): Text;
     begin
         exit(HeadlinesImpl.Truncate(TextToTruncate, MaxLength));

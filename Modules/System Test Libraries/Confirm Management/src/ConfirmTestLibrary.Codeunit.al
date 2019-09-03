@@ -10,12 +10,12 @@ codeunit 132513 "Confirm Test Library"
     var
         GuiAllowed: Boolean;
 
-        /// <summary>
-        /// Sets the value of GUI allowed. This value will be used to determine if the confirm dialog should be shown in 
-        /// GetResponse and GetResponseOrDefault functions when the subscription is bound.
-        /// Uses <see cref="OnBeforeGuiAllowed"/> event.
-        /// </summary>
-        /// <param name="IsGuiAllowed">The desired value of GUI allowed.</param>
+    /// <summary>
+    /// Sets the value of GUI allowed. This value will be used to determine if the confirm dialog should be shown in 
+    /// GetResponse and GetResponseOrDefault functions when the subscription is bound.
+    /// Uses <see cref="OnBeforeGuiAllowed"/> event.
+    /// </summary>
+    /// <param name="IsGuiAllowed">The desired value of GUI allowed.</param>
     [Scope('OnPrem')]
     procedure SetGuiAllowed(IsGuiAllowed: Boolean)
     begin
