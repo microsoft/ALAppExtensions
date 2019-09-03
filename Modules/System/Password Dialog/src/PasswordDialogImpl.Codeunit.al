@@ -9,7 +9,7 @@ codeunit 9811 "Password Dialog Impl."
 
     var
         PasswordMismatchErr: Label 'The passwords that you entered do not match.';
-        PasswordTooSimpleErr: Label 'The password that you entered does not meet the minimum requirements. It must be at least %1 characters long and contain at least one uppercase letter, one lowercase letter, and one number.', Comment = '%1: The minimum number of charracters required in the password';
+        PasswordTooSimpleErr: Label 'The password that you entered does not meet the minimum requirements. It must be at least %1 characters long and contain at least one uppercase letter, one lowercase letter, and one number.', Comment = '%1: The minimum number of characters required in the password';
         ConfirmBlankPasswordQst: Label 'Do you want to exit without entering a password?';
 
     [Scope('OnPrem')]

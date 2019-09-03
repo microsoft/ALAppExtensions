@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// This codeunit is used as a helper for managing interations between
+/// This codeunit is used as a helper for managing interactions between
 /// Business Central and the AppSource marketplace. The marketplace provides a gallery
 /// that users can use to select and install Extensions published (an thus
 /// available) on Business Central.

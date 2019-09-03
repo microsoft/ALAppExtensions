@@ -569,7 +569,7 @@ codeunit 9018 "Azure AD Plan Impl."
                 if not IsUserAdmin(UserSecurityID) then
                     UserPermissions.RemoveSuperPermissions(UserSecurityID);
             if not IsTest then
-                Commit(); // Finalize the transaction. Else any further error can rollback and create elevation of priviledge
+                Commit(); // Finalize the transaction. Else any further error can rollback and create elevation of privilege
         end;
     end;
 

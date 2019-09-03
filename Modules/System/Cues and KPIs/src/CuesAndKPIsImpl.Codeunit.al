@@ -84,11 +84,11 @@ codeunit 9702 "Cues And KPIs Impl."
                     CueSetup.TransferFields(TempCueSetupPageSourceRec);
                     if CueSetup.Find() then begin
                         CueSetup.TransferFields(TempCueSetupPageSourceRec);
-                        // Personalized field contains tempororaty property we never save it in the database.
+                        // Personalized field contains temporary property we never save it in the database.
                         CueSetup.Personalized := false;
                         CueSetup.Modify()
                     end else begin
-                        // Personalized field contains tempororaty property we never save it in the database.
+                        // Personalized field contains temporary property we never save it in the database.
                         CueSetup.Personalized := false;
                         CueSetup.Insert();
                     end;

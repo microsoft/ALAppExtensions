@@ -40,7 +40,7 @@ codeunit 1432 "Satisfaction Survey Impl."
         PositiveResponseTxt: Label 'Positive response.', Locked = true;
         NegativeResponseTxt: Label 'Negative response.', Locked = true;
         CannotGetPropertyTxt: Label 'Cannot get property %1.', Locked = true;
-        RequestSuccessfulTxt: Label 'Request is successfull.', Locked = true;
+        RequestSuccessfulTxt: Label 'Request is successful.', Locked = true;
         CannotParseParametersTxt: Label 'Cannot parse parameters.', Locked = true;
         NPSPageTelemetryTxt: Label 'NPS prompt is displayed.', Locked = true;
         NpsApiUrlTxt: Label 'NpsApiUrl', Locked = true;

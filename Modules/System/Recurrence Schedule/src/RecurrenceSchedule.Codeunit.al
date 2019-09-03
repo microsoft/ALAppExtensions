@@ -32,7 +32,7 @@ codeunit 4690 "Recurrence Schedule"
     /// <param name="LastOccurrence">The time of the last scheduled occurrence.</param>
     /// <returns>Returns the DateTime value for the next occurrence. If there is no next occurrence, it returns the default value 0DT.</returns>
     /// <example>
-    /// To calculate the first occurence (this is using the datatime provided in SetMinDateTime as a minimum datetime to return),
+    /// To calculate the first occurrence (this is using the datatime provided in SetMinDateTime as a minimum datetime to return),
     /// call CalculateNextOccurrence(RecurrenceID, 0DT)), the RecurrenceID is the ID returned from one of the create functions.
     /// </example>
     procedure CalculateNextOccurrence(RecurrenceID: Guid; LastOccurrence: DateTime): DateTime
