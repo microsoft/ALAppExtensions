@@ -71,7 +71,7 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 ## Cryptography Management Module
 **Error**: _'Codeunit "Encryption Management"' does not contain a definition for 'GenerateKeyedHash'_
 
-**Solution**: Function has been moved to `codeunit 1266 "Encryption Management"`, function `GenerateHash`.
+**Solution**: Function has been moved to `codeunit 1266 "Cryptography Management"`, function `GenerateHash`.
 
 ---
 
