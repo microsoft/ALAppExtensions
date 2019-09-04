@@ -74,7 +74,7 @@ codeunit 1439 Headlines
     /// <summary>
     /// Determines if a greeting text should be visible.
     /// </summary>
-    /// <returns>True if the user loged in less than 10 minutes ago, false otherwise.</returns>    
+    /// <returns>True if the user logged in less than 10 minutes ago, false otherwise.</returns>
     procedure ShouldUserGreetingBeVisible(): Boolean;
     begin
         exit(HeadlinesImpl.ShouldUserGreetingBeVisible());
