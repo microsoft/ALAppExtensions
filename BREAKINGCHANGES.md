@@ -438,7 +438,7 @@ end;
 **Error**: _Table 'Service Password' is removed. Reason: The suggested way to store the secrets is Isolated Storage, therefore Service Password will be removed._\
 **Error**: _Table 'Encrypted Key/Value' is removed. Reason: The suggested way to store the secrets is Isolated Storage, therefore Encrypted Key/Value will be removed._
 
-**Solution**: Table has been removed. Secrets should now be stored using [Isolated Storage](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-isolated-storage]). Read more about [Changes in Secret Management](https://cloudblogs.microsoft.com/dynamics365/it/2019/08/14/changes-in-secret-management]).
+**Solution**: Table has been removed. Secrets should now be stored using [Isolated Storage](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-isolated-storage). Read more about [Changes in Secret Management](https://cloudblogs.microsoft.com/dynamics365/it/2019/08/14/changes-in-secret-management).
 
 **Error**: _Codeunit 'Getting Started Mgt.' is missing_
 
