@@ -47,6 +47,14 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 
 **Solution**: Use `codeunit 4100 "Temp Blob"` API instead of the record API.
 
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'ToBase64String'_
+
+**Solution**: Function has been moved to `codeunit 4110 "Base64 Convert"` function `ToBase64`.
+
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'FromBase64String'_
+
+**Solution**: Function has been moved to `codeunit 4110 "Base64 Convert"` function `FromBase64`.
+
 ---
 
 ## Caption Class Module
