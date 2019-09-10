@@ -129,7 +129,7 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 
 **Error**: _'Codeunit "File Management"' does not contain a definition for 'AddStreamToZipStream'_
 
-**Solution**: Function has been moved to `codeunit 425 "Data Compression`, function `AddEntry`.
+**Solution**: Function has been moved to `codeunit 425 "Data Compression"`, function `AddEntry`.
 
 ---
 
