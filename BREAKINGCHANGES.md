@@ -127,6 +127,10 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 
 **Solution**: Codeunit has been renamed to `codeunit 425 "Data Compression"`.
 
+**Error**: _'Codeunit "File Management"' does not contain a definition for 'AddStreamToZipStream'_
+
+**Solution**: Function has been moved to `codeunit 425 "Data Compression`, function `AddEntry`.
+
 ---
 
 ## Environment Information Module
