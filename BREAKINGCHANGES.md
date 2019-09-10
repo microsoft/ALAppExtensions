@@ -370,7 +370,7 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'RegexReplaceIgnoreCase'_\
 
-**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`.
+**Solution**: Function has been removed. The replacement:
 ```
 procedure RegexReplaceIgnoreCase(Input : Text; Pattern : Text; Replacement : Text)
 var
