@@ -16,6 +16,17 @@ We’re working hard to make this a comprehensive list, but there’s always a c
  
 ---
 
+## Record Link Management Module
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'WriteRecordLinkNote'_
+
+**Solution**: Function has been moved to `codeunit 447 "Record Link Management"`, function `WriteNote`.
+
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ReadRecordLinkNote'_
+
+**Solution**: Function has been moved to `codeunit 447 "Record Link Management"`, function `ReadNote`.
+ 
+---
+
 ## Azure AD Tenant Module
 **Error**: _Codeunit 'Tenant Management' is missing_
 
@@ -39,6 +50,10 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ConvertValueFromBase64'_
 
 **Solution**: Function has been moved to `codeunit 4110 "Base64 Convert"`, function `FromBase64`.
+
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ConvertValueToBase64'_
+
+**Solution**: Function has been moved to `codeunit 4110 "Base64 Convert"`, function `ToBase64`.
 
 ---
 
@@ -349,6 +364,15 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 
 **Solution**: Event has been moved to `codeunit 1440 "RC Headlines Page Common"`, function `OnIsAnyExtensionHeadlineVisible`.
 
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'RegexReplace'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'RegexReplaceIgnoreCase'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'IsMatch'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'IsAsciiLetter'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'IsAlphanumeric'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'TextEndsWith'_
+
+**Solution**: Use `codeunit 3001 DotNet_Regex`.
+
 **Error**:  _Codeunit "Item Tracking Management" does not contain a definition for 'CopyItemTracking2'_
 
 **Solution**: Function is now an overload, function `CopyItemTracking`.
@@ -412,9 +436,16 @@ end;
 ---
 
 ## Removed Functionality
-**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'WriteBlob'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'GetBlobString'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'SetBlobString'_\
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ReadBlob'_\
-**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'GetBlobString'_
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ReadTextBlob'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'WriteBlobWithEncoding'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'WriteBlob'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'WriteTextToBlobIfChanged'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ReadTextBlobWithEncoding'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'TryConvertWordBlobToPdf'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ReadTextBlobWithTextEncoding'_
 
 **Solution**: Use stream functions directly.
 
