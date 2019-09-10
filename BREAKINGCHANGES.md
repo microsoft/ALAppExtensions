@@ -64,6 +64,10 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 
 **Solution**: Function has been moved to `codeunit 4110 "Base64 Convert"`, function `FromBase64`.
 
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ConvertValueToBase64'_
+
+**Solution**: Function has been moved to `codeunit 4110 "Base64 Convert"`, function `ToBase64`.
+
 ---
 
 ## BLOB Storage Module
@@ -222,6 +226,17 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 
 ---
 
+## Record Link Management Module
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'WriteRecordLinkNote'_
+
+**Solution**: Function has been moved to `codeunit 447 "Record Link Management"`, function `WriteNote`.
+
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ReadRecordLinkNote'_
+
+**Solution**: Function has been moved to `codeunit 447 "Record Link Management"`, function `ReadNote`.
+
+---
+
 ## Satisfaction Survey Module
 **Error**: _'Net Promoter Score' is inaccessible due to its protection level_
 **Error**: _'Net Promoter Score Setup' is inaccessible due to its protection level_
@@ -373,6 +388,38 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 
 **Solution**: Event has been moved to `codeunit 1440 "RC Headlines Page Common"`, function `OnIsAnyExtensionHeadlineVisible`.
 
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'RegexReplace'_
+
+**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `Replace`.
+
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'RegexReplaceIgnoreCase'_\
+
+**Solution**: Function has been removed. The replacement:
+```
+procedure RegexReplaceIgnoreCase(Input : Text; Pattern : Text; Replacement : Text)
+var
+    DotNet_Regex: Codeunit DotNet_Regex;
+begin
+    DotNet_Regex.RegexIgnoreCase(Pattern);
+    DotNet_Regex.Replace(Input, Replacement);
+```
+
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'IsMatch'_
+
+**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `IsMatch`.
+
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'IsAsciiLetter'_
+
+**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `IsAsciiLetter`.
+
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'IsAlphanumeric'_
+
+**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `IsAlphanumeric`.
+
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'TextEndsWith'_
+
+**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `TextEndsWith`.
+
 **Error**:  _Codeunit "Item Tracking Management" does not contain a definition for 'CopyItemTracking2'_
 
 **Solution**: Function is now an overload, function `CopyItemTracking`.
@@ -436,11 +483,24 @@ end;
 ---
 
 ## Removed Functionality
-**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'WriteBlob'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'GetBlobString'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'SetBlobString'_\
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ReadBlob'_\
-**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'GetBlobString'_
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ReadTextBlob'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'WriteBlobWithEncoding'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'WriteBlob'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'WriteTextToBlobIfChanged'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ReadTextBlobWithEncoding'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'ReadTextBlobWithTextEncoding'_
 
 **Solution**: Use stream functions directly.
+
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'TryConvertWordBlobToPdf'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'FindFields'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'Equals'_\
+**Error**: _'Codeunit "Type Helper"' does not contain a definition for 'AddMinutesToDateTime'_
+
+**Solution**: Function has been removed.
 
 **Error**: _'Codeunit "File Management"' does not contain a definition for 'IsWebClient'_
 
