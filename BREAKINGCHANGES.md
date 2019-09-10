@@ -9,6 +9,30 @@ The breaking changes are currently being identified. We will update this site wi
 We’re working hard to make this a comprehensive list, but there’s always a chance that something is missing. If you can’t find what you’re looking for here, we suggest that you engage with other members of the Business Central community on Yammer, or reach out to us on GitHub to let us know.
 
 # Modules
+
+## Assisted Setup Module
+**Error**: _'Assisted Setup' is inaccessible due to its protection level_
+
+**Solution**: Please use the appropriate API methods in the `codeunit 3725 "Assisted Setup"`.
+
+**Error**: _'Assisted Setup Icon' is inaccessible due to its protection level_
+
+**Solution**: The table usage has been discontinued as the icons are going to be taken from the extension itself.
+
+**Error**: _'Table "Assisted Setup"' does not contain a definition for 'SetStatus'_
+
+**Solution**: Function has been discontinued. You may change the status to Complete by calling function `Complete` on `codeunit 3725 "Assisted Setup"`.
+
+**Error**: _The event 'OnInitialize' is not found in the target"_
+
+**Solution**: Event has been moved to `codeunit 3725 "Assisted Setup"`, function `OnRegister`.
+
+**Error**: _The event 'OnUpdateAssistedSetupStatus' is not found in the target"_
+
+**Solution**: Event has been moved to `codeunit 3725 "Assisted Setup"`, function `OnRegister`.
+
+---
+
 ## Auto Format Module
 **Error**: _Codeunit 'AutoFormatManagement' is missing_
 
