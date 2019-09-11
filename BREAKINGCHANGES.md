@@ -215,6 +215,7 @@ var
 begin
     DotNet_CultureInfo.GetCultureInfoByName(CultureName);
     CultureName := DotNet_CultureInfo.Name();
+end;
 ```
 ---
 
@@ -417,6 +418,7 @@ var
 begin
     DotNet_Regex.RegexIgnoreCase(Pattern);
     DotNet_Regex.Replace(Input, Replacement);
+end;
 ```
 
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'IsMatch'_
