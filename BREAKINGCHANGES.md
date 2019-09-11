@@ -205,6 +205,17 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 
 **Solution**: Function has been moved to `codeunit 43 Language`, function `GetLanguageId`.
 
+**Error**: _'Record Language' does not contain a definition for 'TryGetCultureName'_
+
+**Solution**: Function has been removed. The replacement:
+```
+procedure TryGetCultureName(Culture : Integer; VAR CultureName : Text)
+var
+    DotNet_CultureInfo: Codeunit DotNet_CultureInfo;
+begin
+    DotNet_CultureInfo.GetCultureInfoByName(CultureName);
+    CultureName := DotNet_CultureInfo.Name();
+```
 ---
 
 ## Manual Setup Module
