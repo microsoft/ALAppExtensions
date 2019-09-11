@@ -205,6 +205,20 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 
 **Solution**: Function has been moved to `codeunit 43 Language`, function `GetLanguageId`.
 
+**Error**: _'Codeunit Language' does not contain a definition for 'TryGetCultureName'_
+
+**Solution**: Function has been removed. The replacement:
+```
+[TryFunction]
+procedure TryGetCultureName(Culture : Integer; VAR CultureName : Text)
+var
+    DotNet_CultureInfo: Codeunit DotNet_CultureInfo;
+begin
+    DotNet_CultureInfo.GetCultureInfoByName(Culture);
+    CultureName := DotNet_CultureInfo.Name();
+end;
+```
+
 ---
 
 ## Manual Setup Module
@@ -406,6 +420,7 @@ var
 begin
     DotNet_Regex.RegexIgnoreCase(Pattern);
     DotNet_Regex.Replace(Input, Replacement);
+end;
 ```
 
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'IsMatch'_
