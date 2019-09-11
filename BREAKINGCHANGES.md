@@ -209,14 +209,16 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 
 **Solution**: Function has been removed. The replacement:
 ```
+[TryFunction]
 procedure TryGetCultureName(Culture : Integer; VAR CultureName : Text)
 var
     DotNet_CultureInfo: Codeunit DotNet_CultureInfo;
 begin
-    DotNet_CultureInfo.GetCultureInfoByName(CultureName);
+    DotNet_CultureInfo.GetCultureInfoByName(Culture);
     CultureName := DotNet_CultureInfo.Name();
 end;
 ```
+
 ---
 
 ## Manual Setup Module
