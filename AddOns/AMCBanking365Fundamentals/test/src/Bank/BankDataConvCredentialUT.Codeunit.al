@@ -13,7 +13,7 @@ codeunit 132558 "Bank Data Conv. Credential UT"
         Assert: Codeunit Assert;
         LibraryPaymentAMC: Codeunit "Library - Payment AMC";
         LibraryWebService: Codeunit "Library - Amc Web Service";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         LocalhostURLTxt: Label 'https://localhost:8080', Locked = true;
         MissingCredentialsQst: Label 'The %1 is missing the user name or password. Do you want to open the %1 page?';
         MissingCredentialsErr: Label 'The user name and password must be filled in %1 page.';
@@ -323,7 +323,7 @@ codeunit 132558 "Bank Data Conv. Credential UT"
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
         AMCBankingSetup.DeleteAll();
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
 
     local procedure CreateDataExchWithContent(var TempDataExch: Record "Data Exch." temporary)

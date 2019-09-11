@@ -601,10 +601,10 @@ codeunit 134410 "ERM Bank Data Conv. Setup ATDD"
     local procedure Initialize()
     var
         AMCBankingSetup: Record "AMC Banking Setup";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"ERM Bank Data Conv. Setup ATDD");
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
         AMCBankingSetup.DeleteAll();
         AMCBankingSetup.Init();
         AMCBankingSetup.Validate("User Name",

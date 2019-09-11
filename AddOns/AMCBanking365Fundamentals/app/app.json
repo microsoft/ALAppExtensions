@@ -35,10 +35,7 @@
     "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
     "name":  "AMC Banking 365 Fundamentals",
     "runtime":  "4.0",
-    "publisher":  "AMC Banking",
+    "publisher":  "Microsoft",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://amcbanking.com/kb/",
-    "features":  [
-                     "TranslationFile"
-                 ]
+    "contextSensitiveHelpUrl":  "https://amcbanking.com/kb/"
 }
