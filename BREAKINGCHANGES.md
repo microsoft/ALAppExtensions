@@ -40,6 +40,17 @@ We’re working hard to make this a comprehensive list, but there’s always a c
  
 ---
 
+## Azure AD Plan Module
+**Error**: _'User Plan' is inaccessible due to its protection level_     
+
+**Solution**: Access the table through the facade APIs, `codeunit 9016 "Azure AD Plan"`, or using the `query 774 "Users in Plans"`.
+
+**Error**: _'Plan' is inaccessible due to its protection level_     
+
+**Solution**: Access the table through the facade APIs, `codeunit 9016 "Azure AD Plan"`, or using the `query 775 Plan`.
+
+---
+
 ## Azure AD Tenant Module
 **Error**: _Codeunit 'Tenant Management' is missing_
 
