@@ -83,7 +83,7 @@ codeunit 50101 "Rijndael Management"
     end;
 
     /// <summary>
-    /// Set new padding mode value for the RijnadaelManaged class    
+    /// Set new padding mode value for the RijndaelManaged class    
     /// <param name=PaddingMode>Represents the padding mode used in the symmetric algorithm.. Valid values: None,ANSIX923,ISO10126,PKCS7,Zeros</param>    
     /// </summary>
     procedure SetPaddingMode(PaddingMode: Text)
