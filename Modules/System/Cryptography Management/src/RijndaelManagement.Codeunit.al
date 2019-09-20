@@ -65,7 +65,7 @@ codeunit 50101 "Rijndael Management"
     end;
 
     /// <summary>
-    /// Set new block size value for the RijnadaelManaged class    
+    /// Set new block size value for the RijndaelManaged class    
     /// <param name=BlockSize>Represents the block size, in bits, of the cryptographic operation.</param>
     /// </summary>
     procedure SetBlockSize(BlockSize: Integer)
