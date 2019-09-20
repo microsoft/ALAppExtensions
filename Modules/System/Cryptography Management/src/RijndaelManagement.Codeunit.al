@@ -74,7 +74,7 @@ codeunit 50101 "Rijndael Management"
     end;
 
     /// <summary>
-    /// Set new chiper mode value for the RijnadaelManaged class    
+    /// Set new chiper mode value for the RijndaelManaged class    
     /// <param name=ChiperMode>Represents the cipher mode used in the symmetric algorithm. Valid values: ECB,CBC,CFB,CTS,OFB</param>
     /// </summary>
     procedure SetChiperMode(ChiperMode: Text)
