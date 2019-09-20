@@ -133,7 +133,7 @@ codeunit 50101 "Rijndael Management"
     end;
 
     /// <summary>
-    /// Get the key and vector from the RijnadaelManaged class    
+    /// Get the key and vector from the RijndaelManaged class    
     /// <param name=KeyAsBase64>Represents the secret key for the symmetric algorithm encoded as Base64 Text</param>    
     /// <param name=VectorBase64>Represents the initialization vector (IV) for the symmetric algorithm encoded as Base64 Text</param>    
     /// </summary>
