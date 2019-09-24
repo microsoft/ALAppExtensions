@@ -150,7 +150,7 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 
 **Solution**: Function has been moved to `codeunit 457 "Environment Information"`, function `IsInvoicing`.
 
-**Error**: _'Codeunit "Tenant Information"' does not contain a definition for 'GetPlatformVerion'_
+**Error**: _'Codeunit "Tenant Information"' does not contain a definition for 'GetPlatformVersion'_
 
 **Solution**: The function a very technical term about the platform build number used internally by MS. Please use the alternate methods available in either `codeunit 417 "Tenant Information"` or `codeunit 457 "Environment Information"`.
 
