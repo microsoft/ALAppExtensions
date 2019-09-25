@@ -105,6 +105,10 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 ---
 
 ## Cryptography Management Module
+**Error**: _Codeunit 'Encryption Management' is missing_\
+
+**Solution**: Codeunit has been renamed to `codeunit 1266 "Cryptography Management"`.
+
 **Error**: _'Codeunit "Encryption Management"' does not contain a definition for 'GenerateKeyedHash'_
 
 **Solution**: Function has been moved to `codeunit 1266 "Cryptography Management"`, function `GenerateHash`.
