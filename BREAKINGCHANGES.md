@@ -223,8 +223,8 @@ DataCompression.OpenZipArchive(InStream, OpenForUpdate);
 **Solution**: Function has been removed. Replacement:
 
 ```
-DataCompression.SaveZipArchive(OutStream);
-CopyStream(OutStream, InStream);
+DataCompression.SaveZipArchive(TempBlob);
+TempBlob.CreateInStream(InStream);
 DownloadFromStream(InStream, '', '', '', OutputFileName);
 ```
 
