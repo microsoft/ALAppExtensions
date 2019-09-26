@@ -205,6 +205,33 @@ Xml.WriteTo(Text);
 
 **Solution**: Function has been moved to `codeunit 425 "Data Compression"`, function `AddEntry`.
 
+**Error** _'Codeunit "Zip Stream Wrapper"' does not contain a definition for 'UploadZip'_
+
+**Solution**: Function has been removed. Replacement:
+
+```
+UploadIntoStream('', '', '*.*', '', InStream);
+DataCompression.OpenZipArchive(InStream, OpenForUpdate);
+```
+
+**Error** _'Codeunit "Zip Stream Wrapper"' does not contain a definition for 'OpenZipFromTempBlob'_
+
+**Solution**: Function has been moved to `codeunit 425 "Data Compression"`, function `OpenZipArchive`.
+
+**Error** _'Codeunit "Zip Stream Wrapper"' does not contain a definition for 'DownloadZip'_
+
+**Solution**: Function has been removed. Replacement:
+
+```
+DataCompression.SaveZipArchive(OutStream);
+CopyStream(OutStream, InStream);
+DownloadFromStream(InStream, '', '', '', OutputFileName);
+```
+
+**Error** _'Codeunit "Zip Stream Wrapper"' does not contain a definition for 'SaveZipToTempBlob'_
+
+**Solution**: Function has been moved to `codeunit 425 "Data Compression"`, function `SaveZipArchive`.
+
 ---
 
 ## Environment Information Module
