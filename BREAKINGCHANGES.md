@@ -83,6 +83,76 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 
 **Solution**: Function has been moved to `codeunit 4110 "Base64 Convert"` function `FromBase64`.
 
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'WriteAsText'_
+
+**Solution**: Function has been removed. Replacement:
+
+```
+TempBlob.CreateOutStream(OutStream);
+OutStream.WriteText(Text);
+```
+
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'ReadAsText'_
+
+**Solution**: Function has been removed. Replacement:
+
+```
+TempBlob.CreateInStream(InStream);
+Result := InStream.ReadText;
+```
+
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'ReadAsTextWithCRLFLineSeparator'_
+
+**Solution**: Function has been moved to `Codeunit 10 "Type Helper"` function `ReadAsTextWithSeparator`.
+
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'StartReadingTextLines'_
+
+**Solution**: Function has been removed. Replacement get the `InStream` and use the `ReadText` function.
+
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'StartWritingTextLines'_
+
+**Solution**: Function has been removed. Replacement get the `OutStream` and use the `WriteText` function.
+
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'MoreTextLines'_
+
+**Solution**: Function has been removed. Replacement use the function `EOS` from `InStream`.
+
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'WriteTextLine'_
+
+**Solution**: Function has been removed. Replacement:
+
+```
+TempBlob.CreateOutStream(OutStream);
+OutStream.WriteText(Text);
+```
+
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'ReadTextLine'_
+
+**Solution**: Function has been removed. Replacement:
+
+```
+TempBlob.CreateInStream(InStream);
+Result := InStream.ReadText;
+```
+
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'GetHTMLImgSrc'_
+
+**Solution**: Function has been moved to `codeunit 4112 "Image Helpers"` function `GetHTMLImgSrc`.
+
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'GetImageType'_
+
+**Solution**: Function has been moved to `codeunit 4112 "Image Helpers"` function `GetImageType`.
+
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'GetXMLAsText'_
+
+**Solution**: Function has been removed. Replacement:
+
+```
+TempBlob.CreateInStream(InStream);
+Xml := XmlDocument.Create(Instream);
+Xml.WriteTo(Text);
+```
+
 ---
 
 ## Caption Class Module
