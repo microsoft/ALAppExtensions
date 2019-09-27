@@ -165,6 +165,17 @@ Xml := XmlDocument.Create(Instream);
 Xml.WriteTo(Text);
 ```
 
+**Error**: _'Codeunit "Temp Blob"' does not contain a definition for 'TryDownloadFromUrl'_
+
+**Solution**: Function has been removed. Replacement:
+
+```
+HttClient.Get(url, HttpResponseMessage);
+HttpResponseMessage.Content.ReadAs(InStream);
+TempBlob.CreateOuStream(OutStream);
+CopyStream(OutStream, InStream);
+```
+
 ---
 
 ## Caption Class Module
