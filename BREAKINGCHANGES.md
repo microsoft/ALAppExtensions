@@ -69,6 +69,10 @@ SaaS: access the table using the `query 774 "Users in Plans"`.
 
 **Solution**: Function has been moved to `codeunit 433 "Azure AD Tenant"`, function `GetAadTenantDomainName`.
 
+**Error**: _'Codeunit "Tenant Management"' does not contain a definition for 'IsSandbox'_
+
+**Solution**: Function has been moved to `codeunit 457 "Environment Information"`, function `IsSandbox`.
+
 ---
 
 ## Base64 Convert Module
@@ -591,6 +595,10 @@ end;
 **Error**: _Table 'Cortana Intelligence' is removed. Reason: Renamed to Cash Flow Azure AI Buffer_
 
 **Solution**: Table has been renamed to `table 852 "Cash Flow Azure AI Buffer"`.
+
+**Error**: _'Codeunit "CalendarManagement"' is missing'_
+
+**Solution**: Codeunit was renamed to `Shop Calendar Management`.
 
 **Error**: _'Codeunit "Calendar Management"' does not contain a definition for 'CheckCustomizedDateStatus'_
 
