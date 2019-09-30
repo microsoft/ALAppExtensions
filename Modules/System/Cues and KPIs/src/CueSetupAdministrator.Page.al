@@ -129,4 +129,3 @@ page 9701 "Cue Setup Administrator"
         HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("High Range Style");
     end;
 }
-

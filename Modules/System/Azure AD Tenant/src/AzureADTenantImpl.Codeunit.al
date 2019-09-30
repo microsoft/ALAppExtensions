@@ -10,7 +10,7 @@ codeunit 3705 "Azure AD Tenant Impl."
 
     var
         NavTenantSettingsHelper: DotNet NavTenantSettingsHelper;
-        AADTenantDomainNameFailure: Label 'Failed to retrieve the Azure Active Directory tenant domain name.';
+        AADTenantDomainNameErr: Label 'Failed to retrieve the Azure Active Directory tenant domain name.';
 
     procedure GetAadTenantId() TenantAadIdValue: Text
     begin
@@ -26,7 +26,7 @@ codeunit 3705 "Azure AD Tenant Impl."
         if not IsNull(TenantInfo) then
             exit(TenantInfo.InitialDomain());
 
-        Error(AADTenantDomainNameFailure);
+        Error(AADTenantDomainNameErr);
     end;
 }
 

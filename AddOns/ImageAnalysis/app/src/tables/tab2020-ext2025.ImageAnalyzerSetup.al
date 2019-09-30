@@ -26,7 +26,7 @@ tableextension 2025 "MS - Image Analyzer Setup" extends "Image Analysis Setup"
     var
         UserPermissions: Codeunit "User Permissions";
     begin
-        if (rec."Image-Based Attribute Recognition Enabled" and not UserPermissions.IsSuper(UserSecurityId)) then
+        if (rec."Image-Based Attribute Recognition Enabled" and not UserPermissions.IsSuper(UserSecurityId())) then
             Error(NotAdminErr);
     end;
 

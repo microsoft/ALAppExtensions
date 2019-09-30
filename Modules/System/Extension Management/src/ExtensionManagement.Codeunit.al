@@ -13,7 +13,6 @@ codeunit 2504 "Extension Management"
     var
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
-        ExtensionMarketplace: Codeunit "Extension Marketplace";
 
 
     /// <summary>

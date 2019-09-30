@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>This page shows the video playing in Business Central.</summary>
 page 1821 "Video Link"
 {
     Extensible = false;

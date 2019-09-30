@@ -67,6 +67,7 @@ codeunit 13624 "OIOUBL-Initialize"
         Customer: Record Customer;
         ItemCharge: Record "Item Charge";
         Company: Record Company;
+        RecordExportBuffer: Record "Record Export Buffer";
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
     begin
         Company.Get(CompanyName());
@@ -192,6 +193,8 @@ codeunit 13624 "OIOUBL-Initialize"
         DataClassificationMgt.SetFieldToNormal(Database::"Item Charge", ItemCharge.FieldNo("OIOUBL-Charge Category"));
 
         DataClassificationMgt.SetTableFieldsToNormal(Database::"OIOUBL-Profile");
+
+        DataClassificationMgt.SetFieldToPersonal(Database::"Record Export Buffer", RecordExportBuffer.FieldNo("OIOUBL-User ID"));
     end;
 
     local procedure CreateElectronicProfiles();

@@ -1,4 +1,4 @@
-﻿codeunit 139087 "Azure AD Graph Test"
+codeunit 139087 "Azure AD Graph Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
@@ -12,7 +12,7 @@
         LibraryAssert: Codeunit "Library Assert";
         AzureADGraphTest: Codeunit "Azure AD Graph Test";
         AzureADGraph: Codeunit "Azure AD Graph";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         MockGraphQuery: DotNet MockGraphQuery;
 
     [Test]
@@ -517,7 +517,7 @@
 
     local procedure Initialize()
     begin
-        EnvironmentInfo.SetTestabilitySoftwareAsAService := true;
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService := true;
 
         Clear(AzureADGraph);
         AzureADGraph.SetTestInProgress(true);
@@ -534,7 +534,7 @@
 
     local procedure TearDown()
     begin
-        EnvironmentInfo.SetTestabilitySoftwareAsAService := false;
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService := false;
         AzureADGraph.SetTestInProgress(false);
         UnbindSubscription(AzureADGraphTest);
     end;

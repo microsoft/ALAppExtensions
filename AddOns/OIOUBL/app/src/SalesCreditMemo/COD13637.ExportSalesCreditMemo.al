@@ -38,6 +38,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
     procedure ExportXML(SalesCrMemoHeader: Record "Sales Cr.Memo Header");
     var
         SalesCrMemoHeader2: Record "Sales Cr.Memo Header";
+        RecordExportBuffer: Record "Record Export Buffer";
         RBMgt: Codeunit "File Management";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         EnvironmentInfo: Codeunit "Environment Information";
@@ -46,16 +47,21 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
     begin
         FromFile := CreateXML(SalesCrMemoHeader);
 
-        SalesSetup.GET();
+        SalesSetup.Get();
 
         if RBMgt.IsLocalFileSystemAccessible() and not EnvironmentInfo.IsSaaS() then
             SalesSetup.VerifyAndSetOIOUBLSetupPath(DocumentType::"Credit Memo");
 
+        OIOUBLManagement.UpdateRecordExportBuffer(
+            SalesCrMemoHeader.RecordId(),
+            CopyStr(FromFile, 1, MaxStrLen(RecordExportBuffer.ServerFilePath)),
+            StrSubstNo('%1.xml', SalesCrMemoHeader."No."));
+
         OIOUBLManagement.ExportXMLFile(SalesCrMemoHeader."No.", FromFile, SalesSetup."OIOUBL-Cr. Memo Path");
 
-        SalesCrMemoHeader2.GET(SalesCrMemoHeader."No.");
-        SalesCrMemoHeader2."OIOUBL-Electronic Credit Memo Created" := TRUE;
-        SalesCrMemoHeader2.MODIFY();
+        SalesCrMemoHeader2.Get(SalesCrMemoHeader."No.");
+        SalesCrMemoHeader2."OIOUBL-Electronic Credit Memo Created" := true;
+        SalesCrMemoHeader2.Modify();
     end;
 
     local procedure InsertDiscrepancyResponse(var CrMemoElement: XmlElement);

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the Data Classification module",
     "description":  "Tests for the Data Classification module",
-    "version":  "15.0.0.0",
+    "version":  "16.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -18,13 +18,13 @@
                              "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "15.0.0.0"
+                             "version":  "16.0.0.0"
                          },
                          {
                              "appId":  "370dcef7-9c6d-4a32-94b1-754230578672",
                              "name":  "Data Classification",
                              "publisher":  "Microsoft",
-                             "version":  "15.0.0.0"
+                             "version":  "16.0.0.0"
                          }
                      ],
     "screenshots":  [
@@ -37,8 +37,8 @@
                          "to":  135150
                      },
                      {
-                         "from":  135157,
-                         "to":  135157
+                         "from":  135159,
+                         "to":  135159
                      }
                  ],
     "target":  "OnPrem"

@@ -192,7 +192,6 @@ codeunit 130044 "User Login Time Tracker Test"
     procedure TestCreateOrUpdateLoginInfo()
     var
         UserLogin: Record "User Login";
-        UserLoginTimeTracker: Codeunit "User Login Time Tracker";
     begin
         // [GIVEN] The User Login table is empty
         UserLogin.DeleteAll();

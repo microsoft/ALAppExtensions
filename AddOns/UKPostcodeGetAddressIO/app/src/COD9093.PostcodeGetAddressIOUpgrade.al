@@ -60,7 +60,7 @@ codeunit 9093 "Postcode GetAddress.io Upgrade"
     begin
         if PostcodeSetup.Get() then
             if ServicePassword.Get(PostcodeSetup.APIKey) then begin
-                if not IsolatedStorage.Get(PostcodeSetup.APIKey, IsolatedStorageValue) then
+                if not IsolatedStorage.Get(PostcodeSetup.APIKey, DataScope::Company, IsolatedStorageValue) then
                     Error('Could not retrieve the secret from isolated storage after the Upgrade for key "%1"', PostcodeSetup.APIKey);
                 ServicePasswordValue := ServicePassword.GetPassword();
                 if IsolatedStorageValue <> ServicePasswordValue then

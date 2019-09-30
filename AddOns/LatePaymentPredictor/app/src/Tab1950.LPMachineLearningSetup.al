@@ -69,6 +69,13 @@ table 1950 "LP Machine Learning Setup"
             Editable = false;
             NotBlank = true;
             ExtendedDatatype = Masked;
+
+            trigger OnValidate()
+            var
+                AzureMLConnector: Codeunit "Azure ML Connector";
+            begin
+                AzureMLConnector.ValidateApiUrl("Custom API Key");
+            end;
         }
 
         field(11; "Exact Invoice No OnLastML"; Integer)

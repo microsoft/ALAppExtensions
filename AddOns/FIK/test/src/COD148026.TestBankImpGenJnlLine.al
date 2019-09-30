@@ -14,7 +14,6 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
         RandNoGen: Codeunit "Library - Random";
         LibraryUtility: Codeunit "Library - Utility";
         TempBlobList: Codeunit "Temp Blob List";
-        BlobKey: Integer;
         AssertMsg: Label '%1 Field:"%2" different from expected.', Locked = true;
 
     trigger OnRun();
@@ -26,10 +25,10 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
     procedure TestDanskeBankSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         GenJnlLineTemplate: Record "Gen. Journal Line";
         TempExpdGenJnlLine: Record "Gen. Journal Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
@@ -80,10 +79,10 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
     procedure TestNordeaSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         GenJnlLineTemplate: Record "Gen. Journal Line";
         TempExpdGenJnlLine: Record "Gen. Journal Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
@@ -137,10 +136,10 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
     procedure TestBECSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         GenJnlLineTemplate: Record "Gen. Journal Line";
         TempExpdGenJnlLine: Record "Gen. Journal Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         DocNo: Code[10];
@@ -188,10 +187,10 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
     procedure TestDanskeBankCorpSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         GenJnlLineTemplate: Record "Gen. Journal Line";
         TempExpdGenJnlLine: Record "Gen. Journal Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
@@ -241,10 +240,10 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
     procedure TestNordeaCorpSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         GenJnlLineTemplate: Record "Gen. Journal Line";
         TempExpdGenJnlLine: Record "Gen. Journal Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
@@ -295,11 +294,11 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
     [Test]
     procedure TestBankDataSampleImport();
     var
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         GenJnlLineTemplate: Record "Gen. Journal Line";
         TempExpdGenJnlLine: Record "Gen. Journal Line" TEMPORARY;
         DataExch: Record "Data Exch.";
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
@@ -344,10 +343,10 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
     procedure TestSDCSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         GenJnlLineTemplate: Record "Gen. Journal Line";
         TempExpdGenJnlLine: Record "Gen. Journal Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;

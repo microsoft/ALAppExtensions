@@ -1,20 +1,16 @@
-# Language
-
 Changes the language for Windows and applications, and converts language codes to language IDs, and vice versa. The Language table is a subset of Windows languages. You can add languages, and edit translations and descriptions in the list.
 
 # Public Objects
-## Language (table 8)
-
+## Language (Table 8)
 
  Table that contains the available application languages.
-
  
+
 ### GetLanguageId (Method) <a name="GetLanguageId"></a> 
 
-
  [OBSOLETE] Gets the language ID based on its code.
-
  
+
 #### Syntax
 ```
 [Obsolete('Please use function with the same name from this modules facade codeunit 43 - "Language".')]
@@ -30,22 +26,18 @@ The code of the language
 
 The ID for the language code that was provided for this function. If no ID is found for the language code, then it returns 0.
 
-## Language (codeunit 43)
-
+## Language (Codeunit 43)
 
  Management codeunit that exposes various functions to work with languages.
-
  
+
 ### GetUserLanguageCode (Method) <a name="GetUserLanguageCode"></a> 
 
-
  Gets the current user's language code.
-
  The function emits the [OnGetUserLanguageCode](#OnGetUserLanguageCode) event.
-
  To change the language code returned from this function, subscribe for this event and change the passed language code.
-
  
+
 #### Syntax
 ```
 procedure GetUserLanguageCode(): Code[10]
@@ -56,10 +48,9 @@ procedure GetUserLanguageCode(): Code[10]
 The language code of the user's language
 ### GetLanguageIdOrDefault (Method) <a name="GetLanguageIdOrDefault"></a> 
 
-
  Gets the language ID based on its code. Or defaults to the current user language.
-
  
+
 #### Syntax
 ```
 procedure GetLanguageIdOrDefault(LanguageCode: Code[10]): Integer
@@ -75,10 +66,9 @@ The code of the language
 The ID for the language code that was provided for this function. If no ID is found for the language code, then it returns the ID of the current user's language.
 ### GetLanguageId (Method) <a name="GetLanguageId"></a> 
 
-
  Gets the language ID based on its code.
-
  
+
 #### Syntax
 ```
 procedure GetLanguageId(LanguageCode: Code[10]): Integer
@@ -94,10 +84,9 @@ The code of the language
 The ID for the language code that was provided for this function. If no ID is found for the language code, then it returns 0.
 ### GetLanguageCode (Method) <a name="GetLanguageCode"></a> 
 
-
  Gets the code for a language based on its ID.
-
  
+
 #### Syntax
 ```
 procedure GetLanguageCode(LanguageId: Integer): Code[10]
@@ -113,10 +102,9 @@ The ID of the language.
 The code of the language that corresponds to the ID, or an empty code if the language with the specified ID does not exist.
 ### GetWindowsLanguageName (Method) <a name="GetWindowsLanguageName"></a> 
 
-
  Gets the name of a language based on the language code.
-
  
+
 #### Syntax
 ```
 procedure GetWindowsLanguageName(LanguageCode: Code[10]): Text
@@ -132,10 +120,9 @@ The code of the language.
 The name of the language corresponding to the code or empty string, if language with the specified code does not exist
 ### GetWindowsLanguageName (Method) <a name="GetWindowsLanguageName"></a> 
 
-
  Gets the name of a windows language based on its ID.
-
  
+
 #### Syntax
 ```
 procedure GetWindowsLanguageName(LanguageId: Integer): Text
@@ -151,10 +138,9 @@ The ID of the language.
 The name of the language that corresponds to the ID, or an empty string if a language with the specified ID does not exist.
 ### GetApplicationLanguages (Method) <a name="GetApplicationLanguages"></a> 
 
-
  Gets all available languages in the application.
-
  
+
 #### Syntax
 ```
 procedure GetApplicationLanguages(var TempLanguage: Record "Windows Language" temporary)
@@ -166,10 +152,9 @@ A temporary record to place the result in
 
 ### GetDefaultApplicationLanguageId (Method) <a name="GetDefaultApplicationLanguageId"></a> 
 
-
  Gets the default application language ID.
-
  
+
 #### Syntax
 ```
 procedure GetDefaultApplicationLanguageId(): Integer
@@ -180,12 +165,10 @@ procedure GetDefaultApplicationLanguageId(): Integer
 
 ### ValidateApplicationLanguageId (Method) <a name="ValidateApplicationLanguageId"></a> 
 
-
  Checks whether the provided language is a valid application language.
-
  If it isn't, the function displays an error.
-
  
+
 #### Syntax
 ```
 procedure ValidateApplicationLanguageId(LanguageId: Integer)
@@ -197,10 +180,9 @@ The ID of the language to validate.
 
 ### ValidateWindowsLanguageId (Method) <a name="ValidateWindowsLanguageId"></a> 
 
-
  Checks whether the provided language exists. If it doesn't, the function displays an error.
-
  
+
 #### Syntax
 ```
 procedure ValidateWindowsLanguageId(LanguageId: Integer)
@@ -212,10 +194,9 @@ The ID of the language to validate.
 
 ### LookupApplicationLanguageId (Method) <a name="LookupApplicationLanguageId"></a> 
 
-
  Opens a list of the languages that are available for the application so that the user can choose a language.
-
  
+
 #### Syntax
 ```
 procedure LookupApplicationLanguageId(var LanguageId: Integer)
@@ -227,10 +208,9 @@ Exit parameter that holds the chosen language ID.
 
 ### LookupWindowsLanguageId (Method) <a name="LookupWindowsLanguageId"></a> 
 
-
  Opens a list of languages that are available for the Windows version.
-
  
+
 #### Syntax
 ```
 procedure LookupWindowsLanguageId(var LanguageId: Integer)
@@ -242,12 +222,10 @@ Exit parameter that holds the chosen language ID.
 
 ### OnGetUserLanguageCode (Event) <a name="OnGetUserLanguageCode"></a> 
 
-
  Integration event, emitted from [GetUserLanguageCode](#GetUserLanguageCode).
-
  Subscribe to this event to change the default behavior by changing the provided parameter(s).
-
  
+
 #### Syntax
 ```
 [IntegrationEvent(false, false)]
@@ -263,16 +241,14 @@ Exit parameter that holds the user language code.
 
 
 
-## Languages (page 9)
-
+## Languages (Page 9)
 
  Page for displaying application languages.
-
  
 
-## Windows Languages (page 535)
 
+## Windows Languages (Page 535)
 
  Page for displaying available windows languages.
-
  
+

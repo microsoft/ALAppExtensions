@@ -157,16 +157,6 @@ codeunit 1750 "Data Classification Mgt."
     end;
 
     /// <summary>
-    /// Filters the Field record for enabled, sensitive fields (fields that might contain customer content, End User Identifiable Information
-    /// or End User Pseudonymous Identifiers) and for which have not ben removed.
-    /// </summary>
-    /// <param name="Field">The Field record that gets filtered.</param>
-    procedure GetEnabledSensitiveFields(var "Field": Record "Field")
-    begin
-        DataClassificationMgtImpl.GetEnabledSensitiveFields(Field);
-    end;
-
-    /// <summary>
     /// Inserts a new Data Privacy Entity entry in a record.
     /// </summary>
     /// <param name="DataPrivacyEntities">The record that the entry gets inserted into.</param>

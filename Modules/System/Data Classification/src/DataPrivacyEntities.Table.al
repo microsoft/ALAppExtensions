@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays a list of data privacy entities.
+/// </summary>
 table 1180 "Data Privacy Entities"
 {
     Access = Public;

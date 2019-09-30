@@ -119,4 +119,3 @@ table 9701 "Cue Setup"
         }
     }
 }
-

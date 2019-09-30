@@ -28,11 +28,10 @@ codeunit 134934 "Manual Setup Test"
         ManualSetupTest: Codeunit "Manual Setup Test";
         ManualSetupPage: TestPage "Manual Setup";
         MyManualSetup: TestPage "My Manual Setup";
-
     begin
         if BindSubscription(ManualSetupTest) then;
 
-        // [Given] Two sunscribers that register a manual setup and randomly initialized values
+        // [Given] A subscriber that registers a manual setup and randomly initialized values
         Initialize();
         AppId := AddExtension();
 
@@ -53,8 +52,49 @@ codeunit 134934 "Manual Setup Test"
         MyManualSetup.Trap();
         ManualSetupPage."Open Manual Setup".Invoke();
         MyManualSetup.Close();
+    end;
 
-        if UnbindSubscription(ManualSetupTest) then;
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('HandleManualSetup')]
+    procedure TestFilteredView()
+    var
+        ManualSetupTest: Codeunit "Manual Setup Test";
+        ManualSetup: Codeunit "Manual Setup";
+        ManualSetupCategory: Enum "Manual Setup Category";
+    begin
+        if BindSubscription(ManualSetupTest) then;
+
+        // [Given] A subscriber that registers a manual setup and randomly initialized values
+        Initialize();
+
+        // [When] The list is fetched
+        ManualSetup.Open(ManualSetupCategory::Uncategorized);
+
+        // [Then] Verificaton of records happens inside the modal form handler
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure VerifyListOfPageIDs()
+    var
+        ManualSetupTest: Codeunit "Manual Setup Test";
+        ManualSetup: Codeunit "Manual Setup";
+        PageIDs: List of [Integer];
+    begin
+        if BindSubscription(ManualSetupTest) then;
+
+        // [Given] A subscriber that registers a manual setup and randomly initialized values
+        Initialize();
+
+        // [When] The list is fetched
+        ManualSetup.GetPageIDs(PageIDs);
+
+        // [Then] The PageID has just one entry
+        Assert.AreEqual(1, PageIDs.Count(), 'The test subscriber only adds one entry.');
+
+        // [Then] and the entry is
+        Assert.IsTrue(PageIDs.Contains(Page::"My Manual Setup"), 'The added setup page is not in list.');
     end;
 
     local procedure Initialize()
@@ -96,6 +136,13 @@ codeunit 134934 "Manual Setup Test"
     begin
         Sender.Insert(CopyStr(TestBusinessSetupNameTxt, 1, 50), CopyStr(TestBusinessSetupDescriptionTxt, 1, 250),
           CopyStr(TestBusinessSetupKeywordsTxt, 1, 250), Page::"My Manual Setup", AppId, ManualSetupCategory::Uncategorized);
+    end;
+
+    [ModalPageHandler]
+    procedure HandleManualSetup(var ManualSetup: TestPage "Manual Setup")
+    begin
+        ManualSetup.First();
+        ManualSetup.Name.AssertEquals(CopyStr(TestBusinessSetupNameTxt, 1, 50));
     end;
 }
 

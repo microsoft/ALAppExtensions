@@ -14,7 +14,6 @@ codeunit 148168 "Elster Export Business Data"
     end;
 
     var
-        FileManagement: Codeunit "File Management";
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryRandom: Codeunit "Library - Random";
@@ -26,16 +25,15 @@ codeunit 148168 "Elster Export Business Data"
     procedure TestExportElsterXMLWithGermanicSymbols()
     var
         SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
-        LibraryXMLRead: Codeunit "Library - XML Read";
+        LibraryXPathXMLReader: Codeunit "Library - XPath XML Reader";
+        TempBlob: Codeunit "Temp Blob";
         GermanicUmlautTxt: Text[7];
         ConvertedGermanicUmlautTxt: Text[14];
-        FilePath: Text;
     begin
         // [SCENARIO 382098] Generate Sales VAT Advance Notification XML file with proper Germanic umlaut symbols
 
         GermanicUmlautTxt := 'ÄÖÜüöäß';
         ConvertedGermanicUmlautTxt := 'AeOeUeueoeaess';
-        FilePath := FileManagement.ServerTempFileName('XML');
         LibrarySetupStorage.Save(Database::"Company Information");
         UpdateCompanyInformation();
 
@@ -47,10 +45,9 @@ codeunit 148168 "Elster Export Business Data"
 
         // [THEN] Verifying that Germanic umlaut symbols are converted correctly
         SalesVATAdvanceNotif.CalcFields("XML Submission Document");
-        SalesVATAdvanceNotif."XML Submission Document".Export(FilePath);
-        LibraryXMLRead.Initialize(FilePath);
-
-        Assert.AreEqual(ConvertedGermanicUmlautTxt, LibraryXMLRead.GetElementValue('Name'), ConvertedGermanicUmlauErr);
+        TempBlob.FromRecord(SalesVATAdvanceNotif, SalesVATAdvanceNotif.FieldNo("XML Submission Document"));
+        LibraryXPathXMLReader.InitializeXml(TempBlob, 'elster', 'http://www.elster.de/elsterxml/schema/v11');
+        Assert.AreEqual(ConvertedGermanicUmlautTxt, LibraryXPathXMLReader.GetXmlElementValue('//elster:Name'), ConvertedGermanicUmlauErr);
         LibrarySetupStorage.Restore();
     END;
 

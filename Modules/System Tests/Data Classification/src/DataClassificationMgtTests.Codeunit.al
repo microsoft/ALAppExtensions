@@ -16,16 +16,16 @@ codeunit 135150 "Data Classification Mgt. Tests"
 
     var
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
-        DataClassificationMgtTests: Codeunit "Data Classification Mgt. Tests";
         LibraryAssert: Codeunit "Library Assert";
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestFillDataSensitivityTable()
+    procedure TestPopulateDataSensitivityTable()
     var
         DataSensitivity: Record "Data Sensitivity";
         "Field": Record "Field";
         FieldsSyncStatus: Record "Fields Sync Status";
+        DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
         DataSensitivityCount: Integer;
         FieldCount: Integer;
     begin
@@ -38,7 +38,7 @@ codeunit 135150 "Data Classification Mgt. Tests"
         DataClassificationMgt.PopulateDataSensitivityTable();
 
         // [WHEN] The Field table is filtered to the potentially data sensitive entries
-        DataClassificationMgt.GetEnabledSensitiveFields(Field);
+        DataClassificationMgtImpl.GetEnabledSensitiveFields(Field);
 
         DataSensitivityCount := DataSensitivity.Count();
         FieldCount := Field.Count();
@@ -99,7 +99,6 @@ codeunit 135150 "Data Classification Mgt. Tests"
         LibraryAssert.AreEqual(DataSensitivityOption, DataSensitivity."Data Sensitivity",
           'The Data Sensitivity field of the Data Sensitivity record is incorrect');
     end;
-
 
     [Test]
     [Scope('OnPrem')]
@@ -165,7 +164,6 @@ codeunit 135150 "Data Classification Mgt. Tests"
           'Both entries in the Data Sensitiviy table should have Normal sensitivity');
     end;
 
-
     [Test]
     [Scope('OnPrem')]
     procedure TestPopulateFieldValue()
@@ -192,7 +190,6 @@ codeunit 135150 "Data Classification Mgt. Tests"
         LibraryAssert.IsTrue(TempFieldContentBuffer.Get(WebService."Service Name"),
           'The created web service name value is not found');
     end;
-
 
     [Test]
     [Scope('OnPrem')]
@@ -234,7 +231,6 @@ codeunit 135150 "Data Classification Mgt. Tests"
         // [THEN] The result should be false
         LibraryAssert.IsFalse(AreAllFieldsClassified, 'Not all the fields should be classified');
     end;
-
 
     [Test]
     [Scope('OnPrem')]
@@ -489,6 +485,7 @@ codeunit 135150 "Data Classification Mgt. Tests"
     var
         "Field": Record "Field";
         DataSensitivity: Record "Data Sensitivity";
+        DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
         TableNo: Integer;
         NumberOfSensitivieFields: Integer;
     begin
@@ -502,7 +499,7 @@ codeunit 135150 "Data Classification Mgt. Tests"
 
         // [GIVEN] The Field table is filtered to include only the enabled, sensitive fields in this table
         Field.SetRange(TableNo, TableNo);
-        DataClassificationMgt.GetEnabledSensitiveFields(Field);
+        DataClassificationMgtImpl.GetEnabledSensitiveFields(Field);
         NumberOfSensitivieFields := Field.Count();
 
         // [WHEN] Setting the data sensitivity for the sensitive fields in this table to normal
@@ -530,7 +527,6 @@ codeunit 135150 "Data Classification Mgt. Tests"
         LibraryAssert.AreEqual(DataSensitivity.Count(), NumberOfSensitivieFields, 'The number of Normal fields is incorrect');
     end;
 
-
     [Test]
     [Scope('OnPrem')]
     procedure TestIsDataSensitivityEmptyForCurrentCompany()
@@ -554,6 +550,258 @@ codeunit 135150 "Data Classification Mgt. Tests"
         // [THEN] The result should be false
         LibraryAssert.IsFalse(DataClassificationMgt.IsDataSensitivityEmptyForCurrentCompany(),
           'The data sensitivity table should not be empty');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestSyncAllFieldsForEmptyDataSensitivityTable()
+    var
+        DataSensitivity: Record "Data Sensitivity";
+        FieldsSyncStatus: Record "Fields Sync Status";
+        Field: Record Field;
+        DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
+        FieldCount: Integer;
+    begin
+        // [SCENARIO] Synchronizing the Field and Data Sensitivity table when the Data Sensitivity table
+        // is empty
+
+        // [GIVEN] The Data Sensitivity table is empty
+        DataSensitivity.DeleteAll();
+
+        // [GIVEN] The number of enabled, sensitive fields
+        DataClassificationMgtImpl.GetEnabledSensitiveFields(Field);
+        FieldCount := Field.Count();
+
+        // [WHEN] Synchronizing the Field and Data Sensitivity table
+        DataClassificationMgt.SyncAllFields();
+
+        // [THEN] The number of fields in the Data Sensitivity table should be the same as FieldCount
+        LibraryAssert.AreEqual(FieldCount, DataSensitivity.Count(), 'The tables have not been synchronized correctly');
+
+        // [THEN] All the entries in the Data Sensitivity table should be unclassified
+        DataSensitivity.SetRange("Data Sensitivity", DataSensitivity."Data Sensitivity"::Unclassified);
+        LibraryAssert.AreEqual(FieldCount, DataSensitivity.Count(), 'Not all the fields are unclassified');
+
+        // [THEN] The Fields Sync Status table is not empty
+        LibraryAssert.AreNotEqual(0, FieldsSyncStatus.Count(), 'The Fields Sync Status table cannot be empty');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestSyncAllFieldsForNonEmptyDataSensitivityTable()
+    var
+        DataSensitivity: Record "Data Sensitivity";
+        FieldsSyncStatus: Record "Fields Sync Status";
+        Field: Record Field;
+        DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
+        FieldCount: Integer;
+        TableNo: Integer;
+        SensitiveFieldNo: Integer;
+        UnclassifiedFieldNo: Integer;
+    begin
+        // [SCENARIO] Synchronizing the Field and Data Sensitivity table when the Data Sensitivity table
+        // is not empty
+
+        // [GIVEN] The Data Sensitivity table is not empty - it contains a classified and an unclassifed entry
+        DataSensitivity.DeleteAll();
+
+        TableNo := 50000;
+        SensitiveFieldNo := 1;
+        UnclassifiedFieldNo := 2;
+        DataClassificationMgt.InsertDataSensitivityForField(TableNo, SensitiveFieldNo, DataSensitivity."Data Sensitivity"::Personal);
+        DataClassificationMgt.InsertDataSensitivityForField(TableNo, UnclassifiedFieldNo, DataSensitivity."Data Sensitivity"::Unclassified);
+
+        // [GIVEN] The number of enabled, sensitive, normal fields
+        Field.SetRange(Class, Field.Class::Normal);
+        DataClassificationMgtImpl.GetEnabledSensitiveFields(Field);
+        FieldCount := Field.Count();
+
+        // [WHEN] Synchronizing the Field and Data Sensitivity table
+        DataClassificationMgt.SyncAllFields();
+
+        // [THEN] The number of fields in the Data Sensitivity table should be the FieldCount + 1
+        LibraryAssert.AreEqual(FieldCount + 1, DataSensitivity.Count(), 'The tables have not been synchronized correctly');
+
+        // [THEN] FieldCount entries in the Data Sensitivity table should be unclassified
+        DataSensitivity.SetRange("Data Sensitivity", DataSensitivity."Data Sensitivity"::Unclassified);
+        LibraryAssert.AreEqual(FieldCount, DataSensitivity.Count(), 'Not all the fields are unclassified');
+
+        // [THEN] The Data Sensitivity should still contain the initial sensitive field
+        DataSensitivity.Reset();
+        DataSensitivity.SetRange("Table No", TableNo);
+        DataSensitivity.SetRange("Field No", SensitiveFieldNo);
+        LibraryAssert.AreEqual(1, DataSensitivity.Count(),
+          'The Data Sensitivity table should still contain the initial sensitive field');
+
+        // [THEN] The Data Sensitivity should not contain the initial unclassified field anymore
+        DataSensitivity.SetRange("Field No", UnclassifiedFieldNo);
+        LibraryAssert.AreEqual(0, DataSensitivity.Count(),
+          'The Data Sensitivity table should not contain the initial unclassified field anymore');
+
+        // [THEN] The Fields Sync Status table is not empty
+        LibraryAssert.AreNotEqual(0, FieldsSyncStatus.Count(), 'The Fields Sync Status table cannot be empty');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGetDataSensitivityOptionString()
+    var
+        DataSensitivityOptionString: Text;
+    begin
+        // [SCENARIO] The options that Data Sensitivity can take are retrieved correctly
+
+        // [WHEN] Calling GetDataSensitivityOptionString
+        DataSensitivityOptionString := DataClassificationMgt.GetDataSensitivityOptionString();
+
+        // [THEN] The resulting string is correct
+        LibraryAssert.AreEqual('Unclassified,Sensitive,Personal,Company Confidential,Normal', DataSensitivityOptionString,
+          'The Data Sensitivity Option String is incorrect');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestDataPrivacyEntitiesExist()
+    var
+        DataClassificationMgtTests: Codeunit "Data Classification Mgt. Tests";
+        DataPrivacyEntitiesExist: Boolean;
+    begin
+        // [SCENARIO] Having an event subscriber that introduces a data privacy entity causes the 
+        // DataPrivacyEntitiesExist function to return true
+
+        BindSubscription(DataClassificationMgtTests);
+
+        // [GIVEN] There is an event subscriber (OnGetDataPrivacyEntitiesSubscriber) that inserts a data
+        // privacy entity 
+
+        // [WHEN] Calling DataPrivacyEntitiesExist
+        DataPrivacyEntitiesExist := DataClassificationMgt.DataPrivacyEntitiesExist();
+
+        // [THEN] The result should be true
+        LibraryAssert.IsTrue(DataPrivacyEntitiesExist, 'There should exist at least one data privacy entity');
+
+        UnbindSubscription(DataClassificationMgtTests);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestInsertDataPrivacyEntity()
+    var
+        DataPrivacyEntities: Record "Data Privacy Entities";
+        TableNo: Integer;
+        PageNo: Integer;
+        KeyFieldNo: Integer;
+        EntityFilter: Text;
+        PrivacyBlockedFieldNo: Integer;
+    begin
+        // [SCENARIO] A "standard" Data Privacy Entities entry can be inserted in a record
+
+        // [GIVEN] The Data Privacy Entities table is empty
+        DataPrivacyEntities.DeleteAll();
+
+        // [WHEN] Inserting a Data Privacy Entities entry
+        TableNo := 50000;
+        PageNo := 7;
+        KeyFieldNo := 13;
+        EntityFilter := 'filter filter filter';
+        PrivacyBlockedFieldNo := 12;
+        DataClassificationMgt.InsertDataPrivacyEntity(DataPrivacyEntities, TableNo, PageNo, KeyFieldNo,
+          EntityFilter, PrivacyBlockedFieldNo);
+
+        // [THEN] The DataPrivacyEntities record contains exactly one entry
+        LibraryAssert.AreEqual(1, DataPrivacyEntities.Count(),
+          'The Data Privacy Entities record should contain exactly one entry');
+
+        // [THEN] The fields of the Data Privacy Entities entry should be set correctly
+        if DataPrivacyEntities.FindFirst() then;
+        LibraryAssert.AreEqual(TableNo, DataPrivacyEntities."Table No.", 'The Table No. is incorrect');
+        LibraryAssert.AreEqual(PageNo, DataPrivacyEntities."Page No.", 'The Page No. is incorrect');
+        LibraryAssert.AreEqual(KeyFieldNo, DataPrivacyEntities."Key Field No.", 'The Key Field No. is incorrect');
+        LibraryAssert.AreEqual(PrivacyBlockedFieldNo, DataPrivacyEntities."Privacy Blocked Field No.",
+          'The Privacy Blocked Field No. is incorrect');
+        LibraryAssert.IsTrue(DataPrivacyEntities.Include, 'The Include flag should be set to true');
+        LibraryAssert.AreEqual(DataPrivacyEntities."Default Data Sensitivity"::Personal, DataPrivacyEntities."Default Data Sensitivity",
+          'The Default Data Sensitivity is incorrect');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGetLastSyncStatusDate()
+    var
+        FieldsSyncStatus: Record "Fields Sync Status";
+        LastSyncStatusDate: DateTime;
+    begin
+        // [SCENARIO] The last date when the Data Sensitivity and Field tables have been synched can be retrieved
+
+        // [GIVEN] The Fields Sync Status table is empty
+        FieldsSyncStatus.DeleteAll();
+
+        // [WHEN] Getting the last sync status date
+        LastSyncStatusDate := DataClassificationMgt.GetLastSyncStatusDate();
+
+        // [THEN] LastSyncStatusDate is 0DT
+        LibraryAssert.AreEqual(0DT, LastSyncStatusDate, 'The last sync status date should be 0DT');
+
+        // [GIVEN] The Data Sensitivity and Field tables are synched
+        DataClassificationMgt.SyncAllFields();
+
+        // [WHEN] etting the last sync status date
+        LastSyncStatusDate := DataClassificationMgt.GetLastSyncStatusDate();
+
+        // [THEN] LastSyncStatusDate is not 0DT
+        LibraryAssert.AreNotEqual(0DT, LastSyncStatusDate, 'The last sync status date should not be 0DT');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestRaiseOnGetDataPrivacyEntitiesWithNonTempRecord()
+    var
+        DataPrivacyEntities: Record "Data Privacy Entities";
+    begin
+        // [SCENARIO] The call to RaiseOnGetDataPrivacyEntities results in an error when the parameter is not a temporary record
+
+        // [WHEN] Calling RaiseOnGetDataPrivacyEntities with a non-temporary record
+        // [THEN] An error is thrown
+        asserterror DataClassificationMgt.RaiseOnGetDataPrivacyEntities(DataPrivacyEntities);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestRaiseOnGetDataPrivacyEntitiesWithTempRecord()
+    var
+        DataPrivacyEntities: Record "Data Privacy Entities" temporary;
+        DataClassificationMgtTests: Codeunit "Data Classification Mgt. Tests";
+    begin
+        // [SCENARIO] When calling RaiseOnGetDataPrivacyEntities, the OnGetDataPrivacyEntitiesSubscriber will 
+        // successfully insert a Data Privacy Entities entry in the parameter record
+
+        BindSubscription(DataClassificationMgtTests);
+
+        // [GIVEN] The OnGetDataPrivacyEntitiesSubscriber inserts an entry in the Data Privacy Entities record
+
+        // [WHEN] Calling RaiseOnGetDataPrivacyEntities
+        DataClassificationMgt.RaiseOnGetDataPrivacyEntities(DataPrivacyEntities);
+
+        // [THEN] The DataPrivacyEntities record contains exactly one entry
+        LibraryAssert.AreEqual(1, DataPrivacyEntities.Count(),
+          'The DataPrivacyEntities record should contain exactly one entry');
+
+        UnbindSubscription(DataClassificationMgtTests);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Classification Mgt.", 'OnGetDataPrivacyEntities', '', false, false)]
+    [Scope('OnPrem')]
+    procedure OnGetDataPrivacyEntitiesSubscriber(var DataPrivacyEntities: Record "Data Privacy Entities" temporary)
+    var
+        FieldContentBuffer: Record "Field Content Buffer";
+    begin
+        if FieldContentBuffer.IsEmpty() then begin
+            FieldContentBuffer.Init();
+            FieldContentBuffer.Value := 'value';
+            FieldContentBuffer.Insert();
+        end;
+
+        DataClassificationMgt.InsertDataPrivacyEntity(DataPrivacyEntities, Database::"Field Content Buffer",
+          Page::"Field Content Buffer", 1, '', 1);
     end;
 }
 

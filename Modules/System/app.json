@@ -4,12 +4,12 @@
     "publisher":  "Microsoft",
     "brief":  "Provides a standard set of capabilities that serve as a foundation for developing business apps.",
     "description":  "Contains an expansive set of open source modules that make it easier to build, maintain, and easily upgrade on-premises and online apps. These modules let you focus on the business logic, and the needs of your users or customers.",
-    "version":  "15.0.0.0",
+    "version":  "16.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "",
+    "logo":  "ExtensionLogo.png",
     "dependencies":  [
 
                      ],

@@ -5,10 +5,11 @@
 enum 9701 "Cues And KPIs Style"
 {
     Extensible = true;
+    // The values are matching the original option field on the Cue Setup table
+    // Values 1 to 6 were blank options so they could be extended
     value(0; None) { }
-    value(1; Favorable) { }
-    value(2; Unfavorable) { }
-    value(3; Ambiguous) { }
-    value(4; Subordinate) { }
-
+    value(7; Favorable) { }
+    value(8; Unfavorable) { }
+    value(9; Ambiguous) { }
+    value(10; Subordinate) { }
 }

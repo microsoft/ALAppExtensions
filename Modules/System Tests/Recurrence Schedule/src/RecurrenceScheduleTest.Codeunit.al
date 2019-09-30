@@ -1084,8 +1084,8 @@ codeunit 134691 "Recurrence Schedule Test"
             Counter += 1;
         until NextOccurrence = 0DT;
 
-        // [THEN] The number of occurences counted 
-        Assert.AreEqual(78, Counter, 'It should calculate 78 occurences which total to 11 years of months with 31 days.');
+        // [THEN] The number of occurrences counted 
+        Assert.AreEqual(78, Counter, 'It should calculate 78 occurrences which total to 11 years of months with 31 days.');
     end;
 
     [Scope('OnPrem')]

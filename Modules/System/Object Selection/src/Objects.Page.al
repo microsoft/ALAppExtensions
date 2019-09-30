@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// List page that contains all of the application objects.
+/// </summary>
 page 358 Objects
 {
     Extensible = false;

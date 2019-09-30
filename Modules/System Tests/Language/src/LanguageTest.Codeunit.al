@@ -420,36 +420,36 @@ codeunit 130043 "Language Test"
 
     local procedure Init()
     var
-        Language: Record Language;
+        LanguageLocal: Record Language;
     begin
         if IsInitialized then
             EXIT;
 
-        Language.DeleteAll();
+        LanguageLocal.DeleteAll();
 
-        Language.Init();
-        Language.Validate(Code, 'GB');
-        Language.Validate("Windows Language ID", 2057); // en-GB
-        Language.Validate(Name, 'English GB');
-        Language.Insert();
+        LanguageLocal.Init();
+        LanguageLocal.Validate(Code, 'GB');
+        LanguageLocal.Validate("Windows Language ID", 2057); // en-GB
+        LanguageLocal.Validate(Name, 'English GB');
+        LanguageLocal.Insert();
 
-        Language.Init();
-        Language.Validate(Code, 'US');
-        Language.Validate("Windows Language ID", 1033); // en-US
-        Language.Validate(Name, 'English US');
-        Language.Insert();
+        LanguageLocal.Init();
+        LanguageLocal.Validate(Code, 'US');
+        LanguageLocal.Validate("Windows Language ID", 1033); // en-US
+        LanguageLocal.Validate(Name, 'English US');
+        LanguageLocal.Insert();
 
-        Language.Init();
-        Language.Validate(Code, 'FR');
-        Language.Validate("Windows Language ID", 1036); // fr-FR
-        Language.Validate(Name, 'French');
-        Language.Insert();
+        LanguageLocal.Init();
+        LanguageLocal.Validate(Code, 'FR');
+        LanguageLocal.Validate("Windows Language ID", 1036); // fr-FR
+        LanguageLocal.Validate(Name, 'French');
+        LanguageLocal.Insert();
 
-        Language.Init();
-        Language.Validate(Code, 'BG');
-        Language.Validate("Windows Language ID", 1026); // bg-BG
-        Language.Validate(Name, 'Bulgarian');
-        Language.Insert();
+        LanguageLocal.Init();
+        LanguageLocal.Validate(Code, 'BG');
+        LanguageLocal.Validate("Windows Language ID", 1026); // bg-BG
+        LanguageLocal.Validate(Name, 'Bulgarian');
+        LanguageLocal.Insert();
 
         IsInitialized := true;
     end;

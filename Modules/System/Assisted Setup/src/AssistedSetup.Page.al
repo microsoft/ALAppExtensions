@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>This page shows all registered assisted setup guides.</summary>
 page 1801 "Assisted Setup"
 {
     AccessByPermission = TableData "Assisted Setup" = R;
@@ -17,6 +18,7 @@ page 1801 "Assisted Setup"
     RefreshOnActivate = true;
     ShowFilter = false;
     SourceTable = "Assisted Setup";
+    SourceTableTemporary = true;
     UsageCategory = Administration;
     Extensible = true;
 
@@ -26,15 +28,18 @@ page 1801 "Assisted Setup"
         {
             repeater(Group)
             {
+                IndentationColumn = NameIndent;
+                IndentationControls = Name;
                 field(Name; Name)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name.';
+                    Style = Strong;
+                    StyleExpr = NameEmphasize;
 
                     trigger OnLookup(var Text: Text): Boolean
                     begin
-                        Run();
-                        CurrPage.Update(false);
+                        RunPage();
                     end;
                 }
                 field(Completed; Completed)
@@ -44,8 +49,7 @@ page 1801 "Assisted Setup"
 
                     trigger OnLookup(var Text: Text): Boolean
                     begin
-                        Run();
-                        CurrPage.Update(false);
+                        RunPage();
                     end;
                 }
                 field(Help; HelpAvailable)
@@ -55,8 +59,10 @@ page 1801 "Assisted Setup"
                     Width = 3;
 
                     trigger OnDrillDown()
+                    var
+                        AssistedSetupImpl: Codeunit "Assisted Setup Impl.";
                     begin
-                        NavigateHelpPage();
+                        AssistedSetupImpl.NavigateHelpPage(Rec);
                     end;
                 }
                 field(Video; VideoAvailable)
@@ -72,6 +78,34 @@ page 1801 "Assisted Setup"
                         if "Video Url" <> '' then
                             Video.Play("Video Url");
                     end;
+                }
+                field(GroupName; "Group Name")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Group';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'The groups now appear as headings in the page, so this column is redundant.';
+                }
+                field(TranslatedName; TranslatedName)
+                {
+                    Caption = 'Translated Name';
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the name translated locally.';
+
+                    trigger OnDrillDown()
+                    var
+                        AssistedSetup: Record "Assisted Setup";
+                        Translation: Codeunit Translation;
+                    begin
+                        if AssistedSetup.Get("Page ID") then
+                            Translation.Show(AssistedSetup, AssistedSetup.FieldNo(Name));
+                    end;
+                }
+                field("Extension Name"; "Extension Name")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the extension which has added this setup.';
                 }
             }
         }
@@ -92,7 +126,7 @@ page 1801 "Assisted Setup"
 
                 trigger OnAction()
                 begin
-                    Run();
+                    RunPage();
                 end;
             }
             action("General videos")
@@ -111,7 +145,21 @@ page 1801 "Assisted Setup"
         }
     }
 
+    trigger OnOpenPage()
+    var
+        AssistedSetupApi: Codeunit "Assisted Setup";
+        AssistedSetupImpl: Codeunit "Assisted Setup Impl.";
+    begin
+        AssistedSetupApi.OnRegister();
+        SetCurrentKey("Group Name");
+        AssistedSetupImpl.RefreshBuffer(Rec);
+        if FilterSet then
+            SetRange("Group Name", AssistedSetupGroup);
+    end;
+
     trigger OnAfterGetRecord()
+    var
+        AssistedSetupImpl: Codeunit "Assisted Setup Impl.";
     begin
         HelpAvailable := '';
         VideoAvailable := '';
@@ -119,15 +167,42 @@ page 1801 "Assisted Setup"
             HelpAvailable := HelpLinkTxt;
         if "Video Url" <> '' then
             VideoAvailable := VideoLinkTxt;
+        if AssistedSetupImpl.IsSetupRecord(Rec) then
+            SetPageVariablesForSetupRecord()
+        else
+            SetPageVariablesForSetupGroup();
     end;
 
-    trigger OnOpenPage()
+    local procedure RunPage()
     var
-        AssistedSetupApi: Codeunit "Assisted Setup";
+        AssistedSetupImpl: Codeunit "Assisted Setup Impl.";
     begin
-        AssistedSetupApi.OnRegister();
-        SetCurrentKey("App ID");
-        Ascending(true);
+        if AssistedSetupImpl.IsSetupRecord(Rec) then begin
+            AssistedSetupImpl.RunAndRefreshRecord(Rec);
+            CurrPage.Update(false);
+        end;
+    end;
+
+    local procedure SetPageVariablesForSetupRecord()
+    var
+        AssistedSetupImpl: Codeunit "Assisted Setup Impl.";
+    begin
+        TranslatedName := AssistedSetupImpl.GetTranslatedName("Page ID");
+        NameIndent := 1;
+        NameEmphasize := false;
+    end;
+
+    local procedure SetPageVariablesForSetupGroup()
+    begin
+        TranslatedName := '';
+        NameEmphasize := true;
+        NameIndent := 0;
+    end;
+
+    internal procedure SetGroupToDisplay(AssistedSetupGroupValue: Enum "Assisted Setup Group")
+    begin
+        FilterSet := true;
+        AssistedSetupGroup := AssistedSetupGroupValue;
     end;
 
     var
@@ -135,5 +210,13 @@ page 1801 "Assisted Setup"
         VideoLinkTxt: Label 'Watch';
         HelpAvailable: Text;
         VideoAvailable: Text;
+        [InDataSet]
+        TranslatedName: Text;
+        [InDataSet]
+        NameIndent: Integer;
+        [InDataSet]
+        NameEmphasize: Boolean;
+        AssistedSetupGroup: Enum "Assisted Setup Group";
+        FilterSet: Boolean;
 }
 

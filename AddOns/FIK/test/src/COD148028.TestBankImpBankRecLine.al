@@ -13,7 +13,6 @@ codeunit 148028 "Test Bank Imp. Bank Rec. Line"
         LibraryUtility: Codeunit "Library - Utility";
         Assert: Codeunit Assert;
         RandNoGen: Codeunit "Library - Random";
-        BlobKey: Integer;
         AssertMsg: Label '%1 Field:"%2" different from expected.', Locked = true;
 
     trigger OnRun();
@@ -25,11 +24,11 @@ codeunit 148028 "Test Bank Imp. Bank Rec. Line"
     procedure TestDanskeBankSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         BankAccRecon: Record "Bank Acc. Reconciliation";
         BankAccReconLineTemplate: Record "Bank Acc. Reconciliation Line";
         TempExpdBankAccRecLine: Record "Bank Acc. Reconciliation Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
@@ -95,11 +94,11 @@ codeunit 148028 "Test Bank Imp. Bank Rec. Line"
     procedure TestDanskeBankCorpSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         BankAccRecon: Record "Bank Acc. Reconciliation";
         BankAccReconLineTemplate: Record "Bank Acc. Reconciliation Line";
         TempExpdBankAccRecLine: Record "Bank Acc. Reconciliation Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
@@ -155,11 +154,11 @@ codeunit 148028 "Test Bank Imp. Bank Rec. Line"
     procedure TestNordeaSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         BankAccRecon: Record "Bank Acc. Reconciliation";
         BankAccReconLineTemplate: Record "Bank Acc. Reconciliation Line";
         TempExpdBankAccRecLine: Record "Bank Acc. Reconciliation Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
@@ -218,11 +217,11 @@ codeunit 148028 "Test Bank Imp. Bank Rec. Line"
     procedure TestNordeaCorpSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         BankAccRecon: Record "Bank Acc. Reconciliation";
         BankAccReconLineTemplate: Record "Bank Acc. Reconciliation Line";
         TempExpdBankAccRecLine: Record "Bank Acc. Reconciliation Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
@@ -277,11 +276,11 @@ codeunit 148028 "Test Bank Imp. Bank Rec. Line"
     procedure TestBECSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         BankAccRecon: Record "Bank Acc. Reconciliation";
         BankAccReconLineTemplate: Record "Bank Acc. Reconciliation Line";
         TempExpdBankAccRecLine: Record "Bank Acc. Reconciliation Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         BankAccNo: Code[20];
@@ -332,12 +331,12 @@ codeunit 148028 "Test Bank Imp. Bank Rec. Line"
     [Test]
     procedure TestBankDataSampleImport();
     var
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         BankAccRecon: Record "Bank Acc. Reconciliation";
         BankAccReconLineTemplate: Record "Bank Acc. Reconciliation Line";
         TempExpdBankAccRecLine: Record "Bank Acc. Reconciliation Line" TEMPORARY;
         DataExch: Record "Data Exch.";
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         BankAccNo: Code[20];
@@ -382,11 +381,11 @@ codeunit 148028 "Test Bank Imp. Bank Rec. Line"
     procedure TestSDCSampleImport();
     var
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         BankAccRecon: Record "Bank Acc. Reconciliation";
         BankAccReconLineTemplate: Record "Bank Acc. Reconciliation Line";
         TempExpdBankAccRecLine: Record "Bank Acc. Reconciliation Line" TEMPORARY;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;

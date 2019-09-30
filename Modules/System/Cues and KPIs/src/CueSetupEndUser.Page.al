@@ -134,4 +134,3 @@ page 9702 "Cue Setup End User"
         HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("High Range Style");
     end;
 }
-

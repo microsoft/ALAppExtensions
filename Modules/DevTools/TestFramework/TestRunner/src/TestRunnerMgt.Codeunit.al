@@ -31,6 +31,12 @@ codeunit 130454 "Test Runner - Mgt"
         OnAfterRunTestSuite(TestMethodLine);
     end;
 
+    procedure GetDefaultTestRunner(): Integer
+    begin
+        exit(GetCodeIsolationTestRunner());
+    end;
+
+    [Obsolete]
     procedure GetDefautlTestRunner(): Integer
     begin
         exit(GetCodeIsolationTestRunner());

@@ -1,9 +1,20 @@
 Provides helper functions for encryption and hashing. 
+s
+Encryption is always turned on for online versions, and you cannot turn it off.
 
-For encryption in an on-premises versions, use it to turn encryption on or off, and import and export the encryption key. 
+Use this module to do the following:
+- Encrypt plain text into encrypted value.
+- Decrypt encrypted text into plain text.
+- Check if encryption is enabled.
+- Check whether the encryption key is present, which only works if encryption is enabled.
+- Get the recommended question to activate encryption.
+- Generates a hash from a string or a stream based on the provided hash algorithm.
+- Generates a keyed hash or a keyed base64 encoded hash from a string based on provided hash algorithm and key.
+- Generates a base64 encoded hash or a keyed base64 encoded hash from a string based on provided hash algorithm.
 
-Encryption is always turned on for online versions.
-
+For on-premises versions, you can also use this module to do the following:
+- Turn on or turn off encryption.
+- Publish an event that allows subscription when turning encryption on or off.
 
 # Public Objects
 ## Cryptography Management (Codeunit 1266)

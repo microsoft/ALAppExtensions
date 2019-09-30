@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Exposes functionality to query the Azure AD Graph.
+/// Exposes functionality to query Azure AD.
 /// </summary>
 codeunit 9012 "Azure AD Graph"
 {
@@ -14,7 +14,7 @@ codeunit 9012 "Azure AD Graph"
         AzureADGraphImpl: Codeunit "Azure AD Graph Impl.";
 
     /// <summary>
-    /// Gets the user with the specified user principal name from the Azure AD Graph API.
+    /// Gets the user with the specified user principal name from Azure AD.
     /// </summary>
     /// <param name="UserPrincipalName">The user principal name.</param>
     /// <param name="UserInfo">The user to return.</param>
@@ -25,7 +25,7 @@ codeunit 9012 "Azure AD Graph"
     end;
 
     /// <summary>
-    /// Gets the current user from the Azure AD Graph API.
+    /// Gets the current user from Azure AD.
     /// </summary>
     /// <param name="UserInfo">The user to return.</param>
     [Scope('OnPrem')]
@@ -35,7 +35,7 @@ codeunit 9012 "Azure AD Graph"
     end;
 
     /// <summary>
-    /// Gets the user with the specified authorization email from the Azure AD Graph API.
+    /// Gets the user with the specified authorization email from Azure AD.
     /// </summary>
     /// <param name="AuthorizationEmail">The user's authorization email.</param>
     /// <param name="UserInfo">The user to return.</param>
@@ -46,7 +46,7 @@ codeunit 9012 "Azure AD Graph"
     end;
 
     /// <summary>
-    /// Gets the user with the specified object ID from the Azure AD Graph API.
+    /// Gets the user with the specified object ID from Azure AD.
     /// </summary>
     /// <param name="ObjectId">The object ID assigned to the user.</param>
     /// <param name="UserInfo">The user to return.</param>
@@ -57,7 +57,7 @@ codeunit 9012 "Azure AD Graph"
     end;
 
     /// <summary>
-    /// Tries to return the user with the specified object ID from the Azure AD Graph API.
+    /// Tries to return the user with the specified object ID from Azure AD.
     /// </summary>
     /// <param name="ObjectId">The object ID assigned to the user.</param>
     /// <param name="UserInfo">The user to return.</param>
@@ -69,7 +69,7 @@ codeunit 9012 "Azure AD Graph"
     end;
 
     /// <summary>
-    /// Gets the assigned plans for the specified user from the Azure AD Graph API.
+    /// Gets the assigned plans for the specified user from Azure AD.
     /// </summary>
     /// <param name="UserInfo">The user.</param>
     /// <param name="UserAssignedPlans">The assigned plans for the user.</param>
@@ -80,7 +80,7 @@ codeunit 9012 "Azure AD Graph"
     end;
 
     /// <summary>
-    /// Gets the roles assigned to the user from the Azure AD Graph API.
+    /// Gets the roles assigned to the user from Azure AD.
     /// </summary>
     /// <param name="UserInfo">The user for whom to retrieve the roles.</param>
     /// <param name="UserRoles">The user's roles.</param>
@@ -101,7 +101,7 @@ codeunit 9012 "Azure AD Graph"
     end;
 
     /// <summary>
-    /// Gets the directory roles from the Azure AD Graph API.
+    /// Gets the directory roles from Azure AD.
     /// </summary>
     /// <param name="DirectoryRoles">The directory roles to return.</param>
     [Scope('OnPrem')]
@@ -111,7 +111,7 @@ codeunit 9012 "Azure AD Graph"
     end;
 
     /// <summary>
-    /// Gets details about the tenant from the Azure AD Graph API.
+    /// Gets details about the tenant from Azure AD.
     /// </summary>
     /// <param name="TenantInfo">The tenant details to return.</param>
     [Scope('OnPrem')]
@@ -139,7 +139,11 @@ codeunit 9012 "Azure AD Graph"
     begin
         AzureADGraphImpl.SetTestInProgress(TestInProgress);
     end;
-
+	
+    /// <summary>
+    /// Publishes an event that is used to initialize the Azure AD Graph.
+    /// </summary>
+    /// <param name="GraphQuery">The graph that the Azure AD Graph will be initialized with.</param>
     [IntegrationEvent(false, false)]
     [Scope('OnPrem')]
     internal procedure OnInitialize(var GraphQuery: DotNet GraphQuery)

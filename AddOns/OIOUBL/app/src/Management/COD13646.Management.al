@@ -6,11 +6,24 @@
 codeunit 13646 "OIOUBL-Management"
 {
     var
+        FileManagement: Codeunit "File Management";
+        OIOUBLFormatNameTxt: Label 'OIOUBL', Locked = true;
+        InvoiceDocTypeTxt: Label 'Invoice';
+        CrMemoDocTypeTxt: Label 'Credit Memo';
         XmlFilterTxt: Label 'XML File(*.xml)|*.xml', Locked = true;
+        ZipArchiveFilterTxt: Label 'Zip File (*.zip)|*.zip', Locked = true;
+        ZipArchiveSaveDialogTxt: Label 'Export OIOUBL archive';
+
+    procedure ClearRecordExportBuffer()
+    var
+        RecordExportBuffer: Record "Record Export Buffer";
+    begin
+        RecordExportBuffer.SetRange("OIOUBL-User ID", UserId());
+        RecordExportBuffer.DeleteAll();
+    end;
 
     procedure ExportXMLFile(DocNo: Code[20]; SourceFile: Text[1024]; FolderPath: Text);
     var
-        FileManagement: Codeunit 419;
         OIOUBLFileEvents: Codeunit "OIOUBL-File Events";
         FilePath: Text;
         FileName: Text;
@@ -30,6 +43,50 @@ codeunit 13646 "OIOUBL-Management"
             FileManagement.CopyClientFile(FilePath, STRSUBSTNO('%1\%2', FolderPath, FileName), true);
         end else
             DOWNLOAD(SourceFile, '', FolderPath, XmlFilterTxt, FileName);
+    end;
+
+    procedure GetOIOUBLElectronicDocumentFormatCode(): Code[20];
+    var
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+    begin
+        ElectronicDocumentFormat.SetFilter(Code, OIOUBLFormatNameTxt);
+        if ElectronicDocumentFormat.FindFirst() then
+            exit(ElectronicDocumentFormat.Code);
+
+        exit('');
+    end;
+
+    procedure GetDocumentExportPath(RecRef: RecordRef): Text[250];
+    var
+        SalesSetup: Record "Sales & Receivables Setup";
+        ServiceSetup: Record "Service Mgt. Setup";
+    begin
+        SalesSetup.Get();
+        ServiceSetup.Get();
+        case RecRef.Number() of
+            Database::"Sales Invoice Header":
+                exit(SalesSetup."OIOUBL-Invoice Path");
+            Database::"Sales Cr.Memo Header":
+                exit(SalesSetup."OIOUBL-Cr. Memo Path");
+            Database::"Service Invoice Header":
+                exit(ServiceSetup."OIOUBL-Service Invoice Path");
+            Database::"Service Cr.Memo Header":
+                exit(ServiceSetup."OIOUBL-Service Cr. Memo Path");
+            else
+                exit('');
+        end;
+    end;
+
+    procedure GetDocumentType(RecRef: RecordRef): Text[50];
+    begin
+        case RecRef.Number() of
+            Database::"Sales Invoice Header", Database::"Service Invoice Header":
+                exit(InvoiceDocTypeTxt);
+            Database::"Sales Cr.Memo Header", Database::"Service Cr.Memo Header":
+                exit(CrMemoDocTypeTxt);
+            else
+                exit('');
+        end;
     end;
 
     procedure IsOIOUBLCheckRequired(GLN: Code[13]; CustomerNo: Code[20]): Boolean;
@@ -56,9 +113,27 @@ codeunit 13646 "OIOUBL-Management"
     procedure IsOIOUBLSendingProfile(DocumentSendingProfile: Record 60): Boolean;
     begin
         exit(
-          (DocumentSendingProfile."Electronic Format" = 'OIOUBL') OR
-          (DocumentSendingProfile."E-Mail Format" = 'OIOUBL') OR
-          (DocumentSendingProfile."Disk Format" = 'OIOUBL'));
+          (DocumentSendingProfile."Electronic Format" = OIOUBLFormatNameTxt) OR
+          (DocumentSendingProfile."E-Mail Format" = OIOUBLFormatNameTxt) OR
+          (DocumentSendingProfile."Disk Format" = OIOUBLFormatNameTxt));
+    end;
+
+    procedure UpdateRecordExportBuffer(RecID: RecordID; ServerFilePath: Text[250]; ClientFileName: Text[250]);
+    var
+        RecordExportBuffer: Record "Record Export Buffer";
+    begin
+        if RecordExportBuffer.IsEmpty() then
+            exit;
+
+        RecordExportBuffer.SetRange(RecordID, RecID);
+        RecordExportBuffer.SetRange("OIOUBL-User ID", UserId());
+        RecordExportBuffer.SetFilter("Electronic Document Format", '');
+        if RecordExportBuffer.FindFirst() then begin
+            RecordExportBuffer.ServerFilePath := ServerFilePath;
+            RecordExportBuffer.ClientFileName := ClientFileName;
+            RecordExportBuffer."Electronic Document Format" := GetOIOUBLElectronicDocumentFormatCode();
+            RecordExportBuffer.Modify();
+        end;
     end;
 
     procedure WriteLogSalesInvoice(SalesInvoiceHeader: Record "Sales Invoice Header")
@@ -90,6 +165,48 @@ codeunit 13646 "OIOUBL-Management"
             SegManagement.LogDocument(
                             6, "No.", 0, 0, DATABASE::Customer, "Sell-to Customer No.", "Salesperson Code",
                             "Campaign No.", "Posting Description", '');
+    end;
+
+    procedure ZipMultipleXMLFilesInServerFolder(var RecordExportBuffer: Record "Record Export Buffer") ZipFilePath: Text;
+    var
+        OIOUBLFileEvents: Codeunit "OIOUBL-File Events";
+        DataCompression: Codeunit "Data Compression";
+        EntryTempBlob: Codeunit "Temp Blob";
+        EntryFileInStream: InStream;
+        ZipOutStream: OutStream;
+        ZipFile: File;
+    begin
+        if RecordExportBuffer.IsEmpty() then
+            exit;
+
+        DataCompression.CreateZipArchive();
+        RecordExportBuffer.FindSet();
+        repeat
+            FileManagement.BLOBImportFromServerFile(EntryTempBlob, RecordExportBuffer.ServerFilePath);
+            EntryTempBlob.CreateInStream(EntryFileInStream);
+            DataCompression.AddEntry(EntryFileInStream, RecordExportBuffer.ClientFileName);
+            FileManagement.DeleteServerFile(RecordExportBuffer.ServerFilePath);
+        until RecordExportBuffer.Next() = 0;
+
+        ZipFilePath := FileManagement.ServerTempFileName('zip');
+        ZipFile.WriteMode(true);
+        ZipFile.Create(ZipFilePath);
+        ZipFile.CreateOutStream(ZipOutStream);
+        DataCompression.SaveZipArchive(ZipOutStream);
+        DataCompression.CloseZipArchive();
+        ZipFile.Close();
+
+        OIOUBLFileEvents.FileCreated(ZipFilePath);
+    end;
+
+    procedure DownloadZipFile(ServerZipFilePath: Text; ClientZipFolder: Text; ClientZipFileName: Text);
+    var
+        TempBlob: Codeunit "Temp Blob";
+        ZipInStream: InStream;
+    begin
+        FileManagement.BLOBImportFromServerFile(TempBlob, ServerZipFilePath);
+        TempBlob.CreateInStream(ZipInStream);
+        DownloadFromStream(ZipInStream, ZipArchiveSaveDialogTxt, ClientZipFolder, ZipArchiveFilterTxt, ClientZipFileName);
     end;
 
     [IntegrationEvent(true, false)]

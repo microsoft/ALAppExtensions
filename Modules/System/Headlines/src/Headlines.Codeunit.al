@@ -58,10 +58,10 @@ codeunit 1439 Headlines
     /// <summary>
     /// Get a greeting text for the current user relevant to the time of the day.
     /// Timespans and correspondant greetings:
-    /// 00:00-10:59     Good morning, <user name>!
-    /// 11:00-13:59     Hi, <user name>!
-    /// 14:00-18:59     Good afternoon, <user name>!
-    /// 19:00-23:59     Good evening, <user name>!
+    /// 00:00-10:59     Good morning, John Doe!
+    /// 11:00-13:59     Hi, John Doe!
+    /// 14:00-18:59     Good afternoon, John Doe!
+    /// 19:00-23:59     Good evening, John Doe!
     /// if the user name is blank for the current user, simplified version 
     /// is used (for example, "Good afternoon!").
     /// </summary>

@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// A Page that allows the user to enter a password.
+/// </summary>
 page 9810 "Password Dialog"
 {
     Extensible = false;
@@ -92,6 +95,10 @@ page 9810 "Password Dialog"
         RequiresPasswordValidation: Boolean;
         RequiresPasswordConfirmation: Boolean;
 
+    /// <summary>
+    /// Gets the password value typed on the page.
+    /// </summary>
+    /// <returns>The password value typed on the page.</returns>
     [Scope('OnPrem')]
     procedure GetPasswordValue(): Text
     begin
@@ -101,6 +108,10 @@ page 9810 "Password Dialog"
         exit('');
     end;
 
+    /// <summary>
+    /// Gets the old password value typed on the page.
+    /// </summary>
+    /// <returns>The old password typed on the page.</returns>
     [Scope('OnPrem')]
     procedure GetOldPasswordValue(): Text
     begin
@@ -110,18 +121,27 @@ page 9810 "Password Dialog"
         exit('');
     end;
 
+    /// <summary>
+    /// Enables the Change password mode, it makes the old password field on the page visible.
+    /// </summary>
     [Scope('OnPrem')]
     procedure EnableChangePassword()
     begin
         ShowOldPassword := true;
     end;
 
+    /// <summary>
+    /// Disables any password validation.
+    /// </summary>
     [Scope('OnPrem')]
     procedure DisablePasswordValidation()
     begin
         RequiresPasswordValidation := false;
     end;
 
+    /// <summary>
+    /// Disables any password confirmation, it makes the Confirm Password field on the page hidden.
+    /// </summary>
     [Scope('OnPrem')]
     procedure DisablePasswordConfirmation()
     begin

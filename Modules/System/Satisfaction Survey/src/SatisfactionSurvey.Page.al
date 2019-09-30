@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays the satisfaction survey dialog box.
+/// </summary>
 page 1433 "Satisfaction Survey"
 {
     Extensible = false;
@@ -14,7 +17,7 @@ page 1433 "Satisfaction Survey"
     {
         area(content)
         {
-            usercontrol(WebPageViewer; "Microsoft.Dynamics.Nav.Client.WebPageViewer")
+            usercontrol(SatisfactionSurvey; "Microsoft.Dynamics.Nav.Client.SatisfactionSurvey")
             {
                 ApplicationArea = All;
 
@@ -51,8 +54,8 @@ page 1433 "Satisfaction Survey"
         Url := SatisfactionSurveyImpl.GetRenderUrl();
         if Url = '' then
             exit;
-        CurrPage.WebPageViewer.SubscribeToEvent('message', Url);
-        CurrPage.WebPageViewer.Navigate(Url);
+        CurrPage.SatisfactionSurvey.SubscribeToEvent('message', Url);
+        CurrPage.SatisfactionSurvey.Navigate(Url);
     end;
 }
 

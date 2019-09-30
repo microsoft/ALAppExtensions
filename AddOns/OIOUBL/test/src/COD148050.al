@@ -288,13 +288,13 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
     [Test]
     procedure SalesReceivablesSetupOIOUBLPathIsHiddenOnSaaS();
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         SalesReceivablesSetup: TestPage "Sales & Receivables Setup";
     begin
         // [FEATURE] [Sales Invoice] [UI] [SaaS]
         // [SCENARIO 212351] Group field OutputPaths Should be invisible on SaaS
 
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(TRUE);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(TRUE);
         SalesReceivablesSetup.OpenView();
         Assert.IsFalse(SalesReceivablesSetup."OIOUBL-Invoice Path".Visible(), 'Field OIOUBL-Invoice Path should be invisible');
         Assert.IsFalse(SalesReceivablesSetup."OIOUBL-Cr. Memo Path".Visible(), 'Field OIOUBL-Cr. Memo Path should be invisible');

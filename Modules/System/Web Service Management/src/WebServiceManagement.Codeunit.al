@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Provides methods for creating and modifying web services, accessing web service URLs, and getting and setting web service filters and clauses.
+/// </summary>
 codeunit 9750 "Web Service Management"
 {
     Access = Public;
@@ -222,5 +225,15 @@ codeunit 9750 "Web Service Management"
     procedure RemoveUnselectedColumnsFromFilter(var TenantWebService: Record "Tenant Web Service"; DataItem: Integer; DataItemView: Text): Text
     begin
         exit(WebServiceManagementImpl.RemoveUnselectedColumnsFromFilter(TenantWebService, DataItem, DataItemView));
+    end;
+
+    /// <summary> 
+    /// Checks if given service name is valid.
+    /// </summary>
+    /// <param name="Value">The service name to be checked.</param>
+    /// <returns>If given service name valid or not.</returns>
+    procedure IsServiceNameValid(Value: Text): Boolean
+    begin
+        exit(WebServiceManagementImpl.IsServiceNameValid(Value));
     end;
 }

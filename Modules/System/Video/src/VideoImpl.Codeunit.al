@@ -7,7 +7,7 @@ codeunit 3709 "Video Impl."
 {
     Access = Internal;
 
-    procedure InsertIntoBuffer(var ProductVideoBuffer: Record "Product Video Buffer"; AppID: Guid; Title: Text[250]; VideoUrl: Text[2048]; TableNum: Integer; SystemId: Guid)
+    procedure InsertIntoBuffer(var ProductVideoBuffer: Record "Product Video Buffer"; AppID: Guid; Title: Text[250]; VideoUrl: Text[2048]; TableNum: Integer; SystemId: Guid; Category: Enum "Video Category")
     var
         ProductVideoBuff: Record "Product Video Buffer";
         EntryNo: Integer;
@@ -30,6 +30,7 @@ codeunit 3709 "Video Impl."
         ProductVideoBuffer."Table Num" := TableNum;
         ProductVideoBuffer."System ID" := SystemId;
         ProductVideoBuffer."App ID" := AppID;
+        ProductVideoBuffer.Category := Category;
         ProductVideoBuffer.Insert();
     end;
 
@@ -39,6 +40,14 @@ codeunit 3709 "Video Impl."
     begin
         VideoLink.SetURL(Url);
         VideoLink.RunModal();
+    end;
+
+    procedure Show(Category: Enum "Video Category")
+    var
+        ProductVideos: Page "Product Videos";
+    begin
+        ProductVideos.SetSpecificCategory(Category);
+        ProductVideos.Run();
     end;
 
 }

@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Exposes functionality that allows users to classify their data.
+/// </summary>
 page 1752 "Data Classification Wizard"
 {
     Extensible = true;
@@ -449,6 +452,9 @@ page 1752 "Data Classification Wizard"
         ReviewSimilarFieldsErr: Label 'You must review the classifications for similar fields before you can continue.';
         ReviewFieldsErr: Label 'You must review the classifications for fields before you can continue.';
 
+    /// <summary>
+    /// Resets the buttons on the page, enabling and disabling them according to the current step.
+    /// </summary>	
     procedure ResetControls()
     var
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
@@ -479,7 +485,6 @@ page 1752 "Data Classification Wizard"
 
     local procedure RunDataClassificationWorksheetForTable()
     var
-        DataSensitivity: Record "Data Sensitivity";
         DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
     begin
         DataClassificationMgtImpl.RunDataClassificationWorksheetForTable("Table No.");
@@ -491,7 +496,6 @@ page 1752 "Data Classification Wizard"
 
     local procedure RunDataClassificationWorksheetForPersonalAndSensitiveDataInTable()
     var
-        DataSensitivity: Record "Data Sensitivity";
         DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
     begin
         DataClassificationMgtImpl.RunDataClassificationWorksheetForPersonalAndSensitiveDataInTable("Table No.");
@@ -501,6 +505,10 @@ page 1752 "Data Classification Wizard"
         CurrPage.Update();
     end;
 
+    /// <summary>
+    /// Queries on whether or not the Next button should be enabled.
+    /// </summary>	
+    /// <returns>True if the Next button should be enabled and false otherwise.</returns>
     procedure ShouldEnableNext(): Boolean
     begin
         exit(ImportModeSelected or ExpertModeSelected or ExportModeSelected);
@@ -516,6 +524,10 @@ page 1752 "Data Classification Wizard"
         NextEnabled := ShouldEnableNext();
     end;
 
+    /// <summary>
+    /// Selects the next step.
+    /// </summary>	
+    /// <param name="Backward">A boolean value that specifies if the next step should be to go back.</param>	
     procedure NextStep(Backward: Boolean)
     begin
         if Backward then begin
@@ -531,6 +543,9 @@ page 1752 "Data Classification Wizard"
         ResetControls();
     end;
 
+    /// <summary>
+    /// Displays errors if the preconditions for an action are not met.
+    /// </summary>		
     procedure CheckMandatoryActions()
     begin
         if Step = Step::"Verify Related Fields" then begin
@@ -545,46 +560,82 @@ page 1752 "Data Classification Wizard"
         end;
     end;
 
+    /// <summary>
+    /// Queries on whether the Next button is enabled.
+    /// </summary>			
+    /// <returns>True if the Next button is enabled and false otherwise.</returns>
     procedure IsNextEnabled(): Boolean
     begin
         exit(NextEnabled);
     end;
 
+    /// <summary>
+    /// Gets the current step.
+    /// </summary>			
+    /// <returns>The current step.</returns>	
     procedure GetStep(): Option
     begin
         exit(Step);
     end;
 
+    /// <summary>
+    /// Sets the current step.
+    /// </summary>	
+    /// <param name="StepValue">The new value of the current step.</param>	
     procedure SetStep(StepValue: Option)
     begin
         Step := StepValue;
     end;
 
+    /// <summary>
+    /// Queries on whether import mode is selected.
+    /// </summary>			
+    /// <returns>True if import mode is selected and false otherwise.</returns>		
     procedure IsImportModeSelected(): Boolean
     begin
         exit(ImportModeSelected);
     end;
 
+    /// <summary>
+    /// Queries on whether export mode is selected.
+    /// </summary>			
+    /// <returns>True if export mode is selected and false otherwise.</returns>		
     procedure IsExportModeSelected(): Boolean
     begin
         exit(ExportModeSelected);
     end;
 
+    /// <summary>
+    /// Queries on whether expert mode is selected.
+    /// </summary>			
+    /// <returns>True if expert mode is selected and false otherwise.</returns>		
     procedure IsExpertModeSelected(): Boolean
     begin
         exit(ExpertModeSelected);
     end;
 
+    /// <summary>
+    /// Gets the default classification for ledger entries.
+    /// </summary>			
+    /// <returns>The default classification for ledger entries.</returns>		
     procedure GetLedgerEntriesDefaultClassification(): Option
     begin
         exit(LedgerEntriesDefaultClassification);
     end;
 
+    /// <summary>
+    /// Gets the default classification for templates.
+    /// </summary>			
+    /// <returns>The default classification for templates.</returns>	
     procedure GetTemplatesDefaultClassification(): Option
     begin
         exit(TemplatesDefaultClassification);
     end;
 
+    /// <summary>
+    /// Gets the default classification for setup tables.
+    /// </summary>			
+    /// <returns>The default classification for setup tables.</returns>	
     procedure GetSetupTablesDefaultClassification(): Option
     begin
         exit(SetupTablesDefaultClassification);

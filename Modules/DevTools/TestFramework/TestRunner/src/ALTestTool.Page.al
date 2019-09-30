@@ -234,7 +234,7 @@ page 130451 "AL Test Tool"
                     var
                         TestSuiteMgt: Codeunit "Test Suite Mgt.";
                     begin
-                        TestSuiteMgt.SelectTestMethods(GlobalALTestSuite);
+                        TestSuiteMgt.LookupTestMethodsByRange(GlobalALTestSuite);
                         CurrPage.Update(false);
                     end;
                 }
@@ -256,7 +256,7 @@ page 130451 "AL Test Tool"
                     trigger OnAction()
                     var
                         TestSuiteMgt: Codeunit "Test Suite Mgt.";
-                        TestRunnerProgessDialog: Codeunit "Test Runner - Progess Dialog";
+                        TestRunnerProgessDialog: Codeunit "Test Runner - Progress Dialog";
                     begin
                         BindSubscription(TestRunnerProgessDialog);
                         TestSuiteMgt.RunTestSuiteSelection(Rec);

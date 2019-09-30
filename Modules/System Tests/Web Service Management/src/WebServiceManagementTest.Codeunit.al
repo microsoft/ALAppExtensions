@@ -1,4 +1,4 @@
-codeunit 139003 "Web Service Management Test"
+codeunit 139043 "Web Service Management Test"
 {
     Subtype = Test;
     TestPermissions = NonRestrictive;
@@ -83,7 +83,6 @@ codeunit 139003 "Web Service Management Test"
     procedure TestPublishedAppServiceWithMatchingPublishedTenantService()
     var
         WebService: Record "Web Service";
-        TenantWebService: Record "Tenant Web Service";
         WebServiceAggregate: Record "Web Service Aggregate";
     begin
         Initialize();
@@ -103,7 +102,6 @@ codeunit 139003 "Web Service Management Test"
     procedure TestPublishedAppServiceWithPublishedTenantService()
     var
         WebService: Record "Web Service";
-        TenantWebService: Record "Tenant Web Service";
         WebServiceAggregate: Record "Web Service Aggregate";
     begin
         Initialize();
@@ -131,7 +129,6 @@ codeunit 139003 "Web Service Management Test"
     procedure TestPublishedAppServiceWithNonPublishedTenantService()
     var
         WebService: Record "Web Service";
-        TenantWebService: Record "Tenant Web Service";
         WebServiceAggregate: Record "Web Service Aggregate";
     begin
         Initialize();
@@ -539,13 +536,13 @@ codeunit 139003 "Web Service Management Test"
     procedure TestCreateWebService()
     var
         WebService: Record "Web Service";
-        ObjectName: Label 'TestWebService';
+        ObjectNameLbl: Label 'TestWebService';
     begin
         Initialize();
-        WebServiceManagement.CreateTenantWebService(WebService."Object Type"::Page, Page::"Dummy Page", ObjectName, true);
+        WebServiceManagement.CreateTenantWebService(WebService."Object Type"::Page, Page::"Dummy Page", ObjectNameLbl, true);
 
-        if WebService.Get(WebService."Object Type"::Page, ObjectName) then
-            Assert.IsTrue(WebService.Published, ObjectName + ' web service record "Published" field should be checked.');
+        if WebService.Get(WebService."Object Type"::Page, ObjectNameLbl) then
+            Assert.IsTrue(WebService.Published, ObjectNameLbl + ' web service record "Published" field should be checked.');
     end;
 
     [Test]
@@ -553,13 +550,13 @@ codeunit 139003 "Web Service Management Test"
     procedure TestCreateTenantWebService()
     var
         TenantWebService: Record "Tenant Web Service";
-        ObjectName: Label 'TestTenantWebService';
+        ObjectNameLbl: Label 'TestTenantWebService';
     begin
         Initialize();
-        WebServiceManagement.CreateTenantWebService(TenantWebService."Object Type"::Page, Page::"Dummy Page", ObjectName, true);
+        WebServiceManagement.CreateTenantWebService(TenantWebService."Object Type"::Page, Page::"Dummy Page", ObjectNameLbl, true);
 
-        if TenantWebService.Get(TenantWebService."Object Type"::Page, ObjectName) then
-            Assert.IsTrue(TenantWebService.Published, ObjectName + ' tenant web service record "Published" field should be checked.');
+        if TenantWebService.Get(TenantWebService."Object Type"::Page, ObjectNameLbl) then
+            Assert.IsTrue(TenantWebService.Published, ObjectNameLbl + ' tenant web service record "Published" field should be checked.');
     end;
 
     local procedure VerifyUrlHasServiceName(Url: Text; ServiceName: Text[240])

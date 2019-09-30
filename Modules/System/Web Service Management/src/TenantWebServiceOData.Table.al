@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Contains tenant web service OData clause entities.
+/// </summary>
 table 6710 "Tenant Web Service OData"
 {
     Caption = 'Tenant Web Service OData';

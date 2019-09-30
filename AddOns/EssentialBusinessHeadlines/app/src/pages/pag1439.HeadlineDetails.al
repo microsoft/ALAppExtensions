@@ -27,6 +27,7 @@ page 1439 "Headline Details"
                         Customer: Record Customer;
                         Item: Record Item;
                         Resource: Record Resource;
+                        SalesLine: Record "Sales Line";
                     begin
                         if IsHeadlineCustomerRelatedWithAmount then begin
                             if Customer.Get("No.") then
@@ -134,7 +135,6 @@ page 1439 "Headline Details"
     end;
 
     var
-        SalesLine: Record "Sales Line";
         ProductType: Option;
         IsHeadlineCustomerRelatedWithAmount: Boolean;
         AmountCaptionToUse: Text;

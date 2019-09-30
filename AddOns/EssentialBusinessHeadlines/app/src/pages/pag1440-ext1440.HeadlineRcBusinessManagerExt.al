@@ -51,7 +51,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
 
             group(TopCustomerVisible)
             {
-                Visible = TopCustomerVisible;
+                Visible = IsTopCustomerVisible;
                 Editable = false;
                 ShowCaption = false;
 
@@ -190,7 +190,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                         LargestSaleVisible, LargestSaleText,
                         SalesIncreaseVisible, SalesIncreaseText,
                         BusiestResourceVisible, BusiestResourceText,
-                        TopCustomerVisible, TopCustomerText,
+                        IsTopCustomerVisible, TopCustomerText,
                         RecentlyOverdueInvoicesVisible, RecentlyOverdueInvoicesText);
         OnSetVisibilityOpenVATReturn(OpenVATReturnVisible, OpenVATReturnText);
         OnSetVisibilityOverdueVATReturn(OverdueVATReturnVisible, OverdueVATReturnText);
@@ -244,7 +244,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
         BusiestResourceText: Text[250];
 
         [InDataSet]
-        TopCustomerVisible: Boolean;
+        IsTopCustomerVisible: Boolean;
         [InDataSet]
         TopCustomerText: Text[250];
 

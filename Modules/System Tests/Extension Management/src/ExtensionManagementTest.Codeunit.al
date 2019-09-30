@@ -20,7 +20,6 @@ codeunit 133100 "Extension Management Test"
         Assert: Codeunit "Library Assert";
         MainAppId: Guid;
         DependingAppId: Guid;
-        IsInitialized: Boolean;
         NotInstalledSuccErr: Label 'Extension was not installed succesfully';
         NotUninstalledSuccErr: Label 'Extension has not been uninstalled succesfully';
         MainExtNotInstalledSuccErr: Label 'The extension the current extension is depending on was not installed succesfully';

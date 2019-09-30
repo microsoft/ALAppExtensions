@@ -23,14 +23,14 @@ codeunit 2202 "Azure Key Vault Impl."
         NoSecretsErr: Label 'The key vault did not have any secrets that are allowed to be fetched.';
         AllowedApplicationSecretsSecretNotFetchedMsg: Label 'The list of allowed secret names could not be fetched.', Locked = true;
         AzureKeyVaultTxt: Label 'Azure Key Vault', Comment = '{LOCKED}';
-        InitializeAllowedSecretNamesFailed: Label 'Initialization of allowed secret names failed.';
+        InitializeAllowedSecretNamesErr: Label 'Initialization of allowed secret names failed.';
 
     procedure GetAzureKeyVaultSecret(SecretName: Text; var Secret: Text)
     begin
         // Gets the secret as a Text from the key vault, given a SecretName.
 
         if not InitializeAllowedSecretNames() then
-            Error(InitializeAllowedSecretNamesFailed);
+            Error(InitializeAllowedSecretNamesErr);
 
         if not IsSecretNameAllowed(SecretName) then
             Error(SecretNotFoundErr, SecretName);

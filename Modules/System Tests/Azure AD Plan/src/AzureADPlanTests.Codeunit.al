@@ -274,9 +274,7 @@ codeunit 132912 "Azure AD Plan Tests"
         LibraryAssert.AreEqual(1, AzureADPlan.GetAvailablePlansCount(), 'The Plan table should have only 1 Plan');
     end;
 
-    local procedure PopulateMockGraph(GraphUser: DotNet UserInfo; PlanId: Guid;
-                                                     PlanName: Text;
-                                                     UserId: Guid)
+    local procedure PopulateMockGraph(GraphUser: DotNet UserInfo; PlanId: Guid; PlanName: Text; UserId: Guid)
     var
         MockGraphQuery: DotNet MockGraphQuery;
     begin
@@ -291,9 +289,7 @@ codeunit 132912 "Azure AD Plan Tests"
         GraphUser.ObjectId := UserId;
     end;
 
-    local procedure AddUserPlan(var MockGraphQuery: DotNet MockGraphQuery; GraphUser: DotNet UserInfo;
-                                                        PlanId: Guid;
-                                                        PlanName: Text)
+    local procedure AddUserPlan(var MockGraphQuery: DotNet MockGraphQuery; GraphUser: DotNet UserInfo; PlanId: Guid; PlanName: Text)
     var
         AssignedPlan: DotNet ServicePlanInfo;
     begin
