@@ -1,18 +1,15 @@
 # Introduction
-This module contains all pages that are used by assisted setup guides in Business Central. Assisted setup guides provide step-by-step guidance that helps simplify the process of setting up complex features. 
-
-# What has been done
-We have combined the assisted setup capabilities that already existed in Business Central in this module. If your extension provides setup assistance through a guide, you can add that guide to Assisted Setup for easy discoverability.  
+This module contains all pages that are used by assisted setup guides in Business Central. Assisted setup guides provide step-by-step guidance that helps simplify the process of setting up complex features. If your extension provides setup assistance through a guide, you can add that guide to Assisted Setup for easy discoverability.  
  
 The Assisted Setup module provides capabilities for:
- - Adding an assisted setup guide for a given extension, page ID, an optional video link that explains the feature, and a help link where the user can read more about it. 
+ - Adding an assisted setup guide for a given extension, a page ID, an optional video link that explains the feature, and a help link where the user can read more about it. 
  - Adding a translation for the name of the setup record. This is helpful when the extension is available in multiple languages. 
  - Checking whether a user has already completed the steps in an assisted setup guide. 
  - Completing an assisted setup guide, typically from the guide itself when the user clicks Finish. 
  - Running an assisted setup guide page that takes the user through the various steps to set up an extension. 
 
 # Usage example
-The Base Application adds quite a few assisted setup guides by subscribing to the OnRegister event. In the following example, the Data Migration Wizard is being added to the Assisted Setup through the API exposed for the module. See the details for codeunit 1814 ìAssisted Setup Subscribers,î which shows that the Data Migration Wizard, is added along with a video and a link to more information. Also, the English (United States) translation for the name is added. 
+The Base Application adds quite a few assisted setup guides by subscribing to the OnRegister event. In the following example, the Data Migration Wizard is being added to the Assisted Setup through the API exposed for the module. See the details for codeunit 1814 ‚ÄúAssisted Setup Subscribers,‚Äù which shows that the Data Migration Wizard, is added along with a video and a link to more information. Also, the English (United States) translation for the name is added. 
 ```
         CurrentGlobalLanguage := GLOBALLANGUAGE; 
         // Getting Started 
