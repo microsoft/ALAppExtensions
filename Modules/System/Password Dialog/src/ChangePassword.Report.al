@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Report to change the current user's login password for OnPrem scenarios.
+/// </summary>
 report 9810 "Change Password"
 {
     ProcessingOnly = true;

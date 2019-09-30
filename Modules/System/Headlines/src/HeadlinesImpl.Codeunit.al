@@ -8,10 +8,15 @@ codeunit 1470 "Headlines Impl."
     Access = Internal;
 
     var
-        MorningGreetingTxt: Label 'Good morning, %1!', Comment = 'Displayed between 00:00 and 10:59. %1 is the user name.';
-        NoonGreetingTxt: Label 'Hi, %1!', Comment = 'Displayed between 11:00 and 13:59. %1 is the user name.';
-        AfternoonGreetingTxt: Label 'Good afternoon, %1!', Comment = 'Displayed between 14:00 and 18:59. %1 is the user name.';
-        EveningGreetingTxt: Label 'Good evening, %1!', Comment = 'Displayed between 19:00 and 23:59. %1 is the user name.';
+        MorningGreetingWithUsernameTxt: Label 'Good morning, %1!', Comment = 'Displayed between 00:00 and 10:59. %1 is the user name.';
+        NoonGreetingWithUsernameTxt: Label 'Hi, %1!', Comment = 'Displayed between 11:00 and 13:59. %1 is the user name.';
+        AfternoonGreetingWithUsernameTxt: Label 'Good afternoon, %1!', Comment = 'Displayed between 14:00 and 18:59. %1 is the user name.';
+        EveningGreetingWithUsernameTxt: Label 'Good evening, %1!', Comment = 'Displayed between 19:00 and 23:59. %1 is the user name.';
+
+        MorningGreetingWithoutUsernameTxt: Label 'Good morning!', Comment = 'Displayed between 00:00 and 10:59.';
+        NoonGreetingWithoutUsernameTxt: Label 'Hi!', Comment = 'Displayed between 11:00 and 13:59.';
+        AfternoonGreetingWithoutUsernameTxt: Label 'Good afternoon!', Comment = 'Displayed between 14:00 and 18:59.';
+        EveningGreetingWithoutUsernameTxt: Label 'Good evening!', Comment = 'Displayed between 19:00 and 23:59.';
 
     procedure Truncate(TextToTruncate: Text; MaxLength: Integer): Text;
     var
@@ -79,27 +84,38 @@ codeunit 1470 "Headlines Impl."
 
     procedure GetUserGreetingTextInternal(UserName: Text[80]; CurrentTimeOfDay: Time): Text;
     var
-        GreetingText: Text;
+        GreetingTextWithUsername: Text;
+        GreetingTextWithoutUsername: Text;
     begin
         case CurrentTimeOfDay of
             000000T .. 105959T:
-                GreetingText := MorningGreetingTxt;
+                begin
+                    GreetingTextWithUsername := MorningGreetingWithUsernameTxt;
+                    GreetingTextWithoutUsername := MorningGreetingWithoutUsernameTxt;
+                end;
             110000T .. 135959T:
-                GreetingText := NoonGreetingTxt;
+                begin
+                    GreetingTextWithUsername := NoonGreetingWithUsernameTxt;
+                    GreetingTextWithoutUsername := NoonGreetingWithoutUsernameTxt;
+                end;
             140000T .. 185959T:
-                GreetingText := AfternoonGreetingTxt;
+                begin
+                    GreetingTextWithUsername := AfternoonGreetingWithUsernameTxt;
+                    GreetingTextWithoutUsername := AfternoonGreetingWithoutUsernameTxt;
+                end;
             190000T .. 235959T:
-                GreetingText := EveningGreetingTxt;
+                begin
+                    GreetingTextWithUsername := EveningGreetingWithUsernameTxt;
+                    GreetingTextWithoutUsername := EveningGreetingWithoutUsernameTxt;
+                end;
         end;
 
         // check if the UserName is empty or contains only spaces
         if (UserName = '') OR (DelChr(UserName, '=') = '') then
-            // remove UserName from the greeting
-            GreetingText := DelStr(GreetingText, StrPos(GreetingText, ','), StrLen(', %1'))
-        else
-            GreetingText := StrSubstNo(GreetingText, UserName);
+            exit(GreetingTextWithoutUsername);
 
-        exit(GreetingText);
+        GreetingTextWithUsername := StrSubstNo(GreetingTextWithUsername, UserName);
+        exit(GreetingTextWithUsername);
     end;
 
     procedure ShouldUserGreetingBeVisible(): Boolean;

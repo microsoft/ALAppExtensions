@@ -71,7 +71,7 @@ codeunit 135038 "Video Test"
         MyVideoSource.Insert();
         SourceVideoTableNum := Database::"My Video Source";
         SourceVideoSystemID := MyVideoSource.SystemId;
-        Sender.Register(EmptyGuid, 'My Video', UrlTxt, SourceVideoTableNum, SourceVideoSystemID);
+        Sender.Register(EmptyGuid, 'My Video', UrlTxt, "Video Category"::Uncategorized, SourceVideoTableNum, SourceVideoSystemID);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::Video, 'OnVideoPlayed', '', false, false)]

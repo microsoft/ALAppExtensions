@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Contains web services aggregated from Web Services and Tenant Web Services.
+/// </summary>
 table 9900 "Web Service Aggregate"
 {
     Caption = 'Web Service Aggregate';

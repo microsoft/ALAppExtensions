@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays the extension logo.
+/// </summary>
 page 2506 "Extension Logo Part"
 {
     Extensible = false;

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -120,13 +120,13 @@ codeunit 135035 "User Selection Test"
     [Test]
     procedure ExternalUsersAreNotVisibleTest()
     var
-        EnvironmentInformation: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         UserLookup: TestPage "User Lookup";
     begin
         // [SCENARIO] External users are not visible on the Lookup page.
         // [GIVEN] There are some users in the system
         Initialize();
-        EnvironmentInformation.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
         // [WHEN] User Lookup page opens
         UserLookup.OpenView();
@@ -136,7 +136,7 @@ codeunit 135035 "User Selection Test"
             Assert.AreNotEqual(UserLookup."User Name".Value(), 'EXTERNAL', 'External user should have been hidden.');
         until not UserLookup.Next();
 
-        EnvironmentInformation.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
 
     [ModalPageHandler]

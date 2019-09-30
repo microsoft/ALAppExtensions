@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the Essential Business Headlines extension.",
     "description":  "Tests for the Essential Business Headlines extension.",
-    "version":  "15.0.0.0",
+    "version":  "16.0.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
@@ -12,34 +12,44 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "2a89f298-7ffd-44a5-a7ce-e08dac98abce",
-                             "publisher":  "Microsoft",
+                             "id":  "2a89f298-7ffd-44a5-a7ce-e08dac98abce",
                              "name":  "Essential Business Headlines",
-                             "version":  "15.0.0.0"
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
+                             "id":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
+                             "name":  "Base Application",
                              "publisher":  "Microsoft",
-                             "name":  "BaseApp",
-                             "version":  "15.0.0.0"
+                             "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "publisher":  "Microsoft",
+                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
-                             "version":  "15.0.0.0"
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
-                             "publisher":  "Microsoft",
+                             "id":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
                              "name":  "System Application",
-                             "version":  "15.0.0.0"
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "11.0.0.0",
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  139500,
+                         "to":  139899
+                     },
+                     {
+                         "from":  148000,
+                         "to":  148499
+                     }
+                 ],
     "target":  "OnPrem",
     "showMyCode":  false
 }

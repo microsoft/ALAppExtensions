@@ -16,7 +16,7 @@ codeunit 135205 "Azure Key Vault Test"
     var
         Assert: Codeunit "Library Assert";
         SecretNotFoundErr: Label '%1 is not an application secret.', Comment = '%1 = Secret Name.';
-        SecretNotInitialized: Label 'Initialization of allowed secret names failed';
+        SecretNotInitializedTxt: Label 'Initialization of allowed secret names failed';
         AllowedApplicationSecretsSecretNameTxt: Label 'AllowedApplicationSecrets', Locked = true;
 
     [Test]
@@ -132,6 +132,6 @@ codeunit 135205 "Azure Key Vault Test"
 
         // [THEN] The secret is no longer accessible and an error is thrown
         asserterror AzureKeyVault.GetAzureKeyVaultSecret('somesecret', Secret);
-        Assert.ExpectedError(StrSubstNo(SecretNotInitialized, 'somesecret'));
+        Assert.ExpectedError(SecretNotInitializedTxt);
     end;
 }

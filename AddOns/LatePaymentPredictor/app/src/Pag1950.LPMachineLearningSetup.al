@@ -97,7 +97,7 @@ page 1950 "LP Machine Learning Setup"
                     trigger OnValidate();
                     begin
                         if (ApiURIText <> '') and (not EncryptionEnabled()) then
-                            if Confirm(EncryptionManagement.GetEncryptionIsnotActivatedQst()) then
+                            if Confirm(CryptographyManagement.GetEncryptionIsnotActivatedQst()) then
                                 Page.RunModal(Page::"Data Encryption Management");
                         if ApiKeyText <> '' then
                             CheckCustomCredentialsAreSet();
@@ -113,7 +113,7 @@ page 1950 "LP Machine Learning Setup"
                     trigger OnValidate();
                     begin
                         if (ApiKeyText <> '') and (not EncryptionEnabled()) then
-                            if Confirm(EncryptionManagement.GetEncryptionIsnotActivatedQst()) then
+                            if Confirm(CryptographyManagement.GetEncryptionIsnotActivatedQst()) then
                                 Page.RunModal(Page::"Data Encryption Management");
                         if ApiURIText <> '' then
                             CheckCustomCredentialsAreSet();
@@ -282,7 +282,7 @@ page 1950 "LP Machine Learning Setup"
 
     var
         AzureAIUsage: Record "Azure AI Usage";
-        EncryptionManagement: Codeunit "Encryption Management";
+        CryptographyManagement: Codeunit "Cryptography Management";
         CustomModelExists: Boolean;
         ModelQuality: Decimal;
         ApiURIText: Text[250];

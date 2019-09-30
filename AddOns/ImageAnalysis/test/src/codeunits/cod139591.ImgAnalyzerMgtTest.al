@@ -1,6 +1,6 @@
 // ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved. 
-// Licensed under the MIT License. See License.txt in the project root for license information. 
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
 codeunit 139591 "Img. Analyzer Mgt. Test"
@@ -10,7 +10,7 @@ codeunit 139591 "Img. Analyzer Mgt. Test"
 
     var
         Assert: Codeunit Assert;
-
+        ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
     trigger OnRun();
     begin
         // [FEATURE] [Image Analysis]
@@ -59,12 +59,12 @@ codeunit 139591 "Img. Analyzer Mgt. Test"
     procedure TestIsSaasAndCannotUseRelationshipMgmtFalse()
     var
         ImageAnalyzerExtMgt: Codeunit "Image Analyzer Ext. Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
     begin
         // [Scenario] When Not in a saas environment IsSaasAndCannotUseRelationshipMgmt should be false
 
         // [Given] Not in saas
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
 
         // [When]
 
@@ -77,13 +77,14 @@ codeunit 139591 "Img. Analyzer Mgt. Test"
     var
         ApplicationAreaSetup: Record "Application Area Setup";
         ImageAnalyzerExtMgt: Codeunit "Image Analyzer Ext. Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
     begin
         // [Scenario] When in a saas environment and no application area IsSaasAndCannotUseRelationshipMgmt should be false
 
         // [Given] In saas and no application area is setup
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         ApplicationAreaSetup.DeleteAll();
+        ApplicationAreaMgmtFacade.SetupApplicationArea();
 
         // [When]
 
@@ -96,18 +97,19 @@ codeunit 139591 "Img. Analyzer Mgt. Test"
     var
         ApplicationAreaSetup: Record "Application Area Setup";
         ImageAnalyzerExtMgt: Codeunit "Image Analyzer Ext. Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
     begin
         // [Scenario] When in a saas environment and is advanced experience IsSaasAndCannotUseRelationshipMgmt should be false
 
         // [Given] In saas and is advanced experience
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         ApplicationAreaSetup.DeleteAll();
         ApplicationAreaSetup."Company Name" := '';
         ApplicationAreaSetup."Profile ID" := '';
         ApplicationAreaSetup."User ID" := CopyStr(UserId(), 1, MaxStrLen(ApplicationAreaSetup."User ID"));
         ApplicationAreaSetup.Advanced := true;
         ApplicationAreaSetup.Insert();
+        ApplicationAreaMgmtFacade.SetupApplicationArea();
         // [When]
 
         // [Then] Function returns false
@@ -119,12 +121,12 @@ codeunit 139591 "Img. Analyzer Mgt. Test"
     var
         ApplicationAreaSetup: Record "Application Area Setup";
         ImageAnalyzerExtMgt: Codeunit "Image Analyzer Ext. Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
     begin
         // [Scenario] When in a saas environment and relationshipmgmt enabled IsSaasAndCannotUseRelationshipMgmt should be false
 
         // [Given] In saas and relationshipmgmt enabled
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         ApplicationAreaSetup.DeleteAll();
         ApplicationAreaSetup."Company Name" := '';
         ApplicationAreaSetup."Profile ID" := '';
@@ -132,6 +134,7 @@ codeunit 139591 "Img. Analyzer Mgt. Test"
         ApplicationAreaSetup.Basic := true;
         ApplicationAreaSetup."Relationship Mgmt" := true;
         ApplicationAreaSetup.Insert();
+        ApplicationAreaMgmtFacade.SetupApplicationArea();
 
         // [When]
 
@@ -144,18 +147,19 @@ codeunit 139591 "Img. Analyzer Mgt. Test"
     var
         ApplicationAreaSetup: Record "Application Area Setup";
         ImageAnalyzerExtMgt: Codeunit "Image Analyzer Ext. Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
     begin
         // [Scenario] When in a saas environment IsSaasAndCannotUseRelationshipMgmt should be false
 
         // [Given] In saas and only application area basic enabled (making advanced experience false and isAllDisabled false)
         ApplicationAreaSetup.DeleteAll();
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         ApplicationAreaSetup."Company Name" := '';
         ApplicationAreaSetup."Profile ID" := '';
         ApplicationAreaSetup."User ID" := CopyStr(UserId(), 1, MaxStrLen(ApplicationAreaSetup."User ID"));
         ApplicationAreaSetup.Basic := true;
         ApplicationAreaSetup.Insert();
+        ApplicationAreaMgmtFacade.SetupApplicationArea();
 
         // [When]
 

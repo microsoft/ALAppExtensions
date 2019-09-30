@@ -44,7 +44,7 @@ codeunit 9701 "Cues And KPIs"
     /// The computed cue style is returned by var.
     /// </summary>
     /// <param name="TableID">The ID of the table containing the field for which the style is wanted.</param>
-    /// <param name="FieldID">The ID of the field for which the style is wanted</param.>
+    /// <param name="FieldID">The ID of the field for which the style is wanted.</param>
     /// <param name="Amount">The amount for which the style will be calculated based on the threshold values of the setup.</param>
     /// <param name="FinalStyle">The amount for which the style will be calculated based on the threshold values of the setup</param>
     procedure SetCueStyle(TableID: Integer; FieldID: Integer; Amount: Decimal; var FinalStyle: enum "Cues And KPIs Style")
@@ -53,10 +53,21 @@ codeunit 9701 "Cues And KPIs"
     end;
 
     /// <summary>
+    /// Converts a Cues And KPIs Style enum to a style text.
+    /// Enum values 0,7,8,9,10 are defined by default, if custom values are needed take a look at OnConvertStyleToStyleText event.
+    /// <seealso cref="OnConvertStyleToStyleText"/>
+    /// <param name="CueStyle">A Cues And KPIs Style enum from which the style text will be converted.</param>
+    /// </summary>
+    procedure ConvertStyleToStyleText(CueStyle: enum "Cues And KPIs Style"): Text
+    begin
+        exit(CuesAndKPIsImpl.ConvertStyleToStyleText(CueStyle));
+    end;
+
+    /// <summary>
     /// Inserts cue setup data. The entries inserted via this method will have no value for the userid field.
     /// </summary>
     /// <param name="TableID">The ID of the table where the cue is defined.</param>
-    /// <param name="FieldID">The ID of the field which the cue is based on.</param.>
+    /// <param name="FieldID">The ID of the field which the cue is based on.</param>
     /// <param name="LowRangeStyle">A Cues And KPIs Style enum representing the style that cues which have a value under threshold 1 will take.</param>
     /// <param name="Threshold1">The lower amount which defines which style cues get based on their value</param>
     /// <param name="MiddleRangeStyle">A Cues And KPIs Style enum representing the style that cues which have a value over threshold 1 but under threshold 2 will take.</param>
@@ -68,5 +79,17 @@ codeunit 9701 "Cues And KPIs"
     begin
         exit(CuesAndKPIsImpl.InsertData(TableID, FieldNo, LowRangeStyle, Threshold1, MiddleRangeStyle, Threshold2, HighRangeStyle));
     end;
-}
 
+    /// <summary>
+    /// Event that is called to convert from the style enum to a text value in case of extended enum values.
+    /// Subscribe to this event if you want to introduce new cue styles.
+    /// </summary>
+    /// <param name="CueStyle">A Cues And KPIs Style enum from which the style text will be converted.</param>
+    /// <param name="Result">A text vaue returned by var, which is the result of the conversion from the style enum.</param>
+    /// <param name="Resolved">A boolean value that describes whether or not the custom conversion was executed.</param>
+    [IntegrationEvent(false, false)]
+    [Scope('OnPrem')]
+    internal procedure OnConvertStyleToStyleText(CueStyle: Enum "Cues And KPIs Style"; var Result: Text; var Resolved: Boolean)
+    begin
+    end;
+}

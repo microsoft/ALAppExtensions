@@ -264,7 +264,7 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         ImageAnalyzerSetup: Record "Image Analysis Setup";
         UserPermissions: Codeunit "User Permissions";
     begin
-        if not UserPermissions.IsSuper(UserSecurityId) then
+        if not UserPermissions.IsSuper(UserSecurityId()) then
             exit(false);
 
         if not MyNotifications.IsEnabled(GetSetupNotificationId()) then

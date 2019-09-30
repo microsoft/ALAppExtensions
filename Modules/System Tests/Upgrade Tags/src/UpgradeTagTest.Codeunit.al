@@ -20,7 +20,7 @@ codeunit 135092 "Upgrade Tag Test"
         // [Scenario] HasUpgradeTag should return false when upgrade tag is not set
 
         // [Given] Upgrade tag that does not exist
-        NonExistingUpgradeTag := Any.AlphanumericText(MaxStrLen(NonExistingUpgradeTag));
+        NonExistingUpgradeTag := CopyStr(Any.AlphanumericText(MaxStrLen(NonExistingUpgradeTag)), 1, MaxStrLen(NonExistingUpgradeTag));
 
         // [When] HasUpgradeTag is called for upgrade tag that is not set
         // [Then] HasUpgradeTag Should return true
@@ -39,7 +39,7 @@ codeunit 135092 "Upgrade Tag Test"
         // [Scenario] HasUpgradeTag should return true when upgrade tag is set by using SetUpgradeTag function
 
         // [Given] Any Upgrade tag
-        NewUpgradeTag := Any.AlphanumericText(MaxStrLen(NewUpgradeTag));
+        NewUpgradeTag := CopyStr(Any.AlphanumericText(MaxStrLen(NewUpgradeTag)), 1, MaxStrLen(NewUpgradeTag));
 
         // [When] SetUpgradeTag is called
         UpgradeTag.SetUpgradeTag(NewUpgradeTag);
@@ -54,7 +54,6 @@ codeunit 135092 "Upgrade Tag Test"
     var
         UpgradeTag: Codeunit "Upgrade Tag";
         SetAllUpgradeTagsMock: Codeunit "SetAllUpgradeTags Mock";
-        Assert: Codeunit "Library Assert";
         MockedPerCompanyUpgradeTags: List of [Code[250]];
         MockedPerDatabaseUpgradeTags: List of [Code[250]];
     begin
@@ -78,7 +77,6 @@ codeunit 135092 "Upgrade Tag Test"
     var
         UpgradeTag: Codeunit "Upgrade Tag";
         SetAllUpgradeTagsMock: Codeunit "SetAllUpgradeTags Mock";
-        Assert: Codeunit "Library Assert";
         MockedPerCompanyUpgradeTags: List of [Code[250]];
         MockedPerDatabaseUpgradeTags: List of [Code[250]];
     begin
@@ -119,10 +117,10 @@ codeunit 135092 "Upgrade Tag Test"
         I: Integer;
     begin
         for I := 1 To 10 do
-            MockedPerCompanyUpgradeTags.Add(Any.AlphanumericText(250));
+            MockedPerCompanyUpgradeTags.Add(CopyStr(Any.AlphanumericText(250), 1, 250));
 
         for I := 1 To 10 do
-            MockedPerDatabaseUpgradeTags.Add(Any.AlphanumericText(250));
+            MockedPerDatabaseUpgradeTags.Add(CopyStr(Any.AlphanumericText(250), 1, 250));
 
         SetAllUpgradeTagsMock.SetPerCompanyUpgradeTags(MockedPerCompanyUpgradeTags);
         SetAllUpgradeTagsMock.SetPerDatabaseUpgradeTags(MockedPerDatabaseUpgradeTags);

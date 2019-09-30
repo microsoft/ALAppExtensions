@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Exposes functionality that allows users to classify their data.
+/// </summary>
 page 1751 "Data Classification Worksheet"
 {
     Extensible = false;

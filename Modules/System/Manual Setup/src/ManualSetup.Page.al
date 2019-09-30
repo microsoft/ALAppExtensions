@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>This page shows all registered manual setups.</summary>
 page 1875 "Manual Setup"
 {
     Extensible = false;
@@ -74,12 +75,24 @@ page 1875 "Manual Setup"
         }
     }
 
+    var
+        ManualSetupCategory: Enum "Manual Setup Category";
+        FilterSet: Boolean;
+
     trigger OnOpenPage()
     var
         ManualSetup: Codeunit "Manual Setup";
     begin
         ManualSetup.OnRegisterManualSetup();
         ManualSetup.GetTemporaryRecord(Rec);
+        if FilterSet then
+            SetRange(Category, ManualSetupCategory);
+    end;
+
+    internal procedure SetCategoryToDisplay(ManualSetupCategoryValue: Enum "Manual Setup Category")
+    begin
+        FilterSet := true;
+        ManualSetupCategory := ManualSetupCategoryValue;
     end;
 }
 

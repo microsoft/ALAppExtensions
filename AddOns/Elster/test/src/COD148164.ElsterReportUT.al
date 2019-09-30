@@ -16,7 +16,6 @@ codeunit 148164 "Elster Report UT"
     var
         LibraryUTUtility: Codeunit "Library UT Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
-        LibraryRandom: Codeunit "Library - Random";
         Assert: Codeunit Assert;
 
     [Test]
@@ -29,15 +28,15 @@ codeunit 148164 "Elster Report UT"
     end;
 
     [Test]
-    [HandlerFunctions('TransmitXMLFileVATAdvNotifReportHandler,ConfirmHandlerEncrypt,ElecVATDeclSetupHandler')]
+    [HandlerFunctions('TransmitXMLFileVATAdvNotifReportHandler')]
     procedure OnPostDataItemTransmitXMLFileVATAdvNotif()
     var
-        EncryptionManagement: Codeunit "Encryption Management";
+        CryptographyManagement: Codeunit "Cryptography Management";
     begin
         // [SCENARIO 283574] Purpose of the test is to validate Sales VAT Advance Notification - OnPostDataItem of Report Create XML File VAT Adv. Notif. for XML Create option of Create and Transmit.
         Initialize();
-        if not EncryptionManagement.IsEncryptionEnabled() then
-            EncryptionManagement.EnableEncryption(FALSE);
+        if not CryptographyManagement.IsEncryptionEnabled() then
+            CryptographyManagement.EnableEncryption(true);
         OnPostDataItemXMLOptionCreateXMLFileVATAdvNotif();
     end;
 
@@ -139,10 +138,10 @@ codeunit 148164 "Elster Report UT"
 
     local procedure Initialize()
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
     begin
         LibraryVariableStorage.Clear();
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
 
     local procedure CreateSalesVATAdvanceNotif(var SalesVATAdvanceNotif: Record "Sales VAT Advance Notif."; Period: Option)
@@ -232,36 +231,11 @@ codeunit 148164 "Elster Report UT"
     begin
     end;
 
-    [ConfirmHandler]
-    procedure ConfirmHandlerEncrypt(Message: Text[1024]; var Reply: Boolean);
-    begin
-        case true of
-            StrPos(Message, 'Do you want to save the encryption key?') <> 0:
-                Reply := false;
-            StrPos(Message, 'Enabling encryption will generate an encryption key') <> 0:
-                Reply := true;
-            StrPos(Message, 'Disabling encryption will decrypt the encrypted data') <> 0:
-                Reply := true;
-            else
-                Reply := true;
-        end;
-    end;
-
     [RequestPageHandler]
     procedure TransmitXMLFileVATAdvNotifReportHandler(var CreateXMLFileVATAdvNotif: TestRequestPage "Create XML-File VAT Adv.Notif.");
     var
         CreateXMLOption: Option "Only create","Create and export";
     begin
         UpdateXMLFileVATAdvNotifReportRequestpage(CreateXMLFileVATAdvNotif, CreateXMLOption::"Create and export");
-    end;
-
-    [ModalPageHandler]
-    procedure ElecVATDeclSetupHandler(var ElectronicVATDeclSetup: TestPage "Electronic VAT Decl. Setup")
-    var
-        FileManagement: Codeunit "File Management";
-    begin
-        ElectronicVATDeclSetup."XML File Default Name".SetValue(LibraryRandom.RandIntInRange(10, 100));
-        ElectronicVATDeclSetup."Sales VAT Adv. Notif. Path".SetValue(FileManagement.CreateClientTempSubDirectory());
-        ElectronicVATDeclSetup.OK().Invoke();
     end;
 }

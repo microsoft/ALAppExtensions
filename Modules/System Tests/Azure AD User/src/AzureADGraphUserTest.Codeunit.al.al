@@ -12,7 +12,7 @@ codeunit 132911 "Azure AD Graph User Test"
         AzureADGraphUser: Codeunit "Azure AD Graph User";
         AzureADGraphUserTest: Codeunit "Azure AD Graph User Test";
         LibraryAssert: Codeunit "Library Assert";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         MockGraphQuery: DotNet MockGraphQuery;
 
         NewAADUserIdLbl: Label '6D59EA6C-BD8c-4694-A839-FE5C70089021';
@@ -72,7 +72,7 @@ codeunit 132911 "Azure AD Graph User Test"
         UserProperty.DeleteAll();
 
         AzureADGraphUser.SetTestInProgress(true);
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
         AzureADGraphUserTest.SetupMockGraphQuery();
 
@@ -82,7 +82,7 @@ codeunit 132911 "Azure AD Graph User Test"
     local procedure TearDown()
     begin
         AzureADGraphUser.SetTestInProgress(false);
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
 
         UnbindSubscription(AzureADGraphUserTest);
     end;

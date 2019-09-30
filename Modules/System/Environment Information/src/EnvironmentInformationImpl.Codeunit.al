@@ -83,11 +83,6 @@ codeunit 3702 "Environment Information Impl."
         exit(GetAppId() = 'NAV');
     end;
 
-    procedure IsInvoicing(): Boolean
-    begin
-        exit(GetAppId() = 'INV');
-    end;
-
     procedure IsFinancials(): Boolean
     begin
         exit(GetAppId() = 'FIN');
@@ -99,8 +94,6 @@ codeunit 3702 "Environment Information Impl."
     end;
 
     local procedure GetAppId() AppId: Text
-    var
-        EnvironmentInformation: Codeunit "Environment Information";
     begin
         OnBeforeGetApplicationIdentifier(AppId);
         if AppId = '' then

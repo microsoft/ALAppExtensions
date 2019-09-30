@@ -38,6 +38,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
     procedure ExportXML(SalesInvoiceHeader: Record "Sales Invoice Header");
     var
         SalesInvHeader2: Record "Sales Invoice Header";
+        RecordExportBuffer: Record "Record Export Buffer";
         RBMgt: Codeunit "File Management";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         EnvironmentInfo: Codeunit "Environment Information";
@@ -46,16 +47,21 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
     begin
         FromFile := CreateXML(SalesInvoiceHeader);
 
-        SalesSetup.GET();
+        SalesSetup.Get();
 
         if RBMgt.IsLocalFileSystemAccessible() and not EnvironmentInfo.IsSaaS() then
             SalesSetup.VerifyAndSetOIOUBLSetupPath(DocumentType::Invoice);
 
+        OIOUBLManagement.UpdateRecordExportBuffer(
+            SalesInvoiceHeader.RecordId(),
+            CopyStr(FromFile, 1, MaxStrLen(RecordExportBuffer.ServerFilePath)),
+            StrSubstNo('%1.xml', SalesInvoiceHeader."No."));
+
         OIOUBLManagement.ExportXMLFile(SalesInvoiceHeader."No.", FromFile, SalesSetup."OIOUBL-Invoice Path");
 
-        SalesInvHeader2.GET(SalesInvoiceHeader."No.");
-        SalesInvHeader2."OIOUBL-Electronic Invoice Created" := TRUE;
-        SalesInvHeader2.MODIFY();
+        SalesInvHeader2.Get(SalesInvoiceHeader."No.");
+        SalesInvHeader2."OIOUBL-Electronic Invoice Created" := true;
+        SalesInvHeader2.Modify();
     end;
 
     local procedure InsertInvoiceTaxTotal(var InvoiceElement: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);

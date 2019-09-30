@@ -38,6 +38,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
     procedure ExportXML(ServiceInvoiceHeader: Record "Service Invoice Header")
     var
         ServInvHeader2: Record "Service Invoice Header";
+        RecordExportBuffer: Record "Record Export Buffer";
         RBMgt: Codeunit "File Management";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         EnvironmentInfo: Codeunit "Environment Information";
@@ -46,16 +47,21 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
     begin
         FromFile := CreateXML(ServiceInvoiceHeader);
 
-        ServiceMgtSetup.GET();
+        ServiceMgtSetup.Get();
 
         if RBMgt.IsLocalFileSystemAccessible() and not EnvironmentInfo.IsSaaS() then
             ServiceMgtSetup.OIOUBLVerifyAndSetPath(DocumentType::Invoice);
 
+        OIOUBLManagement.UpdateRecordExportBuffer(
+            ServiceInvoiceHeader.RecordId(),
+            CopyStr(FromFile, 1, MaxStrLen(RecordExportBuffer.ServerFilePath)),
+            StrSubstNo('%1.xml', ServiceInvoiceHeader."No."));
+
         OIOUBLManagement.ExportXMLFile(ServiceInvoiceHeader."No.", FromFile, ServiceMgtSetup."OIOUBL-Service Invoice Path");
 
-        ServInvHeader2.GET(ServiceInvoiceHeader."No.");
-        ServInvHeader2."OIOUBL-Electronic Invoice Created" := TRUE;
-        ServInvHeader2.MODIFY();
+        ServInvHeader2.Get(ServiceInvoiceHeader."No.");
+        ServInvHeader2."OIOUBL-Electronic Invoice Created" := true;
+        ServInvHeader2.Modify();
     end;
 
     local procedure InsertOrderReference(var RootElement: XmlElement; ID: Code[35]; CustomerReference: Code[20]);

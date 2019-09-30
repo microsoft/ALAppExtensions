@@ -2,6 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Allows users to view and edit existing recurrence schedules.
+/// </summary>
 page 4690 "Recurrence Schedule Card"
 {
     Extensible = false;
@@ -29,7 +33,7 @@ page 4690 "Recurrence Schedule Card"
                     ApplicationArea = All;
                     Caption = 'Recurrence Start Time';
                     Importance = Promoted;
-                    ToolTip = 'Specifies the time of day when the recurrence takes effect. This is also the time of day for each occurence.';
+                    ToolTip = 'Specifies the time of day when the recurrence takes effect. This is also the time of day for each occurrence.';
                 }
                 field(RecurrencePattern; Pattern)
                 {

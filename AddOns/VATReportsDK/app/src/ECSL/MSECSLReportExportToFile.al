@@ -50,7 +50,6 @@ codeunit 13690 "MS - ECSL Report Export File"
         ServiceAmount: Decimal;
         GrandTotal: Decimal;
         Counter: Integer;
-        ExitLoop: Boolean;
     begin
         ECSLVATReportLine.SetRange("Report No.", VATReportHeader."No.");
         ECSLVATReportLine.SetCurrentKey("Customer VAT Reg. No.");
@@ -59,13 +58,14 @@ codeunit 13690 "MS - ECSL Report Export File"
 
         AddHeader(TxtBuilder, VATReportHeader);
 
-        while not ExitLoop do begin
+        repeat
             CurrentVAT := ECSLVATReportLine."Customer VAT Reg. No.";
+            ECSLVATReportLine.SetRange("Customer VAT Reg. No.", CurrentVAT);
             repeat
                 GrandTotal += ECSLVATReportLine."Total Value Of Supplies";
                 PopulateAmountFromLine(ECSLVATReportLine, SalesAmount, ServiceAmount, TriangulatedAmount);
-                ExitLoop := ECSLVATReportLine.Next() = 0;
-            until (CurrentVAT <> ECSLVATReportLine."Customer VAT Reg. No.") or ExitLoop;
+            until ECSLVATReportLine.Next() = 0;
+            ECSLVATReportLine.SetRange("Customer VAT Reg. No.");
 
             TxtBuilder.AppendLine(
               PopulateLine(
@@ -80,7 +80,7 @@ codeunit 13690 "MS - ECSL Report Export File"
             ServiceAmount := 0;
             TriangulatedAmount := 0;
             Counter += 1;
-        end;
+        until ECSLVATReportLine.Next() = 0;
 
         AddGrandTotal(TxtBuilder, Counter, GrandTotal);
         ReportTxt := TxtBuilder.ToText();

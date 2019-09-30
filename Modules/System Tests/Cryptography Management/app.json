@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Tests for the Cryptography Management module",
-    "version":  "15.0.0.0",
+    "version":  "16.0.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
@@ -15,7 +15,7 @@
                              "appId":  "a3964a53-9345-458a-af20-d13f7eab7bd7",
                              "name":  "Cryptography Management",
                              "publisher":  "Microsoft",
-                             "version":  "15.0.0.0"
+                             "version":  "16.0.0.0"
                          }
                      ],
     "screenshots":  [

@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Lookup page for users.
+/// </summary>
 page 9843 "User Lookup"
 {
     Extensible = false;
@@ -68,6 +71,10 @@ page 9843 "User Lookup"
         UserSelectionImpl: Codeunit "User Selection Impl.";
         IsSaaS: Boolean;
 
+    /// <summary>
+    /// Gets the currently selected users.
+    /// </summary>
+    /// <param name="SelectedUser">A record that contains the currently selected users</param>
     [Scope('OnPrem')]
     procedure GetSelectedUsers(var SelectedUser: Record User)
     var

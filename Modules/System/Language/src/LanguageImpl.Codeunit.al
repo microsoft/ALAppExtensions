@@ -88,7 +88,6 @@ codeunit 54 "Language Impl."
     procedure GetApplicationLanguages(var TempLanguage: Record "Windows Language" temporary)
     var
         WindowsLanguage: Record "Windows Language";
-        Language: Codeunit Language;
     begin
         WindowsLanguage.SetRange("Localization Exist", true);
         WindowsLanguage.SetRange("Globally Enabled", true);
@@ -98,8 +97,6 @@ codeunit 54 "Language Impl."
                 TempLanguage := WindowsLanguage;
                 TempLanguage.Insert();
             until WindowsLanguage.Next() = 0;
-
-        Language.OnAfterGetApplicationLanguages(TempLanguage);
     end;
 
     procedure GetDefaultApplicationLanguageId(): Integer

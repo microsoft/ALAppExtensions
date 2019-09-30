@@ -7,7 +7,7 @@ codeunit 1877 "Manual Setup Impl."
 {
     Access = Internal;
 
-    local procedure InsertBase(var ManualSetup: Record "Manual Setup"; Name: Text[50]; ExtensionId: GUID; Description: Text[250]; Keywords: Text[250]; RunPage: Integer; Category: Enum "Manual Setup Category")
+    local procedure InsertBase(var ManualSetup: Record "Manual Setup"; Name: Text[50]; ExtensionId: Guid; Description: Text[250]; Keywords: Text[250]; RunPage: Integer; Category: Enum "Manual Setup Category")
     begin
         ManualSetup.Init();
         ManualSetup.Name := Name;
@@ -52,6 +52,32 @@ codeunit 1877 "Manual Setup Impl."
 
         ManualSetup.Icon := BusinessSetupIcon.Icon;
         if ManualSetup.Modify(true) then;
+    end;
+
+    procedure Open()
+    begin
+        Page.RunModal(Page::"Manual Setup");
+    end;
+
+    procedure Open(ManualSetupCategory: Enum "Manual Setup Category")
+    var
+        ManualSetup: Page "Manual Setup";
+    begin
+        ManualSetup.SetCategoryToDisplay(ManualSetupCategory);
+        ManualSetup.RunModal();
+    end;
+
+    procedure GetPageIDs(var PageIDs: List of [Integer])
+    var
+        TemporaryManualSetup: Record "Manual Setup" temporary;
+        ManualSetupApi: Codeunit "Manual Setup";
+    begin
+        ManualSetupApi.OnRegisterManualSetup();
+        ManualSetupApi.GetTemporaryRecord(TemporaryManualSetup);
+        if TemporaryManualSetup.FindSet() then
+            repeat
+                PageIDs.Add(TemporaryManualSetup."Setup Page ID");
+            until TemporaryManualSetup.Next() = 0;
     end;
 
 }

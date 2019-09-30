@@ -142,7 +142,8 @@ codeunit 130500 "Any"
     /// <summary>
     /// Provides an alphanumeric text
     /// </summary>
-    /// <param name="Length">Desired length of the text<
+    /// <param name="Length">Desired length of the text</param>
+    /// <returns>A pseudo-random alphanumeric text</returns>
     procedure AlphanumericText(Length: Integer): Text
     var
         GuidTxt: Text;

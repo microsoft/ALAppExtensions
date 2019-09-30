@@ -1,60 +1,91 @@
 {
-  "id": "086892d7-4d8b-4e4a-a522-5efdf47923e3",
-  "name": "Assisted Setup",
-  "publisher": "Microsoft",
-  "brief": "Collects setup wizards in one place.",
-  "description": "",
-  "version": "15.0.0.0",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
-  "help": "",
-  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-  "logo": "",
-  "dependencies": [
-    {
-      "appId": "3ade8173-2cc2-4727-8c57-eb0754f70cdc",
-      "name": "Translation",
-      "publisher": "Microsoft",
-      "version": "1.0.0.0"
-    },
-    {
-      "appId":  "e31ad830-3d46-472e-afeb-1d3d35247943",
-      "name":  "BLOB Storage",
-      "publisher":  "Microsoft",
-      "version":  "15.0.0.0"
-    },
-    {
-      "appId": "84e448ad-faa5-44c8-835a-ec4b408e8cec",
-      "name": "Video",
-      "publisher": "Microsoft",
-      "version": "1.0.0.0"
-    },
-    {
-        "appId":  "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
-        "name":  "Extension Management",
-        "publisher":  "Microsoft",
-        "version":  "15.0.0.0"
-    }],
-  "screenshots": [],
-  "platform": "13.0.0.0",
-  "idRanges": [{
-    "from": 1471,
-    "to": 1471
-  },
-  {
-    "from": 1801,
-      "to": 1822
-    },
-    {
-      "from": 3725,
-      "to": 3725
-  }],
-  "target": "OnPrem",
-  "internalsVisibleTo": [
-    {
-      "appId": "2856b1c4-3dda-4426-9403-d0313172b6c0",
-      "name": "Assisted Setup Test Library",
-      "publisher": "Microsoft"
-    }
-  ]
+    "id":  "086892d7-4d8b-4e4a-a522-5efdf47923e3",
+    "name":  "Assisted Setup",
+    "publisher":  "Microsoft",
+    "brief":  "Collects setup wizards in one place.",
+    "description":  "",
+    "version":  "16.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "appId":  "3ade8173-2cc2-4727-8c57-eb0754f70cdc",
+                             "name":  "Translation",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                             "appId":  "e31ad830-3d46-472e-afeb-1d3d35247943",
+                             "name":  "BLOB Storage",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                             "appId":  "84e448ad-faa5-44c8-835a-ec4b408e8cec",
+                             "name":  "Video",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                             "appId":  "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
+                             "name":  "Extension Management",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                             "appId":  "93b83ef6-9666-4c1d-b130-c232f4047621",
+                             "name":  "Upgrade Tags",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "13.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  1471,
+                         "to":  1471
+                     },
+                     {
+                         "from":  1801,
+                         "to":  1801
+                     },
+                     {
+                         "from":  1803,
+                         "to":  1803
+                     },
+                     {
+                         "from":  1807,
+                         "to":  1808
+                     },
+                     {
+                         "from":  1810,
+                         "to":  1810
+                     },
+                     {
+                         "from":  1813,
+                         "to":  1813
+                     },
+                     {
+                         "from":  1815,
+                         "to":  1815
+                     },
+                     {
+                         "from":  3725,
+                         "to":  3725
+                     }
+                 ],
+    "target":  "OnPrem",
+    "internalsVisibleTo":  [
+                               {
+                                   "appId":  "2856b1c4-3dda-4426-9403-d0313172b6c0",
+                                   "name":  "Assisted Setup Test Library",
+                                   "publisher":  "Microsoft"
+                               }
+                           ]
 }

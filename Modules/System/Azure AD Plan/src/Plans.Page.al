@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// List page that contains all plans that can be assigned to users.
+/// </summary>
 page 9824 Plans
 {
     Caption = 'Plans';
@@ -22,7 +25,7 @@ page 9824 Plans
                 field(Name; Name)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the name of the record.';
+                    ToolTip = 'Specifies the name of the plan.';
                 }
             }
         }

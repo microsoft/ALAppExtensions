@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays details about the selected extension, and offers features for installing and uninstalling it.
+/// </summary>
 page 2501 "Extension Details"
 {
     Extensible = false;

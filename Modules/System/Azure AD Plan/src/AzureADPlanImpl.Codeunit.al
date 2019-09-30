@@ -14,7 +14,6 @@ codeunit 9018 "Azure AD Plan Impl."
 
     var
         UserLoginTimeTracker: Codeunit "User Login Time Tracker";
-        GraphDotNet: DotNet GraphQuery;
         AzureADGraph: Codeunit "Azure AD Graph";
         AzureADGraphUser: Codeunit "Azure AD Graph User";
         IsTest: Boolean;
@@ -27,10 +26,9 @@ codeunit 9018 "Azure AD Plan Impl."
         ChangesInPlansDetectedMsg: Label 'Changes in users plans were detected. Choose the Refresh all User Groups action in the Users window.';
         UserPlanAssignedMsg: Label 'User %1 is assigned plan %2', Locked = true;
         UserHasNoPlansMsg: Label 'User %1 has no Business Central plans assigned', Locked = true;
-        DeviceUserCannotBeFirstUser: Label 'The device user cannot be the first user to log into the system.';
+        DeviceUserCannotBeFirstUserErr: Label 'The device user cannot be the first user to log into the system.';
         NoMixPlans: array[3] of Guid;
 
-    [Scope('OnPrem')]
     procedure IsPlanAssigned(PlanGUID: Guid): Boolean
     var
         UsersInPlans: Query "Users in Plans";
@@ -42,15 +40,11 @@ codeunit 9018 "Azure AD Plan Impl."
             exit(UsersInPlans.Read());
     end;
 
-    [Scope('OnPrem')]
     procedure IsPlanAssignedToUser(PlanGUID: Guid): Boolean
-    var
-        UserPlan: Record "User Plan";
     begin
         exit(IsPlanAssignedToUser(PlanGUID, UserSecurityId()));
     end;
 
-    [Scope('OnPrem')]
     procedure IsPlanAssignedToUser(PlanGUID: Guid; UserGUID: Guid): Boolean
     var
         UserPlan: Record "User Plan";
@@ -60,7 +54,6 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(not UserPlan.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
     procedure IsGraphUserEntitledFromServicePlan(var GraphUser: DotNet UserInfo): Boolean
     var
         AssignedPlan: DotNet ServicePlanInfo;
@@ -80,7 +73,6 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(FALSE);
     end;
 
-    [Scope('OnPrem')]
     procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo)
     var
         TempO365Plan: Record Plan temporary;
@@ -100,7 +92,6 @@ codeunit 9018 "Azure AD Plan Impl."
         AddNewlyAssignedUserPlans(TempO365Plan, UserSecurityId, HasUserBeenSetupBefore);
     end;
 
-    [Scope('OnPrem')]
     procedure UpdateUserPlans(UserSecurityId: Guid)
     var
         GraphUser: DotNet UserInfo;
@@ -109,7 +100,6 @@ codeunit 9018 "Azure AD Plan Impl."
             UpdateUserPlans(UserSecurityId, GraphUser);
     end;
 
-    [Scope('OnPrem')]
     procedure UpdateUserPlans()
     var
         User: Record User;
@@ -125,7 +115,6 @@ codeunit 9018 "Azure AD Plan Impl."
         until User.Next() = 0;
     end;
 
-    [Scope('OnPrem')]
     procedure RefreshUserPlanAssignments(UserSecurityID: Guid)
     var
         User: Record User;
@@ -139,9 +128,6 @@ codeunit 9018 "Azure AD Plan Impl."
         if not AzureADGraphUser.GetGraphUser(UserSecurityID, GraphUser) then
             exit;
 
-        if not DoPlansExist() then
-            PopulatePlanTable();
-
         // Is this the first user being setup
         if UsersInPlan.Open() then
             if UsersInPlan.Read() then
@@ -149,20 +135,18 @@ codeunit 9018 "Azure AD Plan Impl."
 
         if not UserPlanExists then
             if IsDeviceRole(GraphUser) then
-                Error(DeviceUserCannotBeFirstUser);
+                Error(DeviceUserCannotBeFirstUserErr);
 
         UpdateUserFromAzureGraph(User, GraphUser);
         UpdateUserPlans(User."User Security ID", GraphUser);
     end;
 
     [TryFunction]
-    [Scope('OnPrem')]
     procedure TryGetAzureUserPlanRoleCenterId(var RoleCenterID: Integer; UserSecurityID: Guid)
     begin
         RoleCenterID := GetAzureUserPlanRoleCenterId(UserSecurityID);
     end;
 
-    [Scope('OnPrem')]
     procedure DoPlansExist(): Boolean
     var
         Plan: Record Plan;
@@ -170,7 +154,6 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(not Plan.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
     procedure DoUserPlansExist(): Boolean
     var
         UserPlan: Record "User Plan";
@@ -178,7 +161,6 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(not UserPlan.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
     procedure DoesPlanExist(PlanGUID: Guid): Boolean
     var
         Plan: Record Plan;
@@ -186,7 +168,6 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(Plan.Get(PlanGUID));
     end;
 
-    [Scope('OnPrem')]
     procedure DoesUserHavePlans(UserSecurityId: Guid): Boolean
     var
         UserPlan: Record "User Plan";
@@ -195,7 +176,6 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(not UserPlan.IsEmpty());
     end;
 
-    [Scope('OnPrem')]
     procedure GetAvailablePlansCount(): Integer
     var
         Plan: Record Plan;
@@ -203,7 +183,6 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(Plan.Count());
     end;
 
-    [Scope('OnPrem')]
     procedure SetTestInProgress(EnableTestability: Boolean)
     begin
         IsTest := EnableTestability;
@@ -213,8 +192,8 @@ codeunit 9018 "Azure AD Plan Impl."
 
     procedure CheckMixedPlans()
     var
-        PlanIds: Codeunit "Plan Ids";
         Company: Record Company;
+        PlanIds: Codeunit "Plan Ids";
         AzureADPlan: Codeunit "Azure AD Plan";
         EnvironmentInfo: Codeunit "Environment Information";
         CanManage: Boolean;
@@ -255,56 +234,9 @@ codeunit 9018 "Azure AD Plan Impl."
         if IsNullGuid(NoMixPlans[1]) then
             FillNoMixPlans();
 
-        for i := 1 to ArrayLen(NoMixPlans) do begin
+        for i := 1 to ArrayLen(NoMixPlans) do
             if IsMixedPlan(NoMixPlans[i]) then
                 exit(true);
-        end;
-    end;
-
-    local procedure PopulatePlanTable()
-    var
-        Plan: Record Plan;
-    begin
-        Plan.LockTable();
-
-        CreatePlan('00000000-0000-0000-0000-000000000007', 'Administrator', 9022, '7584DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('00000000-0000-0000-0000-000000000008', 'Helpdesk', 9022, '8884DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('62E90394-69F5-4237-9190-012177145E10', 'Internal Administrator', 9022, '9B84DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('8BB56CEA-3F11-4647-854A-212E2B05306A', 'Dynamics 365 Business Central, Essential ISV User', 9022, '2E84DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('07EB0DC4-7DA7-4E7B-BB42-2D44C5E08B08', 'Microsoft Invoice', 9029, '0D84DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('9695F925-27A8-4127-98C7-3CAAC1809758', 'Test Plan - Finance and Operations for Financials', 9022, 'CF84DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('39B5C996-467E-4E60-BD62-46066F572726', 'Microsoft Invoicing', 9029, '1384DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('D9A6391B-8970-4976-BD94-5F205007C8D8', 'Finance and Operations, Team Member', 9028, '5784DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('8E9002C0-A1D8-4465-B952-817D2948E6E2', 'Dynamics 365 Business Central, Premium User', 9022, '3884DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('46764787-E039-4AB0-8F00-820FC2D89BF9', 'Test Plan - Fin and Ops, External Accountant', 9027, 'C184DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('2EC8B6CA-AB13-4753-A479-8C2FFE4C323B', 'Dynamics 365 Business Central, ISV User', 9022, '4C84DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('920656A2-7DD8-4C83-97B6-A356414DBD36', 'Finance and Operations', 9022, '2484DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('996DEF3D-B36C-4153-8607-A6FD3C01B89F', 'Project Madeira Infrastructure Base Application', 9022, 'A684DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('5D60EA51-0053-458F-80A8-B6F426A1A0C1', 'Dynamics 365 - Accountant Hub', 1151, '6684DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('100E1865-35D4-4463-AAFF-D38EEE3A1116', 'Finance and Operations, Device', 9022, 'AC84DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('FD1441B8-116B-4FA7-836E-D7956700E0FA', 'Dynamics 365 Business Central, Team Member ISV', 9028, '5E84DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('170991D7-B98E-41C5-83D4-DB2052E1795F', 'Finance and Operations, External Accountant', 9027, '1A84DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('4C52D56D-5121-425A-91A5-DD0DE136CA17', 'Dynamics 365 Business Central, Premium ISV User', 9022, '4284DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('A98D0C4A-A52F-4771-A609-E20366102D2A', 'Dynamics 365 Business Central Device - Embedded', 9022, 'B684DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('312BDEEE-8FBD-496E-B529-EB985F305FCF', 'Test - Fin and Ops, Team Members Business Edition', 9028, 'DE84DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('3F2AFEED-6FB5-4BF9-998F-F2912133AEAD', 'Finance and Operations for IWs', 9022, '0184DDCA-27B8-E911-BB26-000D3A2B005C');
-
-        Commit();
-    end;
-
-    local procedure CreatePlan(PlanGuid: Guid; PlanName: Text[50]; RoleCenterId: Integer; SystemId: Guid)
-    var
-        Plan: Record Plan;
-    begin
-        if Plan.Get(PlanGuid) then
-            exit;
-
-        Plan.Init();
-        Plan."Plan ID" := PlanGuid;
-        Plan.Name := PlanName;
-        Plan."Role Center ID" := RoleCenterId;
-        Plan.SystemId := SystemId;
-        Plan.Insert(true);
     end;
 
     local procedure PlansExist(PlanId: Guid): Boolean
@@ -339,10 +271,9 @@ codeunit 9018 "Azure AD Plan Impl."
         if IsNullGuid(NoMixPlans[1]) then
             FillNoMixPlans();
 
-        for i := 1 to ArrayLen(NoMixPlans) do begin
+        for i := 1 to ArrayLen(NoMixPlans) do
             if (NoMixPlans[i] <> PlanId) and PlansExist(NoMixPlans[i]) then
                 exit(true);
-        end;
     end;
 
     local procedure RemoveUnassignedUserPlans(var TempPlan: Record "Plan" temporary; UserSecurityID: Guid)
@@ -387,14 +318,11 @@ codeunit 9018 "Azure AD Plan Impl."
             until TempNavUserPlan.Next() = 0;
     end;
 
-    [Scope('OnPrem')]
     local procedure GetGraphUserPlans(var TempPlan: Record "Plan" temporary; var GraphUser: DotNet UserInfo; IncludePlansWithoutEntitlement: Boolean)
     var
         AssignedPlan: DotNet ServicePlanInfo;
         DirectoryRole: DotNet RoleInfo;
-        UserRoles: DotNet GenericList1;
         ServicePlanIdValue: Variant;
-        IsSystemRole: Boolean;
         HaveAssignedPlans: Boolean;
         DevicesPlanId: Guid;
         DevicesPlanName: Text;
@@ -501,19 +429,13 @@ codeunit 9018 "Azure AD Plan Impl."
     local procedure IsBCServicePlan(ServicePlanId: Guid): Boolean
     var
         Plan: Record "Plan";
-        PlanIds: Codeunit "Plan Ids";
-        EnvironmentInformation: codeunit "Environment Information";
     begin
         if IsNullGuid(ServicePlanId) then
             exit(false);
 
-        if ServicePlanId = PlanIds.GetInvoicingPlanId() then
-            exit(EnvironmentInformation.IsInvoicing());
-
         exit(Plan.GET(ServicePlanId));
     end;
 
-    [Scope('OnPrem')]
     local procedure GetAzureUserPlanRoleCenterId(UserSecurityID: Guid): Integer
     var
         TempPlan: Record "Plan" temporary;

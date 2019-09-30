@@ -8,7 +8,7 @@ codeunit 1753 "Data Classification Mgt. Impl."
     Access = Internal;
 
     var
-        DataSensitivityOptionStringTxt: Label 'Unclassified,Sensitive,Personal,Company Confidential,Normal', Comment = 'It needs to be translated as the field Data Sensitivity on Page 1751 Data Classification WorkSheet and field Data Sensitivity of Table 1180 Data Sensitivity Entities';
+        DataSensitivityOptionStringTxt: Label 'Unclassified,Sensitive,Personal,Company Confidential,Normal', Comment = 'It needs to be translated as the field Data Sensitivity on Page 1751 Data Classification WorkSheet and field Data Sensitivity of Table 1180 Data Privacy Entities';
         LegalDisclaimerTxt: Label 'Microsoft is providing this Data Classification feature as a matter of convenience only. It''s your responsibility to classify the data appropriately and comply with any laws and regulations that are applicable to you. Microsoft disclaims all responsibility towards any claims related to your classification of the data.';
 
     procedure PopulateDataSensitivityTable()
@@ -185,7 +185,7 @@ codeunit 1753 "Data Classification Mgt. Impl."
         FieldsSyncStatusManagement.SetLastSyncDate();
     end;
 
-    local procedure UpdateDataSensitivityTable("Field": Record "Field")
+    local procedure UpdateDataSensitivityTable(var "Field": Record "Field")
     var
         DataSensitivity: Record "Data Sensitivity";
         TempDataSensitivity: Record "Data Sensitivity" temporary;
@@ -220,17 +220,16 @@ codeunit 1753 "Data Classification Mgt. Impl."
             until DataSensitivity.Next() = 0;
     end;
 
-    local procedure DeleteUnclasifiedEntriesInDataSensitivity(TempDataSensitivity: Record "Data Sensitivity" temporary)
+    local procedure DeleteUnclasifiedEntriesInDataSensitivity(var TempDataSensitivity: Record "Data Sensitivity" temporary)
     var
         DataSensitivity: Record "Data Sensitivity";
     begin
-        if TempDataSensitivity.FindSet() then
-            repeat
-                if TempDataSensitivity."Data Sensitivity" = TempDataSensitivity."Data Sensitivity"::Unclassified then begin
-                    DataSensitivity.Get(TempDataSensitivity."Company Name", TempDataSensitivity."Table No", TempDataSensitivity."Field No");
-                    DataSensitivity.Delete();
-                end;
-            until TempDataSensitivity.Next() = 0;
+        repeat
+            if TempDataSensitivity."Data Sensitivity" = TempDataSensitivity."Data Sensitivity"::Unclassified then begin
+                DataSensitivity.Get(TempDataSensitivity."Company Name", TempDataSensitivity."Table No", TempDataSensitivity."Field No");
+                DataSensitivity.Delete();
+            end;
+        until TempDataSensitivity.Next() = 0;
     end;
 
     procedure AreAllFieldsClassified(): Boolean

@@ -41,7 +41,7 @@ codeunit 6723 "Server Setting"
         exit(ServerSettingImpl.GetApiServicesEnabled());
     end;
 
-    /// <summary>Checks whether the API subscriptions are enabled./summary>
+    /// <summary>Checks whether the API subscriptions are enabled.</summary>
     /// <returns>True if enabled; otherwise, false.</returns>
     /// <remarks>Gets the value of the server setting ApiSubscriptionsEnabled.</remarks>
     [Scope('OnPrem')]

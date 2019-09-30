@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Contains tenant web service column entities.
+/// </summary>
 table 6711 "Tenant Web Service Columns"
 {
     Caption = 'Tenant Web Service Columns';

@@ -20,7 +20,7 @@ codeunit 132585 "Assisted Setup Test Library"
     var
         AssistedSetup: Record "Assisted Setup";
     begin
-        if AssistedSetup.Get(ExtensionId, PageID) then
+        if AssistedSetup.Get(PageID) then
             AssistedSetup.Delete(true);
     end;
 
@@ -31,7 +31,7 @@ codeunit 132585 "Assisted Setup Test Library"
     var
         AssistedSetup: Record "Assisted Setup";
     begin
-        if not AssistedSetup.Get(ExtensionId, PageID) then
+        if not AssistedSetup.Get(PageID) then
             exit;
         if not AssistedSetup.Completed then
             exit;
@@ -62,7 +62,7 @@ codeunit 132585 "Assisted Setup Test Library"
     var
         AssistedSetup: Record "Assisted Setup";
     begin
-        exit(AssistedSetup.Get(ExtensionId, PageID));
+        exit(AssistedSetup.Get(PageID));
     end;
 
     /// <summary>Gets the page id of the first setup record.</summary>

@@ -37,7 +37,7 @@ codeunit 139036 "Data Compression Tests"
         DataCompression.CloseZipArchive();
         ArchiveTempBlob.CreateInStream(ArchiveInStream);
 
-        // assert that you can successfuly construct a ZipArchive out of the saved InStream
+        // assert that you can successfully construct a ZipArchive out of the saved InStream
         DataCompressionLocal.OpenZipArchive(ArchiveInStream, false);
 
         // Clean up

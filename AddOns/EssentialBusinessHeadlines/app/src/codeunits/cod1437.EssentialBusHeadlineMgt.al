@@ -11,7 +11,6 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         QualifierWeekTxt: Label 'Insight from last week', MaxLength = 50;
         QualifierMonthTxt: Label 'Insight from last month', MaxLength = 50;
         Qualifier3MonthsTxt: Label 'Insight from the last three months', MaxLength = 50;
-
         MostPopularItemPayloadTxt: Label 'The best-selling item was %1 with %2 units sold', Comment = '%1 is the item name, %2 is the quantity sold', MaxLength = 50; // support 20 chars for item and number up to 9 chars: '1,234,567'
         BusiestResourcePayloadTxt: Label '%1 was busy, with %2 units booked', Comment = '%1 is the resource name, %2 is the quantity sold', MaxLength = 50;  // support 20 chars for resource and number up to 9 chars: '1,234,567'
         LargestOrderPayloadTxt: Label 'The biggest sales order was for %1', Comment = '%1 is the order amount with currency symbol/name.', MaxLength = 65; // support currencies up to 12 chars: '1,234,567 kr'
@@ -83,6 +82,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         HeadlineDetails: Record "Headline Details Per User";
         BestSoldItemQuery: Query "Best Sold Item Headline";
         BestQty: Decimal;
+        HeadlineText: Text;
     begin
         BestSoldItemQuery.SetFilter(PostDate, '>=%1&<=%2', CalcDate(StrSubstNo('<-%1D>', DaysSearch), WorkDate()), WorkDate());
         BestSoldItemQuery.SetRange(ProductType, SalesLine.Type::Item);
@@ -94,14 +94,16 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
         BestQty := BestSoldItemQuery.SumQuantity;
         Item.Get(BestSoldItemQuery.ProductNo);
+        HeadlineText := EssentialBusinessHeadline."Headline Text";
 
         if not Headlines.GetHeadlineText(
                 ChooseQualifier(QualifierWeekTxt, QualifierMonthTxt, Qualifier3MonthsTxt, DaysSearch),
                 GetBestItemPayload(Item.Description, Format(BestQty)),
-                EssentialBusinessHeadline."Headline Text")
+                HeadlineText)
         then
             exit;
 
+        EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
         HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Item);
         HeadlineDetails.SetRange("User Id", UserSecurityId());
         HeadlineDetails.DeleteAll();
@@ -180,6 +182,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         HeadlineDetails: Record "Headline Details Per User";
         BusiestResource: Query "Best Sold Item Headline";
         BestQty: Decimal;
+        HeadlineText: Text;
     begin
         BusiestResource.SetFilter(PostDate, '>=%1&<=%2', CalcDate(StrSubstNo('<-%1D>', DaysSearch), WorkDate()), WorkDate());
         BusiestResource.SetRange(ProductType, SalesLine.Type::Resource);
@@ -190,14 +193,16 @@ codeunit 1437 "Essential Bus. Headline Mgt."
             exit;
         BestQty := BusiestResource.SumQuantity;
         Resource.Get(BusiestResource.ProductNo);
+        HeadlineText := EssentialBusinessHeadline."Headline Text";
 
         if not Headlines.GetHeadlineText(
                 ChooseQualifier(QualifierWeekTxt, QualifierMonthTxt, Qualifier3MonthsTxt, DaysSearch),
                 GetBusiestResoucePayload(Resource.Name, Format(BestQty)),
-                EssentialBusinessHeadline."Headline Text")
+                HeadlineText)
         then
             exit;
 
+        EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
         HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Resource);
         HeadlineDetails.SetRange("User Id", UserSecurityId());
         HeadlineDetails.DeleteAll();
@@ -282,13 +287,16 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
     local procedure TryHandleLargestOrder(var EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr"; DaysSearch: Integer): Boolean
     var
+        [SecurityFiltering(SecurityFilter::Filtered)]
         SalesHeader: Record "Sales Header";
         CurrentKeyOk: Boolean;
+        HeadlineText: Text;
     begin
         SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Order);
         SalesHeader.SetFilter("Posting Date", '>=%1&<=%2', CalcDate(StrSubstNo('<-%1D>', DaysSearch), WorkDate()), WorkDate());
         CurrentKeyOk := SalesHeader.SetCurrentKey(Amount);
         SalesHeader.SetAscending(Amount, false);
+        HeadlineText := EssentialBusinessHeadline."Headline Text";
 
         // we need at least 5 orders for this headline to be valid
         if (SalesHeader.Count() > 5) and SalesHeader.FindFirst() then begin
@@ -296,10 +304,11 @@ codeunit 1437 "Essential Bus. Headline Mgt."
                 ChooseQualifier(QualifierWeekTxt, QualifierMonthTxt, Qualifier3MonthsTxt, DaysSearch),
                 StrSubstNo(LargestOrderPayloadTxt,
                    Headlines.Emphasize(FormatCurrency(SalesHeader.Amount, SalesHeader."Currency Code"))),
-                EssentialBusinessHeadline."Headline Text")
+                HeadlineText)
             then
                 exit;
 
+            EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
             EssentialBusinessHeadline.Validate("Headline Visible", true);
             EssentialBusinessHeadline.Validate("Headline Computation Date", CurrentDateTime());
             EssentialBusinessHeadline.Validate("Headline Computation WorkDate", WorkDate());
@@ -353,12 +362,14 @@ codeunit 1437 "Essential Bus. Headline Mgt."
     var
         CustomerLedgerEntry: Record "Cust. Ledger Entry";
         CurrentKeyOk: Boolean;
+        HeadlineText: Text;
     begin
         CustomerLedgerEntry.SetFilter("Posting Date", '>=%1&<=%2', CalcDate(StrSubstNo('<-%1D>', DaysSearch), WorkDate()), WorkDate());
         CustomerLedgerEntry.SetRange("Document Type", CustomerLedgerEntry."Document Type"::Invoice);
         CustomerLedgerEntry.SetRange(Reversed, false);
         CurrentKeyOk := CustomerLedgerEntry.SetCurrentKey("Amount (LCY)");
         CustomerLedgerEntry.SetAscending("Amount (LCY)", false);
+        HeadlineText := EssentialBusinessHeadline."Headline Text";
 
         // we need at least 5 sales for this headline to be valid
         if (CustomerLedgerEntry.Count() > 5) and CustomerLedgerEntry.FindFirst() then begin
@@ -368,10 +379,11 @@ codeunit 1437 "Essential Bus. Headline Mgt."
                 ChooseQualifier(QualifierWeekTxt, QualifierMonthTxt, Qualifier3MonthsTxt, DaysSearch),
                 StrSubstNo(LargestSalePayloadTxt,
                   Headlines.Emphasize(FormatCurrency(CustomerLedgerEntry.Amount, CustomerLedgerEntry."Currency Code"))),
-                EssentialBusinessHeadline."Headline Text")
+                HeadlineText)
             then
                 exit;
 
+            EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
             EssentialBusinessHeadline.Validate("Headline Visible", true);
             EssentialBusinessHeadline.Validate("Headline Computation Date", CurrentDateTime());
             EssentialBusinessHeadline.Validate("Headline Computation WorkDate", WorkDate());
@@ -427,6 +439,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         SalesIncreaseHeadline: Query "Sales Increase Headline";
         SalesThisMonth: Integer;
         SalesThisMonthLastYear: Integer;
+        HeadlineText: Text;
     begin
         SalesIncreaseHeadline.SetFilter(PostDate, '>=%1&<=%2', CalcDate(StrSubstNo('<-%1D>', DaysSearch), WorkDate()), WorkDate());
         if not SalesIncreaseHeadline.Open() then
@@ -459,14 +472,17 @@ codeunit 1437 "Essential Bus. Headline Mgt."
             exit;
         end;
 
+        HeadlineText := EssentialBusinessHeadline."Headline Text";
+
         if not Headlines.GetHeadlineText(
             ChooseQualifier(QualifierWeekTxt, QualifierMonthTxt, Qualifier3MonthsTxt, DaysSearch),
             StrSubstNo(SalesIncreaseComparedToLastYearPayloadTxt,
                 Headlines.Emphasize(Format(SalesThisMonth - SalesThisMonthLastYear))),
-            EssentialBusinessHeadline."Headline Text")
+            HeadlineText)
         then
             exit;
 
+        EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
         EssentialBusinessHeadline.Validate("Headline Visible", true);
         EssentialBusinessHeadline.Validate("Headline Computation Date", CurrentDateTime());
         EssentialBusinessHeadline.Validate("Headline Computation WorkDate", WorkDate());
@@ -502,6 +518,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         CustomerLedgerEntry: Record "Cust. Ledger Entry";
         RecentlyOverdueInvoices: Integer;
         TotalAmount: Decimal;
+        HeadlineText: Text;
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
         if not NeedToUpdateHeadline(EssentialBusinessHeadline."Headline Computation Date", 10 * 60, EssentialBusinessHeadline."Headline Computation WorkDate") then
@@ -523,17 +540,19 @@ codeunit 1437 "Essential Bus. Headline Mgt."
                 TotalAmount := TotalAmount + CustomerLedgerEntry."Amount (LCY)";
             until CustomerLedgerEntry.Next() = 0;
 
+        HeadlineText := EssentialBusinessHeadline."Headline Text";
         if not Headlines.GetHeadlineText(
             QualifierYesterdayTxt,
             StrSubstNo(RecentlyOverdueInvoicesPayloadTxt,
                 Headlines.Emphasize(Format(RecentlyOverdueInvoices)),
                 Headlines.Emphasize(FormatLocalCurrency(TotalAmount))),
-            EssentialBusinessHeadline."Headline Text")
+            HeadlineText)
         then begin
             HideHeadLine(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
             exit;
         end;
 
+        EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
         EssentialBusinessHeadline.Validate("Headline Visible", true);
         EssentialBusinessHeadline.Validate("Headline Computation Date", CurrentDateTime());
         EssentialBusinessHeadline.Validate("Headline Computation WorkDate", WorkDate());
@@ -588,6 +607,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         Customer: Record Customer;
         HeadlineDetails: Record "Headline Details Per User";
         TopCustomerHeadlineQuery: Query "Top Customer Headline";
+        HeadlineText: Text;
     begin
         TopCustomerHeadlineQuery.SetFilter(PostDate, '>=%1&<=%2',
             CalcDate(StrSubstNo('<-%1D>', DaysSearch), WorkDate()),
@@ -600,14 +620,16 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
         Customer.Get(TopCustomerHeadlineQuery.CustomerNo);
 
+        HeadlineText := EssentialBusinessHeadline."Headline Text";
         if not Headlines.GetHeadlineText(
             ChooseQualifier(QualifierWeekTxt, QualifierMonthTxt, Qualifier3MonthsTxt, DaysSearch),
             GetTopCustomerPayload(Customer.Name, FormatLocalCurrency(TopCustomerHeadlineQuery.SumAmountLcy)),
-            EssentialBusinessHeadline."Headline Text")
+            HeadlineText)
         then
             exit;
 
 
+        EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
         HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Customer);
         HeadlineDetails.SetRange("User Id", UserSecurityId());
         HeadlineDetails.DeleteAll();
@@ -753,7 +775,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         exit(VATReturnPeriod.FindFirst());
     end;
 
-    local procedure UpdateVATReturnHeadline(var EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr"; HeadlineText: Text[250])
+    local procedure UpdateVATReturnHeadline(var EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr"; HeadlineText: Text)
     begin
         with EssentialBusinessHeadline do begin
             Validate("Headline Visible", HeadlineText <> '');

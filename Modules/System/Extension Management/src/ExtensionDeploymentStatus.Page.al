@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays the deployment status for extensions that are deployed or are scheduled for deployment.
+/// </summary>
 page 2508 "Extension Deployment Status"
 {
     Extensible = false;

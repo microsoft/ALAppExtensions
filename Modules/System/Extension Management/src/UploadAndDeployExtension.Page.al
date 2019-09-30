@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Allows users to upload an extension and schedule its deployment.
+/// </summary>
 page 2507 "Upload And Deploy Extension"
 {
     Extensible = false;
@@ -29,7 +32,7 @@ page 2507 "Upload And Deploy Extension"
 
                 trigger OnAssistEdit()
                 begin
-                    UploadIntoStream(DialogTitleTxt, '', FromFilterTxt, FileName, FileStream);
+                    UploadIntoStream(DialogTitleTxt, '', AppFileFilterTxt, FileName, FileStream);
                 end;
             }
             label("Deploy Extension")
@@ -136,7 +139,7 @@ page 2507 "Upload And Deploy Extension"
         LanguageName: Text;
         LanguageID: Integer;
         DialogTitleTxt: Label 'Select .APP';
-        FromFilterTxt: Label 'Extension Files|*.app';
+        AppFileFilterTxt: Label 'Extension Files|*.app', Locked = true;
         ExtensionNotUploadedMsg: Label 'Please upload an extension file before clicking "Deploy" button.';
         DisclaimerLbl: Label 'Disclaimer';
         DisclaimerMsg: Label 'The creator of this customized extension is responsible for its licensing. The customized extension is subject to the terms and conditions, privacy policy, support and billing offered by the creator, as applicable, and does not create any liability or obligation for Microsoft.\\The publisher of the customized extension must maintain compatibility with new releases of Dynamics 365 Business Central. An extension that is not compatible with a new release within 90 days of the release will be removed and the tenant upgraded.';

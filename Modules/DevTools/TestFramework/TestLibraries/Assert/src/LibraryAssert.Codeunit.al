@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-///
+/// This module provides functions for easy verification of expected values and error handling in test code.
 /// </summary>
 codeunit 130002 "Library Assert"
 {
@@ -37,11 +37,11 @@ codeunit 130002 "Library Assert"
         NoFilterTok: Label 'DB:NoFilter';
         ErrorHasNotBeenThrownErr: Label 'The error has not been thrown.';
 
-        /// <summary>
-        /// Tests whether the specified condition is true and throws an exception if the condition is false.
-        /// </summary>
-        /// <param name="Condition">The condition the test expects to be true.</param>
-        /// <param name="Msg">The message to include in the exception when condition is false. The message is shown in test results.</param>
+    /// <summary>
+    /// Tests whether the specified condition is true and throws an exception if the condition is false.
+    /// </summary>
+    /// <param name="Condition">The condition the test expects to be true.</param>
+    /// <param name="Msg">The message to include in the exception when condition is false. The message is shown in test results.</param>
     procedure IsTrue(Condition: Boolean; Msg: Text)
     begin
         if not Condition then

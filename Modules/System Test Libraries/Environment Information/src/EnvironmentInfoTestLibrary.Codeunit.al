@@ -26,6 +26,19 @@ codeunit 135094 "Environment Info Test Library"
     end;
 
     /// <summary>
+    /// Sets the testability SaaS flag.
+    /// </summary>
+    /// <remarks>
+    /// This functions should only be used for testing purposes.
+    /// </remarks>
+    /// <param name="EnableSoftwareAsAServiceForTest">The value to be set to the testability SaaS flag.</param>
+    [Scope('OnPrem')]
+    procedure SetTestabilitySoftwareAsAService(EnableSoftwareAsAServiceForTest: Boolean)
+    begin
+        EnvironmentInformationImpl.SetTestabilitySoftwareAsAService(EnableSoftwareAsAServiceForTest);
+    end;
+
+    /// <summary>
     /// Sets the App ID that of the current application (for example, 'FIN' - Financials) when the sunscription is bound.
     /// Uses <see cref="OnBeforeGetApplicationIdentifier"/> event.
     /// </summary>

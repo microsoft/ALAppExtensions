@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays a list of the plans assigned to users.
+/// </summary>
 query 774 "Users in Plans"
 {
     Caption = 'Users in Plans';

@@ -44,7 +44,7 @@ table 4690 "Recurrence Schedule"
             MaxValue = 31;
             MinValue = 1;
         }
-        field(6; "Ordinal Recurrence No."; Enum "Recurrence - Ordinal No.") // todo what happens if feb 31 yearly
+        field(6; "Ordinal Recurrence No."; Enum "Recurrence - Ordinal No.")
         {
             DataClassification = SystemMetadata;
         }

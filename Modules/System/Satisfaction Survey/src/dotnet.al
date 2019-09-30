@@ -5,9 +5,9 @@
 
 dotnet
 {
-    assembly("Microsoft.Dynamics.Nav.Client.WebPageViewer")
+    assembly("Microsoft.Dynamics.Nav.Client.SatisfactionSurvey")
     {
-        type("Microsoft.Dynamics.Nav.Client.WebPageViewer.IWebPageViewer"; "Microsoft.Dynamics.Nav.Client.WebPageViewer")
+        type("Microsoft.Dynamics.Nav.Client.SatisfactionSurvey.ISatisfactionSurvey"; "Microsoft.Dynamics.Nav.Client.SatisfactionSurvey")
         {
             IsControlAddIn = true;
         }

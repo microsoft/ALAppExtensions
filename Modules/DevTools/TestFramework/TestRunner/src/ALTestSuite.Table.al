@@ -79,7 +79,7 @@ table 130451 "AL Test Suite"
         TestRunnerMgt: Codeunit "Test Runner - Mgt";
     begin
         if "Test Runner Id" = 0 then
-            "Test Runner Id" := TestRunnerMgt.GetDefautlTestRunner();
+            "Test Runner Id" := TestRunnerMgt.GetDefaultTestRunner();
     end;
 }
 

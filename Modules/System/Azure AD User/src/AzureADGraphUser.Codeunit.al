@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Exposes functionality to retrieve and update Azure AD Graph API users.
+/// Exposes functionality to retrieve and update Azure AD users.
 /// </summary>
 codeunit 9024 "Azure AD Graph User"
 {
@@ -18,15 +18,15 @@ codeunit 9024 "Azure AD Graph User"
         AzureADGraphUserImpl: Codeunit "Azure AD Graph User Impl.";
 
     /// <summary>    
-    /// Gets the Azure AD Graph API user with the given security ID.
+    /// Gets the Azure AD user with the given security ID.
     /// </summary>
     /// <param name="UserSecurityId">The user's security ID.</param>
-    /// <param name="GraphUserOut">The Azure AD Graph API user.</param>
+    /// <param name="User">The Azure AD user.</param>
     [Scope('OnPrem')]
     [TryFunction]
-    procedure GetGraphUser(UserSecurityId: Guid; var GraphUserOut: DotNet UserInfo)
+    procedure GetGraphUser(UserSecurityId: Guid; var User: DotNet UserInfo)
     begin
-        AzureADGraphUserImpl.GetGraphUser(UserSecurityId, GraphUserOut);
+        AzureADGraphUserImpl.GetGraphUser(UserSecurityId, User);
     end;
 
     /// <summary>
@@ -34,7 +34,7 @@ codeunit 9024 "Azure AD Graph User"
     /// </summary>
     /// <param name="UserSecurityId">The user's security ID.</param>
     /// <returns>
-    /// The object ID of the Azure AD Graph API user, or an empty string if the user cannot be found.
+    /// The object ID of the Azure AD user, or an empty string if the user cannot be found.
     /// </returns>
     [Scope('OnPrem')]
     procedure GetObjectId(UserSecurityId: Guid): Text
@@ -54,21 +54,21 @@ codeunit 9024 "Azure AD Graph User"
     end;
 
     /// <summary>    
-    /// Updates the user record with information from the Azure AD Graph API.
+    /// Updates the user record with information from Azure AD.
     /// </summary>
     /// <param name="User">The user record to update.</param>
-    /// <param name="GraphUser">The Azure AD Graph API user.</param>
+    /// <param name="AzureADUser">The Azure AD user.</param>
     /// <returns>True if the user record has been updated. Otherwise, false.</returns>
     [Scope('OnPrem')]
-    procedure UpdateUserFromAzureGraph(var User: Record User; var GraphUser: DotNet UserInfo): Boolean
+    procedure UpdateUserFromAzureGraph(var User: Record User; var AzureADUser: DotNet UserInfo): Boolean
     begin
-        exit(AzureADGraphUserImpl.UpdateUserFromAzureGraph(User, GraphUser));
+        exit(AzureADGraphUserImpl.UpdateUserFromAzureGraph(User, AzureADUser));
     end;
 
     /// <summary>    
     /// Ensures that an email address specified for authorization is not already in use by another database user.
     /// If it is, all the database users with this authentication email address are updated and their email 
-    /// addresses are updated the ones that are specified in the Azure AD Graph API.
+    /// addresses are updated the ones that are specified in Azure AD.
     /// </summary>
     /// <param name="AuthenticationEmail">The authentication email address.</param>
     [Scope('OnPrem')]

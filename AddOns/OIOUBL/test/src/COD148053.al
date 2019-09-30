@@ -368,7 +368,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         // [THEN] OIOUBL Electronic Document is created at the location, specified in Sales Setup.
         FindSalesInvoiceHeader(SalesInvoiceHeader, SalesHeader."No.");
         SalesInvoiceHeader.TESTFIELD("OIOUBL-Electronic Invoice Created", true);
-        VerifyElectronicServiceDocument(SalesInvoiceHeader."No.", SalesInvoiceHeader."OIOUBL-Account Code");
+        VerifyElectronicSalesDocument(SalesInvoiceHeader."No.", SalesInvoiceHeader."OIOUBL-Account Code");
         VerifyInteractionLogEntry(InteractionLogEntry."Document Type"::"Sales Inv.", SalesInvoiceHeader."No.");
 
         DefaultDocumentSendingProfile.DELETE();
@@ -386,28 +386,71 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         InteractionLogEntry: Record "Interaction Log Entry";
         PostedDocNo: Code[20];
     begin
-        // [SCENARIO 378908] Send Posted Sales Invoice to Disk = Electronic Document (OIOUBL) should create electronic document
+        // [SCENARIO 378908] Send Posted Sales Invoice to Disk = Electronic Document (OIOUBL) should create electronic document.
         Initialize();
-        DocumentSendingProfile.DELETEALL();
+        DocumentSendingProfile.DeleteAll();
         CreateElectronicDocumentFormat(
           OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", CODEUNIT::"OIOUBL-Export Sales Invoice");
 
-        // [GIVEN] DefaultDocumentSendingProfile Disk::"Electronic Document"; Posted Sales Invoice;
-        PostedDocNo := CreateAndPostSalesDocument(SalesLine, SalesLine."Document Type"::Invoice);
-        SalesInvoiceHeader.Get(PostedDocNo);
+        // [GIVEN] DefaultDocumentSendingProfile Disk::"Electronic Document", Format = OIOUBL; Posted Sales Invoice;
         SetDocumentSendingProfile(DefaultDocumentSendingProfile, DefaultDocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+        PostedDocNo := CreateAndPostSalesDocument(SalesLine, SalesLine."Document Type"::Invoice);
 
-        // [WHEN] Send to Disk = Electronic Document.
-        SalesInvoiceHeader.SetRecFilter();
+        // [WHEN] Run "Send" for Posted Sales Invoice.
+        SalesInvoiceHeader.SetRange("No.", PostedDocNo);
         SalesInvoiceHeader.SendRecords();
 
         // [THEN] OIOUBL Electronic Document is created at the location, specified in Sales Setup.
         SalesInvoiceHeader.Get(PostedDocNo);
         SalesInvoiceHeader.TESTFIELD("OIOUBL-Electronic Invoice Created", true);
-        VerifyElectronicServiceDocument(SalesInvoiceHeader."No.", SalesInvoiceHeader."OIOUBL-Account Code");
+        VerifyElectronicSalesDocument(SalesInvoiceHeader."No.", SalesInvoiceHeader."OIOUBL-Account Code");
         VerifyInteractionLogEntry(InteractionLogEntry."Document Type"::"Sales Inv.", SalesInvoiceHeader."No.");
 
-        DefaultDocumentSendingProfile.DELETE();
+        DefaultDocumentSendingProfile.Delete();
+    end;
+
+    [Test]
+    [HandlerFunctions('ProfileSelectionMethodStrMenuHandler')]
+    procedure SendMultiplePostedSalesInvoicesToDiskEDOIOUBL();
+    var
+        DefaultDocumentSendingProfile: Record "Document Sending Profile";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+        InteractionLogEntry: Record "Interaction Log Entry";
+        PostedDocNoLst: List of [Code[20]];
+        AccountCodeLst: List of [Text[30]];
+        PostedDocNoFilter: Text;
+        PostedDocNo: Code[20];
+    begin
+        // [FEATURE] [Zip]
+        // [SCENARIO 318500] Send multiple Posted Sales Invoices to Disk = Electronic Document (OIOUBL).
+        Initialize();
+        DocumentSendingProfile.DeleteAll();
+        CreateElectronicDocumentFormat(
+          OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", CODEUNIT::"OIOUBL-Export Sales Invoice");
+
+        // [GIVEN] DefaultDocumentSendingProfile Disk::"Electronic Document", Format = OIOUBL; three Posted Sales Invoices;
+        SetDocumentSendingProfile(DefaultDocumentSendingProfile, DefaultDocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+        CreateMultiplePostedSalesDocuments(PostedDocNoLst, PostedDocNoFilter, SalesLine."Document Type"::Invoice, 3);
+
+        // [WHEN] Run "Send" for these Posted Sales Invoices.
+        SalesInvoiceHeader.SetFilter("No.", PostedDocNoFilter);
+        SalesInvoiceHeader.SendRecords();
+
+        // [THEN] One ZIP file is created at the location, specified in Sales Setup.
+        // [THEN] ZIP file contains OIOUBL Electronic Document for each Posted Sales Invoice.
+        foreach PostedDocNo in PostedDocNoLst do begin
+            SalesInvoiceHeader.Get(PostedDocNo);
+            SalesInvoiceHeader.TESTFIELD("OIOUBL-Electronic Invoice Created", true);
+            VerifyInteractionLogEntry(InteractionLogEntry."Document Type"::"Sales Inv.", SalesInvoiceHeader."No.");
+            AccountCodeLst.Add(SalesInvoiceHeader."OIOUBL-Account Code");
+        end;
+        VerifyElectronicSalesDocumentInZipArchive(PostedDocNoLst, AccountCodeLst);
+
+        DefaultDocumentSendingProfile.Delete();
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
@@ -521,7 +564,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         // [THEN] OIOUBL Electronic Document is created at the location, specified in Sales Setup.
         FindSalesCrMemoHeader(SalesCrMemoHeader, SalesHeader."No.");
         SalesCrMemoHeader.TESTFIELD("OIOUBL-Electronic Credit Memo Created", true);
-        VerifyElectronicServiceDocument(SalesCrMemoHeader."No.", SalesCrMemoHeader."OIOUBL-Account Code");
+        VerifyElectronicSalesDocument(SalesCrMemoHeader."No.", SalesCrMemoHeader."OIOUBL-Account Code");
         VerifyInteractionLogEntry(InteractionLogEntry."Document Type"::"Sales Cr. Memo", SalesCrMemoHeader."No.");
 
         DefaultDocumentSendingProfile.DELETE();
@@ -539,28 +582,71 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         InteractionLogEntry: Record "Interaction Log Entry";
         PostedDocNo: Code[20];
     begin
-        // [SCENARIO 378908] Send Posted Sales Credit Memo to Disk = Electronic Document (OIOUBL) should create electronic document
+        // [SCENARIO 378908] Send Posted Sales Credit Memo to Disk = Electronic Document (OIOUBL) should create electronic document.
         Initialize();
-        DocumentSendingProfile.DELETEALL();
+        DocumentSendingProfile.DeleteAll();
         CreateElectronicDocumentFormat(
           OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Credit Memo", CODEUNIT::"OIOUBL-Export Sales Cr. Memo");
 
-        // [GIVEN] DefaultDocumentSendingProfile Disk::"Electronic Document"; Posted Sales Credit Memo;
-        PostedDocNo := CreateAndPostSalesDocument(SalesLine, SalesLine."Document Type"::"Credit Memo");
-        SalesCrMemoHeader.Get(PostedDocNo);
+        // [GIVEN] DefaultDocumentSendingProfile Disk::"Electronic Document", Format = OIOUBL; Posted Sales Credit Memo;
         SetDocumentSendingProfile(DefaultDocumentSendingProfile, DefaultDocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+        PostedDocNo := CreateAndPostSalesDocument(SalesLine, SalesLine."Document Type"::"Credit Memo");
 
-        // [WHEN] Send to Disk = Electronic Document.
-        SalesCrMemoHeader.SetRecFilter();
+        // [WHEN] Run "Send" for Posted Sales Credit Memo.
+        SalesCrMemoHeader.SetRange("No.", PostedDocNo);
         SalesCrMemoHeader.SendRecords();
 
         // [THEN] OIOUBL Electronic Document is created at the location, specified in Sales Setup.
         SalesCrMemoHeader.Get(PostedDocNo);
         SalesCrMemoHeader.TESTFIELD("OIOUBL-Electronic Credit Memo Created", true);
-        VerifyElectronicServiceDocument(SalesCrMemoHeader."No.", SalesCrMemoHeader."OIOUBL-Account Code");
+        VerifyElectronicSalesDocument(SalesCrMemoHeader."No.", SalesCrMemoHeader."OIOUBL-Account Code");
         VerifyInteractionLogEntry(InteractionLogEntry."Document Type"::"Sales Cr. Memo", SalesCrMemoHeader."No.");
 
-        DefaultDocumentSendingProfile.DELETE();
+        DefaultDocumentSendingProfile.Delete();
+    end;
+
+    [Test]
+    [HandlerFunctions('ProfileSelectionMethodStrMenuHandler')]
+    procedure SendMultiplePostedSalesCreditMemosToDiskEDOIOUBL();
+    var
+        DefaultDocumentSendingProfile: Record "Document Sending Profile";
+        SalesLine: Record "Sales Line";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+        InteractionLogEntry: Record "Interaction Log Entry";
+        PostedDocNoLst: List of [Code[20]];
+        AccountCodeLst: List of [Text[30]];
+        PostedDocNoFilter: Text;
+        PostedDocNo: Code[20];
+    begin
+        // [FEATURE] [Zip]
+        // [SCENARIO 318500] Send multiple Posted Sales Credit Memo to Disk = Electronic Document (OIOUBL).
+        Initialize();
+        DocumentSendingProfile.DeleteAll();
+        CreateElectronicDocumentFormat(
+          OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Credit Memo", CODEUNIT::"OIOUBL-Export Sales Cr. Memo");
+
+        // [GIVEN] DefaultDocumentSendingProfile Disk::"Electronic Document", Format = OIOUBL; three Posted Sales Credit Memos.
+        SetDocumentSendingProfile(DefaultDocumentSendingProfile, DefaultDocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+        CreateMultiplePostedSalesDocuments(PostedDocNoLst, PostedDocNoFilter, SalesLine."Document Type"::"Credit Memo", 3);
+
+        // [WHEN] Run "Send" for these Posted Sales Credit Memos.
+        SalesCrMemoHeader.SetFilter("No.", PostedDocNoFilter);
+        SalesCrMemoHeader.SendRecords();
+
+        // [THEN] One ZIP file is created at the location, specified in Sales Setup.
+        // [THEN] ZIP file contains OIOUBL Electronic Document for each Posted Sales Credit Memo.
+        foreach PostedDocNo in PostedDocNoLst do begin
+            SalesCrMemoHeader.Get(PostedDocNo);
+            SalesCrMemoHeader.TESTFIELD("OIOUBL-Electronic Credit Memo Created", true);
+            VerifyInteractionLogEntry(InteractionLogEntry."Document Type"::"Sales Cr. Memo", SalesCrMemoHeader."No.");
+            AccountCodeLst.Add(SalesCrMemoHeader."OIOUBL-Account Code");
+        end;
+        VerifyElectronicSalesDocumentInZipArchive(PostedDocNoLst, AccountCodeLst);
+
+        DefaultDocumentSendingProfile.Delete();
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
@@ -647,13 +733,14 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     begin
         UpdateSalesReceivablesSetup();
         UpdateOIOUBLCountryRegionCode();
-        LibraryERM.DisableMyNotifications(CopyStr(USERID(), 1, 50), SalesHeader.GetModifyCustomerAddressNotificationId());
+        LibraryVariableStorage.Clear();
+        LibraryERM.DisableMyNotifications(CopyStr(UserId(), 1, 50), SalesHeader.GetModifyCustomerAddressNotificationId());
 
-        DocumentSendingProfile.DELETEALL();
-        DocumentSendingProfile.INIT();
+        DocumentSendingProfile.DeleteAll();
+        DocumentSendingProfile.Init();
         DocumentSendingProfile.Default := true;
         DocumentSendingProfile."Electronic Format" := OIOUBLFormatNameTxt;
-        DocumentSendingProfile.INSERT();
+        DocumentSendingProfile.Insert();
 
         OIOUBLNewFileMock.Setup(OIOUBLNewFileMock);
     end;
@@ -701,6 +788,21 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
         // Exercise.
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreateMultiplePostedSalesDocuments(var PostedDocNoLst: List of [Code[20]]; var PostedDocNoFilter: Text; DocumentType: Option; NumberOfDocuments: Integer);
+    var
+        SalesLine: Record "Sales Line";
+        i: Integer;
+    begin
+        Clear(PostedDocNoLst);
+        PostedDocNoFilter := '';
+
+        for i := 1 to NumberOfDocuments do begin
+            PostedDocNoLst.Add(CreateAndPostSalesDocument(SalesLine, DocumentType));
+            PostedDocNoFilter += PostedDocNoLst.Get(i) + '|';
+        end;
+        PostedDocNoFilter := DelChr(PostedDocNoFilter, '>', '|');
     end;
 
     local procedure CreateCustomer(): Code[20];
@@ -794,12 +896,14 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     var
         ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
-        ElectronicDocumentFormat.SetRange(Code, Code);
-        ElectronicDocumentFormat.DeleteAll();
-        ElectronicDocumentFormat.Validate(Code, Code);
-        ElectronicDocumentFormat.Validate(Usage, Usage);
-        ElectronicDocumentFormat.Validate("Codeunit ID", CodeunitID);
-        ElectronicDocumentFormat.Insert(true);
+        with ElectronicDocumentFormat do begin
+            SetRange(Code, Code);
+            DeleteAll();
+            Validate(Code, Code);
+            Validate(Usage, Usage);
+            Validate("Codeunit ID", CodeunitID);
+            Insert(true);
+        end;
     end;
 
     local procedure CreateOIOUBLProfile(): Code[10];
@@ -933,11 +1037,13 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
     begin
         // Use TEMPORARYPATH to save the generated xml to avoid hardcoding for path.
-        SalesReceivablesSetup.GET();
-        SalesReceivablesSetup.VALIDATE("OIOUBL-Cr. Memo Path", TEMPORARYPATH());
-        SalesReceivablesSetup.VALIDATE("OIOUBL-Invoice Path", TEMPORARYPATH());
-        SalesReceivablesSetup.VALIDATE("OIOUBL-Default Profile Code", CreateOIOUBLProfile());
-        SalesReceivablesSetup.MODIFY(true);
+        with SalesReceivablesSetup do begin
+            Get();
+            Validate("OIOUBL-Invoice Path", TemporaryPath());
+            Validate("OIOUBL-Cr. Memo Path", TemporaryPath());
+            Validate("OIOUBL-Default Profile Code", CreateOIOUBLProfile());
+            Modify(true);
+        end;
     end;
 
     local procedure UpdateCompanySwiftCode()
@@ -951,11 +1057,47 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         end;
     end;
 
-    local procedure VerifyElectronicServiceDocument(DocumentNo: Code[20]; AccountCode: Text[30]);
+    local procedure VerifyElectronicSalesDocument(DocumentNo: Code[20]; AccountCode: Text[30]);
     begin
         LibraryXMLReadOnServer.Initialize(OIOUBLNewFileMock.PopFilePath());
         LibraryXMLReadOnServer.VerifyNodeValue(IDTxt, DocumentNo);
         LibraryXMLReadOnServer.VerifyNodeValue(AccountingCostCodeTxt, AccountCode);
+    end;
+
+    local procedure VerifyElectronicSalesDocumentInZipArchive(DocumentNoLst: List of [Code[20]]; AccountCodeLst: List of [Text[30]]);
+    var
+        DataCompression: Codeunit "Data Compression";
+        TempBlob: Codeunit "Temp Blob";
+        ZipFile: File;
+        ZipFileInStream: InStream;
+        ZipEntryOutStream: OutStream;
+        XMLInStream: InStream;
+        ZipEntryList: List of [Text];
+        ZipEntry: Text;
+        ZipEntryLength: Integer;
+        i: Integer;
+    begin
+        for i := 1 to DocumentNoLst.Count() do // dequeue unused XML files names
+            OIOUBLNewFileMock.PopFilePath();
+
+        i := 0;
+        ZipFile.WriteMode(false);
+        ZipFile.Open(OIOUBLNewFileMock.PopFilePath());
+        ZipFile.CreateInStream(ZipFileInStream);
+        DataCompression.OpenZipArchive(ZipFileInStream, false);
+        DataCompression.GetEntryList(ZipEntryList);
+        foreach ZipEntry in ZipEntryList do begin
+            i += 1;
+            Clear(TempBlob);
+            TempBlob.CreateOutStream(ZipEntryOutStream);
+            DataCompression.ExtractEntry(ZipEntry, ZipEntryOutStream, ZipEntryLength);
+            TempBlob.CreateInStream(XMLInStream);
+            LibraryXMLReadOnServer.LoadXMLDocFromInStream(XMLInStream);
+            LibraryXMLReadOnServer.VerifyNodeValue(IDTxt, DocumentNoLst.Get(i));
+            LibraryXMLReadOnServer.VerifyNodeValue(AccountingCostCodeTxt, AccountCodeLst.Get(i));
+        end;
+        DataCompression.CloseZipArchive();
+        ZipFile.Close();
     end;
 
     local procedure VerifyDocumentNoAndTaxAmount(DocumentNo: Code[20]; TaxAmount: Decimal);
@@ -1024,6 +1166,12 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     [MessageHandler]
     procedure MessageHandler(Meassage: Text[1024]);
     begin
+    end;
+
+    [StrMenuHandler]
+    procedure ProfileSelectionMethodStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        Choice := 3; // Use the default profile for all selected documents without confimation.
     end;
 
     [ModalPageHandler]

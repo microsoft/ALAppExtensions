@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Adds plans to the Plan table.
+/// </summary>
 codeunit 9056 "Plan Installer"
 {
     Subtype = Install;

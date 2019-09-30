@@ -48,7 +48,7 @@ codeunit 135091 "Environment Information Test"
         // [SCENARIO] Set the testability to true. IsSaaS returns correct values.
 
         // [Given] Set the testability SaaS to true
-        EnvironmentInformation.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
         // [When] Poll for IsSaaS
         // [Then] Should return true
@@ -62,7 +62,7 @@ codeunit 135091 "Environment Information Test"
         // [SCENARIO] Set the testability to false. IsSaaS returns correct values.
 
         // [Given] Set the testability SaaS to false
-        EnvironmentInformation.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
 
         // [When] Poll for IsSaaS
         // [Then] Should return false

@@ -79,7 +79,8 @@ codeunit 1951 "LP Model Management"
         JsonObject: JsonObject;
         JsonToken: JsonToken;
     begin
-        AzureKeyVault.GetAzureKeyVaultSecret(BackgroundMLEnabledTxt, SecretText);
+        if not AzureKeyVault.GetAzureKeyVaultSecret(BackgroundMLEnabledTxt, SecretText) then
+            exit(true);
         if SecretText = '' then
             exit(true);
 

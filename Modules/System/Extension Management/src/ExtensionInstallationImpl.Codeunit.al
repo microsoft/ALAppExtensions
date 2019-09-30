@@ -20,7 +20,7 @@ codeunit 2500 "Extension Installation Impl"
         NoBuildVersionStringTxt: Label '%1.%2', Comment = '%1=Version Major, %2=Version Minor';
         PermissionErr: Label 'You do not have the required permissions to install the selected app. Contact your Partner or system administrator to install the app or assign you permissions.';
         DependenciesFoundQst: Label 'The extension %1 has a dependency on one or more extensions: %2. \ \Do you want to install %1 and all of its dependencies?', Comment = '%1=name of app, %2=semicolon separated list of uninstalled dependencies';
-        DependentsFoundQst: Label 'The extension %1 is a dependency for on or more extensions: %2. \ \Do you want to uninstall %1 and all of its dependents?', Comment = '%1=name of app, %2=semicolon separated list of installed dependents';
+        DependentsFoundQst: Label 'The extension %1 is a dependency for one or more extensions: %2. \ \Do you want to uninstall %1 and all of its dependents?', Comment = '%1=name of app, %2=semicolon separated list of installed dependents';
         AlreadyInstalledMsg: Label 'The extension %1 is already installed.', Comment = '%1=name of app';
         RestartActivityInstallMsg: Label 'The %1 extension was successfully installed. All active users must sign out and sign in again to see the navigation changes.', Comment = 'Indicates that users need to restart their activity to pick up new menusuite items. %1=Name of Extension';
         AlreadyUninstalledMsg: Label 'The extension %1 is not installed.', Comment = '%1=name of app';
@@ -90,6 +90,8 @@ codeunit 2500 "Extension Installation Impl"
         end;
 
         Dependencies := GetDependenciesForExtensionToInstall(PackageId);
+
+        Dependencies := GetNonExcludedApps(Dependencies);
         CanChange := true;
         if StrLen(Dependencies) <> 0 then
             CanChange := ConfirmManagement.GetResponse(StrSubstNo(DependenciesFoundQst,
@@ -176,6 +178,8 @@ codeunit 2500 "Extension Installation Impl"
 
         Dependents := GetDependentForExtensionToUninstall(PackageId);
 
+        Dependents := GetNonExcludedApps(Dependents);
+
         CanChange := true;
         if StrLen(Dependents) <> 0 then
             CanChange := ConfirmManagement.GetResponse(StrSubstNo(DependentsFoundQst,
@@ -193,6 +197,34 @@ codeunit 2500 "Extension Installation Impl"
             exit(false);
 
         exit(true);
+    end;
+
+    procedure GetNonExcludedApps(Dependents: Text): Text
+    var
+        newDependentsText: Text;
+        auxString: Text;
+        pos: Integer;
+    begin
+        newDependentsText := '';
+        auxString := '';
+
+        pos := StrPos(Dependents, ';');
+        if pos = 0 then
+            if StrPos(Dependents, '_Exclude_') > 0 then
+                exit('')
+            else
+                exit(Dependents);
+
+        while pos > 0 do begin
+            auxString := CopyStr(Dependents, 1, pos);
+            if StrPos(auxString, '_Exclude_') = 0 then
+                newDependentsText := newDependentsText + auxString;
+
+            Dependents := CopyStr(Dependents, pos + 1);
+            pos := StrPos(Dependents, ';');
+        end;
+
+        exit(newDependentsText);
     end;
 
     procedure GetVersionDisplayString(NAVApp: Record "NAV App"): Text
