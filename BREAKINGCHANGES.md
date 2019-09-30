@@ -37,6 +37,17 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 **Error**: _Codeunit 'AutoFormatManagement' is missing_
 
 **Solution**: Codeunit has been renamed to `codeunit 45 "Auto Format"`.
+
+**Error**: _'Codeunit "Auto Format"' does not contain a definition for 'AutoFormatTranslate'_
+
+**Solution**: The procedure `AutoFormatTranslate` has been renamed to `ResolveAutoFormat`. 
+The procedure has also been refactored but the behavior is unchanged:
+- The parameter `AutoFormatType: Enum Auto Format` replaces the parameter `AutoFormatType: Integer`.
+- The logic for cases other than 0 (`Enum DefaultFormat`) and 11 (`Enum CustomFormatExpr`) has been moved to Base Application.
+
+**Error**: _OnResolveAutoFormat has scope OnPrem_
+
+**Solution**: The publisher `OnResolveAutoFormat` has the scope OnPrem, but everyone can subscribe to it and implement a new logic for formatting decimal numbers in text messages.
  
 ---
 
