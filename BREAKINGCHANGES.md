@@ -549,6 +549,36 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 
 **Solution**: Event has been moved to `codeunit 1440 "RC Headlines Page Common"`, function `OnIsAnyExtensionHeadlineVisible`.
 
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'GetCurrentProfileIDNoError'_
+
+**Solution**: Profiles are no longer uniquely identified by their ID: use `'GetCurrentProfileNoError(var AllProfile: Record "All Profile")'` instead.
+
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'ExportProfilesInZipFile'_\
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'ExportProfiles'_\
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'ImportProfiles'_
+
+**Solution**: Export the profiles in the AL format using `DownloadProfileConfigurationPackage` instead.
+
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'InsertProfile'_\
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'InitializeProfiles'_\
+**Error**: _The event 'OnInitializeProfiles' is not found in the target_
+
+**Solution**: Use the [Profile](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-profile-object) objects built into the AL language instead.
+
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'ImportTranslatedResources'_\
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'ImportTranslatedResourcesWithFolderSelection'_\
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'ExportTranslatedResources'_\
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'ExportTranslatedResourcesWithFolderSelection'_\
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'RemoveTranslatedResources'_\
+**Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'RemoveTranslatedResourcesWithLanguageSelection'_\
+**Error**: _The event 'OnTranslateProfileID' is not found in the target_
+
+**Solution**: Use the `CaptionML` and `ProfileDescriptionML` properties in the [Profile](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-profile-object) AL objects to translate the profile, and [Page Customization](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-page-customization-object) AL objects for other translations.
+
+**Error**: _The event 'OnGetBuiltInRoleCenterFilter' is not found in the target_
+
+**Solution**: Mark the profiles as `AllProfile.Enabled := false` to hide it from the profile selection, or subscribe to the [Page Trigger Events](https://docs.microsoft.com/en-us/dynamics-nav/event-types#PageEvents) to hide the profile from specific pages.
+
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'RegexReplace'_
 
 **Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `Replace`.
