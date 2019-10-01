@@ -564,7 +564,6 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 
 **Solution**: Use the `CaptionML` and `ProfileDescriptionML` properties in the [Profile](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-profile-object) AL objects to translate the profile, and [Page Customization](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-page-customization-object) AL objects for other translations.
 
-
 **Error**: _The event 'OnGetBuiltInRoleCenterFilter' is not found in the target_
 
 **Solution**: Mark the profiles as `AllProfile.Enabled := false` to hide it from the profile selection, or subscribe to the [Page Trigger Events](https://docs.microsoft.com/en-us/dynamics-nav/event-types#PageEvents) to hide the profile from specific pages.
