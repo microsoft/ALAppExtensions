@@ -148,6 +148,84 @@ codeunit 135030 "Temp Blob Test"
         Assert.AreEqual(SampleTxt, OutputText, 'Same text was expected.');
     end;
 
+    [Test]
+    procedure ReadFromFieldRefTest()
+    var
+        Media: Record Media;
+        TempBlob: Codeunit "Temp Blob";
+        MediaRecordRef: RecordRef;
+        MediaFieldRef: FieldRef;
+        BlobOutStream: OutStream;
+        BlobFieldNo: Integer;
+        IntegerFieldNo: Integer;
+    begin
+        // [SCENARIO] TempBlob can be set from FieldRef.
+
+        IntegerFieldNo := 5; // Height
+        BlobFieldNo := 3; // Content
+
+        // [THEN] Cannot set the value of an uninitialized FieldRef.
+        asserterror TempBlob.FromFieldRef(MediaFieldRef);
+
+        // [GIVEN] RecordRef is initialized.
+        MediaRecordRef.GetTable(Media);
+        MediaFieldRef := MediaRecordRef.Field(IntegerFieldNo);
+
+        // [THEN] Cannot set the BLOB from a non-BLOB field.
+        asserterror TempBlob.FromFieldRef(MediaFieldRef);
+
+        // [GIVEN] Some value is written on the record.
+        Media.Content.CreateOutStream(BlobOutStream);
+        BlobOutStream.Write(SampleTxt);
+        MediaRecordRef.GetTable(Media);
+        MediaFieldRef := MediaRecordRef.Field(BlobFieldNo);
+
+        TempBlob.FromFieldRef(MediaFieldRef);
+
+        // [THEN] The value is copied In TempBlob.
+        Assert.IsTrue(BlobContentIsEqualToSampleText(TempBlob), 'Same text was expected.');
+    end;
+
+    [Test]
+    procedure WriteToFieldRefTest()
+    var
+        Media: Record Media;
+        TempBlob: Codeunit "Temp Blob";
+        MediaRecordRef: RecordRef;
+        MediaFieldRef: FieldRef;
+        BlobInStream: InStream;
+        OutputText: Text;
+        BlobFieldNo: Integer;
+        IntegerFieldNo: Integer;
+    begin
+        // [SCENARIO] TempBlob can be exported to FieldRef.
+
+        IntegerFieldNo := 5; // Height
+        BlobFieldNo := 3; // Content
+
+        // [GIVEN] A value in TempBlob.
+        WriteSampleTextToBlob(TempBlob);
+
+        // [THEN] Cannot get a value for an uninitialized RecordRef.
+        asserterror TempBlob.ToFieldRef(MediaFieldRef);
+
+        // [GIVEN] RecordRef is initialized.
+        MediaRecordRef.GetTable(Media);
+        MediaFieldRef := MediaRecordRef.Field(IntegerFieldNo);
+
+        // [THEN] Cannot get a value for a non-BLOB field.
+        asserterror TempBlob.ToFieldRef(MediaFieldRef);
+
+        MediaFieldRef := MediaRecordRef.Field(BlobFieldNo);
+        TempBlob.ToFieldRef(MediaFieldRef);
+
+        MediaRecordRef.SetTable(Media);
+        Media.Content.CreateInStream(BlobInStream);
+        BlobInStream.ReadText(OutputText);
+        // [THEN] The same value is copied on the record.
+        Assert.AreEqual(SampleTxt, OutputText, 'Same text was expected.');
+    end;
+
     local procedure WriteSampleTextToBlob(TempBlob: Codeunit "Temp Blob")
     var
         BlobOutStream: OutStream;
