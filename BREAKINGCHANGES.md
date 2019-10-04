@@ -285,10 +285,6 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Solution**: Function has been moved to `codeunit 457 "Environment Information"`, function `IsSandbox`.
 
-**Error**: _'Codeunit "Identity Management"' does not contain a definition for 'IsInvAppId'_
-
-**Solution**: Function has been moved to `codeunit 457 "Environment Information"`, function `IsInvoicing`.
-
 **Error**: _'Codeunit "Tenant Information"' does not contain a definition for 'GetPlatformVersion'_
 
 **Solution**: The function a very technical term about the platform build number used internally by MS. Please use the alternate methods available in either `codeunit 417 "Tenant Information"` or `codeunit 457 "Environment Information"`.
@@ -548,6 +544,10 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 **Error**: _The event 'OnIsAnyExtensionHeadlineVisible' is not found in the target_
 
 **Solution**: Event has been moved to `codeunit 1440 "RC Headlines Page Common"`, function `OnIsAnyExtensionHeadlineVisible`.
+
+**Error**: _'Codeunit "Identity Management"' does not contain a definition for 'IsInvAppId'_
+
+**Solution**: Function has been moved to `codeunit 9995 "Env. Info Proxy"`, function `IsInvoicing`.
 
 **Error**: _'Codeunit "Conf./Personalization Mgt."' does not contain a definition for 'GetCurrentProfileIDNoError'_
 
