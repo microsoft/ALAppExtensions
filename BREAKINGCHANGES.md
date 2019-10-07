@@ -516,6 +516,10 @@ If you prefer platform support vote for the https://experience.dynamics.com/idea
 ---
 
 ## Base Application
+**Error**: _GlobalVarAccess in Event Publisher is set to false_
+
+**Solution**: We do not set GlobalVarAccess anymore, as this property will be discontinued in the next major release of AL. We have set this property to `false` everywhere, but are ready to respond to requests here on GitHub to add additional events/parameters to mitigate this issue immediately.
+
 **Error**: _'Codeunit' does not contain a definition for 'Headline RC Order Processor'_\
 **Error**: _'Codeunit' does not contain a definition for 'Headline RC Accountant'_\
 **Error**: _'Codeunit' does not contain a definition for 'Headline RC Business Manager'_\
