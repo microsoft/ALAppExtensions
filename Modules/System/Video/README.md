@@ -132,7 +132,9 @@ procedure Register(AppID: Guid; Title: Text[250]; VideoUrl: Text[2048]; Category
  played.
 
 ### Show (Method) <a name="Show"></a> 
-Show all videos that belong to a given category.
+
+ Show all videos that belong to a given category.
+ 
 
 #### Syntax
 ```
@@ -141,7 +143,7 @@ procedure Show(Category: Enum "Video Category")
 #### Parameters
 *Category ([Enum "Video Category"]())* 
 
-
+The category to filter the videos by.
 
 ### OnRegisterVideo (Event) <a name="OnRegisterVideo"></a> 
  Notifies the subscribers that they can add links to videos to the Product Videos page.

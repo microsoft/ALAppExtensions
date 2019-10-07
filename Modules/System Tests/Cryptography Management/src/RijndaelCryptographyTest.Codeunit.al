@@ -2,110 +2,110 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 50102 "Rijndael Management Test"
+codeunit 132575 "Rijnadael Cryptography Test"
 {
     Subtype = Test;
 
     var
         LibraryAssert: Codeunit "Library Assert";
-        LibraryRandom: Codeunit "Library Random";
+        LibraryAny: Codeunit "Any";
 
     [Test]
-    procedure "WithEncryptionKey.EncryptText.VerifyExpectedResult"()
+    procedure VerifyEncryptText()
     var
-        RijndaelMgt: Codeunit "Rijndael Management";
+        RijndaelCryptography: Codeunit "Rijndael Cryptography";
         EncryptedText: Text;
     begin
         // [GIVEN] With Encryption Key 
-        RijndaelMgt.InitRijndaelProvider(GetECP256BitEncryptionKey(), 256, 'ECB', 'None');
+        RijndaelCryptography.InitRijndaelProvider(GetECP256BitEncryptionKey(), 256, 'ECB', 'None');
         // [WHEN] Encrypt Text 
-        EncryptedText := RijndaelMgt.Encrypt(GetECP256BitPlainText());
+        EncryptedText := RijndaelCryptography.Encrypt(GetECP256BitPlainText());
         // [THEN] Verify Result 
         LibraryAssert.AreEqual(GetECP256BitCryptedText(), EncryptedText, 'Failed to encrypt text with ECB');
     end;
 
     [Test]
-    procedure "WithEncryptionKey.DecryptText.VerifyExpectedResult"()
+    procedure VerifyDecryptText()
     var
-        RijndaelMgt: Codeunit "Rijndael Management";
+        RijndaelCryptography: Codeunit "Rijndael Cryptography";
         PlainText: Text;
     begin
         // [GIVEN] With Encryption Key 
-        RijndaelMgt.InitRijndaelProvider(GetECP256BitEncryptionKey(), 256, 'ECB', 'None');
+        RijndaelCryptography.InitRijndaelProvider(GetECP256BitEncryptionKey(), 256, 'ECB', 'None');
         // [WHEN] Plain Text
-        PlainText := RijndaelMgt.Decrypt(GetECP256BitCryptedText());
+        PlainText := RijndaelCryptography.Decrypt(GetECP256BitCryptedText());
         // [THEN] Verify Result 
         LibraryAssert.AreEqual(GetECP256BitPlainText(), PlainText, 'Failed to decrypt text with ECB');
     end;
 
     [Test]
-    procedure "DefaultEncryption.EncryptAndDecrypt.VerifyResult"()
+    procedure VerifyEncryptAndDecryptText()
     var
-        RijndaelMgt: Codeunit "Rijndael Management";
+        RijndaelCryptography: Codeunit "Rijndael Cryptography";
         PlainText: Text;
         ResultText: Text;
     begin
         // [GIVEN] Default Encryption         
-        PlainText := LibraryRandom.RandText(50);
+        PlainText := LibraryAny.AlphanumericText(50);
         // [WHEN] Encrypt And Decrypt 
-        ResultText := RijndaelMgt.Decrypt(RijndaelMgt.Encrypt(PlainText));
+        ResultText := RijndaelCryptography.Decrypt(RijndaelCryptography.Encrypt(PlainText));
         // [THEN] Verify Result 
         LibraryAssert.AreEqual(PlainText, ResultText, 'Decrypting an encrypted text failed.');
     end;
 
     [Test]
-    procedure "DefaultEncryption.GetMinKeySize.ExpectedToBeValid"()
+    procedure VerifyMinimumKeySize()
     var
-        RijndaelMgt: Codeunit "Rijndael Management";
+        RijndaelCryptography: Codeunit "Rijndael Cryptography";
         MinSize: Integer;
         MaxSize: Integer;
         SkipSize: Integer;
     begin
         // [GIVEN] Default Encryption
-        RijndaelMgt.InitRijndaelProvider();
+        RijndaelCryptography.InitRijndaelProvider();
         // [WHEN] Min Key Size Allowed 
-        RijndaelMgt.GetLegalKeySizeValues(MinSize, MaxSize, SkipSize);
+        RijndaelCryptography.GetLegalKeySizeValues(MinSize, MaxSize, SkipSize);
         // [THEN] Expected to be valid
-        LibraryAssert.AreEqual(true, RijndaelMgt.IsValidKeySize(MinSize), 'Minimum Key Size failed to verify');
+        LibraryAssert.IsTrue(RijndaelCryptography.IsValidKeySize(MinSize), 'Minimum Key Size failed to verify');
     end;
 
     [Test]
-    procedure "DefaultEncryption.GetMaxKeySize.ExpectedToBeValid"()
+    procedure VerifyMaximumKeySize()
     var
-        RijndaelMgt: Codeunit "Rijndael Management";
+        RijndaelCryptography: Codeunit "Rijndael Cryptography";
         MinSize: Integer;
         MaxSize: Integer;
         SkipSize: Integer;
     begin
         // [GIVEN] Default Encryption
-        RijndaelMgt.InitRijndaelProvider();
+        RijndaelCryptography.InitRijndaelProvider();
         // [WHEN] Min Key Size Allowed 
-        RijndaelMgt.GetLegalKeySizeValues(MinSize, MaxSize, SkipSize);
+        RijndaelCryptography.GetLegalKeySizeValues(MinSize, MaxSize, SkipSize);
         // [THEN] Expected to be valid
-        LibraryAssert.AreEqual(true, RijndaelMgt.IsValidKeySize(MaxSize), 'Minimum Key Size failed to verify');
+        LibraryAssert.IsTrue(RijndaelCryptography.IsValidKeySize(MaxSize), 'Minimum Key Size failed to verify');
     end;
 
     [Test]
-    procedure "DefaultEncryption.CreatedEncryptionKey.ValidateDecryption"()
+    procedure VerifyCreateEncryptionKeyAndDecryption()
     var
-        RijndaelMgt1: Codeunit "Rijndael Management";
-        RijndaelMgt2: Codeunit "Rijndael Management";
+        RijndaelCryptography1: Codeunit "Rijndael Cryptography";
+        RijndaelCryptography2: Codeunit "Rijndael Cryptography";
         KeyAsBase64: Text;
         VectorAsBase64: Text;
         PlainText: Text;
         CryptedText: Text;
     begin
         // [GIVEN] Default Encryption        
-        RijndaelMgt1.InitRijndaelProvider();
-        PlainText := LibraryRandom.RandText(50);
+        RijndaelCryptography1.InitRijndaelProvider();
+        PlainText := LibraryAny.AlphanumericText(50);
 
         // [WHEN] Get Created Encryption Data
-        RijndaelMgt1.GetEncryptionData(KeyAsBase64, VectorAsBase64);
-        CryptedText := RijndaelMgt1.Encrypt(PlainText);
+        RijndaelCryptography1.GetEncryptionData(KeyAsBase64, VectorAsBase64);
+        CryptedText := RijndaelCryptography1.Encrypt(PlainText);
 
         // [THEN] Validate Decryption With Generated Key
-        RijndaelMgt2.SetEncryptionData(KeyAsBase64, VectorAsBase64);
-        LibraryAssert.AreEqual(PlainText, RijndaelMgt2.Decrypt(CryptedText), 'Set Encryption Datay and Decrypt failed');
+        RijndaelCryptography2.SetEncryptionData(KeyAsBase64, VectorAsBase64);
+        LibraryAssert.AreEqual(PlainText, RijndaelCryptography2.Decrypt(CryptedText), 'Set Encryption Datay and Decrypt failed');
     end;
 
     local procedure GetECP256BitCryptedText(): Text

@@ -31,6 +31,13 @@ codeunit 9996 "Upgrade Tag Impl."
 
     procedure SetAllUpgradeTags()
     var
+        ConstUpgradeTags: Record "Upgrade Tags";
+    begin
+        SetAllUpgradeTags(CopyStr(CompanyName(), 1, MaxStrLen(ConstUpgradeTags.Company)));
+    end;
+
+    procedure SetAllUpgradeTags(NewCompanyName: Code[30])
+    var
         UpgradeTag: Codeunit "Upgrade Tag";
         PerCompanyUpgradeTags: List of [Code[250]];
         PerDatabaseUpgradeTags: List of [Code[250]];
@@ -39,10 +46,10 @@ codeunit 9996 "Upgrade Tag Impl."
         EnsurePerDatabaseUpgradeTagsExist(PerDatabaseUpgradeTags);
 
         UpgradeTag.OnGetPerCompanyUpgradeTags(PerCompanyUpgradeTags);
-        EnsurePerCompanyUpgradeTagsExist(PerCompanyUpgradeTags);
+        EnsurePerCompanyUpgradeTagsExist(PerCompanyUpgradeTags, NewCompanyName);
     end;
 
-    local procedure EnsurePerCompanyUpgradeTagsExist(PerCompanyUpgradeTags: List of [Code[250]])
+    local procedure EnsurePerCompanyUpgradeTagsExist(PerCompanyUpgradeTags: List of [Code[250]]; TagCompanyName: Code[30])
     var
         UpgradeTag: Code[250];
     begin
@@ -50,8 +57,8 @@ codeunit 9996 "Upgrade Tag Impl."
             exit;
 
         foreach UpgradeTag in PerCompanyUpgradeTags do
-            if not HasUpgradeTag(UpgradeTag) then
-                SetUpgradeTag(UpgradeTag);
+            if not HasUpgradeTag(UpgradeTag, TagCompanyName) then
+                SetUpgradeTagForCompany(UpgradeTag, TagCompanyName);
     end;
 
     local procedure EnsurePerDatabaseUpgradeTagsExist(PerDatabaseUpgradeTags: List of [Code[250]])

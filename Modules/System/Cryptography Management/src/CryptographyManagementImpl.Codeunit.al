@@ -9,6 +9,8 @@ codeunit 1279 "Cryptography Management Impl."
 
     var
         CryptographyManagement: Codeunit "Cryptography Management";
+        RijndaelProvider: DotNet "Cryptography.RijndaelManaged";
+        CryptoStreamMode: DotNet "Cryptography.CryptoStreamMode";
         ExportEncryptionKeyFileDialogTxt: Label 'Choose the location where you want to save the encryption key.';
         ExportEncryptionKeyConfirmQst: Label 'The encryption key file must be protected by a password and stored in a safe location.\\Do you want to save the encryption key?';
         FileImportCaptionMsg: Label 'Select a key file to import.';
@@ -140,7 +142,7 @@ codeunit 1279 "Cryptography Management Impl."
     var
         PasswordDialogManagement: Codeunit "Password Dialog Management";
         TempBlob: Codeunit "Temp Blob";
-        ExportKey: Boolean;
+        ShouldExportKey: Boolean;
         Password: Text;
     begin
         if Silent then begin
@@ -152,11 +154,11 @@ codeunit 1279 "Cryptography Management Impl."
             if Confirm(ExportEncryptionKeyConfirmQst, true) then begin
                 Password := PasswordDialogManagement.OpenPasswordDialog();
                 if Password <> '' then
-                    ExportKey := true;
+                    ShouldExportKey := true;
             end;
 
             CreateEncryptionKeys();
-            if ExportKey then begin
+            if ShouldExportKey then begin
                 GetEncryptionKeyAsStream(TempBlob, Password);
                 DownloadEncryptionFileFromStream(TempBlob);
             end;
@@ -345,5 +347,153 @@ codeunit 1279 "Cryptography Management Impl."
             Error(GetLastErrorText());
         exit(ConvertByteHashToString(HashBytes));
     end;
-}
 
+    procedure InitRijndaelProvider()
+    begin
+        RijndaelProvider := RijndaelProvider.RijndaelManaged();
+        RijndaelProvider.GenerateKey();
+        RijndaelProvider.GenerateIV();
+    end;
+
+    procedure InitRijndaelProvider(EncryptionKey: Text)
+    var
+        Encoding: DotNet Encoding;
+    begin
+        InitRijndaelProvider();
+        RijndaelProvider."Key" := Encoding.Default().GetBytes(EncryptionKey);
+    end;
+
+    procedure InitRijndaelProvider(EncryptionKey: Text; BlockSize: Integer)
+    begin
+        InitRijndaelProvider(EncryptionKey);
+        SetBlockSize(BlockSize);
+    end;
+
+    procedure InitRijndaelProvider(EncryptionKey: Text; BlockSize: Integer; CipherMode: Text)
+    begin
+        InitRijndaelProvider(EncryptionKey, BlockSize);
+        SetCipherMode(CipherMode);
+    end;
+
+    procedure InitRijndaelProvider(EncryptionKey: Text; BlockSize: Integer; CipherMode: Text; PaddingMode: Text)
+    begin
+        InitRijndaelProvider(EncryptionKey, BlockSize, CipherMode);
+        SetPaddingMode(PaddingMode);
+    end;
+
+    procedure SetBlockSize(BlockSize: Integer)
+    begin
+        Construct();
+        RijndaelProvider.BlockSize := BlockSize;
+    end;
+
+    procedure SetCipherMode(CipherMode: Text)
+    var
+        CryptographyCipherMode: DotNet "Cryptography.CipherMode";
+    begin
+        Construct();
+        CryptographyCipherMode := RijndaelProvider.Mode();
+        RijndaelProvider.Mode := CryptographyCipherMode.Parse(CryptographyCipherMode.GetType(), CipherMode);
+    end;
+
+    procedure SetPaddingMode(PaddingMode: Text)
+    var
+        CryptographyPaddingMode: DotNet "Cryptography.PaddingMode";
+    begin
+        Construct();
+        CryptographyPaddingMode := RijndaelProvider.Padding();
+        RijndaelProvider.Padding := CryptographyPaddingMode.Parse(CryptographyPaddingMode.GetType(), PaddingMode);
+    end;
+
+    procedure SetEncryptionData(KeyAsBase64: Text; VectorAsBase64: Text)
+    var
+        Convert: DotNet Convert;
+    begin
+        Construct();
+        RijndaelProvider."Key"(Convert.FromBase64String(KeyAsBase64));
+        RijndaelProvider.IV(Convert.FromBase64String(VectorAsBase64));
+    end;
+
+    procedure IsValidKeySize(KeySize: Integer): Boolean
+    begin
+        Construct();
+        exit(RijndaelProvider.ValidKeySize(KeySize))
+    end;
+
+    procedure GetLegalKeySizeValues(var MinSize: Integer; var MaxSize: Integer; var SkipSize: Integer)
+    var
+        KeySizes: DotNet "Cryptography.KeySizes";
+    begin
+        Construct();
+        KeySizes := RijndaelProvider.LegalKeySizes().GetValue(0);
+        MinSize := KeySizes.MinSize();
+        MaxSize := KeySizes.MaxSize();
+        SkipSize := KeySizes.SkipSize();
+    end;
+
+    procedure GetLegalBlockSizeValues(var MinSize: Integer; var MaxSize: Integer; var SkipSize: Integer)
+    var
+        KeySizes: DotNet "Cryptography.KeySizes";
+    begin
+        Construct();
+        KeySizes := RijndaelProvider.LegalBlockSizes().GetValue(0);
+        MinSize := KeySizes.MinSize();
+        MaxSize := KeySizes.MaxSize();
+        SkipSize := KeySizes.SkipSize();
+    end;
+
+    procedure GetEncryptionData(var KeyAsBase64: Text; var VectorAsBase64: Text)
+    var
+        Convert: DotNet Convert;
+    begin
+        Construct();
+        KeyAsBase64 := Convert.ToBase64String(RijndaelProvider."Key"());
+        VectorAsBase64 := Convert.ToBase64String(RijndaelProvider.IV());
+    end;
+
+    procedure EncryptRijndael(PlainText: Text) EncryptedText: Text
+    var
+        Encryptor: DotNet "Cryptography.ICryptoTransform";
+        Convert: DotNet Convert;
+        EncMemoryStream: DotNet MemoryStream;
+        EncCryptoStream: DotNet "Cryptography.CryptoStream";
+        EncStreamWriter: DotNet StreamWriter;
+    begin
+        Construct();
+        Encryptor := RijndaelProvider.CreateEncryptor();
+        EncMemoryStream := EncMemoryStream.MemoryStream();
+        EncCryptoStream := EncCryptoStream.CryptoStream(EncMemoryStream, Encryptor, CryptoStreamMode.Write);
+        EncStreamWriter := EncStreamWriter.StreamWriter(EncCryptoStream);
+        EncStreamWriter.Write(PlainText);
+        EncStreamWriter.Close();
+        EncCryptoStream.Close();
+        EncMemoryStream.Close();
+        EncryptedText := Convert.ToBase64String(EncMemoryStream.ToArray());
+    end;
+
+    procedure DecryptRijndael(EncryptedText: Text) PlainText: Text
+    var
+        Decryptor: DotNet "Cryptography.ICryptoTransform";
+        Convert: DotNet Convert;
+        DecMemoryStream: DotNet MemoryStream;
+        DecCryptoStream: DotNet "Cryptography.CryptoStream";
+        DecStreamReader: DotNet StreamReader;
+        NullChar: Char;
+    begin
+        Construct();
+        Decryptor := RijndaelProvider.CreateDecryptor();
+        DecMemoryStream := DecMemoryStream.MemoryStream(Convert.FromBase64String(EncryptedText));
+        DecCryptoStream := DecCryptoStream.CryptoStream(DecMemoryStream, Decryptor, CryptoStreamMode.Read);
+        DecStreamReader := DecStreamReader.StreamReader(DecCryptoStream);
+        PlainText := DelChr(DecStreamReader.ReadToEnd(), '>', NullChar);
+        DecStreamReader.Close();
+        DecCryptoStream.Close();
+        DecMemoryStream.Close();
+    end;
+
+    local procedure Construct()
+    begin
+        if IsNull(RijndaelProvider) then
+            InitRijndaelProvider();
+    end;
+}

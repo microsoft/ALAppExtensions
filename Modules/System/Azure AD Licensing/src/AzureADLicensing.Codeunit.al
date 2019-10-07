@@ -160,6 +160,7 @@ codeunit 458 "Azure AD Licensing"
     /// <summary>
     /// Sets whether to include unknown plans when moving to the next subscribed SKU in subscribed SKUs collection.
     /// </summary>
+    /// <param name="IncludeUnknownPlans">The value to be set to the flag.</param>
     [Scope('OnPrem')]
     procedure SetIncludeUnknownPlans(IncludeUnknownPlans: Boolean)
     begin
@@ -169,6 +170,7 @@ codeunit 458 "Azure AD Licensing"
     /// <summary>
     /// Sets a flag that is used to determine whether a test is in progress or not.
     /// </summary>
+    /// <param name="TestInProgress">The value to be set to the flag.</param>
     [Scope('OnPrem')]
     procedure SetTestInProgress(TestInProgress: Boolean)
     begin

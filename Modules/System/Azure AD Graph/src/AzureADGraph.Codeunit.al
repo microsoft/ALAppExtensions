@@ -134,12 +134,13 @@ codeunit 9012 "Azure AD Graph"
     /// <summary>
     /// Sets a flag that is used to determine whether a test is in progress or not.
     /// </summary>
+    /// <param name="TestInProgress">The value to be set to the flag.</param>
     [Scope('OnPrem')]
     procedure SetTestInProgress(TestInProgress: Boolean)
     begin
         AzureADGraphImpl.SetTestInProgress(TestInProgress);
     end;
-	
+
     /// <summary>
     /// Publishes an event that is used to initialize the Azure AD Graph.
     /// </summary>

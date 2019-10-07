@@ -29,9 +29,9 @@ The key of the new BLOB.
 procedure Exists("Key": BigInteger): Boolean
 ```
 #### Parameters
-*"Key" ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
+*Key ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
 
-
+The key of the BLOB.
 
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
@@ -47,9 +47,9 @@ True if the BLOB with the given key exists.
 procedure Delete("Key": BigInteger): Boolean
 ```
 #### Parameters
-*"Key" ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
+*Key ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
 
-
+The key of the BLOB.
 
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
@@ -65,9 +65,9 @@ True if the BLOB with the given key was deleted.
 procedure CopyFromInStream("Key": BigInteger; Source: InStream): Boolean
 ```
 #### Parameters
-*"Key" ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
+*Key ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
 
-
+The key of the BLOB.
 
 *Source ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
 
@@ -87,9 +87,9 @@ True if the BLOB with the given key was updated with the contents of the source.
 procedure CopyToOutStream("Key": BigInteger; Destination: OutStream): Boolean
 ```
 #### Parameters
-*"Key" ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
+*Key ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
 
-
+The key of the BLOB.
 
 *Destination ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
 

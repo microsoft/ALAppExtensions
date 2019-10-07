@@ -162,7 +162,7 @@ procedure GetDefaultApplicationLanguageId(): Integer
 #### Return Value
 *[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
 
-
+The ID of the default language for the application.
 ### ValidateApplicationLanguageId (Method) <a name="ValidateApplicationLanguageId"></a> 
 
  Checks whether the provided language is a valid application language.
@@ -238,7 +238,7 @@ Exit parameter that holds the user language code.
 
 *Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
-
+To change the default behavior of the function that emits the event, set this parameter to true.
 
 
 ## Languages (Page 9)

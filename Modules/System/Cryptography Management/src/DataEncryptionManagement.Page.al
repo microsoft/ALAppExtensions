@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Exposes functionality that allows super users for on-premises versions to enable or disable encryption, import, export or change the encryption key.
+/// </summary>
+
 page 9905 "Data Encryption Management"
 {
     Extensible = false;
@@ -17,14 +21,14 @@ page 9905 "Data Encryption Management"
     {
         area(content)
         {
-            field(EncryptionEnabledState; EncryptionEnabledState)
+            field(EncryptionEnabledState; IsEncryptionEnabled)
             {
                 ApplicationArea = All;
                 Caption = 'Encryption Enabled';
                 Editable = false;
                 ToolTip = 'Specifies if an encryption key exists and is enabled on the Business Central Server.';
             }
-            field(EncryptionKeyExistsState; EncryptionKeyExistsState)
+            field(EncryptionKeyExistsState; DoesEncryptionKeyExist)
             {
                 ApplicationArea = All;
                 Caption = 'Encryption Key Exists';
@@ -142,8 +146,8 @@ page 9905 "Data Encryption Management"
     var
         CryptographyManagement: Codeunit "Cryptography Management";
         CryptographyManagementImpl: Codeunit "Cryptography Management Impl.";
-        EncryptionEnabledState: Boolean;
-        EncryptionKeyExistsState: Boolean;
+        IsEncryptionEnabled: Boolean;
+        DoesEncryptionKeyExist: Boolean;
         EnableEncryptionActionEnabled: Boolean;
         ChangeKeyActionEnabled: Boolean;
         ExportKeyActionEnabled: Boolean;
@@ -152,13 +156,12 @@ page 9905 "Data Encryption Management"
 
     local procedure RefreshEncryptionStatus()
     begin
-        EncryptionEnabledState := EncryptionEnabled();
-        EncryptionKeyExistsState := EncryptionKeyExists();
+        IsEncryptionEnabled := EncryptionEnabled();
+        DoesEncryptionKeyExist := EncryptionKeyExists();
 
-        EnableEncryptionActionEnabled := not EncryptionEnabledState;
-        ExportKeyActionEnabled := EncryptionKeyExistsState;
-        DisableEncryptionActionEnabled := EncryptionEnabledState;
-        ChangeKeyActionEnabled := EncryptionKeyExistsState;
+        EnableEncryptionActionEnabled := not IsEncryptionEnabled;
+        ExportKeyActionEnabled := DoesEncryptionKeyExist;
+        DisableEncryptionActionEnabled := IsEncryptionEnabled;
+        ChangeKeyActionEnabled := DoesEncryptionKeyExist;
     end;
 }
-

@@ -17,7 +17,7 @@ page 3712 Translation
         {
             repeater(Group)
             {
-                field(LanguageName; LanguageName)
+                field(LanguageName; LanguageNameValue)
                 {
                     ApplicationArea = All;
                     Caption = 'Target Language';
@@ -42,7 +42,7 @@ page 3712 Translation
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
-        LanguageName := '';
+        LanguageNameValue := '';
     end;
 
     trigger OnAfterGetRecord()
@@ -55,14 +55,14 @@ page 3712 Translation
         Language: Codeunit Language;
     begin
         CalcFields("Language Name");
-        LanguageName := "Language Name";
-        if LanguageName = '' then
-            LanguageName := Language.GetWindowsLanguageName("Language ID");
+        LanguageNameValue := "Language Name";
+        if LanguageNameValue = '' then
+            LanguageNameValue := Language.GetWindowsLanguageName("Language ID");
     end;
 
     var
         CaptionTxt: Text;
-        LanguageName: Text;
+        LanguageNameValue: Text;
 
     /// <summary>
     /// Sets the page's caption.

@@ -12,7 +12,7 @@ The Assisted Setup module provides capabilities for:
  - Running an assisted setup guide page that takes the user through the various steps to set up an extension. 
 
 # Usage example
-The Base Application adds quite a few assisted setup guides by subscribing to the OnRegister event. In the following example, the Data Migration Wizard is being added to the Assisted Setup through the API exposed for the module. See the details for codeunit 1814 “Assisted Setup Subscribers,” which shows that the Data Migration Wizard, is added along with a video and a link to more information. Also, the English (United States) translation for the name is added. 
+The Base Application adds quite a few assisted setup guides by subscribing to the OnRegister event. In the following example, the Data Migration Wizard is being added to the Assisted Setup through the API exposed for the module. See the details for codeunit 1814 "Assisted Setup Subscribers", which shows that the Data Migration Wizard, is added along with a video and a link to more information. Also, the English (United States) translation for the name is added. 
 ```
         CurrentGlobalLanguage := GLOBALLANGUAGE; 
         // Getting Started 
@@ -181,7 +181,7 @@ The ID of the page to open when the user clicks the setup.
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
-
+True if an assisted setup guide for provided extension and page IDs exists; false otherwise.
 ### ExistsAndIsNotComplete (Method) <a name="ExistsAndIsNotComplete"></a> 
 Checks whether as assisted setup guide exists but has not been completed.
 
@@ -264,7 +264,7 @@ Notifies the user that the list of assisted setup guides is being gathered, and 
 internal procedure OnRegister()
 ```
 ### OnReRunOfCompletedSetup (Event) <a name="OnReRunOfCompletedSetup"></a> 
-Notifies the user that a setup that was previously completed is being run again. 
+Notifies the user that a setup that was previously completed is being run again.
 
 #### Syntax
 ```
@@ -285,7 +285,7 @@ The ID of the page to open when the user clicks the setup.
 The flag which if set, would stop executing the run of the assisted setup guide.
 
 ### OnAfterRun (Event) <a name="OnAfterRun"></a> 
-Notifies that the run of the assisted setup has finished. It lets subscribers react when a user completes the steps in a guide.  
+Notifies that the run of the assisted setup has finished.
 
 #### Syntax
 ```

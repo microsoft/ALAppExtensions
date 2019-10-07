@@ -87,5 +87,6 @@
                                    "name":  "Assisted Setup Test Library",
                                    "publisher":  "Microsoft"
                                }
-                           ]
+                           ],
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2106205"
 }

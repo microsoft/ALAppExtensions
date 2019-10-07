@@ -87,7 +87,7 @@ codeunit 135030 "Temp Blob Test"
         IntegerFieldNo: Integer;
     begin
         // [SCENARIO] TempBlob can be set from RecordRef.
-
+        
         IntegerFieldNo := 5; // Height
         BlobFieldNo := 3; // Content
 
@@ -123,7 +123,6 @@ codeunit 135030 "Temp Blob Test"
         IntegerFieldNo: Integer;
     begin
         // [SCENARIO] TempBlob can be exported to RecordRef.
-
         IntegerFieldNo := 5; // Height
         BlobFieldNo := 3; // Content
 
@@ -160,6 +159,7 @@ codeunit 135030 "Temp Blob Test"
         IntegerFieldNo: Integer;
     begin
         // [SCENARIO] TempBlob can be set from FieldRef.
+        Media.DeleteAll();
 
         IntegerFieldNo := 5; // Height
         BlobFieldNo := 3; // Content
@@ -175,10 +175,11 @@ codeunit 135030 "Temp Blob Test"
         asserterror TempBlob.FromFieldRef(MediaFieldRef);
 
         // [GIVEN] Some value is written on the record.
+
+        MediaFieldRef := MediaRecordRef.Field(BlobFieldNo);
         Media.Content.CreateOutStream(BlobOutStream);
         BlobOutStream.Write(SampleTxt);
         MediaRecordRef.GetTable(Media);
-        MediaFieldRef := MediaRecordRef.Field(BlobFieldNo);
 
         TempBlob.FromFieldRef(MediaFieldRef);
 

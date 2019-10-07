@@ -1,12 +1,12 @@
 This module provides functionality for retrieving user and tenant information from Azure AD.
 
-Use this module to do the following:
-- retrieve user information from Azure AD
-- retrieve a user's assigned plans
-- retrieve a user's roles
-- retrieve the list of subscriptions owned by the current tenant
-- retrieve the list of directory roles 
-- retrieve information about the current tenant
+Use this module to retrieve the following:
+- User information from Azure AD
+- A user's assigned plans
+- A user's roles
+- The list of subscriptions owned by the current tenant
+- The list of directory roles 
+- Information about the current tenant
 
 This module is meant for on-premises use only.
 
@@ -226,7 +226,7 @@ procedure SetTestInProgress(TestInProgress: Boolean)
 #### Parameters
 *TestInProgress ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
-
+The value to be set to the flag.
 
 ### OnInitialize (Event) <a name="OnInitialize"></a> 
 

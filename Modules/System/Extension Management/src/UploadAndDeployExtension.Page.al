@@ -24,7 +24,7 @@ page 2507 "Upload And Deploy Extension"
                 Style = StrongAccent;
                 StyleExpr = TRUE;
             }
-            field(FileName; FileName)
+            field(FileName; FilePath)
             {
                 ApplicationArea = All;
                 Caption = 'Select .app file';
@@ -32,7 +32,7 @@ page 2507 "Upload And Deploy Extension"
 
                 trigger OnAssistEdit()
                 begin
-                    UploadIntoStream(DialogTitleTxt, '', AppFileFilterTxt, FileName, FileStream);
+                    UploadIntoStream(DialogTitleTxt, '', AppFileFilterTxt, FilePath, FileStream);
                 end;
             }
             label("Deploy Extension")
@@ -42,7 +42,7 @@ page 2507 "Upload And Deploy Extension"
                 Style = StrongAccent;
                 StyleExpr = TRUE;
             }
-            field(DeployTo; DeployTo)
+            field(DeployTo; DeployToValue)
             {
                 ApplicationArea = All;
                 Caption = 'Deploy to';
@@ -55,10 +55,10 @@ page 2507 "Upload And Deploy Extension"
 
                 trigger OnAssistEdit()
                 var
-                    Language: Codeunit Language;
+                    LanguageManagement: Codeunit Language;
                 begin
-                    Language.LookupApplicationLanguageId(LanguageID);
-                    LanguageName := Language.GetWindowsLanguageName(LanguageID);
+                    LanguageManagement.LookupApplicationLanguageId(LanguageID);
+                    LanguageName := LanguageManagement.GetWindowsLanguageName(LanguageID);
                 end;
             }
             field(Disclaimer; DisclaimerLbl)
@@ -73,7 +73,7 @@ page 2507 "Upload And Deploy Extension"
                     Message(DisclaimerMsg);
                 end;
             }
-            field(Accepted; Accepted)
+            field(Accepted; IsAccepted)
             {
                 ApplicationArea = All;
                 Caption = 'Accept';
@@ -91,7 +91,7 @@ page 2507 "Upload And Deploy Extension"
                 ApplicationArea = All;
                 Caption = 'Deploy';
                 Image = ServiceOrderSetup;
-                Enabled = Accepted;
+                Enabled = IsAccepted;
                 InFooterBar = true;
                 Promoted = true;
                 RunPageMode = Edit;
@@ -100,10 +100,10 @@ page 2507 "Upload And Deploy Extension"
                 var
                     ExtensionOperationImpl: Codeunit "Extension Operation Impl";
                 begin
-                    if FileName = '' then
+                    if FilePath = '' then
                         Message(ExtensionNotUploadedMsg)
                     else begin
-                        ExtensionOperationImpl.DeployAndUploadExtension(FileStream, LanguageID, DeployTo);
+                        ExtensionOperationImpl.DeployAndUploadExtension(FileStream, LanguageID, DeployToValue);
                         CurrPage.Close();
                     end;
                 end;
@@ -126,16 +126,16 @@ page 2507 "Upload And Deploy Extension"
 
     trigger OnOpenPage()
     var
-        Language: Codeunit Language;
+        LanguageManagement: Codeunit Language;
     begin
         LanguageID := GlobalLanguage();
-        LanguageName := Language.GetWindowsLanguageName(LanguageID);
+        LanguageName := LanguageManagement.GetWindowsLanguageName(LanguageID);
     end;
 
     var
         FileStream: InStream;
-        DeployTo: Option "Current version","Next minor version","Next major version";
-        FileName: Text;
+        DeployToValue: Option "Current version","Next minor version","Next major version";
+        FilePath: Text;
         LanguageName: Text;
         LanguageID: Integer;
         DialogTitleTxt: Label 'Select .APP';
@@ -143,6 +143,6 @@ page 2507 "Upload And Deploy Extension"
         ExtensionNotUploadedMsg: Label 'Please upload an extension file before clicking "Deploy" button.';
         DisclaimerLbl: Label 'Disclaimer';
         DisclaimerMsg: Label 'The creator of this customized extension is responsible for its licensing. The customized extension is subject to the terms and conditions, privacy policy, support and billing offered by the creator, as applicable, and does not create any liability or obligation for Microsoft.\\The publisher of the customized extension must maintain compatibility with new releases of Dynamics 365 Business Central. An extension that is not compatible with a new release within 90 days of the release will be removed and the tenant upgraded.';
-        Accepted: Boolean;
+        IsAccepted: Boolean;
 }
 

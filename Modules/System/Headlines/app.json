@@ -3,7 +3,7 @@
     "name":  "Headlines",
     "publisher":  "Microsoft",
     "brief":  "Helps with constructing the text for headlines.",
-    "description":  "The module provides various functions related to headlines functionality. It includes constants for the maximum allowed text length, functionality for truncating text, emphasizing text, determining if the user logged in recently (for greetings) and standard greeting messages.",
+    "description":  "This module provides methods for constructing headlines on Role Centers. It includes constants for the maximum allowed text length, functionality for truncating and emphasizing text, and methods related to the standard greeting headline.",
     "version":  "16.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
@@ -45,5 +45,6 @@
                          "to":  1470
                      }
                  ],
-    "target":  "OnPrem"
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2106205"
 }

@@ -42,7 +42,7 @@ codeunit 9999 "Upgrade Tag"
     /// <summary>
     /// Sets the upgrade tag.
     /// </summary>
-    /// <param name="Tag">Tag code to save</param>
+    /// <param name="NewTag">Tag code to save</param>
     procedure SetUpgradeTag(NewTag: Code[250])
     begin
         UpgradeTagImpl.SetUpgradeTag(NewTag);
@@ -52,10 +52,19 @@ codeunit 9999 "Upgrade Tag"
     /// This method should be used to set all upgrade tags in a new company. 
     /// The method is called from codeunit 2 - Company Initialize.
     /// </summary>
-    [Scope('OnPrem')]
     procedure SetAllUpgradeTags()
     begin
         UpgradeTagImpl.SetAllUpgradeTags();
+    end;
+
+    /// <summary>
+    /// This method should be used to set all upgrade tags in a new company. 
+    /// The method is called from Copy Company Report
+    /// </summary>
+    /// <param name="NewCompanyName">Name of the company set the upgrade tags</param>
+    procedure SetAllUpgradeTags(NewCompanyName: Code[30])
+    begin
+        UpgradeTagImpl.SetAllUpgradeTags(NewCompanyName);
     end;
 
     /// <summary>
