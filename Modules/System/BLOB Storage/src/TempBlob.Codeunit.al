@@ -100,9 +100,9 @@ codeunit 4100 "Temp Blob"
     end;
 
     /// <summary>
-    /// Copies the value of the BLOB field in the FieldRef to the TempBlob.
+    /// Copies the value of the FieldRef to the TempBlob.
     /// </summary>
-    /// <param name="FieldRef">A FieldRef variable attached to a Record's field.</param>
+    /// <param name="FieldRef">A FieldRef variable attached to a field for a record.</param>
     procedure FromFieldRef(BlobFieldRef: FieldRef)
     begin
         TempBlobImpl.FromFieldRef(BlobFieldRef);
@@ -111,7 +111,7 @@ codeunit 4100 "Temp Blob"
     /// <summary>
     /// Copies the value of the TempBlob to the specified FieldRef.
     /// </summary>
-    /// <param name="FieldRef">A FieldRef variable attached to a Record's field.</param>
+    /// <param name="FieldRef">A FieldRef variable attached to a field for a record.</param>
     procedure ToFieldRef(var BlobFieldRef: FieldRef)
     begin
         TempBlobImpl.ToFieldRef(BlobFieldRef);
