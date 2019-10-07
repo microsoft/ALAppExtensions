@@ -99,6 +99,7 @@ codeunit 43 Language
     /// <summary>
     /// Gets the default application language ID.
     /// </summary>
+    /// <returns>The ID of the default language for the application.</returns>
     procedure GetDefaultApplicationLanguageId(): Integer
     var
         LanguageImpl: Codeunit "Language Impl.";
@@ -157,7 +158,7 @@ codeunit 43 Language
     /// </summary>
     /// <seealso cref="GetUserLanguageCode"/>
     /// <param name="UserLanguageCode">Exit parameter that holds the user language code.</param>
-    /// <param name="IsHandled">To change the default behavior of the function that emits the event, set this parameter to true.</param>
+    /// <param name="Handled">To change the default behavior of the function that emits the event, set this parameter to true.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnGetUserLanguageCode(var UserLanguageCode: Code[10]; var Handled: Boolean)
     begin

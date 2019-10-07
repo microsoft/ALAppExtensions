@@ -235,7 +235,7 @@ page 2501 "Extension Details"
                                 HyperLink("Privacy Statement");
                             end;
                         }
-                        field(Accepted; Accepted)
+                        field(Accepted; IsAccepted)
                         {
                             ApplicationArea = All;
                             Caption = 'I accept the terms and conditions';
@@ -287,7 +287,7 @@ page 2501 "Extension Details"
             {
                 ApplicationArea = All;
                 Caption = 'Install';
-                Enabled = Accepted;
+                Enabled = IsAccepted;
                 Image = Approve;
                 InFooterBar = true;
                 Visible = InstallEnabled AND (not IsInstalled);
@@ -337,7 +337,7 @@ page 2501 "Extension Details"
         BackEnabled: Boolean;
         NextEnabled: Boolean;
         InstallEnabled: Boolean;
-        Accepted: Boolean;
+        IsAccepted: Boolean;
         IsInstalled: Boolean;
         Legal: Boolean;
         Step1Enabled: Boolean;
@@ -395,7 +395,7 @@ page 2501 "Extension Details"
         Legal := ((StrLen("Privacy Statement") <> 0) or (StrLen(EULA) <> 0));
 
         // Auto accept if no legal info
-        Accepted := not Legal;
+        IsAccepted := not Legal;
     end;
 }
 

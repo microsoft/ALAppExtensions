@@ -25,6 +25,7 @@ codeunit 2500 "Extension Installation Impl"
         RestartActivityInstallMsg: Label 'The %1 extension was successfully installed. All active users must sign out and sign in again to see the navigation changes.', Comment = 'Indicates that users need to restart their activity to pick up new menusuite items. %1=Name of Extension';
         AlreadyUninstalledMsg: Label 'The extension %1 is not installed.', Comment = '%1=name of app';
         RestartActivityUninstallMsg: Label 'The %1 extension was successfully uninstalled. All active users must sign out and sign in again to see the navigation changes.', Comment = 'Indicates that users need to restart their activity to pick up new menusuite items. %1=Name of Extension';
+        NotSufficientPermissionErr: Label 'You do not have sufficient permissions to manage extensions. Please contact your administrator.';
 
     procedure IsInstalledByPackageId(PackageID: Guid): Boolean
     var
@@ -53,6 +54,7 @@ codeunit 2500 "Extension Installation Impl"
     var
         NavApp: Record "NAV App";
     begin
+        CheckPermissions();
         if IsUIEnabled = true then
             exit(InstallExtensionWithConfirmDialog(PackageId, Lcid));
 
@@ -64,7 +66,7 @@ codeunit 2500 "Extension Installation Impl"
 
     procedure InstallExtensionSilently(PackageID: Guid; Lcid: Integer): Boolean
     begin
-
+        CheckPermissions();
         AssertIsInitialized();
         DotNetNavAppALInstaller.ALInstallNavApp(PackageID, Lcid);
 
@@ -81,6 +83,7 @@ codeunit 2500 "Extension Installation Impl"
         Dependencies: Text;
         CanChange: Boolean;
     begin
+        CheckPermissions();
         if not NAVApp.Get(PackageId) then
             exit(false);
 
@@ -137,10 +140,19 @@ codeunit 2500 "Extension Installation Impl"
         end;
     end;
 
+    local procedure CheckPermissions()
+    var
+        NAVAppObjectMetadata: Record "NAV App Object Metadata";
+    begin
+        if not NavAppObjectMetadata.ReadPermission() then
+            Error(NotSufficientPermissionErr);
+    end;
+
     procedure UninstallExtension(PackageID: Guid; IsUIEnabled: Boolean): Boolean
     var
         NAVApp: Record "NAV App";
     begin
+        CheckPermissions();
         if IsUIEnabled = true then
             exit(UninstallExtensionWithConfirmDialog(PackageID));
 
@@ -152,6 +164,7 @@ codeunit 2500 "Extension Installation Impl"
 
     procedure UninstallExtensionSilently(PackageID: Guid): Boolean
     begin
+        CheckPermissions();
         AssertIsInitialized();
         DotNetNavAppALInstaller.ALUninstallNavApp(PackageID);
 
@@ -168,6 +181,7 @@ codeunit 2500 "Extension Installation Impl"
         Dependents: Text;
         CanChange: Boolean;
     begin
+        CheckPermissions();
         if not NAVApp.Get(PackageId) then
             exit(false);
 

@@ -9,7 +9,7 @@
 page 2511 "Extension Settings"
 {
     Extensible = false;
-    DataCaptionExpression = AppName;
+    DataCaptionExpression = AppNameValue;
     PageType = Card;
     SourceTable = "NAV App Setting";
 
@@ -19,21 +19,21 @@ page 2511 "Extension Settings"
         {
             group(Group)
             {
-                field(AppId; AppId)
+                field(AppId; AppIdValue)
                 {
                     ApplicationArea = All;
                     Caption = 'App ID';
                     Editable = false;
                     ToolTip = 'Specifies the App ID of the extension.';
                 }
-                field(AppName; AppName)
+                field(AppName; AppNameValue)
                 {
                     ApplicationArea = All;
                     Caption = 'Name';
                     Editable = false;
                     ToolTip = 'Specifies the name of the extension.';
                 }
-                field(AppPublisher; AppPublisher)
+                field(AppPublisher; AppPublisherValue)
                 {
                     ApplicationArea = All;
                     Caption = 'Publisher';
@@ -44,6 +44,7 @@ page 2511 "Extension Settings"
                 {
                     ApplicationArea = All;
                     Caption = 'Allow HttpClient Requests';
+                    Editable = HasExtensionManagementPermissions;
                     ToolTip = 'Specifies whether the runtime should allow this extension to make HTTP requests through the HttpClient data type when running in a non-production environment.';
                 }
             }
@@ -61,13 +62,15 @@ page 2511 "Extension Settings"
         NAVApp.SetRange(ID, "App ID");
 
         if NAVApp.FindFirst() then begin
-            AppName := NAVApp.Name;
-            AppPublisher := NAVApp.Publisher;
-            AppId := LowerCase(DelChr(Format(NAVApp.ID), '=', '{}'));
+            AppNameValue := NAVApp.Name;
+            AppPublisherValue := NAVApp.Publisher;
+            AppIdValue := LowerCase(DelChr(Format(NAVApp.ID), '=', '{}'));
         end
     end;
 
     trigger OnOpenPage()
+    var
+        NAVAppObjectMetadata: Record "NAV App Object Metadata";
     begin
         if GetFilter("App ID") = '' then
             exit;
@@ -77,11 +80,14 @@ page 2511 "Extension Settings"
             Init();
             Insert();
         end;
+
+        HasExtensionManagementPermissions := NavAppObjectMetadata.ReadPermission()
     end;
 
     var
-        AppName: Text;
-        AppPublisher: Text;
-        AppId: Text;
+        AppNameValue: Text;
+        AppPublisherValue: Text;
+        AppIdValue: Text;
+        HasExtensionManagementPermissions: Boolean;
 }
 

@@ -87,7 +87,7 @@ page 1801 "Assisted Setup"
                     ObsoleteState = Pending;
                     ObsoleteReason = 'The groups now appear as headings in the page, so this column is redundant.';
                 }
-                field(TranslatedName; TranslatedName)
+                field(TranslatedName; TranslatedNameValue)
                 {
                     Caption = 'Translated Name';
                     ApplicationArea = All;
@@ -187,14 +187,14 @@ page 1801 "Assisted Setup"
     var
         AssistedSetupImpl: Codeunit "Assisted Setup Impl.";
     begin
-        TranslatedName := AssistedSetupImpl.GetTranslatedName("Page ID");
+        TranslatedNameValue := AssistedSetupImpl.GetTranslatedName("Page ID");
         NameIndent := 1;
         NameEmphasize := false;
     end;
 
     local procedure SetPageVariablesForSetupGroup()
     begin
-        TranslatedName := '';
+        TranslatedNameValue := '';
         NameEmphasize := true;
         NameIndent := 0;
     end;
@@ -211,7 +211,7 @@ page 1801 "Assisted Setup"
         HelpAvailable: Text;
         VideoAvailable: Text;
         [InDataSet]
-        TranslatedName: Text;
+        TranslatedNameValue: Text;
         [InDataSet]
         NameIndent: Integer;
         [InDataSet]

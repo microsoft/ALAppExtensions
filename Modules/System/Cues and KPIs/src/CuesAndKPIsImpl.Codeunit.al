@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
 codeunit 9702 "Cues And KPIs Impl."
 {
     Permissions = TableData "Cue Setup" = r;

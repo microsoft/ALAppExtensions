@@ -53,11 +53,7 @@ codeunit 4107 "Temp Blob Impl."
         BlobFieldRef: FieldRef;
     begin
         BlobFieldRef := RecordRef.Field(FieldNo);
-        TempBlob.Blob := BlobFieldRef.Value();
-        if not HasValue() then begin
-            BlobFieldRef.CalcField();
-            TempBlob.Blob := BlobFieldRef.Value()
-        end
+        FromFieldRef(BlobFieldRef);
     end;
 
     procedure ToRecordRef(var RecordRef: RecordRef; FieldNo: Integer)
@@ -65,6 +61,20 @@ codeunit 4107 "Temp Blob Impl."
         BlobFieldRef: FieldRef;
     begin
         BlobFieldRef := RecordRef.Field(FieldNo);
+        ToFieldRef(BlobFieldRef);
+    end;
+
+    procedure FromFieldRef(BlobFieldRef: FieldRef)
+    begin
+        TempBlob.Blob := BlobFieldRef.Value();
+        if not HasValue() then begin
+            BlobFieldRef.CalcField();
+            TempBlob.Blob := BlobFieldRef.Value()
+        end
+    end;
+
+    procedure ToFieldRef(var BlobFieldRef: FieldRef)
+    begin
         BlobFieldRef.Value := TempBlob.Blob;
     end;
 }

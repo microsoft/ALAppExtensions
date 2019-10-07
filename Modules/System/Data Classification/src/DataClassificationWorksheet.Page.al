@@ -90,7 +90,7 @@ page 1751 "Data Classification Worksheet"
                     Enabled = false;
                     ToolTip = 'Specifies the classification of the data. Open Help to lean more.';
                 }
-                field(LastModifiedBy; LastModifiedBy)
+                field(LastModifiedBy; LastModifiedByUser)
                 {
                     ApplicationArea = All;
                     Caption = 'Last Modified By';
@@ -382,7 +382,7 @@ page 1751 "Data Classification Worksheet"
     var
         NoRecordsErr: Label 'No record has been selected.';
         FieldContentEnabled: Boolean;
-        LastModifiedBy: Text;
+        LastModifiedByUser: Text;
         DeletedUserTok: Label 'Deleted User';
         ClassifyAllfieldsQst: Label 'Do you want to set data sensitivity to %1 on %2 fields?', Comment = '%1=Choosen sensitivity %2=total number of fields';
 
@@ -401,12 +401,12 @@ page 1751 "Data Classification Worksheet"
     var
         User: Record User;
     begin
-        LastModifiedBy := '';
+        LastModifiedByUser := '';
         if User.Get("Last Modified By") then
-            LastModifiedBy := User."User Name"
+            LastModifiedByUser := User."User Name"
         else
             if not IsNullGuid("Last Modified By") then
-                LastModifiedBy := DeletedUserTok;
+                LastModifiedByUser := DeletedUserTok;
     end;
 
     local procedure ConfirmEditDataSensitivity(Sensitivity: Option; var DataSensitivity: Record "Data Sensitivity"): Boolean

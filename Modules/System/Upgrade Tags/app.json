@@ -27,5 +27,6 @@
                          "to":  9999
                      }
                  ],
-    "target":  "Cloud"
+    "target":  "Cloud",
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2106205"
 }

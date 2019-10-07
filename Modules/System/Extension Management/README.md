@@ -358,25 +358,25 @@ Out parameter holding the logo of the extension.
 
 ## Extension Deployment Status (Page 2508)
 
- Displays a brief of the deployment status for the extensions that were deployed or scheduled for deployment.
+ Displays the deployment status for extensions that are deployed or are scheduled for deployment.
  
 
 
 ## Extension Details (Page 2501)
 
- Displays details about the selected extension but also exposes functionality that allows installing and uninstalling it.
+ Displays details about the selected extension, and offers features for installing and uninstalling it.
  
 
 
 ## Extension Details Part (Page 2504)
 
- Displays the details of the extension.
+ Displays information about the extension.
  
 
 
 ## Extension Installation (Page 2503)
 
- Initiates installation of the extension.
+ Installs the selected extension.
  
 
 
@@ -388,30 +388,30 @@ Out parameter holding the logo of the extension.
 
 ## Extension Management (Page 2500)
 
- Displays a list of extensions available to the current user and allows him to manage them.
+ Lists the available extensions, and provides features for managing them.
  
 
 
 ## Extension Settings (Page 2511)
 
- Displays the selected extensions' settings and allows users to edit them.
+ Displays settings for the selected extension, and allows users to edit them.
  
 
 
 ## Extn Deployment Status Detail (Page 2509)
 
- Displays deployment status details of the selected extension.
+ Displays details about the deployment status of the selected extension.
  
 
 
 ## Marketplace Extn Deployment (Page 2510)
 
- Provides an interface to Business Central for installing an AppSource Extension.
+ Provides an interface for installing extensions from AppSource.
  
 
 
 ## Upload And Deploy Extension (Page 2507)
 
- Exposes functionality that allows users to upload and schedule the deployment of an extension.
+ Allows users to upload an extension and schedule its deployment.
  
 

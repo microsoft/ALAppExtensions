@@ -2,6 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// List page that contains settings that define the appearance of cues on all pages.
+/// Administrators can use this page to define a general style, which users can customize from the Cue Setup End User page.
+/// </summary>
 page 9701 "Cue Setup Administrator"
 {
     ApplicationArea = All;

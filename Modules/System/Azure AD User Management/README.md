@@ -92,5 +92,5 @@ procedure SetTestInProgress(TestInProgress: Boolean)
 #### Parameters
 *TestInProgress ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
-
+The value to be set to the flag.
 

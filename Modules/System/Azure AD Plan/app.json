@@ -100,5 +100,6 @@
                                    "appId":  "e63749f1-a7a5-4557-a943-0ae4745616bd",
                                    "publisher":  "Microsoft"
                                }
-                           ]
+                           ],
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2106205"
 }

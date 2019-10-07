@@ -79,10 +79,10 @@ page 2510 "Marketplace Extn Deployment"
 
     trigger OnInit()
     var
-        Language: Codeunit Language;
+        LanguageManagement: Codeunit Language;
     begin
         LanguageID := GlobalLanguage();
-        LanguageName := Language.GetWindowsLanguageName(LanguageID);
+        LanguageName := LanguageManagement.GetWindowsLanguageName(LanguageID);
         clear(InstallSelected);
     end;
 

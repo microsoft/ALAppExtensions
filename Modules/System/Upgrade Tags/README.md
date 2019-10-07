@@ -84,7 +84,7 @@ procedure SetUpgradeTag(NewTag: Code[250])
 #### Parameters
 *NewTag ([Code[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
 
-
+Tag code to save
 
 ### SetAllUpgradeTags (Method) <a name="SetAllUpgradeTags"></a> 
 
@@ -94,9 +94,23 @@ procedure SetUpgradeTag(NewTag: Code[250])
 
 #### Syntax
 ```
-[Scope('OnPrem')]
 procedure SetAllUpgradeTags()
 ```
+### SetAllUpgradeTags (Method) <a name="SetAllUpgradeTags"></a> 
+
+ This method should be used to set all upgrade tags in a new company. 
+ The method is called from Copy Company Report
+ 
+
+#### Syntax
+```
+procedure SetAllUpgradeTags(NewCompanyName: Code[30])
+```
+#### Parameters
+*NewCompanyName ([Code[30]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+
+Name of the company set the upgrade tags
+
 ### OnGetPerCompanyUpgradeTags (Event) <a name="OnGetPerCompanyUpgradeTags"></a> 
 
  Use this event if you want to add upgrade tag for PerCompany upgrade method for a new company.
@@ -129,3 +143,5 @@ internal procedure OnGetPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List 
 
 
  List of upgrade tags that should be inserted if they do not exist.
+ 
+

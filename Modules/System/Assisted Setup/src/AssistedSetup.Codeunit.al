@@ -65,6 +65,7 @@ codeunit 3725 "Assisted Setup"
     /// <summary>Checks whether an assisted setup guide exists.</summary>
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    /// <returns>True if an assisted setup guide for provided extension and page IDs exists; false otherwise.</returns>
     procedure Exists(ExtensionID: Guid; PageID: Integer): Boolean
     begin
         exit(AssistedSetupImpl.Exists(ExtensionID, PageID));

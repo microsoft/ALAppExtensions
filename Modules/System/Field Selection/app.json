@@ -23,5 +23,6 @@
                          "to":  9807
                      }
                  ],
-    "target":  "OnPrem"
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2106205"
 }

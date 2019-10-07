@@ -36,5 +36,6 @@
                          "to":  100000
                      }
                  ],
-    "showMyCode":  false
+    "showMyCode":  false,
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2106205"
 }

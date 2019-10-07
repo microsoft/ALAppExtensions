@@ -69,7 +69,10 @@ codeunit 3710 Video
         VideoImpl.InsertIntoBuffer(TempProductVideoBuffer, AppID, Title, VideoUrl, TableNum, SystemId, Category);
     end;
 
-    /// <summary>Show all videos that belong to a given category.</summary>
+    /// <summary>
+    /// Show all videos that belong to a given category.
+    /// </summary>
+    /// <param name="Category">The category to filter the videos by.</param>
     procedure Show(Category: Enum "Video Category")
     begin
         VideoImpl.Show(Category);

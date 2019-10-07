@@ -1,6 +1,10 @@
-The module provides various functions related to headlines functionality. 
+This module provides methods for constructing headlines on Role Centers.
 
-It includes constants for the maximum allowed text length, functionality for truncating text, emphasizing text, determining if the user logged in recently (for greetings) and standard greeting messages.
+Use this module to do the following:
+
+Get the maximum text length displayed on a headline.
+Truncate and emphasize text.
+Manage the standard greeting headline.
 
 
 # Public Objects

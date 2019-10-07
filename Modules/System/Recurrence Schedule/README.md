@@ -426,7 +426,7 @@ The short text to display.
  Specifies that the recurrence to occur on all days from Monday to Friday.
  
 
-### "Weekend Day" (value: 10)
+### Weekend Day (value: 10)
 
 
  Specifies that the recurrence to occur on Saturday and Sunday.
@@ -516,13 +516,13 @@ The short text to display.
  This enum has the monthly occurrence patterns for the recurrence.
  
 
-### "Specific Day" (value: 0)
+### Specific Day (value: 0)
 
 
  Specifies that the recurrence will occur on a specific day.
  
 
-### "By Weekday" (value: 1)
+### By Weekday (value: 1)
 
 
  Specifies that the recurrence will occur on a weekday. This is used in conjuction with the "Recurrence - Day Of Week" enums.

@@ -16,7 +16,7 @@ page 9810 "Password Dialog"
     {
         area(content)
         {
-            field(OldPassword; OldPassword)
+            field(OldPassword; OldPasswordValue)
             {
                 ApplicationArea = All;
                 Caption = 'Old Password';
@@ -24,7 +24,7 @@ page 9810 "Password Dialog"
                 ToolTip = 'Specifies the current password, before the user defines a new one.';
                 Visible = ShowOldPassword;
             }
-            field(Password; Password)
+            field(Password; PasswordValue)
             {
                 ApplicationArea = All;
                 Caption = 'Password';
@@ -34,10 +34,10 @@ page 9810 "Password Dialog"
                 trigger OnValidate()
                 begin
                     if RequiresPasswordValidation then
-                        PasswordDialogImpl.ValidatePasswordStrength(Password);
+                        PasswordDialogImpl.ValidatePasswordStrength(PasswordValue);
                 end;
             }
-            field(ConfirmPassword; ConfirmPassword)
+            field(ConfirmPassword; ConfirmPasswordValue)
             {
                 ApplicationArea = All;
                 Caption = 'Confirm Password';
@@ -47,7 +47,7 @@ page 9810 "Password Dialog"
 
                 trigger OnValidate()
                 begin
-                    if RequiresPasswordConfirmation and (Password <> ConfirmPassword) then
+                    if RequiresPasswordConfirmation and (PasswordValue <> ConfirmPasswordValue) then
                         Error(PasswordMismatchErr);
                 end;
             }
@@ -75,8 +75,8 @@ page 9810 "Password Dialog"
             ValidPassword := PasswordDialogImpl.ValidatePassword(
                 RequiresPasswordConfirmation,
                 RequiresPasswordValidation,
-                Password,
-                ConfirmPassword);
+                PasswordValue,
+                ConfirmPasswordValue);
             exit(ValidPassword);
         end;
     end;
@@ -85,11 +85,11 @@ page 9810 "Password Dialog"
         PasswordDialogImpl: Codeunit "Password Dialog Impl.";
         PasswordMismatchErr: Label 'The passwords that you entered do not match.';
         [InDataSet]
-        Password: Text;
+        PasswordValue: Text;
         [InDataSet]
-        ConfirmPassword: Text;
+        ConfirmPasswordValue: Text;
         [InDataSet]
-        OldPassword: Text;
+        OldPasswordValue: Text;
         ShowOldPassword: Boolean;
         ValidPassword: Boolean;
         RequiresPasswordValidation: Boolean;
@@ -103,7 +103,7 @@ page 9810 "Password Dialog"
     procedure GetPasswordValue(): Text
     begin
         if ValidPassword then
-            exit(Password);
+            exit(PasswordValue);
 
         exit('');
     end;
@@ -116,7 +116,7 @@ page 9810 "Password Dialog"
     procedure GetOldPasswordValue(): Text
     begin
         if ValidPassword then
-            exit(OldPassword);
+            exit(OldPasswordValue);
 
         exit('');
     end;

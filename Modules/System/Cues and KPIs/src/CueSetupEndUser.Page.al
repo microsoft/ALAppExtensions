@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// List page that contains settings that define the appearance of cues for the current user and page.
+/// </summary>
 page 9702 "Cue Setup End User"
 {
     Caption = 'Cue Setup';

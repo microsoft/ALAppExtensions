@@ -30,7 +30,6 @@ Gets the value of the server setting IsSaasExcelAddinEnabled.
 
 #### Syntax
 ```
-[Scope('OnPrem')]
 procedure GetIsSaasExcelAddinEnabled(): Boolean
 ```
 #### Return Value

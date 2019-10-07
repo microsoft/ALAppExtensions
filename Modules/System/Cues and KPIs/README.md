@@ -10,6 +10,7 @@ For on-premises versions, you can also use this module to do the following:
 - Change the user of a cue setup entry.
 - Publish an event to convert from the style enum to a text value in case of extended enum values.
 
+
 # Public Objects
 ## Cues And KPIs (Codeunit 9701)
 
@@ -174,16 +175,51 @@ A boolean value that describes whether or not the custom conversion was executed
 
 ## Cue Setup Administrator (Page 9701)
 
+ List page that contains settings that define the appearance of cues on all pages.
+ Administrators can use this page to define a general style, which users can customize from the Cue Setup End User page.
+ 
+
+
 ## Cue Setup End User (Page 9702)
 
+ List page that contains settings that define the appearance of cues for the current user and page.
+ 
+
+
 ## Cues And KPIs Style (Enum 9701)
+
+ This enum has the styles for the cues and KPIs on RoleCenter pages.
+ The values match the original option field on the Cue Setup table, values 1 to 6 are blank options to be extended.
+
+The values match the original option field on the Cue Setup table, values 1 to 6 are blank options to be extended.
+
 ### None (value: 0)
+
+
+ Specifies that no style will be used when rendering the cue.
+ 
 
 ### Favorable (value: 7)
 
+
+ Specifies that the Favorable style will be used when rendering the cue.
+ 
+
 ### Unfavorable (value: 8)
+
+
+ Specifies that the Unfavorable style will be used when rendering the cue.
+ 
 
 ### Ambiguous (value: 9)
 
+
+ Specifies that the Ambiguous style will be used when rendering the cue.
+ 
+
 ### Subordinate (value: 10)
+
+
+ Specifies that the Subordinate style will be used when rendering the cue.
+ 
 

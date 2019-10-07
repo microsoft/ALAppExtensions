@@ -8,9 +8,10 @@ For on-premises versions, you can also use this module to personalize expression
 
 Remarks
 This module introduces the following changes:
+- The procedure AutoFormatTranslate has been renamed to ResolveAutoFormat.
 - Enum type 59 Auto Format is new. 
 - The parameter AutoFormatType: Enum Auto Format replaces the parameter AutoFormatType: Integer.
-- The logic for cases 1, 2, and 10 has been moved to BaseApp. The behavior is the same is unchanged.
+- The logic for cases other than 0 (Enum DefaultFormat) and 11 (Enum CustomFormatExpr) has been moved to Base Application but the behavior is unchanged.
 - The publisher OnResolveAutoFormat has the scope OnPrem, but everyone can subscribe to it and implement a new logic for formatting decimal numbers in text messages.
 
 # Public Objects
