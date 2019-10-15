@@ -89,6 +89,15 @@ codeunit 3725 "Assisted Setup"
         AssistedSetupImpl.Complete(ExtensionID, PageID);
     end;
 
+    /// <summary>Sets the status of the assisted setup to uncomplete.</summary>
+    /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
+    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    /// <returns>True if the assisted setup is uncomplete now.</returns>
+    procedure Reset(ExtensionID: Guid; PageID: Integer)
+    begin
+        AssistedSetupImpl.Reset(ExtensionID, PageID);
+    end;
+
     /// <summary>Issues the call to execute the setup.</summary>
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
