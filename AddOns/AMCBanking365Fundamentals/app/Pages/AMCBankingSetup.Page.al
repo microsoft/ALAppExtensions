@@ -1,0 +1,193 @@
+page 20101 "AMC Banking Setup"
+{
+    AdditionalSearchTerms = 'bank file import,bank file export,bank transfer,amc,bank service setup,bank data conversion';
+    ApplicationArea = Basic, Suite;
+    Caption = 'AMC Banking Setup';
+    InsertAllowed = false;
+    PageType = Card;
+    PromotedActionCategories = 'New,Process,Page,Bank Name,Encryption';
+    SourceTable = "AMC Banking Setup";
+    UsageCategory = Administration;
+    ContextSensitiveHelpPage = '300';
+
+    layout
+    {
+        area(content)
+        {
+            group(General)
+            {
+                group(User)
+                {
+                    Caption = 'User information';
+                    field("User Name"; "User Name")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ShowMandatory = true;
+                        ToolTip = 'Specifies the user name that represents your company''s sign-up for the service that converts bank data to the format required by your bank when you export payment bank files and import bank statement files.';
+                    }
+                    field(Password; PasswordText)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Password';
+                        Editable = CurrPageEditable;
+                        ExtendedDatatype = Masked;
+                        ShowMandatory = true;
+                        ToolTip = 'Specifies your company''s password to the service that converts bank data to the format required by your bank. The password that you enter in the Password field must be the same as on the service provider''s sign-on page.';
+
+                        trigger OnValidate()
+                        begin
+                            SavePassword(PasswordText);
+                            Commit();
+                            if PasswordText <> '' then
+                                CheckEncryption();
+                        end;
+                    }
+                }
+
+                group(SolutionLicense)
+                {
+                    Caption = 'Solution information';
+                    group(SolutionGrp)
+                    {
+                        Caption = '';
+                        field("Solution"; "Solution")
+                        {
+                            ApplicationArea = Suite;
+                            Visible = true;
+                            Enabled = false;
+                            ToolTip = 'Specifies a customizable calendar for bank''s that holds the bank''s working days and holidays. Choose the field to select another bank calendars or to set up a customized calendar.';
+                        }
+                    }
+                    Group(LicenseGrp)
+                    {
+                        Caption = '';
+                        field("BCLicenseNumber"; BCLicenseNumberText)
+                        {
+                            ApplicationArea = Basic, Suite;
+                            Visible = true;
+                            Enabled = false;
+                            Caption = 'License';
+                            ToolTip = 'License number of Business Central for AMC Banking';
+                        }
+                    }
+                }
+            }
+            group(Service)
+            {
+                Caption = 'Service';
+                field("Sign-up URL"; "Sign-up URL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the sign-up page for the service that converts bank data to the format required by your bank when you export payment bank files and import bank statement files. This is the web page where you enter your company''s user name and password to sign up for the service.';
+                }
+                field("Service URL"; "Service URL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the address of the service that converts bank data to the format required by your bank when you export payment bank files and import bank statement files. The service specified in the Service URL field is called when users export or import bank files.';
+                    trigger OnDrillDown()
+                    begin
+                        Hyperlink(CopyStr("Service URL", 1, StrLen("Service URL") - StrLen("Namespace API Version")));
+                    end;
+                }
+                field("Support URL"; "Support URL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the web site where the provider of the AMC Banking publishes status and support information about the service.';
+                }
+                field("Namespace API Version"; "Namespace API Version")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the default namespace for the AMC Banking.';
+                }
+            }
+        }
+    }
+
+    actions
+    {
+        area(processing)
+        {
+            action(AMCAssistedSetup)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Assisted Setup';
+                ToolTip = 'Runs Service setup wizard';
+                Visible = true;
+                Enabled = true;
+                Image = Setup;
+                Promoted = true;
+                PromotedCategory = Process;
+
+                trigger OnAction()
+                var
+                begin
+                    PAGE.RunModal(PAGE::"AMC Bank Assisted Setup", Rec);
+                end;
+            }
+        }
+        area(navigation)
+        {
+            action(BankList)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Bank Name List';
+                Image = ListPage;
+                Promoted = true;
+                PromotedCategory = Category4;
+                RunObject = Page "AMC Bank Bank Name List";
+                RunPageMode = View;
+                ToolTip = 'View or update the list of banks in your country/region that you can use to import or export bank account data using the AMC Banking.';
+            }
+            action(EncryptionManagement)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Encryption Management';
+                Image = EncryptionKeys;
+                Promoted = true;
+                PromotedCategory = Category5;
+                PromotedIsBig = true;
+                RunObject = Page "Data Encryption Management";
+                RunPageMode = View;
+                ToolTip = 'Enable or disable data encryption. Data encryption helps make sure that unauthorized users cannot read business data.';
+            }
+        }
+    }
+
+    trigger OnAfterGetRecord()
+    begin
+        CurrPageEditable := CurrPage.Editable();
+
+        if HasPassword() then
+            PasswordText := 'Password Dots';
+    end;
+
+    trigger OnOpenPage()
+    begin
+        CheckedEncryption := false;
+        if not Get() then begin
+            Init();
+            Insert(true);
+        end;
+        BCLicenseNumberText := AMCBankServMgt.GetLicenseNumber();
+    end;
+
+    var
+        AMCBankServMgt: Codeunit "AMC Banking Mgt.";
+        PasswordText: Text[50];
+        CheckedEncryption: Boolean;
+        EncryptionIsNotActivatedQst: Label 'Data encryption is not activated. It is recommended that you encrypt data. \Do you want to open the Data Encryption Management page?';
+        CurrPageEditable: Boolean;
+        BCLicenseNumberText: Text;
+
+    local procedure CheckEncryption()
+    begin
+        if not CheckedEncryption and not EncryptionEnabled() then begin
+            CheckedEncryption := true;
+            if Confirm(EncryptionIsNotActivatedQst) then begin
+                PAGE.Run(PAGE::"Data Encryption Management");
+                CheckedEncryption := false;
+            end;
+        end;
+    end;
+}
+
