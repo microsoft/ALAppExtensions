@@ -12,6 +12,7 @@ page 9823 "User Plan Members FactBox"
     Editable = false;
     PageType = ListPart;
     SourceTable = "User Plan";
+    ContextSensitiveHelpPage = 'ui-how-users-permissions';
 
     layout
     {

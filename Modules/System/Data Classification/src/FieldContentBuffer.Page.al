@@ -16,6 +16,7 @@ page 1753 "Field Content Buffer"
     ModifyAllowed = false;
     PageType = List;
     SourceTable = "Field Content Buffer";
+    ContextSensitiveHelpPage = 'admin-classifying-data-sensitivity';
 
     layout
     {

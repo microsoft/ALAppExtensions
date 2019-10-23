@@ -10,6 +10,7 @@ page 1821 "Video Link"
     Caption = 'Video link';
     Editable = false;
     PageType = Card;
+    ContextSensitiveHelpPage = 'across-videos';
 
     layout
     {

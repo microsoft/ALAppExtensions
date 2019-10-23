@@ -16,6 +16,7 @@ page 1470 "Product Videos"
     SourceTableTemporary = true;
     UsageCategory = Administration;
     ApplicationArea = All;
+    ContextSensitiveHelpPage = 'across-videos';
 
     layout
     {

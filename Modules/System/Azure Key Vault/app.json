@@ -5,10 +5,10 @@
     "brief":  "Stores Azure Key Vault secrets for deployments.",
     "description":  "Azure Key Vault stores secrets for deployment. These secrets are not available for apps with \"target\" cloud. ISV solutions that are deployed in their own cluster and have their own key-vault can use this module to read shared secrets. The AKV should contain an \"AllowedApplicationSecrets\" key with a comma separated list of allowed secrets. Only white-listed keys can be read from the code.",
     "version":  "16.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "",
     "dependencies":  [
                          {
@@ -40,5 +40,5 @@
                      }
                  ],
     "target":  "OnPrem",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2106205"
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
 }

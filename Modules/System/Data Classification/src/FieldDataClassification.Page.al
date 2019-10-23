@@ -16,6 +16,7 @@ page 1750 "Field Data Classification"
     ModifyAllowed = false;
     PageType = List;
     SourceTable = "Field";
+    ContextSensitiveHelpPage = 'admin-classifying-data-sensitivity';
 
     layout
     {

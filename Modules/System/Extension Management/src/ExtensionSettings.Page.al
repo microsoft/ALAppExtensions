@@ -12,6 +12,7 @@ page 2511 "Extension Settings"
     DataCaptionExpression = AppNameValue;
     PageType = Card;
     SourceTable = "NAV App Setting";
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {

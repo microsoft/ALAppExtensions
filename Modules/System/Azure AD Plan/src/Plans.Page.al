@@ -15,6 +15,7 @@ page 9824 Plans
     PageType = List;
     ShowFilter = false;
     SourceTable = Plan;
+    ContextSensitiveHelpPage = 'ui-how-users-permissions';
 
     layout
     {

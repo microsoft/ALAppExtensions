@@ -14,6 +14,7 @@ page 9825 "Plans FactBox"
     PageType = ListPart;
     ShowFilter = false;
     SourceTable = Plan;
+    ContextSensitiveHelpPage = 'ui-how-users-permissions';
 
     layout
     {

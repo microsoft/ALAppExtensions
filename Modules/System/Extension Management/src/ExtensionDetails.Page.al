@@ -14,6 +14,7 @@ page 2501 "Extension Details"
     PageType = NavigatePage;
     SourceTable = "NAV App";
     SourceTableTemporary = true;
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {

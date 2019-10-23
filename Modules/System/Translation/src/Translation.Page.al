@@ -10,6 +10,7 @@ page 3712 Translation
     DataCaptionExpression = CaptionTxt;
     PageType = List;
     SourceTable = Translation;
+    ContextSensitiveHelpPage = 'ui-get-ready-business';
 
     layout
     {

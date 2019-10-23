@@ -18,6 +18,7 @@ page 1752 "Data Classification Wizard"
     ShowFilter = false;
     SourceTable = "Data Privacy Entities";
     SourceTableTemporary = true;
+    ContextSensitiveHelpPage = 'admin-classifying-data-sensitivity';
 
     layout
     {

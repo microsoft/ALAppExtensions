@@ -16,6 +16,7 @@ page 9905 "Data Encryption Management"
     Editable = false;
     PageType = Card;
     UsageCategory = Tasks;
+    ContextSensitiveHelpPage = 'dev-itpro/developer/devenv-encrypting-data';
 
     layout
     {

@@ -17,6 +17,7 @@ page 1875 "Manual Setup"
     SourceTable = "Manual Setup";
     SourceTableTemporary = true;
     UsageCategory = Administration;
+    ContextSensitiveHelpPage = 'setup';
 
     layout
     {

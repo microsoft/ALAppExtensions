@@ -24,6 +24,7 @@ page 2500 "Extension Management"
                       WHERE(Name = FILTER(<> '_Exclude_*'),
                             "Package Type" = FILTER(= 0 | 2));
     UsageCategory = Administration;
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {
