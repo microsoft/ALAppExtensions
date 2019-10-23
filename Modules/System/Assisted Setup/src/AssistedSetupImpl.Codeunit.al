@@ -99,7 +99,7 @@ codeunit 1813 "Assisted Setup Impl."
         AssistedSetup.Modify(true);
     end;
 
-    procedure Reset(ExtensionID: Guid; PageID: Integer)
+    procedure Reset(PageID: Integer)
     var
         AssistedSetup: Record "Assisted Setup";
     begin
