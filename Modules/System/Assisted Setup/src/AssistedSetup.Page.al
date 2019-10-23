@@ -21,6 +21,7 @@ page 1801 "Assisted Setup"
     SourceTableTemporary = true;
     UsageCategory = Administration;
     Extensible = true;
+    ContextSensitiveHelpPage = 'ui-get-ready-business';
 
     layout
     {

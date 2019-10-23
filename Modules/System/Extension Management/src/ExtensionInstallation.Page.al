@@ -12,6 +12,7 @@ page 2503 "Extension Installation"
     PageType = Card;
     SourceTable = "NAV App";
     SourceTableTemporary = true;
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {

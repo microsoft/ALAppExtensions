@@ -19,6 +19,7 @@ page 2504 "Extension Details Part"
     RefreshOnActivate = true;
     ShowFilter = false;
     SourceTable = "NAV App";
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {

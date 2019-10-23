@@ -15,6 +15,7 @@ page 9702 "Cue Setup End User"
     Permissions = TableData "Cue Setup" = rimd;
     SourceTable = "Cue Setup";
     SourceTableTemporary = true;
+    ContextSensitiveHelpPage = 'admin-how-set-up-colored-indicator-on-cues';
 
     layout
     {

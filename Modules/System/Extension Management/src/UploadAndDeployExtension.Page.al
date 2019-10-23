@@ -12,6 +12,7 @@ page 2507 "Upload And Deploy Extension"
     PageType = NavigatePage;
     SourceTable = "NAV App";
     SourceTableTemporary = true;
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {

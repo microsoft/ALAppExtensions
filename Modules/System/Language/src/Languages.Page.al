@@ -14,6 +14,7 @@ page 9 Languages
     PageType = List;
     SourceTable = Language;
     UsageCategory = Lists;
+    ContextSensitiveHelpPage = 'ui-change-basic-settings#language';
 
     layout
     {

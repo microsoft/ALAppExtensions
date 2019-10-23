@@ -19,6 +19,7 @@ page 2506 "Extension Logo Part"
     RefreshOnActivate = true;
     ShowFilter = false;
     SourceTable = "NAV App";
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {

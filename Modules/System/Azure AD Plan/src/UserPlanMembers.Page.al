@@ -14,6 +14,7 @@ page 9822 "User Plan Members"
     LinksAllowed = false;
     PageType = List;
     SourceTable = "User Plan";
+    ContextSensitiveHelpPage = 'ui-how-users-permissions';
 
     layout
     {

@@ -20,6 +20,7 @@ page 2509 "Extn Deployment Status Detail"
     ShowFilter = false;
     SourceTable = "NAV App Tenant Operation";
     SourceTableTemporary = true;
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {

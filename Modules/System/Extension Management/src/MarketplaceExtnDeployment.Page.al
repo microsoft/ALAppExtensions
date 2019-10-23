@@ -11,6 +11,7 @@ page 2510 "Marketplace Extn Deployment"
     Extensible = false;
     Caption = 'Extension Installation';
     PageType = NavigatePage;
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {

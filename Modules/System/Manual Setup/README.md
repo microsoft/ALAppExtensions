@@ -1,4 +1,8 @@
-Lists, describes, and opens pages that are used to manually set up business processes and general entities. 
+This module aggregates all cases where the functionality is set up manually. Lists, describes, and opens pages that are used to manually set up business processes and general entities. 
+
+Use this module to do the following:
+- Insert a manual setup page for an extension.
+- Open the Manual Setup page.
 
 For example, setups for business processes include posting groups and general ledger setup. General entities include currency setup, language setup, and so on.
 
