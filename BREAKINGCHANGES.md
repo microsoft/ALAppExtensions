@@ -31,6 +31,10 @@ We’re working hard to make this a comprehensive list, but there’s always a c
 
 **Solution**: Event has been moved to `codeunit 3725 "Assisted Setup"`, function `OnRegister`.
 
+**Error**: _The event 'OnBeforeUpdateAssistedSetupStatus' is not found in the target"_
+
+**Solution**: Event has been removed. You may alternatively use `codeunit 3725 "Assisted Setup"`, function `OnRegister`.
+
 ---
 
 ## Auto Format Module
@@ -321,6 +325,26 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 **Error**: _'Codeunit' does not contain a definition for 'TextManagement'_
 
 **Solution**: Codeunit has been renamed to `codeunit 41 "Filter Tokens"`.
+
+**Error**: _The event 'OnBeforeMakeTextFilter' is not found in the target"_
+
+**Solution**: Use the event `OnResolveTextFilterToken` instead.
+
+**Error**: _The event 'OnAfterMakeTextFilter' is not found in the target"_
+
+**Solution**: Use the event `OnResolveTextFilterToken` instead.
+
+**Error**: _The event 'OnAfterMakeDateTimeFilter' is not found in the target"_
+
+**Solution**: Use the events `OnResolveTimeTokenFromDateTimeFilter` and `OnResolveDateTokenFromDateTimeFilter` instead.
+
+**Error**: _The event 'OnAfterMakeDateFilter' is not found in the target"_
+
+**Solution**: Use the event `OnResolveDateFilterToken` instead.
+
+**Error**: _The event 'OnAfterMakeTimeFilter' is not found in the target"_
+
+**Solution**: Use the event `OnResolveTimeFilterToken` instead.
 
 ---
 
