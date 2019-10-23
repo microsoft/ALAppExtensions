@@ -9,11 +9,8 @@ codeunit 1432 "Satisfaction Survey Impl."
 
     var
         FinancialsUriSegmentTxt: Label 'financials', Locked = true;
-        InvoicingUriSegmentTxt: Label 'invoicing', Locked = true;
         DisplayDataTxt: Label 'display/%1/?puid=%2', Locked = true;
         RenderDataTxt: Label 'render/%1/?culture=%2&puid=%3', Locked = true;
-        ClientDataTxt: Label '&client=%1', Locked = true;
-        UniversalWindowsPlatformTxt: Label 'wp', Locked = true;
         NpsCategoryTxt: Label 'AL NPS Prompt', Locked = true;
         RequestFailedTxt: Label 'Request failed without status code.', Locked = true;
         NPSApiUrlEmptyTelemetryTxt: Label 'API URL is empty.', Locked = true;
@@ -40,7 +37,7 @@ codeunit 1432 "Satisfaction Survey Impl."
         PositiveResponseTxt: Label 'Positive response.', Locked = true;
         NegativeResponseTxt: Label 'Negative response.', Locked = true;
         CannotGetPropertyTxt: Label 'Cannot get property %1.', Locked = true;
-        RequestSuccessfulTxt: Label 'Request is successfull.', Locked = true;
+        RequestSuccessfulTxt: Label 'Request is successful.', Locked = true;
         CannotParseParametersTxt: Label 'Cannot parse parameters.', Locked = true;
         NPSPageTelemetryTxt: Label 'NPS prompt is displayed.', Locked = true;
         NpsApiUrlTxt: Label 'NpsApiUrl', Locked = true;
@@ -289,14 +286,10 @@ codeunit 1432 "Satisfaction Survey Impl."
         if EnvironmentInfo.IsSandbox() then
             exit(false);
 
-        case true of
-            EnvironmentInfo.IsFinancials():
-                exit(not IsMobileDevice());
-            EnvironmentInfo.IsInvoicing():
-                exit(true);
-            else
-                exit(false);
-        end;
+        if EnvironmentInfo.IsFinancials() then
+            exit(not IsMobileDevice())
+        else
+            exit(false);
     end;
 
     local procedure IsConfigured(Puid: Text; BaseUrl: Text): Boolean
@@ -586,9 +579,6 @@ codeunit 1432 "Satisfaction Survey Impl."
         CultureInfo := CultureInfo.CultureInfo(GlobalLanguage());
         CultureName := LowerCase(CultureInfo.Name());
         Data := StrSubstNo(RenderDataTxt, AppUriSegment, CultureName, Puid);
-        if AppUriSegment = InvoicingUriSegmentTxt then
-            if IsMobileDevice() then
-                Data += StrSubstNo(ClientDataTxt, UniversalWindowsPlatformTxt);
         exit(Data);
     end;
 
@@ -596,14 +586,10 @@ codeunit 1432 "Satisfaction Survey Impl."
     var
         EnvironmentInfo: Codeunit "Environment Information";
     begin
-        case true of
-            EnvironmentInfo.IsFinancials():
-                exit(FinancialsUriSegmentTxt);
-            EnvironmentInfo.IsInvoicing():
-                exit(InvoicingUriSegmentTxt);
-            else
-                exit('');
-        end;
+        if EnvironmentInfo.IsFinancials() then
+            exit(FinancialsUriSegmentTxt)
+        else
+            exit('');
     end;
 
     local procedure GetDisplayProperty(JsonString: Text): Boolean

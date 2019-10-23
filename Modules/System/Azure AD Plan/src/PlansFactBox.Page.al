@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// ListPart page that contains all the plans.
+/// </summary>
 page 9825 "Plans FactBox"
 {
     Caption = 'Plans';
@@ -11,6 +14,7 @@ page 9825 "Plans FactBox"
     PageType = ListPart;
     ShowFilter = false;
     SourceTable = Plan;
+    ContextSensitiveHelpPage = 'ui-how-users-permissions';
 
     layout
     {

@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays details about the selected extension, and offers features for installing and uninstalling it.
+/// </summary>
 page 2501 "Extension Details"
 {
     Extensible = false;
@@ -11,6 +14,7 @@ page 2501 "Extension Details"
     PageType = NavigatePage;
     SourceTable = "NAV App";
     SourceTableTemporary = true;
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {
@@ -232,7 +236,7 @@ page 2501 "Extension Details"
                                 HyperLink("Privacy Statement");
                             end;
                         }
-                        field(Accepted; Accepted)
+                        field(Accepted; IsAccepted)
                         {
                             ApplicationArea = All;
                             Caption = 'I accept the terms and conditions';
@@ -284,7 +288,7 @@ page 2501 "Extension Details"
             {
                 ApplicationArea = All;
                 Caption = 'Install';
-                Enabled = Accepted;
+                Enabled = IsAccepted;
                 Image = Approve;
                 InFooterBar = true;
                 Visible = InstallEnabled AND (not IsInstalled);
@@ -334,7 +338,7 @@ page 2501 "Extension Details"
         BackEnabled: Boolean;
         NextEnabled: Boolean;
         InstallEnabled: Boolean;
-        Accepted: Boolean;
+        IsAccepted: Boolean;
         IsInstalled: Boolean;
         Legal: Boolean;
         Step1Enabled: Boolean;
@@ -392,7 +396,7 @@ page 2501 "Extension Details"
         Legal := ((StrLen("Privacy Statement") <> 0) or (StrLen(EULA) <> 0));
 
         // Auto accept if no legal info
-        Accepted := not Legal;
+        IsAccepted := not Legal;
     end;
 }
 

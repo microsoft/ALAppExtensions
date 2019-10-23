@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>This page shows all registered videos.</summary>
 page 1470 "Product Videos"
 {
     Extensible = false;
@@ -10,10 +11,12 @@ page 1470 "Product Videos"
     DeleteAllowed = false;
     InsertAllowed = false;
     ModifyAllowed = false;
-    PageType = NavigatePage;
+    PageType = List;
     SourceTable = "Product Video Buffer";
     SourceTableTemporary = true;
     UsageCategory = Administration;
+    ApplicationArea = All;
+    ContextSensitiveHelpPage = 'across-videos';
 
     layout
     {
@@ -42,6 +45,7 @@ page 1470 "Product Videos"
                     ApplicationArea = All;
                     Editable = false;
                     ToolTip = 'Specifies the video category.';
+                    Visible = false;
                 }
                 field("App ID"; "App ID")
                 {
@@ -66,6 +70,18 @@ page 1470 "Product Videos"
     begin
         Video.OnRegisterVideo();
         Video.GetTemporaryRecord(Rec);
+        if ShowSpecificCategory then
+            Rec.SetRange(Category, CategoryToShowVideosFor);
     end;
+
+    internal procedure SetSpecificCategory(Category: Enum "Video Category")
+    begin
+        ShowSpecificCategory := true;
+        CategoryToShowVideosFor := Category;
+    end;
+
+    var
+        ShowSpecificCategory: Boolean;
+        CategoryToShowVideosFor: Enum "Video Category";
 }
 

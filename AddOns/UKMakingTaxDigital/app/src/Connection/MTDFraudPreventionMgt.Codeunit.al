@@ -1,12 +1,20 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 10541 "MTD Fraud Prevention Mgt."
 {
     var
+        VATReportSetup: Record "VAT Report Setup";
         ClientWMIBuffer: Record "Name/Value Buffer" temporary;
         ServerWMIBuffer: Record "Name/Value Buffer" temporary;
         ClientPublicIPsBuffer: Record "Name/Value Buffer" temporary;
         ClientLocalIPsBuffer: Record "Name/Value Buffer" temporary;
         ServerPublicIPsBuffer: Record "Name/Value Buffer" temporary;
         TypeHelper: Codeunit "Type Helper";
+        TargetJsonMgt: Codeunit "JSON Management";
+        SourceJsonMgt: Codeunit "JSON Management";
         OnPrem: Boolean;
         WebClient: Boolean;
         WinClient: Boolean;
@@ -16,7 +24,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         ConnectionMethodBatchClientTxt: Label 'BATCH_PROCESS_DIRECT', Locked = true;
         ProdNameTxt: Label 'Microsoft_Dynamics_365_Business_Central', Locked = true;
         ProdNameOnPremSuffixTxt: Label '_OnPrem', Locked = true;
-        DefaultProdVersionTxt: Label '15.0.0.0', Locked = true;
+        DefaultProdVersionTxt: Label '16.0.0.0', Locked = true;
         DefaultOSFamilyTxt: Label 'Windows', Locked = true;
         WMI_OSInfo_FieldTxt: Label 'Version,CurrentTimeZone', Locked = true;
         WMI_OSInfo_WhereTxt: Label 'Primary=''true'' and Name like ''%Windows%''', Locked = true;
@@ -42,6 +50,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         EnvironmentInfo: Codeunit "Environment Information";
         ClientTypeMgt: Codeunit "Client Type Management";
     begin
+        VATReportSetup.Get();
         OnPrem := EnvironmentInfo.IsOnPrem();
 
         case ClientTypeMgt.GetCurrentClientType() of
@@ -59,39 +68,127 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
     [Scope('OnPrem')]
     procedure AddFraudPreventionHeaders(var RequestJson: Text)
     var
-        JsonMgt: Codeunit "JSON Management";
-        TextValue: Text;
+        ConnectionMethod: Text;
     begin
         Init();
-        if not GetConnectionMethod(TextValue) then
+        if VATReportSetup."MTD Disable FraudPrev. Headers" then
             exit;
 
-        InvokeWMIQueries();
+        if not GetConnectionMethod(ConnectionMethod) then
+            exit;
 
-        JsonMgt.InitializeFromString(RequestJson);
-        JsonMgt.SetValue('Header.Gov-Client-Connection-Method', TextValue);
+        CollectData();
+        TargetJsonMgt.InitializeFromString(RequestJson);
+        TargetJsonMgt.SetValue('Header.Gov-Client-Connection-Method', ConnectionMethod);
+        TargetJsonMgt.SetValue('Header.Gov-Vendor-Version', GetVendorVersion());
+        CopyJson();
+        RequestJson := TargetJsonMgt.WriteObjectToString();
+    end;
+
+    local procedure CollectData()
+    begin
+        with VATReportSetup do
+            case true of
+                WinClient:
+                    CollectDataForClient("MTD FP WinClient Due DateTime", FieldNo("MTD FP WinClient Json"));
+                WebClient:
+                    CollectDataForClient("MTD FP WebClient Due DateTime", FieldNo("MTD FP WebClient Json"));
+                BatchClient:
+                    CollectDataForClient("MTD FP Batch Due DateTime", FieldNo("MTD FP Batch Json"));
+            end;
+    end;
+
+    local procedure CollectDataForClient(var DueDateTime: DateTime; JsonFieldNo: Integer)
+    var
+        TempBlob: Codeunit "Temp Blob";
+        RecordRef: RecordRef;
+        Expired: Boolean;
+        OutStream: OutStream;
+        InStream: InStream;
+        JsonText: Text;
+    begin
+        Expired := true;
+        if DueDateTime <> 0DT then
+            Expired := DueDateTime < CurrentDateTime();
+        TempBlob.FromRecord(VATReportSetup, JsonFieldNo);
+        if not TempBlob.HasValue() or Expired then begin
+            InvokeWMIQueries();
+            CreateSourceJson();
+            TempBlob.CreateOutStream(OutStream);
+            OutStream.Write(SourceJsonMgt.WriteObjectToString());
+            RecordRef.GetTable(VATReportSetup);
+            TempBlob.ToRecordRef(RecordRef, JsonFieldNo);
+            RecordRef.SetTable(VATReportSetup);
+            DueDateTime := CalcNextDueDateTime();
+            VATReportSetup.Modify();
+        end else begin
+            TempBlob.CreateInStream(InStream);
+            InStream.Read(JsonText);
+            SourceJsonMgt.InitializeFromString(JsonText);
+        end;
+    end;
+
+    local procedure CalcNextDueDateTime(): DateTime
+    begin
+        exit(TypeHelper.AddHoursToDateTime(CurrentDateTime(), 12));
+    end;
+
+    local procedure CreateSourceJson()
+    var
+        TextValue: Text;
+    begin
         if GetClientPublicIPs(TextValue) then
-            JsonMgt.SetValue('Header.Gov-Client-Public-IP', TextValue);
+            SourceJsonMgt.SetValue('Gov-Client-Public-IP', TextValue);
         if GetClientDeviceID(TextValue) then
-            JsonMgt.SetValue('Header.Gov-Client-Device-ID', TextValue);
+            SourceJsonMgt.SetValue('Gov-Client-Device-ID', TextValue);
         if GetClientUserIDs(TextValue) then
-            JsonMgt.SetValue('Header.Gov-Client-User-IDs', TextValue);
+            SourceJsonMgt.SetValue('Gov-Client-User-IDs', TextValue);
         if GetClientTimezone(TextValue) then
-            JsonMgt.SetValue('Header.Gov-Client-Timezone', TextValue);
+            SourceJsonMgt.SetValue('Gov-Client-Timezone', TextValue);
         if GetClientLocalIPs(TextValue) then
-            JsonMgt.SetValue('Header.Gov-Client-Local-IPs', TextValue);
+            SourceJsonMgt.SetValue('Gov-Client-Local-IPs', TextValue);
         if GetClientMACAddresses(TextValue) then
-            JsonMgt.SetValue('Header.Gov-Client-MAC-Addresses', TextValue);
+            SourceJsonMgt.SetValue('Gov-Client-MAC-Addresses', TextValue);
         if GetClientScreens(TextValue) then
-            JsonMgt.SetValue('Header.Gov-Client-Screens', TextValue);
+            SourceJsonMgt.SetValue('Gov-Client-Screens', TextValue);
         if GetClientUserAgent(TextValue) then
-            JsonMgt.SetValue('Header.Gov-Client-User-Agent', TextValue);
-        JsonMgt.SetValue('Header.Gov-Vendor-Version', GetVendorVersion());
+            SourceJsonMgt.SetValue('Gov-Client-User-Agent', TextValue);
         if GetVendorLicenseIDs(TextValue) then
-            JsonMgt.SetValue('Header.Gov-Vendor-License-IDs', TextValue);
+            SourceJsonMgt.SetValue('Gov-Vendor-License-IDs', TextValue);
         if GetVendorPublicIPs(TextValue) then
-            JsonMgt.SetValue('Header.Gov-Vendor-Public-IP', TextValue);
-        RequestJson := JsonMgt.WriteObjectToString();
+            SourceJsonMgt.SetValue('Gov-Vendor-Public-IP', TextValue);
+    end;
+
+    local procedure CopyJson()
+    var
+        TextValue: Text;
+    begin
+        if GetSourceJsonValue('Gov-Client-Public-IP', TextValue) then
+            TargetJsonMgt.SetValue('Header.Gov-Client-Public-IP', TextValue);
+        if GetSourceJsonValue('Gov-Client-Device-ID', TextValue) then
+            TargetJsonMgt.SetValue('Header.Gov-Client-Device-ID', TextValue);
+        if GetSourceJsonValue('Gov-Client-User-IDs', TextValue) then
+            TargetJsonMgt.SetValue('Header.Gov-Client-User-IDs', TextValue);
+        if GetSourceJsonValue('Gov-Client-Timezone', TextValue) then
+            TargetJsonMgt.SetValue('Header.Gov-Client-Timezone', TextValue);
+        if GetSourceJsonValue('Gov-Client-Local-IPs', TextValue) then
+            TargetJsonMgt.SetValue('Header.Gov-Client-Local-IPs', TextValue);
+        if GetSourceJsonValue('Gov-Client-MAC-Addresses', TextValue) then
+            TargetJsonMgt.SetValue('Header.Gov-Client-MAC-Addresses', TextValue);
+        if GetSourceJsonValue('Gov-Client-Screens', TextValue) then
+            TargetJsonMgt.SetValue('Header.Gov-Client-Screens', TextValue);
+        if GetSourceJsonValue('Gov-Client-User-Agent', TextValue) then
+            TargetJsonMgt.SetValue('Header.Gov-Client-User-Agent', TextValue);
+        if GetSourceJsonValue('Gov-Vendor-License-IDs', TextValue) then
+            TargetJsonMgt.SetValue('Header.Gov-Vendor-License-IDs', TextValue);
+        if GetSourceJsonValue('Gov-Vendor-Public-IP', TextValue) then
+            TargetJsonMgt.SetValue('Header.Gov-Vendor-Public-IP', TextValue);
+    end;
+
+    local procedure GetSourceJsonValue(Path: Text; var Result: Text): Boolean;
+    begin
+        Result := SourceJsonMgt.GetValue(Path);
+        exit(Result <> '');
     end;
 
     local procedure GetConnectionMethod(var Result: Text): Boolean
@@ -267,9 +364,10 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
 
     local procedure GetVendorLicenseIDs(var Result: Text): Boolean
     var
-        TenantSettings: Codeunit "Tenant Settings";
+        TenantSettings: Codeunit "Tenant Information";
+        AzureADTenant: Codeunit "Azure AD Tenant";
         TenantLicenseState: Codeunit "Tenant License State";
-        EncryptionManagement: Codeunit "Encryption Management";
+        CryptographyManagement: Codeunit "Cryptography Management";
         HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512;
         ProdName: Text;
         Hashed: Text;
@@ -278,9 +376,9 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         Hashed :=
             StrSubstNo(
                 'Microsoft_Dynamics_365_Business_Central,AadTenantId=%1,TenantId=%2,Start=%3,End=%4',
-                TenantSettings.GetAadTenantId(), TenantSettings.GetTenantId(),
+                AzureADTenant.GetAadTenantId(), TenantSettings.GetTenantId(),
                 TenantLicenseState.GetStartDate(), TenantLicenseState.GetEndDate());
-        Hashed := EncryptionManagement.GenerateHash(Hashed, HashAlgorithmType::SHA256);
+        Hashed := CryptographyManagement.GenerateHash(Hashed, HashAlgorithmType::SHA256);
         Result := StrSubstNo('%1=%2', TypeHelper.UrlEncode(ProdName), Hashed);
         exit(true);
     end;

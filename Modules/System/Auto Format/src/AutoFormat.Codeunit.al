@@ -61,7 +61,7 @@ codeunit 45 "Auto Format"
     /// <param name="AutoFormatExpr">An expression that specifies how to format data.</param>
     /// <param name="Result">
     /// The resolved expression that defines data formatting.
-    /// For example '<Precision,4:4><Standard Format,2> suffix' that depending on your regional settings 
+    /// For example '&lt;Precision,4:4&gt;&lt;Standard Format,2&gt; suffix' that depending on your regional settings 
     /// will format decimal into "-12345.6789 suffix" or "-12345,6789 suffix".
     /// </param>
     /// <param name="Resolved">A value that describes whether the data formatting expression is correct.</param>

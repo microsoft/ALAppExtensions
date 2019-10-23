@@ -57,5 +57,15 @@ table 3712 Translation
     fieldgroups
     {
     }
+
+    trigger OnInsert()
+    begin
+        TestField("Language ID");
+    end;
+
+    trigger OnModify()
+    begin
+        TestField("Language ID");
+    end;
 }
 

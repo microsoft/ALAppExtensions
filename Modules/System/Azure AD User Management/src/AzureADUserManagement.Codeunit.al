@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Exposes functionality to manage the Azure AD Graph API users.
+/// Exposes functionality to manage Azure AD users.
 /// </summary>
 codeunit 9010 "Azure AD User Management"
 {
@@ -19,8 +19,8 @@ codeunit 9010 "Azure AD User Management"
     end;
 
     /// <summary>    
-    /// Retrieves all the users from the Azure AD Graph API. If the users already exist in the database, 
-    /// they are updated to match the ones from the API; otherwise new users are inserted in the database.
+    /// Retrieves all the users from Azure AD. If the users already exist in the database, 
+    /// they are updated to match the ones from Azure AD; otherwise new users are inserted in the database.
     /// </summary>
     [Scope('OnPrem')]
     procedure CreateNewUsersFromAzureAD()
@@ -29,9 +29,9 @@ codeunit 9010 "Azure AD User Management"
     end;
 
     /// <summary>    
-    /// Creates a new user from an Azure AD Graph API user.
+    /// Creates a new user from an Azure AD user.
     /// </summary>
-    /// <param name="GraphUser">The Azure AD Graph API user.</param>
+    /// <param name="GraphUser">The Azure AD user.</param>
     [Scope('OnPrem')]
     procedure CreateNewUserFromGraphUser(GraphUser: DotNet UserInfo)
     begin
@@ -39,18 +39,18 @@ codeunit 9010 "Azure AD User Management"
     end;
 
     /// <summary>    
-    /// Synchronizes a user with the Azure AD Graph API user corresponding to the authentication 
+    /// Synchronizes a user with the Azure AD user corresponding to the authentication 
     /// email that is passed as a parameter. If the user record does not exist, it gets created.
     /// </summary>
     /// <param name="AuthenticationEmail">The user's authentication email.</param>
-    /// <returns>True if there is a user in the Azure AD Graph API corresponding to the authentication email; otherwise false.</returns>
+    /// <returns>True if there is a user in Azure AD corresponding to the authentication email; otherwise false.</returns>
     procedure SynchronizeLicensedUserFromDirectory(AuthenticationEmail: Text): Boolean
     begin
         AzureADUserMgmtImpl.SynchronizeLicensedUserFromDirectory(AuthenticationEmail);
     end;
 
     /// <summary>    
-    /// Synchronizes all the users from the database with the ones from the Azure AD Graph API. If 
+    /// Synchronizes all the users from the database with the ones from Azure AD. If 
     /// the users do not exist in the database, they get created.
     /// </summary>
     procedure SynchronizeAllLicensedUsersFromDirectory()
@@ -70,6 +70,7 @@ codeunit 9010 "Azure AD User Management"
     /// <summary>
     /// Sets a flag that is used to determine whether a test is in progress or not.
     /// </summary>
+    /// <param name="TestInProgress">The value to be set to the flag.</param>
     [Scope('OnPrem')]
     procedure SetTestInProgress(TestInProgress: Boolean)
     begin

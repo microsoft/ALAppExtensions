@@ -112,7 +112,7 @@ table 1803 "Assisted Setup"
         {
             Caption = 'Extension Name';
             FieldClass = FlowField;
-            CalcFormula = Lookup ("NAV App".Name where("Package ID" = FIELD("App ID")));
+            CalcFormula = Lookup ("NAV App".Name where(ID = FIELD("App ID")));
             Editable = false;
         }
         field(21; "Group Name"; Enum "Assisted Setup Group")
@@ -125,13 +125,20 @@ table 1803 "Assisted Setup"
             Caption = 'Completed';
             Editable = false;
         }
+        field(23; "Video Category"; Enum "Video Category")
+        {
+            Editable = false;
+        }
     }
 
     keys
     {
-        key(Key1; "App ID", "Page ID")
+        key(Key1; "Page ID")
         {
             Clustered = true;
+        }
+        key(Key2; Order, Visible)
+        {
         }
     }
 
@@ -139,39 +146,11 @@ table 1803 "Assisted Setup"
     {
     }
 
-    var
-        RunSetupAgainQst: Label 'You have already completed the %1 assisted setup guide. Do you want to run it again?', Comment = '%1 = Assisted Setup Name';
-
     trigger OnDelete()
     var
         Translation: Codeunit Translation;
     begin
         Translation.Delete(Rec);
-    end;
-
-    procedure Run()
-    var
-        AssistedSetupApi: Codeunit "Assisted Setup";
-        Handled: Boolean;
-    begin
-        if Completed then begin
-            AssistedSetupApi.OnReRunOfCompletedSetup("App ID", "Page ID", Handled);
-            if Handled then
-                exit;
-            if not Confirm(RunSetupAgainQst, false, Name) then
-                exit;
-        end;
-
-        Page.RunModal("Page ID");
-        AssistedSetupApi.OnAfterRun("App ID", "Page ID");
-    end;
-
-    procedure NavigateHelpPage()
-    begin
-        if "Help Url" = '' then
-            exit;
-
-        HyperLink("Help Url");
     end;
 }
 

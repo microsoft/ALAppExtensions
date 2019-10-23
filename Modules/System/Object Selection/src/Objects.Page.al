@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// List page that contains all of the application objects.
+/// </summary>
 page 358 Objects
 {
     Extensible = false;
@@ -47,7 +50,7 @@ page 358 Objects
                     ToolTip = 'Specifies the name of the object.';
                     Visible = false;
                 }
-                field(ExtensionName; ExtensionName)
+                field(ExtensionName; AppName)
                 {
                     ApplicationArea = All;
                     Caption = 'Extension Name';
@@ -68,16 +71,16 @@ page 358 Objects
     var
         NAVApp: Record "NAV App";
     begin
-        ExtensionName := '';
+        AppName := '';
 
         if IsNullGuid("App Package ID") then
             exit;
 
         if NAVApp.Get("App Package ID") then
-            ExtensionName := NAVApp.Name;
+            AppName := NAVApp.Name;
     end;
 
     var
-        ExtensionName: Text;
+        AppName: Text;
 }
 

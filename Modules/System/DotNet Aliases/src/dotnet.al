@@ -688,7 +688,7 @@ dotnet
         {
         }
 
-        type("Microsoft.Dynamics.Nav.NavUserAccount.NavTenantSettingsHelper";"NavTenantSettingsHelper")
+        type("Microsoft.Dynamics.Nav.NavUserAccount.NavTenantSettingsHelper"; "NavTenantSettingsHelper")
         {
         }
 
@@ -1100,8 +1100,8 @@ dotnet
         type("System.Array"; "Array")
         {
         }
-		
-		type("System.Base64FormattingOptions"; "Base64FormattingOptions")
+
+        type("System.Base64FormattingOptions"; "Base64FormattingOptions")
         {
         }
 
@@ -1397,6 +1397,10 @@ dotnet
         {
         }
 
+        type("System.Text.NormalizationForm"; "NormalizationForm")
+        {
+        }
+
         type("System.Text.StringBuilder"; "StringBuilder")
         {
         }
@@ -1412,8 +1416,8 @@ dotnet
         type("System.Threading.Thread"; "Thread")
         {
         }
-	
-	    type("System.Threading.CancellationToken"; "CancellationToken")
+
+        type("System.Threading.CancellationToken"; "CancellationToken")
         {
         }
 

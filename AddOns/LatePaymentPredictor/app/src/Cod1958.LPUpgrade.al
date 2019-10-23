@@ -75,12 +75,21 @@ codeunit 1958 "Late Payment Upgrade"
     local procedure MoveSecretToIsolatedStorage(ServicePasswordKey: Text[200])
     var
         ServicePassword: Record "Service Password";
+        ServicePasswordKeyGuid: Guid;
     begin
-        if ServicePassword.Get(ServicePasswordKey) then
-            if EncryptionEnabled() then
-                IsolatedStorage.SetEncrypted(ServicePasswordKey, ServicePassword.GetPassword(), DataScope::Company)
-            else
-                IsolatedStorage.Set(ServicePasswordKey, ServicePassword.GetPassword(), DataScope::Company);
+        if ServicePasswordKey = '' then
+            exit;
+
+        if not Evaluate(ServicePasswordKeyGuid, ServicePasswordKey) then
+            exit;
+
+        if not ServicePassword.Get(ServicePasswordKeyGuid) then
+            exit;
+
+        if EncryptionEnabled() then
+            IsolatedStorage.SetEncrypted(ServicePasswordKey, ServicePassword.GetPassword(), DataScope::Company)
+        else
+            IsolatedStorage.Set(ServicePasswordKey, ServicePassword.GetPassword(), DataScope::Company);
     end;
 
     local procedure VerifySecret(ServicePasswordKey: Text[200])
@@ -88,13 +97,23 @@ codeunit 1958 "Late Payment Upgrade"
         ServicePassword: Record "Service Password";
         IsolatedStorageValue: Text;
         ServicePasswordValue: Text;
+        ServicePasswordKeyGuid: Guid;
     begin
-        if ServicePassword.Get(ServicePasswordKey) then begin
-            if not IsolatedStorage.Get(ServicePasswordKey, IsolatedStorageValue) then
-                Error('Could not retrieve the secret from isolated storage after the Upgrade for key "%1"', ServicePasswordKey);
-            ServicePasswordValue := ServicePassword.GetPassword();
-            if IsolatedStorageValue <> ServicePasswordValue then
-                Error('The secret value for key "%1" in isolated storage does not match the one in service password.', ServicePasswordKey);
-        end;
+        if ServicePasswordKey = '' then
+            exit;
+
+        if not Evaluate(ServicePasswordKeyGuid, ServicePasswordKey) then
+            exit;
+
+        if not ServicePassword.Get(ServicePasswordKeyGuid) then
+            exit;
+
+        if not IsolatedStorage.Get(ServicePasswordKey, DataScope::Company, IsolatedStorageValue) then
+            Error('Could not retrieve the secret from isolated storage after the Upgrade for key "%1"', ServicePasswordKey);
+
+        ServicePasswordValue := ServicePassword.GetPassword();
+
+        if IsolatedStorageValue <> ServicePasswordValue then
+            Error('The secret value for key "%1" in isolated storage does not match the one in service password.', ServicePasswordKey);
     end;
 }

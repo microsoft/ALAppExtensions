@@ -8,6 +8,7 @@
 /// For encryption in an on-premises versions, use it to turn encryption on or off, and import and export the encryption key.
 /// Encryption is always turned on for online versions.
 /// </summary>
+
 codeunit 1266 "Cryptography Management"
 {
     Access = Public;
@@ -168,6 +169,4 @@ codeunit 1266 "Cryptography Management"
     begin
         exit(CryptographyManagementImpl.GenerateBase64KeyedHashAsBase64String(InputString, Key, HashAlgorithmType));
     end;
-
 }
-

@@ -11,7 +11,6 @@ Codeunit 148034 "TestFIKImp.Pmt. Rec. Jnl."
     VAR
         LibraryERM: Codeunit "Library - ERM";
         Assert: Codeunit Assert;
-        BlobKey: Integer;
         AssertMsg: Label '%1 Field:"%2" different from expected.', Locked = true;
         FIKFileNotValidErr: Label 'The selected file is not a FIK file.', Locked = true;
         WrongBankAccountErr: Label 'You cannot use bank account', Locked = true;
@@ -25,11 +24,11 @@ Codeunit 148034 "TestFIKImp.Pmt. Rec. Jnl."
     PROCEDURE TestFIKImport();
     VAR
         DataExch: Record "Data Exch.";
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         TempBankAccReconLineExpected: Record "Bank Acc. Reconciliation Line" temporary;
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         FIKManagement: Codeunit FIKManagement;
         OutStream: OutStream;
         LineNo: Integer;
@@ -95,9 +94,9 @@ Codeunit 148034 "TestFIKImp.Pmt. Rec. Jnl."
     [Test]
     PROCEDURE TestFIKImportWrongFileFormat();
     VAR
+        BankAccReconciliation: Record "Bank Acc. Reconciliation";
         TempBlobOEM: Codeunit "Temp Blob";
         TempBlobANSI: Codeunit "Temp Blob";
-        BankAccReconciliation: Record "Bank Acc. Reconciliation";
         FIKManagement: Codeunit FIKManagement;
         OutStream: OutStream;
     BEGIN
@@ -127,10 +126,10 @@ Codeunit 148034 "TestFIKImp.Pmt. Rec. Jnl."
     [Test]
     PROCEDURE TestFIKImportWrongBankAccNotDKK();
     VAR
-        TempBlobOEM: Codeunit "Temp Blob";
-        TempBlobANSI: Codeunit "Temp Blob";
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
         Currency: Record Currency;
+        TempBlobOEM: Codeunit "Temp Blob";
+        TempBlobANSI: Codeunit "Temp Blob";
         FIKManagement: Codeunit FIKManagement;
         OutStream: OutStream;
     BEGIN

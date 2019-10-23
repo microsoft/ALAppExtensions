@@ -4,21 +4,21 @@
     "publisher":  "Microsoft",
     "brief":  "Determines whether a confirm dialog displays when logic is run.",
     "description":  "Contains helper methods that either display a confirm dialog when logic is run, or suppresses it if UI is not allowed, such as background sessions or webservice calls.",
-    "version":  "15.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "version":  "16.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "",
     "dependencies":  [
 
                      ],
     "internalsVisibleTo":  [
-                                {
-								    "appId":  "d4dcc3bc-265b-48fc-99e2-3262a6130236",
-                                    "name":  "Confirm Management Test Library",
-                                    "publisher":  "Microsoft"
-                                }
+                               {
+                                   "appId":  "d4dcc3bc-265b-48fc-99e2-3262a6130236",
+                                   "name":  "Confirm Management Test Library",
+                                   "publisher":  "Microsoft"
+                               }
                            ],
     "screenshots":  [
 
@@ -30,5 +30,6 @@
                          "to":  27
                      }
                  ],
-    "target":  "OnPrem"
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
 }

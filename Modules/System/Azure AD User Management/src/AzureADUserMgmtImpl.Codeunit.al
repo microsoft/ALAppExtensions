@@ -37,8 +37,6 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         CompanyAdminRoleTemplateIdTok: Label '62e90394-69f5-4237-9190-012177145e10', Locked = true;
         UserSetupCategoryTxt: Label 'User Setup', Locked = true;
         UserCreatedMsg: Label 'User %1 has been created', Locked = true;
-        DevicePlanFoundMsg: Label 'Device plan %1 found for user %2', Locked = true;
-        NotBCUserMsg: Label 'User %1 is not a Business Central user. Contact your administrator.';
 
     procedure Run(ForUserSecurityId: Guid)
     var

@@ -3,12 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Installs the selected extension.
+/// </summary>
 page 2503 "Extension Installation"
 {
     Extensible = false;
     PageType = Card;
     SourceTable = "NAV App";
     SourceTableTemporary = true;
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {

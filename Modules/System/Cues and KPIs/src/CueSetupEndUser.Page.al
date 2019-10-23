@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// List page that contains settings that define the appearance of cues for the current user and page.
+/// </summary>
 page 9702 "Cue Setup End User"
 {
     Caption = 'Cue Setup';
@@ -7,6 +15,7 @@ page 9702 "Cue Setup End User"
     Permissions = TableData "Cue Setup" = rimd;
     SourceTable = "Cue Setup";
     SourceTableTemporary = true;
+    ContextSensitiveHelpPage = 'admin-how-set-up-colored-indicator-on-cues';
 
     layout
     {
@@ -134,4 +143,3 @@ page 9702 "Cue Setup End User"
         HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("High Range Style");
     end;
 }
-

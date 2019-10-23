@@ -14,9 +14,9 @@ codeunit 6723 "Server Setting"
     var
         ServerSettingImpl: Codeunit "Server Setting Impl.";
 
-        /// <summary>Checks whether online extensions can be installed on the server.</summary>
-        /// <returns>True, if they can be installed; otherwise, false.</returns>
-        /// <remarks>Gets the value of the server setting EnableSaasExtensionInstallConfigSetting.</remarks>
+    /// <summary>Checks whether online extensions can be installed on the server.</summary>
+    /// <returns>True, if they can be installed; otherwise, false.</returns>
+    /// <remarks>Gets the value of the server setting EnableSaasExtensionInstallConfigSetting.</remarks>
     [Scope('OnPrem')]
     procedure GetEnableSaaSExtensionInstallSetting(): Boolean
     begin
@@ -26,7 +26,6 @@ codeunit 6723 "Server Setting"
     /// <summary>Checks whether Excel add-in is enabled on the server.</summary>
     /// <returns>True if enabled; otherwise, false.</returns>
     /// <remarks>Gets the value of the server setting IsSaasExcelAddinEnabled.</remarks>
-    [Scope('OnPrem')]
     procedure GetIsSaasExcelAddinEnabled(): Boolean
     begin
         exit(ServerSettingImpl.GetIsSaasExcelAddinEnabled());
@@ -41,7 +40,7 @@ codeunit 6723 "Server Setting"
         exit(ServerSettingImpl.GetApiServicesEnabled());
     end;
 
-    /// <summary>Checks whether the API subscriptions are enabled./summary>
+    /// <summary>Checks whether the API subscriptions are enabled.</summary>
     /// <returns>True if enabled; otherwise, false.</returns>
     /// <remarks>Gets the value of the server setting ApiSubscriptionsEnabled.</remarks>
     [Scope('OnPrem')]

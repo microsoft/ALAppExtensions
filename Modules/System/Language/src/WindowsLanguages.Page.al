@@ -13,6 +13,7 @@ page 535 "Windows Languages"
     Editable = false;
     PageType = List;
     SourceTable = "Windows Language";
+    ContextSensitiveHelpPage = 'ui-change-basic-settings#language';
 
     layout
     {

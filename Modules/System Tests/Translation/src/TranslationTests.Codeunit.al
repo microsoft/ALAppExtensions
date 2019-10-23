@@ -15,6 +15,7 @@ codeunit 137121 "Translation Tests"
         Text2Txt: Label 'Translation 2';
         Text3Txt: Label 'Translation 3';
         Text4Txt: Label 'Translation 4';
+        Text5Txt: Label 'Translation 5';
 
     [Test]
     [Scope('OnPrem')]
@@ -66,7 +67,7 @@ codeunit 137121 "Translation Tests"
         TranslationTestTable.PK := 1;
         TranslationTestTable.Insert();
 
-        // [WHEN] Set the translations in 2 fields
+        // [WHEN] Set the translations in two fields
         Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), Text1Txt);
         Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030, Text2Txt);
         Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(SecondTextField), Text3Txt);
@@ -94,7 +95,6 @@ codeunit 137121 "Translation Tests"
     procedure TestRetrivalAndStorageThroughUI()
     var
         TranslationTestTable: Record "Translation Test Table";
-        Translation: Codeunit Translation;
         TranslationTestPage: TestPage "Translation Test Page";
         TranslationPage: TestPage Translation;
         Translation2: Text;
@@ -130,10 +130,10 @@ codeunit 137121 "Translation Tests"
 
         // [THEN] Two records show up
         TranslationPage.First();
-        TranslationPage."Language Name".AssertEquals('Danish');
+        TranslationPage.LanguageName.AssertEquals('Danish');
         TranslationPage.Value.AssertEquals(Text2Txt);
         TranslationPage.Last();
-        TranslationPage."Language Name".AssertEquals('English');
+        TranslationPage.LanguageName.AssertEquals('English');
         TranslationPage.Value.AssertEquals(Text1Txt);
 
         // [WHEN] Edit the ENU record
@@ -141,7 +141,7 @@ codeunit 137121 "Translation Tests"
         TranslationPage.Next();
 
         // [WHEN] Add a new translation for FRA
-        TranslationPage."Language Name".AssistEdit(); // pops out the Languages page handled by the Modal Handler
+        TranslationPage.LanguageName.AssistEdit(); // pops out the Languages page handled by the Modal Handler
         TranslationPage.Value.SetValue(Text4Txt);
         TranslationPage.Next();
 
@@ -182,23 +182,32 @@ codeunit 137121 "Translation Tests"
 
         // [THEN] Verify the content of the page as all the translations for the 3 records
         TranslationPage.First();
-        TranslationPage."Language Name".AssertEquals('Danish');
+        TranslationPage.LanguageName.AssertEquals('Danish');
         TranslationPage.Value.AssertEquals(CalculateValue(TranslationTestTableA, Text2Txt));
         TranslationPage.Next();
-        TranslationPage."Language Name".AssertEquals('Danish');
+        TranslationPage.LanguageName.AssertEquals('Danish');
         TranslationPage.Value.AssertEquals(CalculateValue(TranslationTestTableB, Text2Txt));
         TranslationPage.Next();
-        TranslationPage."Language Name".AssertEquals('Danish');
+        TranslationPage.LanguageName.AssertEquals('Danish');
         TranslationPage.Value.AssertEquals(CalculateValue(TranslationTestTableC, Text2Txt));
         TranslationPage.Next();
-        TranslationPage."Language Name".AssertEquals('English');
+        TranslationPage.LanguageName.AssertEquals('English');
         TranslationPage.Value.AssertEquals(CalculateValue(TranslationTestTableA, Text1Txt));
         TranslationPage.Next();
-        TranslationPage."Language Name".AssertEquals('English');
+        TranslationPage.LanguageName.AssertEquals('English');
         TranslationPage.Value.AssertEquals(CalculateValue(TranslationTestTableB, Text1Txt));
         TranslationPage.Next();
-        TranslationPage."Language Name".AssertEquals('English');
+        TranslationPage.LanguageName.AssertEquals('English');
         TranslationPage.Value.AssertEquals(CalculateValue(TranslationTestTableC, Text1Txt));
+        TranslationPage.Next();
+        TranslationPage.LanguageName.AssertEquals('Afrikaans (South Africa)');
+        TranslationPage.Value.AssertEquals(CalculateValue(TranslationTestTableA, Text5Txt));
+        TranslationPage.Next();
+        TranslationPage.LanguageName.AssertEquals('Afrikaans (South Africa)');
+        TranslationPage.Value.AssertEquals(CalculateValue(TranslationTestTableB, Text5Txt));
+        TranslationPage.Next();
+        TranslationPage.LanguageName.AssertEquals('Afrikaans (South Africa)');
+        TranslationPage.Value.AssertEquals(CalculateValue(TranslationTestTableC, Text5Txt));
         TranslationPage.Next();
         Assert.IsFalse(TranslationPage.Next(), 'No more records should be available.');
     end;
@@ -206,13 +215,14 @@ codeunit 137121 "Translation Tests"
     local procedure Initialize()
     var
         TranslationTestTable: Record "Translation Test Table";
+        Language: Codeunit Language;
     begin
         CreateLanguage('ENU', 'English', 1033);
         CreateLanguage('DAN', 'Danish', 1030);
         CreateLanguage('FRA', 'French', 1036);
 
         // Set ENU to global language
-        GlobalLanguage(1033);
+        GlobalLanguage(Language.GetDefaultApplicationLanguageId());
         TranslationTestTable.DeleteAll(true);
     end;
 
@@ -242,6 +252,8 @@ codeunit 137121 "Translation Tests"
           CalculateValue(TranslationTestTable, Text1Txt));
         Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030,
           CalculateValue(TranslationTestTable, Text2Txt));
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1078,
+          CalculateValue(TranslationTestTable, Text5Txt));
     end;
 
     local procedure CalculateValue(TranslationTestTable: Record "Translation Test Table"; OrigValue: Text): Text[2048]

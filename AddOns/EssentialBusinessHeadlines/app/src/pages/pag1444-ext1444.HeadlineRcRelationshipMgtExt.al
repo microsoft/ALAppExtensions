@@ -12,7 +12,7 @@ pageextension 1444 "Headlines RC Rel. Mgt. Ext." extends "Headline RC Relationsh
         {
             group(TopCustomerVisible)
             {
-                Visible = TopCustomerVisible;
+                Visible = IsTopCustomerVisible;
                 Editable = false;
                 ShowCaption = false;
 
@@ -33,7 +33,7 @@ pageextension 1444 "Headlines RC Rel. Mgt. Ext." extends "Headline RC Relationsh
 
     trigger OnOpenPage()
     begin
-        OnSetVisibility(TopCustomerVisible, TopCustomerText);
+        OnSetVisibility(IsTopCustomerVisible, TopCustomerText);
     end;
 
     [IntegrationEvent(false, false)]
@@ -43,7 +43,7 @@ pageextension 1444 "Headlines RC Rel. Mgt. Ext." extends "Headline RC Relationsh
 
     var
         [InDataSet]
-        TopCustomerVisible: Boolean;
+        IsTopCustomerVisible: Boolean;
         [InDataSet]
         TopCustomerText: Text[250];
 }

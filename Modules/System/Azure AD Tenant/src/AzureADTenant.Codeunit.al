@@ -27,10 +27,11 @@ codeunit 433 "Azure AD Tenant"
     /// Gets the Azure Active Directory tenant domain name.
     /// If the Microsoft Graph API cannot be reached, the error is displayed.
     /// </summary>
+    /// <returns>The AAD Tenant Domain Name.</returns>
     /// <error>Cannot retrieve the Azure Active Directory tenant domain name.</error>
-    procedure GetAadTenantDomainName()
+    procedure GetAadTenantDomainName(): Text
     begin
-        AzureADTenantImpl.GetAadTenantDomainName();
+        exit(AzureADTenantImpl.GetAadTenantDomainName());
     end;
 }
 

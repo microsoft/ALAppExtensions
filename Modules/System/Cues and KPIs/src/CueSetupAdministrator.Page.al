@@ -2,6 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// List page that contains settings that define the appearance of cues on all pages.
+/// Administrators can use this page to define a general style, which users can customize from the Cue Setup End User page.
+/// </summary>
 page 9701 "Cue Setup Administrator"
 {
     ApplicationArea = All;
@@ -10,6 +15,7 @@ page 9701 "Cue Setup Administrator"
     Permissions = TableData "Cue Setup" = rimd;
     SourceTable = "Cue Setup";
     UsageCategory = Administration;
+    ContextSensitiveHelpPage = 'admin-how-set-up-colored-indicator-on-cues';
 
     layout
     {
@@ -129,4 +135,3 @@ page 9701 "Cue Setup Administrator"
         HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("High Range Style");
     end;
 }
-

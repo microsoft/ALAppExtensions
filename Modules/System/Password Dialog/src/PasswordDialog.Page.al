@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// A Page that allows the user to enter a password.
+/// </summary>
 page 9810 "Password Dialog"
 {
     Extensible = false;
@@ -13,7 +16,7 @@ page 9810 "Password Dialog"
     {
         area(content)
         {
-            field(OldPassword; OldPassword)
+            field(OldPassword; OldPasswordValue)
             {
                 ApplicationArea = All;
                 Caption = 'Old Password';
@@ -21,7 +24,7 @@ page 9810 "Password Dialog"
                 ToolTip = 'Specifies the current password, before the user defines a new one.';
                 Visible = ShowOldPassword;
             }
-            field(Password; Password)
+            field(Password; PasswordValue)
             {
                 ApplicationArea = All;
                 Caption = 'Password';
@@ -31,10 +34,10 @@ page 9810 "Password Dialog"
                 trigger OnValidate()
                 begin
                     if RequiresPasswordValidation then
-                        PasswordDialogImpl.ValidatePasswordStrength(Password);
+                        PasswordDialogImpl.ValidatePasswordStrength(PasswordValue);
                 end;
             }
-            field(ConfirmPassword; ConfirmPassword)
+            field(ConfirmPassword; ConfirmPasswordValue)
             {
                 ApplicationArea = All;
                 Caption = 'Confirm Password';
@@ -44,7 +47,7 @@ page 9810 "Password Dialog"
 
                 trigger OnValidate()
                 begin
-                    if RequiresPasswordConfirmation and (Password <> ConfirmPassword) then
+                    if RequiresPasswordConfirmation and (PasswordValue <> ConfirmPasswordValue) then
                         Error(PasswordMismatchErr);
                 end;
             }
@@ -72,8 +75,8 @@ page 9810 "Password Dialog"
             ValidPassword := PasswordDialogImpl.ValidatePassword(
                 RequiresPasswordConfirmation,
                 RequiresPasswordValidation,
-                Password,
-                ConfirmPassword);
+                PasswordValue,
+                ConfirmPasswordValue);
             exit(ValidPassword);
         end;
     end;
@@ -82,46 +85,63 @@ page 9810 "Password Dialog"
         PasswordDialogImpl: Codeunit "Password Dialog Impl.";
         PasswordMismatchErr: Label 'The passwords that you entered do not match.';
         [InDataSet]
-        Password: Text;
+        PasswordValue: Text;
         [InDataSet]
-        ConfirmPassword: Text;
+        ConfirmPasswordValue: Text;
         [InDataSet]
-        OldPassword: Text;
+        OldPasswordValue: Text;
         ShowOldPassword: Boolean;
         ValidPassword: Boolean;
         RequiresPasswordValidation: Boolean;
         RequiresPasswordConfirmation: Boolean;
 
+    /// <summary>
+    /// Gets the password value typed on the page.
+    /// </summary>
+    /// <returns>The password value typed on the page.</returns>
     [Scope('OnPrem')]
     procedure GetPasswordValue(): Text
     begin
         if ValidPassword then
-            exit(Password);
+            exit(PasswordValue);
 
         exit('');
     end;
 
+    /// <summary>
+    /// Gets the old password value typed on the page.
+    /// </summary>
+    /// <returns>The old password typed on the page.</returns>
     [Scope('OnPrem')]
     procedure GetOldPasswordValue(): Text
     begin
         if ValidPassword then
-            exit(OldPassword);
+            exit(OldPasswordValue);
 
         exit('');
     end;
 
+    /// <summary>
+    /// Enables the Change password mode, it makes the old password field on the page visible.
+    /// </summary>
     [Scope('OnPrem')]
     procedure EnableChangePassword()
     begin
         ShowOldPassword := true;
     end;
 
+    /// <summary>
+    /// Disables any password validation.
+    /// </summary>
     [Scope('OnPrem')]
     procedure DisablePasswordValidation()
     begin
         RequiresPasswordValidation := false;
     end;
 
+    /// <summary>
+    /// Disables any password confirmation, it makes the Confirm Password field on the page hidden.
+    /// </summary>
     [Scope('OnPrem')]
     procedure DisablePasswordConfirmation()
     begin

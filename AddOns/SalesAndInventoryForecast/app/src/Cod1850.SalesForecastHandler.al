@@ -11,8 +11,9 @@ codeunit 1850 "Sales Forecast Handler"
         MSSalesForecastSetup: Record "MS - Sales Forecast Setup";
         NotEnoughHistoricalDataErr: Label 'There is not enough historical data to predict future sales.';
         SpecifyApiKeyErr: Label 'You must specify an API key and an API URI in the Sales and Inventory Forecast Setup page.';
-        Status: Option " ","Missing API","Not enough historical data","Out of limit";
+        Status: Option " ","Missing API","Not enough historical data","Out of limit","Failed Time Series initialization";
         OutOfLimitErr: Label 'Each calculation uses Azure Machine Learning credits, and you have reached your limit for this month.';
+        FailedTimeSeriesInitializationErr: Label 'Failed to initialize the forecast method. Please, contact your system administrator.';
         SalesForecastNameTxt: Label 'Sales and Inventory Forecast';
         SalesForecastBusinessSetupDescriptionTxt: Label 'Set up and enable the Sales and Inventory Forecast service.';
         SalesForecastBusinessSetupKeywordsTxt: Label 'Sales,Inventory,Forecast';
@@ -117,17 +118,25 @@ codeunit 1850 "Sales Forecast Handler"
         // if null, then using standard credentials
         if IsNullGuid(MSSalesForecastSetup."API Key ID") then begin
             TimeSeriesManagement.GetMLForecastCredentials(APIURI, APIKey, LimitType, Limit);
-            TimeSeriesManagement.Initialize(APIURI, APIKey, MSSalesForecastSetup."Timeout (seconds)", true);
+
+            if not TimeSeriesManagement.Initialize(APIURI, APIKey, MSSalesForecastSetup."Timeout (seconds)", true) then begin
+                Status := Status::"Failed Time Series initialization";
+                exit(false);
+            end;
+
             if AzureAIUsage.IsAzureMLLimitReached(AzureAIUsage.Service::"Machine Learning", Limit) then begin
                 Status := Status::"Out of limit";
                 exit(false);
             end;
         end else
-            TimeSeriesManagement.Initialize(
+            if not TimeSeriesManagement.Initialize(
               MSSalesForecastSetup.GetAPIUri(),
               MSSalesForecastSetup.GetAPIKey(),
               MSSalesForecastSetup."Timeout (seconds)",
-              false);
+              false) then begin
+                Status := Status::"Failed Time Series initialization";
+                exit(false);
+            end;
         exit(true);
     end;
 
@@ -148,6 +157,8 @@ codeunit 1850 "Sales Forecast Handler"
                 Error(NotEnoughHistoricalDataErr);
             Status::"Out of limit":
                 Error(OutOfLimitErr);
+            Status::"Failed Time Series initialization":
+                Error(FailedTimeSeriesInitializationErr);
         end;
     end;
 
@@ -269,11 +280,13 @@ codeunit 1850 "Sales Forecast Handler"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
     local procedure HandleRegisterBusinessSetup(var Sender: Codeunit "Manual Setup")
+    var
+        ManualSetupCategory: Enum "Manual Setup Category";
     begin
-        Sender.InsertForExtension(
+        Sender.Insert(
           SalesForecastNameTxt, SalesForecastBusinessSetupDescriptionTxt,
           SalesForecastBusinessSetupKeywordsTxt,
-          Page::"Sales Forecast Setup Card", 'c526b3e9-b8ca-4683-81ba-fcd5f6b1472a');
+          Page::"Sales Forecast Setup Card", 'c526b3e9-b8ca-4683-81ba-fcd5f6b1472a', ManualSetupCategory::Service);
     end;
 
     [IntegrationEvent(false, false)]

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -17,20 +17,17 @@ codeunit 138074 "Satisfaction Survey Tests"
     var
         LibraryAssert: Codeunit "Library Assert";
         SatisfactionSurveyMgt: Codeunit "Satisfaction Survey Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         TestClientTypeSubscriber: Codeunit "Test Client Type Subscriber";
         IsInitialized: Boolean;
         TestApiUrlTxt: Label 'https://localhost:8080/', Locked = true;
         DisplayDataTxt: Label 'display/%1/?puid=%2', Locked = true;
         FinancialsUriSegmentTxt: Label 'financials', Locked = true;
-        InvoicingUriSegmentTxt: Label 'invoicing', Locked = true;
         ApiUrlTxt: Label 'NpsApiUrl', Locked = true;
         RequestTimeoutTxt: Label 'NpsRequestTimeout', Locked = true;
         CacheLifeTimeTxt: Label 'NpsCacheLifeTime', Locked = true;
         ParametersTxt: Label 'NpsParameters', Locked = true;
         AllowedApplicationSecretsTxt: Label 'AllowedApplicationSecrets', Locked = true;
-        InvoiceTok: Label 'INV', Locked = true;
         FinacialsTok: Label 'FIN', Locked = true;
 
     [Test]
@@ -47,7 +44,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         ResultAfter: Boolean;
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         SimulatePuidNotEmpty();
 
         // Execute
@@ -74,7 +71,7 @@ codeunit 138074 "Satisfaction Survey Tests"
     procedure TestResetState()
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
@@ -107,7 +104,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsPresented: Boolean;
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
 
@@ -126,7 +123,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsPresented: Boolean;
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
 
@@ -145,7 +142,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsPresented: Boolean;
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
 
@@ -164,7 +161,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsPresented: Boolean;
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
 
@@ -183,7 +180,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsPresented: Boolean;
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
 
@@ -203,27 +200,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Result: Boolean;
     begin
         // Setup
-        InitializeFinancials();
-        SimulatePuidNotEmpty();
-        SimulateApiUrlEmpty();
-
-        // Execute
-        Result := SatisfactionSurveyMgt.TryGetCheckUrl(Url);
-
-        // Verify
-        LibraryAssert.IsFalse(Result, 'API URL is returned.');
-        LibraryAssert.AreEqual('', Url, 'API URL is not empty.');
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestInvocingUrlEmpty()
-    var
-        Url: Text;
-        Result: Boolean;
-    begin
-        // Setup
-        InitializeInvoicing();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
 
@@ -244,7 +221,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Result: Boolean;
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
@@ -259,53 +236,12 @@ codeunit 138074 "Satisfaction Survey Tests"
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestInvocingUrlNotEmpty()
-    var
-        ActualUrl: Text;
-        ExpectedUrl: Text;
-        Result: Boolean;
-    begin
-        // Setup
-        InitializeInvoicing();
-        SimulatePuidNotEmpty();
-        SimulateApiUrlNotEmpty();
-
-        // Execute
-        Result := SatisfactionSurveyMgt.TryGetCheckUrl(ActualUrl);
-        ExpectedUrl := TestApiUrlTxt + StrSubstNo(DisplayDataTxt, InvoicingUriSegmentTxt, GetPuid());
-
-        // Verify
-        LibraryAssert.IsTrue(Result, 'API URL is not returned.');
-        LibraryAssert.AreEqual(LowerCase(ExpectedUrl), LowerCase(ActualUrl), 'API URL is incorrect.');
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
     procedure TestFinancialsSurveyDisabledInSandbox()
     var
         IsActivated: Boolean;
     begin
         // Setup
-        InitializeFinancials();
-        EnvironmentInfoTestLibrary.SetTestabilitySandbox(true);
-        SimulatePuidNotEmpty();
-        SimulateApiUrlNotEmpty();
-
-        // Execute
-        IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
-
-        // Verify
-        VerifySurveyDeactivated(not IsActivated);
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestInvocingSurveyDisabledInSandbox()
-    var
-        IsActivated: Boolean;
-    begin
-        // Setup
-        InitializeInvoicing();
+        Initialize();
         EnvironmentInfoTestLibrary.SetTestabilitySandbox(true);
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
@@ -324,7 +260,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsActivated: Boolean;
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         TestClientTypeSubscriber.SetClientType(CLIENTTYPE::Phone);
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
@@ -343,27 +279,8 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsActivated: Boolean;
     begin
         // Setup
-        InitializeFinancials();
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
-        SimulatePuidNotEmpty();
-        SimulateApiUrlNotEmpty();
-
-        // Execute
-        IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
-
-        // Verify
-        VerifySurveyDeactivated(not IsActivated);
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestInvocingSurveyDisabledOnPrem()
-    var
-        IsActivated: Boolean;
-    begin
-        // Setup
-        InitializeInvoicing();
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        Initialize();
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
@@ -381,26 +298,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsDeactivated: Boolean;
     begin
         // Setup
-        InitializeFinancials();
-        SimulatePuidNotEmpty();
-        SimulateApiUrlNotEmpty();
-
-        // Execute
-        ActivateSurvey();
-        IsDeactivated := SatisfactionSurveyMgt.DeactivateSurvey();
-
-        // Verify
-        VerifySurveyDeactivated(IsDeactivated);
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestInvocingSurveyDeactivated()
-    var
-        IsDeactivated: Boolean;
-    begin
-        // Setup
-        InitializeInvoicing();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
@@ -419,25 +317,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsActivated: Boolean;
     begin
         // Setup
-        InitializeFinancials();
-        SimulatePuidEmpty();
-        SimulateApiUrlNotEmpty();
-
-        // Execute
-        IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
-
-        // Verify
-        VerifySurveyDeactivated(not IsActivated);
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestInvocingSurveyDisabledWhenPuidEmpty()
-    var
-        IsActivated: Boolean;
-    begin
-        // Setup
-        InitializeInvoicing();
+        Initialize();
         SimulatePuidEmpty();
         SimulateApiUrlNotEmpty();
 
@@ -455,7 +335,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsPresented: Boolean;
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
 
@@ -467,27 +347,6 @@ codeunit 138074 "Satisfaction Survey Tests"
         VerifyRequestNotSent();
         VerifySurveyNotPresented(not IsPresented);
     end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestInvocingSurveyDisabledWhenApiUrlEmpty()
-    var
-        IsPresented: Boolean;
-    begin
-        // Setup
-        InitializeInvoicing();
-        SimulatePuidNotEmpty();
-        SimulateApiUrlEmpty();
-
-        // Execute
-        ActivateSurvey();
-        IsPresented := SatisfactionSurveyMgt.TryShowSurvey();
-
-        // Verify
-        VerifyRequestNotSent();
-        VerifySurveyNotPresented(not IsPresented);
-    end;
-
 
     [Test]
     [Scope('OnPrem')]
@@ -496,25 +355,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsActivated: Boolean;
     begin
         // Setup
-        InitializeFinancials();
-        SimulatePuidNotEmpty();
-        SimulateApiUrlNotEmpty();
-
-        // Execute
-        IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
-
-        // Verify
-        VerifySurveyActivated(IsActivated);
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestInvocingSurveyEnabledWhenApiUrlNotEmpty()
-    var
-        IsActivated: Boolean;
-    begin
-        // Setup
-        InitializeInvoicing();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
@@ -532,27 +373,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsPresented: Boolean;
     begin
         // Setup
-        InitializeFinancials();
-        SimulatePuidNotEmpty();
-        SimulateApiUrlNotEmpty();
-
-        // Execute
-        ActivateSurvey();
-        IsPresented := SatisfactionSurveyMgt.TryShowSurvey();
-
-        // Verify
-        VerifyRequestFailed();
-        VerifySurveyNotPresented(not IsPresented);
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestInvocingSurveyErrorWhenNoConnection()
-    var
-        IsPresented: Boolean;
-    begin
-        // Setup
-        InitializeInvoicing();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
@@ -570,24 +391,7 @@ codeunit 138074 "Satisfaction Survey Tests"
     procedure TestFinancialsSurveyDeactivatedAfterBasePresenting()
     begin
         // Setup
-        InitializeFinancials();
-        SimulatePuidNotEmpty();
-        SimulateApiUrlNotEmpty();
-
-        // Execute
-        ActivateSurvey();
-        SatisfactionSurveyMgt.TryShowSurvey();
-
-        // Verify
-        VerifySurveyDeactivated();
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestInvocingSurveyDeactivatedAfterBasePresenting()
-    begin
-        // Setup
-        InitializeInvoicing();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
@@ -607,28 +411,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         IsPresented: Boolean;
     begin
         // Setup
-        InitializeFinancials();
-        SimulatePuidNotEmpty();
-        SimulateApiUrlNotEmpty();
-
-        // Execute
-        ActivateSurvey();
-        IsPresented := SatisfactionSurveyMgt.TryShowSurvey(200, '{"display":true}');
-
-        // Verify
-        VerifySurveyPresented(IsPresented);
-        VerifySurveyDeactivated();
-    end;
-
-    [Test]
-    [HandlerFunctions('HandleSurveyPage')]
-    [Scope('OnPrem')]
-    procedure TestInvocingSurveyDeactivatedAfterForcePresenting()
-    var
-        IsPresented: Boolean;
-    begin
-        // Setup
-        InitializeInvoicing();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
@@ -649,7 +432,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Result2: Boolean;
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
@@ -670,7 +453,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Result2: Boolean;
     begin
         // Setup
-        InitializeFinancials();
+        Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
 
@@ -684,28 +467,15 @@ codeunit 138074 "Satisfaction Survey Tests"
         LibraryAssert.IsFalse(Result2, 'Survey is already deactivated.');
     end;
 
-    local procedure InitializeFinancials()
-    begin
-        Initialize(false);
-    end;
-
-    local procedure InitializeInvoicing()
-    begin
-        Initialize(true);
-    end;
-
-    local procedure Initialize(IsInvoicing: Boolean)
+    local procedure Initialize()
     begin
         ClearLastError();
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
         SatisfactionSurveyMgt.ResetCache();
         TestClientTypeSubscriber.SetClientType(CLIENTTYPE::Web);
         SatisfactionSurveyMgt.ResetState();
-        if IsInvoicing then
-            EnvironmentInfoTestLibrary.SetAppId(InvoiceTok)
-        else
-            EnvironmentInfoTestLibrary.SetAppId(FinacialsTok);
+        EnvironmentInfoTestLibrary.SetAppId(FinacialsTok);
 
         if IsInitialized then
             exit;
@@ -718,7 +488,6 @@ codeunit 138074 "Satisfaction Survey Tests"
 
     local procedure SetSurveyParameters(ApiUrl: Text; RequestTimeoutMilliseconds: Integer; CacheLifeTimeMinutes: Integer)
     var
-        AzureKeyVault: Codeunit "Azure Key Vault";
         AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
         JObject: JsonObject;
         MockAzureKeyVaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;

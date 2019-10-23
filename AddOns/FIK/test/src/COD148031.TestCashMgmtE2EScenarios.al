@@ -17,7 +17,6 @@ codeunit 148031 "Cash Mgmt E2E Scenarios"
         LibraryRandom: Codeunit "Library - Random";
         FileLineValueIsWrongErr: Label 'Unexpected file value at position %1, length %2.', Locked = true;
         ImportLineTxt: Label 'CMKV,%1,%2,%3,%4,%5,%6,%7,%8', Locked = true;
-        BlobKey: Integer;
 
     trigger OnRun();
     begin

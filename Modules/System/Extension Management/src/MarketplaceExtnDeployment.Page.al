@@ -3,11 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Provides an interface for installing extensions from AppSource.
+/// </summary>
 page 2510 "Marketplace Extn Deployment"
 {
     Extensible = false;
     Caption = 'Extension Installation';
     PageType = NavigatePage;
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {
@@ -76,15 +80,14 @@ page 2510 "Marketplace Extn Deployment"
 
     trigger OnInit()
     var
-        Language: Codeunit Language;
+        LanguageManagement: Codeunit Language;
     begin
         LanguageID := GlobalLanguage();
-        LanguageName := Language.GetWindowsLanguageName(LanguageID);
+        LanguageName := LanguageManagement.GetWindowsLanguageName(LanguageID);
         clear(InstallSelected);
     end;
 
     var
-        ExtensionMarketplaceImpl: Codeunit "Extension Marketplace";
         LanguageName: Text;
         LanguageID: Integer;
         InstallSelected: Boolean;

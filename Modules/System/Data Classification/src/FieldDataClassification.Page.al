@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays a list of fields and their corresponding data classifications.
+/// </summary>
 page 1750 "Field Data Classification"
 {
     Extensible = false;
@@ -13,6 +16,7 @@ page 1750 "Field Data Classification"
     ModifyAllowed = false;
     PageType = List;
     SourceTable = "Field";
+    ContextSensitiveHelpPage = 'admin-classifying-data-sensitivity';
 
     layout
     {

@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays details about the deployment status of the selected extension.
+/// </summary>
 page 2509 "Extn Deployment Status Detail"
 {
     Extensible = false;
@@ -17,6 +20,7 @@ page 2509 "Extn Deployment Status Detail"
     ShowFilter = false;
     SourceTable = "NAV App Tenant Operation";
     SourceTableTemporary = true;
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {
@@ -48,7 +52,7 @@ page 2509 "Extn Deployment Status Detail"
                         ToolTip = 'Specifies the version of the App.';
                         Visible = NOT HideName;
                     }
-                    field(Schedule; Schedule)
+                    field(Schedule; DeploymentSchedule)
                     {
                         ApplicationArea = All;
                         Caption = 'Schedule';
@@ -71,7 +75,7 @@ page 2509 "Extn Deployment Status Detail"
                         Caption = 'Status';
                         ToolTip = 'Specifies the deployment status.';
                     }
-                    field(OpDetails; OpDetails)
+                    field(OpDetails; DeploymentDetails)
                     {
                         ApplicationArea = All;
                         Caption = 'Summary';
@@ -185,19 +189,19 @@ page 2509 "Extn Deployment Status Detail"
         SetOperationRecord();
 
         ShowDetails := not (Status in [Status::InProgress, Status::Completed]);
-        ExtensionOperationImpl.GetDeployOperationInfo("Operation ID", Version, Schedule, Publisher, Name, Description);
+        ExtensionOperationImpl.GetDeployOperationInfo("Operation ID", Version, DeploymentSchedule, Publisher, Name, Description);
         if Name = '' then
             HideName := true;
     end;
 
     var
         NavAppTenantOperationTable: Record "NAV App Tenant Operation";
-        OpDetails: BigText;
+        DeploymentDetails: BigText;
         DetailedMessageLbl: Label 'View Details';
         ShowDetails: Boolean;
         DetailedMessageText: Text;
         ShowDetailedMessage: Boolean;
-        Schedule: Text;
+        DeploymentSchedule: Text;
         Version: Text;
         Name: Text;
         Publisher: Text;
@@ -212,7 +216,7 @@ page 2509 "Extn Deployment Status Detail"
 
         NavAppTenantOperationTable.CalcFields(Details);
         NavAppTenantOperationTable.Details.CreateInStream(DetailsStream, TEXTENCODING::UTF8);
-        OpDetails.Read(DetailsStream);
+        DeploymentDetails.Read(DetailsStream);
         Insert();
     end;
 
@@ -223,7 +227,7 @@ page 2509 "Extn Deployment Status Detail"
         Status := NavAppTenantOperationTable.Status;
         NavAppTenantOperationTable.CalcFields(Details);
         NavAppTenantOperationTable.Details.CreateInStream(DetailsStream, TEXTENCODING::UTF8);
-        OpDetails.Read(DetailsStream);
+        DeploymentDetails.Read(DetailsStream);
 
         CurrPage.Update();
         ShowDetails := Status <> Status::InProgress;

@@ -2,6 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Allows users to view and edit existing recurrence schedules.
+/// </summary>
 page 4690 "Recurrence Schedule Card"
 {
     Extensible = false;
@@ -29,7 +33,7 @@ page 4690 "Recurrence Schedule Card"
                     ApplicationArea = All;
                     Caption = 'Recurrence Start Time';
                     Importance = Promoted;
-                    ToolTip = 'Specifies the time of day when the recurrence takes effect. This is also the time of day for each occurence.';
+                    ToolTip = 'Specifies the time of day when the recurrence takes effect. This is also the time of day for each occurrence.';
                 }
                 field(RecurrencePattern; Pattern)
                 {
@@ -58,7 +62,7 @@ page 4690 "Recurrence Schedule Card"
             group(Daily)
             {
                 Caption = 'Daily';
-                Visible = "Pattern" = RecurrencePattern::Daily;
+                Visible = "Pattern" = RecurrencePatterns::Daily;
                 field(DailyFrequency; "Recurs Every")
                 {
                     ApplicationArea = All;
@@ -124,7 +128,7 @@ page 4690 "Recurrence Schedule Card"
             group(Monthly)
             {
                 Caption = 'Monthly';
-                Visible = "Pattern" = RecurrencePattern::Monthly;
+                Visible = "Pattern" = RecurrencePatterns::Monthly;
                 field(MontlyFrequency; "Recurs Every")
                 {
                     ApplicationArea = All;
@@ -172,7 +176,7 @@ page 4690 "Recurrence Schedule Card"
             group(Yearly)
             {
                 Caption = 'Yearly';
-                Visible = "Pattern" = RecurrencePattern::Yearly;
+                Visible = "Pattern" = RecurrencePatterns::Yearly;
                 field(YearlyFrequency; "Recurs Every")
                 {
                     ApplicationArea = All;
@@ -234,7 +238,7 @@ page 4690 "Recurrence Schedule Card"
             {
                 ApplicationArea = All;
                 Caption = 'Daily';
-                Enabled = "Pattern" <> RecurrencePattern::Daily;
+                Enabled = "Pattern" <> RecurrencePatterns::Daily;
                 Image = DueDate;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -244,14 +248,14 @@ page 4690 "Recurrence Schedule Card"
 
                 trigger OnAction()
                 begin
-                    VALIDATE(Pattern, RecurrencePattern::Daily);
+                    VALIDATE(Pattern, RecurrencePatterns::Daily);
                 end;
             }
             action("Weekly Recurrence")
             {
                 ApplicationArea = All;
                 Caption = 'Weekly';
-                Enabled = "Pattern" <> RecurrencePattern::Weekly;
+                Enabled = "Pattern" <> RecurrencePatterns::Weekly;
                 Image = Workdays;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -261,14 +265,14 @@ page 4690 "Recurrence Schedule Card"
 
                 trigger OnAction()
                 begin
-                    VALIDATE(Pattern, RecurrencePattern::Weekly);
+                    VALIDATE(Pattern, RecurrencePatterns::Weekly);
                 end;
             }
             action("Monthly Recurrence")
             {
                 ApplicationArea = All;
                 Caption = 'Monthly';
-                Enabled = "Pattern" <> RecurrencePattern::Monthly;
+                Enabled = "Pattern" <> RecurrencePatterns::Monthly;
                 Image = Workdays;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -278,14 +282,14 @@ page 4690 "Recurrence Schedule Card"
 
                 trigger OnAction()
                 begin
-                    VALIDATE(Pattern, RecurrencePattern::Monthly);
+                    VALIDATE(Pattern, RecurrencePatterns::Monthly);
                 end;
             }
             action("Yearly Recurrence")
             {
                 ApplicationArea = All;
                 Caption = 'Yearly';
-                Enabled = "Pattern" <> RecurrencePattern::Yearly;
+                Enabled = "Pattern" <> RecurrencePatterns::Yearly;
                 Image = Period;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -295,7 +299,7 @@ page 4690 "Recurrence Schedule Card"
 
                 trigger OnAction()
                 begin
-                    VALIDATE(Pattern, RecurrencePattern::Yearly);
+                    VALIDATE(Pattern, RecurrencePatterns::Yearly);
                 end;
             }
         }
@@ -306,7 +310,7 @@ page 4690 "Recurrence Schedule Card"
         ConfirmManagement: Codeunit "Confirm Management";
     begin
         if CloseAction = Action::LookupOK then
-            if Pattern in [RecurrencePattern::Monthly, RecurrencePattern::Yearly] then
+            if Pattern in [RecurrencePatterns::Monthly, RecurrencePatterns::Yearly] then
                 if "Monthly Pattern" = RecurrenceMonthlyPattern::"Specific Day" then
                     if "Recurs on Day" >= 29 then
                         exit(ConfirmManagement.GetResponseOrDefault(StrSubstNo(ConfirmLbl, "Recurs on Day"), true));
@@ -317,7 +321,7 @@ page 4690 "Recurrence Schedule Card"
         [InDataSet]
         RecurrenceMonthlyPattern: Enum "Recurrence - Monthly Pattern";
         [InDataSet]
-        RecurrencePattern: Enum "Recurrence - Pattern";
+        RecurrencePatterns: Enum "Recurrence - Pattern";
         ConfirmLbl: Label 'Some months have fewer than %1 days. These months will not be included in the recurrence.\\Do you want to continue?';
 
 

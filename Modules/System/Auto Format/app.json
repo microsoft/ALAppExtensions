@@ -4,11 +4,11 @@
     "publisher":  "Microsoft",
     "brief":  "Formats the appearance decimal data types.",
     "description":  "Formats the appearance of decimal data types in fields of a table, report, or page. For example, you can change how amounts that include decimals appear in a Cue on a Role Center.",
-    "version":  "15.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "version":  "16.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "",
     "dependencies":  [
 
@@ -27,5 +27,6 @@
                          "to":  59
                      }
                  ],
-    "target":  "OnPrem"
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
 }

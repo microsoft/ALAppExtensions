@@ -40,6 +40,13 @@ table 1853 "MS - Sales Forecast Setup"
         field(6; "API URI"; Text[250])
         {
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                AzureMLConnector: Codeunit "Azure ML Connector";
+            begin
+                AzureMLConnector.ValidateApiUrl("API URI");
+            end;
         }
         field(7; "API Key ID"; Guid)
         {
@@ -161,10 +168,10 @@ table 1853 "MS - Sales Forecast Setup"
 
     local procedure EnableEncryption()
     var
-        EncryptionManagement: Codeunit "Encryption Management";
+        CryptographyManagement: Codeunit "Cryptography Management";
     begin
-        if not EncryptionManagement.IsEncryptionEnabled() then
-            EncryptionManagement.EnableEncryption(FALSE);
+        if not CryptographyManagement.IsEncryptionEnabled() then
+            CryptographyManagement.EnableEncryption(FALSE);
     end;
 
     procedure URIOrKeyEmpty(): Boolean

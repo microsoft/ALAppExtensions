@@ -10,6 +10,8 @@ codeunit 148040 "MS - ECSL Export Test"
 
     var
         Assert: Codeunit Assert;
+        LibraryRandom: Codeunit "Library - Random";
+        CountryRegionCode: array[3] of Code[10];
 
     trigger OnRun();
     begin
@@ -49,6 +51,74 @@ codeunit 148040 "MS - ECSL Export Test"
         AssertFile(ReportTxt, VATReportHeader."No.");
     END;
 
+    [Test]
+    PROCEDURE ECSLGenerate_MixedEntries();
+    var
+        VATReportHeader: Record "VAT Report Header";
+        ECSalesListSuggestLines: Codeunit "EC Sales List Suggest Lines";
+        MSECSLReportExportFile: Codeunit "MS - ECSL Report Export File";
+        ReportTxt: Text;
+        StartDate: Date;
+        EndDate: Date;
+        VatRegNo: array[3] of Text[20];
+    BEGIN
+        // [SCENARIO 322290] Export lines created as follows: A_100, B_200, C_300, A_100, B_200, C_300 
+        StartDate := DMY2DATE(1, 1, 2017);
+        EndDate := DMY2DATE(31, 1, 2017);
+        InitPrerequisites();
+
+        InitReportHeader(VATReportHeader, StartDate, EndDate);
+        VATReportHeader."Period Type" := VATReportHeader."Period Type"::Quarter;
+        VATReportHeader."Period No." := 1;
+        VATReportHeader.MODIFY();
+
+        VatRegNo[1] := '000001';
+        VatRegNo[2] := '000002';
+        VatRegNo[3] := '000003';
+        GenerateMixedData(StartDate, VatRegNo);
+        ECSalesListSuggestLines.Run(VATReportHeader);
+
+        MSECSLReportExportFile.AvoidDownload();
+        MSECSLReportExportFile.Run(VATReportHeader);
+
+        ReportTxt := MSECSLReportExportFile.GetOutputContent();
+        AssertSequenceInFile(ReportTxt, VATReportHeader."No.");
+    END;
+
+    [Test]
+    PROCEDURE ECSLGenerate_MixedEntries_2();
+    var
+        VATReportHeader: Record "VAT Report Header";
+        ECSalesListSuggestLines: Codeunit "EC Sales List Suggest Lines";
+        MSECSLReportExportFile: Codeunit "MS - ECSL Report Export File";
+        ReportTxt: Text;
+        StartDate: Date;
+        EndDate: Date;
+        VatRegNo: array[3] of Text[20];
+    BEGIN
+        // [SCENARIO 322290] Export lines created as follows: A_100, A_100, B_200, B_200, C_300, C_300 
+        StartDate := DMY2DATE(1, 1, 2017);
+        EndDate := DMY2DATE(31, 1, 2017);
+        InitPrerequisites();
+
+        InitReportHeader(VATReportHeader, StartDate, EndDate);
+        VATReportHeader."Period Type" := VATReportHeader."Period Type"::Quarter;
+        VATReportHeader."Period No." := 1;
+        VATReportHeader.MODIFY();
+
+        VatRegNo[1] := '000001';
+        VatRegNo[2] := '000002';
+        VatRegNo[3] := '000003';
+        GenerateMixedData2(StartDate, VatRegNo);
+        ECSalesListSuggestLines.Run(VATReportHeader);
+
+        MSECSLReportExportFile.AvoidDownload();
+        MSECSLReportExportFile.Run(VATReportHeader);
+
+        ReportTxt := MSECSLReportExportFile.GetOutputContent();
+        AssertSequenceInFile(ReportTxt, VATReportHeader."No.");
+    END;
+
     local procedure AssertFile(ReportTxt: Text; VatReportNo: Code[20]);
     var
         InStrm: InStream;
@@ -68,11 +138,38 @@ codeunit 148040 "MS - ECSL Export Test"
                     AssertHeader(Linetxt);
                 '2':
                     begin
-                        LineCounter += 1;
                         AssertLine(Linetxt, VatReportNo);
+                        LineCounter += 1;
                     end;
                 '10':
                     AssertFooter(Linetxt, LineCounter, VatReportNo);
+            end;
+    end;
+
+    local procedure AssertSequenceInFile(ReportTxt: Text; VatReportNo: Code[20]);
+    var
+        InStrm: InStream;
+        OutStrm: OutStream;
+        LineNo: Integer;
+        FileObj: File;
+        Linetxt: Text;
+    begin
+        FileObj.CreateTempFile();
+        FileObj.CREATEOUTSTREAM(OutStrm);
+        OutStrm.WRITETEXT(ReportTxt);
+        FileObj.CreateInStream(InStrm);
+
+        while InStrm.ReadText(Linetxt) <> 0 do
+            case SelectStr(1, Linetxt) of
+                '0':
+                    AssertHeader(Linetxt);
+                '2':
+                    begin
+                        AssertSequenceInLines(Linetxt, VatReportNo, LineNo);
+                        LineNo += 1;
+                    end;
+                '10':
+                    AssertFooter(Linetxt, LineNo, VatReportNo);
             end;
     end;
 
@@ -101,8 +198,8 @@ codeunit 148040 "MS - ECSL Export Test"
 
         Evaluate(CountryCode, SelectStr(5, lineTxt));
         Evaluate(GoodsValInt, SelectStr(7, Linetxt));
-        Evaluate(SrvValInt, SelectStr(8, Linetxt));
-        Evaluate(TriGoodsValInt, SelectStr(9, Linetxt));
+        Evaluate(SrvValInt, SelectStr(9, Linetxt));
+        Evaluate(TriGoodsValInt, SelectStr(8, Linetxt));
 
         ECSLVATReportLine.Init();
         if ECSLVATReportLine.FindFirst() then;
@@ -125,6 +222,28 @@ codeunit 148040 "MS - ECSL Export Test"
 
     end;
 
+    local procedure AssertSequenceInLines(lineTxt: Text; ReportNo: code[20]; LineNo: integer);
+    var
+        ECSLVATReportLine: Record "ECSL VAT Report Line";
+        VatRegNo: Code[20];
+        CountryCode: Code[10];
+        GoodsValInt: Integer;
+    begin
+        VatRegNo := CopyStr(SelectStr(6, Linetxt), 1, MaxStrLen(VatRegNo));
+
+        ECSLVATReportLine.SetCurrentKey("Customer VAT Reg. No.");
+        ECSLVATReportLine.SetAscending("Customer VAT Reg. No.", true);
+        ECSLVATReportLine.SetRange("Report No.", ReportNo);
+        ECSLVATReportLine.FindSet();
+        ECSLVATReportLine.Next(LineNo);
+
+        Evaluate(CountryCode, SelectStr(5, lineTxt));
+        Evaluate(GoodsValInt, SelectStr(7, Linetxt));
+
+        Assert.AreEqual(ECSLVATReportLine."Country Code", CountryCode, 'Country Code');
+        Assert.AreEqual(ECSLVATReportLine."Total Value Of Supplies", GoodsValInt, 'Total Value of Supplies');
+    end;
+
     procedure GenerateData(RecordToGen: Integer; PostingDate: Date);
     var
         VATEntry: Record "VAT Entry";
@@ -135,10 +254,36 @@ codeunit 148040 "MS - ECSL Export Test"
         VATEntry.DELETEALL();
         LastVatRegNo := 100000 + RecordToGen;
         for VatRegNo := 100000 to LastVatRegNo do begin
-            InitVatEntry(VATEntry, Format(VatRegNo), PostingDate, ECSLVATReportLine."Transaction Indicator"::"B2B Goods");
-            InitVatEntry(VATEntry, Format(VatRegNo), PostingDate, ECSLVATReportLine."Transaction Indicator"::"B2B Services");
-            InitVatEntry(VATEntry, Format(VatRegNo), PostingDate, ECSLVATReportLine."Transaction Indicator"::"Triangulated Goods");
+            InitVatEntry(VATEntry, Format(VatRegNo), PostingDate, ECSLVATReportLine."Transaction Indicator"::"B2B Goods", 1);
+            InitVatEntry(VATEntry, Format(VatRegNo), PostingDate, ECSLVATReportLine."Transaction Indicator"::"B2B Services", 1);
+            InitVatEntry(VATEntry, Format(VatRegNo), PostingDate, ECSLVATReportLine."Transaction Indicator"::"Triangulated Goods", 1);
         end;
+    end;
+
+    local procedure GenerateMixedData(PostingDate: Date; VatRegNo: array[3] of Text[20]);
+    var
+        VATEntry: Record "VAT Entry";
+        ECSLVATReportLine: Record "ECSL VAT Report Line";
+        i: Integer;
+        j: Integer;
+    begin
+        VATEntry.DELETEALL();
+        for i := 1 to 2 do
+            for j := 1 to ArrayLen(VatRegNo) do
+                InitVatEntry(VATEntry, Format(VatRegNo[j]), PostingDate, ECSLVATReportLine."Transaction Indicator"::"B2B Goods", j);
+    end;
+
+    local procedure GenerateMixedData2(PostingDate: Date; VatRegNo: array[3] of Text[20]);
+    var
+        VATEntry: Record "VAT Entry";
+        ECSLVATReportLine: Record "ECSL VAT Report Line";
+        i: Integer;
+        j: Integer;
+    begin
+        VATEntry.DELETEALL();
+        for j := 1 to ArrayLen(VatRegNo) do
+            for i := 1 to 2 do
+                InitVatEntry(VATEntry, Format(VatRegNo[j]), PostingDate, ECSLVATReportLine."Transaction Indicator"::"B2B Goods", j);
     end;
 
     local procedure AssertFooter(lineTxt: Text; LineCount: integer; ReportNo: code[20]);
@@ -160,6 +305,10 @@ codeunit 148040 "MS - ECSL Export Test"
         CompanyInformation."VAT Registration No." := '7777777';
         CompanyInformation."Post Code" := '12345';
         CompanyInformation.MODIFY();
+
+        CountryRegionCode[1] := 'DE';
+        CountryRegionCode[2] := 'AT';
+        CountryRegionCode[3] := 'BE';
     END;
 
     LOCAL PROCEDURE InitReportHeader(VAR VATReportHeader: Record "VAT Report Header"; StartDate: Date; EndDate: Date);
@@ -177,18 +326,17 @@ codeunit 148040 "MS - ECSL Export Test"
         VATReportHeader.INSERT();
     END;
 
-    LOCAL PROCEDURE InitVatEntry(VAR VATEntry: Record "VAT Entry"; VatRegNo: Text[20]; PostingDate: Date; TradeType: Option);
+    LOCAL PROCEDURE InitVatEntry(VAR VATEntry: Record "VAT Entry"; VatRegNo: Text[20]; PostingDate: Date; TradeType: Option; CountryIndex: Integer);
     var
         ECSLVATReportLine: Record "ECSL VAT Report Line";
         LastId: Integer;
-
     BEGIN
         IF VATEntry.FINDLAST() THEN
             LastId := VATEntry."Entry No.";
 
         VATEntry.INIT();
         VATEntry."Entry No." := LastId + 1;
-        VATEntry.Base := -1.7;
+        VATEntry.Base := -LibraryRandom.RandDecInRange(10, 200, 2);
         VATEntry."Posting Date" := PostingDate;
         VATEntry.Type := VATEntry.Type::Sale;
         VATEntry."EU 3-Party Trade" := false;
@@ -202,7 +350,7 @@ codeunit 148040 "MS - ECSL Export Test"
         end;
 
         VATEntry."VAT Registration No." := VatRegNo;
-        VATEntry."Country/Region Code" := 'DE';
+        VATEntry."Country/Region Code" := CountryRegionCode[CountryIndex];
         VATEntry.INSERT();
     END;
 

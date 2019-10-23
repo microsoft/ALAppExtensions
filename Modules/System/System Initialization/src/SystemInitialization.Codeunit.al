@@ -14,7 +14,7 @@ codeunit 150 "System Initialization"
     /// <summary>
     /// Checks whether the system initialization is currently in progress.
     /// </summary>
-    /// <return>True, if the system initialization is in progress; false, otherwise</returns>
+    /// <returns>True, if the system initialization is in progress; false, otherwise</returns>
     procedure IsInProgress(): Boolean
     var
         SystemInitializationImpl: Codeunit "System Initialization Impl.";

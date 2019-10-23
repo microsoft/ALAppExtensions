@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays the deployment status for extensions that are deployed or are scheduled for deployment.
+/// </summary>
 page 2508 "Extension Deployment Status"
 {
     Extensible = false;
@@ -10,6 +13,7 @@ page 2508 "Extension Deployment Status"
     PageType = List;
     RefreshOnActivate = true;
     SourceTable = "NAV App Tenant Operation";
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {
@@ -23,7 +27,7 @@ page 2508 "Extension Deployment Status"
                     Caption = 'Name';
                     ToolTip = 'Specifies the name of the App.';
                 }
-                field(Publisher; Publisher)
+                field(Publisher; AppPublisher)
                 {
                     ApplicationArea = All;
                     Caption = 'Publisher';
@@ -41,7 +45,7 @@ page 2508 "Extension Deployment Status"
                     Caption = 'Status';
                     ToolTip = 'Specifies the deployment status.';
                 }
-                field(Schedule; Schedule)
+                field(Schedule; DeploymentSchedule)
                 {
                     ApplicationArea = All;
                     Caption = 'Schedule';
@@ -98,7 +102,7 @@ page 2508 "Extension Deployment Status"
         else
             OperationType := OperationType::Upload;
 
-        ExtensionOperationImpl.GetDeployOperationInfo("Operation ID", Version, Schedule, Publisher, AppName, Description);
+        ExtensionOperationImpl.GetDeployOperationInfo("Operation ID", Version, DeploymentSchedule, AppPublisher, AppName, Description);
 
         if Status = Status::InProgress then
             ExtensionOperationImpl.RefreshStatus("Operation ID");
@@ -112,8 +116,8 @@ page 2508 "Extension Deployment Status"
 
     var
         Version: Text;
-        Schedule: Text;
-        Publisher: Text;
+        DeploymentSchedule: Text;
+        AppPublisher: Text;
         AppName: Text;
         OperationType: Option Upload,Install;
 }

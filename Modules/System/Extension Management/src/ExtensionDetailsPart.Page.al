@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays information about the extension.
+/// </summary>
 page 2504 "Extension Details Part"
 {
     Extensible = false;
@@ -16,6 +19,7 @@ page 2504 "Extension Details Part"
     RefreshOnActivate = true;
     ShowFilter = false;
     SourceTable = "NAV App";
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {

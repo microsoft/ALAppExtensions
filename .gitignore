@@ -288,5 +288,5 @@ __pycache__/
 *.xsd.cs
 
 # AL extension
-**/launch.json
+**/.vscode/*.json
 *.app

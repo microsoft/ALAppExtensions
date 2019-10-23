@@ -4,22 +4,22 @@
     "publisher":  "Microsoft",
     "brief":  "Allows testing of code relying on different client types",
     "description":  "The purpose of this module is to allow testing of units that rely on client type other than the one on which the test executes. This is achieved by using the method GetCurrentClientType in the unit to compare the client type and subscribing to the event OnAfterGetCurrentClientType to alter the client type in the test.",
-    "version":  "15.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
-    "help":  "",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "version":  "16.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "",
     "dependencies":  [
 
                      ],
     "internalsVisibleTo":  [
-                                {
-									"appId":  "47397d83-32ba-4ef0-8988-ef72539bfe36",
-									"name":  "Client Type Management Test Library",
-                                    "publisher":  "Microsoft"
-                                }
-                            ],
+                               {
+                                   "appId":  "47397d83-32ba-4ef0-8988-ef72539bfe36",
+                                   "name":  "Client Type Management Test Library",
+                                   "publisher":  "Microsoft"
+                               }
+                           ],
     "screenshots":  [
 
                     ],
@@ -34,5 +34,6 @@
                          "to":  4032
                      }
                  ],
-    "target":  "OnPrem"
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
 }

@@ -13,7 +13,6 @@ codeunit 2504 "Extension Management"
     var
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
-        ExtensionMarketplace: Codeunit "Extension Marketplace";
 
 
     /// <summary>
@@ -159,7 +158,7 @@ codeunit 2504 "Extension Management"
     end;
 
     /// <summary>
-    /// Returns the PackageId of the version of the extension by the extension's AppId, Name, Version Major, Verion Minor, Version Build, Version Revision.
+    /// Returns the PackageId of the version of the extension by the extension's AppId, Name, Version Major, Version Minor, Version Build, Version Revision.
     /// </summary>
     /// <param name="AppId">The AppId of the extension.</param>
     /// <param name="Name">The input/output Name parameter of the extension. If there is no need to filter by this parameter, the default value is ''.</param>
@@ -174,9 +173,9 @@ codeunit 2504 "Extension Management"
     end;
 
     /// <summary>
-    /// Gets the logo of an extenstion.
+    /// Gets the logo of an extension.
     /// </summary>
-    /// <param name="AppId">The App ID of the extenstion.</param>
+    /// <param name="AppId">The App ID of the extension.</param>
     /// <param name="Logo">Out parameter holding the logo of the extension.</param> 
     procedure GetExtensionLogo(AppId: Guid; var Logo: Codeunit "Temp Blob")
     begin

@@ -195,8 +195,8 @@ page 11016 "Sales VAT Adv. Notif. Card"
                     Promoted = true;
                     PromotedCategory = Process;
                     RunObject = Page "VAT Statement Preview";
-                    RunPageLink = "Statement Template Name" = field ("Statement Template Name"),
-                                  Name = field ("Statement Name");
+                    RunPageLink = "Statement Template Name" = field("Statement Template Name"),
+                                  Name = field("Statement Name");
                     ToolTip = 'Preview the sales VAT advance notification that you will send to the tax authorities.';
                 }
                 separator("2")
@@ -265,7 +265,7 @@ page 11016 "Sales VAT Adv. Notif. Card"
     var
         ClientTypeManagement: Codeunit "Client Type Management";
     begin
-        IsWindowsClient := ClientTypeManagement.GetCurrentClientType = ClientType::Windows;
+        IsWindowsClient := ClientTypeManagement.GetCurrentClientType() = ClientType::Windows;
     end;
 
     var

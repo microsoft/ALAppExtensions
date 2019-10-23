@@ -3,12 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>This page shows the target language and the translation for data in a table field.</summary>
 page 3712 Translation
 {
     Extensible = false;
     DataCaptionExpression = CaptionTxt;
     PageType = List;
     SourceTable = Translation;
+    ContextSensitiveHelpPage = 'ui-get-ready-business';
 
     layout
     {
@@ -16,34 +18,57 @@ page 3712 Translation
         {
             repeater(Group)
             {
-                field("Language Name"; "Language Name")
+                field(LanguageName; LanguageNameValue)
                 {
                     ApplicationArea = All;
+                    Caption = 'Target Language';
+                    ToolTip = 'The language to which the source text was translated.';
 
                     trigger OnAssistEdit()
                     var
                         Language: Codeunit Language;
                     begin
                         Language.LookupWindowsLanguageId("Language ID");
-                        if "Language ID" <> xRec."Language ID" then
-                            CalcFields("Language Name");
+                        CalculateLanguageFromID();
                     end;
                 }
                 field(Value; Value)
                 {
                     ApplicationArea = All;
+                    ToolTip = 'The translated text.';
                 }
             }
         }
     }
 
-    actions
-    {
-    }
+    trigger OnNewRecord(BelowxRec: Boolean)
+    begin
+        LanguageNameValue := '';
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        CalculateLanguageFromID();
+    end;
+
+    local procedure CalculateLanguageFromID()
+    var
+        Language: Codeunit Language;
+    begin
+        CalcFields("Language Name");
+        LanguageNameValue := "Language Name";
+        if LanguageNameValue = '' then
+            LanguageNameValue := Language.GetWindowsLanguageName("Language ID");
+    end;
 
     var
         CaptionTxt: Text;
+        LanguageNameValue: Text;
 
+    /// <summary>
+    /// Sets the page's caption.
+    /// </summary>
+    /// <param name="CaptionText">The caption to set.</param>
     [Scope('OnPrem')]
     procedure SetCaption(CaptionText: Text)
     begin

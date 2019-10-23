@@ -31,6 +31,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         AccountingCostCodeCapTxt: Label 'cbc:AccountingCostCode';
         OIOUBLFormatNameTxt: Label 'OIOUBL';
         PEPPOLFormatNameTxt: Label 'PEPPOL';
+        DefaultCodeTxt: Label 'DEFAULT';
 
     [Test]
     [HandlerFunctions('MessageHandler')]
@@ -685,12 +686,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceInvoiceHeader: Record "Service Invoice Header";
         DocumentSendingProfile: Record "Document Sending Profile";
-        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Invoice in case OIOUBL profile is selected.
         Initialize();
-        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
-
 
         // [GIVEN] Service Invoice.
         CreateServiceDocument(
@@ -706,7 +704,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         // [THEN] Electronic Document is created and saved to location, specified in Service Setup.
         LibraryService.FindServiceInvoiceHeader(ServiceInvoiceHeader, ServiceHeader."No.");
         ServiceInvoiceHeader.TestField("OIOUBL-Electronic Invoice Created", true);
-        VerifyElectronicServiceDocument(ServiceInvoiceHeader."No.", ServiceLine."OIOUBL-Account Code");
+        VerifyElectronicServiceDocument(ServiceInvoiceHeader."No.", ServiceInvoiceHeader."OIOUBL-Account Code");
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -715,34 +713,69 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     [HandlerFunctions('SelectSendingOptionsSetFormatModalPageHandler')]
     procedure SendPostedServiceInvoiceOIOUBL()
     var
-        ServiceLine: Record "Service Line";
         ServiceInvoiceHeader: Record "Service Invoice Header";
         DocumentSendingProfile: Record "Document Sending Profile";
-        ElectronicDocumentFormat: Record "Electronic Document Format";
         PostedDocNo: Code[20];
     begin
         // [SCENARIO 299031] Send Posted Service Invoice in case OIOUBL profile is selected.
         Initialize();
-        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Posted Service Invoice.
-        CreateServiceDocument(
-          ServiceLine, ServiceLine."Document Type"::Invoice, CreateCustomer(LibraryUtility.GenerateGUID(), ''),
-          ServiceLine.Type::Item, CreateItemWithDecimalUnitPrice());
-        PostedDocNo := PostServiceInvoice(ServiceLine."Document No.");
-        ServiceInvoiceHeader.Get(PostedDocNo);
+        PostedDocNo := CreateAndPostServiceInvoice();
 
         // [WHEN] Run "Send" for Posted Service Invoice, select Format = OIOUBL.
         LibraryVariableStorage.Enqueue(DocumentSendingProfile.Disk::"Electronic Document");
         LibraryVariableStorage.Enqueue(FindElectronicDocumentFormatCode(OIOUBLFormatNameTxt));
-        ServiceInvoiceHeader.SetRecFilter();
+        ServiceInvoiceHeader.SetRange("No.", PostedDocNo);
         ServiceInvoiceHeader.SendRecords();
 
         // [THEN] Electronic Document is created and saved to location, specified in Service Setup.
         ServiceInvoiceHeader.Get(PostedDocNo);
         ServiceInvoiceHeader.TestField("OIOUBL-Electronic Invoice Created", true);
-        VerifyElectronicServiceDocument(ServiceInvoiceHeader."No.", ServiceLine."OIOUBL-Account Code");
+        VerifyElectronicServiceDocument(ServiceInvoiceHeader."No.", ServiceInvoiceHeader."OIOUBL-Account Code");
 
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ProfileSelectionMethodStrMenuHandler')]
+    procedure SendMultiplePostedServiceInvoicesOIOUBL()
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        DocumentSendingProfile: Record "Document Sending Profile";
+        DefaultDocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+        PostedDocNoLst: List of [Code[20]];
+        AccountCodeLst: List of [Text[30]];
+        PostedDocNo: Code[20];
+    begin
+        // [FEATURE] [Zip]
+        // [SCENARIO 299031] Send multiple Posted Service Invoices in case OIOUBL profile is selected.
+        Initialize();
+        DocumentSendingProfile.DeleteAll();
+        CreateElectronicDocumentFormat(
+          OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
+
+        // [GIVEN] DefaultDocumentSendingProfile Disk::"Electronic Document", Format = OIOUBL; three Posted Service Invoices.
+        SetDocumentSendingProfile(DefaultDocumentSendingProfile, DefaultDocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+        PostedDocNoLst.Add(CreateAndPostServiceInvoice());
+        PostedDocNoLst.Add(CreateAndPostServiceInvoice());
+        PostedDocNoLst.Add(CreateAndPostServiceInvoice());
+
+        // [WHEN] Run "Send" for these Posted Service Invoices.
+        ServiceInvoiceHeader.SetFilter("No.", '%1|%2|%3', PostedDocNoLst.Get(1), PostedDocNoLst.Get(2), PostedDocNoLst.Get(3));
+        ServiceInvoiceHeader.SendRecords();
+
+        // [THEN] One ZIP file is created at the location, specified in Service Setup.
+        // [THEN] ZIP file contains OIOUBL Electronic Document for each Posted Service Invoice.
+        foreach PostedDocNo in PostedDocNoLst do begin
+            ServiceInvoiceHeader.Get(PostedDocNo);
+            ServiceInvoiceHeader.TestField("OIOUBL-Electronic Invoice Created", true);
+            AccountCodeLst.Add(ServiceInvoiceHeader."OIOUBL-Account Code");
+        end;
+        VerifyElectronicServiceDocumentInZipArchive(PostedDocNoLst, AccountCodeLst);
+
+        DefaultDocumentSendingProfile.Delete();
         LibraryVariableStorage.AssertEmpty();
     end;
 
@@ -754,12 +787,10 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceInvoiceHeader: Record "Service Invoice Header";
         DocumentSendingProfile: Record "Document Sending Profile";
-        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Invoice in case non-OIOUBL profile is selected.
         Initialize();
         UpdateCompanySwiftCode();
-        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Service Invoice.
         CreateServiceDocument(
@@ -787,11 +818,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceInvoiceHeader: Record "Service Invoice Header";
         DocumentSendingProfile: Record "Document Sending Profile";
-        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Invoice in case Disk = No in Document Sending Profile.
         Initialize();
-        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Service Invoice.
         CreateServiceDocument(
@@ -819,11 +848,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         DocumentSendingProfile: Record "Document Sending Profile";
-        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Credit Memo in case OIOUBL profile is selected.
         Initialize();
-        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Service Credit Memo.
         CreateServiceDocument(
@@ -848,34 +875,69 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     [HandlerFunctions('SelectSendingOptionsSetFormatModalPageHandler')]
     procedure SendPostedServiceCrMemoOIOUBL()
     var
-        ServiceLine: Record "Service Line";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         DocumentSendingProfile: Record "Document Sending Profile";
-        ElectronicDocumentFormat: Record "Electronic Document Format";
         PostedDocNo: Code[20];
     begin
         // [SCENARIO 299031] Send Posted Service Credit Memo in case OIOUBL profile is selected.
         Initialize();
-        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Posted Service Credit Memo.
-        CreateServiceDocument(
-          ServiceLine, ServiceLine."Document Type"::"Credit Memo", CreateCustomer(LibraryUtility.GenerateGUID(), ''),
-          ServiceLine.Type::Item, CreateItemWithDecimalUnitPrice());
-        PostedDocNo := PostServiceCrMemo(ServiceLine."Document No.");
-        ServiceCrMemoHeader.Get(PostedDocNo);
+        PostedDocNo := CreateAndPostServiceCrMemo();
 
-        // [WHEN] Run "Send" for Service Credit Memo, select Format = OIOUBL.
+        // [WHEN] Run "Send" for Posted Service Credit Memo, select Format = OIOUBL.
         LibraryVariableStorage.Enqueue(DocumentSendingProfile.Disk::"Electronic Document");
         LibraryVariableStorage.Enqueue(FindElectronicDocumentFormatCode(OIOUBLFormatNameTxt));
-        ServiceCrMemoHeader.SetRecFilter();
+        ServiceCrMemoHeader.SetRange("No.", PostedDocNo);
         ServiceCrMemoHeader.SendRecords();
 
         // [THEN] Electronic Document is created and saved to location, specified in Service Setup.
         ServiceCrMemoHeader.Get(PostedDocNo);
         ServiceCrMemoHeader.TestField("OIOUBL-Electronic Credit Memo Created", true);
-        VerifyElectronicServiceDocument(ServiceCrMemoHeader."No.", ServiceLine."OIOUBL-Account Code");
+        VerifyElectronicServiceDocument(ServiceCrMemoHeader."No.", ServiceCrMemoHeader."OIOUBL-Account Code");
 
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ProfileSelectionMethodStrMenuHandler')]
+    procedure SendMultiplePostedServiceCrMemosOIOUBL()
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        DocumentSendingProfile: Record "Document Sending Profile";
+        DefaultDocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+        PostedDocNoLst: List of [Code[20]];
+        AccountCodeLst: List of [Text[30]];
+        PostedDocNo: Code[20];
+    begin
+        // [FEATURE] [Zip]
+        // [SCENARIO 318500] Send multiple Posted Service Credit Memos in case OIOUBL profile is selected.
+        Initialize();
+        DocumentSendingProfile.DeleteAll();
+        CreateElectronicDocumentFormat(
+          OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Credit Memo", CODEUNIT::"OIOUBL-Export Service Cr.Memo");
+
+        // [GIVEN] DefaultDocumentSendingProfile Disk::"Electronic Document", Format = OIOUBL; three Posted Service Credit Memos.
+        SetDocumentSendingProfile(DefaultDocumentSendingProfile, DefaultDocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+        PostedDocNoLst.Add(CreateAndPostServiceCrMemo());
+        PostedDocNoLst.Add(CreateAndPostServiceCrMemo());
+        PostedDocNoLst.Add(CreateAndPostServiceCrMemo());
+
+        // [WHEN] Run "Send" for these Posted Service Credit Memos.
+        ServiceCrMemoHeader.SetFilter("No.", '%1|%2|%3', PostedDocNoLst.Get(1), PostedDocNoLst.Get(2), PostedDocNoLst.Get(3));
+        ServiceCrMemoHeader.SendRecords();
+
+        // [THEN] One ZIP file is created at the location, specified in Service Setup.
+        // [THEN] ZIP file contains OIOUBL Electronic Document for each Posted Service Credit Memo.
+        foreach PostedDocNo in PostedDocNoLst do begin
+            ServiceCrMemoHeader.Get(PostedDocNo);
+            ServiceCrMemoHeader.TestField("OIOUBL-Electronic Credit Memo Created", true);
+            AccountCodeLst.Add(ServiceCrMemoHeader."OIOUBL-Account Code");
+        end;
+        VerifyElectronicServiceDocumentInZipArchive(PostedDocNoLst, AccountCodeLst);
+
+        DefaultDocumentSendingProfile.Delete();
         LibraryVariableStorage.AssertEmpty();
     end;
 
@@ -887,12 +949,10 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         DocumentSendingProfile: Record "Document Sending Profile";
-        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Credit Memo in case non-OIOUBL profile is selected.
         Initialize();
         UpdateCompanySwiftCode();
-        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Service Credit Memo.
         CreateServiceDocument(
@@ -920,11 +980,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine: Record "Service Line";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         DocumentSendingProfile: Record "Document Sending Profile";
-        ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
         // [SCENARIO 299031] Post and Send Service Credit Memo in case Disk = No in Document Sending Profile.
         Initialize();
-        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", CODEUNIT::"OIOUBL-Export Service Invoice");
 
         // [GIVEN] Service Credit Memo.
         CreateServiceDocument(
@@ -948,14 +1006,15 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     var
         DocumentSendingProfile: Record "Document Sending Profile";
     begin
-        UpdateSalesSetup();
+        UpdateServiceSetup();
         UpdateOIOUBLCountryRegionCode();
+        LibraryVariableStorage.Clear();
 
-        DocumentSendingProfile.DELETEALL();
-        DocumentSendingProfile.INIT();
+        DocumentSendingProfile.DeleteAll();
+        DocumentSendingProfile.Init();
         DocumentSendingProfile.Default := true;
         DocumentSendingProfile."Electronic Format" := OIOUBLFormatNameTxt;
-        DocumentSendingProfile.INSERT();
+        DocumentSendingProfile.Insert();
 
         OIOUBLNewFileMock.Setup(OIOUBLNewFileMock);
     end;
@@ -1105,6 +1164,40 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         OIOUBLUoMs.Add(PEPPOLManagement.GetUoMforPieceINUNECERec20ListID());
     end;
 
+    local procedure CreateAndPostServiceInvoice(): Code[20];
+    var
+        ServiceLine: Record "Service Line";
+    begin
+        CreateServiceDocument(
+          ServiceLine, ServiceLine."Document Type"::Invoice, CreateCustomer(LibraryUtility.GenerateGUID(), ''),
+          ServiceLine.Type::Item, CreateItemWithDecimalUnitPrice());
+        exit(PostServiceInvoice(ServiceLine."Document No."));
+    end;
+
+    local procedure CreateAndPostServiceCrMemo(): Code[20];
+    var
+        ServiceLine: Record "Service Line";
+    begin
+        CreateServiceDocument(
+          ServiceLine, ServiceLine."Document Type"::"Credit Memo", CreateCustomer(LibraryUtility.GenerateGUID(), ''),
+          ServiceLine.Type::Item, CreateItemWithDecimalUnitPrice());
+        exit(PostServiceCrMemo(ServiceLine."Document No."));
+    end;
+
+    local procedure CreateElectronicDocumentFormat(Code: Code[20]; Usage: Option; CodeunitID: Integer);
+    var
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+    begin
+        with ElectronicDocumentFormat do begin
+            SetRange(Code, Code);
+            DeleteAll();
+            Validate(Code, Code);
+            Validate(Usage, Usage);
+            Validate("Codeunit ID", CodeunitID);
+            Insert(true);
+        end;
+    end;
+
     local procedure FindAndUpdateVATPostingSetupPct(var VATPostingSetup: Record "VAT Posting Setup"; NewVATPct: Decimal) OldVATPercent: Decimal;
     begin
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
@@ -1226,6 +1319,18 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         exit(Customer.GLN);
     end;
 
+    local procedure SetDocumentSendingProfile(var DefaultDocumentSendingProfile: Record "Document Sending Profile"; DiskType: Option; DiskFormatCode: Code[20]);
+    begin
+        with DefaultDocumentSendingProfile do begin
+            Init();
+            Code := DefaultCodeTxt;
+            Disk := DiskType;
+            "Disk Format" := DiskFormatCode;
+            Default := true;
+            Insert();
+        end;
+    end;
+
     local procedure CreateOIOUBLProfile(): Code[10];
     var
         OIOUBLProfile: Record "OIOUBL-Profile";
@@ -1256,6 +1361,42 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         LibraryXMLReadOnServer.VerifyNodeValue(AccountingCostCodeCapTxt, AccountCode);
     end;
 
+    local procedure VerifyElectronicServiceDocumentInZipArchive(DocumentNoLst: List of [Code[20]]; AccountCodeLst: List of [Text[30]]);
+    var
+        DataCompression: Codeunit "Data Compression";
+        TempBlob: Codeunit "Temp Blob";
+        ZipFile: File;
+        ZipFileInStream: InStream;
+        ZipEntryOutStream: OutStream;
+        XMLInStream: InStream;
+        ZipEntryList: List of [Text];
+        ZipEntry: Text;
+        ZipEntryLength: Integer;
+        i: Integer;
+    begin
+        for i := 1 to DocumentNoLst.Count() do // dequeue unused XML files names
+            OIOUBLNewFileMock.PopFilePath();
+
+        i := 0;
+        ZipFile.WriteMode(false);
+        ZipFile.Open(OIOUBLNewFileMock.PopFilePath());
+        ZipFile.CreateInStream(ZipFileInStream);
+        DataCompression.OpenZipArchive(ZipFileInStream, false);
+        DataCompression.GetEntryList(ZipEntryList);
+        foreach ZipEntry in ZipEntryList do begin
+            i += 1;
+            Clear(TempBlob);
+            TempBlob.CreateOutStream(ZipEntryOutStream);
+            DataCompression.ExtractEntry(ZipEntry, ZipEntryOutStream, ZipEntryLength);
+            TempBlob.CreateInStream(XMLInStream);
+            LibraryXMLReadOnServer.LoadXMLDocFromInStream(XMLInStream);
+            LibraryXMLReadOnServer.VerifyNodeValue(IDCapTxt, DocumentNoLst.Get(i));
+            LibraryXMLReadOnServer.VerifyNodeValue(AccountingCostCodeCapTxt, AccountCodeLst.Get(i));
+        end;
+        DataCompression.CloseZipArchive();
+        ZipFile.Close();
+    end;
+
     local procedure VerifyUnitOfMeasureForInvoiceLineOnElectronicDocument(UoMCode: Code[10]; NodeIndex: Integer)
     begin
         LibraryXMLReadOnServer.VerifyAttributeValueByIndexInSubtree('cac:InvoiceLine', 'cbc:InvoicedQuantity', 'unitCode', UoMCode, NodeIndex);
@@ -1276,18 +1417,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceMgtSetup.MODIFY(true);
     end;
 
-    local procedure CreateElectronicDocumentFormat(Code: Code[20]; Usage: Option; CodeunitID: Integer);
-    var
-        ElectronicDocumentFormat: Record "Electronic Document Format";
-    begin
-        ElectronicDocumentFormat.SetRange(Code, Code);
-        ElectronicDocumentFormat.DeleteAll();
-        ElectronicDocumentFormat.Validate(Code, Code);
-        ElectronicDocumentFormat.Validate(Usage, Usage);
-        ElectronicDocumentFormat.Validate("Codeunit ID", CodeunitID);
-        ElectronicDocumentFormat.Insert(true);
-    end;
-
     local procedure UpdateServiceLineUnitOfMeasure(ServiceLine: Record "Service Line");
     var
         UnitOfMeasure: Record "Unit of Measure";
@@ -1304,14 +1433,15 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         VATPostingSetup.MODIFY(true);
     end;
 
-    local procedure UpdateSalesSetup();
+    local procedure UpdateServiceSetup();
     var
-        SalesSetup: Record "Sales & Receivables Setup";
+        ServiceSetup: Record "Service Mgt. Setup";
     begin
-        with SalesSetup do begin
-            GET();
-            VALIDATE("OIOUBL-Default Profile Code", CreateOIOUBLProfile());
-            MODIFY(true);
+        with ServiceSetup do begin
+            Get();
+            Validate("OIOUBL-Service Invoice Path", TemporaryPath());
+            Validate("OIOUBL-Service Cr. Memo Path", TemporaryPath());
+            Modify(true);
         end;
     end;
 
@@ -1334,6 +1464,12 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     [MessageHandler]
     procedure MessageHandler(Meassage: Text[1024]);
     begin
+    end;
+
+    [StrMenuHandler]
+    procedure ProfileSelectionMethodStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        Choice := 3; // Use the default profile for all selected documents without confimation.
     end;
 
     [ModalPageHandler]

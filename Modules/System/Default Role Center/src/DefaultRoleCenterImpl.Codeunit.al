@@ -14,14 +14,21 @@ codeunit 9171 "Default Role Center Impl."
     // <returns>ID of a valid Role Center page</returns>
     local procedure GetDefaultRoleCenterId(): Integer
     var
+        AllProfile: Record "All Profile";
         DefaultRoleCenter: Codeunit "Default Role Center";
         RoleCenterId: Integer;
         Handled: Boolean;
     begin
         DefaultRoleCenter.OnBeforeGetDefaultRoleCenter(RoleCenterId, Handled);
 
-        if not IsValidRoleCenterId(RoleCenterId) then
+        if not IsValidRoleCenterId(RoleCenterId) then begin
+            AllProfile.Get(AllProfile.Scope::Tenant, '63ca2fa4-4f03-4f2b-a480-172fef340d3f', 'BLANK');
+            if not AllProfile.Enabled then begin
+                AllProfile.Enabled := true;
+                AllProfile.Modify();
+            end;
             RoleCenterId := PAGE::"Blank Role Center";
+        end;
 
         exit(RoleCenterId);
     end;

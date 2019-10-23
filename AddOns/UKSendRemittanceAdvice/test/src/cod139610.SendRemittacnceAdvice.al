@@ -32,6 +32,7 @@ codeunit 139610 SendRemittanceAdvice
     begin
         // [SCENARIO] Send remittance advice report to vendor by email from Payment Journal
         Initialize();
+        CreateSMTPMailSetup();
 
         // [GIVEN] Vendor with email
         // [GIVEN] Payment journal line
@@ -57,6 +58,7 @@ codeunit 139610 SendRemittanceAdvice
     begin
         // [SCENARIO] Send remittance advice report to vendor by email from Payment Journal
         Initialize();
+        CreateSMTPMailSetup();
 
         // [GIVEN] Vendor with email
         // [GIVEN] Vendor Ledger Entry
@@ -82,7 +84,7 @@ codeunit 139610 SendRemittanceAdvice
         if IsInitialized then
             exit;
         LibraryAzureKVMockMgmt.InitMockAzureKeyvaultSecretProvider();
-		LibraryAzureKVMockMgmt.EnsureSecretNameIsAllowed('SmtpSetup');
+        LibraryAzureKVMockMgmt.EnsureSecretNameIsAllowed('SmtpSetup');
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::SendRemittanceAdvice);
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::SendRemittanceAdvice);
@@ -175,6 +177,21 @@ codeunit 139610 SendRemittanceAdvice
         VendorLedgerEntries.GOTORECORD(VendorLedgerEntry);
         VendorLedgerEntries.SendRemittanceAdvice.INVOKE();
         VendorLedgerEntries.CLOSE();
+    end;
+
+    local procedure CreateSMTPMailSetup()
+    var
+        SMTPMailSetup: Record "SMTP Mail Setup";
+    begin
+        if SMTPMailSetup.get() then
+            SMTPMailSetup.Delete();
+
+        SMTPMailSetup.Init();
+        SMTPMailSetup.Authentication := SMTPMailSetup.Authentication::Basic;
+        SMTPMailSetup."SMTP Server" := 'smtp.test.com';
+        SMTPMailSetup."User ID" := 'testuser@test.com';
+        SMTPMailSetup.SetPassword('password');
+        SMTPMailSetup.Insert();
     end;
 
     [ModalPageHandler]

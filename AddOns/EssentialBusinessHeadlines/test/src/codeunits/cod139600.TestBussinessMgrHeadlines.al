@@ -785,17 +785,17 @@ codeunit 139600 "Test Essential Bus. Headlines"
 
     local procedure CreateInvoiceWithDueDate(DueDate: Date): Decimal
     var
-        SalesHeader: Record "Sales Header";
+        SalesHeaderLocal: Record "Sales Header";
         Amount: Decimal;
     begin
-        LibrarySales.CreateSalesInvoice(SalesHeader);
-        SalesHeader.Validate("Due Date", DueDate);
-        SalesHeader.Modify(true);
+        LibrarySales.CreateSalesInvoice(SalesHeaderLocal);
+        SalesHeaderLocal.Validate("Due Date", DueDate);
+        SalesHeaderLocal.Modify(true);
 
-        SalesHeader.CalcFields("Amount Including VAT");
-        Amount := SalesHeader."Amount Including VAT";
+        SalesHeaderLocal.CalcFields("Amount Including VAT");
+        Amount := SalesHeaderLocal."Amount Including VAT";
 
-        LibrarySales.PostSalesDocument(SalesHeader, false, true);
+        LibrarySales.PostSalesDocument(SalesHeaderLocal, false, true);
         exit(Amount);
     end;
 
@@ -863,18 +863,18 @@ codeunit 139600 "Test Essential Bus. Headlines"
 
     local procedure GetVisibility(HeadlineName: Option): Boolean
     var
-        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
+        EssentialBusinessHeadlineLocal: Record "Ess. Business Headline Per Usr";
     begin
-        if EssentialBusinessHeadline.Get(HeadlineName, UserSecurityId()) then
-            exit(EssentialBusinessHeadline."Headline Visible");
+        if EssentialBusinessHeadlineLocal.Get(HeadlineName, UserSecurityId()) then
+            exit(EssentialBusinessHeadlineLocal."Headline Visible");
     end;
 
     local procedure GetHeadlineText(HeadlineName: Option): Text[250]
     var
-        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
+        EssentialBusinessHeadlineLocal: Record "Ess. Business Headline Per Usr";
     begin
-        if EssentialBusinessHeadline.Get(HeadlineName, UserSecurityId()) then
-            exit(EssentialBusinessHeadline."Headline Text");
+        if EssentialBusinessHeadlineLocal.Get(HeadlineName, UserSecurityId()) then
+            exit(EssentialBusinessHeadlineLocal."Headline Text");
     end;
 
     local procedure ComputeVATReturnHeadlines()

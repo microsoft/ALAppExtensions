@@ -41,13 +41,13 @@ codeunit 135034 "Filter Tokens Test"
         UNBINDSUBSCRIPTION(FilterTokensTest);
     end;
 
-    local procedure VerifyDateTimeFilter(FilterText: Text; ExpectedText: Text)
+    local procedure VerifyDateTimeFilter(FilterText: Text; ExpectedText: Text[250])
     var
         OrgFilterText: Text[250];
         ExpectedFilterText: Text;
         NoOfAttempts: Integer;
     begin
-        OrgFilterText := FilterText;
+        OrgFilterText := CopyStr(FilterText, 1, MaxStrLen(OrgFilterText));
 
         // [WHEN] MakeDateTimeFilter is called.
         FilterTokens.MakeDateTimeFilter(FilterText);
@@ -91,7 +91,7 @@ codeunit 135034 "Filter Tokens Test"
         ExpectedFilterText: Text;
         NoOfAttempts: Integer;
     begin
-        OrgFilterText := FilterText;
+        OrgFilterText := CopyStr(FilterText, 1, MaxStrLen(OrgFilterText));
 
         // [WHEN] MakeTimeFilter is called.
         FilterTokens.MakeTimeFilter(FilterText);
@@ -128,7 +128,7 @@ codeunit 135034 "Filter Tokens Test"
         VerifyDateFilter('WORKDATE', FORMAT(WORKDATE()));
         VerifyDateFilter('TOMORROW', FORMAT(TODAY() + 1));
         VerifyDateFilter('WEEK', FORMAT(CALCDATE('<CW-6D>', TODAY())) + '..' + FORMAT(CALCDATE('<CW>', TODAY())));
-        VerifyDateFilter('QUARTER', STRSUBSTNO('%1..%2', FORMAT(CALCDATE('-CQ')), FORMAT(CALCDATE('CQ'))));
+        VerifyDateFilter('QUARTER', STRSUBSTNO('%1..%2', FORMAT(CALCDATE('<-CQ>')), FORMAT(CALCDATE('<CQ>'))));
         VerifyDateFilter('WEEK - 7D', FORMAT(CALCDATE('<CW-13D>', TODAY())) + '..' + FORMAT(CALCDATE('<CW-7D>', TODAY())));
         VerifyDateFilter('+15D', FORMAT(CALCDATE('<+15D>', TODAY())));
         VerifyDateFilter('15D', FORMAT(CALCDATE('<+15D>', TODAY())));
@@ -136,7 +136,7 @@ codeunit 135034 "Filter Tokens Test"
         VerifyDateFilter('TODAY - 15D', FORMAT(CALCDATE('<-15D>', TODAY())));
         VerifyDateFilter('+15D+CM', FORMAT(CALCDATE('<+15D+CM>', TODAY())));
         VerifyDateFilter('CM', FORMAT(CALCDATE('<CM>', TODAY())));
-        VerifyDateFilter('CQ', FORMAT(CALCDATE('<CQ', TODAY())));
+        VerifyDateFilter('CQ', FORMAT(CALCDATE('<CQ>', TODAY())));
         VerifyDateFilter('CQ - 34D', FORMAT(CALCDATE('<CQ-34D>', TODAY())));
         VerifyDateFilter('WORKDATE + CQ - 34D', FORMAT(CALCDATE('<CQ-34D>', WORKDATE())));
         VerifyDateFilter('WORKDATE + CQ - 34D..TODAY+3D', FORMAT(CALCDATE('<CQ-34D>', WORKDATE())) + '..' + FORMAT(CALCDATE('<+3D>', TODAY())));
@@ -223,7 +223,7 @@ codeunit 135034 "Filter Tokens Test"
     begin
         IF NOT Handled THEN
             CASE DateToken OF
-                COPYSTR(ChristmasTxt, 1, STRLEN(DateToken)):
+                COPYSTR(ChristmasTxt, 1, STRLEN(ChristmasTxt)):
                     BEGIN
                         DateFilter := DMY2DATE(25, 12, 2019);
                         Handled := TRUE;

@@ -18,7 +18,6 @@ codeunit 148023 "Bank Statement Import Sunshine"
         FileExtentionTxt: Label 'csv';
         ImportLineTxt: Label 'CMKV,%1,%2,%3,%4,%5,%6,%7,%8';
         RecordsMismatchErr: Label '%1 records on %2 %3 do not match.', Comment = '%1=Table;%2=Table;%3=Field';
-        BlobKey: Integer;
 
     trigger OnRun();
     begin

@@ -15,7 +15,7 @@ codeunit 3725 "Assisted Setup"
     /// <param name="GroupName">The assisted setup group enum that this belongs to.</param>
     procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group")
     begin
-        AssistedSetupImpl.Add(ExtensionID, PageID, AssistantName, GroupName, '', '');
+        AssistedSetupImpl.Add(ExtensionID, PageID, AssistantName, GroupName, '', "Video Category"::Uncategorized, '');
     end;
 
     /// <summary>Adds an assisted setup record from a given extension so that it can be shown in the list.</summary>
@@ -27,7 +27,20 @@ codeunit 3725 "Assisted Setup"
     /// <param name="HelpLink">The help url that explains the purpose and usage of this setup.</param>
     procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; HelpLink: Text[250])
     begin
-        AssistedSetupImpl.Add(ExtensionID, PageID, AssistantName, GroupName, VideoLink, HelpLink);
+        AssistedSetupImpl.Add(ExtensionID, PageID, AssistantName, GroupName, VideoLink, "Video Category"::Uncategorized, HelpLink);
+    end;
+
+    /// <summary>Adds an assisted setup record from a given extension so that it can be shown in the list.</summary>
+    /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
+    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    /// <param name="AssistantName">The name as shown for the setup.</param>
+    /// <param name="GroupName">The assisted setup group enum that this belongs to.</param>
+    /// <param name="VideoLink">The URL of the video that explains the purpose and use of this setup.</param>
+    /// <param name="VideoCategory">The category of the video for this setup.</param>
+    /// <param name="HelpLink">The help url that explains the purpose and usage of this setup.</param>
+    procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; VideoCategory: Enum "Video Category"; HelpLink: Text[250])
+    begin
+        AssistedSetupImpl.Add(ExtensionID, PageID, AssistantName, GroupName, VideoLink, VideoCategory, HelpLink);
     end;
 
     /// <summary>Adds the translation for the name of the setup.</summary>
@@ -52,9 +65,19 @@ codeunit 3725 "Assisted Setup"
     /// <summary>Checks whether an assisted setup guide exists.</summary>
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    /// <returns>True if an assisted setup guide for provided extension and page IDs exists; false otherwise.</returns>
     procedure Exists(ExtensionID: Guid; PageID: Integer): Boolean
     begin
         exit(AssistedSetupImpl.Exists(ExtensionID, PageID));
+    end;
+
+    /// <summary>Checks whether as assisted setup guide exists but has not been completed.</summary>
+    /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
+    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    /// <returns>True if it exists and is incomplete, false otherwise.</returns>
+    procedure ExistsAndIsNotComplete(ExtensionID: Guid; PageID: Integer): Boolean
+    begin
+        exit(AssistedSetupImpl.ExistsAndIsNotComplete(ExtensionID, PageID));
     end;
 
     /// <summary>Sets the status of the assisted setup to Complete.</summary>
@@ -74,11 +97,17 @@ codeunit 3725 "Assisted Setup"
         AssistedSetupImpl.Run(ExtensionID, PageID);
     end;
 
-    /// <summary>Clears the assisted setup records.</summary>
-    [Scope('OnPrem')]
-    procedure DeleteAll()
+    /// <summary>Opens the Assisted Setup page with the setup guides in it.</summary>
+    procedure Open()
     begin
-        AssistedSetupImpl.DeleteAll();
+        AssistedSetupImpl.Open();
+    end;
+
+    /// <summary>Opens the Assisted Setup page with the setup guides filtered on a selected group of guides.</summary>
+    /// <param name="AssistedSetupGroup">The group of guides to display on the Assisted Setup page.</param>
+    procedure Open(AssistedSetupGroup: Enum "Assisted Setup Group")
+    begin
+        AssistedSetupImpl.Open(AssistedSetupGroup);
     end;
 
     /// <summary>Notifies the user that the list of assisted setup guides is being gathered, and that new guides might be added.</summary>
@@ -96,10 +125,10 @@ codeunit 3725 "Assisted Setup"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
     /// <summary>Notifies that the run of the assisted setup has finished.</summary>
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    [IntegrationEvent(false, false)]
     internal procedure OnAfterRun(ExtensionID: Guid; PageID: Integer)
     begin
     end;

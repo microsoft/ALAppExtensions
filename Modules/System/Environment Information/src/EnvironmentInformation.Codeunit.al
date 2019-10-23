@@ -61,15 +61,6 @@ codeunit 457 "Environment Information"
     end;
 
     /// <summary>
-    /// Checks the application family is Invoicing.
-    /// </summary>
-    /// <returns>True if the application family is Invoicing, false otherwise.</returns>
-    procedure IsInvoicing(): Boolean
-    begin
-        exit(EnvironmentInformationImpl.IsInvoicing());
-    end;
-
-    /// <summary>
     /// Checks the application family is Financials.
     /// </summary>
     /// <returns>True if the application family is Financials, false otherwise.</returns>
@@ -84,18 +75,5 @@ codeunit 457 "Environment Information"
     procedure GetApplicationFamily(): Text
     begin
         exit(EnvironmentInformationImpl.GetApplicationFamily());
-    end;
-
-    /// <summary>
-    /// Sets the testability SaaS flag.
-    /// </summary>
-    /// <remarks>
-    /// This functions should only be used for testing purposes.
-    /// </remarks>
-    /// <param name="EnableSoftwareAsAServiceForTest">The value to be set to the testability SaaS flag.</param>
-    [Scope('OnPrem')]
-    procedure SetTestabilitySoftwareAsAService(EnableSoftwareAsAServiceForTest: Boolean)
-    begin
-        EnvironmentInformationImpl.SetTestabilitySoftwareAsAService(EnableSoftwareAsAServiceForTest);
     end;
 }

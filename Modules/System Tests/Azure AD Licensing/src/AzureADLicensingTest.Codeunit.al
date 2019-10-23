@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@ codeunit 138458 "Azure AD Licensing Test"
         AzureADLicensingTest: Codeunit "Azure AD Licensing Test";
         AzureADLicensing: Codeunit "Azure AD Licensing";
         Assert: Codeunit "Library Assert";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         MockGraphQuery: DotNet MockGraphQuery;
         ServicePlanOneIdTxt: Text;
         ServicePlanTwoIdTxt: Text;
@@ -46,7 +46,7 @@ codeunit 138458 "Azure AD Licensing Test"
         SubscribedSkuOneId: Guid;
         SubscribedSkuTwoId: Guid;
     begin
-        EnvironmentInfo.SetTestabilitySoftwareAsAService := true;
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService := true;
 
         Clear(AzureADLicensing);
         AzureADLicensing.SetTestInProgress(true);

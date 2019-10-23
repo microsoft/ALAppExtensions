@@ -80,7 +80,7 @@ codeunit 1851 "Sales Forecast Upgrade"
     begin
         if SalesForecastSetup.Get() then
             if ServicePassword.Get(SalesForecastSetup."API Key ID") then begin
-                if not IsolatedStorage.Get(SalesForecastSetup."API Key ID", IsolatedStorageValue) then
+                if not IsolatedStorage.Get(SalesForecastSetup."API Key ID", DataScope::Company, IsolatedStorageValue) then
                     Error('Could not retrieve the secret from isolated storage after the Upgrade for key "%1"', SalesForecastSetup."API Key ID");
                 ServicePasswordValue := ServicePassword.GetPassword();
                 if IsolatedStorageValue <> ServicePasswordValue then

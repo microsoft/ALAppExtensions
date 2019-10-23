@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Exposes functionality to get plan IDs.
+/// </summary>
 codeunit 9027 "Plan Ids"
 {
 
@@ -26,127 +29,127 @@ codeunit 9027 "Plan Ids"
         DeviceISVPlanGUIDTxt: Label '{a98d0c4a-a52f-4771-a609-e20366102d2a}', Locked = true;
         DevicePlanGUIDTxt: Label '{100e1865-35d4-4463-aaff-d38eee3a1116}', Locked = true;
 
-    // <summary>
-    // Returns the Basic plan GUID.
-    // </summary>
-    // <returns>the Basic plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Basic plan.
+    /// </summary>
+    /// <returns>The ID for the Basic plan.</returns>
     procedure GetBasicPlanId(): Guid
     begin
         EXIT(BasicPlanGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Team Member plan GUID.
-    // </summary>
-    // <returns>the Team Member plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Finance and Operations, Team Member plan.
+    /// </summary>
+    /// <returns>The ID for the Finance and Operations, Team Member plan.</returns>
     procedure GetTeamMemberPlanId(): Guid
     begin
         EXIT(TeamMemberPlanGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Essential plan GUID.
-    // </summary>
-    // <returns>the Essential plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Finance and Operations plan.
+    /// </summary>
+    /// <returns>The ID for the Finance and Operations plan.</returns>
     procedure GetEssentialPlanId(): Guid
     begin
         EXIT(EssentialPlanGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Premium plan GUID.
-    // </summary>
-    // <returns>the Premium plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Dynamics 365 Business Central, Premium User plan.
+    /// </summary>
+    /// <returns>The ID for the Dynamics 365 Business Central, Premium User plan.</returns>
     procedure GetPremiumPlanId(): Guid
     begin
         EXIT(PremiumPlanGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Invoicing plan GUID.
-    // </summary>
-    // <returns>the Invoicing plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Microsoft Invoicing plan.
+    /// </summary>
+    /// <returns>The ID for the Microsoft Invoicing plan.</returns>
     procedure GetInvoicingPlanId(): Guid
     begin
         EXIT(InvoicingPlanGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Viral signup plan GUID.
-    // </summary>
-    // <returns>the Viral signup plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Finance and Operations for IWs plan.
+    /// </summary>
+    /// <returns>The ID for the Finance and Operations for IWs plan.</returns>
     procedure GetViralSignupPlanId(): Guid
     begin
         EXIT(ViralSignupPlanGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the External accountant plan GUID.
-    // </summary>
-    // <returns>the External accountant plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Finance and Operations, External Accountant plan.
+    /// </summary>
+    /// <returns>The ID for the Finance and Operations, External Accountant plan.</returns>
     procedure GetExternalAccountantPlanId(): Guid
     begin
         EXIT(ExternalAccountantPlanGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Delegated admin plan GUID.
-    // </summary>
-    // <returns>the Delegated admin plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Administrator plan.
+    /// </summary>
+    /// <returns>The ID for the Administrator plan.</returns>
     procedure GetDelegatedAdminPlanId(): Guid
     begin
         EXIT(DelegatedAdminGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Internal admin plan GUID.
-    // </summary>
-    // <returns>the Internal admin plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Internal Administrator plan.
+    /// </summary>
+    /// <returns>The ID for the Internal Administrator plan.</returns>
     procedure GetInternalAdminPlanId(): Guid
     begin
         EXIT(InternalAdminGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Team member ISV plan GUID.
-    // </summary>
-    // <returns>the Team member ISV plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Dynamics 365 Business Central, Team Member ISV plan.
+    /// </summary>
+    /// <returns>The ID for the Dynamics 365 Business Central, Team Member ISV plan.</returns>
     procedure GetTeamMemberISVPlanId(): Guid
     begin
         EXIT(TeamMemberISVPlanGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Essential ISV plan GUID.
-    // </summary>
-    // <returns>the Essential ISV plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Dynamics 365 Business Central, Essential ISV User plan.
+    /// </summary>
+    /// <returns>The ID for the Dynamics 365 Business Central, Essential ISV User plan.</returns>
     procedure GetEssentialISVPlanId(): Guid
     begin
         EXIT(EssentialISVPlanGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Premium ISV plan GUID.
-    // </summary>
-    // <returns>the Premium ISV plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Dynamics 365 Business Central, Premium ISV User plan.
+    /// </summary>
+    /// <returns>The ID for the Dynamics 365 Business Central, Premium ISV User plan.</returns>
     procedure GetPremiumISVPlanId(): Guid
     begin
         EXIT(PremiumISVPlanGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Device ISV plan GUID.
-    // </summary>
-    // <returns>the Device ISV plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Dynamics 365 Business Central Device - Embedded plan.
+    /// </summary>
+    /// <returns>The ID for the Dynamics 365 Business Central Device - Embedded plan.</returns>
     procedure GetDeviceISVPlanId(): Guid
     begin
         exit(DeviceISVPlanGUIDTxt);
     end;
 
-    // <summary>
-    // Returns the Device plan GUID.
-    // </summary>
-    // <returns>the Device plan GUID</returns>
+    /// <summary>
+    /// Returns the ID for the Finance and Operations, Device plan.
+    /// </summary>
+    /// <returns>The ID for the Finance and Operations, Device plan.</returns>
     procedure GetDevicePlanId(): Guid
     begin
         exit(DevicePlanGUIDTxt);

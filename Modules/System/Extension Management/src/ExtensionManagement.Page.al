@@ -3,10 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Lists the available extensions, and provides features for managing them.
+/// </summary>
 page 2500 "Extension Management"
 {
     Extensible = false;
     AdditionalSearchTerms = 'app,add-in,customize,plug-in';
+    ApplicationArea = All;
     DeleteAllowed = false;
     Editable = false;
     InsertAllowed = false;
@@ -19,6 +23,8 @@ page 2500 "Extension Management"
                       ORDER(Ascending)
                       WHERE(Name = FILTER(<> '_Exclude_*'),
                             "Package Type" = FILTER(= 0 | 2));
+    UsageCategory = Administration;
+    ContextSensitiveHelpPage = 'ui-extensions';
 
     layout
     {

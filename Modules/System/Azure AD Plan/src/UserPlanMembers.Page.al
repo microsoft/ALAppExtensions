@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// List page that contains all users and the plans that they are assigned to.
+/// </summary>
 page 9822 "User Plan Members"
 {
     Caption = 'User Plan Members';
@@ -11,6 +14,7 @@ page 9822 "User Plan Members"
     LinksAllowed = false;
     PageType = List;
     SourceTable = "User Plan";
+    ContextSensitiveHelpPage = 'ui-how-users-permissions';
 
     layout
     {

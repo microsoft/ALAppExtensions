@@ -7,7 +7,6 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
 {
 
     var
-        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         EssentialBusHeadlineMgt: Codeunit "Essential Bus. Headline Mgt.";
 
     local procedure CanRunSubscribers(): Boolean
@@ -28,6 +27,8 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
     end;
 
     local procedure InvalidateHeadlines()
+    var
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
         if not EssentialBusinessHeadline.WritePermission() then
             exit;
@@ -51,6 +52,8 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"RC Headlines Executor", 'OnComputeHeadlines', '', true, true)]
     procedure OnComputeRoleCenterHeadlines(RoleCenterPageID: Integer)
+    var
+        EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
         if not EssentialBusinessHeadline.WritePermission() then
             exit;

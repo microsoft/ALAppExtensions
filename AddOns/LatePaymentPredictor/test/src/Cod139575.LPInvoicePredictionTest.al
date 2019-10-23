@@ -11,7 +11,7 @@ codeunit 139575 "LP Prediction Test"
         LibraryInventory: Codeunit "Library - Inventory";
         LPPredictionTest: Codeunit "LP Prediction Test";
         LibraryUtility: Codeunit "Library - Utility";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         EnableNotificationMsg: Label 'Want to know if a sales document will be paid on time? The Late Payment Prediction extension can predict that.';
         PredictionResultWillBeLateTxt: Label 'The payment is predicted to be late, with Low confidence in the prediction.';
         LearnMoreNotificationTxt: Label 'To predict a late payment, choose the %1 action. Want to learn more about the late payment predictions?';
@@ -122,7 +122,7 @@ codeunit 139575 "LP Prediction Test"
     begin
         // [SCENARIO] Prediction results appear when the Predict button is clicked
         if BindSubscription(LPPredictionTest) then;
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         EnsureThatMockDataIsFetchedFromKeyVault();
 
         // [GIVEN] Enable predictions in the setup
@@ -133,7 +133,7 @@ codeunit 139575 "LP Prediction Test"
         LPPredictionMgt.PredictLateShowResult(SalesHeader);
 
         // [THEN] The result is checked in the handler
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
         UnbindSubscription(LPPredictionTest);
     end;
 
@@ -159,7 +159,7 @@ codeunit 139575 "LP Prediction Test"
         if BindSubscription(LPPredictionTest) then;
         LPMLInputData.DeleteAll();
         EnsureThatMockDataIsFetchedFromKeyVault();
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         CustomerNo := CreateSalesInvoiceHeader(false, SalesInvoiceHeader);
 
         // [GIVEN] Enable predictions in the setup
@@ -178,7 +178,7 @@ codeunit 139575 "LP Prediction Test"
         // [THEN] The input data table has been filled with one record correcponding to the customer
         Assert.AreEqual(1, LPMLInputData.Count(), 'Expected the LPMLInputData table to have one record.');
 
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
         UnbindSubscription(LPPredictionTest);
     end;
 
@@ -269,7 +269,7 @@ codeunit 139575 "LP Prediction Test"
         end;
 
         // [SCENARIO] Training a model manually creates a model with a quality that is saved in the setup. Enabling the setup with a threshold higher than given model raises error.
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         EnsureThatMockDataIsFetchedFromKeyVault();
 
         if BindSubscription(LPPredictionTest) then;
@@ -303,7 +303,7 @@ codeunit 139575 "LP Prediction Test"
         // [THEN] Raises error
         Assert.ExpectedError(CurrentModelLowerQualityThanDesiredErr);
 
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
 
     [Test]
@@ -378,7 +378,7 @@ codeunit 139575 "LP Prediction Test"
         // [SCENARIO] A custom model already exists. Training a new model leads to a model of poorer quality. User confirms that he stil wishes to use the new model.
         if BindSubscription(LPPredictionTest) then;
         SomeModelQuality := 0.66;
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         LPMachineLearningSetup.DeleteAll();
         DummyModel := 'some new but worse model';
 
@@ -400,7 +400,7 @@ codeunit 139575 "LP Prediction Test"
         Assert.AreEqual(SomeModelQuality, LPMachineLearningSetup."My Model Quality", 'Fetched incorrect quality');
         Assert.AreEqual(DummyModel, LPMachineLearningSetup.GetModelAsText(LPMachineLearningSetup."Selected Model"::My), 'Fetched incorrect model');
         UnbindSubscription(LPPredictionTest);
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
 
     [Test]
@@ -414,7 +414,7 @@ codeunit 139575 "LP Prediction Test"
             exit;
 
         // [SCENARIO] Test the background task calls the evaluate and train in the good sequence and when expected
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         EnsureThatMockDataIsFetchedFromKeyVault();
         DeleteStandardModel();
 
@@ -528,7 +528,7 @@ codeunit 139575 "LP Prediction Test"
         Assert.AreEqual(LPMachineLearningSetup."Selected Model"::My, LPMachineLearningSetup."Selected Model", 'My Model has better quality- so it should be selected automatically');
 
         UnbindSubscription(LPPredictionTest);
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
 
     [Test]
@@ -544,7 +544,7 @@ codeunit 139575 "LP Prediction Test"
         end;
 
         // [SCENARIO] Testing a model saves the model quality to the Setup
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
         if BindSubscription(LPPredictionTest) then;
         SomeModelQuality := 0.66;
@@ -570,7 +570,7 @@ codeunit 139575 "LP Prediction Test"
         Assert.AreEqual(DefaultDummyModelTxt, LPMachineLearningSetup.GetModelAsText(LPMachineLearningSetup."Selected Model"::My), 'Fetched incorrect model');
         UnbindSubscription(LPPredictionTest);
 
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
 
     [Test]

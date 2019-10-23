@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Displays a list of plans.
+/// </summary>
 table 9004 Plan
 {
     Caption = 'Subscription Plan';

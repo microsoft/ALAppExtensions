@@ -45,7 +45,7 @@ page 130455 "Command Line Test Tool"
             field(TestRunnerCodeunitId; TestRunnerCodeunitId)
             {
                 ApplicationArea = All;
-                Caption = 'Test Runnter Codeunit ID';
+                Caption = 'Test Runner Codeunit ID';
                 ToolTip = 'Specifies the currently selected test runner ID';
 
                 trigger OnValidate()

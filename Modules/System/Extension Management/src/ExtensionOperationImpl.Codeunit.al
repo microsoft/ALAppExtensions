@@ -10,7 +10,6 @@ codeunit 2503 "Extension Operation Impl"
 
     var
         DotNetALNavAppOperationInvoker: DotNet ALNavAppOperationInvoker;
-        DotNetALPackageDeploymentSchedule: DotNet ALPackageDeploymentSchedule;
         DotNetNavAppALInstaller: DotNet NavAppALInstaller;
         OperationInvokerHasBeenCreated: Boolean;
         InstallerHasBeenCreated: Boolean;
@@ -21,6 +20,7 @@ codeunit 2503 "Extension Operation Impl"
         ScheduledOperationMinorProgressMsg: Label 'Extension deployment has been scheduled for the next minor version. Please check the Deployment Status page for updates.';
         DialogTitleTxt: Label 'Export';
         OutExtTxt: Label 'Text Files (*.txt)|*.txt|*.*';
+        NotSufficientPermissionErr: Label 'You do not have sufficient permissions to manage extensions. Please contact your administrator.';
 
     local procedure AssertIsInitialized()
     begin
@@ -30,10 +30,9 @@ codeunit 2503 "Extension Operation Impl"
         end;
     end;
 
-    procedure DeployExtension(AppId: GUID; lcid: Integer; IsUIEnabled: Boolean)
-    var
-        NavApp: Record "NAV App";
+    procedure DeployExtension(AppId: Guid; lcid: Integer; IsUIEnabled: Boolean)
     begin
+        CheckPermissions();
         InitializeOperationInvoker();
         DotNetALNavAppOperationInvoker.DeployTarget(AppId, Format(lcid));
         if IsUIEnabled then
@@ -42,7 +41,10 @@ codeunit 2503 "Extension Operation Impl"
 
 
     procedure UploadExtension(PackageStream: InStream; lcid: Integer)
+    var
+        DotNetALPackageDeploymentSchedule: DotNet ALPackageDeploymentSchedule;
     begin
+        CheckPermissions();
         DotNetALPackageDeploymentSchedule := DotNetALPackageDeploymentSchedule.Immediate;
         InitializeOperationInvoker();
         DotNetALNavAppOperationInvoker.UploadPackage(PackageStream, DotNetALPackageDeploymentSchedule, Format(lcid));
@@ -52,6 +54,7 @@ codeunit 2503 "Extension Operation Impl"
     var
         DotNetALPackageDeploymentSchedule: DotNet ALPackageDeploymentSchedule;
     begin
+        CheckPermissions();
         InitializeOperationInvoker();
         case DeployTo of
             DeployTo::"Current version":
@@ -95,6 +98,7 @@ codeunit 2503 "Extension Operation Impl"
 
     procedure UnpublishUninstalledPerTenantExtension(PackageID: Guid)
     begin
+        CheckPermissions();
         AssertIsInitialized();
         DotNetNavAppALInstaller.ALUnpublishNavTenantApp(PackageID);
     end;
@@ -111,6 +115,7 @@ codeunit 2503 "Extension Operation Impl"
         VersionString: Text;
         CleanFileName: Text;
     begin
+        CheckPermissions();
         if not NAVApp.Get(PackageId) then
             exit(false);
 
@@ -160,6 +165,7 @@ codeunit 2503 "Extension Operation Impl"
         NavApp: Record "NAV App";
         NavAppSetting: Record "NAV App Setting";
     begin
+        CheckPermissions();
         if not NavApp.Get(PackageId) then
             exit(false);
 
@@ -182,6 +188,14 @@ codeunit 2503 "Extension Operation Impl"
         end;
     end;
 
+    local procedure CheckPermissions()
+    var
+        NAVAppObjectMetadata: Record "NAV App Object Metadata";
+    begin
+        if not NavAppObjectMetadata.ReadPermission() then
+            Error(NotSufficientPermissionErr);
+    end;
+
     procedure GetAllExtensionDeploymentStatusEntries(var NavAppTenantOperation: Record "NAV App Tenant Operation")
     begin
         NavAppTenantOperation.FindSet();
@@ -201,6 +215,7 @@ codeunit 2503 "Extension Operation Impl"
 
     procedure GetDeployOperationInfo(OperationId: Guid; var Version: Text; var Schedule: Text; var Publisher: Text; var AppName: Text; Description: Text)
     begin
+        CheckPermissions();
         AppName := GetDeployOperationAppName(OperationId);
         if AppName = '' then
             AppName := Description;
@@ -256,7 +271,6 @@ codeunit 2503 "Extension Operation Impl"
     procedure GetCurrentlyInstalledVersionPackageIdByAppId(AppId: Guid): Guid
     var
         NavAppInstalledApp: Record "NAV App Installed App";
-        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         NullGuid: Guid;
     begin
         if NavAppInstalledApp.Get(AppId) then

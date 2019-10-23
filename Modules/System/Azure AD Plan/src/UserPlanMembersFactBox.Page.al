@@ -3,12 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// ListPart page that contains all the user plan members.
+/// </summary>
 page 9823 "User Plan Members FactBox"
 {
     Caption = 'Users in Plan';
     Editable = false;
     PageType = ListPart;
     SourceTable = "User Plan";
+    ContextSensitiveHelpPage = 'ui-how-users-permissions';
 
     layout
     {

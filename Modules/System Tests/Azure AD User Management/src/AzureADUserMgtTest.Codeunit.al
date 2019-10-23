@@ -11,7 +11,7 @@ codeunit 132909 "Azure AD User Management Test"
     end;
 
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         AzureADUserManagementImpl: Codeunit "Azure AD User Mgmt. Impl.";
         AzureADGraphUser: Codeunit "Azure AD Graph User";
         LibraryAssert: Codeunit "Library Assert";
@@ -34,7 +34,7 @@ codeunit 132909 "Azure AD User Management Test"
         AzureADPlanTestLibrary.DeleteAllUserPlan();
 
         // [GIVEN] Not running in SaaS
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
 
         // [GIVEN] The Azure AD Graph contains a user with the AccountEnabled flag set to true
         UserSecurityId := CreateGuid();
@@ -81,7 +81,7 @@ codeunit 132909 "Azure AD User Management Test"
         AzureADPlanTestLibrary.DeleteAllUserPlan();
 
         // [GIVEN] Running in SaaS
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
         // [GIVEN] The User Property and User Plan tables are empty      
         UserProperty.DeleteAll();
@@ -126,7 +126,6 @@ codeunit 132909 "Azure AD User Management Test"
         AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
         AzureADPlan: Codeunit "Azure AD Plan";
         UserLoginTestLibrary: Codeunit "User Login Test Library";
-        CompanyTriggers: Codeunit "Company Triggers";
         AzureADUserManagementTest: Codeunit "Azure AD User Management Test";
         PlanId: Guid;
     begin
@@ -135,7 +134,7 @@ codeunit 132909 "Azure AD User Management Test"
         UserLoginTestLibrary.DeleteAllLoginInformation(UserSecurityId());
 
         // [GIVEN] Running in SaaS
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         Initialize(AzureADUserManagementTest);
 
         // [GIVEN] The User Property and User Plan tables are empty      
@@ -186,7 +185,7 @@ codeunit 132909 "Azure AD User Management Test"
         // [SCENARIO] Codeunit AzureADUserManagement exits immediately if the user has no graph authentication ID
 
         // [GIVEN] Running in SaaS
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         Initialize(AzureADUserManagementTest);
 
         // [GIVEN] The User Property and User Plan tables are empty      
@@ -258,7 +257,7 @@ codeunit 132909 "Azure AD User Management Test"
         AzureADPlanTestLibrary.DeleteAllUserPlan();
 
         // [GIVEN] Running in SaaS
-        EnvironmentInfo.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
         // [GIVEN] The Azure AD Graph contains a user 
         UserId := CreateGuid();
