@@ -209,7 +209,7 @@ CopyStream(OutStream, InStream);
 ---
 
 ## Client Type Management Module
-**Error**: _Codeunit 'ClientTypeManagement' is missing_\
+**Error**: _Codeunit 'ClientTypeManagement' is missing_
 **Error**: _Codeunit '4' is missing_
 
 **Solution**: Codeunit has been renamed to `codeunit 4030 "Client Type Management"`.
@@ -217,13 +217,21 @@ CopyStream(OutStream, InStream);
 ---
 
 ## Cryptography Management Module
-**Error**: _Codeunit 'Encryption Management' is missing_\
+**Error**: _Codeunit 'Encryption Management' is missing_
 
 **Solution**: Codeunit has been renamed to `codeunit 1266 "Cryptography Management"`.
 
 **Error**: _'Codeunit "Encryption Management"' does not contain a definition for 'GenerateKeyedHash'_
 
 **Solution**: Function has been moved to `codeunit 1266 "Cryptography Management"`, function `GenerateHash`.
+
+**Error**: _The event 'OnBeforeEncryptDataInAllCompaniesOnPrem' is not found in the target"_
+
+**Solution**: Use the event `OnBeforeEnableEncryptionOnPrem` instead.
+
+**Error**: _The event 'OnBeforeDecryptDataInAllCompaniesOnPrem' is not found in the target"_
+
+**Solution**: Use the event `OnBeforeDisableEncryptionOnPrem` instead.
 
 ---
 
