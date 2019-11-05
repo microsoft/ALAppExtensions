@@ -374,7 +374,7 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Error**: _'Record Language' does not contain a definition for 'GetLanguageID'_
 
-**Solution**: Function has been moved to `codeunit 43 Language`, function `GetLanguageId`.
+**Solution**: Function has been moved to `codeunit 43 Language`, function `GetLanguageId`. If empty language code could be expected, use `GetLanguageIdOrDefault` instead.
 
 **Error**: _'Codeunit Language' does not contain a definition for 'TryGetCultureName'_
 
