@@ -368,6 +368,14 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Solution**: Codeunit was renamed to `codeunit 43 Language`.
 
+**Error**: _'Codeunit "LanguageManagement"' does not contain a definition for 'ApplicationLanguage'_
+
+**Solution**: Function has been replaced by `GetDefaultApplicationLanguageId` in `codeunit 43 Language`.
+
+**Error**: _'Codeunit "LanguageManagement"' does not contain a definition for 'LookupApplicationLanguage'_
+
+**Solution**: Function has been replaced by `LookupApplicationLanguageId` in `codeunit 43 Language`.
+
 **Error**: _'Record Language' does not contain a definition for 'GetUserLanguage'_
 
 **Solution**: Function has been moved to `codeunit 43 Language`, function `GetUserLanguageCode`.
