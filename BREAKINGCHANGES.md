@@ -191,7 +191,7 @@ Xml.WriteTo(Text);
 ```
 HttClient.Get(url, HttpResponseMessage);
 HttpResponseMessage.Content.ReadAs(InStream);
-TempBlob.CreateOuStream(OutStream);
+TempBlob.CreateOutStream(OutStream);
 CopyStream(OutStream, InStream);
 ```
 
