@@ -21,6 +21,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                 MaxOccurs = Once;
                 XmlName = 'amcpaymentreq';
                 NamespacePrefix = '';
+
                 textelement(version)
                 {
                     MaxOccurs = Once;
@@ -128,7 +129,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                         trigger OnBeforePassVariable();
                         begin
                             journalnumber := GetValue(DataExchField."Data Exch. No.", DataExchField."Line No.");
-                            journalnumber := journalnumber + '_' + FORMAT(DataExchEntryNo);
+                            journalnumber := journalnumber + '_' + FORMAT(DataExchEntryNo); //Making it a unique Journal
                         end;
                     }
                     fieldelement(legalregistrationnumber; "Company Information"."VAT Registration No.")
@@ -467,6 +468,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                             {
                                 MinOccurs = Zero;
                                 XmlName = 'banktransspec';
+
                                 textelement(cardref)
                                 {
                                     MaxOccurs = Unbounded;
@@ -593,7 +595,10 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                                 begin
                                     "Credit Transfer Entry".SETRANGE("Credit Transfer Entry"."Data Exch. Entry No.", "Data Exch. Field"."Data Exch. No.");
                                     "Credit Transfer Entry".SETRANGE("Credit Transfer Entry"."Transaction ID", TransThemUniqueId);
+                                    if ("Credit Transfer Entry".Count() = 0) then
+                                        currXMLport.skip();
                                 end;
+
                             }
                             textelement(emailadvice)
                             {
@@ -743,7 +748,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                                 begin
                                     chequeinfo := GetValue("Data Exch. Field"."Data Exch. No.", "Data Exch. Field"."Line No.");
                                     if (chequeinfo = 'FALSE') then
-                                        currXMLport.SKIP()
+                                        currXMLport.Skip()
                                     else
                                         chequeinfo := '';
                                 end;

@@ -5,7 +5,7 @@ page 20101 "AMC Banking Setup"
     Caption = 'AMC Banking Setup';
     InsertAllowed = false;
     PageType = Card;
-    PromotedActionCategories = 'New,Process,Page,Bank Name,Encryption';
+    PromotedActionCategories = 'New,Process,Page,Sign-up,Assisted setup,Bank Name,Encryption,Support';
     SourceTable = "AMC Banking Setup";
     UsageCategory = Administration;
     ContextSensitiveHelpPage = '300';
@@ -75,11 +75,6 @@ page 20101 "AMC Banking Setup"
             group(Service)
             {
                 Caption = 'Service';
-                field("Sign-up URL"; "Sign-up URL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the sign-up page for the service that converts bank data to the format required by your bank when you export payment bank files and import bank statement files. This is the web page where you enter your company''s user name and password to sign up for the service.';
-                }
                 field("Service URL"; "Service URL")
                 {
                     ApplicationArea = Basic, Suite;
@@ -88,11 +83,6 @@ page 20101 "AMC Banking Setup"
                     begin
                         Hyperlink(CopyStr("Service URL", 1, StrLen("Service URL") - StrLen("Namespace API Version")));
                     end;
-                }
-                field("Support URL"; "Support URL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the web site where the provider of the AMC Banking publishes status and support information about the service.';
                 }
                 field("Namespace API Version"; "Namespace API Version")
                 {
@@ -105,6 +95,22 @@ page 20101 "AMC Banking Setup"
 
     actions
     {
+        area(Creation)
+        {
+            action(SignUp)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Sign-up here';
+                Image = SignUp;
+                Promoted = true;
+                ToolTip = 'Calls the sign-up page for the service that converts bank data to the format required by your bank when you export payment bank files and import bank statement files. This is the web page where you enter your company''s user name and password to sign up for the service.';
+                PromotedCategory = Category4;
+                trigger OnAction();
+                begin
+                    Hyperlink("Sign-up URL");
+                end;
+            }
+        }
         area(processing)
         {
             action(AMCAssistedSetup)
@@ -116,7 +122,7 @@ page 20101 "AMC Banking Setup"
                 Enabled = true;
                 Image = Setup;
                 Promoted = true;
-                PromotedCategory = Process;
+                PromotedCategory = Category5;
 
                 trigger OnAction()
                 var
@@ -133,7 +139,7 @@ page 20101 "AMC Banking Setup"
                 Caption = 'Bank Name List';
                 Image = ListPage;
                 Promoted = true;
-                PromotedCategory = Category4;
+                PromotedCategory = Category6;
                 RunObject = Page "AMC Bank Bank Name List";
                 RunPageMode = View;
                 ToolTip = 'View or update the list of banks in your country/region that you can use to import or export bank account data using the AMC Banking.';
@@ -144,11 +150,24 @@ page 20101 "AMC Banking Setup"
                 Caption = 'Encryption Management';
                 Image = EncryptionKeys;
                 Promoted = true;
-                PromotedCategory = Category5;
+                PromotedCategory = Category7;
                 PromotedIsBig = true;
                 RunObject = Page "Data Encryption Management";
                 RunPageMode = View;
                 ToolTip = 'Enable or disable data encryption. Data encryption helps make sure that unauthorized users cannot read business data.';
+            }
+            action(Support)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Get support';
+                Image = OnlineHelp;
+                Promoted = true;
+                ToolTip = 'Calls the web site where the provider of the AMC Banking publishes status and support information about the service.';
+                PromotedCategory = Category8;
+                trigger OnAction();
+                begin
+                    Hyperlink("Support URL");
+                end;
             }
         }
     }
