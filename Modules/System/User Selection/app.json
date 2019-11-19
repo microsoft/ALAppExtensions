@@ -12,7 +12,7 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "2673d810-273e-402f-9093-2eaef7e03b83",
+                             "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

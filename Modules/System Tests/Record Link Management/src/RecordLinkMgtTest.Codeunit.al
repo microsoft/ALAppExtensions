@@ -57,8 +57,11 @@ codeunit 132508 "Record Link Mgt. Test"
         FromRecordLinkRecordTest: Record 132508;
         ToRecordLinkRecordTest: Record 132508;
         NewRecordLink: Record 2000000068;
+        OnAfterCopyLinksMonitor: Codeunit "OnAfterCopyLinks Monitor";
         RecLinkCount: Integer;
     begin
+        BindSubscription(OnAfterCopyLinksMonitor);
+
         // [GIVEN] A new record is created to set record links on
         FromRecordLinkRecordTest.DeleteAll();
         FromRecordLinkRecordTest.Init();
@@ -67,7 +70,6 @@ codeunit 132508 "Record Link Mgt. Test"
         FromRecordLinkRecordTest.Insert();
 
         // [GIVEN] Some text is written to the record Link
-        RecordLink.Init();
         RecordLink.Type := RecordLink.Type::Note;
         // [GIVEN] Assign the record link to a record
         RecordLink."Record ID" := FromRecordLinkRecordTest.RecordId();
@@ -88,6 +90,7 @@ codeunit 132508 "Record Link Mgt. Test"
         // [WHEN] The record link is copied to the other instance
         RecLinkCount := NewRecordLink.Count();
         RecordLinkManagement.CopyLinks(FromRecordLinkRecordTest, ToRecordLinkRecordTest);
+        Assert.IsTrue(OnAfterCopyLinksMonitor.IsEventRaised(), 'OnAfterCopyLinks event was not raised');
 
         // [THEN] A new record link has been created
         Assert.AreEqual(RecLinkCount + 1, NewRecordLink.Count(), 'No new record links created');
@@ -110,7 +113,7 @@ codeunit 132508 "Record Link Mgt. Test"
         EmptyRecordId: RecordID;
     begin
         // [GIVEN] Some text is written to the record Link
-        RecordLink.Init();
+        RecordLink.DeleteAll();
         RecordLinkManagement.WriteNote(RecordLink, 'My note for the link');
 
         // [GIVEN] Insert the record link

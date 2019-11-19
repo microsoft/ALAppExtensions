@@ -95,6 +95,13 @@ codeunit 132586 "Assisted Setup Test"
 
         // [THEN] Translation page opens and caught by the trap above.
         Translation.LanguageName.AssertEquals('English (United States)');
+        Translation.Close();
+
+        // [WHEN] The assisted setup is refreshed
+        AssistedSetup."Reset Setup".Invoke();
+
+        // [THEN] Assisted Setup does not have Completed status anymore
+        AssistedSetup.Completed.AssertEquals(false);
     end;
 
     [Test]
@@ -102,7 +109,9 @@ codeunit 132586 "Assisted Setup Test"
     procedure TestAssistedSetupsShowUpOnFilteredView()
     var
         AssistedSetup: Codeunit "Assisted Setup";
+        AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
         AssistedSetupGroup: Enum "Assisted Setup Group";
+        Info: ModuleInfo;
     begin
         Initialize();
 
@@ -113,6 +122,16 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Open(AssistedSetupGroup::WithoutLinks);
 
         // [THEN] Run within the modal form handler
+
+		// [WHEN] Setup is set to be Completed 
+		AssistedSetupTestLibrary.SetStatusToCompleted(Page::"Other Assisted Setup Test Page");
+
+		// [WHEN] Reset is called
+		AssistedSetup.Reset(Page::"Other Assisted Setup Test Page");
+
+		// [THEN] Status is incomplete
+        NavApp.GetCurrentModuleInfo(Info);
+		LibraryAssert.IsFalse(AssistedSetup.IsComplete(Info.Id(), Page::"Other Assisted Setup Test Page"), 'Complete!');
     end;
 
     local procedure Initialize();
@@ -132,7 +151,7 @@ codeunit 132586 "Assisted Setup Test"
     begin
         NavApp.GetCurrentModuleInfo(Info);
         AssistedSetup.Add(Info.Id(), Page::"My Assisted Setup Test Page", 'My Assisted Setup Test Page', AssistedSetupGroup::WithoutLinks, 'http://youtube.com', "Video Category"::Uncategorized, 'http://yahoo.com');
-        AssistedSetup.AddTranslation(Info.Id(), Page::"My Assisted Setup Test Page", 1033, 'English translation');
+        AssistedSetup.AddTranslation(Page::"My Assisted Setup Test Page", 1033, 'English translation');
         AssistedSetup.Add(Info.Id(), Page::"Other Assisted Setup Test Page", 'Other Assisted Setup Test Page', AssistedSetupGroup::WithLinks);
     end;
 

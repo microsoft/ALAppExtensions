@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -48,6 +48,7 @@ codeunit 1432 "Satisfaction Survey Impl."
         ParameterNotFoundTxt: Label 'Parameter %1 is not found.', Locked = true;
         CouldNotInsertSetupRecordTxt: Label 'Inserting of the setup record has failed.', Locked = true;
         CouldNotModifySetupRecordTxt: Label 'Modification of the setup record has failed.', Locked = true;
+        TooEarlyTxt: Label 'Too short time since last activation try.', Locked = true;
 
     procedure TryShowSurvey(): Boolean
     begin
@@ -113,6 +114,7 @@ codeunit 1432 "Satisfaction Survey Impl."
     procedure ActivateSurvey(): Boolean
     var
         NetPromoterScore: Record "Net Promoter Score";
+        EarliestActivateTime: DateTime;
         Puid: Text;
     begin
         if not IsSupported() then begin
@@ -146,6 +148,12 @@ codeunit 1432 "Satisfaction Survey Impl."
                 SendTraceTag('00009N4', NpsCategoryTxt, VERBOSITY::Warning, CouldNotInsertSetupRecordTxt, DATACLASSIFICATION::SystemMetadata);
                 exit(false);
             end;
+        end;
+
+        EarliestActivateTime := NetPromoterScore."Last Request Time" + MinDelayTime() * MillisecondsInMinute();
+        if CurrentDateTime() < EarliestActivateTime then begin
+            SendTraceTag('0000AW8', NpsCategoryTxt, VERBOSITY::Normal, TooEarlyTxt, DATACLASSIFICATION::SystemMetadata);
+            exit(false);
         end;
 
         if not NetPromoterScore."Send Request" then begin
@@ -525,10 +533,10 @@ codeunit 1432 "Satisfaction Survey Impl."
         end;
         NetPromoterScoreSetup."Request Timeout" := RequestTimeout;
         NetPromoterScoreSetup."Expire Time" := CurrentDateTime() + CacheLifeTime * MillisecondsInMinute();
-        if Exists then
-            NetPromoterScoreSetup.Modify()
-        else
-            NetPromoterScoreSetup.Insert();
+        if Exists then begin
+            if NetPromoterScoreSetup.Modify() then;
+        end else
+            if NetPromoterScoreSetup.Insert() then;
         Commit();
     end;
 
@@ -696,6 +704,11 @@ codeunit 1432 "Satisfaction Survey Impl."
         if NetPromoterScoreSetup."Request Timeout" < MinRequestTimeout() then
             exit(MinRequestTimeout());
         exit(NetPromoterScoreSetup."Request Timeout");
+    end;
+
+    local procedure MinDelayTime(): Integer
+    begin
+        exit(30); // 30 minutes
     end;
 
     local procedure MinCacheLifeTime(): Integer

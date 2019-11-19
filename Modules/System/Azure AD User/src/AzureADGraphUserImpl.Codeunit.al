@@ -80,10 +80,12 @@ codeunit 9011 "Azure AD Graph User Impl."
             ModifyUser := true;
         end;
 
-        TempString := CopyStr(Format(GraphUser.Mail()), 1, MaxStrLen(User."Contact Email"));
-        if LowerCase(User."Contact Email") <> LowerCase(TempString) then begin
-            User."Contact Email" := CopyStr(TempString, 1, MaxStrLen(User."Contact Email"));
-            ModifyUser := true;
+        if not IsNull(GraphUser.Mail()) then begin
+            TempString := CopyStr(Format(GraphUser.Mail()), 1, MaxStrLen(User."Contact Email"));
+            if LowerCase(User."Contact Email") <> LowerCase(TempString) then begin
+                User."Contact Email" := CopyStr(TempString, 1, MaxStrLen(User."Contact Email"));
+                ModifyUser := true;
+            end;
         end;
 
         TempString := CopyStr(Format(GraphUser.UserPrincipalName()), 1, MaxStrLen(User."Authentication Email"));
@@ -188,9 +190,11 @@ codeunit 9011 "Azure AD Graph User Impl."
         if LowerCase(User."Full Name") <> LowerCase(TempString) then
             exit(true);
 
-        TempString := CopyStr(Format(GraphUser.Mail()), 1, MaxStrLen(User."Contact Email"));
-        if LowerCase(User."Contact Email") <> LowerCase(TempString) then
-            exit(true);
+        if not IsNull(GraphUser.Mail()) then begin
+            TempString := CopyStr(Format(GraphUser.Mail()), 1, MaxStrLen(User."Contact Email"));
+            if LowerCase(User."Contact Email") <> LowerCase(TempString) then
+                exit(true);
+        end;
 
         TempString := CopyStr(Format(GraphUser.UserPrincipalName()), 1, MaxStrLen(User."Authentication Email"));
         if LowerCase(User."Authentication Email") <> LowerCase(TempString) then

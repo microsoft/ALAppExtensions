@@ -33,12 +33,12 @@
                  ],
     "internalsVisibleTo":  [
                                {
-                                   "appId":  "eb65d818-4f43-4f81-b20b-f8ff726dc247",
+                                   "id":  "eb65d818-4f43-4f81-b20b-f8ff726dc247",
                                    "name":  "User Login Times Test",
                                    "publisher":  "Microsoft"
                                },
                                {
-                                   "appId":  "9761c0ac-e4ea-4c14-8918-2f4ded158b12",
+                                   "id":  "9761c0ac-e4ea-4c14-8918-2f4ded158b12",
                                    "name":  "User Login Times Test Library",
                                    "publisher":  "Microsoft"
                                }

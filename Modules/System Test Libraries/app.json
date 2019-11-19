@@ -12,7 +12,7 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+                             "id":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
                              "name":  "System Application",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

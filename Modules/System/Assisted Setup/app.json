@@ -12,31 +12,31 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "3ade8173-2cc2-4727-8c57-eb0754f70cdc",
+                             "id":  "3ade8173-2cc2-4727-8c57-eb0754f70cdc",
                              "name":  "Translation",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "e31ad830-3d46-472e-afeb-1d3d35247943",
+                             "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "BLOB Storage",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "84e448ad-faa5-44c8-835a-ec4b408e8cec",
+                             "id":  "84e448ad-faa5-44c8-835a-ec4b408e8cec",
                              "name":  "Video",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
+                             "id":  "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
                              "name":  "Extension Management",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "93b83ef6-9666-4c1d-b130-c232f4047621",
+                             "id":  "93b83ef6-9666-4c1d-b130-c232f4047621",
                              "name":  "Upgrade Tags",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
@@ -83,7 +83,7 @@
     "target":  "OnPrem",
     "internalsVisibleTo":  [
                                {
-                                   "appId":  "2856b1c4-3dda-4426-9403-d0313172b6c0",
+                                   "id":  "2856b1c4-3dda-4426-9403-d0313172b6c0",
                                    "name":  "Assisted Setup Test Library",
                                    "publisher":  "Microsoft"
                                }

@@ -12,7 +12,7 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "086892d7-4d8b-4e4a-a522-5efdf47923e3",
+                             "id":  "086892d7-4d8b-4e4a-a522-5efdf47923e3",
                              "name":  "Assisted Setup",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

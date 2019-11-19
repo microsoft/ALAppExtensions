@@ -252,5 +252,80 @@ codeunit 139036 "Data Compression Tests"
         // Clean up
         Clear(DataCompression);
     end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGZipCompressAndDecompress()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        TempBlobGZipCompressed: Codeunit "Temp Blob";
+        TempBlobGZipDecompressed: Codeunit "Temp Blob";
+        ContentInStream: InStream;
+        ContentOutStream: OutStream;
+        GZipCompressedInStream: InStream;
+        GZipCompressedOutStream: OutStream;
+        GZipDecompressedInStream: InStream;
+        GZipDecompressedOutStream: OutStream;
+        StreamContent: Text;
+        DecompressedStreamContent: Text;
+    begin
+        // [SCERNARIO] Verify that one can compress and decompress streams with GZip
+
+        // [GIVEN] create stream with text content
+        StreamContent := 'VerifyGZipStreamAdd10';
+        TempBlob.CreateOutStream(ContentOutStream);
+        ContentOutStream.WriteText(StreamContent);
+        TempBlob.CreateInStream(ContentInStream);
+
+        // [WHEN] compress the the stream with GZip
+        TempBlobGZipCompressed.CreateOutStream(GZipCompressedOutStream);
+        DataCompression.GZipCompress(ContentInStream, GZipCompressedOutStream);
+        TempBlobGZipCompressed.CreateInStream(GZipCompressedInStream);
+
+        // [WHEN] Decompress the Gzip stream
+        TempBlobGZipDecompressed.CreateOutStream(GZipDecompressedOutStream);
+        DataCompression.GZipDecompress(GZipCompressedInStream, GZipDecompressedOutStream);
+        TempBlobGZipDecompressed.CreateInStream(GZipDecompressedInStream);
+
+        // [THEN] verify that the decompressed stream contains the data
+        GZipDecompressedInStream.ReadText(DecompressedStreamContent);
+        Assert.AreEqual(StreamContent, DecompressedStreamContent, 'Stream content changed after GZip compression and decompression.');
+        // Clean up
+        Clear(DataCompression);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestIsGZip()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        TempBlobGZipCompressed: Codeunit "Temp Blob";
+        ContentInStream: InStream;
+        ContentOutStream: OutStream;
+        GZipCompressedInStream: InStream;
+        GZipCompressedOutStream: OutStream;
+        StreamContent: Text;
+    begin
+        // [SCERNARIO] Verify that one can add streams to GZIP stream.
+
+        // [GIVEN] create stream with text content
+        StreamContent := 'VerifyGZipStreamAdd10';
+        TempBlob.CreateOutStream(ContentOutStream);
+        ContentOutStream.WriteText(StreamContent);
+        TempBlob.CreateInStream(ContentInStream);
+
+        // [WHEN] compress the the stream with GZip
+        TempBlobGZipCompressed.CreateOutStream(GZipCompressedOutStream);
+        DataCompression.GZipCompress(ContentInStream, GZipCompressedOutStream);
+        TempBlobGZipCompressed.CreateInStream(GZipCompressedInStream);
+
+        // [THEN] verify that IsGZip returns true for compressed stream and false for the uncompressed stream
+        Assert.IsTrue(DataCompression.IsGZip(GZipCompressedInStream), 'IsGzip should have returned true for the GZip compressed stream.');
+        Assert.IsFalse(DataCompression.IsGZip(ContentInStream), 'IsGzip should have returned false for the uncompressed stream.');
+
+        // Clean up
+        Clear(DataCompression);
+    end;
+
 }
 

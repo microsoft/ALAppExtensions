@@ -12,13 +12,13 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "21566fb3-3c6b-4cac-a70d-052f5d66ac64",
+                             "id":  "21566fb3-3c6b-4cac-a70d-052f5d66ac64",
                              "name":  "Tenant License State",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

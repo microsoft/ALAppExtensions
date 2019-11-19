@@ -12,6 +12,17 @@ codeunit 132912 "Azure AD Plan Tests"
         LibraryAssert: Codeunit "Library Assert";
 
     [Test]
+    [Scope('OnPrem')]
+    procedure CheckPlansNumber()
+    var
+        AzureADPlan: Codeunit "Azure AD Plan";
+    begin
+        // [SCENARIO] There should be 15 Plans
+        LibraryAssert.AreEqual(16, AzureADPlan.GetAvailablePlansCount(),
+            'The number of available plans has changed. Make sure that you have added or removed tests on these changes in Plan-Based tests and then update the number of plans in this test.');
+    end;
+
+    [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure TestIsPlanAssigned()

@@ -12,25 +12,25 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "a2ca2793-e1b4-461d-8251-dbe934daec78",
+                             "id":  "a2ca2793-e1b4-461d-8251-dbe934daec78",
                              "name":  "Password Dialog",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "2673d810-273e-402f-9093-2eaef7e03b83",
+                             "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "e31ad830-3d46-472e-afeb-1d3d35247943",
+                             "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "Blob Storage",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

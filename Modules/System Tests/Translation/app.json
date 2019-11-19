@@ -12,19 +12,19 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "3ade8173-2cc2-4727-8c57-eb0754f70cdc",
+                             "id":  "3ade8173-2cc2-4727-8c57-eb0754f70cdc",
                              "name":  "Translation",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "5c36f279-480c-451b-b513-c1af8cfb0744",
+                             "id":  "5c36f279-480c-451b-b513-c1af8cfb0744",
                              "name":  "Language",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

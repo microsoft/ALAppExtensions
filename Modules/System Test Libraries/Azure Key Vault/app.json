@@ -12,7 +12,7 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "3a56c7d2-a594-4682-bd90-b10bfb177620",
+                             "id":  "3a56c7d2-a594-4682-bd90-b10bfb177620",
                              "name":  "Azure Key Vault",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

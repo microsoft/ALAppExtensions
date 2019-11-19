@@ -12,19 +12,19 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "a4584a53-9345-458a-af20-d1df2fab7bd8",
+                             "id":  "a4584a53-9345-458a-af20-d1df2fab7bd8",
                              "name":  "Confirm Management",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "d4dcc3bc-265b-48fc-99e2-3262a6130236",
+                             "id":  "d4dcc3bc-265b-48fc-99e2-3262a6130236",
                              "name":  "Confirm Management Test Library",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

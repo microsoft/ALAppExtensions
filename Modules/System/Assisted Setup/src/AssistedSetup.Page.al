@@ -130,6 +130,25 @@ page 1801 "Assisted Setup"
                     RunPage();
                 end;
             }
+            action("Reset Setup")
+            {
+                ApplicationArea = All;
+                Caption = 'Reset Setup';
+                Image = Setup;
+                Scope = Repeater;
+                ShortCutKey = 'Return';
+                ToolTip = 'Resets the assisted setup guide.';
+
+                trigger OnAction()
+                var
+                    AssistedSetupImpl: Codeunit "Assisted Setup Impl.";
+                begin
+                    if AssistedSetupImpl.IsSetupRecord(Rec) then begin
+                        AssistedSetupImpl.RunAndRefreshRecord(Rec);
+                        CurrPage.Update(false);
+                    end;
+                end;
+            }
             action("General videos")
             {
                 ApplicationArea = All;

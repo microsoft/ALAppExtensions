@@ -10,7 +10,7 @@ codeunit 1813 "Assisted Setup Impl."
     var
         RunSetupAgainQst: Label 'You have already completed the %1 assisted setup guide. Do you want to run it again?', Comment = '%1 = Assisted Setup Name';
 
-    procedure Add(ExtensionId: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; VideoCategory: Enum "Video Category"; HelpLink: Text[250])
+    procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; VideoCategory: Enum "Video Category"; HelpLink: Text[250])
     var
         AssistedSetup: Record "Assisted Setup";
         Translation: Codeunit Translation;
@@ -24,7 +24,7 @@ codeunit 1813 "Assisted Setup Impl."
         if not AssistedSetup.Get(PageID) then begin
             AssistedSetup.Init();
             AssistedSetup."Page ID" := PageID;
-            AssistedSetup."App ID" := ExtensionId;
+            AssistedSetup."App ID" := ExtensionID;
             AssistedSetup.Insert(true);
         end;
 
@@ -57,7 +57,7 @@ codeunit 1813 "Assisted Setup Impl."
         AssistedSetup.Modify(true);
     end;
 
-    procedure AddSetupAssistantTranslation(ExtensionId: Guid; PageID: Integer; LanguageID: Integer; TranslatedName: Text)
+    procedure AddSetupAssistantTranslation(PageID: Integer; LanguageID: Integer; TranslatedName: Text)
     var
         AssistedSetup: Record "Assisted Setup";
         Translation: Codeunit Translation;
@@ -68,7 +68,7 @@ codeunit 1813 "Assisted Setup Impl."
             Translation.Set(AssistedSetup, AssistedSetup.FIELDNO(Name), LanguageID, CopyStr(TranslatedName, 1, 2048));
     end;
 
-    procedure IsComplete(ExtensionID: Guid; PageID: Integer): Boolean
+    procedure IsComplete(PageID: Integer): Boolean
     var
         AssistedSetup: Record "Assisted Setup";
     begin
@@ -78,7 +78,7 @@ codeunit 1813 "Assisted Setup Impl."
             exit(AssistedSetup.Completed);
     end;
 
-    procedure Exists(ExtensionID: Guid; PageID: Integer): Boolean
+    procedure Exists(PageID: Integer): Boolean
     var
         AssistedSetup: Record "Assisted Setup";
     begin
@@ -87,7 +87,7 @@ codeunit 1813 "Assisted Setup Impl."
         exit(AssistedSetup.Get(PageID));
     end;
 
-    procedure Complete(ExtensionId: Guid; PageID: Integer)
+    procedure Complete(PageID: Integer)
     var
         AssistedSetup: Record "Assisted Setup";
     begin
@@ -97,6 +97,17 @@ codeunit 1813 "Assisted Setup Impl."
             exit;
         AssistedSetup.Validate(Completed, true);
         AssistedSetup.Modify(true);
+    end;
+
+    procedure ExistsAndIsNotComplete(PageID: Integer): Boolean
+    var
+        AssistedSetup: Record "Assisted Setup";
+    begin
+        if not AssistedSetup.ReadPermission() then
+            exit(false);
+        if not AssistedSetup.Get(PageID) then
+            exit(false);
+        exit(not AssistedSetup.Completed);
     end;
 
     procedure Reset(PageID: Integer)
@@ -111,18 +122,7 @@ codeunit 1813 "Assisted Setup Impl."
         AssistedSetup.Modify(true);
     end;
 
-    procedure ExistsAndIsNotComplete(ExtensionID: Guid; PageID: Integer): Boolean
-    var
-        AssistedSetup: Record "Assisted Setup";
-    begin
-        if not AssistedSetup.ReadPermission() then
-            exit(false);
-        if not AssistedSetup.Get(PageID) then
-            exit(false);
-        exit(not AssistedSetup.Completed);
-    end;
-
-    procedure Run(ExtensionID: Guid; PageID: Integer)
+    procedure Run(PageID: Integer)
     var
         AssistedSetup: Record "Assisted Setup";
     begin
@@ -151,13 +151,24 @@ codeunit 1813 "Assisted Setup Impl."
     end;
 
     procedure RunAndRefreshRecord(var TempAssistedSetup: Record "Assisted Setup" temporary)
+    begin
+        Run(TempAssistedSetup);
+        RefreshRecord(TempAssistedSetup);
+    end;
+
+    procedure ResetAndRefreshRecord(var TempAssistedSetup: Record "Assisted Setup" temporary)
+    begin
+        Reset(TempAssistedSetup."Page ID");
+        RefreshRecord(TempAssistedSetup);
+    end;
+
+    local procedure RefreshRecord(var AssistedSetupToRefresh: Record "Assisted Setup")
     var
         AssistedSetup: Record "Assisted Setup";
     begin
-        Run(TempAssistedSetup);
-        AssistedSetup.Get(TempAssistedSetup."Page ID");
-        TempAssistedSetup := AssistedSetup;
-        TempAssistedSetup.Modify();
+        AssistedSetup.Get(AssistedSetupToRefresh."Page ID");
+        AssistedSetupToRefresh := AssistedSetup;
+        AssistedSetupToRefresh.Modify();
     end;
 
     procedure NavigateHelpPage(AssistedSetup: Record "Assisted Setup")
