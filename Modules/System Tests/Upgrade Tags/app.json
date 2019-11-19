@@ -12,19 +12,19 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "93b83ef6-9666-4c1d-b130-c232f4047621",
+                             "id":  "93b83ef6-9666-4c1d-b130-c232f4047621",
                              "publisher":  "Microsoft",
                              "name":  "Upgrade Tags",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "publisher":  "Microsoft",
                              "name":  "Library Assert",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+                             "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
                              "publisher":  "Microsoft",
                              "name":  "Any",
                              "version":  "16.0.0.0"

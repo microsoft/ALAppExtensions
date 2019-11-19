@@ -12,25 +12,25 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
+                             "id":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
                              "name":  "Azure AD Graph",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "2673d810-273e-402f-9093-2eaef7e03b83",
+                             "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "5c36f279-480c-451b-b513-c1af8cfb0744",
+                             "id":  "5c36f279-480c-451b-b513-c1af8cfb0744",
                              "name":  "Language",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

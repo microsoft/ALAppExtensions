@@ -12,19 +12,19 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "a3964a53-9345-458a-af20-d13f7eab7bd7",
+                             "id":  "a3964a53-9345-458a-af20-d13f7eab7bd7",
                              "name":  "Cryptography Management",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                            "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                            "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                             "name":  "Library Assert",
                             "publisher":  "Microsoft",
                             "version":  "16.0.0.0"
                         },
                         {
-                            "appId":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+                            "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
                             "name":  "Any",
                             "publisher":  "Microsoft",
                             "version":  "16.0.0.0"

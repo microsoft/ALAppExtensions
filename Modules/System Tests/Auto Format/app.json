@@ -12,13 +12,13 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "34222918-6f0f-4623-a063-f716575b8529",
+                             "id":  "34222918-6f0f-4623-a063-f716575b8529",
                              "name":  "Auto Format",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

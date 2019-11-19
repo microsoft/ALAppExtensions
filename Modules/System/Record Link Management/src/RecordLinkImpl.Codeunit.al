@@ -9,6 +9,7 @@ codeunit 4470 "Record Link Impl."
     SingleInstance = true;
 
     var
+        RecordLinkManagement: Codeunit "Record Link Management";
         RemoveLinkConfirmQst: Label 'Do you want to remove links with no record reference?';
         RemovingMsg: Label 'Removing Record Links without record reference.\';
         RemovingStatusMsg: Label '@1@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@';
@@ -33,6 +34,7 @@ codeunit 4470 "Record Link Impl."
         RecRefTo.GetTable(ToRecord);
         RecRefTo.CopyLinks(FromRecord);
         ResetNotifyOnLinks(RecRefTo);
+        RecordLinkManagement.OnAfterCopyLinks(FromRecord, ToRecord);
     end;
 
     procedure WriteNote(var RecordLink: Record "Record Link"; Note: Text)

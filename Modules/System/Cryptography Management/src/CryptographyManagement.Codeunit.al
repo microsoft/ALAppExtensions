@@ -169,4 +169,56 @@ codeunit 1266 "Cryptography Management"
     begin
         exit(CryptographyManagementImpl.GenerateBase64KeyedHashAsBase64String(InputString, Key, HashAlgorithmType));
     end;
+
+    /// <summary>
+    /// Computes the hash value of the specified string and signs it.
+    /// </summary>
+    /// <param name="InputString">Input string.</param>
+    /// <param name="KeyStream">The stream of the private key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithmType">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureStream">The stream to write the output to.</param>
+    /// <returns>The signature for the specified string.</returns>
+    procedure SignData(InputString: Text; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
+    begin
+        CryptographyManagementImpl.SignData(InputString, KeyStream, HashAlgorithmType, SignatureStream);
+    end;
+
+    /// <summary>
+    /// Computes the hash value of the specified data and signs it.
+    /// </summary>
+    /// <param name="DataStream">The stream of input data.</param>
+    /// <param name="KeyStream">The stream of the private key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithmType">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureStream">The stream to write the output to.</param>
+    /// <returns>The signature for the specified data.</returns>
+    procedure SignData(DataStream: InStream; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA5122; SignatureStream: OutStream)
+    begin
+        CryptographyManagementImpl.SignData(DataStream, KeyStream, HashAlgorithmType, SignatureStream);
+    end;
+
+    /// <summary>
+    /// Verifies that a digital signature is valid.
+    /// </summary>
+    /// <param name="InputString">Input string.</param>
+    /// <param name="KeyStream">Public key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithmType">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureStream">The stream of signature.</param>
+    /// <returns>True if the digital signature is valid.</returns>
+    procedure VerifyData(InputString: Text; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+    begin
+        exit(CryptographyManagementImpl.VerifyData(InputString, "Key", HashAlgorithmType, SignatureStream));
+    end;
+
+    /// <summary>
+    /// Verifies that a digital signature is valid.
+    /// </summary>
+    /// <param name="DataStream">The stream of input data.</param>
+    /// <param name="KeyStream">Public key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithmType">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureStream">The stream of digital signature.</param>
+    /// <returns>True if the digital signature is valid.</returns>
+    procedure VerifyData(DataStream: InStream; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+    begin
+        exit(CryptographyManagementImpl.VerifyData(DataStream, "Key", HashAlgorithmType, SignatureStream));
+    end;
 }

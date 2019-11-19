@@ -12,13 +12,13 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "7f850a76-a58c-4ade-a14f-7d7acff97115",
+                             "id":  "7f850a76-a58c-4ade-a14f-7d7acff97115",
                              "name":  "User Selection",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "94245fbb-b5b1-416e-b8cf-484306646e82",
+                             "id":  "94245fbb-b5b1-416e-b8cf-484306646e82",
                              "name":  "Field Selection",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

@@ -12,7 +12,7 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
@@ -20,7 +20,7 @@
                      ],
     "internalsVisibleTo":  [
                                {
-                                   "appId":  "901cbabc-1217-4d4a-922f-77b4d4ef3dcf",
+                                   "id":  "901cbabc-1217-4d4a-922f-77b4d4ef3dcf",
                                    "name":  "Azure Key Vault Test Library",
                                    "publisher":  "Microsoft"
                                }

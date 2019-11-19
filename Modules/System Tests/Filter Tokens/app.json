@@ -12,13 +12,13 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "dcfc6d73-8259-4595-ad3e-c2574fe2a197",
+                             "id":  "dcfc6d73-8259-4595-ad3e-c2574fe2a197",
                              "name":  "Filter Tokens",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

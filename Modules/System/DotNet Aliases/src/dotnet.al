@@ -668,17 +668,6 @@ dotnet
         }
     }
 
-    assembly("Microsoft.Dynamics.Nav.Management.DSObjectPickerWrapper")
-    {
-        Version = '15.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
-
-        type("Microsoft.Dynamics.Nav.Management.DSObjectPicker.DSObjectPickerWrapper"; "DSObjectPickerWrapper")
-        {
-        }
-    }
-
     assembly("Microsoft.Dynamics.Nav.NavUserAccount")
     {
         Culture = 'neutral';
@@ -1346,6 +1335,10 @@ dotnet
         }
 
         type("System.Security.Claims.Claim"; "Claim")
+        {
+        }
+
+        type(System.Security.Cryptography.AsymmetricAlgorithm; "AsymmetricAlgorithm")
         {
         }
 

@@ -12,13 +12,13 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "959630b2-01c5-48d8-a477-d6d40da855fb",
+                             "id":  "959630b2-01c5-48d8-a477-d6d40da855fb",
                              "name":  "User Login Times",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
@@ -26,7 +26,7 @@
                      ],
     "internalsVisibleTo":  [
                                {
-                                   "appId":  "4b7bef15-07dc-4b9e-ae9d-81ac1a71d630",
+                                   "id":  "4b7bef15-07dc-4b9e-ae9d-81ac1a71d630",
                                    "name":  "Headlines Test",
                                    "publisher":  "Microsoft"
                                }

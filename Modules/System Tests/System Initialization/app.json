@@ -12,7 +12,7 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "a2ca2793-e1b4-461d-8251-dbe934daec78",
+                             "id":  "a2ca2793-e1b4-461d-8251-dbe934daec78",
                              "name":  "Password Dialog",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"

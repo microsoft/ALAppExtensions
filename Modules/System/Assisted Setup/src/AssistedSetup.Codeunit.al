@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-/// <summary>Manage setup wizards by allowing adding to the list and updating the status of each.</summary>
+/// <summary>Manage assisted setup guides by allowing the addition of new guides to the list, and updating whether a guide has been completed.</summary>
 codeunit 3725 "Assisted Setup"
 {
     Access = Public;
@@ -48,48 +48,94 @@ codeunit 3725 "Assisted Setup"
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <param name="LanguageID">The language ID for which the translation is made.</param>
     /// <param name="TranslatedName">The translated text of the name.</param>
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
     procedure AddTranslation(ExtensionID: Guid; PageID: Integer; LanguageID: Integer; TranslatedName: Text)
     begin
-        AssistedSetupImpl.AddSetupAssistantTranslation(ExtensionID, PageID, LanguageID, TranslatedName);
+        AddTranslation(PageID, LanguageID, TranslatedName);
+    end;
+
+    /// <summary>Adds the translation for the name of the setup.</summary>
+    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    /// <param name="LanguageID">The language ID for which the translation is made.</param>
+    /// <param name="TranslatedName">The translated text of the name.</param>
+    procedure AddTranslation(PageID: Integer; LanguageID: Integer; TranslatedName: Text)
+    begin
+        AssistedSetupImpl.AddSetupAssistantTranslation(PageID, LanguageID, TranslatedName);
     end;
 
     /// <summary>Checks whether a user has already completed the setup.</summary>
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <returns>Returns true if the given setup guide has been completed by the user, otherwise false.</returns> 
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
     procedure IsComplete(ExtensionID: Guid; PageID: Integer): Boolean
     begin
-        exit(AssistedSetupImpl.IsComplete(ExtensionID, PageID));
+        exit(IsComplete(PageID));
+    end;
+
+    /// <summary>Checks whether a user has already completed the setup.</summary>
+    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    /// <returns>Returns true if the given setup guide has been completed by the user, otherwise false.</returns> 
+    procedure IsComplete(PageID: Integer): Boolean
+    begin
+        exit(AssistedSetupImpl.IsComplete(PageID));
     end;
 
     /// <summary>Checks whether an assisted setup guide exists.</summary>
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <returns>True if an assisted setup guide for provided extension and page IDs exists; false otherwise.</returns>
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
     procedure Exists(ExtensionID: Guid; PageID: Integer): Boolean
     begin
-        exit(AssistedSetupImpl.Exists(ExtensionID, PageID));
+        exit(Exists(PageID));
+    end;
+
+    /// <summary>Checks whether an assisted setup guide exists.</summary>
+    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    /// <returns>True if an assisted setup guide for provided extension and page IDs exists; false otherwise.</returns>
+    procedure Exists(PageID: Integer): Boolean
+    begin
+        exit(AssistedSetupImpl.Exists(PageID));
     end;
 
     /// <summary>Checks whether as assisted setup guide exists but has not been completed.</summary>
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <returns>True if it exists and is incomplete, false otherwise.</returns>
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
     procedure ExistsAndIsNotComplete(ExtensionID: Guid; PageID: Integer): Boolean
     begin
-        exit(AssistedSetupImpl.ExistsAndIsNotComplete(ExtensionID, PageID));
+        exit(ExistsAndIsNotComplete(PageID));
+    end;
+
+    /// <summary>Checks whether as assisted setup guide exists but has not been completed.</summary>
+    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    /// <returns>True if it exists and is incomplete, false otherwise.</returns>
+    procedure ExistsAndIsNotComplete(PageID: Integer): Boolean
+    begin
+        exit(AssistedSetupImpl.ExistsAndIsNotComplete(PageID));
     end;
 
     /// <summary>Sets the status of the assisted setup to Complete.</summary>
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <remarks>This is typically called from inside the assisted setup guide when the setup is finished.</remarks>
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
     procedure Complete(ExtensionID: Guid; PageID: Integer)
     begin
-        AssistedSetupImpl.Complete(ExtensionID, PageID);
+        Complete(PageID);
     end;
 
-    /// <summary>Sets the status of the assisted setup to incomplete.</summary>
+    /// <summary>Sets the status of the assisted setup to Complete.</summary>
+    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    /// <remarks>This is typically called from inside the assisted setup guide when the setup is finished.</remarks>
+    procedure Complete(PageID: Integer)
+    begin
+        AssistedSetupImpl.Complete(PageID);
+    end;
+
+    /// <summary>Resets the status of the assisted setup guide so that it does not appear to have been completed.</summary>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     procedure Reset(PageID: Integer)
     begin
@@ -99,9 +145,17 @@ codeunit 3725 "Assisted Setup"
     /// <summary>Issues the call to execute the setup.</summary>
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
     procedure Run(ExtensionID: Guid; PageID: Integer)
     begin
-        AssistedSetupImpl.Run(ExtensionID, PageID);
+        Run(PageID);
+    end;
+
+    /// <summary>Issues the call to execute the setup.</summary>
+    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    procedure Run(PageID: Integer)
+    begin
+        AssistedSetupImpl.Run(PageID);
     end;
 
     /// <summary>Opens the Assisted Setup page with the setup guides in it.</summary>

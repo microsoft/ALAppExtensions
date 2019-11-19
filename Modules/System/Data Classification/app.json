@@ -38,12 +38,12 @@
     "internalsVisibleTo":  [
                                {
                                    "name":  "Data Classification Test",
-                                   "appId":  "e63c534d-667d-4764-9d34-0b10dcb52e98",
+                                   "id":  "e63c534d-667d-4764-9d34-0b10dcb52e98",
                                    "publisher":  "Microsoft"
                                },
                                {
                                    "name":  "Data Classification Test Library",
-                                   "appId":  "4a81e695-54d3-44a9-b870-3797c875714a",
+                                   "id":  "4a81e695-54d3-44a9-b870-3797c875714a",
                                    "publisher":  "Microsoft"
                                }
                            ],

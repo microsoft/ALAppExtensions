@@ -26,7 +26,7 @@ table 9701 "Cue Setup"
         field(2; "Table ID"; Integer)
         {
             TableRelation = AllObjWithCaption."Object ID" WHERE("Object Type" = CONST(Table),
-                                                                 "Object Name" = FILTER('*Cue'));
+                                                                 "Object Name" = FILTER('*Cue*'));
 
             trigger OnValidate()
             begin

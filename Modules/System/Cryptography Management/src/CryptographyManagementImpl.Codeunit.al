@@ -348,6 +348,100 @@ codeunit 1279 "Cryptography Management Impl."
         exit(ConvertByteHashToString(HashBytes));
     end;
 
+    procedure SignData(InputString: Text; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
+    var
+        Encoding: DotNet Encoding;
+    begin
+        if InputString = '' then
+            exit;
+        SignData(Encoding.UTF8().GetBytes(InputString), KeyStream, HashAlgorithmType, SignatureStream);
+    end;
+
+    procedure SignData(DataStream: InStream; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
+    var
+        MemoryStream: DotNet MemoryStream;
+    begin
+        if DataStream.EOS() then
+            exit;
+        MemoryStream := MemoryStream.MemoryStream();
+        CopyStream(MemoryStream, DataStream);
+        SignData(MemoryStream.ToArray(), KeyStream, HashAlgorithmType, SignatureStream);
+    end;
+
+    local procedure SignData(Bytes: DotNet Array; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream): Boolean
+    var
+        MemoryStream: DotNet MemoryStream;
+        Signature: DotNet Array;
+    begin
+        if Bytes.Length() = 0 then
+            exit(false);
+        if not TrySignData(Bytes, KeyStream, Format(HashAlgorithmType), Signature) then
+            Error(GetLastErrorText());
+        MemoryStream := MemoryStream.MemoryStream(Signature);
+        MemoryStream.WriteTo(SignatureStream);
+        MemoryStream.Close();
+        exit(true);
+    end;
+
+    [TryFunction]
+    local procedure TrySignData(Bytes: DotNet Array; KeyStream: InStream; Algorithm: Text; var Signature: DotNet Array)
+    var
+        RSACryptoServiceProvider: DotNet RSACryptoServiceProvider;
+        StreamReader: DotNet StreamReader;
+    begin
+        StreamReader := StreamReader.StreamReader(KeyStream);
+        RSACryptoServiceProvider := RSACryptoServiceProvider.RSACryptoServiceProvider();
+        RSACryptoServiceProvider.FromXmlString(StreamReader.ReadToEnd());
+        Signature := RSACryptoServiceProvider.SignData(Bytes, Algorithm);
+        RSACryptoServiceProvider.Dispose();
+    end;
+
+    procedure VerifyData(InputString: Text; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+    var
+        Encoding: DotNet Encoding;
+    begin
+        if InputString = '' then
+            exit(false);
+        exit(VerifyData(Encoding.UTF8().GetBytes(InputString), "Key", HashAlgorithmType, SignatureStream));
+    end;
+
+    procedure VerifyData(DataStream: InStream; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+    var
+        MemoryStream: DotNet MemoryStream;
+    begin
+        if DataStream.EOS() then
+            exit(false);
+        MemoryStream := MemoryStream.MemoryStream();
+        CopyStream(MemoryStream, DataStream);
+        exit(VerifyData(MemoryStream.ToArray(), "Key", HashAlgorithmType, SignatureStream));
+    end;
+
+    local procedure VerifyData(Bytes: DotNet Array; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+    var
+        MemoryStream: DotNet MemoryStream;
+        Verified: Boolean;
+    begin
+        if Bytes.Length() = 0 then
+            exit(false);
+        MemoryStream := MemoryStream.MemoryStream();
+        CopyStream(MemoryStream, SignatureStream);
+        Verified := TryVerifyData(Bytes, "Key", Format(HashAlgorithmType), MemoryStream.ToArray());
+        if not Verified and (GetLastErrorText() <> '') then
+            Error(GetLastErrorText());
+        exit(Verified);
+    end;
+
+    [TryFunction]
+    local procedure TryVerifyData(Bytes: DotNet Array; "Key": Text; Algorithm: Text; Signature: DotNet Array)
+    var
+        RSACryptoServiceProvider: DotNet RSACryptoServiceProvider;
+    begin
+        RSACryptoServiceProvider := RSACryptoServiceProvider.RSACryptoServiceProvider();
+        RSACryptoServiceProvider.FromXmlString("Key");
+        if not RSACryptoServiceProvider.VerifyData(Bytes, Algorithm, Signature) then
+            Error('');
+    end;
+
     procedure InitRijndaelProvider()
     begin
         RijndaelProvider := RijndaelProvider.RijndaelManaged();

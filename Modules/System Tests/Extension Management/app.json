@@ -12,13 +12,13 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
+                             "id":  "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
                              "publisher":  "Microsoft",
                              "name":  "Extension Management",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "publisher":  "Microsoft",
                              "name":  "Library Assert",
                              "version":  "16.0.0.0"

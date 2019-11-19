@@ -15,7 +15,6 @@ codeunit 152 "User Permissions"
     /// </summary>
     /// <param name="UserSecurityId">The security ID assigned to the user.</param>
     /// <returns>True if the user has the SUPER permissions set. Otherwise, false.</returns>
-    [Scope('OnPrem')]
     procedure IsSuper(UserSecurityId: Guid): Boolean
     var
         UserPermissionsImpl: Codeunit "User Permissions Impl.";

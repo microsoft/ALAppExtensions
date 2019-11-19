@@ -15,7 +15,7 @@
                      ],
     "internalsVisibleTo":  [
                                {
-                                   "appId":  "47397d83-32ba-4ef0-8988-ef72539bfe36",
+                                   "id":  "47397d83-32ba-4ef0-8988-ef72539bfe36",
                                    "name":  "Client Type Management Test Library",
                                    "publisher":  "Microsoft"
                                }

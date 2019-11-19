@@ -15,13 +15,13 @@
                      ],
     "dependencies":  [
                          {
-                             "appId":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "370dcef7-9c6d-4a32-94b1-754230578672",
+                             "id":  "370dcef7-9c6d-4a32-94b1-754230578672",
                              "name":  "Data Classification",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
