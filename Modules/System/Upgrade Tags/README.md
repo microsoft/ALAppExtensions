@@ -19,7 +19,7 @@ This module must be used for upgrade purposes only.
 
 Upgrade Tags are used within upgrade codeunits to know which upgrade methods have been run and to prevent executing the same upgrade code twice. 
 
-They can also be used to skip the uprade methods on a specific company or to fix the upgrade that went wrong.
+They can also be used to skip the upgrade methods on a specific company or to fix the upgrade that went wrong.
 
 
 # Public Objects
