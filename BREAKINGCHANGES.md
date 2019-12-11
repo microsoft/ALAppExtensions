@@ -722,6 +722,29 @@ end;
 
 ---
 
+**Error**: 'Codeunit "Reservation Management"' does not contain a definition for 'DeleteReservEntries2'.
+
+**Solution**: Is now an overload of DeleteReservEntries.
+
+**Error**: 'Codeunit "User Setup Management"' does not contain a definition for 'CheckRespCenter2'.
+
+**Solution**: Is now an overload of CheckRespCenter.
+
+**Error**: 'Codeunit "User Setup Management"' does not contain a definition for 'GetSalesFilter2'.
+
+**Solution**: Is now an overload of GetSalesFilter
+
+**Error**: No overload for method 'CalcDateBOC' takes 9 arguments.
+
+**Solution**: Has been changed to use a CustomCalendarChange: Array[2] of Record "Customized Calendar Change";
+```
+CustomCalendarChange[1].SetSource(CalChange."Source Type"::"Shipping Agent", "Shipping Agent Code", "Shipping Agent Service Code", '');
+CustomCalendarChange[2].SetSource(CalChange."Source Type"::Location, "Location Code", '', '');
+CalendarMgmt.CalcDateBOC2(Format("Shipping Time"), "Planned Delivery Date", CustomCalendarChange, true);
+```
+
+---
+
 ## Removed Functionality
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'GetBlobString'_\
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'SetBlobString'_\
