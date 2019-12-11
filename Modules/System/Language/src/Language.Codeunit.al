@@ -153,6 +153,17 @@ codeunit 43 Language
     end;
 
     /// <summary>
+    /// Returns an alternative language based on Windows Culture Info.
+    /// </summary>
+    /// <param name="LanguageId">Exit parameter that holds the chosen language ID.</param>
+    procedure GetParentLanguageId(LanguageId: Integer): Integer
+    var
+        LanguageImpl: Codeunit "Language Impl.";
+    begin
+        exit(LanguageImpl.GetParentLanguageId((LanguageId)));
+    end;
+    
+    /// <summary>
     /// Integration event, emitted from <see cref="GetUserLanguageCode"/>.
     /// Subscribe to this event to change the default behavior by changing the provided parameter(s).
     /// </summary>

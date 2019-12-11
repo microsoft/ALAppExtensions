@@ -149,6 +149,13 @@ codeunit 54 "Language Impl."
         if PAGE.RunModal(PAGE::"Windows Languages", WindowsLanguage) = ACTION::LookupOK then
             LanguageId := WindowsLanguage."Language ID";
     end;
+        
+    procedure GetParentLanguageId(LanguageId: Integer): Integer
+    var
+        CultureInfo: DotNet CultureInfo;
+    begin
+        exit(CultureInfo.CultureInfo(LanguageId).Parent.LCID);
+    end;
 
     [EventSubscriber(ObjectType::Codeunit, 2000000004, 'GetApplicationLanguage', '', false, false)]
     local procedure SetApplicationLanguageId(var language: Integer)
