@@ -214,6 +214,17 @@ codeunit 1813 "Assisted Setup Impl."
         AssistedSetup.RunModal();
     end;
 
+    procedure Remove(ExtensionID: Guid; PageID: Integer)
+    var
+        AssistedSetup: Record "Assisted Setup";
+    begin
+        if not AssistedSetup.WritePermission() then
+            exit;
+        if not AssistedSetup.Get(PageID) then
+            exit;
+        AssistedSetup.Delete(true);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::Video, 'OnVideoPlayed', '', false, false)]
     local procedure OnVideoPlayed(TableNum: Integer; SystemID: Guid)
     var
