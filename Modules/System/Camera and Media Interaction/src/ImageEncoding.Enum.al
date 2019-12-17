@@ -3,20 +3,26 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-enumextension 132586 "Assisted Setup Test Group" extends "Assisted Setup Group"
+/// <summary>
+/// Specifies the supported encodings for the Camera Interaction page.
+/// </summary>
+enum 1908 "Image Encoding"
 {
-    value(100; WithLinks)
+    Extensible = false;
+
+    /// <summary>
+    /// JPEG image encoding format.
+    /// </summary>
+    value(0; JPEG)
     {
-        Caption = 'WithLinks';
+        Caption = 'JPEG';
     }
 
-    value(200; WithoutLinks)
+    /// <summary>
+    /// PNG image encoding format.
+    /// </summary>
+    value(1; PNG)
     {
-        Caption = 'WithoutLinks';
-    }
-
-    value(300; ZZ)
-    {
-        Caption = 'Last group alphabetically';
+        Caption = 'PNG';
     }
 }

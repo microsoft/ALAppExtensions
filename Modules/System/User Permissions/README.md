@@ -20,7 +20,6 @@ User this module to do the following:
 
 #### Syntax
 ```
-[Scope('OnPrem')]
 procedure IsSuper(UserSecurityId: Guid): Boolean
 ```
 #### Parameters

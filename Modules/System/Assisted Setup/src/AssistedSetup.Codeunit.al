@@ -151,8 +151,9 @@ codeunit 3725 "Assisted Setup"
         Run(PageID);
     end;
 
-    /// <summary>Issues the call to execute the setup.</summary>
+    /// <summary>Issues the call to start the setup.</summary>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
+    /// <remarks>If the page does not exist the user can choose whether to delete the page record.</remarks>
     procedure Run(PageID: Integer)
     begin
         AssistedSetupImpl.Run(PageID);

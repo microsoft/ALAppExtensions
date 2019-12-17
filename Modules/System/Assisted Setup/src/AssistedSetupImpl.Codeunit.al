@@ -9,6 +9,7 @@ codeunit 1813 "Assisted Setup Impl."
 
     var
         RunSetupAgainQst: Label 'You have already completed the %1 assisted setup guide. Do you want to run it again?', Comment = '%1 = Assisted Setup Name';
+        DeleteRecordQst: Label 'The page does not exist. Do you want to remove this assisted setup?';
 
     procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; VideoCategory: Enum "Video Category"; HelpLink: Text[250])
     var
@@ -135,19 +136,41 @@ codeunit 1813 "Assisted Setup Impl."
 
     procedure Run(var AssistedSetup: Record "Assisted Setup")
     var
+        AllObj: Record AllObj;
         AssistedSetupApi: Codeunit "Assisted Setup";
+        ConfirmManagement: Codeunit "Confirm Management";
         Handled: Boolean;
     begin
         if AssistedSetup.Completed then begin
             AssistedSetupApi.OnReRunOfCompletedSetup(AssistedSetup."App ID", AssistedSetup."Page ID", Handled);
             if Handled then
                 exit;
-            if not Confirm(RunSetupAgainQst, false, AssistedSetup.Name) then
+            if not ConfirmManagement.GetResponse(StrSubstNo(RunSetupAgainQst, AssistedSetup.Name), false) then
                 exit;
+        end;
+
+        if not AllObj.Get(AllObj."Object Type"::Page, AssistedSetup."Page ID") then begin
+            // when say, an extension that added this Assisted Setup record gets uninstalled.
+            ConfirmAndDeleteSetup(AssistedSetup);
+            exit;
         end;
 
         Page.RunModal(AssistedSetup."Page ID");
         AssistedSetupApi.OnAfterRun(AssistedSetup."App ID", AssistedSetup."Page ID");
+    end;
+
+    local procedure ConfirmAndDeleteSetup(var AssistedSetup: Record "Assisted Setup")
+    var
+        AssistedSetupPersisted: Record "Assisted Setup";
+        ConfirmManagement: Codeunit "Confirm Management";
+    begin
+        if ConfirmManagement.GetResponse(DeleteRecordQst, true) then begin
+            if AssistedSetup.IsTemporary() then begin
+                AssistedSetupPersisted.Get(AssistedSetup."Page ID");
+                AssistedSetupPersisted.Delete();
+            end;
+            AssistedSetup.Delete(true);
+        end;
     end;
 
     procedure RunAndRefreshRecord(var TempAssistedSetup: Record "Assisted Setup" temporary)
@@ -166,7 +189,8 @@ codeunit 1813 "Assisted Setup Impl."
     var
         AssistedSetup: Record "Assisted Setup";
     begin
-        AssistedSetup.Get(AssistedSetupToRefresh."Page ID");
+        if not AssistedSetup.Get(AssistedSetupToRefresh."Page ID") then
+            exit;
         AssistedSetupToRefresh := AssistedSetup;
         AssistedSetupToRefresh.Modify();
     end;

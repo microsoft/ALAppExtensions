@@ -24,7 +24,7 @@ The Base Application adds quite a few assisted setup guides by subscribing to th
 
 # Public Objects
 ## Assisted Setup (Codeunit 3725)
-Manage setup wizards by allowing adding to the list and updating the status of each.
+Manage assisted setup guides by allowing the addition of new guides to the list, and updating whether a guide has been completed.
 
 ### Add (Method) <a name="Add"></a> 
 Adds an assisted setup record from a given extension so that it can be shown in the list.
@@ -123,6 +123,7 @@ Adds the translation for the name of the setup.
 
 #### Syntax
 ```
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
 procedure AddTranslation(ExtensionID: Guid; PageID: Integer; LanguageID: Integer; TranslatedName: Text)
 ```
 #### Parameters
@@ -142,11 +143,32 @@ The language ID for which the translation is made.
 
 The translated text of the name.
 
+### AddTranslation (Method) <a name="AddTranslation"></a> 
+Adds the translation for the name of the setup.
+
+#### Syntax
+```
+procedure AddTranslation(PageID: Integer; LanguageID: Integer; TranslatedName: Text)
+```
+#### Parameters
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page to open when the user clicks the setup.
+
+*LanguageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The language ID for which the translation is made.
+
+*TranslatedName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The translated text of the name.
+
 ### IsComplete (Method) <a name="IsComplete"></a> 
 Checks whether a user has already completed the setup.
 
 #### Syntax
 ```
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
 procedure IsComplete(ExtensionID: Guid; PageID: Integer): Boolean
 ```
 #### Parameters
@@ -162,11 +184,28 @@ The ID of the page to open when the user clicks the setup.
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 Returns true if the given setup guide has been completed by the user, otherwise false.
+### IsComplete (Method) <a name="IsComplete"></a> 
+Checks whether a user has already completed the setup.
+
+#### Syntax
+```
+procedure IsComplete(PageID: Integer): Boolean
+```
+#### Parameters
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page to open when the user clicks the setup.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+Returns true if the given setup guide has been completed by the user, otherwise false.
 ### Exists (Method) <a name="Exists"></a> 
 Checks whether an assisted setup guide exists.
 
 #### Syntax
 ```
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
 procedure Exists(ExtensionID: Guid; PageID: Integer): Boolean
 ```
 #### Parameters
@@ -182,11 +221,28 @@ The ID of the page to open when the user clicks the setup.
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if an assisted setup guide for provided extension and page IDs exists; false otherwise.
+### Exists (Method) <a name="Exists"></a> 
+Checks whether an assisted setup guide exists.
+
+#### Syntax
+```
+procedure Exists(PageID: Integer): Boolean
+```
+#### Parameters
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page to open when the user clicks the setup.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if an assisted setup guide for provided extension and page IDs exists; false otherwise.
 ### ExistsAndIsNotComplete (Method) <a name="ExistsAndIsNotComplete"></a> 
 Checks whether as assisted setup guide exists but has not been completed.
 
 #### Syntax
 ```
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
 procedure ExistsAndIsNotComplete(ExtensionID: Guid; PageID: Integer): Boolean
 ```
 #### Parameters
@@ -202,6 +258,22 @@ The ID of the page to open when the user clicks the setup.
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if it exists and is incomplete, false otherwise.
+### ExistsAndIsNotComplete (Method) <a name="ExistsAndIsNotComplete"></a> 
+Checks whether as assisted setup guide exists but has not been completed.
+
+#### Syntax
+```
+procedure ExistsAndIsNotComplete(PageID: Integer): Boolean
+```
+#### Parameters
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page to open when the user clicks the setup.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if it exists and is incomplete, false otherwise.
 ### Complete (Method) <a name="Complete"></a> 
 Sets the status of the assisted setup to Complete.
 
@@ -209,7 +281,51 @@ This is typically called from inside the assisted setup guide when the setup is 
 
 #### Syntax
 ```
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
 procedure Complete(ExtensionID: Guid; PageID: Integer)
+```
+#### Parameters
+*ExtensionID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The app ID of the extension to which the setup belongs.
+
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page to open when the user clicks the setup.
+
+### Complete (Method) <a name="Complete"></a> 
+Sets the status of the assisted setup to Complete.
+
+This is typically called from inside the assisted setup guide when the setup is finished.
+
+#### Syntax
+```
+procedure Complete(PageID: Integer)
+```
+#### Parameters
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page to open when the user clicks the setup.
+
+### Reset (Method) <a name="Reset"></a> 
+Resets the status of the assisted setup guide so that it does not appear to have been completed.
+
+#### Syntax
+```
+procedure Reset(PageID: Integer)
+```
+#### Parameters
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page to open when the user clicks the setup.
+
+### Run (Method) <a name="Run"></a> 
+Issues the call to execute the setup.
+
+#### Syntax
+```
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+procedure Run(ExtensionID: Guid; PageID: Integer)
 ```
 #### Parameters
 *ExtensionID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
@@ -225,13 +341,9 @@ Issues the call to execute the setup.
 
 #### Syntax
 ```
-procedure Run(ExtensionID: Guid; PageID: Integer)
+procedure Run(PageID: Integer)
 ```
 #### Parameters
-*ExtensionID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
-
-The app ID of the extension to which the setup belongs.
-
 *PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
 
 The ID of the page to open when the user clicks the setup.

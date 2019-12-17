@@ -54,7 +54,7 @@ codeunit 1288 OAuth
     /// <param name="RequestTokenSecret">The OAuth response token secret. Cannot be null.</param>
     /// <param name="RequestUrl">The REST URL. Cannot be null.</param>
     /// <param name="RequestMethod">The REST method call with capital letters(POST, GET, PUT, PATCH, DELETE).</param>
-    /// <param name="AuthorizationHeader">Exit parameter containing the requested OAuth specific authorization header.</returns>
+    /// <param name="AuthorizationHeader">Exit parameter containing the requested OAuth specific authorization header.</param>
     [TryFunction]
     procedure GetAuthorizationHeader(ConsumerKey: Text; ConsumerSecret: Text; RequestTokenKey: Text; RequestTokenSecret: Text; RequestUrl: Text; RequestMethod: Enum "Http Request Type"; var AuthorizationHeader: Text)
     begin

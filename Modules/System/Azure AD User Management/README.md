@@ -37,6 +37,21 @@ procedure CreateNewUserFromGraphUser(GraphUser: DotNet UserInfo)
 
 The Azure AD user.
 
+### UpdateUserFromGraph (Method) <a name="UpdateUserFromGraph"></a> 
+
+ Updates details about the user with information from Office 365.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure UpdateUserFromGraph(var User: Record User)
+```
+#### Parameters
+*User ([Record User]())* 
+
+The user whose information will be updated.
+
 ### SynchronizeLicensedUserFromDirectory (Method) <a name="SynchronizeLicensedUserFromDirectory"></a> 
     
  Synchronizes a user with the Azure AD user corresponding to the authentication 
