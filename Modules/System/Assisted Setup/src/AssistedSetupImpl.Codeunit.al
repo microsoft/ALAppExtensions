@@ -214,7 +214,7 @@ codeunit 1813 "Assisted Setup Impl."
         AssistedSetup.RunModal();
     end;
 
-    procedure Remove(ExtensionID: Guid; PageID: Integer)
+    procedure Remove(PageID: Integer)
     var
         AssistedSetup: Record "Assisted Setup";
     begin

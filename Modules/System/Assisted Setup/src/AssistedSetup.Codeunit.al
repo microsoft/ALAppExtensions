@@ -112,9 +112,9 @@ codeunit 3725 "Assisted Setup"
     /// <summary>Removes an Assisted Setup from a given extension so it will no longer be shown in the list.</summary>
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to be removed.</param>
-    procedure Remove(ExtensionID: Guid; PageID: Integer)
+    procedure Remove(PageID: Integer)
     begin
-        AssistedSetupImpl.Remove(ExtensionID, PageID);
+        AssistedSetupImpl.Remove(PageID);
     end;
 
 
