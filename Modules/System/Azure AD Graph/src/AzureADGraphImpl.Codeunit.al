@@ -45,12 +45,18 @@ codeunit 9014 "Azure AD Graph Impl."
 
     procedure GetUserAssignedPlans(UserInfo: DotNet UserInfo; var UserAssignedPlans: DotNet GenericList1)
     begin
+        if IsNull(UserInfo) then
+            exit;
+
         if CanQueryGraph() then
             UserAssignedPlans := GraphQuery.GetUserAssignedPlans(UserInfo);
     end;
 
     procedure GetUserRoles(UserInfo: DotNet UserInfo; var UserRoles: DotNet GenericIEnumerable1)
     begin
+        if IsNull(UserInfo) then
+            exit;
+
         if CanQueryGraph() then
             UserRoles := UserInfo.Roles();
     end;

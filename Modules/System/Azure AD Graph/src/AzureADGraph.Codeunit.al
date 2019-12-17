@@ -73,6 +73,7 @@ codeunit 9012 "Azure AD Graph"
     /// </summary>
     /// <param name="UserInfo">The user.</param>
     /// <param name="UserAssignedPlans">The assigned plans for the user.</param>
+    /// <remarks>If the provided user is null, the output parameter holding the assigned plans remains unchanged.</remarks> 
     [Scope('OnPrem')]
     procedure GetUserAssignedPlans(UserInfo: DotNet UserInfo; var UserAssignedPlans: DotNet GenericList1)
     begin
@@ -84,6 +85,7 @@ codeunit 9012 "Azure AD Graph"
     /// </summary>
     /// <param name="UserInfo">The user for whom to retrieve the roles.</param>
     /// <param name="UserRoles">The user's roles.</param>
+    /// <remarks>If the provided user is null, the output parameter holding the user roles remains unchanged.</remarks>
     [Scope('OnPrem')]
     procedure GetUserRoles(UserInfo: DotNet UserInfo; var UserRoles: DotNet GenericIEnumerable1)
     begin

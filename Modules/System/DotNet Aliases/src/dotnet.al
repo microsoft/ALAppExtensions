@@ -422,14 +422,6 @@ dotnet
         Culture = 'neutral';
         PublicKeyToken = '31bf3856ad364e35';
 
-        type("Microsoft.Dynamics.Nav.Client.Capabilities.CameraOptions"; "CameraOptions")
-        {
-        }
-
-        type("Microsoft.Dynamics.Nav.Client.Capabilities.CameraProvider"; "CameraProvider")
-        {
-        }
-
         type("Microsoft.Dynamics.Nav.Client.Capabilities.DeviceContact"; "DeviceContact")
         {
         }
@@ -1429,6 +1421,22 @@ dotnet
         type("System.Version"; "Version")
         {
         }
+
+        type("System.Reflection.FieldInfo"; "FieldInfo")
+        {
+        }
+
+        type("System.Reflection.PropertyInfo"; "PropertyInfo")
+        {
+        }
+
+        type("System.Security.Cryptography.CryptoConfig"; "CryptoConfig")
+        {
+        }
+
+        type("System.Security.Cryptography.RSA"; "RSA")
+        {
+        }
     }
 
     assembly("Newtonsoft.Json")
@@ -1566,22 +1574,6 @@ dotnet
         }
 
         type("System.Net.WebRequest"; "WebRequest")
-        {
-        }
-
-        type("System.Reflection.FieldInfo"; "FieldInfo")
-        {
-        }
-
-        type("System.Reflection.PropertyInfo"; "PropertyInfo")
-        {
-        }
-
-        type("System.Security.Cryptography.CryptoConfig"; "CryptoConfig")
-        {
-        }
-
-        type("System.Security.Cryptography.RSA"; "RSA")
         {
         }
 

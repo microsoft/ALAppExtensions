@@ -20,6 +20,13 @@ page 9806 "Fields Lookup"
             repeater(Control2)
             {
                 ShowCaption = false;
+                field(TableNo; TableNo)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Table No.';
+                    ToolTip = 'Specifies the number of the table this field belongs to.';
+                    Visible = false;
+                }
                 field(TableName; TableName)
                 {
                     ApplicationArea = All;

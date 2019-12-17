@@ -345,19 +345,19 @@ codeunit 9018 "Azure AD Plan Impl."
                     end;
                 end;
 
-        // If there are no Azure AD Plans, loop through Azure AD Roles
-        if not HaveAssignedPlans then begin
+        if not HaveAssignedPlans then
             SendTraceTag('00009KZ', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(UserHasNoPlansMsg, Format(GraphUser.DisplayName())),
                 DataClassification::CustomerContent);
-            if not IsNull(GraphUser.Roles()) then
-                foreach DirectoryRole in GraphUser.Roles() do
-                    if IncludePlansWithoutEntitlement or IsBCServicePlan(DirectoryRole.RoleTemplateId()) then begin
-                        AddToTempPlan(Format(DirectoryRole.RoleTemplateId()), Format(DirectoryRole.DisplayName()), TempPlan);
-                        SendTraceTag('00009L0', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(UserPlanAssignedMsg, Format(GraphUser.DisplayName()), Format(DirectoryRole.RoleTemplateId())),
-                          DataClassification::CustomerContent);
-                        SystemRoleAdded := true;
-                    end;
-        end;
+
+        // Loop through Azure AD Roles
+        if not IsNull(GraphUser.Roles()) then
+            foreach DirectoryRole in GraphUser.Roles() do
+                if IncludePlansWithoutEntitlement or IsBCServicePlan(DirectoryRole.RoleTemplateId()) then begin
+                    AddToTempPlan(Format(DirectoryRole.RoleTemplateId()), Format(DirectoryRole.DisplayName()), TempPlan);
+                    SendTraceTag('00009L0', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(UserPlanAssignedMsg, Format(GraphUser.DisplayName()), Format(DirectoryRole.RoleTemplateId())),
+                        DataClassification::CustomerContent);
+                    SystemRoleAdded := true;
+                end;
 
         // If there are no Azure AD Plans and no system roles assigned, then check if its a device user
         if HaveAssignedPlans or SystemRoleAdded then

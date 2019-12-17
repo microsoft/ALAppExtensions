@@ -205,6 +205,20 @@ codeunit 139087 "Azure AD Graph Test"
 
     [Test]
     [Scope('OnPrem')]
+    procedure TestGetUserAssignedPlansNullUserInfo()
+    var
+        NullUserInfo: DotNet UserInfo;
+        UserAssignedPlans: DotNet GenericList1;
+    begin
+        // [WHEN] Trying to get the assigned plans, providing a null as UserInfo
+        AzureADGraph.GetUserAssignedPlans(NullUserInfo, UserAssignedPlans);
+
+        // [THEN] The assigned plans are null
+        LibraryAssert.IsTrue(IsNull(UserAssignedPlans), 'The assigned plans should not have been initialized');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure TestGetUserAssignedPlans()
     var
         UserInfo: DotNet UserInfo;
@@ -265,6 +279,20 @@ codeunit 139087 "Azure AD Graph Test"
 
     [Test]
     [Scope('OnPrem')]
+    procedure TestGetUserRolesNullUserInfo()
+    var
+        NullUserInfo: DotNet UserInfo;
+        UserRoles: DotNet GenericList1;
+    begin
+        // [WHEN] Trying to get the assigned plans, providing a null as UserInfo
+        AzureADGraph.GetUserRoles(NullUserInfo, UserRoles);
+
+        // [THEN] The assigned plans are null
+        LibraryAssert.IsTrue(IsNull(UserRoles), 'The user roles should not have been initialized');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure TestGetUserRoles()
     var
         UserInfo: DotNet UserInfo;
@@ -285,13 +313,13 @@ codeunit 139087 "Azure AD Graph Test"
         AzureADGraphTest.AddAndReturnGraphUser(UserInfo, UserId, '', '', UserPrincipalName);
 
         // [WHEN] Trying to get the user's roles
-        if not Isnull(UserInfo.Roles()) then begin
+        if not IsNull(UserInfo.Roles()) then begin
             UserRoles := UserInfo.Roles();
 
             // [THEN] The user should not have any roles, as none have been inserted yet
             LibraryAssert.AreEqual(0, UserRoles.Count(), 'There should not be any roles');
         end;
-        
+
         // [GIVEN] A role is inserted for the given user
         RoleTemplateId := 'template id';
         RoleDescription := 'description';

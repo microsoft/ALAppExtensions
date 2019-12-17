@@ -14,6 +14,8 @@ codeunit 132586 "Assisted Setup Test"
         LibraryAssert: Codeunit "Library Assert";
         AssistedSetupTest: Codeunit "Assisted Setup Test";
         LastPageIDRun: Integer;
+        NonExistingPageID: Integer;
+        DeleteRecordQst: Label 'The page does not exist. Do you want to remove this assisted setup?';
 
     [Test]
     [HandlerFunctions('VideoLinkPageHandler,MySetupTestPageHandler,OtherSetupTestPageHandler')]
@@ -74,7 +76,8 @@ codeunit 132586 "Assisted Setup Test"
         // [THEN] As subscriber sets Handled = true, nothing happens
 
         // [WHEN] Start is invoked on the second wizard
-        AssistedSetup.Last();
+        AssistedSetup.Next();
+        AssistedSetup.Next();
         LastPageIDRun := 0;
         AssistedSetup."Start Setup".Invoke();
 
@@ -105,7 +108,7 @@ codeunit 132586 "Assisted Setup Test"
     end;
 
     [Test]
-    [HandlerFunctions('AssistedSetupPageHandler')]
+    [HandlerFunctions('AssistedSetupPageHandler_ChecksCompletedHelpAndVideo')]
     procedure TestAssistedSetupsShowUpOnFilteredView()
     var
         AssistedSetup: Codeunit "Assisted Setup";
@@ -123,15 +126,34 @@ codeunit 132586 "Assisted Setup Test"
 
         // [THEN] Run within the modal form handler
 
-		// [WHEN] Setup is set to be Completed 
-		AssistedSetupTestLibrary.SetStatusToCompleted(Page::"Other Assisted Setup Test Page");
+        // [WHEN] Setup is set to be Completed 
+        AssistedSetupTestLibrary.SetStatusToCompleted(Page::"Other Assisted Setup Test Page");
 
-		// [WHEN] Reset is called
-		AssistedSetup.Reset(Page::"Other Assisted Setup Test Page");
+        // [WHEN] Reset is called
+        AssistedSetup.Reset(Page::"Other Assisted Setup Test Page");
 
-		// [THEN] Status is incomplete
+        // [THEN] Status is incomplete
         NavApp.GetCurrentModuleInfo(Info);
-		LibraryAssert.IsFalse(AssistedSetup.IsComplete(Info.Id(), Page::"Other Assisted Setup Test Page"), 'Complete!');
+        LibraryAssert.IsFalse(AssistedSetup.IsComplete(Info.Id(), Page::"Other Assisted Setup Test Page"), 'Complete!');
+    end;
+
+    [Test]
+    [HandlerFunctions('AssistedSetupPageHandler_OpenNonExisting,ConfirmRemovalOfNonExistingPage')]
+    procedure TestAssistedSetupPageDoesNotExist()
+    var
+        AssistedSetup: Codeunit "Assisted Setup";
+        AssistedSetupGroup: Enum "Assisted Setup Group";
+    begin
+        Initialize();
+
+        // [GIVEN] Subscribers are registered
+        if BindSubscription(AssistedSetupTest) then;
+
+        // [WHEN] The page is opened with filtered view
+        AssistedSetup.Open(AssistedSetupGroup::ZZ);
+
+        // [THEN] The assisted setup should habe been deleted
+        LibraryAssert.IsFalse(AssistedSetup.Exists(NonExistingPageID), 'Assisted Setup not removed!');
     end;
 
     local procedure Initialize();
@@ -139,6 +161,7 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
     begin
         AssistedSetupTestLibrary.DeleteAll();
+        NonExistingPageID := 34636;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnRegister', '', true, true)]
@@ -153,6 +176,7 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Add(Info.Id(), Page::"My Assisted Setup Test Page", 'My Assisted Setup Test Page', AssistedSetupGroup::WithoutLinks, 'http://youtube.com', "Video Category"::Uncategorized, 'http://yahoo.com');
         AssistedSetup.AddTranslation(Page::"My Assisted Setup Test Page", 1033, 'English translation');
         AssistedSetup.Add(Info.Id(), Page::"Other Assisted Setup Test Page", 'Other Assisted Setup Test Page', AssistedSetupGroup::WithLinks);
+        AssistedSetup.Add(Info.Id(), NonExistingPageID, 'Non existing page', AssistedSetupGroup::ZZ);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnAfterRun', '', true, true)]
@@ -191,7 +215,7 @@ codeunit 132586 "Assisted Setup Test"
     end;
 
     [ModalPageHandler]
-    procedure AssistedSetupPageHandler(var AssistedSetup: TestPage "Assisted Setup")
+    procedure AssistedSetupPageHandler_ChecksCompletedHelpAndVideo(var AssistedSetup: TestPage "Assisted Setup")
     begin
         AssistedSetup.First(); // the group - WithoutLinks
         AssistedSetup.Name.AssertEquals('WithoutLinks');
@@ -204,5 +228,23 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Completed.AssertEquals(false);
         AssistedSetup.Help.AssertEquals('Read');
         AssistedSetup.Video.AssertEquals('Watch');
+    end;
+
+
+    [ModalPageHandler]
+    procedure AssistedSetupPageHandler_OpenNonExisting(var AssistedSetup: TestPage "Assisted Setup")
+    begin
+        AssistedSetup.First(); // the group - ZZ
+        AssistedSetup.Next();
+        AssistedSetup.Name.AssertEquals('Non existing page');
+
+        AssistedSetup."Start Setup".Invoke(); // should raise a confirm dialog
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmRemovalOfNonExistingPage(ConfirmMessage: Text[1024]; var Reply: Boolean)
+    begin
+        LibraryAssert.AreEqual(DeleteRecordQst, ConfirmMessage, 'Unexpected confirm!');
+        Reply := true;
     end;
 }

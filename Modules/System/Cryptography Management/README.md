@@ -313,6 +313,118 @@ The available hash algorithms include HMACMD5, HMACSHA1, HMACSHA256, HMACSHA384,
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 Base64 hashed value.
+### SignData (Method) <a name="SignData"></a> 
+
+ Computes the hash value of the specified string and signs it.
+ 
+
+#### Syntax
+```
+procedure SignData(InputString: Text; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
+```
+#### Parameters
+*InputString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Input string.
+
+*KeyStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of the private key to use in the hash algorithm.
+
+*HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA512]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The stream to write the output to.
+
+### SignData (Method) <a name="SignData"></a> 
+
+ Computes the hash value of the specified data and signs it.
+ 
+
+#### Syntax
+```
+procedure SignData(DataStream: InStream; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA5122; SignatureStream: OutStream)
+```
+#### Parameters
+*DataStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of input data.
+
+*KeyStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of the private key to use in the hash algorithm.
+
+*HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA5122]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The stream to write the output to.
+
+### VerifyData (Method) <a name="VerifyData"></a> 
+
+ Verifies that a digital signature is valid.
+ 
+
+#### Syntax
+```
+procedure VerifyData(InputString: Text; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+```
+#### Parameters
+*InputString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Input string.
+
+*Key ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+
+
+*HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA512]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of signature.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the digital signature is valid.
+### VerifyData (Method) <a name="VerifyData"></a> 
+
+ Verifies that a digital signature is valid.
+ 
+
+#### Syntax
+```
+procedure VerifyData(DataStream: InStream; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+```
+#### Parameters
+*DataStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of input data.
+
+*Key ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+
+
+*HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA512]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of digital signature.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the digital signature is valid.
 
 ## Rijndael Cryptography (Codeunit 1258)
 

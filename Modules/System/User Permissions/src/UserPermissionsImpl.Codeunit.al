@@ -74,7 +74,7 @@ codeunit 153 "User Permissions Impl."
         if IsAnyoneElseSuper(Rec."User Security ID") then
             exit;
 
-        Error(SUPERPermissionErr)
+        Error(SUPERPermissionErr);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::User, 'OnBeforeModifyEvent', '', true, true)]

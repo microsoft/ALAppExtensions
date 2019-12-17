@@ -367,7 +367,7 @@ Whether the user can manage plans and groups
 
 ### GetBasicPlanId (Method) <a name="GetBasicPlanId"></a> 
 
- Returns the ID for the Basic plan.
+ Returns the ID for the Dynamics 365 Business Central Basic Financials plan.
  
 
 #### Syntax
@@ -377,10 +377,10 @@ procedure GetBasicPlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Basic plan.
+The ID for the Dynamics 365 Business Central Basic Financials plan.
 ### GetTeamMemberPlanId (Method) <a name="GetTeamMemberPlanId"></a> 
 
- Returns the ID for the Finance and Operations, Team Member plan.
+ Returns the ID for the Dynamics 365 for Team Members plan.
  
 
 #### Syntax
@@ -390,10 +390,10 @@ procedure GetTeamMemberPlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Finance and Operations, Team Member plan.
+The ID for the Dynamics 365 for Team Members plan.
 ### GetEssentialPlanId (Method) <a name="GetEssentialPlanId"></a> 
 
- Returns the ID for the Finance and Operations plan.
+ Returns the ID for the Dynamics 365 Business Central Essentials plan.
  
 
 #### Syntax
@@ -403,10 +403,10 @@ procedure GetEssentialPlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Finance and Operations plan.
+The ID for the Dynamics 365 Business Central Essentials plan.
 ### GetPremiumPlanId (Method) <a name="GetPremiumPlanId"></a> 
 
- Returns the ID for the Dynamics 365 Business Central, Premium User plan.
+ Returns the ID for the Dynamics 365 Business Central Premium plan.
  
 
 #### Syntax
@@ -416,7 +416,7 @@ procedure GetPremiumPlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Dynamics 365 Business Central, Premium User plan.
+The ID for the Dynamics 365 Business Central Premium plan.
 ### GetInvoicingPlanId (Method) <a name="GetInvoicingPlanId"></a> 
 
  Returns the ID for the Microsoft Invoicing plan.
@@ -424,6 +424,7 @@ The ID for the Dynamics 365 Business Central, Premium User plan.
 
 #### Syntax
 ```
+[Obsolete('Invoicing product has been retired.')]
 procedure GetInvoicingPlanId(): Guid
 ```
 #### Return Value
@@ -432,7 +433,7 @@ procedure GetInvoicingPlanId(): Guid
 The ID for the Microsoft Invoicing plan.
 ### GetViralSignupPlanId (Method) <a name="GetViralSignupPlanId"></a> 
 
- Returns the ID for the Finance and Operations for IWs plan.
+ Returns the ID for the Dynamics 365 Business Central for IWs plan.
  
 
 #### Syntax
@@ -442,10 +443,10 @@ procedure GetViralSignupPlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Finance and Operations for IWs plan.
+The ID for the Dynamics 365 Business Central for IWs plan.
 ### GetExternalAccountantPlanId (Method) <a name="GetExternalAccountantPlanId"></a> 
 
- Returns the ID for the Finance and Operations, External Accountant plan.
+ Returns the ID for the Dynamics 365 Business Central External Accountant plan.
  
 
 #### Syntax
@@ -455,10 +456,10 @@ procedure GetExternalAccountantPlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Finance and Operations, External Accountant plan.
+The ID for the Dynamics 365 Business Central External Accountant plan.
 ### GetDelegatedAdminPlanId (Method) <a name="GetDelegatedAdminPlanId"></a> 
 
- Returns the ID for the Administrator plan.
+ Returns the ID for the Delegated Admin agent - Partner plan.
  
 
 #### Syntax
@@ -468,7 +469,7 @@ procedure GetDelegatedAdminPlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Administrator plan.
+The ID for the Delegated Admin agent - Partner plan.
 ### GetInternalAdminPlanId (Method) <a name="GetInternalAdminPlanId"></a> 
 
  Returns the ID for the Internal Administrator plan.
@@ -484,7 +485,7 @@ procedure GetInternalAdminPlanId(): Guid
 The ID for the Internal Administrator plan.
 ### GetTeamMemberISVPlanId (Method) <a name="GetTeamMemberISVPlanId"></a> 
 
- Returns the ID for the Dynamics 365 Business Central, Team Member ISV plan.
+ Returns the ID for the D365 Business Central Team Member - Embedded plan.
  
 
 #### Syntax
@@ -494,10 +495,10 @@ procedure GetTeamMemberISVPlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Dynamics 365 Business Central, Team Member ISV plan.
+The ID for the D365 Business Central Team Member - Embedded plan.
 ### GetEssentialISVPlanId (Method) <a name="GetEssentialISVPlanId"></a> 
 
- Returns the ID for the Dynamics 365 Business Central, Essential ISV User plan.
+ Returns the ID for the Dynamics 365 Business Central Essential - Embedded plan.
  
 
 #### Syntax
@@ -507,10 +508,10 @@ procedure GetEssentialISVPlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Dynamics 365 Business Central, Essential ISV User plan.
+The ID for the Dynamics 365 Business Central Essential - Embedded plan.
 ### GetPremiumISVPlanId (Method) <a name="GetPremiumISVPlanId"></a> 
 
- Returns the ID for the Dynamics 365 Business Central, Premium ISV User plan.
+ Returns the ID for the Dynamics 365 Business Central Premium - Embedded plan.
  
 
 #### Syntax
@@ -520,7 +521,7 @@ procedure GetPremiumISVPlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Dynamics 365 Business Central, Premium ISV User plan.
+The ID for the Dynamics 365 Business Central Premium - Embedded plan.
 ### GetDeviceISVPlanId (Method) <a name="GetDeviceISVPlanId"></a> 
 
  Returns the ID for the Dynamics 365 Business Central Device - Embedded plan.
@@ -536,7 +537,7 @@ procedure GetDeviceISVPlanId(): Guid
 The ID for the Dynamics 365 Business Central Device - Embedded plan.
 ### GetDevicePlanId (Method) <a name="GetDevicePlanId"></a> 
 
- Returns the ID for the Finance and Operations, Device plan.
+ Returns the ID for the Dynamics 365 Business Central Device plan.
  
 
 #### Syntax
@@ -546,7 +547,59 @@ procedure GetDevicePlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Finance and Operations, Device plan.
+The ID for the Dynamics 365 Business Central Device plan.
+### GetBasicFinancialsISVPlanId (Method) <a name="GetBasicFinancialsISVPlanId"></a> 
+
+ Returns the ID for the Dynamics 365 Business Central Basic Financials - Embedded plan.
+ 
+
+#### Syntax
+```
+procedure GetBasicFinancialsISVPlanId(): Guid
+```
+#### Return Value
+*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+
+The ID for the Dynamics 365 Business Central Basic Financials - Embedded plan.
+### GetAccountantHubPlanId (Method) <a name="GetAccountantHubPlanId"></a> 
+
+ Returns the ID for the Microsoft Dynamics 365 - Accountant Hub plan.
+ 
+
+#### Syntax
+```
+procedure GetAccountantHubPlanId(): Guid
+```
+#### Return Value
+*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+
+The ID for the Microsoft Dynamics 365 - Accountant Hub plan.
+### GetHelpDeskPlanId (Method) <a name="GetHelpDeskPlanId"></a> 
+
+ Returns the ID for the Delegated Helpdesk agent - Partner plan.
+ 
+
+#### Syntax
+```
+procedure GetHelpDeskPlanId(): Guid
+```
+#### Return Value
+*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+
+The ID for the Delegated Helpdesk agent - Partner plan.
+### GetInfrastructurePlanId (Method) <a name="GetInfrastructurePlanId"></a> 
+
+ Returns the ID for the D365 Business Central Infrastructure plan.
+ 
+
+#### Syntax
+```
+procedure GetInfrastructurePlanId(): Guid
+```
+#### Return Value
+*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+
+The ID for the D365 Business Central Infrastructure plan.
 
 ## Plan Upgrade Tag (Codeunit 9058)
 
@@ -576,6 +629,12 @@ The device upgrade tag.
 ## Plans FactBox (Page 9825)
 
  ListPart page that contains all the plans.
+ 
+
+
+## User Plans FactBox (Page 9826)
+
+ ListPart page that contains the plans assigned to users.
  
 
 
