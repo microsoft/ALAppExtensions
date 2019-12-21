@@ -153,7 +153,7 @@ codeunit 43 Language
     end;
 
     /// <summary>
-    /// Returns an alternative language based on Windows Culture Info.
+    /// Returns the parent LanguageId based on Windows Culture Info.
     /// </summary>
     /// <param name="LanguageId">Exit parameter that holds the chosen language ID.</param>
     procedure GetParentLanguageId(LanguageId: Integer): Integer
