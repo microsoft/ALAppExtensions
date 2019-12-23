@@ -119,7 +119,7 @@ SaaS: access the table using the `query 774 "Users in Plans"`.
 **Solution**: Function has been removed. Replacement:
 
 ```
-TempBlob.CreateOutStream(OutStream);
+TempBlob.CreateOutStream(OutStream[, TextEncoding]);
 OutStream.WriteText(Text);
 ```
 
