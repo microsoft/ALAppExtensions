@@ -368,6 +368,71 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTClosingTxt</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 1284718327" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Errors should have been inserted.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType ErrorsNotFoundErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 4134082808" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has found one or more errors.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType HasErrorsErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 1606912885" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has returned the following error message:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType SyslogErrorsErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 4085682537" size-unit="char" translate="yes" xml:space="preserve">
+          <source>File not recognized as valid bankfile</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType StmtNotRecognized1Err</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 469963928" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Check your importfile</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType StmtNotRecognized2Err</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 488662429" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Unexpected value was found. Expected value was: %1.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType UnexpectedValueErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 230233303 - NamedType 2563208725" size-unit="char" translate="yes" xml:space="preserve">
+          <source>There is no element in the list. The service did not provide any elements.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Conv Serv Lookup - NamedType MissingElementMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 230233303 - NamedType 4292699077" size-unit="char" translate="yes" xml:space="preserve">
+          <source>There should be no elemets in the list.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Conv Serv Lookup - NamedType NotEmptyListMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 230233303 - NamedType 3795224834" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The bank name is not the same as the expected one.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Conv Serv Lookup - NamedType IncorrectBankMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1849500811 - NamedType 228609747" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The country code entered does not exist</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Lookup E2E - NamedType CountrCodeErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1947765334 - NamedType 3320504657" size-unit="char" translate="yes" xml:space="preserve">
+          <source>%1 was not found in %2.</source>
+          <note from="Developer" annotates="general" priority="2">%1=Substring;%2=String</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Base64 Decoding / Encoding - NamedType SubstringNotFoundErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1947765334 - NamedType 513849016" size-unit="char" translate="no" xml:space="preserve">
+          <source>"NDEADKKKXXX","1888","9999940560","DKK","Encoding","","20030221","20030221","15757.25","+","15757.25","","68","","Order 12345","4","500","MEDDELNR 2001æ¹å","0","99999999999903","501","","502","KON konto 0979999035","0","","0","","0","","","","","","","266787.12","+","266787.12","","","Driftskonto","DK3420009999940560","N","Test Testsen","Testvej 10","9999 Testrup","","","","Ordrenr. 65656","99999999999903","1170200109040120000018","7","Betaling af f¹lgende fakturaer:","Fakturanr. Bel¹b:","12345 2500,35","22345 1265,66","32345 5825,00","42345 3635,88","52345 2530,36","","","","","","","","","","","","","","","","","","","","","","","",""</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Base64 Decoding / Encoding - NamedType NordeaCorporate_EncodWinTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1947765334 - NamedType 1975081983" size-unit="char" translate="yes" xml:space="preserve">
+          <source>as specified in the bank statement file.\\Do you want to continue?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Base64 Decoding / Encoding - NamedType BankAccMismatchQst</note>
+        </trans-unit>
         <trans-unit id="Codeunit 1138922865 - NamedType 2669200610" size-unit="char" translate="no" xml:space="preserve">
           <source>https://host.docker.internal:8088/</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -498,101 +563,6 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine11Txt</note>
         </trans-unit>
-        <trans-unit id="Codeunit 886246281 - NamedType 3041187379" size-unit="char" translate="yes" xml:space="preserve">
-          <source>For more information, go to</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType SupportURLErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 886246281 - NamedType 1606912885" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The AMC Banking has returned the following error message:</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType SyslogErrorsErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 886246281 - NamedType 3684597839" size-unit="char" translate="no" xml:space="preserve">
-          <source>/ns:reportExportResponse/return/cremul</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType CremulPathTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 886246281 - NamedType 1708704288" size-unit="char" translate="no" xml:space="preserve">
-          <source>/ns:reportExportResponse/return/finsta/statement/</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType EndBalanceNodePathTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 886246281 - NamedType 4173888130" size-unit="char" translate="yes" xml:space="preserve">
-          <source>File not recognized as valid bankfile</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType FileNotRecognizedErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 886246281 - NamedType 1523132696" size-unit="char" translate="no" xml:space="preserve">
-          <source>"NDEADKKKXXX","2999","9999940560","DKK","Demo User","","20030221","20030221","15757.25","+","15757.25","","68","","Order 12345","4","500","MEDDELNR 2001219","0","99999999999903","501","","502","KON konto 0979999035","0","","0","","0","","","","","","","266787.12","+","266787.12","","","Driftskonto","DK3420009999940560","N","Test Testsen","Testvej 10","9999 Testrup","","","","Ordrenr. 65656","99999999999903","1170200109040120000018","7","Betaling af f¹lgende fakturaer:","Fakturanr. Bel¹b:","12345 2500,35","22345 1265,66","32345 5825,00","42345 3635,88","52345 2530,36","","","","","","","","","","","","","","","","","","","","","","","",""</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType NordeaCorporate_EnCodWinTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3946625331 - NamedType 1284718327" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Errors should have been inserted.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType ErrorsNotFoundErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3946625331 - NamedType 4134082808" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The AMC Banking has found one or more errors.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType HasErrorsErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3946625331 - NamedType 1606912885" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The AMC Banking has returned the following error message:</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType SyslogErrorsErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3946625331 - NamedType 4085682537" size-unit="char" translate="yes" xml:space="preserve">
-          <source>File not recognized as valid bankfile</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType StmtNotRecognized1Err</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3946625331 - NamedType 469963928" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Check your importfile</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType StmtNotRecognized2Err</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3946625331 - NamedType 488662429" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Unexpected value was found. Expected value was: %1.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType UnexpectedValueErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 230233303 - NamedType 2563208725" size-unit="char" translate="yes" xml:space="preserve">
-          <source>There is no element in the list. The service did not provide any elements.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Conv Serv Lookup - NamedType MissingElementMsg</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 230233303 - NamedType 4292699077" size-unit="char" translate="yes" xml:space="preserve">
-          <source>There should be no elemets in the list.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Conv Serv Lookup - NamedType NotEmptyListMsg</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 230233303 - NamedType 3795224834" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The bank name is not the same as the expected one.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Conv Serv Lookup - NamedType IncorrectBankMsg</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1849500811 - NamedType 228609747" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The country code entered does not exist</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Lookup E2E - NamedType CountrCodeErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1947765334 - NamedType 3320504657" size-unit="char" translate="yes" xml:space="preserve">
-          <source>%1 was not found in %2.</source>
-          <note from="Developer" annotates="general" priority="2">%1=Substring;%2=String</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Base64 Decoding / Encoding - NamedType SubstringNotFoundErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1947765334 - NamedType 513849016" size-unit="char" translate="no" xml:space="preserve">
-          <source>"NDEADKKKXXX","1888","9999940560","DKK","Encoding","","20030221","20030221","15757.25","+","15757.25","","68","","Order 12345","4","500","MEDDELNR 2001æ¹å","0","99999999999903","501","","502","KON konto 0979999035","0","","0","","0","","","","","","","266787.12","+","266787.12","","","Driftskonto","DK3420009999940560","N","Test Testsen","Testvej 10","9999 Testrup","","","","Ordrenr. 65656","99999999999903","1170200109040120000018","7","Betaling af f¹lgende fakturaer:","Fakturanr. Bel¹b:","12345 2500,35","22345 1265,66","32345 5825,00","42345 3635,88","52345 2530,36","","","","","","","","","","","","","","","","","","","","","","","",""</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Base64 Decoding / Encoding - NamedType NordeaCorporate_EncodWinTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1947765334 - NamedType 1975081983" size-unit="char" translate="yes" xml:space="preserve">
-          <source>as specified in the bank statement file.\\Do you want to continue?</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Base64 Decoding / Encoding - NamedType BankAccMismatchQst</note>
-        </trans-unit>
         <trans-unit id="Codeunit 2979246637 - NamedType 2669200610" size-unit="char" translate="no" xml:space="preserve">
           <source>https://host.docker.internal:8088/</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -627,6 +597,36 @@
           <source>/ns:reportExportResponse/return/finsta/statement/</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Credential UT - NamedType EndBalanceNodePathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 3041187379" size-unit="char" translate="yes" xml:space="preserve">
+          <source>For more information, go to</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType SupportURLErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 1606912885" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has returned the following error message:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType SyslogErrorsErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 3684597839" size-unit="char" translate="no" xml:space="preserve">
+          <source>/ns:reportExportResponse/return/cremul</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType CremulPathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 1708704288" size-unit="char" translate="no" xml:space="preserve">
+          <source>/ns:reportExportResponse/return/finsta/statement/</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType EndBalanceNodePathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 4173888130" size-unit="char" translate="yes" xml:space="preserve">
+          <source>File not recognized as valid bankfile</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType FileNotRecognizedErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 1523132696" size-unit="char" translate="no" xml:space="preserve">
+          <source>"NDEADKKKXXX","2999","9999940560","DKK","Demo User","","20030221","20030221","15757.25","+","15757.25","","68","","Order 12345","4","500","MEDDELNR 2001219","0","99999999999903","501","","502","KON konto 0979999035","0","","0","","0","","","","","","","266787.12","+","266787.12","","","Driftskonto","DK3420009999940560","N","Test Testsen","Testvej 10","9999 Testrup","","","","Ordrenr. 65656","99999999999903","1170200109040120000018","7","Betaling af f¹lgende fakturaer:","Fakturanr. Bel¹b:","12345 2500,35","22345 1265,66","32345 5825,00","42345 3635,88","52345 2530,36","","","","","","","","","","","","","","","","","","","","","","","",""</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType NordeaCorporate_EnCodWinTxt</note>
         </trans-unit>
       </group>
     </body>

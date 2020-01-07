@@ -225,6 +225,7 @@ codeunit 132558 "AMC Banking Credential UT"
 
         // Clean-up
         LibraryPaymentAMC.RestoreServiceSetup(TempAMCBankingSetup, '');
+        SetDemoCompany(true);
     end;
 
     [Test]
@@ -257,6 +258,7 @@ codeunit 132558 "AMC Banking Credential UT"
 
         // Clean-up
         LibraryPaymentAMC.RestoreServiceSetup(TempAMCBankingSetup, '');
+        SetDemoCompany(true);
     end;
 
     [Test]
@@ -299,6 +301,7 @@ codeunit 132558 "AMC Banking Credential UT"
 
         // Clean-up
         LibraryPaymentAMC.RestoreServiceSetup(TempAMCBankingSetup, '');
+        SetDemoCompany(true);
     end;
 
     [Test]
@@ -334,6 +337,7 @@ codeunit 132558 "AMC Banking Credential UT"
 
         // Clean-up
         LibraryPaymentAMC.RestoreServiceSetup(TempAMCBankingSetup, '');
+        SetDemoCompany(true);
     end;
 
     [Test]
@@ -363,6 +367,7 @@ codeunit 132558 "AMC Banking Credential UT"
 
         // Clean-up
         LibraryPaymentAMC.RestoreServiceSetup(TempAMCBankingSetup, '');
+        SetDemoCompany(true);
     end;
 
     [Test]
@@ -392,6 +397,7 @@ codeunit 132558 "AMC Banking Credential UT"
 
         // Clean-up
         LibraryPaymentAMC.RestoreServiceSetup(TempAMCBankingSetup, '');
+        SetDemoCompany(true);
     end;
 
     [Test]
@@ -399,7 +405,7 @@ codeunit 132558 "AMC Banking Credential UT"
     [Scope('OnPrem')]
     procedure TestMissingSetupUpdatedPmtExport()
     var
-        AMCBankingSetup: Record "AMC Banking Setup";
+        TempAMCBankingSetup: Record "AMC Banking Setup" temporary;
         TempDataExch: Record "Data Exch." temporary;
     begin
         // [SCENARIO 7] Handle missing AMC Bank Service Setup record (after upgrade).
@@ -409,11 +415,12 @@ codeunit 132558 "AMC Banking Credential UT"
         // [THEN] Application provides a confirmation message to allow setting the username/password.
         // [THEN] A record in TAB1260 is created.
         // [THEN] User is able to update the username/password.
+        InitializeDataExchDef(AMCBankingMgt.GetDataExchDef_CT());
         Initialize();
 
-        SetDemoCompany(false);
+
         // Setup.
-        AMCBankingSetup.DeleteAll(true);
+        ClearAMCBankingSetup(TempAMCBankingSetup);
         CreateDataExchWithContentCT(TempDataExch, 'MissingSetup');
 
         // Exercise.
@@ -421,6 +428,10 @@ codeunit 132558 "AMC Banking Credential UT"
 
         // Verify.
         Assert.ExpectedError(NoConnectionErr);
+
+        //Cleanup
+        LibraryPaymentAMC.RestoreServiceSetup(TempAMCBankingSetup, '');
+        SetDemoCompany(true);
     end;
 
     [Test]
@@ -439,9 +450,11 @@ codeunit 132558 "AMC Banking Credential UT"
         // [WHEN] User refuses.
         // [THEN] An error is issued.
         // [THEN] TAB1260 stays empty.
+        InitializeDataExchDef(AMCBankingMgt.GetDataExchDef_CT());
         Initialize();
 
         // Setup.
+        SetDemoCompany(false);
         CreateDataExchWithContentCT(TempDataExch, 'MissingSetup');
 
         // Exercise.
@@ -451,6 +464,9 @@ codeunit 132558 "AMC Banking Credential UT"
         // Verify.
         Assert.ExpectedError(StrSubstNo(MissingCredentialsErr, AMCBankingSetup.TableCaption()));
         asserterror AMCBankingSetup.Get();
+
+        // Cleanup.
+        SetDemoCompany(true);
     end;
 
     local procedure Initialize()
