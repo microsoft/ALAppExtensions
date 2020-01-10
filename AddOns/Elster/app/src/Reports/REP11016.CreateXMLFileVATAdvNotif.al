@@ -143,7 +143,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
     begin
         PrepareXmlDoc();
 
-        if not XmlDocument.ReadFrom('<?xml version="1.0" encoding="ISO-8859-15"?>' + '<Elster xmlns="' + XmlNameSpace + '"></Elster>', XmlSubDoc) then
+        if not XmlDocument.ReadFrom('<?xml version="1.0" encoding="UTF-8"?>' + '<Elster xmlns="' + XmlNameSpace + '"></Elster>', XmlSubDoc) then
             Error(XMLDocHasNotBeenCreatedErr);
         XmlSubDoc.GetRoot(XmlRootElem);
         AddTransferHeader(XmlRootElem);
