@@ -12,7 +12,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
     {
         dataitem("Sales VAT Advance Notif."; "Sales VAT Advance Notif.")
         {
-            DataItemTableView = sorting ("No.")
+            DataItemTableView = sorting("No.")
                                 order(Ascending);
 
             trigger OnPreDataItem()
@@ -279,11 +279,8 @@ report 11016 "Create XML-File VAT Adv.Notif."
         end else
             if not AddElement(XmlRootElem, XmlElemNew, 'Vorgang', 'send-NoSig', XmlNameSpace) then
                 exit;
-        if "Sales VAT Advance Notif.".Testversion then begin
+        if "Sales VAT Advance Notif.".Testversion then
             if not AddElement(XmlRootElem, XmlElemNew, 'Testmerker', '700000004', XmlNameSpace) then
-                exit;
-        end else
-            if not AddElement(XmlRootElem, XmlElemNew, 'Testmerker', '000000000', XmlNameSpace) then
                 exit;
         if not AddElement(XmlRootElem, XmlElemNew, 'HerstellerID', ManufacturerID, XmlNameSpace) then
             exit;
