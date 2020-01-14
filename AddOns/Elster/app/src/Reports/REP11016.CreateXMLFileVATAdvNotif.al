@@ -273,12 +273,8 @@ report 11016 "Create XML-File VAT Adv.Notif."
             exit;
         if not AddElement(XmlRootElem, XmlElemNew, 'DatenArt', 'UStVA', XmlNameSpace) then
             exit;
-        if UseAuthentication then begin
-            if not AddElement(XmlRootElem, XmlElemNew, 'Vorgang', 'send-Auth', XmlNameSpace) then
-                exit;
-        end else
-            if not AddElement(XmlRootElem, XmlElemNew, 'Vorgang', 'send-NoSig', XmlNameSpace) then
-                exit;
+        if not AddElement(XmlRootElem, XmlElemNew, 'Vorgang', 'send-Auth', XmlNameSpace) then
+            exit;
         if "Sales VAT Advance Notif.".Testversion then
             if not AddElement(XmlRootElem, XmlElemNew, 'Testmerker', '700000004', XmlNameSpace) then
                 exit;

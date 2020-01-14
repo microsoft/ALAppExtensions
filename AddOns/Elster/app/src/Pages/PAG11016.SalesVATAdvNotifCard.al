@@ -116,11 +116,6 @@ page 11016 "Sales VAT Adv. Notif. Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the VAT statement template name used to calculate the amounts and assign them to the key figures required by the tax authorities.';
                 }
-                field("Use Authentication"; "Use Authentication")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies whether to submit signed data to the tax authorities.';
-                }
             }
             group(Communication)
             {

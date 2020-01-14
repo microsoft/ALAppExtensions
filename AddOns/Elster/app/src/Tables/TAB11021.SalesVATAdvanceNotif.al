@@ -89,7 +89,7 @@ table 11021 "Sales VAT Advance Notif."
         {
             DataClassification = CustomerContent;
             Editable = false;
-            TableRelation = "VAT Statement Name".Name where ("Statement Template Name" = field ("Statement Template Name"));
+            TableRelation = "VAT Statement Name".Name where("Statement Template Name" = field("Statement Template Name"));
 
             trigger OnValidate()
             begin
@@ -209,6 +209,8 @@ table 11021 "Sales VAT Advance Notif."
         field(31; "Use Authentication"; Boolean)
         {
             DataClassification = CustomerContent;
+            ObsoleteState = Removed;
+            ObsoleteReason = 'Authentication is required for electronic transmission.';
 
             trigger OnValidate()
             begin
