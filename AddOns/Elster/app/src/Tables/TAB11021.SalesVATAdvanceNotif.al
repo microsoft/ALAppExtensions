@@ -209,8 +209,8 @@ table 11021 "Sales VAT Advance Notif."
         field(31; "Use Authentication"; Boolean)
         {
             DataClassification = CustomerContent;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Authentication is required for electronic transmission.';
+            ObsoleteState = Pending;
+            ObsoleteReason = 'Authentication is required for electronic transmission. Field will be removed in future version.';
 
             trigger OnValidate()
             begin
