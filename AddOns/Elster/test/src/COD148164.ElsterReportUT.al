@@ -150,7 +150,6 @@ codeunit 148164 "Elster Report UT"
         SalesVATAdvanceNotif."Contact for Tax Office" := LibraryUTUtility.GetNewCode();
         SalesVATAdvanceNotif.Period := Period;
         SalesVATAdvanceNotif."Statement Name" := FindVATStatementName();
-        SalesVATAdvanceNotif."Use Authentication" := true;
         SalesVATAdvanceNotif.Insert();
         UpdateStartingDateOnSalesVATAdvanceNotification(SalesVATAdvanceNotif, 0);  // Period Length Zero for current Month.
     end;
