@@ -120,6 +120,7 @@ page 11016 "Sales VAT Adv. Notif. Card"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies whether to submit signed data to the tax authorities.';
+                    Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Authentication is required for electronic transmission. Field will be removed in future version.';
                 }
