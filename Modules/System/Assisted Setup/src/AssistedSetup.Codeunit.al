@@ -172,6 +172,14 @@ codeunit 3725 "Assisted Setup"
         AssistedSetupImpl.Open(AssistedSetupGroup);
     end;
 
+    /// <summary>Removes an Assisted Setup from a given extension so it will no longer be shown in the list.</summary>
+    /// <param name="PageID">The ID of the page to be removed.</param>
+    procedure Remove(PageID: Integer)
+    begin
+        AssistedSetupImpl.Remove(PageID);
+    end;
+
+
     /// <summary>Notifies the user that the list of assisted setup guides is being gathered, and that new guides might be added.</summary>
     [IntegrationEvent(false, false)]
     internal procedure OnRegister()
