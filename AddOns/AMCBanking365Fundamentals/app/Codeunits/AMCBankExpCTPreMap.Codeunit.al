@@ -171,6 +171,16 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                 GenJournalLine."Account Type", GenJournalLine."Account No.", GenJournalLine.GetAppliesToDocEntryNo(),
                 GenJournalLine."Posting Date", GenJournalLine."Currency Code", GenJournalLine.Amount, PaymentExportData."Payment Information ID",
                 GenJournalLine."Recipient Bank Account", GenJournalLine."Message to Recipient");
+
+            //Update CreditTransferEntry with Data Exch. Entry No. and any discount for banktransspec
+            CreditTransferEntry.SetRange("Credit Transfer Register No.", CreditTransferRegister."No.");
+            CreditTransferEntry.SetRange("Applies-to Entry No.", GenJournalLine.GetAppliesToDocEntryNo());
+            CreditTransferEntry.SetRange("Transaction ID", PaymentExportData."Payment Information ID");
+            if (CreditTransferEntry.FindFirst()) then begin
+                CreditTransferEntry."Data Exch. Entry No." := GenJournalLine."Data Exch. Entry No.";
+                CreditTransferEntry."Pmt. Disc. Possible" := 0;
+                CreditTransferEntry.Modify();
+            end;
         end;
     end;
 
