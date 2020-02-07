@@ -1244,7 +1244,7 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
                     if (CVLedgEntryBuffer."Entry No." <> 0) then begin
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/invoiceref', '/', '/ns:'),
-                          CVLedgEntryBuffer."External Document No.", SpecIndex);
+                          CVLedgEntryBuffer.Description, SpecIndex);
 
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/origdate', '/', '/ns:'),
@@ -1291,20 +1291,31 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
         Clear(CVLedgerEntryBuffer);
         if (CreditTransferEntry."Account Type" = CreditTransferEntry."Account Type"::Vendor) then begin
             VendLedgEntry.SetAutoCalcFields("Remaining Amount", "Original Amount");
-            if (VendLedgEntry.get(CreditTransferEntry."Applies-to Entry No.")) then
-                CVLedgerEntryBuffer.CopyFromVendLedgEntry(VendLedgEntry)
+            if (VendLedgEntry.get(CreditTransferEntry."Applies-to Entry No.")) then begin
+                CVLedgerEntryBuffer.CopyFromVendLedgEntry(VendLedgEntry);
+                if (VendLedgEntry."External Document No." <> '') then
+                    CVLedgerEntryBuffer.Description := VendLedgEntry."External Document No." //1. Prio
+                else
+                    CVLedgerEntryBuffer.Description := VendLedgEntry.Description; //2. Prio
+            end;
         end
         else
             if (CreditTransferEntry."Account Type" = CreditTransferEntry."Account Type"::Customer) then begin
                 CustLedgEntry.SetAutoCalcFields("Remaining Amount", "Original Amount");
-                if (CustLedgEntry.Get(CreditTransferEntry."Applies-to Entry No.")) then
-                    CVLedgerEntryBuffer.CopyFromCustLedgEntry(CustLedgEntry)
+                if (CustLedgEntry.Get(CreditTransferEntry."Applies-to Entry No.")) then begin
+                    CVLedgerEntryBuffer.CopyFromCustLedgEntry(CustLedgEntry);
+                    if (CustLedgEntry."Document Date" <> 0D) then
+                        CVLedgerEntryBuffer."Document Date" := CustLedgEntry."Document Date"
+                    else
+                        CVLedgerEntryBuffer."Document Date" := CustLedgEntry."Posting Date";
+                end;
             end
             else
                 if (CreditTransferEntry."Account Type" = CreditTransferEntry."Account Type"::Employee) then begin
                     EmplLedgEntry.SetAutoCalcFields("Remaining Amount", "Original Amount");
                     if (EmplLedgEntry.Get(CreditTransferEntry."Applies-to Entry No.")) then
                         CVLedgerEntryBuffer.CopyFromEmplLedgEntry(EmplLedgEntry);
+                    CVLedgerEntryBuffer."Document Date" := EmplLedgEntry."Posting Date";
                 end;
     end;
 
@@ -1380,7 +1391,7 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
                     if (CVLedgEntryBuffer."Entry No." <> 0) then begin
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/invoiceref', '/', '/ns:'),
-                          CVLedgEntryBuffer."External Document No.", SpecIndex);
+                          CVLedgEntryBuffer.Description, SpecIndex);
 
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/origdate', '/', '/ns:'),

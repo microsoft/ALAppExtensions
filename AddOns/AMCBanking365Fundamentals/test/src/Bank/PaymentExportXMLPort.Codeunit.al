@@ -117,7 +117,9 @@ codeunit 134423 "Payment Export XMLPort"
                 if (DataExchFieldMapping.FindFirst()) then
                     if ((StrPos(DataExchFieldMapping.GetPath(), 'chequeinfo') = 0) and
                         (StrPos(DataExchFieldMapping.GetPath(), 'journalnumber') = 0) and
-                        (StrPos(DataExchFieldMapping.GetPath(), 'banktransspec') = 0)) then begin //Skip journalnumber, chequeinfo and banktransspec, as this is handled differently
+                        (StrPos(DataExchFieldMapping.GetPath(), 'paymentmessage') = 0) and
+                        (StrPos(DataExchFieldMapping.GetPath(), 'messagestructure') = 0) and
+                        (StrPos(DataExchFieldMapping.GetPath(), 'banktransspec') = 0)) then begin //Skip journalnumber, chequeinfo,messagestructure, paymentmessage and banktransspec, as this is handled differently
                         ColumnCounter += 1;
                         CreateDataExchColumnDef(DataExchDefCode, DataExchDefCode, ColumnCounter, CopyStr(DataExchFieldMapping.GetPath(), 1, 250));
                     end;
