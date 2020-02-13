@@ -427,7 +427,7 @@ codeunit 130456 "Test Suite Mgt."
     procedure SetLastErrorOnLine(var TestMethodLine: Record "Test Method Line")
     begin
         TestMethodLine."Error Code" := CopyStr(GetLastErrorCode(), 1, MaxStrLen(TestMethodLine."Error Code"));
-        TestMethodLine."Error Message Preview" := CopyStr(GetLastErrorCode(), 1, MaxStrLen(TestMethodLine."Error Message Preview"));
+        TestMethodLine."Error Message Preview" := CopyStr(GetLastErrorText(), 1, MaxStrLen(TestMethodLine."Error Message Preview"));
         SetFullErrorMessage(TestMethodLine, GetLastErrorText());
         SetErrorCallStack(TestMethodLine, GetLastErrorCallstack());
     end;
