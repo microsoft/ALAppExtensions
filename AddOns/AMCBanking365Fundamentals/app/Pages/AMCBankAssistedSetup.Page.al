@@ -12,6 +12,7 @@ page 20105 "AMC Bank Assisted Setup"
 
     layout
     {
+
         area(content)
         {
             group(Control19)
@@ -24,6 +25,7 @@ page 20105 "AMC Bank Assisted Setup"
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     ShowCaption = false;
+                    ToolTip = ' ';
                 }
             }
             group(Control17)
@@ -36,6 +38,7 @@ page 20105 "AMC Bank Assisted Setup"
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     ShowCaption = false;
+                    ToolTip = ' ';
                 }
             }
             group(Step1)
@@ -55,6 +58,7 @@ page 20105 "AMC Bank Assisted Setup"
                         ApplicationArea = Basic, Suite;
                         ShowCaption = false;
                         Editable = false;
+                        ToolTip = 'AMC Banking 365 Foundation documentation';
 
                         trigger OnDrillDown()
                         begin
@@ -67,12 +71,14 @@ page 20105 "AMC Bank Assisted Setup"
                         ShowCaption = false;
                         Editable = false;
                         MultiLine = true;
+                        ToolTip = 'By enabling this extension you consent to sharing your data with an external system. Your use of this extension may be subject to additional licensing terms from AMC. To enable the service you must read and accept the terms of use.';
                     }
                     field(TermsOfUseLink; 'AMC Banking 365 Foundation terms of use')
                     {
                         ApplicationArea = Basic, Suite;
                         ShowCaption = false;
                         Editable = false;
+                        ToolTip = 'AMC Banking 365 Foundation terms of use';
 
                         trigger OnDrillDown()
                         begin
@@ -85,6 +91,7 @@ page 20105 "AMC Bank Assisted Setup"
                         MultiLine = true;
                         Editable = true;
                         Caption = 'I understand and accept these terms';
+                        ToolTip = 'I understand and accept these terms';
                         trigger OnValidate()
                         begin
                             if not ConsentAccepted then
@@ -100,7 +107,7 @@ page 20105 "AMC Bank Assisted Setup"
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'Use default values for AMC Banking setup';
-                            ToolTip = 'Use the default settings for bank formats, payment methods, and data exchange definitions.';
+                            ToolTip = 'Use the default settings for back formats, payment methods, and data exchange definitions.';
 
                             trigger OnValidate();
                             begin
@@ -110,146 +117,121 @@ page 20105 "AMC Bank Assisted Setup"
                     }
                 }
             }
-            group("Para2.1")
+            group(Step2)
             {
-                Caption = ' ';
+                Caption = '  ';
                 Visible = ChoseUpdVisible;
-                group("Para2.1.1")
+                group("Para2.1")
                 {
                     Caption = 'Please choose what to setup:';
-                    Visible = ChoseUpdVisible;
-                    group("Para2.1.2")
+
+                    field(URLContent; 'Change the Service, Support and Sign-up URLs to their default values.')
                     {
-                        Caption = ' ';
-                        Visible = ChoseUpdVisible;
-                        group("Para2.1.3")
+                        ApplicationArea = Basic, Suite;
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Change the Service, Support and Sign-up URLs to their default values.';
+                    }
+                    field(UpdURL; UpdURLBoolean)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Set URLs to Default';
+                        ToolTip = 'Change the Service, Support and Sign-up URLs to their default values.';
+                        trigger OnValidate();
+                        begin
+                            EnableNextStep();
+                        end;
+                    }
+                    field(BankListContent; 'Update the list of banks in your country/region that you can use to import or export bank account data using the AMC Banking.')
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Update the list of banks in your country/region that you can use to import or export bank account data using the AMC Banking.';
+                    }
+                    field(UpdBank; UpdBankBoolean)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Update Bank Name List';
+                        ToolTip = 'Update the list of banks in your country/region that you can use to import or export bank account data using the AMC Banking.';
+
+                        trigger OnValidate();
+                        begin
+                            EnableNextStep();
+                        end;
+                    }
+                    field(DataExchContent; 'Setup Data Exchange Definitions to current version of your system for AMC Banking.')
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Setup Data Exchange Definitions to current version of your system for AMC Banking.';
+                    }
+                    field(UpdDataExchDef; UpdDataExchDefBoolean)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Setup Data Exchange Definitions';
+                        ToolTip = 'Setup Data Exchange Definitions to current version of your system for AMC Banking.';
+
+                        trigger OnValidate();
+                        begin
+                            EnableNextStep();
+                        end;
+                    }
+                    field(OwnBankContent; 'Setup own Bank Account with DataExchangeDef. and Credit Msg. No.')
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Setup own Bank Account with DataExchangeDef. and Credit Msg. No.';
+                    }
+                    field(UpdBankAccounts; UpdBankAccountsBoolean)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Setup Bank Accounts';
+                        ToolTip = 'Setup own Bank Account with DataExchangeDef. and Credit Msg. No.';
+
+                        trigger OnValidate();
+                        begin
+                            EnableNextStep();
+                        end;
+                    }
+                    group(UpdPayMethGrp)
+                    {
+                        Caption = '  ';
+                        InstructionalText = 'Setup basic paymentmethods for AMC Banking to current version of your system.';
+                        Visible = UpdPayMethVisible;
+
+                        field(UpdPayMethFld; UpdPayMethBoolean)
                         {
-                            Caption = ' ';
-                            Visible = ChoseUpdVisible;
-                            group("Para2.1.3.1")
-                            {
-                                Caption = 'Change the Service, Support and Sign-up URLs to their default values.';
-                                Visible = ChoseUpdVisible;
-                                field(UpdURL; UpdURLBoolean)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'Set URLs to Default';
-                                    ToolTip = 'Change the Service, Support and Sign-up URLs to their default values.';
-
-                                    trigger OnValidate();
-                                    begin
-                                        EnableNextStep();
-                                    end;
-                                }
-                            }
-                        }
-                        group("Para2.1.4")
-                        {
-                            Caption = ' ';
-                            Visible = ChoseUpdVisible;
-                            group("Para2.1.4.1")
-                            {
-                                Caption = 'Update the list of banks in your country/region that you can use to import or export bank account data using the AMC Banking.';
-                                Visible = ChoseUpdVisible;
-                                field(UpdBank; UpdBankBoolean)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'Update Bank Name List';
-                                    ToolTip = 'Update the list of banks in your country/region that you can use to import or export bank account data using the AMC Banking.';
-
-                                    trigger OnValidate();
-                                    begin
-                                        EnableNextStep();
-                                    end;
-                                }
-                            }
-                        }
-                        group("Para2.1.5")
-                        {
-                            Caption = ' ';
-                            Visible = ChoseUpdVisible;
-                            group("Para2.1.5.1")
-                            {
-                                Caption = 'Setup Data Exchange Definitions to current version of your system for AMC Banking.';
-                                Visible = ChoseUpdVisible;
-                                field(UpdDataExchDef; UpdDataExchDefBoolean)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'Setup Data Exchange Definitions';
-                                    ToolTip = 'Setup Data Exchange Definitions to current version of your system for AMC Banking.';
-
-                                    trigger OnValidate();
-                                    begin
-                                        EnableNextStep();
-                                    end;
-                                }
-                            }
-                        }
-                        group("Para2.1.6")
-                        {
-                            Caption = ' ';
-                            Visible = ChoseUpdVisible and UpdPayMethVisible;
-                            group("Para2.1.6.1")
-                            {
-                                Caption = 'Setup basic paymentmethods for AMC Banking to current version of your system.';
-                                Visible = ChoseUpdVisible and UpdPayMethVisible;
-                                field(UpdPayMeth; UpdPayMethBoolean)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'Setup basic paymentmethods';
-                                    ToolTip = 'Setup basic paymentmethods for AMC Banking to current version of your system.';
-
-                                    trigger OnValidate();
-                                    begin
-                                        EnableNextStep();
-                                    end;
-                                }
-                            }
-                        }
-                        group("Para2.1.7")
-                        {
-                            Caption = ' ';
-                            Visible = ChoseUpdVisible and UpdBankClearStdVisible;
-                            group("Para2.1.7.1")
-                            {
-                                Caption = 'Setup Bank Clearing Standards to be used on vendors bank accounts.';
-                                Visible = ChoseUpdVisible and UpdBankClearStdVisible;
-                                field(UpdBankClearStd; UpdBankClearStdBoolean)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'Setup Bank Clearing Standards';
-                                    ToolTip = 'Setup Bank Clearing Standards to be used on vendors bank accounts.';
-
-                                    trigger OnValidate();
-                                    begin
-                                        EnableNextStep();
-                                    end;
-                                }
-                            }
-                        }
-
-                        group("Para2.1.8")
-                        {
-                            Caption = ' ';
-                            Visible = ChoseUpdVisible;
-                            group("Para2.1.8.1")
-                            {
-                                Caption = 'Setup own Bank Account with DataExchangeDef. and Credit Msg. No.';
-                                Visible = ChoseUpdVisible;
-                                field(UpdBankAccounts; UpdBankAccountsBoolean)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'Setup Bank Accounts';
-                                    ToolTip = 'Setup own Bank Account with DataExchangeDef. and Credit Msg. No.';
-
-                                    trigger OnValidate();
-                                    begin
-                                        EnableNextStep();
-                                    end;
-                                }
-                            }
+                            ApplicationArea = Basic, Suite;
+                            Caption = 'Setup basic paymentmethods';
+                            ToolTip = 'Setup basic paymentmethods for AMC Banking to current version of your system.';
+                            trigger OnValidate();
+                            begin
+                                EnableNextStep();
+                            end;
                         }
                     }
+                    group(UpdBankClearGrp)
+                    {
+                        Caption = '  ';
+                        InstructionalText = 'Setup Bank Clearing Standards to be used on vendors bank accounts';
+                        Visible = UpdBankClearStdVisible;
+
+                        field(UpdBankClearStd; UpdBankClearStdBoolean)
+                        {
+                            ApplicationArea = Basic, Suite;
+                            Caption = 'Setup Bank Clearing Standards';
+                            ToolTip = 'Setup Bank Clearing Standards to be used on vendors bank accounts.';
+
+                            trigger OnValidate();
+                            begin
+                                EnableNextStep();
+                            end;
+                        }
+                    }
+
                 }
             }
             group(UpdateURLS)
@@ -277,18 +259,35 @@ page 20105 "AMC Bank Assisted Setup"
 
                                 trigger OnValidate();
                                 begin
+                                    if SignupURLText <> '' then
+                                        WebRequestHelper.IsSecureHttpUrl(SignupURLText);
+
                                     URLSChanged := true;
+                                end;
+
+                                trigger OnDrillDown()
+                                begin
+                                    Hyperlink(SignupURLText);
                                 end;
                             }
                             field(ServiceURL; ServiceURLText)
                             {
                                 ApplicationArea = Basic, Suite;
                                 Caption = 'Service URL';
+                                ExtendedDatatype = URL;
                                 ToolTip = 'Specifies the address of the service that converts bank data to the format required by your bank when you export payment bank files and import bank statement files. The service specified in the Service URL field is called when users export or import bank files.';
 
                                 trigger OnValidate();
                                 begin
+                                    if ServiceURLText <> '' then
+                                        WebRequestHelper.IsSecureHttpUrl(ServiceURLText);
+
                                     URLSChanged := true;
+                                end;
+
+                                trigger OnDrillDown()
+                                begin
+                                    Hyperlink(CopyStr(ServiceURLText, 1, StrLen(ServiceURLText) - StrLen("Namespace API Version")));
                                 end;
                             }
                             field(SupportURL; SupportURLText)
@@ -300,7 +299,15 @@ page 20105 "AMC Bank Assisted Setup"
 
                                 trigger OnValidate();
                                 begin
+                                    if SupportURLText <> '' then
+                                        WebRequestHelper.IsSecureHttpUrl(SupportURLText);
+
                                     URLSChanged := true;
+                                end;
+
+                                trigger OnDrillDown()
+                                begin
+                                    Hyperlink(SupportURLText);
                                 end;
                             }
                         }
@@ -309,257 +316,142 @@ page 20105 "AMC Bank Assisted Setup"
             }
             group(UpdateBanks)
             {
-                Caption = ' ';
+                Caption = '  ';
                 Visible = BankVisible;
                 group("UpdateBanks1.1")
                 {
                     Caption = 'Update Bank Name List';
-                    Visible = BankVisible;
                     group("UpdateBanks1.2")
                     {
                         Caption = ' ';
-                        InstructionalText = ' ';
-                        Visible = BankVisible;
-                        group(Control85)
-                        {
-                            Caption = 'Update the list of banks in your country/region that you can use to import or export bank account data using the AMC Banking.';
-                            Visible = BankVisible;
-                        }
-                        group(Control29)
-                        {
-                            Caption = ' ';
-                            InstructionalText = 'The Bank Name List shows a list of bank names representing bank data formats that are supported by the AMC Banking.';
-                            Visible = BankVisible;
-                        }
-                        group(Control6)
-                        {
-                            Caption = ' ';
-                            InstructionalText = ' ';
-                            Visible = BankVisible;
-                        }
-                        group(Control82)
-                        {
-                            Caption = ' ';
-                            InstructionalText = 'The list of bank data formats that are supported by the AMC Banking will be updated.';
-                            Visible = BankVisible;
-                        }
-                        group(Control81)
-                        {
-                            Caption = ' ';
-                            InstructionalText = ' ';
-                            Visible = BankVisible;
-                        }
-                        group(Control84)
-                        {
-                            Caption = ' ';
-                            InstructionalText = 'This list of bank names, filtered by the country/region, can be selected in the Bank Name Format field in the Bank Account Card page.';
-                            Visible = BankVisible;
-                        }
-                        group(Control83)
-                        {
-                            Caption = ' ';
-                            InstructionalText = ' ';
-                            Visible = BankVisible;
-                        }
+                        InstructionalText = 'Update the list of banks in your country/region that you can use to import or export bank account data using the AMC Banking.';
+                    }
+                    field(SelctCountryContent; 'Select countrycode to filter banklist.')
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Select countrycode to filter banklist.';
+                    }
+                    field(BankCountryCodeCodeFld; BankCountryCodeCode)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Countrycode';
+                        TableRelation = "Country/Region".Code;
+                        ToolTip = 'Only select a countrycode, if you want to filter the banklist for the selected countrycode. Otherwise leave empty';
+                    }
+                    field(CountryFilterContent; 'Only select a countrycode, if you want to filter the banklist for the selected countrycode, otherwise leave empty')
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Only select a countrycode, if you want to filter the banklist for the selected countrycode, otherwise leave empty';
                     }
                 }
             }
             group(UpdateDataExchDef)
             {
-                Caption = 'Setup Data Exchange Definitions';
-                Visible = DataExchDefVisible;
-            }
-            group("Para3.1")
-            {
                 Caption = ' ';
                 Visible = DataExchDefVisible;
-                group("Para3.1.1")
+
+                group("Para3.1")
                 {
-                    Caption = 'Please chose Data Exchange Definitions to setup:';
+                    Caption = 'Setup Data Exchange Definitions';
                     Visible = DataExchDefVisible;
-                    group("Para3.1.2")
+                    field(ApplVerContent; 'Applicationversion and buildnumber to get Data Exchange Definition for:')
                     {
-                        Caption = ' ';
-                        Visible = DataExchDefVisible;
-                        group("Para3.1.3")
-                        {
-                            Caption = ' ';
-                            Visible = DataExchDefVisible;
-                            group("Para3.1.3.1")
-                            {
-                                Caption = 'Applicationversion and buildnumber to get Data Exchange Definition for:';
-                                Visible = DataExchDefVisible;
-                                field(ApplVer; ApplVerText)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'Applicationversion';
-                                }
-                                field(BuildNo; BuildNoText)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'Buildnumber';
-                                }
-                            }
-                        }
-                        group("Para3.1.4")
-                        {
-                            Caption = ' ';
-                            Visible = DataExchDefVisible;
-                            group("Para3.1.4.1")
-                            {
-                                Caption = 'Setup AMC Banking - Credit Transfer, to be able to make outgoing payments';
-                                Visible = DataExchDefVisible;
-                                field(BANKDATACONVSERVCT; BANKDATACONVSERVCTBoolean)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'AMC Banking - Credit Transfer';
-                                    ToolTip = 'Setup AMC Banking - Credit Transfer, to be able to make outgoing payments';
-
-                                    trigger OnValidate();
-                                    begin
-                                        EnableNextStep();
-                                    end;
-                                }
-                            }
-                        }
-                        group("Para3.1.5")
-                        {
-                            Caption = ' ';
-                            Visible = BankDataConvServPPVisible;
-                            group("Para3.1.5.1")
-                            {
-                                Caption = 'Setup AMC Banking - Positive Pay, to be able to make Positive Pay file for printed checks.';
-                                Visible = BankDataConvServPPVisible;
-                                field(BANKDATACONVSERVPP; BANKDATACONVSERVPPBoolean)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'AMC Banking - Positive Pay';
-                                    ToolTip = 'Setup AMC Banking - Positive Pay, to be able to make Positive Pay file for printed checks.';
-
-                                    trigger OnValidate();
-                                    begin
-                                        EnableNextStep();
-                                    end;
-                                }
-                            }
-                        }
-                        group("Para3.1.6")
-                        {
-                            Caption = ' ';
-                            Visible = DataExchDefVisible;
-                            group("Para3.1.6.1")
-                            {
-                                Caption = 'Setup AMC Banking - Bank Statement, to be able to import Bank statements from your banks.';
-                                Visible = DataExchDefVisible;
-                                field(BANKDATACONVSERVSTMT; BANKDATACONVSERVSTMTBoolean)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'AMC Banking - Bank Statement';
-                                    ToolTip = 'Setup AMC Banking - Bank Statement, to be able to import Bank statements from your banks.';
-
-                                    trigger OnValidate();
-                                    begin
-                                        EnableNextStep();
-                                    end;
-                                }
-                            }
-                        }
-                        group("Para3.1.7")
-                        {
-                            Caption = ' ';
-                            Visible = BankDataConvServCREMVisible;
-                            group("Para3.1.7.1")
-                            {
-                                Caption = 'Setup AMC Banking - Credit Advice, to be able to import Customer payments from your banks.';
-                                Visible = BankDataConvServCREMVisible;
-                                field(BANKDATACONVSERVCREM; BANKDATACONVSERVCREMBoolean)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'AMC Banking - Credit Advice';
-                                    ToolTip = 'Setup AMC Banking - Credit Advice, to be able to import Customer payments from your banks.';
-
-                                    trigger OnValidate();
-                                    begin
-                                        EnableNextStep();
-                                    end;
-                                }
-                            }
-                        }
+                        ApplicationArea = Basic, Suite;
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Applicationversion and buildnumber to get Data Exchange Definition for:';
                     }
-                }
-            }
-            group(UpdatePayMeth)
-            {
-                Caption = 'Setup basic paymentmethods';
-                Visible = PayMethVisible;
-            }
-            group("Para4.1")
-            {
-                Caption = ' ';
-                Visible = PayMethVisible;
-                group("Para4.1.1")
-                {
-                    Caption = 'Please choose Contrycode for Paymentmethods to setup:';
-                    Visible = PayMethVisible;
-                    group("Para4.1.2")
+                    field(ApplVer; ApplVerText)
                     {
-                        Caption = ' ';
-                        Visible = PayMethVisible;
-                        group("Para4.1.3")
-                        {
-                            Caption = ' ';
-                            Visible = PayMethVisible;
-                            group("Para4.1.3.1")
-                            {
-                                Caption = 'Setup paymentmethods for the selected countrycode.';
-                                Visible = PayMethVisible;
-                                field(CountryCode; CountryCodeCode)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = 'Countrycode';
-                                    TableRelation = "Country/Region".Code;
-                                    ToolTip = 'Setup paymentmethods for the selected countrycode.';
-                                }
-                            }
-                        }
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Applicationversion';
+                        ToolTip = 'Applicationversion of your Business Central, used for fetching the correspondent Data Exchange def. from AMC Banking';
                     }
-                }
-            }
-            group(UpdateBankClearStd)
-            {
-                Visible = BankClearStdVisible;
-                group("UpdateBankClearStd1.1")
-                {
-                    Caption = 'Setup Bank Clearing Standards to be used on vendors bank accounts.';
-                    Visible = BankClearStdVisible;
-                    group("UpdateBankClearStd1.2")
+                    field(BuildNo; BuildNoText)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Buildnumber';
+                        ToolTip = 'Buildnumber of your Business Central, used for fetching the correspondent Data Exchange def. from AMC Banking';
+                    }
+                    field(CTContent; 'Setup AMC Banking - Credit Transfer, to be able to make outgoing payments')
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Setup AMC Banking - Credit Transfer, to be able to make outgoing payments';
+                    }
+                    field(BANKDATACONVSERVCT; BANKDATACONVSERVCTBoolean)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'AMC Banking - Credit Transfer';
+                        ToolTip = 'Setup AMC Banking - Credit Transfer, to be able to make outgoing payments';
+
+                        trigger OnValidate();
+                        begin
+                            EnableNextStep();
+                        end;
+                    }
+                    field(StmtContent; 'Setup AMC Banking - Bank Statement, to be able to import Bank statements from your banks.')
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Setup AMC Banking - Bank Statement, to be able to import Bank statements from your banks.';
+                    }
+                    field(BANKDATACONVSERVSTMT; BANKDATACONVSERVSTMTBoolean)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'AMC Banking - Bank Statement';
+                        ToolTip = 'Setup AMC Banking - Bank Statement, to be able to import Bank statements from your banks.';
+
+                        trigger OnValidate();
+                        begin
+                            EnableNextStep();
+                        end;
+                    }
+                    group(Business)
                     {
                         Caption = ' ';
-                        InstructionalText = ' ';
-                        Visible = BankClearStdVisible;
-                        group(Control32)
+                        Visible = BankDataConvServPPVisible and BankDataConvServCREMVisible;
+                        field(PPContent; 'Setup AMC Banking - Positive Pay, to be able to make Positive Pay file for printed checks.')
                         {
-                            Caption = ' ';
-                            InstructionalText = 'Specifies the format standard to be used in bank transfers if you use the Bank Clearing Code field to identify you as the sender.';
-                            Visible = BankClearStdVisible;
+                            ApplicationArea = Basic, Suite;
+                            ShowCaption = false;
+                            Editable = false;
+                            ToolTip = 'Setup AMC Banking - Positive Pay, to be able to make Positive Pay file for printed checks.';
                         }
-                        group(Control95)
+                        field(BANKDATACONVSERVPP; BANKDATACONVSERVPPBoolean)
                         {
-                            Caption = ' ';
-                            InstructionalText = ' ';
-                            Visible = BankClearStdVisible;
+                            ApplicationArea = Basic, Suite;
+                            Caption = 'AMC Banking - Positive Pay';
+                            ToolTip = 'Setup AMC Banking - Positive Pay, to be able to make Positive Pay file for printed checks.';
+
+                            trigger OnValidate();
+                            begin
+                                EnableNextStep();
+                            end;
                         }
-                        group(Control94)
+                        field(CAContent; 'Setup AMC Banking - Credit Advice, to be able to import Customer payments from your banks.')
                         {
-                            Caption = ' ';
-                            InstructionalText = 'This list of Bank Clearing Standards, can be selected in the Bank Clearing Standard field in the Vendor Bank Account Card page.';
-                            Visible = BankClearStdVisible;
+                            ApplicationArea = Basic, Suite;
+                            ShowCaption = false;
+                            Editable = false;
+                            ToolTip = 'Setup AMC Banking - Credit Advice, to be able to import Customer payments from your banks.';
                         }
-                        group(Control93)
+                        field(BANKDATACONVSERVCREM; BANKDATACONVSERVCREMBoolean)
                         {
-                            Caption = ' ';
-                            InstructionalText = ' ';
-                            Visible = BankClearStdVisible;
+                            ApplicationArea = Basic, Suite;
+                            Caption = 'AMC Banking - Credit Advice';
+                            ToolTip = 'Setup AMC Banking - Credit Advice, to be able to import Customer payments from your banks.';
+
+                            trigger OnValidate();
+                            begin
+                                EnableNextStep();
+                            end;
                         }
                     }
                 }
@@ -571,35 +463,35 @@ page 20105 "AMC Bank Assisted Setup"
                 {
                     Caption = 'Setup own Bank accounts';
                     Visible = BankAccountVisible;
-                    group("UpdateBankAccounts1.2")
+
+                    part(AMCBankAssistBankAccount; "AMC Bank Assist Bank Account")
                     {
-                        Caption = ' ';
-                        InstructionalText = ' ';
-                        Visible = BankAccountVisible;
-                        group("UpdateBankAccounts1.2.1")
-                        {
-                            Caption = ' ';
-                            InstructionalText = 'Own Bank accounts are setup to use Data Exchange Def. for AMC Banking';
-                            Visible = BankAccountVisible;
-                        }
-                        group("UpdateBankAccounts1.2.2")
-                        {
-                            Caption = ' ';
-                            InstructionalText = ' ';
-                            Visible = BankAccountVisible;
-                        }
-                        group("UpdateBankAccounts1.2.3")
-                        {
-                            Caption = ' ';
-                            InstructionalText = 'Own Bank accounts are setup to use Credit Msg. No. for AMC Banking';
-                            Visible = BankAccountVisible;
-                        }
-                        group("UpdateBankAccounts1.2.4")
-                        {
-                            Caption = ' ';
-                            InstructionalText = ' ';
-                            Visible = BankAccountVisible;
-                        }
+                        ApplicationArea = Basic, Suite;
+                        Enabled = BankAccountVisible;
+                    }
+
+                }
+            }
+            group(UpdatePayMeth)
+            {
+                Caption = ' ';
+                Visible = PayMethVisible;
+                group("Para4.1.1")
+                {
+                    Caption = 'Setup basic paymentmethods';
+                    field(UpdPayMethContent; 'Please choose Contrycode for Paymentmethods to setup:')
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Please choose Contrycode for Paymentmethods to setup.';
+                    }
+                    field(PaymCountryCode; PaymCountryCodeCode)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Countrycode';
+                        TableRelation = "Country/Region".Code;
+                        ToolTip = 'Setup paymentmethods for the selected countrycode.';
                     }
                 }
             }
@@ -655,9 +547,11 @@ page 20105 "AMC Bank Assisted Setup"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Back';
                 Enabled = BackEnabled;
+                Visible = ButtonVisible;
                 Image = PreviousRecord;
                 InFooterBar = true;
                 ShortCutKey = 'Ctrl+B';
+                ToolTip = 'Go back to previous step.';
 
                 trigger OnAction();
                 begin
@@ -669,9 +563,11 @@ page 20105 "AMC Bank Assisted Setup"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Next';
                 Enabled = NextEnabled;
+                Visible = ButtonVisible;
                 Image = NextRecord;
                 InFooterBar = true;
                 ShortCutKey = 'Ctrl+N';
+                ToolTip = 'Go to next step.';
 
                 trigger OnAction();
                 begin
@@ -683,9 +579,11 @@ page 20105 "AMC Bank Assisted Setup"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Start update';
                 Enabled = StartEnabled;
+                Visible = ButtonVisible;
                 Image = Approve;
                 InFooterBar = true;
                 ShortCutKey = 'Ctrl+S';
+                ToolTip = 'Start update of data.';
 
                 trigger OnAction();
                 var
@@ -697,6 +595,22 @@ page 20105 "AMC Bank Assisted Setup"
                     end
                     else
                         ShowErrorStep();
+                end;
+            }
+            action("Finished")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Close';
+                Enabled = DoneVisible;
+                Visible = not ButtonVisible;
+                Image = Close;
+                InFooterBar = true;
+                ToolTip = 'Click button to close the assisted setup page';
+
+                trigger OnAction();
+                var
+                begin
+                    CurrPage.Close();
                 end;
             }
         }
@@ -718,9 +632,11 @@ page 20105 "AMC Bank Assisted Setup"
         MediaRepositoryDone: Record "Media Repository";
         MediaResourcesStandardRecord: Record "Media Resources";
         MediaResourcesDoneRecord: Record "Media Resources";
+        TempOnlineBankAccLink: Record "Online Bank Acc. Link" temporary;
         AMCBankAssistedMgt: Codeunit "AMC Bank Assisted Mgt.";
         ClientTypeManagement: Codeunit "Client Type Management";
         BankDataConvServMgt: Codeunit "AMC Banking Mgt.";
+        WebRequestHelper: Codeunit "Web Request Helper";
         Step: Option Intro,"Chose updates","Update URLs","Update Banks","Update Data Exch. Def.","Update PayMethods","Update Bank Clear Std","Update Bank Accounts",Done;
         BackEnabled: Boolean;
         NextEnabled: Boolean;
@@ -734,7 +650,6 @@ page 20105 "AMC Bank Assisted Setup"
         BankVisible: Boolean;
         DataExchDefVisible: Boolean;
         PayMethVisible: Boolean;
-        BankClearStdVisible: Boolean;
         BankAccountVisible: Boolean;
         UpdALL: Boolean;
         UpdURLBoolean: Boolean;
@@ -744,12 +659,13 @@ page 20105 "AMC Bank Assisted Setup"
         UpdBankClearStdBoolean: Boolean;
         UpdBankAccountsBoolean: Boolean;
         Para12Visible: Boolean;
-        CountryCodeCode: Code[10];
+        BankCountryCodeCode: Code[10];
+        PaymCountryCodeCode: Code[10];
         BANKDATACONVSERVSTMTBoolean: Boolean;
         BANKDATACONVSERVPPBoolean: Boolean;
-        BankDataConvServPPVisible: Boolean;
         BANKDATACONVSERVCTBoolean: Boolean;
         BANKDATACONVSERVCREMBoolean: Boolean;
+        BankDataConvServPPVisible: Boolean;
         BankDataConvServCREMVisible: Boolean;
         UpdPayMethVisible: Boolean;
         UpdBankClearStdVisible: Boolean;
@@ -761,8 +677,8 @@ page 20105 "AMC Bank Assisted Setup"
         SignupURLText: Text[250];
         ServiceURLText: Text[250];
         SupportURLText: Text[250];
-
         BasisSetupRanOK: Boolean;
+        ButtonVisible: Boolean;
 
     local procedure LoadTopBanners();
     begin
@@ -812,12 +728,17 @@ page 20105 "AMC Bank Assisted Setup"
             BANKDATACONVSERVCREMBoolean := BankDataConvServCREMVisible;
 
         CompanyInformation.GET();
-        CountryCodeCode := CompanyInformation."Country/Region Code";
+        PaymCountryCodeCode := CompanyInformation."Country/Region Code";
 
         ApplVerText := AMCBankAssistedMgt.GetApplVersion();
         BuildNoText := AMCBankAssistedMgt.GetBuildNumber();
 
         URLSChanged := false;
+
+        if (TempOnlineBankAccLink.FindSet()) then
+            TempOnlineBankAccLink.DeleteAll();
+
+        CurrPage.AMCBankAssistBankAccount.Page.ClearRecs();
     end;
 
     local procedure ResetWizardControls();
@@ -826,6 +747,7 @@ page 20105 "AMC Bank Assisted Setup"
         BackEnabled := true;
         NextEnabled := true;
         StartEnabled := false;
+        ButtonVisible := true;
 
         // Tabs
         IntroVisible := false;
@@ -834,10 +756,12 @@ page 20105 "AMC Bank Assisted Setup"
         BankVisible := false;
         DataExchDefVisible := false;
         PayMethVisible := false;
-        BankClearStdVisible := false;
         BankAccountVisible := false;
         DoneVisible := false;
         ErrorVisible := false;
+
+        //Get TempOnlineBankAccLink from page AMCBankAssistBankAccount, if setup
+        CurrPage.AMCBankAssistBankAccount.Page.GetRecs(TempOnlineBankAccLink);
     end;
 
     local procedure NextStep(Backwards: Boolean);
@@ -860,14 +784,14 @@ page 20105 "AMC Bank Assisted Setup"
                             if (UpdDataExchDefBoolean) then
                                 ShowDataExchDef()
                             else
-                                if (UpdPayMethBoolean) then
-                                    ShowPayMeth()
+                                if (UpdBankAccountsBoolean) then
+                                    ShowBankAccounts()
                                 else
-                                    if (UpdBankClearStdBoolean) then
-                                        ShowBankClearStd()
+                                    if (UpdPayMethBoolean) then
+                                        ShowPayMeth()
                                     else
-                                        if (UpdBankAccountsBoolean) then
-                                            ShowBankAccounts();
+                                        if (UpdBankClearStdBoolean) then
+                                            ShowBankClearStd();
             end
             else
                 if (Step = Step::"Update URLs") then begin
@@ -880,14 +804,14 @@ page 20105 "AMC Bank Assisted Setup"
                             if (UpdDataExchDefBoolean) then
                                 ShowDataExchDef()
                             else
-                                if (UpdPayMethBoolean) then
-                                    ShowPayMeth()
+                                if (UpdBankAccountsBoolean) then
+                                    ShowBankAccounts()
                                 else
-                                    if (UpdBankClearStdBoolean) then
-                                        ShowBankClearStd()
+                                    if (UpdPayMethBoolean) then
+                                        ShowPayMeth()
                                     else
-                                        if (UpdBankAccountsBoolean) then
-                                            ShowBankAccounts();
+                                        if (UpdBankClearStdBoolean) then
+                                            ShowBankClearStd();
                 end
                 else
                     if (Step = Step::"Update Banks") then begin
@@ -901,14 +825,14 @@ page 20105 "AMC Bank Assisted Setup"
                             if (UpdDataExchDefBoolean) then
                                 ShowDataExchDef()
                             else
-                                if (UpdPayMethBoolean) then
-                                    ShowPayMeth()
+                                if (UpdBankAccountsBoolean) then
+                                    ShowBankAccounts()
                                 else
-                                    if (UpdBankClearStdBoolean) then
-                                        ShowBankClearStd()
+                                    if (UpdPayMethBoolean) then
+                                        ShowPayMeth()
                                     else
-                                        if (UpdBankAccountsBoolean) then
-                                            ShowBankAccounts();
+                                        if (UpdBankClearStdBoolean) then
+                                            ShowBankClearStd();
                     end
                     else
                         if (Step = Step::"Update Data Exch. Def.") then begin
@@ -922,17 +846,17 @@ page 20105 "AMC Bank Assisted Setup"
                                         ShowChose();
                             end
                             else
-                                if (UpdPayMethBoolean) then
-                                    ShowPayMeth()
+                                if (UpdBankAccountsBoolean) then
+                                    ShowBankAccounts()
                                 else
-                                    if (UpdBankClearStdBoolean) then
-                                        ShowBankClearStd()
+                                    if (UpdPayMethBoolean) then
+                                        ShowPayMeth()
                                     else
-                                        if (UpdBankAccountsBoolean) then
-                                            ShowBankAccounts();
+                                        if (UpdBankClearStdBoolean) then
+                                            ShowBankClearStd();
                         end
                         else
-                            if (Step = Step::"Update PayMethods") then begin
+                            if (Step = Step::"Update Bank Accounts") then begin
                                 if Backwards then begin
                                     if (UpdDataExchDefBoolean) then
                                         ShowDataExchDef()
@@ -946,18 +870,17 @@ page 20105 "AMC Bank Assisted Setup"
                                                 ShowChose();
                                 end
                                 else
-                                    if (UpdBankClearStdBoolean) then
-                                        ShowBankClearStd()
+                                    if (UpdPayMethBoolean) then
+                                        ShowPayMeth()
                                     else
-                                        if (UpdBankAccountsBoolean) then
-                                            ShowBankAccounts();
-
+                                        if (UpdBankClearStdBoolean) then
+                                            ShowBankClearStd();
                             end
                             else
-                                if (Step = Step::"Update Bank Clear Std") then begin
+                                if (Step = Step::"Update PayMethods") then begin
                                     if Backwards then begin
-                                        if (UpdPayMethBoolean) then
-                                            ShowPayMeth()
+                                        if (UpdBankAccountsBoolean) then
+                                            ShowBankAccounts()
                                         else
                                             if (UpdDataExchDefBoolean) then
                                                 ShowDataExchDef()
@@ -968,20 +891,20 @@ page 20105 "AMC Bank Assisted Setup"
                                                     if (UpdURLBoolean) then
                                                         ShowURL()
                                                     else
-                                                        ShowChose();
+                                                        ShowChose()
                                     end
                                     else
-                                        if (UpdBankAccountsBoolean) then
-                                            ShowBankAccounts();
+                                        if (UpdBankClearStdBoolean) then
+                                            ShowBankClearStd();
                                 end
                                 else
-                                    if (Step = Step::"Update Bank Accounts") then begin
-                                        if Backwards then
-                                            if (UpdBankClearStdBoolean) then
-                                                ShowBankClearStd()
+                                    if (Step = Step::"Update Bank Clear Std") then
+                                        if Backwards then begin
+                                            if (UpdPayMethBoolean) then
+                                                ShowPayMeth()
                                             else
-                                                if (UpdPayMethBoolean) then
-                                                    ShowPayMeth()
+                                                if (UpdBankAccountsBoolean) then
+                                                    ShowBankAccounts()
                                                 else
                                                     if (UpdDataExchDefBoolean) then
                                                         ShowDataExchDef()
@@ -993,10 +916,10 @@ page 20105 "AMC Bank Assisted Setup"
                                                                 ShowURL()
                                                             else
                                                                 ShowChose();
-                                    end
-                                    else
-                                        if (Step = Step::Done) then
+                                        end
+                                        else
                                             ShowDoneStep();
+
 
         EnableNextStep();
 
@@ -1013,20 +936,23 @@ page 20105 "AMC Bank Assisted Setup"
                 if (UpdALL) then
                     StartEnabled := true;
             Step::"Chose updates":
-                if (UpdURLBoolean) or (UpdBankBoolean) or (UpdDataExchDefBoolean) or (UpdPayMethBoolean) or (UpdBankClearStdBoolean) or (UpdBankAccountsBoolean) then
-                    NextEnabled := true;
+                if (UpdURLBoolean) or (UpdBankBoolean) or (UpdDataExchDefBoolean) or (UpdBankAccountsBoolean) or (UpdPayMethBoolean) or (UpdBankClearStdBoolean) then
+                    if (not UpdURLBoolean) and (not UpdBankBoolean) and (not UpdDataExchDefBoolean) and (not UpdBankAccountsBoolean) and (not UpdPayMethBoolean) and (UpdBankClearStdBoolean) then
+                        StartEnabled := true
+                    else
+                        NextEnabled := true;
             Step::"Update URLs":
-                if (UpdURLBoolean) and (not UpdBankBoolean) and (not UpdDataExchDefBoolean) and (not UpdPayMethBoolean) and (not UpdBankClearStdBoolean) and (not UpdBankAccountsBoolean) then
+                if (UpdURLBoolean) and (not UpdBankBoolean) and (not UpdDataExchDefBoolean) and (not UpdBankAccountsBoolean) and (not UpdPayMethBoolean) then
                     StartEnabled := true
                 else
                     NextEnabled := true;
             Step::"Update Banks":
-                if (UpdBankBoolean) and (not UpdDataExchDefBoolean) and (not UpdPayMethBoolean) and (not UpdBankClearStdBoolean) and (not UpdBankAccountsBoolean) then
+                if (UpdBankBoolean) and (not UpdDataExchDefBoolean) and (not UpdBankAccountsBoolean) and (not UpdPayMethBoolean) then
                     StartEnabled := true
                 else
                     NextEnabled := true;
             Step::"Update Data Exch. Def.":
-                if (UpdDataExchDefBoolean) and (not UpdPayMethBoolean) and (not UpdBankClearStdBoolean) and (not UpdBankAccountsBoolean) then begin
+                if (UpdDataExchDefBoolean) and (not UpdBankAccountsBoolean) and (not UpdPayMethBoolean) then begin
                     if ((BANKDATACONVSERVCTBoolean) or (BANKDATACONVSERVPPBoolean)
                     or (BANKDATACONVSERVSTMTBoolean) or (BANKDATACONVSERVCREMBoolean)) then
                         StartEnabled := true
@@ -1039,18 +965,16 @@ page 20105 "AMC Bank Assisted Setup"
                         NextEnabled := true
                     else
                         NextEnabled := false;
-            Step::"Update PayMethods":
-                if (UpdPayMethBoolean) and (not UpdBankClearStdBoolean) and (not UpdBankAccountsBoolean) then
-                    StartEnabled := true
-                else
-                    NextEnabled := true;
-            Step::"Update Bank Clear Std":
-                if (UpdBankClearStdBoolean) and (not UpdBankAccountsBoolean) then
-                    StartEnabled := true
-                else
-                    NextEnabled := true;
             Step::"Update Bank Accounts":
-                StartEnabled := true
+                if (UpdBankAccountsBoolean) and (not UpdPayMethBoolean) then
+                    StartEnabled := true
+                else
+                    NextEnabled := true;
+            Step::"Update PayMethods":
+                if (UpdPayMethBoolean) then
+                    StartEnabled := true;
+            Step::"Update Bank Clear Std":
+                StartEnabled := true;
         end;
     end;
 
@@ -1068,6 +992,7 @@ page 20105 "AMC Bank Assisted Setup"
     local procedure ShowChose();
     begin
         ResetWizardControls();
+        CollectBankAccounts();
         NextEnabled := true;
         ChoseUpdVisible := true;
         Step := Step::"Chose updates";
@@ -1102,6 +1027,17 @@ page 20105 "AMC Bank Assisted Setup"
         DataExchDefVisible := true;
     end;
 
+    local procedure ShowBankAccounts();
+    begin
+        ResetWizardControls();
+        Step := Step::"Update Bank Accounts";
+        if TempOnlineBankAccLink.FindFirst() then
+            if not TempOnlineBankAccLink.IsEmpty() then
+                CurrPage.AMCBankAssistBankAccount.PAGE.SetRecs(TempOnlineBankAccLink);
+
+        BankAccountVisible := true;
+    end;
+
     local procedure ShowPayMeth();
     begin
         ResetWizardControls();
@@ -1113,19 +1049,12 @@ page 20105 "AMC Bank Assisted Setup"
     begin
         ResetWizardControls();
         Step := Step::"Update Bank Clear Std";
-        BankClearStdVisible := true;
-    end;
-
-    local procedure ShowBankAccounts();
-    begin
-        ResetWizardControls();
-        Step := Step::"Update Bank Accounts";
-        BankAccountVisible := true;
     end;
 
     local procedure ShowDoneStep();
     begin
         ResetWizardControls();
+        ButtonVisible := false;
         DoneVisible := true;
         BackEnabled := false;
         NextEnabled := false;
@@ -1143,6 +1072,26 @@ page 20105 "AMC Bank Assisted Setup"
         StartEnabled := false;
     end;
 
+    local procedure CollectBankAccounts()
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        TempOnlineBankAccLink.Reset();
+        TempOnlineBankAccLink.DeleteAll();
+
+        BankAccount.SetRange(Blocked, false);
+        if (BankAccount.FindSet()) then
+            repeat
+                TempOnlineBankAccLink.Init();
+                TempOnlineBankAccLink."No." := BankAccount."No.";
+                TempOnlineBankAccLink.Name := CopyStr(BankAccount.Name, 1, 50);
+                TempOnlineBankAccLink."Currency Code" := BankAccount."Currency Code";
+                TempOnlineBankAccLink."Bank Account No." := CopyStr(BankAccount.GetBankAccountNo(), 1, 30);
+                TempOnlineBankAccLink."Automatic Logon Possible" := false;
+                TempOnlineBankAccLink.Insert(false);
+            until BankAccount.Next() = 0;
+    end;
+
     local procedure CheckPath(Var Path: Text)
     begin
         IF (COPYSTR(Path, STRLEN(Path), 1) <> '\') THEN
@@ -1151,16 +1100,27 @@ page 20105 "AMC Bank Assisted Setup"
 
     local procedure RunUpdates();
     var
+        //UpdOnlineBankAccLink: Record "Online Bank Acc. Link" temporary;
         CallLicenseServer: Boolean;
     begin
         CallLicenseServer := true;
-        BasisSetupRanOK := AMCBankAssistedMgt.RunBasisSetup(UpdURLBoolean, URLSChanged, SignupURLText, ServiceURLText, SupportURLText, UpdBankBoolean, UpdPayMethBoolean, CountryCodeCode,
-                                                        UpdDataExchDefBoolean, BANKDATACONVSERVCTBoolean, BANKDATACONVSERVPPBoolean, BANKDATACONVSERVSTMTBoolean, BANKDATACONVSERVCREMBoolean, ApplVerText, BuildNoText,
-                                                        UpdBankClearStdBoolean, UpdBankAccountsBoolean, CallLicenseServer);
+        if (not UpdALL) then
+            CurrPage.AMCBankAssistBankAccount.Page.GetRecs(TempOnlineBankAccLink);
 
-        AMCBankAssistedMgt.OnAfterRunBasisSetup(UpdURLBoolean, URLSChanged, SignupURLText, ServiceURLText, SupportURLText, UpdBankBoolean, UpdPayMethBoolean, CountryCodeCode,
+        BasisSetupRanOK := AMCBankAssistedMgt.RunBasisSetup(UpdURLBoolean, URLSChanged, SignupURLText, ServiceURLText, SupportURLText, UpdBankBoolean, UpdPayMethBoolean, BankCountryCodeCode, PaymCountryCodeCode,
+                                                            UpdDataExchDefBoolean, BANKDATACONVSERVCTBoolean, BANKDATACONVSERVPPBoolean, BANKDATACONVSERVSTMTBoolean, BANKDATACONVSERVCREMBoolean, ApplVerText, BuildNoText,
+                                                            UpdBankClearStdBoolean, UpdBankAccountsBoolean, TempOnlineBankAccLink, CallLicenseServer);
+
+        AMCBankAssistedMgt.OnAfterRunBasisSetup(UpdURLBoolean, URLSChanged, SignupURLText, ServiceURLText, SupportURLText, UpdBankBoolean, UpdPayMethBoolean, BankCountryCodeCode, PaymCountryCodeCode,
+                                                UpdDataExchDefBoolean, BANKDATACONVSERVCTBoolean, BANKDATACONVSERVPPBoolean, BANKDATACONVSERVSTMTBoolean, BANKDATACONVSERVCREMBoolean, ApplVerText, BuildNoText,
+                                                UpdBankClearStdBoolean, UpdBankAccountsBoolean, CallLicenseServer);
+
+        AMCBankAssistedMgt.OnAfterRunBasisSetupV16(UpdURLBoolean, URLSChanged, SignupURLText, ServiceURLText, SupportURLText, UpdBankBoolean, UpdPayMethBoolean, BankCountryCodeCode, PaymCountryCodeCode,
                                                    UpdDataExchDefBoolean, BANKDATACONVSERVCTBoolean, BANKDATACONVSERVPPBoolean, BANKDATACONVSERVSTMTBoolean, BANKDATACONVSERVCREMBoolean, ApplVerText, BuildNoText,
-                                                   UpdBankClearStdBoolean, UpdBankAccountsBoolean, CallLicenseServer);
+                                                   UpdBankClearStdBoolean, UpdBankAccountsBoolean, TempOnlineBankAccLink, CallLicenseServer);
     end;
+
+
+
 
 }

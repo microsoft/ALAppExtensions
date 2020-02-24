@@ -1,0 +1,78 @@
+HTTP/1.1 200 OK
+Content-Type: text/xml
+Server: Jetty(8.1.7.v20120910)
+Content-Length: 4524
+
+<soap:Envelope
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <ns3:paymentExportBankResponse
+            xmlns:ns2="amc/xml/pay03_keyvaluerequest"
+            xmlns:ns3="http://nav03.soap.xml.link.amc.dk/"
+            xmlns:ns4="amc/xml/pay03_paymentrequest"
+            xmlns:ns5="amc/xml/pay03_paymentresponse"
+            xmlns:ns6="amc/xml/pay03_reportresponse"
+            xmlns:ns7="amc/xml/pay03_global"
+            xmlns:ns8="amc/xml/pay03_tokenresponse"
+            xmlns:ns9="amc/xml/pay03_dataexchangeresponse"
+            xmlns:ns10="amc/xml/pay03_journalresponse"
+            xmlns:ns11="amc/xml/pay03_keyvalueresponse"
+            xmlns:ns12="amc/xml/pay03_reportrequest"
+            xmlns:ns13="amc/xml/pay03_bankresponse"
+            xmlns:ns14="amc/xml/pay03_entryrequest"
+            xmlns:ns15="amc/xml/pay03_entryresponse">
+            <return>
+                <version>3.0</version>
+                <pack>
+                    <checksum>eee487969540b91481605e8eea77c34acf059855aebf0e5b74d121e544243a4f3edb8557d03035f576b819c7dc5c999c1fbe5c016f916041e8f0d29cd6dad7a2</checksum>
+                    <date>2019-10-17T13:00:02.020Z</date>
+                    <journalnumber>{20568BA7-_469</journalnumber>
+                    <convertlog>
+                        <hinttext>Please verify that the IBAN number is entered correctly and meets both syntax and length requirements</hinttext>
+                        <messageid>Sender's account no. 'WRONGBANKACCNO' wasn't recognized as a valid IBAN number.</messageid>
+                        <referenceid>1/1US</referenceid>
+                        <text>Sender's account no. 'WRONGBANKACCNO' wasn't recognized as a valid IBAN number.</text>
+                        <url>http://amcbanking.com/kb/Sender's account no. 'WRONGBANKACCNO' wasn't recognized as a valid IBAN number.</url>
+                        <syslogtype>error</syslogtype>
+                    </convertlog>
+                    <convertlog>
+                        <hinttext>Please adjust the date to less than 365 days from today</hinttext>
+                        <messageid>@10492</messageid>
+                        <referenceid>1/1TH</referenceid>
+                        <text>The payment date is more than 365 days in the future.</text>
+                        <url>http://amcbanking.com/kb/10492</url>
+                        <syslogtype>error</syslogtype>
+                    </convertlog>
+                    <convertlog>
+                        <hinttext>The payment date is required to be on a weekday</hinttext>
+                        <messageid>@10675</messageid>
+                        <referenceid>1/1TH</referenceid>
+                        <text>The payment date 2020-10-17 is invalid.</text>
+                        <url>http://amcbanking.com/kb/10675</url>
+                        <syslogtype>error</syslogtype>
+                    </convertlog>
+                    <convertlog>
+                        <hinttext>Please specify receivers IBAN no. or bank account number (BBAN) in your ERP system, or in XTendLink</hinttext>
+                        <messageid>@10541</messageid>
+                        <referenceid>1/1TH</referenceid>
+                        <text>Receiver's IBAN no. or bank account no. must be specified.</text>
+                        <url>http://amcbanking.com/kb/10541</url>
+                        <syslogtype>error</syslogtype>
+                    </convertlog>
+                    <convertlog>
+                        <hinttext>Please verify that the IBAN number is entered correctly and meets both syntax and length requirements</hinttext>
+                        <messageid>Sender's account no. 'WRONGBANKACCNO' wasn't recognized as a valid IBAN number.</messageid>
+                        <referenceid>1/1US</referenceid>
+                        <text>Sender's account no. 'WRONGBANKACCNO' wasn't recognized as a valid IBAN number.</text>
+                        <url>http://amcbanking.com/kb/Sender's account no. 'WRONGBANKACCNO' wasn't recognized as a valid IBAN number.</url>
+                        <syslogtype>error</syslogtype>
+                    </convertlog>
+                    <journalstatus>imported</journalstatus>
+                </pack>
+                <header>
+                    <result>error</result>
+                </header>
+            </return>
+        </ns3:paymentExportBankResponse>
+    </soap:Body>
+</soap:Envelope>

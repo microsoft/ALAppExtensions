@@ -84,9 +84,8 @@ table 20101 "AMC Banking Setup"
                 SavePassword(GetPassword()); // Set Password to demo password, if new record for user to try the funtionality
             if "User Name" = GetDemoUserName() then
                 Solution := AMCBankServMgt.GetDemoSolutionCode();
-
-            AMCBankServMgt.InitDefaultURLs(Rec);
         end;
+        AMCBankServMgt.InitDefaultURLs(Rec);
     end;
 
     var
@@ -99,10 +98,15 @@ table 20101 "AMC Banking Setup"
         if IsNullGuid("Password Key") then
             "Password Key" := CreateGuid();
 
-        if not EncryptionEnabled() then
-            IsolatedStorage.Set(CopyStr("Password Key", 1, 200), PasswordText, Datascope::Company)
+        if (PasswordText <> '') then begin
+            if not EncryptionEnabled() then
+                IsolatedStorage.Set(CopyStr("Password Key", 1, 200), PasswordText, Datascope::Company)
+            else
+                IsolatedStorage.SetEncrypted(CopyStr("Password Key", 1, 200), PasswordText, Datascope::Company);
+        end
         else
-            IsolatedStorage.SetEncrypted(CopyStr("Password Key", 1, 200), PasswordText, Datascope::Company);
+            if HasPassword() then
+                DeletePassword();
     end;
 
     [Scope('OnPrem')]

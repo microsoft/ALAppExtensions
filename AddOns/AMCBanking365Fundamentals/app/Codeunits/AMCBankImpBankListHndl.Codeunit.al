@@ -13,6 +13,7 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         AddnlInfoTxt: Label 'For more information, go to %1.';
         ResponseNodeTxt: Label 'bankListResponse', Locked = true;
         AMCBankServSysErr: Label 'The AMC Banking has returned the following error message:';
+        ContentTypeTxt: Label 'text/xml; charset=utf-8', Locked = true;
 
     [Scope('OnPrem')]
     procedure GetBankListFromWebService(ShowErrors: Boolean; CountryFilter: Text; Timeout: Integer)
@@ -39,6 +40,7 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         TempBlobBody.CreateInStream(InStream);
         SOAPWebServiceRequestMgt.SetGlobals(InStream,
           AMCBankServiceSetup."Service URL", AMCBankServiceSetup.GetUserName(), AMCBankServiceSetup.GetPassword());
+        SOAPWebServiceRequestMgt.SetContentType(ContentTypeTxt);
         SOAPWebServiceRequestMgt.SetTimeout(Timeout);
         if not EnableUI then
             SOAPWebServiceRequestMgt.DisableProgressDialog();

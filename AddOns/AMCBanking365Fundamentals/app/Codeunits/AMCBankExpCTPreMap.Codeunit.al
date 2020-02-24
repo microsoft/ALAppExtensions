@@ -60,8 +60,8 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                 "Recipient ID" := GenJnlLine."Account No.";
                 "Message ID" := MessageID;
                 "Document No." := GenJnlLine."Document No.";
-                "End-to-End ID" := "Message ID" + '/' + Format("Line No.") + 'US'; // Making unique key we added US, because we want to use the same for Payment Information Id for later use.
-                "Payment Information ID" := "Message ID" + '/' + FORMAT("Line No.") + 'TH'; // Making unique key we added TH, because we want to use the same for End-to-end Id for later use.
+                "End-to-End ID" := "Message ID" + '/' + Format("Line No.") + 'US'; // Making uniq key we added US, because we want to use the same for Payment Information Id for later use.
+                "Payment Information ID" := "Message ID" + '/' + FORMAT("Line No.") + 'TH'; // Making uniq key we added TH, because we want to use the same for End-to-end Id for later use.
                 "Applies-to Ext. Doc. No." := GenJnlLine."Applies-to Ext. Doc. No.";
                 "Short Advice" := GenJnlLine."Document No.";
                 "Recipient Creditor No." := GenJnlLine."Creditor No.";
@@ -107,6 +107,11 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                 "Message to Recipient 1" := CopyStr(GenJnlLine."Message to Recipient", 1, 35);
                 "Message to Recipient 2" := CopyStr(GenJnlLine."Message to Recipient", 36, 70);
                 Amount := GenJnlLine.Amount;
+                if (GenJnlLine."Currency Code" <> '') then // This is to handle BC users that by mistake has set CurrencyCode to the same as GeneralLedgerSetup."LCY Code"
+                    "Currency Code" := GenJnlLine."Currency Code"
+                else
+                    "Currency Code" := GeneralLedgerSetup.GetCurrencyCode(GenJnlLine."Currency Code");
+
                 "Currency Code" := GeneralLedgerSetup.GetCurrencyCode(GenJnlLine."Currency Code");
                 "Transfer Date" := GenJnlLine."Posting Date";
                 "Costs Distribution" := 'Shared';
@@ -116,6 +121,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                 "Sender Bank Name - Data Conv." := BankAccount."AMC Bank Name"; // Moved here from above function SetBankAsSenderBank
                 "Sender Bank Country/Region" := CompanyInformation.GetCountryRegionCode(BankAccount."Country/Region Code");
                 "Sender Bank Account Currency" := GeneralLedgerSetup.GetCurrencyCode(BankAccount."Currency Code");
+                "Importing Code" := 'FALSE'; //Never send chequeinfo in XMLPORT 20100, only used for Positive Pay
 
                 OnBeforeInsertPaymentExoprtData(PaymentExportData, GenJnlLine, GeneralLedgerSetup);
 
@@ -165,6 +171,16 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                 GenJournalLine."Account Type", GenJournalLine."Account No.", GenJournalLine.GetAppliesToDocEntryNo(),
                 GenJournalLine."Posting Date", GenJournalLine."Currency Code", GenJournalLine.Amount, PaymentExportData."Payment Information ID",
                 GenJournalLine."Recipient Bank Account", GenJournalLine."Message to Recipient");
+
+            //Update CreditTransferEntry with Data Exch. Entry No. and any discount for banktransspec
+            CreditTransferEntry.SetRange("Credit Transfer Register No.", CreditTransferRegister."No.");
+            CreditTransferEntry.SetRange("Applies-to Entry No.", GenJournalLine.GetAppliesToDocEntryNo());
+            CreditTransferEntry.SetRange("Transaction ID", PaymentExportData."Payment Information ID");
+            if (CreditTransferEntry.FindFirst()) then begin
+                CreditTransferEntry."Data Exch. Entry No." := GenJournalLine."Data Exch. Entry No.";
+                CreditTransferEntry."Pmt. Disc. Possible" := 0;
+                CreditTransferEntry.Modify();
+            end;
         end;
     end;
 

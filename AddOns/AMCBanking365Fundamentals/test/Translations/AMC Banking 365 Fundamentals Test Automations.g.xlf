@@ -1,0 +1,634 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en-US" target-language="en-US" original="AMC Banking 365 Fundamentals Test Automations">
+    <body>
+      <group id="body">
+        <trans-unit id="Codeunit 2979246637 - NamedType 2669200610" size-unit="char" translate="no" xml:space="preserve">
+          <source>https://host.docker.internal:8088/</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Credential UT - NamedType LocalhostURLTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2979246637 - NamedType 3164795350" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The %1 is missing the user name or password. Do you want to open the %1 page?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Credential UT - NamedType MissingCredentialsQst</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2979246637 - NamedType 2591510851" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The user name and password must be filled in %1 page.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Credential UT - NamedType MissingCredentialsErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2979246637 - NamedType 128301118" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The expected data was not received from the web service.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Credential UT - NamedType NoConnectionErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2979246637 - NamedType 1910102229" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paymentExportBank xmlns="http://nav03.soap.xml.link.amc.dk/"&gt;&lt;amcpaymentreq xmlns=''&gt;&lt;banktransjournal&gt;&lt;uniqueid&gt;%1&lt;/uniqueid&gt;&lt;/banktransjournal&gt;&lt;/amcpaymentreq&gt;&lt;bank&gt;Danske DK&lt;/bank&gt;&lt;language&gt;ENU&lt;/language&gt;&lt;/paymentExportBank&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Credential UT - NamedType SamplePmtXmlFile_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2979246637 - NamedType 3684597839" size-unit="char" translate="no" xml:space="preserve">
+          <source>/ns:reportExportResponse/return/cremul</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Credential UT - NamedType CremulPathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2979246637 - NamedType 1708704288" size-unit="char" translate="no" xml:space="preserve">
+          <source>/ns:reportExportResponse/return/finsta/statement/</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Credential UT - NamedType EndBalanceNodePathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 987723820 - NamedType 1810949511" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The request body is not set.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Stmt. to AMC Format UT - NamedType NoRequestBodyErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1204471083 - NamedType 45019233" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The URI is not secure.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit ERM AMC banking Setup ATDD - NamedType UnsecureUriErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1204471083 - NamedType 3531511414" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The URI is not valid.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit ERM AMC banking Setup ATDD - NamedType InvalidUriErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1204471083 - NamedType 652137115" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The password from the database does not match the one that was introduced.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit ERM AMC banking Setup ATDD - NamedType PasswordDoesNotMatchErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1204471083 - NamedType 4016683539" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The encryption was not activated.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit ERM AMC banking Setup ATDD - NamedType EncryptionIsNotActiveErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1204471083 - NamedType 3072151880" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The encryption is activated and it should not be.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit ERM AMC banking Setup ATDD - NamedType EncryptionIsActiveErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1204471083 - NamedType 2591510851" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The user name and password must be filled</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit ERM AMC banking Setup ATDD - NamedType MissingCredentialsErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2463095515 - NamedType 3656526069" size-unit="char" translate="yes" xml:space="preserve">
+          <source>%1 Field:"%2" different from expected.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Import XML Bank Acc. Rec. Line - NamedType AssertMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2463095515 - NamedType 1702298147" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The file that you are trying to import contains more than one bank statement.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Import XML Bank Acc. Rec. Line - NamedType MultiStatementErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2463095515 - NamedType 3608730181" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The statement date was not found in the data to be imported.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Import XML Bank Acc. Rec. Line - NamedType MissingStatementDateInDataMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2463095515 - NamedType 957449493" size-unit="char" translate="yes" xml:space="preserve">
+          <source>urn:iso:std:iso:20022:tech:xsd:camt.053.001.02</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Import XML Bank Acc. Rec. Line - NamedType NamespaceTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2463095515 - NamedType 1975081983" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Bank account %1 does not have the bank account number</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Import XML Bank Acc. Rec. Line - NamedType BankAccMismatchQst</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2463095515 - NamedType 2242781076" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The bank account number was not found in the data to be imported.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Import XML Bank Acc. Rec. Line - NamedType MissingBankAccNoInDataErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2463095515 - NamedType 4082076936" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Bank account %1 does not have a bank account number. Do you want to continue?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Import XML Bank Acc. Rec. Line - NamedType MissingBankAccNoQst</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2463095515 - NamedType 1428720056" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The bank statement that you are importing contains transactions in currencies other than the Currency Code </source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Import XML Bank Acc. Rec. Line - NamedType BankAccCurrErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2463095515 - NamedType 2166558474" size-unit="char" translate="yes" xml:space="preserve">
+          <source>%1 of bank account %2.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Import XML Bank Acc. Rec. Line - NamedType CurrCodeErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2463095515 - NamedType 393648751" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The balance type was not found in the data to be imported.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Import XML Bank Acc. Rec. Line - NamedType MissingBalTypeInDataMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2463095515 - NamedType 3619650937" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The closing balance was not found in the data to be imported.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Import XML Bank Acc. Rec. Line - NamedType MissingClosingBalanceInDataMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 14298264 - NamedType 1278999224" size-unit="char" translate="yes" xml:space="preserve">
+          <source>%1 must have a value</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Pmt. Export AMC - Extract Data - NamedType MissingBankNameDataConvErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 2669200610" size-unit="char" translate="no" xml:space="preserve">
+          <source>https://host.docker.internal:8088/</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType LocalhostURLTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 666208342" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paymentExportBank xmlns="%1"&gt;&lt;amcpaymentreq&gt;&lt;banktransjournal&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine01Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 1260719571" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;journalname&gt;200106&lt;/journalname&gt;&lt;journalnumber&gt;journal-02&lt;/journalnumber&gt;&lt;transmissionref1&gt;01&lt;/transmissionref1&gt;&lt;uniqueid&gt;DE-01&lt;/uniqueid&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine02Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 3818822932" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;banktransus&gt;&lt;countryoforigin&gt;DE&lt;/countryoforigin&gt;&lt;uniqueid&gt;DE01US&lt;/uniqueid&gt;&lt;ownaddress&gt;&lt;address1&gt;Grundtvigsvej 29&lt;/address1&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine03Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 1301450129" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;address2&gt;&lt;/address2&gt;&lt;city&gt;&lt;/city&gt;&lt;countryiso&gt;DK&lt;/countryiso&gt;&lt;name&gt;AMC&lt;/name&gt;&lt;/ownaddress&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine04Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 3828178450" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;banktransthem&gt;&lt;uniqueid&gt;DE01TH&lt;/uniqueid&gt;&lt;receiversaddress&gt;&lt;countryiso&gt;DE&lt;/countryiso&gt;&lt;name&gt;Tysk kreditor 1&lt;/name&gt;&lt;/receiversaddress&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine05Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 127722383" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paymenttype&gt;DomAcc2Acc&lt;/paymenttype&gt;&lt;costs&gt;Shared&lt;/costs&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine06Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 1964668496" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;banktransspec&gt;&lt;discountused&gt;0.0&lt;/discountused&gt;&lt;invoiceref&gt;6541695&lt;/invoiceref&gt;&lt;uniqueid&gt;DE01SP&lt;/uniqueid&gt;&lt;amountdetails&gt;&lt;payamount&gt;0.08&lt;/payamount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine07Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 3532814301" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paycurrency&gt;EUR&lt;/paycurrency&gt;&lt;paydate&gt;20140529&lt;/paydate&gt;&lt;/amountdetails&gt;&lt;/banktransspec&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine08Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 2869595934" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;banktransspec&gt;&lt;discountused&gt;0.0&lt;/discountused&gt;&lt;invoiceref&gt;6541654&lt;/invoiceref&gt;&lt;uniqueid&gt;DE02SP&lt;/uniqueid&gt;&lt;amountdetails&gt;&lt;payamount&gt;0.02&lt;/payamount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine09Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 4168944590" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paycurrency&gt;EUR&lt;/paycurrency&gt;&lt;paydate&gt;20140529&lt;/paydate&gt;&lt;/amountdetails&gt;&lt;/banktransspec&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine10Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 4111005709" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;amountdetails&gt;&lt;payamount&gt;0.10&lt;/payamount&gt;&lt;paycurrency&gt;EUR&lt;/paycurrency&gt;&lt;paydate&gt;20140529&lt;/paydate&gt;&lt;/amountdetails&gt;&lt;receiversbankaccount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine11Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 1542700684" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;bankaccount&gt;0011350044&lt;/bankaccount&gt;&lt;intregno&gt;51420600&lt;/intregno&gt;&lt;intregnotype&gt;GermanBankleitzahl&lt;/intregnotype&gt;&lt;/receiversbankaccount&gt;&lt;/banktransthem&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine12Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 2247495755" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;bankaccountident&gt;&lt;bankaccount&gt;0011350034&lt;/bankaccount&gt;&lt;swiftcode&gt;HANDDEFF&lt;/swiftcode&gt;&lt;/bankaccountident&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine13Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 3035947402" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;/banktransus&gt;&lt;/banktransjournal&gt;&lt;/amcpaymentreq&gt;&lt;bank&gt;AMC Demo Bank GB&lt;/bank&gt;&lt;language&gt;EN&lt;/language&gt;&lt;/paymentExportBank&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType DemoFileLine14Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 390744329" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paymentExportBank xmlns="%1"&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine01Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 1375075976" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;amcpaymentreq&gt;&lt;banktransjournal&gt;&lt;erpsystem&gt;HelloFromCAL&lt;/erpsystem&gt;&lt;journalname&gt;Test 012&lt;/journalname&gt;&lt;transmissionref1&gt;01&lt;/transmissionref1&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine02Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 2759451591" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;uniqueid&gt;Test01Id&lt;/uniqueid&gt;&lt;banktransus&gt;&lt;countryoforigin&gt;DE&lt;/countryoforigin&gt;&lt;ownreference&gt;AMC0001TEST&lt;/ownreference&gt;&lt;uniqueid&gt;DE01US&lt;/uniqueid&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine03Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 818946446" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;banktransthem&gt;&lt;customerid&gt;Kreditor 1&lt;/customerid&gt;&lt;uniqueid&gt;DE01TH&lt;/uniqueid&gt;&lt;receiversaddress&gt;&lt;address1&gt;German vendor 1&lt;/address1&gt;&lt;countryiso&gt;DE&lt;/countryiso&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine04Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 2203322061" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;name&gt;Vendor name&lt;/name&gt;&lt;/receiversaddress&gt;&lt;banktransspec&gt;&lt;discountused&gt;0.0&lt;/discountused&gt;&lt;invoiceref&gt;654123&lt;/invoiceref&gt;&lt;origamount&gt;0.20&lt;/origamount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine05Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 3229230412" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;uniqueid&gt;DE01SP&lt;/uniqueid&gt;&lt;amountdetails&gt;&lt;payamount&gt;0.10&lt;/payamount&gt;&lt;paycurrency&gt;EUR&lt;/paycurrency&gt;&lt;paydate&gt;20120101&lt;/paydate&gt;&lt;/amountdetails&gt;&lt;/banktransspec&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine06Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 3892448779" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;amountdetails&gt;&lt;payamount&gt;0.10&lt;/payamount&gt;&lt;paycurrency&gt;EUR&lt;/paycurrency&gt;&lt;paydate&gt;20081218&lt;/paydate&gt;&lt;/amountdetails&gt;&lt;receiversbankaccount&gt;&lt;bankaccount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine07Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 3251218498" size-unit="char" translate="no" xml:space="preserve">
+          <source>0011350044&lt;/bankaccount&gt;&lt;intregno&gt;51420600&lt;/intregno&gt;&lt;intregnotype&gt;GermanBankleitzahl&lt;/intregnotype&gt;&lt;/receiversbankaccount&gt;&lt;paymenttype&gt;DomAcc2Acc&lt;/paymenttype&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine08Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 693115137" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;costs&gt;PayerPaysAll&lt;/costs&gt;&lt;/banktransthem&gt;&lt;bankaccountident&gt;&lt;bankaccount&gt;11350034&lt;/bankaccount&gt;&lt;swiftcode&gt;HANDDEFF&lt;/swiftcode&gt;&lt;/bankaccountident&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine09Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 2946403153" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;ownaddress&gt;&lt;address1&gt;Grundtvigsvej 29&lt;/address1&gt;&lt;countryiso&gt;DE&lt;/countryiso&gt;&lt;name&gt;AMC Consult A/S&lt;/name&gt;&lt;/ownaddress&gt;&lt;ownaddressinfo&gt;frombank&lt;/ownaddressinfo&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine10Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1138922865 - NamedType 1962071506" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;/banktransus&gt;&lt;/banktransjournal&gt;&lt;/amcpaymentreq&gt;&lt;bank xmlns=""&gt;Handels EDI DE&lt;/bank&gt;&lt;/paymentExportBank&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Payment AMC - NamedType SampleFileLine11Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 3041187379" size-unit="char" translate="yes" xml:space="preserve">
+          <source>For more information, go to</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType SupportURLErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 1606912885" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has returned the following error message:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType SyslogErrorsErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 3684597839" size-unit="char" translate="no" xml:space="preserve">
+          <source>/ns:reportExportResponse/return/cremul</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType CremulPathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 1708704288" size-unit="char" translate="no" xml:space="preserve">
+          <source>/ns:reportExportResponse/return/finsta/statement/</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType EndBalanceNodePathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 4173888130" size-unit="char" translate="yes" xml:space="preserve">
+          <source>File not recognized as valid bankfile</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType FileNotRecognizedErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 886246281 - NamedType 1523132696" size-unit="char" translate="no" xml:space="preserve">
+          <source>"NDEADKKKXXX","2999","9999940560","DKK","Demo User","","20030221","20030221","15757.25","+","15757.25","","68","","Order 12345","4","500","MEDDELNR 2001219","0","99999999999903","501","","502","KON konto 0979999035","0","","0","","0","","","","","","","266787.12","+","266787.12","","","Driftskonto","DK3420009999940560","N","Test Testsen","Testvej 10","9999 Testrup","","","","Ordrenr. 65656","99999999999903","1170200109040120000018","7","Betaling af f¹lgende fakturaer:","Fakturanr. Bel¹b:","12345 2500,35","22345 1265,66","32345 5825,00","42345 3635,88","52345 2530,36","","","","","","","","","","","","","","","","","","","","","","","",""</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Stmt E2E Web Serv - NamedType NordeaCorporate_EnCodWinTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 1284718327" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Errors should have been inserted.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType ErrorsNotFoundErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 4134082808" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has found one or more errors.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType HasErrorsErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 1606912885" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has returned the following error message:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType SyslogErrorsErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 4085682537" size-unit="char" translate="yes" xml:space="preserve">
+          <source>File not recognized as valid bankfile</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType StmtNotRecognized1Err</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 469963928" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Check your importfile</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType StmtNotRecognized2Err</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3946625331 - NamedType 488662429" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Unexpected value was found. Expected value was: %1.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC CT E2E Web Service Test - NamedType UnexpectedValueErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 230233303 - NamedType 2563208725" size-unit="char" translate="yes" xml:space="preserve">
+          <source>There is no element in the list. The service did not provide any elements.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Conv Serv Lookup - NamedType MissingElementMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 230233303 - NamedType 4292699077" size-unit="char" translate="yes" xml:space="preserve">
+          <source>There should be no elemets in the list.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Conv Serv Lookup - NamedType NotEmptyListMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 230233303 - NamedType 3795224834" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The bank name is not the same as the expected one.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Conv Serv Lookup - NamedType IncorrectBankMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1849500811 - NamedType 228609747" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The country code entered does not exist</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Bank Name Lookup E2E - NamedType CountrCodeErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1947765334 - NamedType 3320504657" size-unit="char" translate="yes" xml:space="preserve">
+          <source>%1 was not found in %2.</source>
+          <note from="Developer" annotates="general" priority="2">%1=Substring;%2=String</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Base64 Decoding / Encoding - NamedType SubstringNotFoundErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1947765334 - NamedType 513849016" size-unit="char" translate="no" xml:space="preserve">
+          <source>"NDEADKKKXXX","1888","9999940560","DKK","Encoding","","20030221","20030221","15757.25","+","15757.25","","68","","Order 12345","4","500","MEDDELNR 2001æ¹å","0","99999999999903","501","","502","KON konto 0979999035","0","","0","","0","","","","","","","266787.12","+","266787.12","","","Driftskonto","DK3420009999940560","N","Test Testsen","Testvej 10","9999 Testrup","","","","Ordrenr. 65656","99999999999903","1170200109040120000018","7","Betaling af f¹lgende fakturaer:","Fakturanr. Bel¹b:","12345 2500,35","22345 1265,66","32345 5825,00","42345 3635,88","52345 2530,36","","","","","","","","","","","","","","","","","","","","","","","",""</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Base64 Decoding / Encoding - NamedType NordeaCorporate_EncodWinTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1947765334 - NamedType 1975081983" size-unit="char" translate="yes" xml:space="preserve">
+          <source>as specified in the bank statement file.\\Do you want to continue?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Base64 Decoding / Encoding - NamedType BankAccMismatchQst</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 2669200610" size-unit="char" translate="no" xml:space="preserve">
+          <source>https://host.docker.internal:8088/</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType LocalhostURLTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 2241570171" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paymentExportBank xmlns="%1"&gt;&lt;amcpaymentreq xmlns=''&gt;&lt;banktransjournal&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine01_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1391206350" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;journalname&gt;200106&lt;/journalname&gt;&lt;journalnumber&gt;journal-02&lt;/journalnumber&gt;&lt;transmissionref1&gt;01&lt;/transmissionref1&gt;&lt;uniqueid&gt;DE-01&lt;/uniqueid&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine02_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1067335453" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;banktransus&gt;&lt;countryoforigin&gt;DE&lt;/countryoforigin&gt;&lt;uniqueid&gt;DE01US&lt;/uniqueid&gt;&lt;ownaddress&gt;&lt;address1&gt;Grundtvigsvej 29&lt;/address1&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine03_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3684600744" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;address2&gt;&lt;/address2&gt;&lt;city&gt;&lt;/city&gt;&lt;countryiso&gt;DK&lt;/countryiso&gt;&lt;name&gt;AMC&lt;/name&gt;&lt;/ownaddress&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine04_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 522005303" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;banktransthem&gt;&lt;uniqueid&gt;DE01TH&lt;/uniqueid&gt;&lt;receiversaddress&gt;&lt;countryiso&gt;DE&lt;/countryiso&gt;&lt;name&gt;Tysk kreditor 1&lt;/name&gt;&lt;/receiversaddress&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine05_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1015421450" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paymenttype&gt;DomAcc2Acc&lt;/paymenttype&gt;&lt;costs&gt;Shared&lt;/costs&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine06_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 687979737" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;banktransspec&gt;&lt;discountused&gt;0.0&lt;/discountused&gt;&lt;invoiceref&gt;6541695&lt;/invoiceref&gt;&lt;uniqueid&gt;DE01SP&lt;/uniqueid&gt;&lt;amountdetails&gt;&lt;payamount&gt;0.08&lt;/payamount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine07_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3883898356" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paycurrency&gt;EUR&lt;/paycurrency&gt;&lt;paydate&gt;%1&lt;/paydate&gt;&lt;/amountdetails&gt;&lt;/banktransspec&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine08_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3649256867" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;banktransspec&gt;&lt;discountused&gt;0.0&lt;/discountused&gt;&lt;invoiceref&gt;6541654&lt;/invoiceref&gt;&lt;uniqueid&gt;DE02SP&lt;/uniqueid&gt;&lt;amountdetails&gt;&lt;payamount&gt;0.02&lt;/payamount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine09_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 309910739" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paycurrency&gt;EUR&lt;/paycurrency&gt;&lt;paydate&gt;%1&lt;/paydate&gt;&lt;/amountdetails&gt;&lt;/banktransspec&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine10_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1584343908" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;amountdetails&gt;&lt;payamount&gt;0.10&lt;/payamount&gt;&lt;paycurrency&gt;EUR&lt;/paycurrency&gt;&lt;paydate&gt;2014-05-29&lt;/paydate&gt;&lt;/amountdetails&gt;&lt;receiversbankaccount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine11_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1102757429" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;bankaccount&gt;0011350044&lt;/bankaccount&gt;&lt;intregno&gt;51420600&lt;/intregno&gt;&lt;intregnotype&gt;GermanBankleitzahl&lt;/intregnotype&gt;&lt;/receiversbankaccount&gt;&lt;/banktransthem&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine12_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3130292166" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;ownbankaccount&gt;&lt;bankaccount&gt;0011350034&lt;/bankaccount&gt;&lt;swiftcode&gt;HANDDEFF&lt;/swiftcode&gt;&lt;/ownbankaccount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine13_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1697896463" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;/banktransus&gt;&lt;/banktransjournal&gt;&lt;/amcpaymentreq&gt;&lt;bank xmlns=''&gt;Handels EDI DE&lt;/bank&gt;&lt;language xmlns=''&gt;ENU&lt;/language&gt;&lt;/paymentExportBank&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType DemoFileLine14_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 873783341" size-unit="char" translate="no" xml:space="preserve">
+          <source>"NDEADKKKXXX","2999","9999940560","DKK","Demo User","","20030221","20030221","15757.25","+","15757.25","","68","","Order 12345","4","500","MEDDELNR 2001219","0","99999999999903","501","","502","KON konto 0979999035","0","","0","","0","","","","","","","266787.12","+","266787.12","","","Driftskonto","DK3420009999940560","N","Test Testsen","Testvej 10","9999 Testrup","","","","Ordrenr. 65656","99999999999903","1170200109040120000018","7","Betaling af f¹lgende fakturaer:","Fakturanr. Bel¹b:","12345 2500,35","22345 1265,66","32345 5825,00","42345 3635,88","52345 2530,36","","","","","","","","","","","","","","","","","","","","","","","",""</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType NordeaCorporate_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3168588384" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paymentExportBank xmlns="%1"&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileLine01_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 2729181361" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;amcpaymentreq&gt;&lt;banktransjournal&gt;&lt;erpsystem&gt;HelloFromCAL&lt;/erpsystem&gt;&lt;journalname&gt;Test 012&lt;/journalname&gt;&lt;transmissionref1&gt;01&lt;/transmissionref1&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileLine02_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1900704322" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;uniqueid&gt;%1&lt;/uniqueid&gt;&lt;banktransus&gt;&lt;countryoforigin&gt;DE&lt;/countryoforigin&gt;&lt;ownreference&gt;AMC0001TEST&lt;/ownreference&gt;&lt;uniqueid&gt;DE01US&lt;/uniqueid&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileLine03_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 150585363" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;banktransthem&gt;&lt;customerid&gt;Kreditor 1&lt;/customerid&gt;&lt;uniqueid&gt;DE01TH&lt;/uniqueid&gt;&lt;receiversaddress&gt;&lt;address1&gt;German vendor 1&lt;/address1&gt;&lt;countryiso&gt;DE&lt;/countryiso&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileLine04_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3130395812" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;name&gt;Vendor name&lt;/name&gt;&lt;/receiversaddress&gt;&lt;banktransspec&gt;&lt;discountused&gt;0.0&lt;/discountused&gt;&lt;invoiceref&gt;654123&lt;/invoiceref&gt;&lt;origamount&gt;0.20&lt;/origamount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileLine05_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3959049845" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;uniqueid&gt;DE01SP&lt;/uniqueid&gt;&lt;amountdetails&gt;&lt;payamount&gt;0.10&lt;/payamount&gt;&lt;paycurrency&gt;EUR&lt;/paycurrency&gt;&lt;paydate&gt;%1&lt;/paydate&gt;&lt;/amountdetails&gt;&lt;/banktransspec&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileLine06_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3579169030" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;amountdetails&gt;&lt;payamount&gt;0.10&lt;/payamount&gt;&lt;paycurrency&gt;EUR&lt;/paycurrency&gt;&lt;paydate&gt;%1&lt;/paydate&gt;&lt;/amountdetails&gt;&lt;receiversbankaccount&gt;&lt;bankaccount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileLine07_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1551914663" size-unit="char" translate="no" xml:space="preserve">
+          <source>1111350044&lt;/bankaccount&gt;&lt;intregno&gt;51420600&lt;/intregno&gt;&lt;intregnotype&gt;GermanBankleitzahl&lt;/intregnotype&gt;&lt;/receiversbankaccount&gt;&lt;paymenttype&gt;DomAcc2Acc&lt;/paymenttype&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileLine08_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3217266328" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;costs&gt;PayerPaysAll&lt;/costs&gt;&lt;/banktransthem&gt;&lt;ownbankaccount&gt;&lt;bankaccount&gt;1111350034&lt;/bankaccount&gt;&lt;swiftcode&gt;HANDDEFF&lt;/swiftcode&gt;&lt;/ownbankaccount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileLine09_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1521757928" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;ownaddress&gt;&lt;address1&gt;Grundtvigsvej 29&lt;/address1&gt;&lt;countryiso&gt;DE&lt;/countryiso&gt;&lt;name&gt;AMC Consult A/S&lt;/name&gt;&lt;/ownaddress&gt;&lt;ownaddressinfo&gt;frombank&lt;/ownaddressinfo&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileLine10_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 2196568951" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;/banktransus&gt;&lt;/banktransjournal&gt;&lt;/amcpaymentreq&gt;&lt;bank xmlns=""&gt;Handels EDI DE&lt;/bank&gt;&lt;language xmlns=''&gt;ENU&lt;/language&gt;&lt;/paymentExportBank&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileLine11_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1190588169" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;paymentExportBank xmlns="%1"&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileCDataLine01_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 482015000" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;amcpaymentreq xmlns=""&gt;&lt;version /&gt;&lt;banktransjournal&gt;&lt;erpsystem&gt;Microsoft Dynamics NAV&lt;/erpsystem&gt;&lt;journalname&gt;PAYMENT&lt;/journalname&gt;&lt;journalnumber&gt;BANK&lt;/journalnumber&gt;&lt;legalregistrationnumber&gt;GB777777777&lt;/legalregistrationnumber&gt;&lt;messageref&gt;1004&lt;/messageref&gt;&lt;transmissionref1&gt;1004&lt;/transmissionref1&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileCDataLine02_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3111630631" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;uniqueid&gt;1004&lt;/uniqueid&gt;&lt;banktransus&gt;&lt;bankaccountcurrency&gt;GBP&lt;/bankaccountcurrency&gt;&lt;countryoforigin&gt;GB&lt;/countryoforigin&gt;&lt;messagetoownbank&gt;1&lt;/messagetoownbank&gt;&lt;ownreference&gt;1&lt;/ownreference&gt;&lt;uniqueid&gt;%1&lt;/uniqueid&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileCDataLine03_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3537065214" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;banktransthem&gt;&lt;customerid&gt;10000&lt;/customerid&gt;&lt;uniqueid&gt;1004-TH&lt;/uniqueid&gt;&lt;regulatoryreporting /&gt;&lt;receiversaddress&gt;&lt;address1&gt;10 North Lake Avenue&lt;/address1&gt;&lt;city&gt;London&lt;/city&gt;&lt;name&gt;London Postmaster&lt;/name&gt;&lt;countryiso&gt;GB&lt;/countryiso&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileCDataLine04_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1285982029" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;zipcode&gt;N12 5XY&lt;/zipcode&gt;&lt;/receiversaddress&gt;&lt;banktransspec&gt;&lt;cardref /&gt;&lt;discountused /&gt;&lt;origamount&gt;0&lt;/origamount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileCDataLine05_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 133950684" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;uniqueid&gt;1004-SP&lt;/uniqueid&gt;&lt;amountdetails&gt;&lt;payamount&gt;134.56&lt;/payamount&gt;&lt;paycurrency&gt;GBP&lt;/paycurrency&gt;&lt;paydate&gt;%1&lt;/paydate&gt;&lt;/amountdetails&gt;&lt;/banktransspec&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileCDataLine06_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3207024491" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;emailadvice&gt;&lt;recipient&gt;london.postmaster@contoso.com&lt;/recipient&gt;&lt;paymentmessage&gt;&lt;linenum&gt;1&lt;/linenum&gt;&lt;/paymentmessage&gt;&lt;/emailadvice&gt;&lt;paymentmessage&gt;&lt;linenum&gt;1&lt;/linenum&gt;&lt;/paymentmessage&gt;&lt;amountdetails&gt;&lt;payamount&gt;134.56&lt;/payamount&gt;&lt;paycurrency&gt;GBP&lt;/paycurrency&gt;&lt;paydate&gt;%1&lt;/paydate&gt;&lt;/amountdetails&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileCDataLine07_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3460420290" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;receiversbankaccount&gt;&lt;bankaccount&gt;01234599445670&lt;/bankaccount&gt;&lt;bankaccountaddress&gt;&lt;address1&gt;Anchor House 43&lt;/address1&gt;&lt;city&gt;Birmingham&lt;/city&gt;&lt;name&gt;ECA Bank&lt;/name&gt;&lt;zipcode&gt;B27 4KT&lt;/zipcode&gt;&lt;/bankaccountaddress&gt;&lt;/receiversbankaccount&gt;&lt;paymenttype&gt;DomAcc2Acc&lt;/paymenttype&gt;&lt;costs&gt;Shared&lt;/costs&gt;&lt;messagestructure&gt;manual&lt;/messagestructure&gt;&lt;/banktransthem&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileCDataLine08_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 4288897329" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;ownbankaccount&gt;&lt;bankaccount&gt;01234599445670&lt;/bankaccount&gt;&lt;bankaccountaddress&gt;&lt;address1&gt;1 High Holborn&lt;/address1&gt;&lt;city&gt;London&lt;/city&gt;&lt;name&gt;World Wide Bank&lt;/name&gt;&lt;countryiso&gt;GB&lt;/countryiso&gt;&lt;zipcode&gt;WC1 3DG&lt;/zipcode&gt;&lt;/bankaccountaddress&gt;&lt;/ownbankaccount&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileCDataLine09_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1114177569" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;ownaddress&gt;&lt;address1&gt;5 The Ring&lt;/address1&gt;&lt;address2&gt;Westminster&lt;/address2&gt;&lt;city&gt;London&lt;/city&gt;&lt;name&gt;CRONUS International Ltd.&lt;/name&gt;&lt;countryiso&gt;GB&lt;/countryiso&gt;&lt;zipcode&gt;W2 8HG&lt;/zipcode&gt;&lt;/ownaddress&gt;&lt;ownaddressinfo&gt;frombank&lt;/ownaddressinfo&gt;&lt;/banktransus&gt;&lt;/banktransjournal&gt;&lt;/amcpaymentreq&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileCDataLine10_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 2567577586" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;bank xmlns=""&gt;Barclays GB&lt;/bank&gt;&lt;language xmlns=""&gt;ENU&lt;/language&gt;&lt;/paymentExportBank&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SampleFileCDataLine11_EncodUTF8Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 721000528" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02"&gt;&lt;BkToCstmrStmt&gt;&lt;GrpHdr&gt;&lt;MsgId&gt;IdGeneratedByBank&lt;/MsgId&gt;&lt;CreDtTm&gt;2013-06-</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTHeaderLine1Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 57782161" size-unit="char" translate="no" xml:space="preserve">
+          <source>28T12:21:01.495+03:00&lt;/CreDtTm&gt;&lt;AdditionalInformation&gt;/EODY/&lt;/AdditionalInformation&gt;&lt;/GrpHdr&gt;&lt;Stmt&gt;&lt;Id&gt;IdGeneratedByBank&lt;/Id&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTHeaderLine2Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 2584510482" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;ElctrncSeqNb&gt;001&lt;/ElctrncSeqNb&gt;&lt;CreDtTm&gt;2013-06-28T12:21:01.495+03:00&lt;/CreDtTm&gt;&lt;FrToDt&gt;&lt;FrDtTm&gt;2013-06-28T12:21:01.495+03:00&lt;/FrDtTm&gt;&lt;ToDtTm&gt;2013-06-28T12:21:01.495+03:00&lt;/ToDtTm&gt;&lt;/FrToDt&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTHeaderLine3Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 17051603" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;Acct&gt;&lt;Id&gt;&lt;IBAN&gt;NL91ABNA0417164299&lt;/IBAN&gt;&lt;/Id&gt;&lt;Tp&gt;&lt;Cd&gt;CASH&lt;/Cd&gt;&lt;/Tp&gt;&lt;Ccy&gt;EUR&lt;/Ccy&gt;&lt;Ownr&gt;&lt;Nm&gt;Dutch Company&lt;/Nm&gt;&lt;/Ownr&gt;&lt;Svcr&gt;&lt;FinInstnId&gt;&lt;BIC&gt;DEUTNLNL&lt;/BIC&gt;&lt;/FinInstnId&gt;&lt;/Svcr&gt;&lt;/Acct&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTHeaderLine4Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1713045454" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;Bal&gt;&lt;Tp&gt;&lt;CdOrPrtry&gt;&lt;Cd&gt;OPBD&lt;/Cd&gt;&lt;/CdOrPrtry&gt;&lt;SubTp&gt;&lt;Prtry&gt;OpeningBooked&lt;/Prtry&gt;&lt;/SubTp&gt;&lt;/Tp&gt;&lt;CdtLine&gt;&lt;Incl&gt;false&lt;/Incl&gt;&lt;/CdtLine&gt;&lt;Amt Ccy="EUR"&gt;2000000&lt;/Amt&gt;&lt;CdtDbtInd&gt;CRDT&lt;/CdtDbtInd&gt;&lt;Dt&gt;&lt;Dt&gt;2013-06-28&lt;/Dt&gt;&lt;/Dt&gt;&lt;/Bal&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTBal1Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 4086563915" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;Bal&gt;&lt;Tp&gt;&lt;CdOrPrtry&gt;&lt;Cd&gt;CLBD&lt;/Cd&gt;&lt;/CdOrPrtry&gt;&lt;SubTp&gt;&lt;Prtry&gt;ClosingBooked&lt;/Prtry&gt;&lt;/SubTp&gt;&lt;/Tp&gt;&lt;CdtLine&gt;&lt;Incl&gt;false&lt;/Incl&gt;&lt;/CdtLine&gt;&lt;Amt Ccy="EUR"&gt;1000000&lt;/Amt&gt;&lt;CdtDbtInd&gt;CRDT&lt;/CdtDbtInd&gt;&lt;Dt&gt;&lt;Dt&gt;2013-06-28&lt;/Dt&gt;&lt;/Dt&gt;&lt;/Bal&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTBal2Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3381768844" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;Bal&gt;&lt;Tp&gt;&lt;CdOrPrtry&gt;&lt;Cd&gt;CLAV&lt;/Cd&gt;&lt;/CdOrPrtry&gt;&lt;SubTp&gt;&lt;Prtry&gt;ClosingAvailable&lt;/Prtry&gt;&lt;/SubTp&gt;&lt;/Tp&gt;&lt;CdtLine&gt;&lt;Incl&gt;false&lt;/Incl&gt;&lt;/CdtLine&gt;&lt;Amt Ccy="EUR"&gt;1000000&lt;/Amt&gt;&lt;CdtDbtInd&gt;CRDT&lt;/CdtDbtInd&gt;&lt;Dt&gt;&lt;Dt&gt;2013-06-28&lt;/Dt&gt;&lt;/Dt&gt;&lt;/Bal&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTBal3Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1243266633" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;Bal&gt;&lt;Tp&gt;&lt;CdOrPrtry&gt;&lt;Cd&gt;FWAV&lt;/Cd&gt;&lt;/CdOrPrtry&gt;&lt;SubTp&gt;&lt;Prtry&gt;ForwardAvailable&lt;/Prtry&gt;&lt;/SubTp&gt;&lt;/Tp&gt;&lt;CdtLine&gt;&lt;Incl&gt;false&lt;/Incl&gt;&lt;/CdtLine&gt;&lt;Amt Ccy="EUR"&gt;1000000&lt;/Amt&gt;&lt;CdtDbtInd&gt;CRDT&lt;/CdtDbtInd&gt;&lt;Dt&gt;&lt;Dt&gt;2013-06-28&lt;/Dt&gt;&lt;/Dt&gt;&lt;/Bal&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTBal4Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3000017353" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;TxsSummry&gt;&lt;TtlNtries&gt;&lt;NbOfNtries&gt;1000&lt;/NbOfNtries&gt;&lt;Sum&gt;1000000.00&lt;/Sum&gt;&lt;TtlNetNtryAmt&gt;1000000.00&lt;/TtlNetNtryAmt&gt;&lt;CdtDbtInd&gt;DBIT&lt;/CdtDbtInd&gt;&lt;/TtlNtries&gt;&lt;/TxsSummry&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTTxsSummaryTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1123750947" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;Ntry&gt;&lt;Amt Ccy="EUR"&gt;1000.00&lt;/Amt&gt;&lt;CdtDbtInd&gt;DBIT&lt;/CdtDbtInd&gt;&lt;Sts&gt;BOOK&lt;/Sts&gt;&lt;BookgDt&gt;&lt;Dt&gt;2013-06-28&lt;/Dt&gt;&lt;/BookgDt&gt;&lt;ValDt&gt;&lt;Dt&gt;2013-06-28&lt;/Dt&gt;&lt;/ValDt&gt;&lt;AcctSvcrRef&gt;ReferenceGeneratedByBank&lt;/AcctSvcrRef&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTEntry1Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 529239718" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;BkTxCd&gt;&lt;Domn&gt;&lt;Cd&gt;PMNT&lt;/Cd&gt;&lt;Fmly&gt;&lt;Cd&gt;ICDT&lt;/Cd&gt;&lt;SubFmlyCd&gt;ESCT&lt;/SubFmlyCd&gt;&lt;/Fmly&gt;&lt;/Domn&gt;&lt;/BkTxCd&gt;&lt;NtryDtls&gt;&lt;Btch&gt;&lt;MsgId&gt;M0000000000000000000000000000448808&lt;/MsgId&gt;&lt;PmtInfId&gt;M000000000448807&lt;/PmtInfId&gt;&lt;NbOfTxs&gt;1&lt;/NbOfTxs&gt;&lt;CdtDbtInd&gt;DBIT&lt;/CdtDbtInd&gt;&lt;/Btch&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTEntry2Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 2307680357" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;TxDtls&gt;&lt;Refs&gt;&lt;MsgId&gt;M0000000000000000000000000000448808&lt;/MsgId&gt;&lt;AcctSvcrRef&gt;ReferenceGeneratedByBank&lt;/AcctSvcrRef&gt;&lt;PmtInfId&gt;M000000000448807&lt;/PmtInfId&gt;&lt;InstrId&gt;testing payment reference&lt;/InstrId&gt;&lt;EndToEndId&gt;testing receiver reference&lt;/EndToEndId&gt;&lt;/Refs&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTEntry3Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1837901536" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;AmtDtls&gt;&lt;TxAmt&gt;&lt;Amt Ccy="EUR"&gt;1000.00&lt;/Amt&gt;&lt;/TxAmt&gt;&lt;/AmtDtls&gt;&lt;BkTxCd&gt;&lt;Domn&gt;&lt;Cd&gt;PMNT&lt;/Cd&gt;&lt;Fmly&gt;&lt;Cd&gt;ICDT&lt;/Cd&gt;&lt;SubFmlyCd&gt;ESCT&lt;/SubFmlyCd&gt;&lt;/Fmly&gt;&lt;/Domn&gt;&lt;/BkTxCd&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTEntry4Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 3606140511" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;RltdPties&gt;&lt;Cdtr&gt;&lt;Nm&gt;test&lt;/Nm&gt;&lt;PstlAdr&gt;&lt;Ctry&gt;NL&lt;/Ctry&gt;&lt;/PstlAdr&gt;&lt;/Cdtr&gt;&lt;CdtrAcct&gt;&lt;Id&gt;&lt;IBAN&gt;NL91ABNA0417164299&lt;/IBAN&gt;&lt;/Id&gt;&lt;/CdtrAcct&gt;&lt;/RltdPties&gt;&lt;RltdAgts&gt;&lt;CdtrAgt&gt;&lt;FinInstnId&gt;&lt;BIC&gt;DEUTNLNL&lt;/BIC&gt;&lt;/FinInstnId&gt;&lt;/CdtrAgt&gt;&lt;/RltdAgts&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTEntry5Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 158976482" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;RmtInf&gt;&lt;Ustrd&gt;testing the remittance information&lt;/Ustrd&gt;&lt;/RmtInf&gt;&lt;/TxDtls&gt;&lt;/NtryDtls&gt;&lt;/Ntry&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTEntry6Txt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3586715140 - NamedType 1226784337" size-unit="char" translate="no" xml:space="preserve">
+          <source>&lt;/Stmt&gt;&lt;/BkToCstmrStmt&gt;&lt;/Document&gt;</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Library - Amc Web Service - NamedType SEPACAMTClosingTxt</note>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>

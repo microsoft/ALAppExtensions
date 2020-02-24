@@ -18,9 +18,15 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         WebLoadErrorLbl: Label 'Status code: %1';
         AssistedSetupNeededNotificationTxt: Label 'The AMC Banking 365 Foundation extension needs some information.';
         AssistedSetupNotificationActionTxt: Label 'Do you want to open the AMC Banking Setup page to run the Assisted Setup action?';
+
         DemoSolutionNotificationTxt: Label 'The AMC Banking 365 Foundation extension is in Demo mode.';
         DemoSolutionNotificationActionTxt: Label 'Do you want to open the AMC Banking 365 Foundation extension setup page?';
+        DemoSolutionNotificationNameTok: Label 'Notify user of AMC Banking Demo solution.';
+        DemoSolutionNotificationDescTok: Label 'Show a notification informing the user that AMC Banking is working in Demo solution.';
+        DontShowThisAgainMsg: Label 'Don''t show this again.';
+
         AssistedSetupTxt: Label 'Set up AMC Banking 365 Foundation extension';
+        ContentTypeTxt: Label 'text/xml; charset=utf-8', Locked = true;
 
     procedure GetApplVersion() ApplVersion: Text;
     var
@@ -44,8 +50,9 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         exit(BuildNumber);
     end;
 
+    [Obsolete('This method is obsolete. A new RunBasisSetup overload is available, with the an extra parameters (TempOnlineBankAccLink: Record "Online Bank Acc. Link") to control which bank account should be updated.')]
     procedure RunBasisSetup(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
-                            UpdBank: Boolean; UpdPayMeth: Boolean; CountryCode: Code[10];
+                            UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];
                             UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean; UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
                             UpdBankClearStd: Boolean; UpdBankAccounts: Boolean; CallLicenseServer: Boolean): Boolean;
     var
@@ -58,6 +65,8 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AMCBoughtModule: Boolean;
         AMCSolution: text;
         AMCSpecificURL: Text;
+        AMCSignUpURL: Text;
+        AMCSupportURL: Text;
         BasisSetupRanOK: Boolean;
         DataExchDef_Filter: Text;
     begin
@@ -86,7 +95,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         end
         else
             if (CallLicenseServer) then
-                AMCBoughtModule := GetModuleInfoFromWebservice(AMCSpecificURL, AMCSolution, ShortTimeout);
+                AMCBoughtModule := GetModuleInfoFromWebservice(AMCSpecificURL, AMCSignUpURL, AMCSupportURL, AMCSolution, ShortTimeout);
 
         if (AMCSolution <> '') then begin
             AMCBankServiceSetup.Solution := CopyStr(AMCSolution, 1, 50);
@@ -103,10 +112,19 @@ codeunit 20117 "AMC Bank Assisted Mgt."
                 AMCBankServiceSetup.MODIFY();
             end
             else begin
-                AMCBankServMgt.SetURLsToDefault(AMCBankServiceSetup);
+                if (UpperCase(AMCBankServiceSetup.Solution) <> 'ENTERPRISE') then
+                    AMCBankServMgt.SetURLsToDefault(AMCBankServiceSetup);
 
-                if (AMCSpecificURL <> '') then begin
-                    AMCBankServiceSetup."Service URL" := AMCBankServMgt.GetServiceURL(AMCSpecificURL, AMCBankServiceSetup."Namespace API Version");
+                if ((AMCSpecificURL <> '') or (AMCSignUpURL <> '') or (AMCSupportURL <> '')) then begin
+                    if ((AMCSpecificURL <> '') and (UpperCase(AMCBankServiceSetup.Solution) <> 'ENTERPRISE')) then
+                        AMCBankServiceSetup."Service URL" := AMCBankServMgt.GetServiceURL(AMCSpecificURL, AMCBankServiceSetup."Namespace API Version");
+
+                    if (AMCSignUpURL <> '') then
+                        AMCBankServiceSetup."Sign-up URL" := CopyStr(AMCSignUpURL, 1, 250);
+
+                    if (AMCSupportURL <> '') then
+                        AMCBankServiceSetup."Support URL" := CopyStr(AMCSupportURL, 1, 250);
+
                     AMCBankServiceSetup.Modify();
                 end;
             end;
@@ -133,7 +151,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AMCBankServMgt.AMCBankInitializeBaseData();
 
         if (UpdBank) then
-            AMCBankImpBankListHndl.GetBankListFromWebService(false, CountryCode, LongTimeout);
+            AMCBankImpBankListHndl.GetBankListFromWebService(false, BankCountryCode, LongTimeout);
 
         if (UpdBankAccounts) and (BasisSetupRanOK) then begin
             BankAccount.Reset();
@@ -155,6 +173,153 @@ codeunit 20117 "AMC Bank Assisted Mgt."
                     BankAccount.Modify();
                 until BankAccount.Next() = 0;
         end;
+
+        exit(BasisSetupRanOK);
+    end;
+
+    procedure RunBasisSetup(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
+                            UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];
+                            UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean; UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
+                            UpdBankClearStd: Boolean; UpdBankAccounts: Boolean; TempOnlineBankAccLink: Record "Online Bank Acc. Link"; CallLicenseServer: Boolean): Boolean;
+    var
+        BankAccount: Record "Bank Account";
+        BankExportImportSetup: Record "Bank Export/Import Setup";
+        AMCBankServiceSetup: Record "AMC Banking Setup";
+        AMCBankImpBankListHndl: Codeunit "AMC Bank Imp.BankList Hndl";
+        LongTimeout: Integer;
+        ShortTimeout: Integer;
+        AMCBoughtModule: Boolean;
+        AMCSolution: text;
+        AMCSpecificURL: Text;
+        AMCSignUpURL: Text;
+        AMCSupportURL: Text;
+        BasisSetupRanOK: Boolean;
+        DataExchDef_Filter: Text;
+    begin
+        ShortTimeout := 5000;
+        LongTimeout := 30000;
+        BasisSetupRanOK := true;
+
+        if (NOT AMCBankServiceSetup.Get()) then begin
+            AMCBankServiceSetup.Init();
+            AMCBankServiceSetup.Insert(true);
+            Commit(); //Need to commit, to make sure record exist, if RunBasisSetup at one point is called from Installation/Upgrade CU
+        end;
+
+        if ((AMCBankServiceSetup."User Name" <> AMCBankServiceSetup.GetDemoUserName()) and
+           (AMCBankServiceSetup."User Name" <> AMCBankServMgt.GetLicenseNumber())) then
+            error(StrSubstNo(NotCorrectUserLbl, AMCBankServiceSetup."User Name", AMCBankServMgt.GetLicenseNumber(), AMCBankServiceSetup.GetDemoUserName()) + '\\' +
+                  YouHave2OptionsLbl + '\\' +
+                  StrSubstNo(UseBCLicenseLbl, AMCBankServMgt.GetLicenseNumber(), AMCBankServiceSetup."Sign-up URL") + '\\' +
+                  StrSubstNo(UseDemoUserLbl, AMCBankServiceSetup.GetDemoUserName()));
+
+        //if demouser - always return demosolution
+        if (AMCBankServiceSetup.GetUserName() = AMCBankServiceSetup.GetDemoUserName()) then begin
+            AMCSolution := AMCBankServMgt.GetDemoSolutionCode();
+            AMCBankServiceSetup.Solution := CopyStr(AMCSolution, 1, 50);
+            AMCBankServMgt.SetURLsToDefault(AMCBankServiceSetup);
+        end
+        else
+            if (CallLicenseServer) then
+                AMCBoughtModule := GetModuleInfoFromWebservice(AMCSpecificURL, AMCSignUpURL, AMCSupportURL, AMCSolution, ShortTimeout);
+
+        if (AMCSolution <> '') then begin
+            AMCBankServiceSetup.Solution := CopyStr(AMCSolution, 1, 50);
+            AMCBankServiceSetup.Modify();
+            Commit(); //Need to commit, to make sure right solution is used after this point
+        end;
+
+        //First we update the URLs
+        if (UpdURL) then begin
+            if (URLSChanged) then begin
+                AMCBankServiceSetup."Sign-up URL" := SignupURL;
+                AMCBankServiceSetup."Service URL" := LowerCase(ServiceURL);
+                AMCBankServiceSetup."Support URL" := SupportURL;
+                AMCBankServiceSetup.MODIFY();
+            end
+            else begin
+                if (UpperCase(AMCBankServiceSetup.Solution) <> 'ENTERPRISE') then
+                    AMCBankServMgt.SetURLsToDefault(AMCBankServiceSetup);
+
+                if ((AMCSpecificURL <> '') or (AMCSignUpURL <> '') or (AMCSupportURL <> '')) then begin
+                    if ((AMCSpecificURL <> '') and (UpperCase(AMCBankServiceSetup.Solution) <> 'ENTERPRISE')) then
+                        AMCBankServiceSetup."Service URL" := AMCBankServMgt.GetServiceURL(AMCSpecificURL, AMCBankServiceSetup."Namespace API Version");
+
+                    if (AMCSignUpURL <> '') then
+                        AMCBankServiceSetup."Sign-up URL" := CopyStr(AMCSignUpURL, 1, 250);
+
+                    if (AMCSupportURL <> '') then
+                        AMCBankServiceSetup."Support URL" := CopyStr(AMCSupportURL, 1, 250);
+
+                    AMCBankServiceSetup.Modify();
+                end;
+            end;
+            commit(); //Need to commit, to make sure right service URL is used after this point
+        end;
+
+        if (UpdDataExchDef) then begin
+            if (UpdCreditTransfer) then
+                DataExchDef_Filter += AMCBankServMgt.GetDataExchDef_CT() + ',';
+
+            if (UpdateStatementImport) then
+                DataExchDef_Filter += AMCBankServMgt.GetDataExchDef_STMT() + ',';
+
+            if (UpdPositivePay) then
+                DataExchDef_Filter += AMCBankServMgt.GetDataExchDef_PP() + ',';
+
+            if (UpdCreditAdvice) then
+                DataExchDef_Filter += AMCBankServMgt.GetDataExchDef_CREM();
+
+            if (DataExchDef_Filter <> '') then
+                BasisSetupRanOK := GetDataExchDefsFromWebservice(DataExchDef_Filter, ApplVer, BuildNo, LongTimeout);
+        end;
+
+        AMCBankServMgt.AMCBankInitializeBaseData();
+
+        if (UpdBank) then
+            AMCBankImpBankListHndl.GetBankListFromWebService(false, BankCountryCode, LongTimeout);
+
+        if (UpdBankAccounts) and (BasisSetupRanOK) then begin
+            TempOnlineBankAccLink.Reset();
+            TempOnlineBankAccLink.SetRange(TempOnlineBankAccLink."Automatic Logon Possible", true);
+            if (TempOnlineBankAccLink.FindSet()) then
+                repeat
+                    BankAccount.Reset();
+                    if (BankAccount.get(TempOnlineBankAccLink."No.")) then begin
+                        if (BankExportImportSetup.Get(AMCBankServMgt.GetDataExchDef_CT())) then
+                            BankAccount."Payment Export Format" := AMCBankServMgt.GetDataExchDef_CT();
+
+                        if (BankExportImportSetup.Get(AMCBankServMgt.GetDataExchDef_STMT())) then
+                            BankAccount."Bank Statement Import Format" := AMCBankServMgt.GetDataExchDef_STMT();
+
+                        if (BankAccount."Credit Transfer Msg. Nos." = '') then
+                            BankAccount."Credit Transfer Msg. Nos." := AMCBankServMgt.GetDefaultCreditTransferMsgNo();
+
+                        BankAccount.Modify();
+                    end
+                until TempOnlineBankAccLink.Next() = 0
+            else begin
+                BankAccount.Reset();
+                BankAccount.SetRange(Blocked, false);
+                if (BankAccount.FindSet()) then
+                    repeat
+                        if BankAccount."Payment Export Format" = '' then
+                            if (BankExportImportSetup.Get(AMCBankServMgt.GetDataExchDef_CT())) then
+                                BankAccount."Payment Export Format" := AMCBankServMgt.GetDataExchDef_CT();
+
+                        if BankAccount."Bank Statement Import Format" = '' then
+                            if (BankExportImportSetup.Get(AMCBankServMgt.GetDataExchDef_STMT())) then
+                                BankAccount."Bank Statement Import Format" := AMCBankServMgt.GetDataExchDef_STMT();
+
+                        if BankAccount."Payment Export Format" = AMCBankServMgt.GetDataExchDef_CT() then
+                            if (BankAccount."Credit Transfer Msg. Nos." = '') then
+                                BankAccount."Credit Transfer Msg. Nos." := AMCBankServMgt.GetDefaultCreditTransferMsgNo();
+
+                        BankAccount.Modify();
+                    until BankAccount.Next() = 0;
+            end
+        end;
+
         exit(BasisSetupRanOK);
     end;
 
@@ -168,7 +333,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
     end;
 
 
-    procedure GetModuleInfoFromWebservice(Var XTLUrl: Text; Var Solution: Text; Timeout: Integer): Boolean;
+    procedure GetModuleInfoFromWebservice(Var XTLUrl: Text; Var SignUpUrl: Text; var SupportUrl: Text; Var Solution: Text; Timeout: Integer): Boolean;
     var
         HeadersClientHttp: HttpHeaders;
         ClientHttp: HttpClient;
@@ -205,7 +370,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
             ERROR(TryLoadErrorLbl + StrSubstNo(WebLoadErrorLbl, FORMAT(ModuleResponseMessage.HttpStatusCode()) + ' ' + ModuleResponseMessage.ReasonPhrase()));
 
         //Get reponse and XTLUrl and Solution
-        exit(GetModuleInfoData(ModuleResponseMessage, XTLUrl, Solution));
+        exit(GetModuleInfoData(ModuleResponseMessage, XTLUrl, SignUpUrl, SupportUrl, Solution));
     end;
 
     local procedure SendRequestToWebService(var TempBlobBody: Codeunit "Temp Blob"; EnableUI: Boolean; Timeout: Integer; ApplVersion: Text; BuildNumber: Text)
@@ -225,7 +390,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         TempBlobBody.CreateInStream(InStream);
         SOAPWebServiceRequestMgt.SetGlobals(InStream, AMCBankServiceSetup."Service URL", AMCBankServiceSetup.GetUserName(), AMCBankServiceSetup.GetPassword());
         SOAPWebServiceRequestMgt.SetTimeout(Timeout);
-        SOAPWebServiceRequestMgt.SetContentType('text/xml; charset=UTF-8');
+        SOAPWebServiceRequestMgt.SetContentType(ContentTypeTxt);
 
         if not EnableUI then
             SOAPWebServiceRequestMgt.DisableProgressDialog();
@@ -286,7 +451,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
 
     end;
 
-    local procedure GetModuleInfoData(ResponseMessage: HttpResponseMessage; Var XTLUrl: Text; Var Solution: Text): Boolean;
+    local procedure GetModuleInfoData(ResponseMessage: HttpResponseMessage; Var XTLUrl: Text; Var SignupUrl: Text; Var SupportUrl: Text; Var Solution: Text): Boolean;
     var
         TempBlob: Codeunit "Temp Blob";
         ResponseContent: HttpContent;
@@ -358,6 +523,12 @@ codeunit 20117 "AMC Bank Assisted Mgt."
                         if (DataXmlAttribute.Name() = 'xtlurl') then
                             XTLUrl := DataXmlAttribute.Value();
 
+                        if (DataXmlAttribute.Name() = 'signupurl') then
+                            SignupUrl := DataXmlAttribute.Value();
+
+                        if (DataXmlAttribute.Name() = 'supporturl') then
+                            SupportUrl := DataXmlAttribute.Value();
+
                         if (DataXmlAttribute.Name() = 'solution') then
                             Solution := DataXmlAttribute.Value();
 
@@ -371,6 +542,8 @@ codeunit 20117 "AMC Bank Assisted Mgt."
                 else begin
                     ModuleName := '';
                     XTLUrl := '';
+                    SignupUrl := '';
+                    SupportUrl := '';
                     Solution := AMCBankServMgt.GetDemoSolutionCode();
                     Erp := '';
                 end;
@@ -579,11 +752,21 @@ codeunit 20117 "AMC Bank Assisted Mgt."
 
     [IntegrationEvent(false, false)]
     //To update extra things that standard does not.
+    [Obsolete('This IntegrationEvent is obsolete. A new OnAfterRunBasisSetupV16 IntegrationEvent is available, with the an extra parameters (TempOnlineBankAccLink: Record "Online Bank Acc. Link") to control which bank account should be updated.')]
     procedure OnAfterRunBasisSetup(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
-                                   UpdBank: Boolean; UpdPayMeth: Boolean; CountryCode: Code[10];
+                                   UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];
                                    UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean;
                                    UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
                                    UpdBankClearStd: Boolean; UpdBankAccounts: Boolean; CallLicenseServer: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnAfterRunBasisSetupV16(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
+                                   UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];
+                                   UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean;
+                                   UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
+                                   UpdBankClearStd: Boolean; UpdBankAccounts: Boolean; TempOnlineBankAccLink: Record "Online Bank Acc. Link" temporary; CallLicenseServer: Boolean)
     begin
     end;
 
@@ -637,12 +820,40 @@ codeunit 20117 "AMC Bank Assisted Mgt."
     var
         Notification: Notification;
     begin
+        if IsDemoSolutionNotificationEnabled(NotificationId) then begin
+            Notification.Id := NotificationId;
+            Notification.Scope := NotificationScope::LocalScope;
+            Notification.Message := DemoSolutionNotificationTxt;
+            Notification.AddAction(DemoSolutionNotificationActionTxt, Codeunit::"AMC Bank Assisted Mgt.", 'DisplayAMCBankSetup');
+            Notification.AddAction(DontShowThisAgainMsg, Codeunit::"AMC Bank Assisted Mgt.", 'DisableDemoSolutionNotification');
+            Notification.Send();
+        end;
+    end;
 
-        Notification.Id := NotificationId;
-        Notification.Scope := NotificationScope::LocalScope;
-        Notification.Message := DemoSolutionNotificationTxt;
-        Notification.AddAction(DemoSolutionNotificationActionTxt, Codeunit::"AMC Bank Assisted Mgt.", 'DisplayAMCBankSetup');
-        Notification.Send();
+    procedure IsDemoSolutionNotificationEnabled(NotificationId: GUID): Boolean
+    var
+        MyNotifications: Record "My Notifications";
+    begin
+        if MyNotifications.Disable(NotificationId) then
+            exit(false);
+
+        exit(true);
+    end;
+
+    procedure EnableDemoSolutionNotification(NotificationId: GUID)
+    var
+        MyNotifications: Record "My Notifications";
+    begin
+        if MyNotifications.Disable(NotificationId) then
+            MyNotifications.SetStatus(NotificationId, true);
+    end;
+
+    procedure DisableDemoSolutionNotification(Notification: Notification)
+    var
+        MyNotifications: Record "My Notifications";
+    begin
+        if not MyNotifications.Disable(Notification.Id()) then
+            MyNotifications.InsertDefault(Notification.Id(), DemoSolutionNotificationNameTok, DemoSolutionNotificationDescTok, false);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"AMC Banking Setup", 'OnOpenPageEvent', '', true, true)]
@@ -798,7 +1009,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
     begin
         AssistedSetup.Add(BaseAppID.Get(), Page::"AMC Bank Assisted Setup", AssistedSetupTxt, AssistedSetupGroup::Uncategorized);
         if AmcBankingSetup.Get() then
-            AssistedSetup.Complete(BaseAppID.Get(), Page::"AMC Bank Assisted Setup");
+            AssistedSetup.Complete(Page::"AMC Bank Assisted Setup");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnAfterRun', '', true, true)]
@@ -813,6 +1024,6 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         if PageID <> Page::"AMC Bank Assisted Setup" then
             exit;
         if AmcBankingSetup.Get() then
-            AssistedSetup.Complete(ExtensionID, PageID);
+            AssistedSetup.Complete(PageID);
     end;
 }
