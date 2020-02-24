@@ -12,26 +12,14 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "2c97db9b-4aef-41e2-aa3e-03fa892c6815",
+                             "id":  "2c97db9b-4aef-41e2-aa3e-03fa892c6815",
                              "name":  "Tax File Formats (DK)",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         },
-                         {
-                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
-                             "name":  "Base Application",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         },
-                         {
-                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
-                             "name":  "System Application",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          }
@@ -51,5 +39,6 @@
                      }
                  ],
     "target":  "OnPrem",
-    "showMyCode":  false
+    "showMyCode":  false,
+    "application":  "16.0.0.0"
 }

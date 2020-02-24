@@ -118,6 +118,46 @@ The category of the video for this setup.
 
 The help url that explains the purpose and usage of this setup.
 
+### Add (Method) <a name="Add"></a> 
+Adds an assisted setup record from a given extension so that it can be shown in the list.
+
+#### Syntax
+```
+procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; VideoCategory: Enum "Video Category"; HelpLink: Text[250]; Description: Text[1024])
+```
+#### Parameters
+*ExtensionID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The app ID of the extension to which the setup belongs.
+
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page to open when the user clicks the setup.
+
+*AssistantName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The name as shown for the setup.
+
+*GroupName ([Enum "Assisted Setup Group"]())* 
+
+The assisted setup group enum that this belongs to.
+
+*VideoLink ([Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The URL of the video that explains the purpose and use of this setup.
+
+*VideoCategory ([Enum "Video Category"]())* 
+
+The category of the video for this setup.
+
+*HelpLink ([Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The help url that explains the purpose and usage of this setup.
+
+*Description ([Text[1024]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The description of this setup.
+
 ### AddTranslation (Method) <a name="AddTranslation"></a> 
 Adds the translation for the name of the setup.
 
@@ -337,7 +377,9 @@ The app ID of the extension to which the setup belongs.
 The ID of the page to open when the user clicks the setup.
 
 ### Run (Method) <a name="Run"></a> 
-Issues the call to execute the setup.
+Issues the call to start the setup.
+
+If the page does not exist the user can choose whether to delete the page record.
 
 #### Syntax
 ```
@@ -366,6 +408,20 @@ procedure Open(AssistedSetupGroup: Enum "Assisted Setup Group")
 *AssistedSetupGroup ([Enum "Assisted Setup Group"]())* 
 
 The group of guides to display on the Assisted Setup page.
+
+### Remove (Method) <a name="Remove"></a> 
+Removes an Assisted Setup so it will no longer be shown in the list.
+
+The OnRegister subscriber which adds this PageID needs to be removed first.
+
+#### Syntax
+```
+procedure Remove(PageID: Integer)
+```
+#### Parameters
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page to be removed.
 
 ### OnRegister (Event) <a name="OnRegister"></a> 
 Notifies the user that the list of assisted setup guides is being gathered, and that new guides might be added.
@@ -413,6 +469,23 @@ The app ID of the extension to which the setup belongs.
 
 The ID of the page to open when the user clicks the setup.
 
+### OnBeforeOpenRoleBasedSetupExperience (Event) <a name="OnBeforeOpenRoleBasedSetupExperience"></a> 
+Notifies that the Open Role Based Setup Experience has been invoked.
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnBeforeOpenRoleBasedSetupExperience(var PageID: Integer; var Handled: Boolean)
+```
+#### Parameters
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The Page ID of the page been invoked.
+
+*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+The flag which if set, would stop executing the OpenRoleBasedSetupExperience of the assisted setup guide.
+
 
 ## Assisted Setup (Page 1801)
 This page shows all registered assisted setup guides.
@@ -422,4 +495,8 @@ This page shows all registered assisted setup guides.
 The group to which the setup belongs. Please extend this enum to add your own group to classify the setups being added by your extension.
 
 ### Uncategorized (value: 0)
+
+
+ A default group, specifying that the assisted setup is not categorized.
+ 
 

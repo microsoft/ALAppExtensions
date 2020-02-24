@@ -12,26 +12,14 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
+                             "id":  "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
                              "name":  "Sales and Inventory Forecast",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         },
-                         {
-                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
-                             "name":  "Base Application",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         },
-                         {
-                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
-                             "name":  "System Application",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          }
@@ -51,5 +39,6 @@
                      }
                  ],
     "target":  "OnPrem",
-    "showMyCode":  false
+    "showMyCode":  false,
+    "application":  "16.0.0.0"
 }

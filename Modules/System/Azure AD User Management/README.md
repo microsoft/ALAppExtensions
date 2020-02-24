@@ -73,8 +73,8 @@ The user's authentication email.
 True if there is a user in Azure AD corresponding to the authentication email; otherwise false.
 ### SynchronizeAllLicensedUsersFromDirectory (Method) <a name="SynchronizeAllLicensedUsersFromDirectory"></a> 
     
- Synchronizes all the users from the database with the ones from Azure AD. If 
- the users do not exist in the database, they get created.
+ Synchronizes all the users from the database with the ones from Azure AD.
+ Azure AD users that do not exist in the database are created.
  
 
 #### Syntax
@@ -96,7 +96,7 @@ procedure IsUserTenantAdmin(): Boolean
 True if the user is a tenant admin; otherwise false.
 ### SetTestInProgress (Method) <a name="SetTestInProgress"></a> 
 
- Sets a flag that is used to determine whether a test is in progress or not.
+ Sets a flag that is used to determine whether a test is in progress.
  
 
 #### Syntax
@@ -108,4 +108,106 @@ procedure SetTestInProgress(TestInProgress: Boolean)
 *TestInProgress ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
 The value to be set to the flag.
+
+### OnRestoreDefaultPermissions (Event) <a name="OnRestoreDefaultPermissions"></a> 
+
+ Integration event, raised from "Azure AD User Update Wizard" page when the changes are applied.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnRestoreDefaultPermissions(UserSecurityID: Guid)
+```
+#### Parameters
+*UserSecurityID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The ID of the user whos permission sets will be restored.
+
+
+## Azure AD User Update Wizard (Page 9515)
+
+ Administrators can use this page to synchronize information about users from Office 365 to Business Central.
+ 
+
+
+## Azure AD Permission Change Action (Enum 9017)
+
+ The types of the action to take in response to permission conflicts arising out of changes to plans in Office users.
+ 
+
+### Select (value: 0)
+
+
+ Represents the case when either no action is needed or no action has been provided by the user.
+ 
+
+### Keep Current (value: 1)
+
+
+ Represents the case when the user wants to keep the current configuration.
+ 
+
+### Append (value: 2)
+
+
+ Represents the case when the user wants to append a new configuration to one that already exists.
+ 
+
+
+## Azure AD Update Type (Enum 9010)
+Types of updates from users in the Office 365.
+
+### New (value: 0)
+
+
+ Represents a value that is present in the Office 365 portal but not in Business Central.
+ 
+
+### Change (value: 1)
+
+
+ Represents a value that is different in the Office 365 portal compared to Business Central.
+ 
+
+
+## Azure AD User Update Entity (Enum 9515)
+
+ The entities that are updated in Business Central from Office 365.
+ 
+
+
+ The order in which the update is processed must be in the following order.
+ Authentication email must be updated before Plan, and Plan must be updated before Language ID.
+ 
+
+### Authentication Email (value: 0)
+
+
+ Represents an update to the authentication email property of a user.
+ 
+
+### Contact Email (value: 1)
+
+
+ Represents an update to the contact email property of a user.
+ 
+
+### Full Name (value: 2)
+
+
+ Represents an update to the full name property of a user.
+ 
+
+### Plan (value: 3)
+
+
+ Represents an update to the assigned plans for a user.
+ 
+
+### Language ID (value: 4)
+
+
+ Represents an update to the language setting of a user.
+ 
 

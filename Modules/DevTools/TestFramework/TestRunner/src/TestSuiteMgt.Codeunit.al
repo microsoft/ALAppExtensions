@@ -90,6 +90,7 @@ codeunit 130456 "Test Suite Mgt."
             exit;
 
         CodeunitResultJson.Add('name', CodeunitTestMethodLine.Name);
+        CodeunitResultJson.Add('codeUnit', CodeunitTestMethodLine."Test Codeunit");
         CodeunitResultJson.Add('startTime', CodeunitTestMethodLine."Start Time");
         CodeunitResultJson.Add('finishTime', CodeunitTestMethodLine."Finish Time");
 

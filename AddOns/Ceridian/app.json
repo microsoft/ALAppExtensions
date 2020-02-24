@@ -1,0 +1,23 @@
+{
+    "id":  "30828ce4-53e3-407f-ba80-13ce8d79d110",
+    "name":  "Ceridian Payroll",
+    "publisher":  "Microsoft",
+    "brief":  "The Ceridian Payroll functionality allows you to import payroll transactions from Ceridian HR/Payroll (US) and Ceridian Powerpay (Canada).",
+    "description":  "The Ceridian Payroll functionality allows you to import payroll transactions from Ceridian HR/Payroll (US) and Ceridian Powerpay (Canada).",
+    "version":  "16.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?LinkId=829784",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "ExtensionLogo.png",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "11.0.0.0",
+    "target":  "OnPrem",
+    "showMyCode":  false,
+    "application":  "16.0.0.0"
+}

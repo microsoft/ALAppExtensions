@@ -85,7 +85,7 @@ codeunit 1864 "C5 VendTable Migrator"
 
         VendorDataMigrationFacade.SetBlockedType(ConvertBlocked(C5VendTable));
         VendorDataMigrationFacade.SetFaxNo(C5VendTable.Fax);
-        VendorDataMigrationFacade.SetVATRegistrationNo(C5VendTable.VatNumber);
+        VendorDataMigrationFacade.SetVATRegistrationNo(CopyStr(C5VendTable.VatNumber, 1, 20)); // VAT field length on the vendor table is 20
         VendorDataMigrationFacade.SetHomePage(C5VendTable.URL);
 
         // reference to another vendor

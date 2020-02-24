@@ -19,7 +19,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
         DocNameSpace: Text[250];
         DocNameSpace2: Text[250];
 
-    local procedure InsertReminderTaxTotal(var ReminderElement: XmlElement; IssuedReminderHeader: Record "Issued Reminder Header"; var IssuedReminderLine: Record "Issued Reminder Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);
+    local procedure InsertReminderTaxTotal(var ReminderElement: XmlElement; var IssuedReminderLine: Record "Issued Reminder Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);
     var
         TaxTotalElement: XmlElement;
         TaxableAmount: Decimal;
@@ -201,7 +201,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
           '',
           0,
           CurrencyCode,
-          CalcDate('0D'),
+          CalcDate('<0D>'),
           "Due Date",
           TotalAmount);
 
@@ -218,7 +218,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
             IssuedReminderLine2.CALCSUMS(Amount, Amount);
             TotalTaxAmount := IssuedReminderLine2.Amount - IssuedReminderLine2.Amount;
 
-            InsertReminderTaxTotal(XMLCurrNode, Rec, IssuedReminderLine2, TotalTaxAmount, CurrencyCode);
+            InsertReminderTaxTotal(XMLCurrNode, IssuedReminderLine2, TotalTaxAmount, CurrencyCode);
         end;
 
         // Reminder->LegalMonetaryTotal

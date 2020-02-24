@@ -174,7 +174,7 @@ codeunit 1866 "C5 CustTable Migrator"
 
         CustomerDataMigrationFacade.SetPaymentMethodCode(CreatePaymentMethodIfNeeded(C5CustTable.PaymentMode));
         CustomerDataMigrationFacade.SetFaxNo(C5CustTable.Fax);
-        CustomerDataMigrationFacade.SetVATRegistrationNo(C5CustTable.VatNumber);
+        CustomerDataMigrationFacade.SetVATRegistrationNo(CopyStr(C5CustTable.VatNumber, 1, 20)); // VAT field length on the customer table is 20
         CustomerDataMigrationFacade.SetHomePage(C5CustTable.URL);
         CustomerDataMigrationFacade.SetContact(C5CustTable.Attention);
 

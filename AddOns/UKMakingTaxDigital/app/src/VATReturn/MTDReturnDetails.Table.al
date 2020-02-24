@@ -74,8 +74,7 @@ table 10532 "MTD Return Details"
     {
     }
 
-    [Scope('OnPrem')]
-    procedure DiffersFromReturn(MTDReturnDetails: Record "MTD Return Details"): Boolean
+    internal procedure DiffersFromReturn(MTDReturnDetails: Record "MTD Return Details"): Boolean
     begin
         exit(
           ("Period Key" <> MTDReturnDetails."Period Key") or

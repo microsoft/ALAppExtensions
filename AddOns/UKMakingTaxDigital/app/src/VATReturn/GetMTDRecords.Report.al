@@ -25,11 +25,13 @@ report 10530 "Get MTD Records"
             {
                 field("Start Date"; StartDate)
                 {
+                    Caption = 'Start Date';
                     ToolTip = 'Specifies the date from which to return the records.';
                     ApplicationArea = Basic, Suite;
                 }
                 field("End Date"; EndDate)
                 {
+                    Caption = 'End Date';
                     ToolTip = 'Specifies the date to which to return the records.';
                     ApplicationArea = Basic, Suite;
                 }
@@ -85,8 +87,7 @@ report 10530 "Get MTD Records"
         StartDate: Date;
         EndDate: Date;
 
-    [Scope('OnPrem')]
-    procedure Initialize(NewCaptionOption: Option)
+    internal procedure Initialize(NewCaptionOption: Option)
     begin
         CaptionOption := NewCaptionOption;
     end;

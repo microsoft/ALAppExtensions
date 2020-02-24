@@ -316,12 +316,13 @@ codeunit 135087 "AMC CT E2E Web Service Test"
         BankAccount.Init();
         BankAccount.Validate("No.", CopyStr(CreateGuid(), 1, MaxStrLen(BankAccount."No.")));
         BankAccount.Validate(Name, BankAccount."No.");
+        BankAccount."Bank Branch No." := 'WRONGBRANCHNO';
         BankAccount.Insert();
 
         BankAccount.Validate("Credit Transfer Msg. Nos.", PrepareNoSeriesForFixedLineID());
         BankAccount.Validate("Payment Export Format", SelectAMCCreditTransferFormat());
         BankAccount.Validate("AMC Bank Name", BankName);
-        BankAccount.Validate("Bank Account No.", BankAccNo);
+        BankAccount."Bank Account No." := BankAccNo;
         BankAccount.Modify(true);
     end;
 
@@ -384,7 +385,7 @@ codeunit 135087 "AMC CT E2E Web Service Test"
         GenJournalLine.Validate("Posting Date", PostingDate);
         GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
         GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Vendor);
-        GenJournalLine.Validate("Account No.", VendorNo);
+        GenJournalLine."Account No." := VendorNo;
         GenJournalLine.Validate(Amount, LibraryRandom.RandDec(1000, 2));
         GenJournalLine.Validate("Document No.", CopyStr(CreateGuid(), 1, MaxStrLen(GenJournalLine."Document No.")));
         GenJournalLine.Validate("Bal. Account Type", GenJournalLine."Bal. Account Type"::"Bank Account");
@@ -404,11 +405,23 @@ codeunit 135087 "AMC CT E2E Web Service Test"
     end;
 
     local procedure CreateVendorBankAccount(var VendorBankAccount: Record "Vendor Bank Account"; VendorNo: Code[20])
+    var
+        RecRef: RecordRef;
+        FieldRef: FieldRef;
     begin
         VendorBankAccount.Init();
         VendorBankAccount.Validate("Vendor No.", VendorNo);
         VendorBankAccount.Validate(Code, CopyStr(CreateGuid(), 1, MaxStrLen(VendorBankAccount.Code)));
         VendorBankAccount.Insert(true);
+        // Spanish Localization workaround
+        // Field 10705 - Use For Electronic Payments must be true
+        RecRef.Get(VendorBankAccount.RecordId);
+        if RecRef.FieldExist(10705) then begin
+            FieldRef := RecRef.Field(10705);
+            FieldRef.Value := true;
+            RecRef.Modify();
+        end;
+
     end;
 
     local procedure CreateDataExchWithContent(var TempDataExch: Record "Data Exch." temporary; UniqueText: Text)

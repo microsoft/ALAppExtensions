@@ -12,7 +12,7 @@ report 13630 "OIOUBL-Create Elec. Invoices"
     {
         dataitem("Sales Invoice Header"; "Sales Invoice Header")
         {
-            DataItemTableView = SORTING ("No.");
+            DataItemTableView = SORTING("No.");
             RequestFilterFields = "No.", "Sell-to Customer No.", "Bill-to Customer No.", "OIOUBL-GLN", "OIOUBL-Electronic Invoice Created";
 
             trigger OnAfterGetRecord();
@@ -56,7 +56,7 @@ report 13630 "OIOUBL-Create Elec. Invoices"
 
                 // Some already sent?
                 SalesInvHeader.SETRANGE("OIOUBL-Electronic Invoice Created", TRUE);
-                if SalesInvHeader.FINDFIRST() then
+                if NOT SalesInvHeader.IsEmpty() then
                     if NOT CONFIRM(InvoicesAlreadyCreatedQst, TRUE) then
                         CurrReport.QUIT();
 

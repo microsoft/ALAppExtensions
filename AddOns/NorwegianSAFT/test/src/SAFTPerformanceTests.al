@@ -13,6 +13,7 @@ codeunit 148106 "SAF-T Performance Tests"
     var
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryRandom: Codeunit "Library - Random";
         SAFTTestHelper: Codeunit "SAF-T Test Helper";
         Assert: Codeunit Assert;
         // LibraryPerformanceProfiler: Codeunit "Library - Performance Profiler";
@@ -72,7 +73,7 @@ codeunit 148106 "SAF-T Performance Tests"
     var
         SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
     begin
-        SAFTTestHelper.SetupMasterData();
+        SAFTTestHelper.SetupMasterData(LibraryRandom.RandInt(5));
         SAFTMappingHelper.MapRestSourceCodesToAssortedJournals();
         SAFTTestHelper.InsertSAFTMappingRangeFullySetup(
             SAFTMappingRange, MappingType,

@@ -301,7 +301,7 @@ codeunit 148003 "C5 CustTable Migrator Tst"
         CustomerPriceGroup.SetRange(Code, CustPriceGroupTxt);
         CustomerPriceGroup.SetRange(Description, 'My CPG Description');
         CustomerPriceGroup.SetRange("Price Includes VAT", true);
-        CustomerPriceGroup.FindFirst();
+        Assert.IsFalse(CustomerPriceGroup.IsEmpty(), 'Customer price group was not found.');
     end;
 
     local procedure CreateC5Payment()
@@ -361,7 +361,7 @@ codeunit 148003 "C5 CustTable Migrator Tst"
         PaymentTerms.SetRange(Description, 'My payment');
         Evaluate(DueDateFormula, '<CM+5D>');
         PaymentTerms.SetRange("Due Date Calculation", DueDateFormula);
-        PaymentTerms.FindFirst();
+        Assert.IsFalse(PaymentTerms.IsEmpty(), 'The payment terms were not found.');
     end;
 
     local procedure CreateC5Employee()
@@ -387,7 +387,7 @@ codeunit 148003 "C5 CustTable Migrator Tst"
         SalespersonPurchaser.SetRange(Name, 'Gert Thomas');
         SalespersonPurchaser.SetRange("Phone No.", '123455');
         SalespersonPurchaser.SetRange("E-Mail", 'gertThomas@c5.com');
-        SalespersonPurchaser.FindFirst();
+        Assert.IsFalse(SalespersonPurchaser.IsEmpty(), 'The sales person purchaser was not found.');
     end;
 
     local procedure CreateC5Delivery()
@@ -408,7 +408,7 @@ codeunit 148003 "C5 CustTable Migrator Tst"
     begin
         ShipmentMethod.SetRange(Code, DeliveryTxt);
         ShipmentMethod.SetRange(Description, 'By Avion');
-        ShipmentMethod.FindFirst();
+        Assert.IsFalse(ShipmentMethod.IsEmpty(), 'The shipment method was not found.');
     end;
 
     local procedure CreateC5CustDiscGroup()
@@ -429,7 +429,7 @@ codeunit 148003 "C5 CustTable Migrator Tst"
     begin
         CustomerDiscountGroup.SetRange(Code, DiscGroupTxt);
         CustomerDiscountGroup.SetRange(Description, 'A comment for disc group');
-        CustomerDiscountGroup.FindFirst();
+        Assert.IsFalse(CustomerDiscountGroup.IsEmpty(), 'The customer discount group was not found.');
     end;
 
     local procedure CreateC5ProcCode()
@@ -451,7 +451,7 @@ codeunit 148003 "C5 CustTable Migrator Tst"
     begin
         PaymentMethod.SetRange(Code, ProcCodeTxt);
         PaymentMethod.SetRange(Description, 'Proc Code full name');
-        PaymentMethod.FindFirst();
+        Assert.IsFalse(PaymentMethod.IsEmpty(), 'The payment method was not found.');
     end;
 
     local procedure CheckDefaultDimensionExists(Customer: Text[10])

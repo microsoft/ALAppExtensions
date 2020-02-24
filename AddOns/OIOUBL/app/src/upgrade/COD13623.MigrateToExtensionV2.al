@@ -46,7 +46,7 @@ codeunit 13623 "OIOUBL-MigrateToExtV2"
     var
         OIOUBLProfile: Record "OIOUBL-Profile";
     begin
-        exit(OIOUBLProfile.FindFirst());
+        exit(NOT OIOUBLProfile.IsEmpty());
     end;
 
     local procedure MoveTablePaymentTerms();

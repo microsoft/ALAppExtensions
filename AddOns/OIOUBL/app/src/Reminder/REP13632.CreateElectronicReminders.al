@@ -12,7 +12,7 @@ report 13632 "OIOUBL-Create Elec. Reminders"
     {
         dataitem("Issued Reminder Header"; "Issued Reminder Header")
         {
-            DataItemTableView = SORTING ("No.");
+            DataItemTableView = SORTING("No.");
             RequestFilterFields = "No.", "Customer No.", "OIOUBL-GLN", "OIOUBL-Electronic Reminder Created";
 
             trigger OnAfterGetRecord();
@@ -54,7 +54,7 @@ report 13632 "OIOUBL-Create Elec. Reminders"
 
                 // Some already sent?
                 IssuedReminderHeader.SETRANGE("OIOUBL-Electronic Reminder Created", TRUE);
-                if IssuedReminderHeader.FINDFIRST() then
+                if NOT IssuedReminderHeader.IsEmpty() then
                     if NOT CONFIRM(DocumentAlreadyCreatedQst, TRUE) then
                         CurrReport.QUIT();
 

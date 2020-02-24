@@ -37,13 +37,13 @@ codeunit 1951 "LP Model Management"
 
         if LPMachineLearningSetup.MyModelExists() then begin
             // evaluate My Model on the NEW data only
-            EvaluateModel(true, LPMachineLearningSetup."Selected Model"::My, true);
+            EvaluateModel(LPMachineLearningSetup."Selected Model"::My, true);
             LPMachineLearningSetup.GetSingleInstance();
         end;
 
         if LPMachineLearningSetup.StandardModelExists() then
             // evaluate standard model on ALL data
-            EvaluateModel(true, LPMachineLearningSetup."Selected Model"::Standard, false);
+            EvaluateModel(LPMachineLearningSetup."Selected Model"::Standard, false);
 
         if IsEnoughDataAvailable() then
             // train My Model
@@ -130,7 +130,7 @@ codeunit 1951 "LP Model Management"
 
         LPMachineLearningSetup.GetSingleInstance();
         LPMachineLearningSetup.CheckSelectedModelExists();
-        EvaluateModel(false, LPMachineLearningSetup."Selected Model", false);
+        EvaluateModel(LPMachineLearningSetup."Selected Model", false);
 
         LPMachineLearningSetup.GetSingleInstance();
         Message(ModelTestedMsg, Round(LPMachineLearningSetup.GetModelQuality() * 100, 1));
@@ -253,7 +253,7 @@ codeunit 1951 "LP Model Management"
     begin
     end;
 
-    local procedure EvaluateModel(CalledFromJobQueue: Boolean; Model: Option; BasedOnIncrement: Boolean)
+    local procedure EvaluateModel(Model: Option; BasedOnIncrement: Boolean)
     var
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
         MLPredictionManagement: Codeunit "ML Prediction Management";

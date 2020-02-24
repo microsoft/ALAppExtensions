@@ -1,0 +1,67 @@
+{
+  "QueryResponse": {
+    "TaxRate": [
+      {
+        "Name": "AZ State tax",
+        "Description": "Sales Tax",
+        "Active": true,
+        "RateValue": 7.1,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "SpecialTaxType": "NONE",
+        "DisplayType": "ReadOnly",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "1",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-11-25T12:17:04-08:00",
+          "LastUpdatedTime": "2016-11-25T12:17:04-08:00"
+        }
+      },
+      {
+        "Name": "California",
+        "Description": "Sales Tax",
+        "Active": true,
+        "RateValue": 8,
+        "AgencyRef": {
+          "value": "2"
+        },
+        "SpecialTaxType": "NONE",
+        "DisplayType": "ReadOnly",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "3",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-11-25T12:17:04-08:00",
+          "LastUpdatedTime": "2016-11-25T12:17:04-08:00"
+        }
+      },
+      {
+        "Name": "Tucson City",
+        "Description": "Sales Tax",
+        "Active": true,
+        "RateValue": 2,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "SpecialTaxType": "NONE",
+        "DisplayType": "ReadOnly",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "2",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-11-25T12:17:04-08:00",
+          "LastUpdatedTime": "2016-11-25T12:17:04-08:00"
+        }
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 3,
+    "totalCount": 3
+  },
+  "time": "2017-04-17T07:38:11.882-07:00"
+}

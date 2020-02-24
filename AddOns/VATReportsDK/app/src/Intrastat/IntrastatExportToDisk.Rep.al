@@ -11,12 +11,12 @@ report 13690 "Intrastat Export To Disk"
     {
         dataitem("Intrastat Jnl. Batch"; "Intrastat Jnl. Batch")
         {
-            DataItemTableView = SORTING ("Journal Template Name", Name);
+            DataItemTableView = SORTING("Journal Template Name", Name);
             RequestFilterFields = "Journal Template Name", Name;
             dataitem("Intrastat Jnl. Line"; "Intrastat Jnl. Line")
             {
-                DataItemLink = "Journal Template Name" = FIELD ("Journal Template Name"), "Journal Batch Name" = FIELD (Name);
-                DataItemTableView = SORTING (Type, "Country/Region Code", "Tariff No.", "Transaction Type", "Transport Method");
+                DataItemLink = "Journal Template Name" = FIELD("Journal Template Name"), "Journal Batch Name" = FIELD(Name);
+                DataItemTableView = SORTING(Type, "Country/Region Code", "Tariff No.", "Transaction Type", "Transport Method");
                 RequestFilterFields = Type;
 
                 trigger OnAfterGetRecord();
@@ -63,7 +63,7 @@ report 13690 "Intrastat Export To Disk"
             }
             dataitem(IntrastatJnlLine2; "Intrastat Jnl. Line")
             {
-                DataItemTableView = SORTING ("Internal Ref. No.");
+                DataItemTableView = SORTING("Internal Ref. No.");
 
                 trigger OnAfterGetRecord();
                 begin
@@ -149,7 +149,7 @@ report 13690 "Intrastat Export To Disk"
             trigger OnAfterGetRecord();
             begin
                 TESTFIELD(Reported, false);
-                IntraReferenceNo := "Statistics Period" + '000000';
+                IntraReferenceNo := CopyStr("Statistics Period" + '000000', 1, MaxStrLen(IntraReferenceNo));
             end;
 
             trigger OnPreDataItem();
@@ -252,13 +252,13 @@ report 13690 "Intrastat Export To Disk"
         exit(PADSTR('', Length - STRLEN(Text), '0') + Text);
     end;
 
-    [Scope('Personalization')]
+    [Scope('Cloud')]
     procedure InitializeRequest(newServerFileName: Text);
     begin
         ServerFileName := newServerFileName;
     end;
 
-    [Scope('Internal')]
+    [Scope('OnPrem')]
     procedure WriteGrTotalsToFile(TotalWeightAmt: Decimal; QuantityAmt: Decimal; StatisticalValueAmt: Decimal);
     begin
         with IntrastatJnlLine2 do begin

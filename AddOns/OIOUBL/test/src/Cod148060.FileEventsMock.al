@@ -38,5 +38,12 @@ codeunit 148060 "OIOUBL-File Events Mock"
     begin
         LibraryVariableStorage.Enqueue(FilePath);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"File Management", 'OnBeforeDownloadHandler', '', false, false)]
+    local procedure SavePathOnBeforeDownloadHandler(var ToFolder: Text; ToFileName: Text; FromFileName: Text; var IsHandled: Boolean)
+    begin
+        LibraryVariableStorage.Enqueue(FromFileName);
+        IsHandled := true;
+    end;
 }
 

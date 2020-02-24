@@ -12,6 +12,7 @@ codeunit 1908 "Camera Impl."
         CameraOptions: DotNet CameraOptions;
         AreCameraOptionsInitialized: Boolean;
         QualityOutOfRangeErr: Label 'The picture quality must be in the range from 0 to 100.';
+        NoPictureWasTakenErr: Label 'No picture was taken.';
 
 
     procedure CameraInteractionOnOpenPage(var CameraProvider: DotNet CameraProvider; var CameraAvailable: Boolean)
@@ -66,12 +67,21 @@ codeunit 1908 "Camera Impl."
 
     procedure GetPicture(var TempBlob: Codeunit "Temp Blob")
     begin
-        FileHelper.GetFile(TempBlob);
+        if not FileHelper.GetFile(TempBlob) then
+            Error(NoPictureWasTakenErr);
+    end;
+
+    procedure HasPicture(): Boolean
+    begin
+        exit(FileHelper.FileExists());
     end;
 
     procedure GetPicture(Stream: InStream)
+    var
+        FileTempBlob: Codeunit "Temp Blob";
     begin
-        FileHelper.GetFile(Stream);
+        GetPicture(FileTempBlob);
+        FileTempBlob.CreateInStream(Stream);
     end;
 
     procedure CameraInteractionOnPictureAvailable(FilePath: Text)

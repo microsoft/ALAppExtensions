@@ -10,7 +10,7 @@ page 2507 "Upload And Deploy Extension"
 {
     Extensible = false;
     PageType = NavigatePage;
-    SourceTable = "NAV App";
+    SourceTable = "Published Application";
     SourceTableTemporary = true;
     ContextSensitiveHelpPage = 'ui-extensions';
 

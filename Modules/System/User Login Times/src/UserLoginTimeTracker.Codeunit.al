@@ -72,7 +72,7 @@ codeunit 9026 "User Login Time Tracker"
     /// <summary>
     /// Publishes an event that is fired whenever a user's login information is created or updated.
     /// </summary>
-    /// <param name="UserSecurityID">The User Security ID of the user that is being created or updated.</param>
+    /// <param name="UserSecurityId">The User Security ID of the user that is being created or updated.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnAfterCreateorUpdateLoginInfo(UserSecurityId: Guid)
     begin

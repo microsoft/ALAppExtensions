@@ -480,7 +480,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
     begin
         Initialize();
         LibraryAmcWebService.SetupAMCBankingDataExch(AMCBankingMgt.GetDataExchDef_CT());
-
         // Setup.
         CreateBankAccountWithDetails(BankAccount);
         SetupVendorDetails(Vendor, VendorBankAccount, GetDataExchLineDef(DataExchDef, BankAccount));
@@ -497,7 +496,7 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
         GenJnlLine.ExportPaymentFile();
 
         // Exercise
-        GenJnlLine.DeleteAll(true);
+        GenJnlLine.DeleteAll();
         SuggestVendorPayments(Vendor, PmtGenJnlBatch, SkipExportedPayments);
 
         // Verify - no payments
@@ -576,7 +575,7 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
         CancelExportEntriesForVendor(Vendor."No.");
         if ReExport then
             GenJnlLine.ExportPaymentFile();
-        GenJnlLine.DeleteAll(true);
+        GenJnlLine.DeleteAll();
         SuggestVendorPayments(Vendor, PmtGenJnlBatch, true);
 
         // Verify
@@ -674,7 +673,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
         GenJnlLine.Init();
         GenJnlLine.Validate("Journal Template Name", GenJnlBatch."Journal Template Name");
         GenJnlLine.Validate("Journal Batch Name", GenJnlBatch.Name);
-
         with SuggestVendorPaymentsReport do begin
             SetGenJnlLine(GenJnlLine);
             SetTableView(Vendor);
@@ -692,7 +690,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
         LibraryPurchase.CreateVendor(Vendor);
         CreateVendorBankAccountWithDetails(VendorBankAccount, Vendor."No.");
         CreatePaymentMethodWithDetails(PaymentMethod, DataExchLineDef);
-
         Vendor.Validate("Payment Method Code", PaymentMethod.Code);
         Vendor.Validate("Preferred Bank Account Code", VendorBankAccount.Code);
         Vendor.Validate(Name,
@@ -717,7 +714,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
         LibrarySales.CreateCustomer(Customer);
         CreateCustomerBankAccountWithDetails(CustomerBankAccount, Customer."No.");
         CreatePaymentMethodWithDetails(PaymentMethod, DataExchLineDef);
-
         Customer.Validate("Payment Method Code", PaymentMethod.Code);
         Customer.Validate("Preferred Bank Account Code", CustomerBankAccount.Code);
         Customer.Validate(Name,
@@ -945,14 +941,12 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
           -LibraryRandom.RandDec(1000, 2));
         GenJnlLine."Recipient Bank Account" := '';
         GenJnlLine.Modify();
-
         LibraryERM.CreateGeneralJnlLineWithBalAcc(GenJnlLine,
           GenJnlBatch."Journal Template Name", GenJnlBatch.Name, GenJnlLine."Document Type"::Invoice,
           GenJnlLine."Account Type"::Vendor, VendorNo, GenJnlLine."Bal. Account Type"::"G/L Account", GLAccount."No.",
           -LibraryRandom.RandDec(1000, 2));
         GenJnlLine."Recipient Bank Account" := '';
         GenJnlLine.Modify();
-
         LibraryERM.PostGeneralJnlLine(GenJnlLine);
     end;
 
@@ -990,7 +984,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
           -LibraryRandom.RandDec(1000, 2));
         GenJnlLine."Recipient Bank Account" := '';
         GenJnlLine.Modify();
-
         LibraryERM.PostGeneralJnlLine(GenJnlLine);
     end;
 
@@ -1000,7 +993,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
         Vendor: Record Vendor;
     begin
         SetupVendorDetails(Vendor, VendorBankAccount, GetDataExchLineDef(DataExchDef, BankAccount));
-
         LibraryERM.CreateGeneralJnlLine(GenJnlLine,
           PmtGenJnlBatch."Journal Template Name", PmtGenJnlBatch.Name, GenJnlLine."Document Type"::Payment,
           GenJnlLine."Account Type"::Vendor, Vendor."No.", LibraryRandom.RandDec(1000, 2));
@@ -1020,7 +1012,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
             if CustLedgerEntry.FindFirst() then
                 exit(CustLedgerEntry."Entry No.");
         end;
-
         CustLedgerEntry.SetRange("Applies-to ID");
         CustLedgerEntry.SetRange("Applies-to Doc. Type", GenJournalLine."Document Type");
         CustLedgerEntry.SetRange("Applies-to Doc. No.", GenJournalLine."Document No.");
@@ -1038,7 +1029,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
             if VendorLedgerEntry.FindFirst() then
                 exit(VendorLedgerEntry."Entry No.");
         end;
-
         VendorLedgerEntry.SetRange("Applies-to ID");
         VendorLedgerEntry.SetRange("Applies-to Doc. Type", GenJournalLine."Document Type");
         VendorLedgerEntry.SetRange("Applies-to Doc. No.", GenJournalLine."Document No.");
@@ -1055,7 +1045,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
             SourceText := DelStr(SourceText, pos, STRLEN(FindText));
             SourceText := InsStr(SourceText, ReplaceText, pos);
         END;
-
         exit(SourceText);
     end;
 
@@ -1071,23 +1060,19 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
         DataExch.SetRange("Data Exch. Def Code", DataExchDef.Code);
         DataExch.FindLast();
         DataExch.CalcFields("File Content");
-
         LibraryXPathXMLReader.Initialize(DataExch."File Name", AMCBankingMgt.GetNamespace());
         LibraryXPathXMLReader.SetDefaultNamespaceUsage(false);
-
         GenJournalLine.FindSet();
         repeat
             LineNo += 1;
             BankAccount.Get(GenJournalLine."Bal. Account No.");
             PaymentMethod.Get(GenJournalLine."Payment Method Code");
-
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/journalname', '/', '/ns:'),
               GenJournalLine."Journal Template Name", 0);
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/journalnumber', '/', '/ns:'),
               GenJournalLine."Journal Batch Name" + '_' + Format(DataExch."Entry No."), 0);
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(PrefixXPath('/paymentExportBank/bank', '/', '/ns:'),
               BankAccount."AMC Bank Name", 0);
-
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
               PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/ownbankaccount/bankaccount', '/', '/ns:'),
               BankAccount.GetBankAccountNo(), LineNo - 1);
@@ -1100,7 +1085,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
               PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/ownbankaccount/swiftcode', '/', '/ns:'),
               BankAccount."SWIFT Code", LineNo - 1);
-
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
               PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/ownbankaccount/bankaccountaddress/address1', '/', '/ns:'),
               BankAccount.Address, LineNo - 1);
@@ -1116,7 +1100,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
               PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/ownbankaccount/bankaccountaddress/zipcode', '/', '/ns:'),
               BankAccount."Post Code", LineNo - 1);
-
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
               PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/bankaccountcurrency', '/', '/ns:'),
               GeneralLedgerSetup.GetCurrencyCode(BankAccount."Currency Code"), LineNo - 1);
@@ -1141,7 +1124,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
               PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/reference', '/', '/ns:'),
               GenJournalLine."Payment Reference", LineNo - 1);
-
             Amount := GenJournalLine.Amount; // to avoid DecimalPaces property affects the FORMAT
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
               PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/amountdetails/payamount', '/', '/ns:'),
@@ -1229,41 +1211,33 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
 
         //Fetch Payment Information Id - to use in test of banktransspec
         transthemuniqueid := LibraryXPathXMLReader.GetNodeInnerTextByXPathWithIndex(PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/uniqueid', '/', '/ns:'), Lineno - 1);
-
         if (transthemuniqueid <> '') then begin
             CreditTransferEntry.SETRANGE(CreditTransferEntry."Data Exch. Entry No.", GenJournalLine."Data Exch. Entry No.");
             CreditTransferEntry.SETRANGE(CreditTransferEntry."Transaction ID", transthemuniqueid);
             if (CreditTransferEntry.FindSet()) then
                 repeat
                     GetCVLedgerEntryBuffer(CVLedgEntryBuffer, CreditTransferEntry);
-
                     LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                       PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/discountused', '/', '/ns:'),
                       FORMAT(CreditTransferEntry."Pmt. Disc. Possible", 0, TypeHelper.GetXMLAmountFormatWithTwoDecimalPlaces()), SpecIndex);
-
                     if (CVLedgEntryBuffer."Entry No." <> 0) then begin
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/invoiceref', '/', '/ns:'),
                           CVLedgEntryBuffer.Description, SpecIndex);
-
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/origdate', '/', '/ns:'),
                           GetDateTime(CVLedgEntryBuffer."Document Date"), SpecIndex);
-
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/origamount', '/', '/ns:'),
                           FORMAT(-CVLedgEntryBuffer."Original Amount", 0, TypeHelper.GetXMLAmountFormatWithTwoDecimalPlaces()), SpecIndex);
-
                     end
                     else begin
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                             PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/invoiceref', '/', '/ns:'),
                             CreditTransferEntry."Message to Recipient", SpecIndex);
-
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/origdate', '/', '/ns:'),
                           GetDateTime(CreditTransferEntry."Transfer Date"), SpecIndex);
-
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/origamount', '/', '/ns:'),
                           FORMAT(CreditTransferEntry."Transfer Amount", 0, TypeHelper.GetXMLAmountFormatWithTwoDecimalPlaces()), SpecIndex);
@@ -1330,7 +1304,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
     begin
         Customer.Get(GenJournalLine."Account No.");
         CustomerBankAccount.Get(GenJournalLine."Account No.", GenJournalLine."Recipient Bank Account");
-
         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/receiversaddress/address1', '/', '/ns:'),
           Customer.Address, LineNo - 1);
@@ -1373,44 +1346,35 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/receiversbankaccount/bankaccountaddress/zipcode', '/', '/ns:'),
           CustomerBankAccount."Post Code", LineNo - 1);
-
         //Fetch Payment Information Id - to use in test of banktransspec
         transthemuniqueid := LibraryXPathXMLReader.GetNodeInnerTextByXPathWithIndex(PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/uniqueid', '/', '/ns:'), Lineno - 1);
-
         if (transthemuniqueid <> '') then begin
             CreditTransferEntry.SETRANGE(CreditTransferEntry."Data Exch. Entry No.", GenJournalLine."Data Exch. Entry No.");
             CreditTransferEntry.SETRANGE(CreditTransferEntry."Transaction ID", transthemuniqueid);
             if (CreditTransferEntry.FindSet()) then
                 repeat
                     GetCVLedgerEntryBuffer(CVLedgEntryBuffer, CreditTransferEntry);
-
                     LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                       PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/discountused', '/', '/ns:'),
                       FORMAT(CreditTransferEntry."Pmt. Disc. Possible", 0, TypeHelper.GetXMLAmountFormatWithTwoDecimalPlaces()), SpecIndex);
-
                     if (CVLedgEntryBuffer."Entry No." <> 0) then begin
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/invoiceref', '/', '/ns:'),
                           CVLedgEntryBuffer.Description, SpecIndex);
-
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/origdate', '/', '/ns:'),
                           GetDateTime(CVLedgEntryBuffer."Document Date"), SpecIndex);
-
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/origamount', '/', '/ns:'),
                           FORMAT(-CVLedgEntryBuffer."Original Amount", 0, TypeHelper.GetXMLAmountFormatWithTwoDecimalPlaces()), SpecIndex);
-
                     end
                     else begin
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                             PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/invoiceref', '/', '/ns:'),
                             CreditTransferEntry."Message to Recipient", SpecIndex);
-
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/origdate', '/', '/ns:'),
                           GetDateTime(CreditTransferEntry."Transfer Date"), SpecIndex);
-
                         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
                           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/banktransus/banktransthem/banktransspec/origamount', '/', '/ns:'),
                           FORMAT(CreditTransferEntry."Transfer Amount", 0, TypeHelper.GetXMLAmountFormatWithTwoDecimalPlaces()), SpecIndex);
@@ -1419,7 +1383,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
                 until CreditTransferEntry.Next() = 0;
         end;
     end;
-
     /* TODO Maybe - does not work like this anymore
     local procedure VerifyCreditTransferRegisterEntries(PmtGenJnlBatch: Record "Gen. Journal Batch")
     var
@@ -1486,4 +1449,3 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
     begin
     end;
 }
-

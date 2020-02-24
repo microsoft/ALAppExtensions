@@ -23,7 +23,7 @@ codeunit 13648 "OIOUBL-Common Logic"
         ChildElement.Add(XmlElement.Create('ID', DocNameSpaceCBC, ID));
         if SalesOrderID <> '' then
             ChildElement.Add(XmlElement.Create('SalesOrderID', DocNameSpaceCBC, SalesOrderID));
-        if IssueDate <> CalcDate('0D') then
+        if IssueDate <> CalcDate('<0D>') then
             ChildElement.Add(XmlElement.Create('IssueDate', DocNameSpaceCBC, OIOUBLDocumentEncode.DateToText(IssueDate)));
 
         RootElement.Add(ChildElement);
@@ -188,7 +188,7 @@ codeunit 13648 "OIOUBL-Common Logic"
         InvoiceElement.Add(AccountingSupplierPartyElement);
     end;
 
-    Local procedure InsertCustomerParty(var AccountingCustomerParty: XmlElement; GLN: Code[13]; VATRegNo: Text[20]; PartyName: Text[50]; PostalAddress: Record "Standard Address"; PartyContact: Record Contact);
+    Local procedure InsertCustomerParty(var AccountingCustomerParty: XmlElement; GLN: Code[13]; VATRegNo: Text[20]; PartyName: Text[100]; PostalAddress: Record "Standard Address"; PartyContact: Record Contact);
     var
         PartyElement: XmlElement;
     begin
@@ -198,7 +198,7 @@ codeunit 13648 "OIOUBL-Common Logic"
           XmlAttribute.Create('schemeAgencyID', '9'),
           XmlAttribute.Create('schemeID', 'GLN'),
           GLN));
-        InsertPartyIdentification(PartyElement, OIOUBLDocumentEncode.GetCustomerVATRegNo(VATRegNo));
+        InsertPartyIdentification(PartyElement, OIOUBLDocumentEncode.GetCustomerVATRegNoIncCustomerCountryCode(VATRegNo, PostalAddress."Country/Region Code"));
         InsertPartyName(PartyElement, PartyName);
         InsertAddress(PartyElement,
           'PostalAddress',
@@ -211,7 +211,7 @@ codeunit 13648 "OIOUBL-Common Logic"
         AccountingCustomerParty.Add(PartyElement);
     end;
 
-    procedure InsertAccountingCustomerParty(var InvoiceElement: XmlElement; GLN: Code[13]; VATRegNo: Text[20]; PartyName: Text[50]; PostalAddress: Record "Standard Address"; PartyContact: Record Contact);
+    procedure InsertAccountingCustomerParty(var InvoiceElement: XmlElement; GLN: Code[13]; VATRegNo: Text[20]; PartyName: Text[100]; PostalAddress: Record "Standard Address"; PartyContact: Record Contact);
     var
         AccountingCustomerParty: XmlElement;
     begin
@@ -245,7 +245,7 @@ codeunit 13648 "OIOUBL-Common Logic"
     begin
         DeliveryElement := XmlElement.Create('Delivery', DocNameSpaceCAC);
 
-        if ShipmentDate <> CalcDate('0D') then
+        if ShipmentDate <> CalcDate('<0D>') then
             DeliveryElement.Add(XmlElement.Create('ActualDeliveryDate', DocNameSpaceCBC,
               OIOUBLDocumentEncode.DateToText(ShipmentDate)));
 
@@ -348,7 +348,7 @@ codeunit 13648 "OIOUBL-Common Logic"
           XmlElement.Create('Amount', DocNameSpaceCBC,
             XmlAttribute.Create('currencyID', CurrencyCode),
             OIOUBLDocumentEncode.DecimalToText(Amount)));
-        if PmtDiscountDate <> CalcDate('0D') then
+        if PmtDiscountDate <> CalcDate('<0D>') then
             // Invoice->PaymentTerms->SettlementPeriod
             InsertPeriod(PaymentTermsElement, 'SettlementPeriod', '',
               OIOUBLDocumentEncode.DateToText(PmtDiscountDate));
@@ -437,7 +437,7 @@ codeunit 13648 "OIOUBL-Common Logic"
         RootElement.Add(TaxTotalElement);
     end;
 
-    procedure InsertLegalMonetaryTotal(var InvoiceElement: XmlElement; TaxableAmount: Decimal; TaxAmount: Decimal; TotalAmount: Decimal; TotalInvDiscountAmount: Decimal; CurrencyCode: Code[10])
+    procedure InsertLegalMonetaryTotal(var InvoiceElement: XmlElement; LineAmount: Decimal; TaxAmount: Decimal; TotalAmount: Decimal; TotalInvDiscountAmount: Decimal; CurrencyCode: Code[10])
     var
         LegalMonetaryTotalElement: XmlElement;
     begin
@@ -446,7 +446,7 @@ codeunit 13648 "OIOUBL-Common Logic"
         LegalMonetaryTotalElement.Add(
           XmlElement.Create('LineExtensionAmount', DocNameSpaceCBC,
             XmlAttribute.Create('currencyID', CurrencyCode),
-            OIOUBLDocumentEncode.DecimalToText(TaxableAmount)));
+            OIOUBLDocumentEncode.DecimalToText(LineAmount)));
         LegalMonetaryTotalElement.Add(
           XmlElement.Create('TaxExclusiveAmount', DocNameSpaceCBC,
             XmlAttribute.Create('currencyID', CurrencyCode),
@@ -466,26 +466,6 @@ codeunit 13648 "OIOUBL-Common Logic"
             OIOUBLDocumentEncode.DecimalToText(TotalAmount)));
 
         InvoiceElement.Add(LegalMonetaryTotalElement);
-    end;
-
-    local procedure InsertOrderLineReference(var InvoiceLineElement: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header"; SalesInvoiceLine: Record "Sales Invoice Line");
-    var
-        OrderLineReferenceElement: XmlElement;
-    begin
-        OrderLineReferenceElement := XmlElement.Create('OrderLineReference', DocNameSpaceCAC);
-        OrderLineReferenceElement.Add(XmlElement.Create('LineID', DocNameSpaceCBC,
-          FORMAT(SalesInvoiceLine."Line No.")));
-        // if SalesInvoiceHeader."Order No." <> '' then
-        //   InsertOrderReference(OrderLineReferenceElement,
-        //     SalesInvoiceHeader."External Document No.",
-        //     SalesInvoiceHeader."Order No.",
-        //     SalesInvoiceHeader."Order Date")
-        // else
-        //   InsertOrderReference(OrderLineReferenceElement,
-        //     SalesInvoiceHeader."External Document No.",
-        //     SalesInvoiceHeader."Pre-Assigned No.",
-        //     SalesInvoiceHeader."Order Date");
-        InvoiceLineElement.Add(OrderLineReferenceElement);
     end;
 
     procedure InsertReminderLine(var ReminderElement: XmlElement; ID: integer; Note: Text[100]; Amount: Decimal; CurrencyCode: Code[10]; AccountCode: Code[30]);
@@ -555,7 +535,7 @@ codeunit 13648 "OIOUBL-Common Logic"
         RootElement.Add(PriceElement);
     end;
 
-    procedure GetPaymentChannelCode(): Text[7];
+    procedure GetPaymentChannelCode(): Text;
     begin
         exit(CompanyInfo.GetOIOUBLPaymentChannelCode());
     end;

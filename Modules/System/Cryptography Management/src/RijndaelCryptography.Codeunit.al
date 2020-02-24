@@ -96,7 +96,7 @@ codeunit 1258 "Rijndael Cryptography"
     /// Sets the key and vector for the RijnadaelManaged class.
     /// </summary>
     /// <param name="KeyAsBase64">Represents the secret key for the symmetric algorithm encoded as Base64 Text</param>
-    /// <param name="VectorBase64">Represents the initialization vector (IV) for the symmetric algorithm encoded as Base64 Text</param>
+    /// <param name="VectorAsBase64">Represents the initialization vector (IV) for the symmetric algorithm encoded as Base64 Text</param>
     procedure SetEncryptionData(KeyAsBase64: Text; VectorAsBase64: Text)
     begin
         CryptographyManagementImpl.SetEncryptionData(KeyAsBase64, VectorAsBase64);
@@ -106,6 +106,7 @@ codeunit 1258 "Rijndael Cryptography"
     /// Determines whether the specified key size is valid for the current algorithm.
     /// </summary>
     /// <param name="KeySize">Key Size.</param>
+    /// <returns>True if the key size is valid; false otherwise.</returns>
     procedure IsValidKeySize(KeySize: Integer): Boolean
     begin
         exit(CryptographyManagementImpl.IsValidKeySize(KeySize))
@@ -137,7 +138,7 @@ codeunit 1258 "Rijndael Cryptography"
     /// Gets the key and vector from the RijnadaelManaged class
     /// </summary>
     /// <param name="KeyAsBase64">Represents the secret key for the symmetric algorithm encoded as Base64 Text</param>
-    /// <param name="VectorBase64">Represents the initialization vector (IV) for the symmetric algorithm encoded as Base64 Text</param>
+    /// <param name="VectorAsBase64">Represents the initialization vector (IV) for the symmetric algorithm encoded as Base64 Text</param>
     procedure GetEncryptionData(var KeyAsBase64: Text; var VectorAsBase64: Text)
     begin
         CryptographyManagementImpl.GetEncryptionData(KeyAsBase64, VectorAsBase64);

@@ -1,0 +1,43 @@
+{"Customer":
+  {"Taxable":false,
+   "BillAddr":
+    {"Id":"6",
+     "Line1":"6789 Expensereport",
+     "City":"Chicago",
+     "Country":"United States",
+     "CountrySubDivisionCode":"IL",
+     "PostalCode":"12345"},
+   "Job":false,
+   "BillWithParent":false,
+   "Balance":1234.00,
+   "BalanceWithJobs":1234.00,
+   "CurrencyRef":
+    {"value":"USD",
+     "name":"United States Dollar"},
+   "PreferredDeliveryMethod":"None",
+   "domain":"QBO",
+   "sparse":false,
+   "Id":"6",
+   "SyncToken":"0",
+   "MetaData":
+    {"CreateTime":"2016-09-16T01:45:37-07:00",
+     "LastUpdatedTime":"2016-09-16T01:45:37-07:00"},
+   "GivenName":"Aaron",
+   "MiddleName":"E",
+   "FamilyName":"Berhanu",
+   "FullyQualifiedName":"Aaron E Berhanu",
+   "CompanyName":"Maple Leaf Inc.",
+   "DisplayName":"Aaron E Berhanu",
+   "PrintOnCheckName":"Aaron E Berhanu",
+   "Active":true,
+   "PrimaryPhone":
+    {"FreeFormNumber":"555-5558"},
+   "Mobile":
+    {"FreeFormNumber":"555-555-4567"},
+   "Fax":
+    {"FreeFormNumber":"555-5559"},
+   "PrimaryEmailAddr":
+    {"Address":"Theboss@yahoo.com"},
+   "WebAddr":
+    {"URI":"http://www.mapleleaf-inc.com"}},
+ "time":"2016-09-19T05:47:08.779-07:00"}

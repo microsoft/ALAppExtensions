@@ -12,7 +12,7 @@ report 13631 "OIOUBL-Create Elec. Cr. Memos"
     {
         dataitem("Sales Cr.Memo Header"; "Sales Cr.Memo Header")
         {
-            DataItemTableView = SORTING ("No.");
+            DataItemTableView = SORTING("No.");
             RequestFilterFields = "No.", "Sell-to Customer No.", "Bill-to Customer No.", "OIOUBL-GLN", "OIOUBL-Electronic Credit Memo Created";
 
             trigger OnAfterGetRecord();
@@ -57,7 +57,7 @@ report 13631 "OIOUBL-Create Elec. Cr. Memos"
 
                 // Some already sent?
                 SalesCrMemoHeader.SETRANGE("OIOUBL-Electronic Credit Memo Created", TRUE);
-                if SalesCrMemoHeader.FINDFIRST() then
+                if NOT SalesCrMemoHeader.IsEmpty() then
                     if NOT CONFIRM(DocumentAlreadyCreatedQst, TRUE) then
                         CurrReport.QUIT();
 

@@ -72,6 +72,7 @@ codeunit 457 "Environment Information"
     /// <summary>
     /// Gets the application family.
     /// </summary>
+    /// <returns>The application family.</returns>
     procedure GetApplicationFamily(): Text
     begin
         exit(EnvironmentInformationImpl.GetApplicationFamily());

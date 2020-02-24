@@ -31,28 +31,28 @@ codeunit 139576 "LP ML Input Data Test"
     begin
         SalesInvoiceHeader1.DeleteAll();
         // first with no lines
-        CreateInvoiceHeader(SalesInvoiceHeader1, 'ONE', CalcDate('5D', WorkDate()));
+        CreateInvoiceHeader(SalesInvoiceHeader1, 'ONE', CalcDate('<5D>', WorkDate()));
 
         // second with line but 0 amount
-        CreateInvoiceHeader(SalesInvoiceHeader2, 'TWO', CalcDate('5D', WorkDate()));
+        CreateInvoiceHeader(SalesInvoiceHeader2, 'TWO', CalcDate('<5D>', WorkDate()));
         CreateInvoiceLine(SalesInvoiceHeader2, 0);
 
         // third with one line with amount 10
-        CreateInvoiceHeader(SalesInvoiceHeader3, 'THREE', CalcDate('5D', WorkDate()));
+        CreateInvoiceHeader(SalesInvoiceHeader3, 'THREE', CalcDate('<5D>', WorkDate()));
         CreateInvoiceLine(SalesInvoiceHeader3, 10);
 
         // fourth like third with reversed cust ledger entry
-        CreateInvoiceHeader(SalesInvoiceHeader4, 'FOUR', CalcDate('5D', WorkDate()));
+        CreateInvoiceHeader(SalesInvoiceHeader4, 'FOUR', CalcDate('<5D>', WorkDate()));
         CreateInvoiceLine(SalesInvoiceHeader4, 10);
         CreateCustLedgEntry(SalesInvoiceHeader4, true);
 
         // fifth like third with no reversed cust ledger entry
-        CreateInvoiceHeader(SalesInvoiceHeader5, 'FIVE', CalcDate('5D', WorkDate()));
+        CreateInvoiceHeader(SalesInvoiceHeader5, 'FIVE', CalcDate('<5D>', WorkDate()));
         CreateInvoiceLine(SalesInvoiceHeader5, 10);
         CreateCustLedgEntry(SalesInvoiceHeader5, false);
 
         // sixth like third with due date before third
-        CreateInvoiceHeader(SalesInvoiceHeader6, 'SIX', CalcDate('2D', WorkDate()));
+        CreateInvoiceHeader(SalesInvoiceHeader6, 'SIX', CalcDate('<2D>', WorkDate()));
         CreateInvoiceLine(SalesInvoiceHeader6, 10);
 
         // 3 records: third , fifth and sixth Expected
@@ -157,7 +157,7 @@ codeunit 139576 "LP ML Input Data Test"
         Assert.AreEqual(Invoice2CreationDate, SalesInvoiceHeader2."Posting Date", 'posting date incorrect');
         Assert.AreEqual(Invoice2DueDate, SalesInvoiceHeader2."Due Date", 'Due date incorrect');
 
-        PostUnpaidInvoice(CustomerNo, Invoice3CreationDate, Invoice3DueDate, SalesInvoiceHeader3, GenJournalLine);
+        PostUnpaidInvoice(CustomerNo, Invoice3CreationDate, Invoice3DueDate, SalesInvoiceHeader3);
         SalesInvoiceHeader3.Get(SalesInvoiceHeader3."No.");
 
         LPFeatureTableHelper.ResetAndFillFeaturesTable(LPMLInputData, '', false, 0D);
@@ -188,267 +188,267 @@ codeunit 139576 "LP ML Input Data Test"
 
         // test LP sales header mirror
         // CalculateNumberPaidInvoices
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('-1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+0D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<-1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+0D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+0D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+1D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+0D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+1D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+0D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+1D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+0D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+1D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+0D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+1D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+0D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+1D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+0D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+1D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+0D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+1D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
 
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+0D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+1D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+0D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+1D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
 
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+0D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
-        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+1D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+0D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+1D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
 
-        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+0D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
-        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('+1D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+0D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
+        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberPaidInvoices(CALCDATE('<+1D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid invoices');
 
         // CalculateTotalPaidInvoicesAmount
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('-1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+0D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<-1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+0D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+0D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+1D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+0D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+1D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+0D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+1D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+0D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+1D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+0D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+1D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+0D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+1D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+0D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
-        Assert.AreEqual(SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+1D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+0D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+1D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
 
-        Assert.AreEqual(SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+0D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
-        Assert.AreEqual(SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+1D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+0D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+1D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
 
-        Assert.AreEqual(SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+0D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+1D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+0D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+1D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
 
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+0D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('+1D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+0D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalPaidInvoicesAmount(CALCDATE('<+1D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid invoices');
 
 
         // CalculateNumberPaidLateInvoices
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('-1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+0D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<-1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+0D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+0D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+1D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+0D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+1D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+0D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+1D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+0D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+1D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+0D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+1D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+0D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+1D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+0D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+1D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+0D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+1D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+0D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+1D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+0D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+1D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+0D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+1D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<<+0D>>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+1D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
 
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+0D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('+1D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+0D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberPaidLateInvoices(CALCDATE('<+1D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
 
         // CalculateTotalPaidLateInvoicesAmount
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('-1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+0D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<-1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+0D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+0D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+1D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+0D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+1D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+0D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+1D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+0D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+1D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+0D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+1D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+0D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+1D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+0D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+1D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+0D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+1D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect nb paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+0D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+1D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+0D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+1D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+0D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+1D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+0D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+1D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
 
-        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+0D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('+1D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+0D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalPaidLateInvoicesAmount(CALCDATE('<+1D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect amount paid late invoices');
 
         // CalculateAveragePaidLateInvoicesDays
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('-1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+0D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<-1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+0D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+0D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+1D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+0D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+1D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+0D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+1D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+0D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+1D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+0D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+1D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+0D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+1D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+0D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+1D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+0D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+1D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+0D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+1D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+0D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+1D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+0D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
-        Assert.AreEqual(6, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+1D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+0D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(6, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+1D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
 
-        Assert.AreEqual(6, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+0D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
-        Assert.AreEqual(6, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('+1D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(6, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+0D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
+        Assert.AreEqual(6, LPFeatureTableHelper.CalculateAveragePaidLateInvoicesDays(CALCDATE('<+1D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect average paid late days');
 
 
         // CalculateNumberOutstandingInvoices
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('-1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+0D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<-1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+0D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
 
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+0D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
-        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+1D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+0D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+1D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
 
-        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+0D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
-        Assert.AreEqual(3, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+1D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+0D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(3, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+1D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
 
-        Assert.AreEqual(3, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+0D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
-        Assert.AreEqual(3, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+1D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(3, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+0D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(3, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+1D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
 
-        Assert.AreEqual(3, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+0D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
-        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+1D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(3, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+0D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+1D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
 
-        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+0D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
-        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+1D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+0D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+1D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
 
-        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+0D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+1D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(2, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+0D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+1D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
 
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+0D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('+1D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+0D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingInvoices(CALCDATE('<+1D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding invoices');
 
 
         // CalculateNumberOutstandingLateInvoices
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('-1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+0D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<-1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+0D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+0D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+1D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+0D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+1D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+0D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+1D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+0D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+1D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+0D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+1D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+0D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+1D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
 
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+0D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+1D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+0D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+1D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
 
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+0D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+1D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+0D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+1D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
 
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+0D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+1D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+0D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+1D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+0D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('+1D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+0D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateNumberOutstandingLateInvoices(CALCDATE('<+1D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect number outstanding late invoices');
 
         // CalculateTotalOutstandingInvoicesAmount
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('-1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+0D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<-1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+0D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
 
-        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+0D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+1D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+0D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+1D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
 
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+0D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+1D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+0D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+1D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
 
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+0D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+1D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+0D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+1D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
 
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+0D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+1D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader2.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+0D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+1D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
 
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+0D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+1D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+0D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+1D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
 
-        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+0D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+1D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount + SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+0D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+1D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
 
-        Assert.AreEqual(SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+0D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('+1D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+0D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingInvoicesAmount(CALCDATE('<+1D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding invoices total amount');
 
         // CalculateTotalOutstandingLateInvoicesAmount
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('-1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+0D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<-1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+0D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+0D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+1D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+0D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+1D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+0D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+1D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+0D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+1D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+0D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+1D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+0D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+1D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
 
-        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+0D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+1D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+0D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+1D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
 
-        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+0D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+1D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+0D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+1D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
 
-        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+0D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+1D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader1.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+0D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+1D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+0D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
-        Assert.AreEqual(SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('+1D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+0D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
+        Assert.AreEqual(SalesInvoiceHeader3.Amount, LPFeatureTableHelper.CalculateTotalOutstandingLateInvoicesAmount(CALCDATE('<+1D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect outstanding late invoices total amount');
 
         // CalculateAverageOutstandingDaysLate
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('-1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+0D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+1D', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<-1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+0D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+1D>', Invoice1CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+0D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+1D', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+0D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+1D>', Invoice2CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+0D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+1D', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+0D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+1D>', Invoice3CreationDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+0D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+1D', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+0D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+1D>', Invoice1DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
 
-        Assert.AreEqual(Invoice2PaidDate - Invoice1DueDate, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+0D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
-        Assert.AreEqual(Invoice2PaidDate - Invoice1DueDate + 1, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+1D', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(Invoice2PaidDate - Invoice1DueDate, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+0D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(Invoice2PaidDate - Invoice1DueDate + 1, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+1D>', Invoice2PaidDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
 
-        Assert.AreEqual(Invoice2DueDate - Invoice1DueDate, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+0D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
-        Assert.AreEqual(Invoice2DueDate - Invoice1DueDate + 1, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+1D', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(Invoice2DueDate - Invoice1DueDate, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+0D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(Invoice2DueDate - Invoice1DueDate + 1, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+1D>', Invoice2DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
 
-        Assert.AreEqual(Invoice1PaidDate - Invoice1DueDate, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+0D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+1D', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(Invoice1PaidDate - Invoice1DueDate, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+0D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+1D>', Invoice1PaidDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
 
-        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+0D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
-        Assert.AreEqual(1, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('+1D', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(0, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+0D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
+        Assert.AreEqual(1, LPFeatureTableHelper.CalculateAverageOutstandingDaysLate(CALCDATE('<+1D>', Invoice3DueDate), CustomerNo, LPMLInputData), 'Incorrect average outstanding invoices late days');
     end;
 
 
@@ -471,7 +471,7 @@ codeunit 139576 "LP ML Input Data Test"
         LibrarySales.CreatePaymentAndApplytoInvoice(GenJournalLine, SalesInvoiceHeader."Bill-to Customer No.", PostedSalesInvoiceCode, -SalesInvoiceHeader."Amount Including VAT");
     end;
 
-    local procedure PostUnpaidInvoice(CustomerNo: Code[20]; PostingDate: Date; DueDate: Date; var SalesInvoiceHeader: Record "Sales Invoice Header"; var GenJournalLine: Record "Gen. Journal Line");
+    local procedure PostUnpaidInvoice(CustomerNo: Code[20]; PostingDate: Date; DueDate: Date; var SalesInvoiceHeader: Record "Sales Invoice Header");
     var
         SalesHeader: Record "Sales Header";
         PostedSalesInvoiceCode: Code[20];

@@ -137,7 +137,7 @@ page 2029 "Image Analyzer Wizard"
                         MultiLine = true;
                     }
 
-                    field(EnableFeature; EnableFeature)
+                    field(EnableFeature; IsFeatureEnabled)
                     {
                         ApplicationArea = Basic, Suite;
                         MultiLine = true;
@@ -208,7 +208,7 @@ page 2029 "Image Analyzer Wizard"
                             MultiLine = true;
                         }
 
-                        field(AnalyzePictureOnFinish; AnalyzePictureOnFinish)
+                        field(AnalyzePictureOnFinish; AnalyzePictureOnFinishSwitch)
                         {
                             ApplicationArea = Basic, Suite;
                             ShowCaption = true;
@@ -323,9 +323,9 @@ page 2029 "Image Analyzer Wizard"
         WantToAnalyzeTheCurrentPictureQst: Label 'An image has been added to the chosen item or contact. Want to analyze the image, right after you enable Image Analyzer?';
         IsSetContactToFill: Boolean;
         IsSetItemToFill: Boolean;
-        AnalyzePictureOnFinish: Boolean;
+        AnalyzePictureOnFinishSwitch: Boolean;
         HasPicture: Boolean;
-        EnableFeature: Boolean;
+        IsFeatureEnabled: Boolean;
 
     local procedure EnableControls()
     begin
@@ -363,7 +363,7 @@ page 2029 "Image Analyzer Wizard"
         ItemAttrPopManagement.HandleSetupAndEnable();
         CurrPage.Close();
 
-        if not AnalyzePictureOnFinish then
+        if not AnalyzePictureOnFinishSwitch then
             exit;
 
         if IsSetItemToFill then
@@ -387,7 +387,7 @@ page 2029 "Image Analyzer Wizard"
         SecondStepVisible := true;
         FinishActionEnabled := false;
         BackActionEnabled := true;
-        NextActionEnabled := EnableFeature;
+        NextActionEnabled := IsFeatureEnabled;
     end;
 
     local procedure ShowFinalStep()

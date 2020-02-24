@@ -43,6 +43,11 @@ page 10670 "SAF-T Mapping Setup Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the ending date of the SAF-T reporting period.';
                 }
+                field(IncludeIncomingBalance; "Include Incoming Balance")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies if the incoming balance of G/L account of type "Balance Account" needs to be considered for mapping instead of the reporting period''s net change.';
+                }
             }
             part(SAFTGLAccMappingSubform; "SAF-T G/L Mapping Subpage")
             {

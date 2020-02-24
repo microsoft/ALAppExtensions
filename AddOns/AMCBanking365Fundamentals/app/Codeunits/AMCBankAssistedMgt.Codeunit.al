@@ -27,6 +27,8 @@ codeunit 20117 "AMC Bank Assisted Mgt."
 
         AssistedSetupTxt: Label 'Set up AMC Banking 365 Foundation extension';
         ContentTypeTxt: Label 'text/xml; charset=utf-8', Locked = true;
+        AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2115384', Locked = true;
+        AssistedSetupDescriptionTxt: Label 'Connect to an online bank service that can convert bank data from Business Central into the formats of your bank, to make it easier, and more accurate, to send data to your banks.';
 
     procedure GetApplVersion() ApplVersion: Text;
     var
@@ -332,6 +334,46 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         exit(GetDataExchangeData(TempBlobRequestBody, DataExchDefFilter));
     end;
 
+    [Obsolete('This method is obsolete. A new GetModuleInfoFromWebservice overload is available')]
+    procedure GetModuleInfoFromWebservice(Var XTLUrl: Text; Var Solution: Text; Timeout: Integer): Boolean;
+    var
+        HeadersClientHttp: HttpHeaders;
+        ClientHttp: HttpClient;
+        HeadersContentHttp: HttpHeaders;
+        ModuleRequestMessage: HttpRequestMessage;
+        ModuleResponseMessage: HttpResponseMessage;
+    begin
+
+        AMCBankServMgt.CheckCredentials();
+
+        ModuleRequestMessage.Method('POST');
+        ModuleRequestMessage.SetRequestUri('https://license.amcbanking.com/' + AMCBankServMgt.GetLicenseXmlApi());
+        ModuleRequestMessage.GetHeaders(HeadersClientHttp);
+
+        //Set accept header
+        if (HeadersClientHttp.Contains('Accept')) THEN
+            HeadersClientHttp.Remove('Accept');
+
+        HeadersClientHttp.Add('Accept', 'text/xml; charset=UTF-8');
+
+        PrepareSOAPRequestBodyModuleCreate(ModuleRequestMessage);
+
+        //Set Content-Type header
+        ModuleRequestMessage.Content().GetHeaders(HeadersContentHttp);
+        if (HeadersContentHttp.Contains('Content-Type')) THEN
+            HeadersContentHttp.Remove('Content-Type');
+
+        HeadersContentHttp.Add('Content-Type', 'text/xml; charset=UTF-8');
+
+        //Send Request to webservice
+        ClientHttp.Send(ModuleRequestMessage, ModuleResponseMessage);
+
+        IF (NOT ModuleResponseMessage.IsSuccessStatusCode()) THEN
+            ERROR(TryLoadErrorLbl + StrSubstNo(WebLoadErrorLbl, FORMAT(ModuleResponseMessage.HttpStatusCode()) + ' ' + ModuleResponseMessage.ReasonPhrase()));
+
+        //Get reponse and XTLUrl and Solution
+        exit(GetModuleInfoData(ModuleResponseMessage, XTLUrl, Solution));
+    end;
 
     procedure GetModuleInfoFromWebservice(Var XTLUrl: Text; Var SignUpUrl: Text; var SupportUrl: Text; Var Solution: Text; Timeout: Integer): Boolean;
     var
@@ -449,6 +491,100 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         contentHttpContent.WriteFrom(TempXmlDocText);
         BodyRequestMessage.Content(contentHttpContent);
 
+    end;
+
+    [Obsolete('This method is obsolete. A new GetModuleInfoData overload is available')]
+    local procedure GetModuleInfoData(ResponseMessage: HttpResponseMessage; Var XTLUrl: Text; Var Solution: Text): Boolean;
+    var
+        TempBlob: Codeunit "Temp Blob";
+        ResponseContent: HttpContent;
+        XMLDocOut: XmlDocument;
+        ModuleXMLNodeList: XmlNodeList;
+        ModuleXMLNodeCount: Integer;
+        ModuleIdXMLNode: XmlNode;
+        ResultXMLNode: XmlNode;
+        DataXMLAttributeCollection: XMLAttributeCollection;
+        DataXmlAttribute: XmlAttribute;
+        AttribCounter: Integer;
+        ResponseInStr: InStream;
+        XPath: Text;
+        XResultPath: Text;
+        ModuleName: Text;
+        Erp: Text;
+        Result: Text;
+        ResultText: Text;
+    begin
+
+        TempBlob.CreateInStream(ResponseInStr);
+        ResponseContent := ResponseMessage.Content();
+        ResponseContent.ReadAs(ResponseInStr);
+        XmlDocument.ReadFrom(ResponseInStr, XMLDocOut);
+
+        XResultPath := 'amcwebservice//functionfeedback/header/answer';
+        if (XMLDocOut.SelectSingleNode(XResultPath, ResultXMLNode)) then
+            if (ResultXMLNode.AsXmlElement().HasAttributes()) then begin
+                DataXMLAttributeCollection := ResultXMLNode.AsXmlElement().Attributes();
+                for AttribCounter := 1 to DataXMLAttributeCollection.Count() do begin
+                    DataXMLAttributeCollection.Get(AttribCounter, DataXmlAttribute);
+                    if (DataXmlAttribute.Name() = 'result') then
+                        Result += DataXmlAttribute.Value();
+                end;
+            end;
+        if (Result <> 'ok') then begin
+            ResultText := TryLoadErrorLbl;
+            XResultPath := 'amcwebservice//functionfeedback/body/syslog';
+            XMLDocOut.selectNodes(XResultPath, ModuleXMLNodeList);
+            FOR ModuleXMLNodeCount := 1 TO ModuleXMLNodeList.Count() DO BEGIN
+                ModuleXMLNodeList.Get(ModuleXMLNodeCount, ResultXMLNode);
+                if (ResultXMLNode.AsXmlElement().HasAttributes()) then begin
+                    DataXMLAttributeCollection := ResultXMLNode.AsXmlElement().Attributes();
+                    for AttribCounter := 1 to DataXMLAttributeCollection.Count() do begin
+                        DataXMLAttributeCollection.Get(AttribCounter, DataXmlAttribute);
+                        if (DataXmlAttribute.Name() = 'errortext') then
+                            ResultText += '\' + DataXmlAttribute.Value();
+
+                        if (DataXmlAttribute.Name() = 'url') then
+                            ResultText += '\' + DataXmlAttribute.Value();
+                    end;
+                end;
+            end;
+            error(ResultText)
+        end;
+
+        XPath := 'amcwebservice//functionfeedback/body/package/sysusertable';
+        XMLDocOut.selectNodes(XPath, ModuleXMLNodeList);
+        IF ModuleXMLNodeList.Count() > 0 THEN
+            FOR ModuleXMLNodeCount := 1 TO ModuleXMLNodeList.Count() DO BEGIN
+                ModuleXMLNodeList.Get(ModuleXMLNodeCount, ModuleIdXMLNode);
+                if (ModuleIdXMLNode.AsXmlElement().HasAttributes()) then begin
+                    DataXMLAttributeCollection := ModuleIdXMLNode.AsXmlElement().Attributes();
+                    for AttribCounter := 1 to DataXMLAttributeCollection.Count() do begin
+                        DataXMLAttributeCollection.Get(AttribCounter, DataXmlAttribute);
+                        if (DataXmlAttribute.Name() = 'item') then
+                            ModuleName := DataXmlAttribute.Value();
+
+                        if (DataXmlAttribute.Name() = 'xtlurl') then
+                            XTLUrl := DataXmlAttribute.Value();
+
+                        if (DataXmlAttribute.Name() = 'solution') then
+                            Solution := DataXmlAttribute.Value();
+
+                        if (DataXmlAttribute.Name() = 'erp') then
+                            Erp := DataXmlAttribute.Value();
+                    end;
+                end;
+                if ((LowerCase(ModuleName) = LowerCase('AMC-Banking')) and
+                    (LowerCase(Erp) = LowerCase('Dyn. NAV'))) then
+                    exit(true)
+                else begin
+                    ModuleName := '';
+                    XTLUrl := '';
+                    Solution := AMCBankServMgt.GetDemoSolutionCode();
+                    Erp := '';
+                end;
+            end;
+
+        exit(false);
     end;
 
     local procedure GetModuleInfoData(ResponseMessage: HttpResponseMessage; Var XTLUrl: Text; Var SignupUrl: Text; Var SupportUrl: Text; Var Solution: Text): Boolean;
@@ -754,7 +890,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
     //To update extra things that standard does not.
     [Obsolete('This IntegrationEvent is obsolete. A new OnAfterRunBasisSetupV16 IntegrationEvent is available, with the an extra parameters (TempOnlineBankAccLink: Record "Online Bank Acc. Link") to control which bank account should be updated.')]
     procedure OnAfterRunBasisSetup(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
-                                   UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];
+                                   UpdBank: Boolean; UpdPayMeth: Boolean; CountryCode: Code[10]; PaymCountryCode: Code[10];
                                    UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean;
                                    UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
                                    UpdBankClearStd: Boolean; UpdBankAccounts: Boolean; CallLicenseServer: Boolean)
@@ -1006,8 +1142,9 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         BaseAppID: Codeunit "BaseApp ID";
         AssistedSetup: Codeunit "Assisted Setup";
         AssistedSetupGroup: Enum "Assisted Setup Group";
+        VideoCategory: Enum "Video Category";
     begin
-        AssistedSetup.Add(BaseAppID.Get(), Page::"AMC Bank Assisted Setup", AssistedSetupTxt, AssistedSetupGroup::Uncategorized);
+        AssistedSetup.Add(BaseAppID.Get(), Page::"AMC Bank Assisted Setup", AssistedSetupTxt, AssistedSetupGroup::ReadyForBusiness, '', VideoCategory::ReadyForBusiness, AssistedSetupHelpTxt, AssistedSetupDescriptionTxt);
         if AmcBankingSetup.Get() then
             AssistedSetup.Complete(Page::"AMC Bank Assisted Setup");
     end;

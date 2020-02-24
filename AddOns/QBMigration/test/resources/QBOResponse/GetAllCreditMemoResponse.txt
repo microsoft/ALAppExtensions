@@ -1,0 +1,94 @@
+{
+  "QueryResponse": {
+    "CreditMemo": [
+      {
+        "RemainingCredit": 0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "73",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2016-11-25T12:51:27-08:00",
+          "LastUpdatedTime": "2016-11-25T12:51:28-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Crew #",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1026",
+        "TxnDate": "2016-11-09",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Pest Control Services",
+            "Amount": 100.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "10",
+                "name": "Pest Control"
+              },
+              "UnitPrice": 100,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          },
+          {
+            "Amount": 100.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 0
+        },
+        "CustomerRef": {
+          "value": "1",
+          "name": "Amy's Bird Sanctuary"
+        },
+        "CustomerMemo": {
+          "value": "Thank you for your business and have a great day!"
+        },
+        "BillAddr": {
+          "Id": "79",
+          "Line1": "Amy Lauterbach",
+          "Line2": "Amy's Bird Sanctuary",
+          "Line3": "4581 Finch St.",
+          "Line4": "Bayshore, CA  94326",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "ShipAddr": {
+          "Id": "2",
+          "Line1": "4581 Finch St.",
+          "City": "Bayshore",
+          "CountrySubDivisionCode": "CA",
+          "PostalCode": "94326",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "TotalAmt": 100.0,
+        "ApplyTaxAfterDiscount": false,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "BillEmail": {
+          "Address": "Birds@Intuit.com"
+        },
+        "Balance": 0
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 1
+  },
+  "time": "2017-04-22T20:39:19.477-07:00"
+}

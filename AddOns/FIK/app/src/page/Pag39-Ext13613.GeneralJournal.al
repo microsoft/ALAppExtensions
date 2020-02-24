@@ -13,6 +13,7 @@ pageextension 13613 GeneralJournal extends "General Journal"
             {
                 Caption = 'Import FIK Statement';
                 ToolTip = 'Import a file with FIK payments. The Fik payments are automatically applied as suggestions.';
+                ApplicationArea = Basic, Suite;
                 Promoted = true;
                 Visible = false;
                 PromotedIsBig = true;

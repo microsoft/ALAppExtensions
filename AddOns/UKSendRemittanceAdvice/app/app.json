@@ -11,23 +11,13 @@
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "ExtensionLogo.png",
     "dependencies":  [
-                         {
-                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
-                             "name":  "Base Application",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         },
-                         {
-                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
-                             "name":  "System Application",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         }
+
                      ],
     "screenshots":  [
 
                     ],
     "platform":  "13.0.0.0",
     "target":  "OnPrem",
-    "showMyCode":  true
+    "showMyCode":  true,
+    "application":  "16.0.0.0"
 }

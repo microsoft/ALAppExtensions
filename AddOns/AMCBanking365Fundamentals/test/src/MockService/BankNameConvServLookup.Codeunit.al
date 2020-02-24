@@ -126,6 +126,7 @@ codeunit 135085 "Bank Name Conv Serv Lookup"
     var
         AMCBankBanks: Record "AMC Bank Banks";
         CompanyInformation: Record "Company Information";
+        BankAccount: Record "Bank Account";
         BankAccountCard: TestPage "Bank Account Card";
     begin
         // [SCENARIO] From the bank account card select the first bank name filtered by the company country/region code.
@@ -141,6 +142,9 @@ codeunit 135085 "Bank Name Conv Serv Lookup"
         CompanyInformation.Get();
         CompanyInformation.Validate("Country/Region Code", 'GB');
         CompanyInformation.Modify();
+        BankAccount.FindFirst();
+        Clear(BankAccount."Bank Account No.");
+        BankAccount.Modify();
         BankAccountCard.OpenEdit();
         BankAccountCard."Country/Region Code".SetValue('');
 

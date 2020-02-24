@@ -371,7 +371,7 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
         ServiceLine.MODIFY(true);
     end;
 
-    local procedure FindCity(): Code[20];
+    local procedure FindCity(): Text[30];
     var
         PostCode: Record "Post Code";
         CountryCode: Code[10];

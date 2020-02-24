@@ -112,7 +112,7 @@ table 1803 "Assisted Setup"
         {
             Caption = 'Extension Name';
             FieldClass = FlowField;
-            CalcFormula = Lookup ("NAV App".Name where(ID = FIELD("App ID")));
+            CalcFormula = Lookup ("Published Application".Name where(ID = FIELD("App ID"), "Tenant Visible" = CONST(true)));
             Editable = false;
         }
         field(21; "Group Name"; Enum "Assisted Setup Group")
@@ -127,6 +127,11 @@ table 1803 "Assisted Setup"
         }
         field(23; "Video Category"; Enum "Video Category")
         {
+            Editable = false;
+        }
+        field(24; Description; Text[1024])
+        {
+            Caption = 'Description';
             Editable = false;
         }
     }

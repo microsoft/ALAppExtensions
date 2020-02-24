@@ -38,8 +38,8 @@ codeunit 1852 "Sales Forecast Scheduler"
     var
         JobQueueEntry: Record "Job Queue Entry";
         JobQueueManagement: Codeunit "Job Queue Management";
-        UserLoginTimeTracker : Codeunit "User Login Time Tracker";
-        FromDate : Date;
+        UserLoginTimeTracker: Codeunit "User Login Time Tracker";
+        FromDate: Date;
     begin
         FromDate := CalcDate('<-2W>');
 
@@ -51,7 +51,6 @@ codeunit 1852 "Sales Forecast Scheduler"
     var
         JobQueueEntry: Record "Job Queue Entry";
         MSSalesForecastSetup: Record "MS - Sales Forecast Setup";
-        Date: Record Date;
     begin
         MSSalesForecastSetup.GetSingleInstance();
         if MSSalesForecastSetup.URIOrKeyEmpty() then
@@ -59,8 +58,7 @@ codeunit 1852 "Sales Forecast Scheduler"
 
         CreateJobQueueEntry(JobQueueEntry, true);
         Codeunit.Run(Codeunit::"Job Queue - Enqueue", JobQueueEntry);
-        Date.Get(Date."Period Type"::Date, DT2Date(JobQueueEntry."Earliest Start Date/Time"));
-        Message(ScheduledForecastingEnabledMsg, Date."Period Name");
+        Message(ScheduledForecastingEnabledMsg);
     end;
 
     procedure DeactivateNotification(SetupNotification: Notification)

@@ -39,6 +39,7 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
     var
         ServiceCrMemoHeader2: Record "Service Cr.Memo Header";
         RecordExportBuffer: Record "Record Export Buffer";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
         RBMgt: Codeunit "File Management";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         EnvironmentInfo: Codeunit "Environment Information";
@@ -55,7 +56,7 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         OIOUBLManagement.UpdateRecordExportBuffer(
             ServiceCrMemoHeader.RecordId(),
             CopyStr(FromFile, 1, MaxStrLen(RecordExportBuffer.ServerFilePath)),
-            StrSubstNo('%1.xml', ServiceCrMemoHeader."No."));
+            ElectronicDocumentFormat.GetAttachmentFileName(ServiceCrMemoHeader."No.", 'Credit Memo', 'xml'));
 
         OIOUBLManagement.ExportXMLFile(ServiceCrMemoHeader."No.", FromFile, ServiceSetup."OIOUBL-Service Cr. Memo Path");
 
@@ -89,7 +90,7 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         RootElement.Add(ChildElement);
     end;
 
-    local procedure InsertCrMemoTaxTotal(var CrMemoElement: XmlElement; ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var ServiceCrMemoLine: Record "Service Cr.Memo Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);
+    local procedure InsertCrMemoTaxTotal(var CrMemoElement: XmlElement; var ServiceCrMemoLine: Record "Service Cr.Memo Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);
     var
         TaxTotalElement: XmlElement;
         TaxableAmount: Decimal;
@@ -149,7 +150,7 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         CrMemoElement.Add(TaxTotalElement);
     end;
 
-    local procedure InsertCrMemoLine(var CrMemoElement: XmlElement; ServiceCrMemoHeader: Record "Service Cr.Memo Header"; ServiceCrMemoLine: Record "Service Cr.Memo Line"; CurrencyCode: Code[10]; UnitOfMeasureCode: Code[10])
+    local procedure InsertCrMemoLine(var CrMemoElement: XmlElement; ServiceCrMemoLine: Record "Service Cr.Memo Line"; CurrencyCode: Code[10]; UnitOfMeasureCode: Code[10])
     var
         CrMemoLineElement: XmlElement;
     begin
@@ -163,8 +164,7 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         CrMemoLineElement.Add(
           XmlElement.Create('LineExtensionAmount', DocNameSpace,
             XmlAttribute.Create('currencyID', CurrencyCode),
-            OIOUBLDocumentEncode.DecimalToText(ServiceCrMemoLine.Amount + ServiceCrMemoLine."Inv. Discount Amount" +
-              ServiceCrMemoLine."Line Discount Amount")));
+            OIOUBLDocumentEncode.DecimalToText(ServiceCrMemoLine.Amount + ServiceCrMemoLine."Inv. Discount Amount")));
 
         OIOUBLXMLGenerator.InsertLineTaxTotal(CrMemoLineElement,
           ServiceCrMemoLine."Amount Including VAT",
@@ -173,7 +173,10 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
           ServiceCrMemoLine."VAT %",
           CurrencyCode);
         OIOUBLXMLGenerator.InsertItem(CrMemoLineElement, ServiceCrMemoLine.Description, ServiceCrMemoLine."No.");
-        OIOUBLXMLGenerator.InsertPrice(CrMemoLineElement, ServiceCrMemoLine."Unit Price", UnitOfMeasureCode, CurrencyCode);
+        OIOUBLXMLGenerator.InsertPrice(
+            CrMemoLineElement,
+            Round((ServiceCrMemoLine.Amount + ServiceCrMemoLine."Inv. Discount Amount") / ServiceCrMemoLine.Quantity),
+            UnitOfMeasureCode, CurrencyCode);
 
         CrMemoElement.Add(CrMemoLineElement);
     end;
@@ -191,7 +194,7 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         XMLCurrNode: XmlElement;
         CurrencyCode: Code[10];
         UnitOfMeasureCode: Code[10];
-        TaxableAmount: Decimal;
+        LineAmount: Decimal;
         TaxAmount: Decimal;
         TotalAmount: Decimal;
         TotalInvDiscountAmount: Decimal;
@@ -283,8 +286,8 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
             TotalInvDiscountAmount := 0;
             if ServiceCrMemoLine2.FINDSET() then
                 repeat
-                    TotalInvDiscountAmount := TotalInvDiscountAmount + ServiceCrMemoLine2."Inv. Discount Amount" +
-                      ServiceCrMemoLine2."Line Discount Amount";
+                    ExcludeVAT(ServiceCrMemoLine2, ServiceCrMemoHeader."Prices Including VAT");
+                    TotalInvDiscountAmount += ServiceCrMemoLine2."Inv. Discount Amount";
                 until ServiceCrMemoLine2.NEXT() = 0;
 
             if TotalInvDiscountAmount > 0 then
@@ -305,23 +308,23 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
             ServiceCrMemoLine2.CALCSUMS(Amount, "Amount Including VAT");
             TotalTaxAmount := ServiceCrMemoLine2."Amount Including VAT" - ServiceCrMemoLine2.Amount;
 
-            InsertCrMemoTaxTotal(XMLCurrNode, ServiceCrMemoHeader, ServiceCrMemoLine2, TotalTaxAmount, CurrencyCode);
+            InsertCrMemoTaxTotal(XMLCurrNode, ServiceCrMemoLine2, TotalTaxAmount, CurrencyCode);
         end;
 
         // CreditMemo->LegalMonetaryTotal
-        TaxableAmount := 0;
+        LineAmount := 0;
         TaxAmount := 0;
 
         ServiceCrMemoLine2.RESET();
         ServiceCrMemoLine2.COPY(ServiceCrMemoLine);
         if ServiceCrMemoLine2.FINDSET() then
             repeat
-                TaxableAmount := TaxableAmount + ServiceCrMemoLine2.Amount + ServiceCrMemoLine2."Inv. Discount Amount" +
-                ServiceCrMemoLine2."Line Discount Amount";
-                TotalAmount := TotalAmount + ServiceCrMemoLine2."Amount Including VAT";
-                TaxAmount := TaxAmount + ServiceCrMemoLine2."Amount Including VAT" - ServiceCrMemoLine2.Amount;
+                ExcludeVAT(ServiceCrMemoLine2, ServiceCrMemoHeader."Prices Including VAT");
+                LineAmount += ServiceCrMemoLine2.Amount + ServiceCrMemoLine2."Inv. Discount Amount";
+                TotalAmount += ServiceCrMemoLine2."Amount Including VAT";
+                TaxAmount += ServiceCrMemoLine2."Amount Including VAT" - ServiceCrMemoLine2.Amount;
             until ServiceCrMemoLine2.NEXT() = 0;
-        OIOUBLXMLGenerator.InsertLegalMonetaryTotal(XMLCurrNode, TaxableAmount, TaxAmount, TotalAmount, TotalInvDiscountAmount, CurrencyCode);
+        OIOUBLXMLGenerator.InsertLegalMonetaryTotal(XMLCurrNode, LineAmount, TaxAmount, TotalAmount, TotalInvDiscountAmount, CurrencyCode);
 
         // CreditMemo->CreditMemoLine
         repeat
@@ -332,7 +335,8 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
             else
                 UnitOfMeasureCode := ServiceCrMemoLine."Unit of Measure Code";
 
-            InsertCrMemoLine(XMLCurrNode, ServiceCrMemoHeader, ServiceCrMemoLine, CurrencyCode, UnitOfMeasureCode);
+            ExcludeVAT(ServiceCrMemoLine, ServiceCrMemoHeader."Prices Including VAT");
+            InsertCrMemoLine(XMLCurrNode, ServiceCrMemoLine, CurrencyCode, UnitOfMeasureCode);
         until ServiceCrMemoLine.NEXT() = 0;
 
         OutputFile.Create(FromFile);
@@ -361,6 +365,20 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
     begin
         TaxableAmountParam := TaxableAmountParam + Amount;
         TaxAmountParam := TaxAmountParam + AmountIncludingVAT - Amount;
+    end;
+
+    local procedure ExcludeVAT(var ServiceCrMemoLine: Record "Service Cr.Memo Line"; PricesInclVAT: Boolean);
+    var
+        ExclVATFactor: Decimal;
+    begin
+        if not PricesInclVAT then
+            exit;
+        with ServiceCrMemoLine do begin
+            ExclVATFactor := 1 + "VAT %" / 100;
+            "Line Discount Amount" := Round("Line Discount Amount" / ExclVATFactor, Currency."Amount Rounding Precision");
+            "Inv. Discount Amount" := Round("Inv. Discount Amount" / ExclVATFactor, Currency."Amount Rounding Precision");
+            "Unit Price" := Round("Unit Price" / ExclVATFactor, Currency."Amount Rounding Precision");
+        end;
     end;
 
 }

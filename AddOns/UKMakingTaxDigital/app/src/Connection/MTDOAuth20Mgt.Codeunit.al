@@ -33,20 +33,17 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         RefreshTokenURLPathTxt: Label '/oauth/token', Locked = true;
         AuthorizationResponseTypeTxt: Label 'code', Locked = true;
 
-    [Scope('OnPrem')]
-    procedure GetOAuthPRODSetupCode() Result: Code[20]
+    internal procedure GetOAuthPRODSetupCode() Result: Code[20]
     begin
         Result := CopyStr(OAuthPRODSetupLbl, 1, MaxStrLen(Result))
     end;
 
-    [Scope('OnPrem')]
-    procedure GetOAuthSandboxSetupCode() Result: Code[20]
+    internal procedure GetOAuthSandboxSetupCode() Result: Code[20]
     begin
         Result := CopyStr(OAuthSandboxSetupLbl, 1, MaxStrLen(Result))
     end;
 
-    [Scope('OnPrem')]
-    procedure InitOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup"; OAuthSetupCode: Code[20])
+    internal procedure InitOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup"; OAuthSetupCode: Code[20])
     begin
         with OAuth20Setup do begin
             if not Get(OAuthSetupCode) then begin
@@ -144,7 +141,6 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
 
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
 
-        UpdateClientTokens(OAuth20Setup);
         Result :=
             OAuth20Mgt.RequestAccessTokenWithGivenRequestJson(
                 OAuth20Setup, RequestJSON, MessageText, AuthorizationCode,
@@ -201,10 +197,16 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     local procedure SaveTokens(var OAuth20Setup: Record "OAuth 2.0 Setup"; TokenDataScope: DataScope; AccessToken: Text; RefreshToken: Text)
     var
         TypeHelper: Codeunit "Type Helper";
+        NewAccessTokenDateTime: DateTime;
     begin
         SetToken(OAuth20Setup."Access Token", AccessToken, TokenDataScope);
         SetToken(OAuth20Setup."Refresh Token", RefreshToken, TokenDataScope);
-        OAuth20Setup."Access Token Due DateTime" := TypeHelper.AddHoursToDateTime(CurrentDateTime(), 2);
+        NewAccessTokenDateTime := TypeHelper.AddHoursToDateTime(CurrentDateTime(), 2);
+        if OAuth20Setup."Access Token Due DateTime" = 0DT then
+            OAuth20Setup."Access Token Due DateTime" := NewAccessTokenDateTime
+        else
+            if OAuth20Setup."Access Token Due DateTime" < NewAccessTokenDateTime then
+                OAuth20Setup."Access Token Due DateTime" := NewAccessTokenDateTime;
         OAuth20Setup.Modify();
         Commit(); // need to prevent rollback to save new keys
     end;
@@ -228,12 +230,16 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     local procedure UpdateClientTokens(var OAuth20Setup: Record "OAuth 2.0 Setup")
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
+        EnvironmentInfo: Codeunit "Environment Information";
         AzureClientIDTxt: Text;
         AzureClientSecretTxt: Text;
         KeyValue: Text;
         IsModify: Boolean;
         TokenDataScope: DataScope;
     begin
+        if not EnvironmentInfo.IsSaaS() then
+            exit;
+
         if OAuth20Setup.Code = GetOAuthPRODSetupCode() then begin
             AzureClientIDTxt := PRODAzureClientIDTxt;
             AzureClientSecretTxt := PRODAzureClientSecretTxt;
@@ -244,24 +250,21 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
         if AzureKeyVault.GetAzureKeyVaultSecret(AzureClientIDTxt, KeyValue) then
             if KeyValue <> '' then
-                if KeyValue <> GetToken(OAuth20Setup."Client ID", TokenDataScope) then begin
-                    SetToken(OAuth20Setup."Client ID", KeyValue, TokenDataScope);
-                    IsModify := true;
-                end;
+                if KeyValue <> GetToken(OAuth20Setup."Client ID", TokenDataScope) then
+                    IsModify := SetToken(OAuth20Setup."Client ID", KeyValue, TokenDataScope);
         if AzureKeyVault.GetAzureKeyVaultSecret(AzureClientSecretTxt, KeyValue) then
             if KeyValue <> '' then
-                if KeyValue <> GetToken(OAuth20Setup."Client Secret", TokenDataScope) then begin
-                    SetToken(OAuth20Setup."Client Secret", KeyValue, TokenDataScope);
-                    IsModify := true;
-                end;
+                if KeyValue <> GetToken(OAuth20Setup."Client Secret", TokenDataScope) then
+                    IsModify := SetToken(OAuth20Setup."Client Secret", KeyValue, TokenDataScope);
         if IsModify then
             OAuth20Setup.Modify();
     end;
 
-    [Scope('OnPrem')]
-    procedure SetToken(var TokenKey: Guid; TokenValue: Text; TokenDataScope: DataScope)
+    internal procedure SetToken(var TokenKey: Guid; TokenValue: Text; TokenDataScope: DataScope) NewToken: Boolean
     begin
         if IsNullGuid(TokenKey) then
+            NewToken := true;
+        if NewToken then
             TokenKey := CreateGuid();
 
         if EncryptionEnabled() then
@@ -301,8 +304,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         exit(OAuth20Setup.get(GetOAuthSandboxSetupCode()));
     end;
 
-    [Scope('OnPrem')]
-    procedure IsMTDOAuthSetup(OAuth20Setup: Record "OAuth 2.0 Setup"): Boolean
+    internal procedure IsMTDOAuthSetup(OAuth20Setup: Record "OAuth 2.0 Setup"): Boolean
     var
         VATReportSetup: Record "VAT Report Setup";
         OAuthSetupCode: Code[20];
@@ -338,7 +340,20 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     local procedure AddFraudPreventionHeaders(var RequestJSON: Text)
     var
         FraudPreventionMgt: Codeunit "MTD Fraud Prevention Mgt.";
+        JToken: JsonToken;
+        JToken2: JsonToken;
+        JObject: JsonObject;
+        DummyJObject: JsonObject;
     begin
-        FraudPreventionMgt.AddFraudPreventionHeaders(RequestJSON);
+        if JObject.ReadFrom(RequestJSON) then;
+        if not JObject.Contains('Header') then
+            JObject.Add('Header', DummyJObject);
+        if JObject.SelectToken('Header', JToken) then
+            if JToken2.ReadFrom(FraudPreventionMgt.GenerateFraudPreventionHeaders()) then begin
+                foreach JToken2 in JToken2.AsObject().Values() do
+                    if not JToken.AsObject().Contains(JToken2.Path()) then
+                        JToken.AsObject().Add(JToken2.Path(), JToken2.AsValue().AsText());
+                JObject.WriteTo(RequestJSON);
+            end;
     end;
 }

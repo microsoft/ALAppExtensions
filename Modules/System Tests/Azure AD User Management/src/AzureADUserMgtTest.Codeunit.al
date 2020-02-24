@@ -16,6 +16,7 @@ codeunit 132909 "Azure AD User Management Test"
         AzureADGraphUser: Codeunit "Azure AD Graph User";
         LibraryAssert: Codeunit "Library Assert";
         MockGraphQuery: DotNet MockGraphQuery;
+        DeviceGroupNameTxt: Label 'Dynamics 365 Business Central Device Users', Locked = true;
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -316,6 +317,66 @@ codeunit 132909 "Azure AD User Management Test"
         UnbindSubscription(AzureADUserManagementTest);
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestOfficeSyncWizard()
+    var
+        User: Record User;
+        TempAzureADUserUpdate: Record "Azure AD User Update Buffer" temporary;
+        AzureADPlan: Codeunit "Azure AD Plan";
+        AzureADUserManagementTest: Codeunit "Azure AD User Management Test";
+        AzureADUserMgmtImpl: Codeunit "Azure AD User Mgmt. Impl.";
+        PlanIds: Codeunit "Plan Ids";
+        GraphUserNonBC: DotNet UserInfo;
+        GraphUserDevice: DotNet UserInfo;
+        GraphUserEssential: DotNet UserInfo;
+    begin
+        Initialize(AzureADUserManagementTest);
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+        AzureADUserMgmtImpl.SetTestInProgress(true);
+
+        // create office users
+        AzureADUserManagementTest.AddGraphUser(GraphUserDevice);
+        SetValuesOnGraphUser(GraphUserDevice, 'device@microsoft.com', 'emailDevice@microsoft.com', 'Device', 'Guy');
+        AzureADUserManagementTest.AssignDeviceGroup(GraphUserDevice);
+
+        AzureADUserManagementTest.AddGraphUser(GraphUserEssential);
+        SetValuesOnGraphUser(GraphUserEssential, 'essential@microsoft.com', 'emailEssential@microsoft.com', 'Essential', 'Guy');
+        AzureADUserManagementTest.AssignPlan(GraphUserEssential, PlanIds.GetEssentialPlanId(), 'service', 'status');
+
+        AzureADUserManagementTest.AddGraphUser(GraphUserNonBC);
+        SetValuesOnGraphUser(GraphUserNonBC, 'office@microsoft.com', 'emailNonBC@microsoft.com', 'No', 'BC');
+
+        // run the wizard to sync them
+        AzureADUserMgmtImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdate);
+        AzureADUserMgmtImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdate);
+
+        // verify users
+        User.SetRange("User Name", 'device');
+        LibraryAssert.IsTrue(User.FindFirst(), 'User not created');
+        LibraryAssert.AreEqual(GraphUserDevice.UserPrincipalName(), User."Authentication Email", 'mismatch');
+        LibraryAssert.AreEqual(GraphUserDevice.Mail(), User."Contact Email", 'mismatch');
+        LibraryAssert.AreEqual('Device Guy', User."Full Name", 'mismatch');
+
+        User.SetRange("User Name", 'essential');
+        LibraryAssert.IsTrue(User.FindFirst(), 'User not created');
+        LibraryAssert.AreEqual(GraphUserEssential.UserPrincipalName(), User."Authentication Email", 'mismatch');
+        LibraryAssert.AreEqual(GraphUserEssential.Mail(), User."Contact Email", 'mismatch');
+        LibraryAssert.AreEqual('Essential Guy', User."Full Name", 'mismatch');
+        LibraryAssert.IsTrue(AzureADPlan.DoesUserHavePlans(User."User Security ID"), 'User plan not created');
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetEssentialPlanId(), User."User Security ID"), 'wrong plan assigned');
+
+        User.SetRange("User Name", 'office');
+        LibraryAssert.IsTrue(User.IsEmpty(), 'User got created');
+
+        UnbindSubscription(AzureADUserManagementTest);
+
+
+        // create new users + modify some of the old ones + remove some old ones
+
+        // run the wizard to sync and verify changes
+    end;
+
 
     local procedure Initialize(AzureADUserManagementTest: Codeunit "Azure AD User Management Test")
     begin
@@ -347,6 +408,12 @@ codeunit 132909 "Azure AD User Management Test"
         MockGraphQuery.AddUser(GraphUser);
     end;
 
+    procedure AddGraphUser(var GraphUser: DotNet UserInfo)
+    begin
+        CreateGraphUser(GraphUser, CreateGuid());
+        MockGraphQuery.AddUser(GraphUser);
+    end;
+
     local procedure CreateGraphUser(var GraphUser: DotNet UserInfo; UserId: Text)
     begin
         GraphUser := GraphUser.UserInfo();
@@ -354,6 +421,38 @@ codeunit 132909 "Azure AD User Management Test"
         GraphUser.UserPrincipalName := 'email@microsoft.com';
         GraphUser.Mail := 'email@microsoft.com';
         GraphUser.AccountEnabled := true;
+    end;
+
+    procedure AssignPlan(var GraphUser: DotNet UserInfo; AssignedPlanId: Guid; AssignedPlanService: Text; CapabilityStatus: Text)
+    var
+        AssignedPlan: DotNet ServicePlanInfo;
+        GuidVar: Variant;
+    begin
+        AssignedPlan := AssignedPlan.ServicePlanInfo();
+        GuidVar := AssignedPlanId;
+        AssignedPlan.ServicePlanId := GuidVar;
+        AssignedPlan.ServicePlanName := AssignedPlanService;
+        AssignedPlan.CapabilityStatus := CapabilityStatus;
+
+        MockGraphQuery.AddAssignedPlanToUser(GraphUser, AssignedPlan);
+    end;
+
+    procedure AssignDeviceGroup(var GraphUser: DotNet UserInfo)
+    var
+        AssignedGroup: DotNet GroupInfo;
+    begin
+        AssignedGroup := AssignedGroup.GroupInfo();
+        AssignedGroup.DisplayName := DeviceGroupNameTxt;
+
+        MockGraphQuery.AddUserGroup(GraphUser, AssignedGroup);
+    end;
+
+    local procedure SetValuesOnGraphUser(var GraphUser: DotNet UserInfo; PrincipalName: Text; ContactMail: Text; FirstName: Text; Surname: Text)
+    begin
+        GraphUser.UserPrincipalName := PrincipalName;
+        GraphUser.Mail := ContactMail;
+        GraphUser.GivenName := FirstName;
+        GraphUser.Surname := Surname;
     end;
 
     procedure AddGraphUserPlan(UserId: Text; AssignedPlanId: Guid; AssignedPlanService: Text; CapabilityStatus: Text)

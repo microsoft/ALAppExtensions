@@ -106,7 +106,8 @@ codeunit 1850 "Sales Forecast Handler"
         exit(true);
     end;
 
-    [Scope('Internal')]
+    [NonDebuggable]
+    [Scope('OnPrem')]
     procedure InitializeTimeseries(var TimeSeriesManagement: Codeunit "Time Series Management"; MSSalesForecastSetup: Record "MS - Sales Forecast Setup"): Boolean
     var
         AzureAIUsage: Record "Azure AI Usage";
@@ -264,7 +265,7 @@ codeunit 1850 "Sales Forecast Handler"
         MSSalesForecast.SetRange("Item No.", Item."No.");
         MSSalesForecast.SetRange("Forecast Data", MSSalesForecast."Forecast Data"::Result);
         MSSalesForecast.SetFilter("Variance %", '<=%1', VariancePercSetup);
-        if not MSSalesForecast.FindFirst() then
+        if MSSalesForecast.IsEmpty() then
             exit(false);
 
         // check if forecast expired

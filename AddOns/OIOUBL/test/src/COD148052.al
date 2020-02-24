@@ -1581,12 +1581,12 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
     local procedure SuggestReminderLines(No: Code[20]);
     var
         ReminderHeader: Record "Reminder Header";
-        SuggestReminderLines: Report "Suggest Reminder Lines";
+        SuggestReminderLinesRep: Report "Suggest Reminder Lines";
     begin
         ReminderHeader.SETRANGE("No.", No);
-        SuggestReminderLines.SETTABLEVIEW(ReminderHeader);
-        SuggestReminderLines.USEREQUESTPAGE(false);
-        SuggestReminderLines.RUN();
+        SuggestReminderLinesRep.SETTABLEVIEW(ReminderHeader);
+        SuggestReminderLinesRep.USEREQUESTPAGE(false);
+        SuggestReminderLinesRep.RUN();
     end;
 
     local procedure UpdateOIOUBLCurrency();
@@ -1695,7 +1695,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
           STRSUBSTNO(ValidationErr, SalesInvoiceHeader.FIELDCAPTION("OIOUBL-Sell-to Contact E-Mail"), Contact."E-Mail"));
     end;
 
-    local procedure VerifyElectronicDocumentDetails(PostedDocumentNo: Code[20]; OrderNo: Code[20]; VATPercent: Decimal; CompanyName: Text[50]);
+    local procedure VerifyElectronicDocumentDetails(PostedDocumentNo: Code[20]; OrderNo: Code[20]; VATPercent: Decimal; CompanyName: Text[100]);
     begin
         LibraryXMLReadOnServer.Initialize(OIOUBLNewFileMock.PopFilePath()); // Initialize generated Electronic Invoice Document.
         LibraryXMLReadOnServer.VerifyNodeValue(IDCapTxt, PostedDocumentNo);

@@ -8,6 +8,9 @@ enum 1815 "Assisted Setup Group"
 {
     Extensible = true;
 
+    /// <summary>
+    /// A default group, specifying that the assisted setup is not categorized.
+    /// </summary>
     value(0; Uncategorized)
     {
         Caption = 'Uncategorized';

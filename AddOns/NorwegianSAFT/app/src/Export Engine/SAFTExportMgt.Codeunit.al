@@ -9,6 +9,7 @@ codeunit 10675 "SAF-T Export Mgt."
 
     var
         ExportIsInProgressMsg: Label 'The export is in progress. Starting a new job cancels the current progress.\';
+        LinesInProgressOrCompletedMsg: Label 'One or more export lines are in progress or completed.\';
         CancelExportIsInProgressQst: Label 'Do you want to cancel all export jobs and restart?';
         DeleteExportIsInProgressQst: Label 'Do you want to delete the export entry?';
         RestartExportLineQst: Label 'Do you want to restart the export for this line?';
@@ -23,25 +24,23 @@ codeunit 10675 "SAF-T Export Mgt."
         NoErrorMessageErr: Label 'The generation of a SAF-T file failed but no error message was logged.';
         FilesExistsInFolderErr: Label 'One or more files exist in the folder that you want to export the SAF-T file to. Specify a folder with no files in it.';
         SAFTFileGeneratedTxt: Label 'SAF-T file generated.';
-        SAFTFileNotGeneratedTxt: Label 'SAF-T file generated.';
+        SAFTFileNotGeneratedTxt: Label 'SAF-T file not generated.';
         ParallelSAFTFileGenerationTxt: Label 'Parallel SAF-T file generation';
         ZipArchiveFilterTxt: Label 'Zip File (*.zip)|*.zip', Locked = true;
         SAFTZipFileTxt: Label 'SAF-T Financial.zip', Locked = true;
         ZipArchiveSaveDialogTxt: Label 'Export SAF-T archive';
         MasterDataMsg: Label 'MasterData';
-        GLEntriesMsg: Label 'General ledger entries from %1 to %2';
+        GLEntriesMsg: Label 'General Ledger Entries from %1 to %2';
         NoZipFileGeneratedErr: Label 'No zip file generated.';
         NoOfJobsInProgressTxt: Label 'No of jobs in progress: %1', Comment = '%1 = number';
         JobsStartedOrFailedTxt: Label 'There are %1 jobs not started or failed', Comment = '%1 = number';
         SessionLostTxt: Label 'The task for line %1 was lost.', Comment = '%1 = number';
         NotPossibleToScheduleTxt: Label 'It is not possible to schedule the task for line %1 because the Max. No. of Jobs field contains %2.', Comment = '%1,%2 = numbers';
-        ScheduleTaskForLineTxt: Label 'Schedule a task for line %1.', Comment = '%1';
+        ScheduleTaskForLineTxt: Label 'Schedule a task for line %1.', Comment = '%1 = number';
 
     local procedure StartExport(var SAFTExportHeader: Record "SAF-T Export Header")
     var
-        DummyTempBlob: Codeunit "Temp Blob";
-        FileInStream: InStream;
-        FileOutstream: OutStream;
+        TypeHelper: Codeunit "Type Helper";
     begin
         if not PrepareForExport(SAFTExportHeader) then
             exit;
@@ -50,11 +49,9 @@ codeunit 10675 "SAF-T Export Mgt."
         CreateExportLines(SAFTExportHeader);
 
         SAFTExportHeader.validate(Status, SAFTExportHeader.Status::"In Progress");
-        SAFTExportHeader.Validate("Execution Start Date/Time", CurrentDateTime());
+        SAFTExportHeader.Validate("Execution Start Date/Time", TypeHelper.GetCurrentDateTimeInUserTimeZone());
         SAFTExportHeader.Validate("Execution End Date/Time", 0DT);
-        DummyTempBlob.CreateInStream(FileInStream);
-        SAFTExportHeader."SAF-T File".CreateOutStream(FileOutstream);
-        CopyStream(FileOutstream, FileInStream);
+        Clear(SAFTExportHeader."SAF-T File");
         SAFTExportHeader.Modify(true);
         Commit();
 
@@ -93,12 +90,22 @@ codeunit 10675 "SAF-T Export Mgt."
         DummyNoOfJobs: Integer;
         NotBefore: DateTime;
     begin
-        if not CheckStatus(SAFTExportLine.Status, RestartExportLineQst) then
+        if not CheckLineStatusForRestart(SAFTExportLine) then
             exit;
-        CancelTask(SAFTExportLine);
-        SAFTExportHeader.Get(SAFTExportLine.ID);
-        NotBefore := CurrentDateTime();
-        RunGenerateSAFTFileOnSingleLine(SAFTExportLine, DummyNoOfJobs, NotBefore, SAFTExportHeader);
+        if not SAFTExportLine.FindSet() then
+            exit;
+        repeat
+            SAFTExportLine.SetRange(ID, SAFTExportLine.ID);
+            repeat
+                CancelTask(SAFTExportLine);
+                SAFTExportHeader.Get(SAFTExportLine.ID);
+                NotBefore := CurrentDateTime();
+                RunGenerateSAFTFileOnSingleLine(SAFTExportLine, DummyNoOfJobs, NotBefore, SAFTExportHeader);
+            until SAFTExportLine.Next() = 0;
+            SAFTExportHeader.Find();
+            UpdateExportStatus(SAFTExportHeader);
+            SAFTExportLine.SetRange(ID);
+        until SAFTExportLine.Next() = 0;
     end;
 
     procedure SendTraceTagOfExport(Category: Text; TraceTagMessage: Text)
@@ -109,6 +116,7 @@ codeunit 10675 "SAF-T Export Mgt."
     procedure UpdateExportStatus(var SAFTExportHeader: Record "SAF-T Export Header")
     var
         SAFTExportLine: Record "SAF-T Export Line";
+        TypeHelper: Codeunit "Type Helper";
         TotalCount: Integer;
         Status: Integer;
     begin
@@ -120,7 +128,7 @@ codeunit 10675 "SAF-T Export Mgt."
         SAFTExportLine.SetRange(Status, SAFTExportLine.Status::Completed);
         IF SAFTExportLine.Count() = TotalCount then begin
             SAFTExportHeader.Validate(Status, SAFTExportHeader.Status::Completed);
-            SAFTExportHeader.Validate("Execution End Date/Time", CurrentDateTime());
+            SAFTExportHeader.Validate("Execution End Date/Time", TypeHelper.GetCurrentDateTimeInUserTimeZone());
             SAFTExportHeader.Modify(true);
             exit;
         end;
@@ -226,7 +234,8 @@ codeunit 10675 "SAF-T Export Mgt."
         ActivityLog: Record "Activity Log";
     begin
         ActivityLog.LogActivity(SAFTExportLine.RecordId(), ActivityLog.Status::Success, '', ParallelSAFTFileGenerationTxt, Description);
-        SendTraceTagOfExport(ParallelSAFTFileGenerationTxt, Description);
+        if SetTraceTag then
+            SendTraceTagOfExport(ParallelSAFTFileGenerationTxt, Description);
     end;
 
     local procedure StartExportLines(SAFTExportHeader: Record "SAF-T Export Header")
@@ -257,6 +266,7 @@ codeunit 10675 "SAF-T Export Mgt."
         end;
 
         SAFTExportLine.Validate(Status, SAFTExportLine.Status::"In Progress");
+        Clear(SAFTExportLine."SAF-T File");
         SAFTExportLine.Validate(Progress, 0);
         if SAFTExportHeader."Parallel Processing" then begin
             LogState(SAFTExportLine, StrSubstNo(ScheduleTaskForLineTxt, SAFTExportLine."Line No."), true);
@@ -551,6 +561,7 @@ codeunit 10675 "SAF-T Export Mgt."
         if not SAFTExportHeader.AllowedToExportIntoFolder() then
             exit(false);
         TotalNumberOfFiles := SAFTExportLine.Count();
+        CompanyInformation.Get();
         FilePath :=
             SAFTXMLHelper.GetFilePath(
                 SAFTExportHeader."Folder Path", CompanyInformation."VAT Registration No.", SAFTExportLine."Created Date/Time", FileNumber, TotalNumberOfFiles);
@@ -574,9 +585,10 @@ codeunit 10675 "SAF-T Export Mgt."
     procedure GetNotApplicationVATCode(): Code[10]
     var
         SAFTSetup: Record "SAF-T Setup";
+        VATCode: Record "VAT Code";
     begin
         SAFTSetup.Get();
-        exit(SAFTSetup."Not Applicable VAT Code");
+        exit(copystr(SAFTSetup."Not Applicable VAT Code", 1, MaxStrLen(VATCode.Code)));
     end;
 
     procedure GetISOCurrencyCode(CurrencyCode: Code[10]): Code[10]
@@ -642,7 +654,15 @@ codeunit 10675 "SAF-T Export Mgt."
         if Status = SAFTExportHeader.Status::Completed then
             StatusMessage := ExportIsCompletedQst;
         if StatusMessage <> '' then
-            exit(not HandleConfirm(StatusMessage + Question));
+            exit(HandleConfirm(StatusMessage + Question));
+        exit(true);
+    end;
+
+    local procedure CheckLineStatusForRestart(var SAFTExportLine: Record "SAF-T Export Line"): Boolean;
+    begin
+        SAFTExportLine.SetFilter(Status, '%1|%2', SAFTExportLine.Status::Failed, SAFTExportLine.Status::Completed);
+        if not SAFTExportLine.IsEmpty() then
+            exit(HandleConfirm(LinesInProgressOrCompletedMsg + RestartExportLineQst));
         exit(true);
     end;
 

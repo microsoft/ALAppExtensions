@@ -45,7 +45,7 @@ page 2511 "Extension Settings"
                 {
                     ApplicationArea = All;
                     Caption = 'Allow HttpClient Requests';
-                    Editable = HasExtensionManagementPermissions;
+                    Editable = CanManageExtensions;
                     ToolTip = 'Specifies whether the runtime should allow this extension to make HTTP requests through the HttpClient data type when running in a non-production environment.';
                 }
             }
@@ -58,20 +58,21 @@ page 2511 "Extension Settings"
 
     trigger OnAfterGetCurrRecord()
     var
-        NAVApp: Record "NAV App";
+        PublishedApplication: Record "Published Application";
     begin
-        NAVApp.SetRange(ID, "App ID");
+        PublishedApplication.SetRange(ID, "App ID");
+        PublishedApplication.SetRange("Tenant Visible", true);
 
-        if NAVApp.FindFirst() then begin
-            AppNameValue := NAVApp.Name;
-            AppPublisherValue := NAVApp.Publisher;
-            AppIdValue := LowerCase(DelChr(Format(NAVApp.ID), '=', '{}'));
+        if PublishedApplication.FindFirst() then begin
+            AppNameValue := PublishedApplication.Name;
+            AppPublisherValue := PublishedApplication.Publisher;
+            AppIdValue := LowerCase(DelChr(Format(PublishedApplication.ID), '=', '{}'));
         end
     end;
 
     trigger OnOpenPage()
     var
-        NAVAppObjectMetadata: Record "NAV App Object Metadata";
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
     begin
         if GetFilter("App ID") = '' then
             exit;
@@ -82,13 +83,13 @@ page 2511 "Extension Settings"
             Insert();
         end;
 
-        HasExtensionManagementPermissions := NavAppObjectMetadata.ReadPermission()
+        CanManageExtensions := ExtensionInstallationImpl.CanManageExtensions();
     end;
 
     var
         AppNameValue: Text;
         AppPublisherValue: Text;
         AppIdValue: Text;
-        HasExtensionManagementPermissions: Boolean;
+        CanManageExtensions: Boolean;
 }
 

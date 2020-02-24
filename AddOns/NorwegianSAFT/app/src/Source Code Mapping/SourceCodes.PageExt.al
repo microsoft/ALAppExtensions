@@ -7,7 +7,7 @@ pageextension 10684 "SAF-T Source Codes" extends "Source Codes"
             field(SAFTSourceCode; "SAF-T Source Code")
             {
                 ApplicationArea = Basic, Suite;
-                Tooltip = 'Specified the code that will be exported to the JournalID XML node in the SAF-T file.';
+                Tooltip = 'Specifies the code that will be exported to the JournalID XML node in the SAF-T file.';
             }
         }
     }

@@ -381,7 +381,7 @@ Input string.
 
 *Key ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
-
+Public key to use in the hash algorithm.
 
 *HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA512]())* 
 
@@ -411,7 +411,7 @@ The stream of input data.
 
 *Key ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
-
+Public key to use in the hash algorithm.
 
 *HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA512]())* 
 
@@ -578,7 +578,7 @@ Represents the secret key for the symmetric algorithm encoded as Base64 Text
 
 *VectorAsBase64 ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
-
+Represents the initialization vector (IV) for the symmetric algorithm encoded as Base64 Text
 
 ### IsValidKeySize (Method) <a name="IsValidKeySize"></a> 
 
@@ -597,7 +597,7 @@ Key Size.
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
-
+True if the key size is valid; false otherwise.
 ### GetLegalKeySizeValues (Method) <a name="GetLegalKeySizeValues"></a> 
 
  Specifies the key sizes, in bits, that are supported by the symmetric algorithm.
@@ -658,7 +658,7 @@ Represents the secret key for the symmetric algorithm encoded as Base64 Text
 
 *VectorAsBase64 ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
-
+Represents the initialization vector (IV) for the symmetric algorithm encoded as Base64 Text
 
 ### Encrypt (Method) <a name="Encrypt"></a> 
 

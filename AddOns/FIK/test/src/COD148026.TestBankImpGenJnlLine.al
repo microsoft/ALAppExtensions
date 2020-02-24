@@ -32,7 +32,7 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
-        DocNo: Code[10];
+        DocNo: Code[20];
     begin
         // Setup
         TempBlobOEM.CreateOutStream(OutStream);
@@ -86,7 +86,7 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
-        DocNo: Code[10];
+        DocNo: Code[20];
     begin
         // Setup
         TempBlobOEM.CreateOutStream(OutStream);
@@ -142,7 +142,7 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
         TempBlobANSI: Codeunit "Temp Blob";
         OutStream: OutStream;
         LineNo: Integer;
-        DocNo: Code[10];
+        DocNo: Code[20];
     begin
         // Setup
         TempBlobOEM.CreateOutStream(OutStream);
@@ -194,7 +194,7 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
-        DocNo: Code[10];
+        DocNo: Code[20];
         DBCorpSample1Txt: Label '"CMKXKSX",0901060939,0901060016,1111111111,091208,091208,"DKK",+0.01,"",,"Short Advice","",+0.00,+0.01","Extended advice 1","Extended advice 2","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",', Locked = true;
         DBCorpSample2Txt: Label '"CMKXKSX",0901060939,0901060016,1111111111,051208,081208,"DKK",-125.00,"",,"Short Advice","",+0.00,+0.00","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",', Locked = true;
         DBCorpSampleTemplateTxt: Label '"CMKXKSX",0901060939,0901060016,1111111111,%1,%2,"DKK",%3,"",,%4,"",+0.00,+0.00",%5,%6,"","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",', Locked = true;
@@ -247,7 +247,7 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
-        DocNo: Code[10];
+        DocNo: Code[20];
         NordeaCorpSample1Txt: Label '"NDEADKKKXXX","2999","9999940560","DKK","Testkunde","","20030221","20030221","15757.25","+","15757.25","","68","","OVERFØRSEL MEDDELNR 2001219","4","500","MEDDELNR 2001219","0","99999999999903","501","","502","KON konto 0979999035","0","","0","","0","","","","","","","266787.12","+","266787.12","","","Driftskonto","DK3420009999940560","N","Test Testsen","Testvej 10","9999 Testrup","","","","Ordrenr. 65656","99999999999903","1170200109040120000018","7","Betaling af følgende fakturaer:","Fakturanr. Beløb:","12345 2500,35","22345 1265,66","32345 5825,00","42345 3635,88","52345 2530,36","","","","","","","","","","","","","","","","","","","","","","","",""', Locked = true;
         NordeaCorpSample2Txt: Label '"NDEADKKKXXX","2999","9999940560","DKK","Testkunde","","20030221","20030221","-10220.07","-","10220.07","","358","","UNITEL 17001394","4","502","17001394","0","03520580000012843","155","00000000047278743","502","KON konto 0979999035","0","","0","","0","","","","","","","-64653.28","-","64653.28","","","Kassekredit","DK3420009999940560","N","","","","","","","","","2999200109040120000125","0","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""', Locked = true;
         NordeaCorpTemplateTxt: Label '"NDEADKKKXXX","2999","9999940560","DKK","%1","","%2","%3","%4%5","%4","%5","","358","","%6","4","502","17001394","0","03520580000012843","155","00000000047278743","502","KON konto 0979999035","0","","0","","0","","","","","","","-64653.28","-","64653.28","","","Kassekredit","DK3420009999940560","N","","","","","","","","","2999200109040120000125","0","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""', Locked = true;
@@ -302,7 +302,7 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
-        DocNo: Code[10];
+        DocNo: Code[20];
         BankDataHeaderSampleTxt: Label '"ED000000000003","20130128","125352"', Locked = true;
         BankDataSample1Txt: Label '"ED010103000003","5","20120227","-32,00","2","080790002010094","20120227","99932981,40","test ik aftale","0","","","","","","Creditor ID","","","","","701205828770497959","DKK","","0,00","0,00","","","0,00","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""', Locked = true;
         BankDataSample2Txt: Label '"ED010103000003","10","20120227","9000,00","2","080790002010094","20120227","99957978,46","240212 Indbet.ID=0000000000000018^2","0","","","","","","","","","PK test FI 75 sumbetalinger","","721205800344032009","DKK","","0,00","0,00","","","0,00","Payer Info","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""', Locked = true;
@@ -350,7 +350,7 @@ codeunit 148026 "Test Bank Imp. Gen. Jnl. Line"
         OutStream: OutStream;
         LineNo: Integer;
         EntryNo: Integer;
-        DocNo: Code[10];
+        DocNo: Code[20];
         SDCSamplePosTxt: Label '0400 4010393855;30-01-2013;30-01-2013;26239,15;DKK;26239,15;DKK;;LØNOVERFØRSEL;;Q000004890;;;;;Skandinavisk Data Center A/S;Borupvang 1;2750  Ballerup;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;', Locked = true;
         SDCSampleNeg1Txt: Label '0400 4010393855;07-01-2013;07-01-2013;-135,5;DKK;-135,5;DKK;;Dankort Kringleriet Nota 109850;;1537416545;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;', Locked = true;
         SDCSampleNeg2Txt: Label '0400 4010393855;07-01-2013;07-01-2013;-1840;DKK;-1840;DKK;;Betalingsservice CENTRALREGISTRET FOR MOTORKØRETØJER Aftalenr. 800441095;;306463112;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;', Locked = true;

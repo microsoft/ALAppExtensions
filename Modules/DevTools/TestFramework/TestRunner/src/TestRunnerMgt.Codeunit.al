@@ -36,7 +36,7 @@ codeunit 130454 "Test Runner - Mgt"
         exit(GetCodeIsolationTestRunner());
     end;
 
-    [Obsolete]
+    [Obsolete('', '15.1')]
     procedure GetDefautlTestRunner(): Integer
     begin
         exit(GetCodeIsolationTestRunner());

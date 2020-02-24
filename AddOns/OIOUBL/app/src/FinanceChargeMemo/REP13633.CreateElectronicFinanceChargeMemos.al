@@ -12,7 +12,7 @@ report 13633 "OIOUBL-Create E-Fin Chrg Memos"
     {
         dataitem("Issued Fin. Charge Memo Header"; "Issued Fin. Charge Memo Header")
         {
-            DataItemTableView = SORTING ("No.");
+            DataItemTableView = SORTING("No.");
             RequestFilterFields = "No.", "Customer No.", "OIOUBL-GLN", "OIOUBL-Elec. Fin. Charge Memo Created";
 
             trigger OnAfterGetRecord();
@@ -54,7 +54,7 @@ report 13633 "OIOUBL-Create E-Fin Chrg Memos"
 
                 // Some already sent?
                 IssuedFinChargeMemoHeader.SETRANGE("OIOUBL-Elec. Fin. Charge Memo Created", TRUE);
-                if IssuedFinChargeMemoHeader.FINDFIRST() then
+                if NOT IssuedFinChargeMemoHeader.IsEmpty() then
                     if NOT CONFIRM(DocumentAlreadyCreatedQst, TRUE) then
                         CurrReport.QUIT();
 

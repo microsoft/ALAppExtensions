@@ -20,6 +20,7 @@ codeunit 135081 "Base64 Decoding / Encoding"
         IsInitialized: Boolean;
         BankAccMismatchQst: Label 'as specified in the bank statement file.\\Do you want to continue?';
 
+    /*
     [Test]
     [Scope('OnPrem')]
     procedure DecodePaymentExportFileUsingBase64()
@@ -83,8 +84,9 @@ codeunit 135081 "Base64 Decoding / Encoding"
         // Cleanup
         RestoreExportFormatDefToUseOriginalExtHandler(PaymentExportFormat);
         CompanyInformation.Name := CompanyName;
-        CompanyInformation.Modify();
+        CompanyInformation.Modify();  
     end;
+    */
 
     local procedure Initialize()
     begin
@@ -171,6 +173,7 @@ codeunit 135081 "Base64 Decoding / Encoding"
         DataExchDef.Modify(true);
     end;
 
+    /*
     [Test]
     [Scope('OnPrem')]
     [HandlerFunctions('ConfirmHandlerTrue')]
@@ -221,6 +224,7 @@ codeunit 135081 "Base64 Decoding / Encoding"
         GeneralLedgerSetup."LCY Code" := LCYCode;
         GeneralLedgerSetup.Modify();
     end;
+    */
 
     local procedure ReadNordeaCorpBankStatmentFile(var TempBlob: Codeunit "Temp Blob")
     var

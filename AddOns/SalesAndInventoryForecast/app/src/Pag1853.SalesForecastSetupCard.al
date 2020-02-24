@@ -43,7 +43,7 @@ page 1853 "Sales Forecast Setup Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the API URI for the Azure Machine Learning instance.';
                 }
-                field(APIKey; APIKey)
+                field(APIKey; APIKeyValue)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'API Key';
@@ -58,7 +58,7 @@ page 1853 "Sales Forecast Setup Card"
 
                     trigger OnValidate()
                     begin
-                        SetUserDefinedAPIKey(APIKey);
+                        SetUserDefinedAPIKey(APIKeyValue);
                     end;
                 }
                 field("Timeout (seconds)"; "Timeout (seconds)")
@@ -179,12 +179,12 @@ page 1853 "Sales Forecast Setup Card"
         if SalesForecastScheduler.JobQueueEntryCreationInProcess() then
             Error(JobQueueCreationInProgressErr);
         GetSingleInstance();
-        APIKey := GetAPIKey();
+        APIKeyValue := GetAPIKey();
     end;
 
     var
         UpdatingForecastsMsg: Label 'Sales forecasts are being updated in the background. This might take a minute.';
-        APIKey: Text[250];
+        APIKeyValue: Text[250];
         JobQueueCreationInProgressErr: Label 'Sales forecast updates are being scheduled. Please wait until the process is complete.';
 
     local procedure GetMLTotalProcessingTime(): Decimal

@@ -52,12 +52,35 @@
                              "publisher":  "Microsoft",
                              "name":  "Azure AD Plan",
                              "version":  "16.0.0.0"
-                         }
-                     ],
+                         },
+                         {
+                             "id":  "5c36f279-480c-451b-b513-c1af8cfb0744",
+                             "name":  "Language",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                             "id":  "a4584a53-9345-458a-af20-d1df2fab7bd8",
+                             "publisher":  "Microsoft",
+                             "name":  "Confirm Management",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                            "id":  "c56e3ef4-7ab0-4636-ae87-013a62f12213",
+                            "publisher":  "Microsoft",
+                            "name":  "User Permissions",
+                            "version":  "16.0.0.0"
+                         },
+                         {
+                            "id":  "086892d7-4d8b-4e4a-a522-5efdf47923e3",
+                            "publisher":  "Microsoft",
+                            "name":  "Assisted Setup",
+                            "version":  "16.0.0.0"
+                         }                     ],
     "screenshots":  [
 
                     ],
-    "platform":  "15.0.0.0",
+    "platform":  "16.0.0.0",
     "idRanges":  [
                      {
                          "from":  9010,
@@ -66,6 +89,10 @@
                      {
                          "from":  9017,
                          "to":  9017
+                     },
+                     {
+                        "from":  9515,
+                        "to":  9515
                      }
                  ],
     "internalsVisibleTo":  [

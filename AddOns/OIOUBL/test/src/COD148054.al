@@ -28,7 +28,6 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
         DefaultProfileIDTxt: Label 'Procurement-BilSim-1.0';
         WrongAllowanceChargeErr: Label 'Wrong Count of "AllowanceCharge".';
         WrongInvoiceLineCountErr: Label 'Wrong count of "InvoiceLine".';
-        WrongAllowanceTotalAmountErr: Label 'Wrong count of "AllowanceTotalAmount".';
         BaseQuantityTxt: Label 'cbc:BaseQuantity';
 
     [Test]
@@ -347,7 +346,7 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
         DocumentNo: Code[20];
         ExpectedResult: Decimal;
     begin
-        // [SCENARIO 377873] OIOUBL XML File shouldn'l contain XML node "LegalMonetaryTotal/AllowanceTotalAmount" and should contain XML node "InvoiceLine/AllowanceCharge" with line discount
+        // [SCENARIO 377873] OIOUBL XML File shouldn't contain XML node "LegalMonetaryTotal/AllowanceTotalAmount" and should contain XML node "InvoiceLine/AllowanceCharge" with line discount
         Initialize();
 
         // [GIVEN] Posted sales invoice with two sales lines
@@ -366,7 +365,7 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
         // CODEUNIT.RUN(CODEUNIT::"OIOUBL-Export Sales Invoice",SalesInvoiceHeader);
         OIOUBLExportSalesInvoice.ExportXML(SalesInvoiceHeader);
 
-        // [THEN] OIOUBL XML file contains XML node "LegalMonetaryTotal/AllowanceTotalAmount"
+        // [THEN] OIOUBL XML file does not contain XML node "LegalMonetaryTotal/AllowanceTotalAmount"
         // [THEN] Contains XML node "InvoiceLine/cac:AllowanceCharge/cbc:Amount" with value = "X" for first invoice line
         // [THEN] Doesn't contain XML node "InvoiceLine/cac:AllowanceCharge" for second invoice line
         VerifyAllowanceCharge(DocumentNo, ExpectedResult);
@@ -493,7 +492,7 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
         exit(StandardText.Code);
     end;
 
-    local procedure FindNormalVAT(): Code[10];
+    local procedure FindNormalVAT(): Code[20];
     var
         VATPostingSetup: Record "VAT Posting Setup";
     begin
@@ -501,7 +500,7 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
         exit(VATPostingSetup."VAT Prod. Posting Group");
     end;
 
-    local procedure FindReverseChargeVAT(VATCalculationType: Option): Code[10];
+    local procedure FindReverseChargeVAT(VATCalculationType: Option): Code[20];
     var
         VATPostingSetup: Record "VAT Posting Setup";
     begin
@@ -511,7 +510,7 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
         exit(VATPostingSetup."VAT Prod. Posting Group");
     end;
 
-    local procedure FindZeroVAT(): Code[10];
+    local procedure FindZeroVAT(): Code[20];
     var
         VATPostingSetup: Record "VAT Posting Setup";
     begin
@@ -577,10 +576,10 @@ codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
     begin
         LibraryXMLReadOnServer.Initialize(OIOUBLNewFileMock.PopFilePath());
         LibraryXMLReadOnServer.VerifyNodeValue(IDTxt, DocumentNo);
-        Assert.AreEqual(1, LibraryXMLReadOnServer.GetNodesCount('cbc:AllowanceTotalAmount'), WrongAllowanceTotalAmountErr);
+        LibraryXMLReadOnServer.VerifyElementAbsenceInSubtree('cac:LegalMonetaryTotal', 'cbc:AllowanceTotalAmount');
         Assert.AreEqual(2, LibraryXMLReadOnServer.GetNodesCount('cac:InvoiceLine'), WrongInvoiceLineCountErr);
         LibraryXMLReadOnServer.VerifyNodeValueInSubtree('cac:InvoiceLine', 'cbc:Amount', FORMAT(ExpectedValue, 0, '<Precision,2:3><Sign><Integer><Decimals><Comma,.>'));
-        Assert.AreEqual(2, LibraryXMLReadOnServer.GetNodesCount('cac:AllowanceCharge'), WrongAllowanceChargeErr);
+        Assert.AreEqual(1, LibraryXMLReadOnServer.GetNodesCount('cac:AllowanceCharge'), WrongAllowanceChargeErr);
     end;
 
     [MessageHandler]

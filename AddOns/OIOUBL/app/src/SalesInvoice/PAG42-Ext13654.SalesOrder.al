@@ -44,7 +44,7 @@ pageextension 13654 "OIOUBL-Sales Order" extends "Sales Order"
             }
         }
 
-        addafter("Bill-to Contact")
+        addafter(BillToOptions)
         {
             field("OIOUBL-GLN"; "OIOUBL-GLN")
             {

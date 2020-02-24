@@ -1,0 +1,111 @@
+{
+  "QueryResponse": {
+    "TaxCode": [
+      {
+        "Name": "TAX",
+        "Description": "TAX",
+        "Taxable": true,
+        "TaxGroup": false,
+        "Id": "TAX",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:55:57-08:00",
+          "LastUpdatedTime": "2016-12-21T01:55:57-08:00"
+        }
+      },
+      {
+        "Name": "NON",
+        "Description": "NON",
+        "Taxable": false,
+        "TaxGroup": false,
+        "Id": "NON",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:55:57-08:00",
+          "LastUpdatedTime": "2016-12-21T01:55:57-08:00"
+        }
+      },
+      {
+        "Name": "CustomSalesTax",
+        "Description": "CustomSalesTax",
+        "Taxable": true,
+        "TaxGroup": true,
+        "Id": "CustomSalesTax",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:55:57-08:00",
+          "LastUpdatedTime": "2016-12-21T01:55:57-08:00"
+        }
+      },
+      {
+        "Name": "California",
+        "Description": "California",
+        "Active": true,
+        "Taxable": true,
+        "TaxGroup": true,
+        "SalesTaxRateList": {
+          "TaxRateDetail": [
+            {
+              "TaxRateRef": {
+                "value": "3",
+                "name": "California"
+              },
+              "TaxTypeApplicable": "TaxOnAmount",
+              "TaxOrder": 0
+            }
+          ]
+        },
+        "PurchaseTaxRateList": {
+          "TaxRateDetail": []
+        },
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "2",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-11-25T12:17:04-08:00",
+          "LastUpdatedTime": "2016-11-25T12:17:04-08:00"
+        }
+      },
+      {
+        "Name": "Tucson",
+        "Description": "Tucson",
+        "Active": true,
+        "Taxable": true,
+        "TaxGroup": true,
+        "SalesTaxRateList": {
+          "TaxRateDetail": [
+            {
+              "TaxRateRef": {
+                "value": "1",
+                "name": "AZ State tax"
+              },
+              "TaxTypeApplicable": "TaxOnAmount",
+              "TaxOrder": 0
+            },
+            {
+              "TaxRateRef": {
+                "value": "2",
+                "name": "Tucson City"
+              },
+              "TaxTypeApplicable": "TaxOnAmount",
+              "TaxOrder": 0
+            }
+          ]
+        },
+        "PurchaseTaxRateList": {
+          "TaxRateDetail": []
+        },
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "3",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-11-25T12:17:04-08:00",
+          "LastUpdatedTime": "2016-11-25T12:17:04-08:00"
+        }
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 5,
+    "totalCount": 5
+  },
+  "time": "2017-04-17T07:37:07.639-07:00"
+}

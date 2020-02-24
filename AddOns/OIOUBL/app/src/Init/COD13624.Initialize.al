@@ -254,6 +254,9 @@ codeunit 13624 "OIOUBL-Initialize"
         if not CountryRegion.GET(Code) then
             exit;
 
+        if CountryRegion."OIOUBL-Country/Region Code" = Code then
+            exit;
+
         CountryRegion.VALIDATE("OIOUBL-Country/Region Code", Code);
         CountryRegion.MODIFY();
     end;

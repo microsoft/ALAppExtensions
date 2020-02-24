@@ -30,7 +30,7 @@ codeunit 139610 SendRemittanceAdvice
         GenJournalLine: Record "Gen. Journal Line";
         Vendor: Record Vendor;
     begin
-        // [SCENARIO] Send remittance advice report to vendor by email from Payment Journal
+        // [SCENARIO 339846] Send remittance advice report to vendor by email from Payment Journal using customized Document Sending Profile
         Initialize();
         CreateSMTPMailSetup();
 
@@ -56,7 +56,7 @@ codeunit 139610 SendRemittanceAdvice
         CustomReportSelection: Record "Custom Report Selection";
         Vendor: Record Vendor;
     begin
-        // [SCENARIO] Send remittance advice report to vendor by email from Payment Journal
+        // [SCENARIO 339846] Send remittance advice report to vendor by email from Payment Journal using customized Document Sending Profile
         Initialize();
         CreateSMTPMailSetup();
 
@@ -81,11 +81,12 @@ codeunit 139610 SendRemittanceAdvice
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::SendRemittanceAdvice);
         LibraryVariableStorage.Clear();
+        ResetDefaultDocumentSendingProfile();
         if IsInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::SendRemittanceAdvice);
         LibraryAzureKVMockMgmt.InitMockAzureKeyvaultSecretProvider();
         LibraryAzureKVMockMgmt.EnsureSecretNameIsAllowed('SmtpSetup');
-        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::SendRemittanceAdvice);
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::SendRemittanceAdvice);
     end;
@@ -110,6 +111,12 @@ codeunit 139610 SendRemittanceAdvice
         END;
         CustomReportSelection."Use for Email Attachment" := TRUE;
         CustomReportSelection.INSERT();
+
+        ReportSelections.Init();
+        ReportSelections.Validate(Usage, ReportSelectionUsage);
+        ReportSelections.Validate("Report ID", CustomReportSelection."Report ID");
+        ReportSelections.Validate("Use for Email Attachment", true);
+        ReportSelections.Insert();
     end;
 
     local procedure CreateGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; VendorNo: Code[20])
@@ -188,10 +195,28 @@ codeunit 139610 SendRemittanceAdvice
 
         SMTPMailSetup.Init();
         SMTPMailSetup.Authentication := SMTPMailSetup.Authentication::Basic;
-        SMTPMailSetup."SMTP Server" := 'smtp.test.com';
-        SMTPMailSetup."User ID" := 'testuser@test.com';
+        SMTPMailSetup."SMTP Server" := LibraryUtility.GenerateGUID();
+        SMTPMailSetup."User ID" := LibraryUtility.GenerateRandomEmail();
         SMTPMailSetup.SetPassword('password');
         SMTPMailSetup.Insert();
+    end;
+
+    local procedure ResetDefaultDocumentSendingProfile()
+    var
+        DocumentSendingProfile: Record "Document Sending Profile";
+    begin
+        with DocumentSendingProfile do begin
+            SetRange(Default, true);
+            DeleteAll();
+
+            Validate(Default, true);
+            Validate(Description, LibraryUtility.GenerateGUID());
+            Validate(Disk, Disk::No);
+            Validate(Printer, Printer::No);
+            Validate("E-Mail", "E-Mail"::No);
+            Validate("Electronic Document", "Electronic Document"::No);
+            Insert();
+        end;
     end;
 
     [ModalPageHandler]

@@ -60,8 +60,7 @@ codeunit 10530 "MTD Mgt."
                 end;
     end;
 
-    [Scope('OnPrem')]
-    procedure SubmitVATReturn(var RequestJson: Text; var ResponseJson: Text) Result: Boolean
+    internal procedure SubmitVATReturn(var RequestJson: Text; var ResponseJson: Text) Result: Boolean
     var
         HttpError: Text;
         ErrorMsg: Text;
@@ -86,8 +85,7 @@ codeunit 10530 "MTD Mgt."
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure RetrieveVATReturns(VATReturnPeriod: Record "VAT Return Period"; var ResponseJson: Text; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean) Result: Boolean
+    internal procedure RetrieveVATReturns(VATReturnPeriod: Record "VAT Return Period"; var ResponseJson: Text; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean) Result: Boolean
     var
         HttpError: Text;
     begin
@@ -106,8 +104,7 @@ codeunit 10530 "MTD Mgt."
                 Result, ShowMessage, HttpError, NewCount, ModifiedCount);
     end;
 
-    [Scope('OnPrem')]
-    procedure RetrieveVATReturnPeriods(StartDate: Date; EndDate: Date; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean; OpenOAuthSetup: Boolean) Result: Boolean
+    internal procedure RetrieveVATReturnPeriods(StartDate: Date; EndDate: Date; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean; OpenOAuthSetup: Boolean) Result: Boolean
     var
         ResponseJson: Text;
         HttpError: Text;
@@ -119,8 +116,7 @@ codeunit 10530 "MTD Mgt."
             Result, ShowMessage, HttpError, NewCount, ModifiedCount);
     end;
 
-    [Scope('OnPrem')]
-    procedure RetrieveLiabilities(StartDate: Date; EndDate: Date; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean) Result: Boolean
+    internal procedure RetrieveLiabilities(StartDate: Date; EndDate: Date; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean) Result: Boolean
     var
         ResponseJson: Text;
         HttpError: Text;
@@ -132,8 +128,7 @@ codeunit 10530 "MTD Mgt."
             Result, ShowMessage, HttpError, NewCount, ModifiedCount);
     end;
 
-    [Scope('OnPrem')]
-    procedure RetrievePayments(StartDate: Date; EndDate: Date; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean) Result: Boolean
+    internal procedure RetrievePayments(StartDate: Date; EndDate: Date; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean) Result: Boolean
     var
         ResponseJson: Text;
         HttpError: Text;
@@ -148,51 +143,45 @@ codeunit 10530 "MTD Mgt."
     local procedure ParseObligations(ResponseJson: Text; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer): Boolean
     var
         TempVATReturnPeriod: Record "VAT Return Period" temporary;
-        JSONMgt: Codeunit "JSON Management";
-        i: Integer;
+        JToken: JsonToken;
     begin
         TotalCount := 0;
         NewCount := 0;
         ModifiedCount := 0;
 
-        if not JSONMgt.InitializeFromString(ResponseJson) then
-            exit(false);
-
-        if not JSONMgt.SelectTokenFromRoot('Content.obligations') then
-            exit(false);
-
-        TotalCount := JSONMgt.GetCount();
-        FOR i := 0 TO TotalCount - 1 do
-            if JSONMgt.SelectItemFromRoot('Content.obligations', i) then
-                if ParseObligation(TempVATReturnPeriod, JSONMgt.WriteObjectToString()) then
-                    InsertObligation(TempVATReturnPeriod, NewCount, ModifiedCount);
-
-        exit(true);
+        if JToken.ReadFrom(ResponseJson) then
+            if JToken.SelectToken('Content.obligations', JToken) then begin
+                if JToken.IsArray() then begin
+                    TotalCount := JToken.AsArray().Count();
+                    foreach JToken in JToken.AsArray() do
+                        if ParseObligation(TempVATReturnPeriod, JToken) then
+                            InsertObligation(TempVATReturnPeriod, NewCount, ModifiedCount);
+                end;
+                exit(true);
+            end;
+        exit(false);
     end;
 
-    local procedure ParseObligation(var VATReturnPeriod: Record "VAT Return Period"; Json: Text): Boolean
+    local procedure ParseObligation(var VATReturnPeriod: Record "VAT Return Period"; JToken: JsonToken): Boolean
     var
-        JSONMgt: Codeunit "JSON Management";
         RecordRef: RecordRef;
     begin
-        if not JSONMgt.InitializeFromString(Json) then
-            exit(false);
-
         with VATReturnPeriod do begin
-            CLEAR(VATReturnPeriod);
-            RecordRef.GETTABLE(VATReturnPeriod);
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'start', FIELDNO("Start Date"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'end', FIELDNO("End Date"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'due', FIELDNO("Due Date"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'periodKey', FIELDNO("Period Key"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'received', FIELDNO("Received Date"));
-            RecordRef.SETTABLE(VATReturnPeriod);
-            case JSONMgt.GetValue('status') of
-                'O':
-                    Status := Status::Open;
-                'F':
-                    Status := Status::Closed;
-            end;
+            Clear(VATReturnPeriod);
+            RecordRef.GetTable(VATReturnPeriod);
+            ReadJsonValue(RecordRef, JToken, 'start', FieldNo("Start Date"));
+            ReadJsonValue(RecordRef, JToken, 'end', FieldNo("End Date"));
+            ReadJsonValue(RecordRef, JToken, 'due', FieldNo("Due Date"));
+            ReadJsonValue(RecordRef, JToken, 'periodKey', FieldNo("Period Key"));
+            ReadJsonValue(RecordRef, JToken, 'received', FieldNo("Received Date"));
+            RecordRef.SetTable(VATReturnPeriod);
+            if JToken.SelectToken('status', JToken) then
+                case JToken.AsValue().AsText() of
+                    'O':
+                        Status := Status::Open;
+                    'F':
+                        Status := Status::Closed;
+                end;
         end;
 
         exit(true);
@@ -231,62 +220,57 @@ codeunit 10530 "MTD Mgt."
     local procedure ParseVATReturns(VATReturnPeriod: Record "VAT Return Period"; ResponseJson: Text; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer): Boolean
     var
         TempMTDReturnDetails: Record "MTD Return Details" temporary;
-        JSONMgt: Codeunit "JSON Management";
+        JToken: JsonToken;
     begin
         TotalCount := 0;
         NewCount := 0;
         ModifiedCount := 0;
 
-        if not JSONMgt.InitializeFromString(ResponseJson) then
+        if not JToken.ReadFrom(ResponseJson) then
             exit(false);
 
-        if not JSONMgt.SelectTokenFromRoot('Content') then
+        if not JToken.SelectToken('Content', JToken) then
             exit(false);
 
         TotalCount := 1;
         TempMTDReturnDetails."Start Date" := VATReturnPeriod."Start Date";
         TempMTDReturnDetails."End Date" := VATReturnPeriod."End Date";
         TempMTDReturnDetails.Finalised := true;
-        if not ParseVATReturn(TempMTDReturnDetails, JSONMgt.WriteObjectToString()) then
+        if not ParseVATReturn(TempMTDReturnDetails, JToken) then
             exit(false);
 
         InsertVATReturn(TempMTDReturnDetails, NewCount, ModifiedCount);
         exit(true);
     end;
 
-    local procedure ParseVATReturn(var MTDReturnDetails: Record "MTD Return Details"; Json: Text): Boolean
+    local procedure ParseVATReturn(var MTDReturnDetails: Record "MTD Return Details"; JToken: JsonToken): Boolean
     var
-        JSONMgt: Codeunit "JSON Management";
         RecordRef: RecordRef;
     begin
-        if not JSONMgt.InitializeFromString(Json) then
-            exit(false);
-
-        RecordRef.GETTABLE(MTDReturnDetails);
+        RecordRef.GetTable(MTDReturnDetails);
         with MTDReturnDetails do begin
-            if not JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'periodKey', FIELDNO("Period Key")) then
+            if not ReadJsonValue(RecordRef, JToken, 'periodKey', FieldNo("Period Key")) then
                 exit(false);
-            if not JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'vatDueSales', FIELDNO("VAT Due Sales")) then
+            if not ReadJsonValue(RecordRef, JToken, 'vatDueSales', FieldNo("VAT Due Sales")) then
                 exit(false);
-            if not JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'vatDueAcquisitions', FIELDNO("VAT Due Acquisitions")) then
+            if not ReadJsonValue(RecordRef, JToken, 'vatDueAcquisitions', FieldNo("VAT Due Acquisitions")) then
                 exit(false);
-            if not JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalVatDue', FIELDNO("Total VAT Due")) then
+            if not ReadJsonValue(RecordRef, JToken, 'totalVatDue', FieldNo("Total VAT Due")) then
                 exit(false);
-            if not JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'vatReclaimedCurrPeriod', FIELDNO("VAT Reclaimed Curr Period")) then
+            if not ReadJsonValue(RecordRef, JToken, 'vatReclaimedCurrPeriod', FieldNo("VAT Reclaimed Curr Period")) then
                 exit(false);
-            if not JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'netVatDue', FIELDNO("Net VAT Due")) then
+            if not ReadJsonValue(RecordRef, JToken, 'netVatDue', FieldNo("Net VAT Due")) then
                 exit(false);
-            if not JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalValueSalesExVAT', FIELDNO("Total Value Sales Excl. VAT")) then
+            if not ReadJsonValue(RecordRef, JToken, 'totalValueSalesExVAT', FieldNo("Total Value Sales Excl. VAT")) then
                 exit(false);
-            if not JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalValuePurchasesExVAT', FIELDNO("Total Value Purchases Excl.VAT")) then
+            if not ReadJsonValue(RecordRef, JToken, 'totalValuePurchasesExVAT', FieldNo("Total Value Purchases Excl.VAT")) then
                 exit(false);
-            if not JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalValueGoodsSuppliedExVAT', FIELDNO("Total Value Goods Suppl. ExVAT")) then
+            if not ReadJsonValue(RecordRef, JToken, 'totalValueGoodsSuppliedExVAT', FieldNo("Total Value Goods Suppl. ExVAT")) then
                 exit(false);
-            if not JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalAcquisitionsExVAT', FIELDNO("Total Acquisitions Excl. VAT")) then
+            if not ReadJsonValue(RecordRef, JToken, 'totalAcquisitionsExVAT', FieldNo("Total Acquisitions Excl. VAT")) then
                 exit(false);
         end;
-        RecordRef.SETTABLE(MTDReturnDetails);
-
+        RecordRef.SetTable(MTDReturnDetails);
         exit(true);
     end;
 
@@ -309,47 +293,47 @@ codeunit 10530 "MTD Mgt."
     local procedure ParseLiabilities(LiabilitiesJson: Text; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer): Boolean
     var
         TempMTDLiability: Record "MTD Liability" temporary;
-        JSONMgt: Codeunit "JSON Management";
-        i: Integer;
+        JToken: JsonToken;
     begin
         TotalCount := 0;
         NewCount := 0;
         ModifiedCount := 0;
 
-        if not JSONMgt.InitializeFromString(LiabilitiesJson) then
-            exit(false);
-
-        if not JSONMgt.SelectTokenFromRoot('Content.liabilities') then
-            exit(false);
-
-        TotalCount := JSONMgt.GetCount();
-        FOR i := 0 TO TotalCount - 1 do
-            if JSONMgt.SelectItemFromRoot('Content.liabilities', i) then
-                if ParseLiability(TempMTDLiability, JSONMgt.WriteObjectToString()) then
-                    InsertLiability(TempMTDLiability, NewCount, ModifiedCount);
-
-        exit(true);
+        if JToken.ReadFrom(LiabilitiesJson) then
+            if JToken.SelectToken('Content.liabilities', JToken) then begin
+                if JToken.IsArray() then begin
+                    TotalCount := JToken.AsArray().Count();
+                    foreach JToken in JToken.AsArray() do
+                        if ParseLiability(TempMTDLiability, JToken) then
+                            InsertLiability(TempMTDLiability, NewCount, ModifiedCount);
+                end;
+                exit(true);
+            end;
+        exit(false);
     end;
 
-    local procedure ParseLiability(var MTDLiability: Record "MTD Liability"; Json: Text): Boolean
+    local procedure ParseLiability(var MTDLiability: Record "MTD Liability"; JToken: JsonToken): Boolean
     var
-        JSONMgt: Codeunit "JSON Management";
         RecordRef: RecordRef;
+        JToken2: JsonToken;
     begin
-        if not JSONMgt.InitializeFromString(Json) then
-            exit(false);
-
-        RecordRef.GETTABLE(MTDLiability);
         with MTDLiability do begin
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'taxPeriod.from', FIELDNO("From Date"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'taxPeriod.to', FIELDNO("To Date"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'type', FIELDNO(Type));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'originalAmount', FIELDNO("Original Amount"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'outstandingAmount', FIELDNO("Outstanding Amount"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'due', FIELDNO("Due Date"));
-        end;
-        RecordRef.SETTABLE(MTDLiability);
+            if JToken.SelectToken('type', JToken2) then
+                case JToken2.AsValue().AsText() of
+                    'VAT Return Debit Charge':
+                        Type := Type::"VAT Return Debit Charge";
+                end;
+            RecordRef.GetTable(MTDLiability);
+            ReadJsonValue(RecordRef, JToken, 'originalAmount', FieldNo("Original Amount"));
+            ReadJsonValue(RecordRef, JToken, 'outstandingAmount', FieldNo("Outstanding Amount"));
+            ReadJsonValue(RecordRef, JToken, 'due', FieldNo("Due Date"));
 
+            if JToken.SelectToken('taxPeriod', JToken) then begin
+                ReadJsonValue(RecordRef, JToken, 'from', FieldNo("From Date"));
+                ReadJsonValue(RecordRef, JToken, 'to', FieldNo("To Date"));
+            end;
+        end;
+        RecordRef.SetTable(MTDLiability);
         exit(true);
     end;
 
@@ -372,49 +356,42 @@ codeunit 10530 "MTD Mgt."
     local procedure ParsePayments(PaymentsJson: Text; StartDate: Date; EndDate: Date; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer): Boolean
     var
         TempMTDPayment: Record "MTD Payment" temporary;
-        JSONMgt: Codeunit "JSON Management";
-        i: Integer;
+        JToken: JsonToken;
     begin
         TotalCount := 0;
         NewCount := 0;
         ModifiedCount := 0;
 
-        if not JSONMgt.InitializeFromString(PaymentsJson) then
-            exit(false);
-
-        if not JSONMgt.SelectTokenFromRoot('Content.payments') then
-            exit(false);
-
-        TotalCount := JSONMgt.GetCount();
         TempMTDPayment."Entry No." := 0;
         TempMTDPayment."Start Date" := StartDate;
         TempMTDPayment."End Date" := EndDate;
-        FOR i := 0 TO TotalCount - 1 do
-            if JSONMgt.SelectItemFromRoot('Content.payments', i) then
-                if ParsePayment(TempMTDPayment, JSONMgt.WriteObjectToString()) then
-                    InsertPayment(TempMTDPayment, NewCount, ModifiedCount);
 
-        exit(true);
+        if JToken.ReadFrom(PaymentsJson) then
+            if JToken.SelectToken('Content.payments', JToken) then begin
+                if JToken.IsArray() then begin
+                    TotalCount := JToken.AsArray().Count();
+                    foreach JToken in JToken.AsArray() do
+                        if ParsePayment(TempMTDPayment, JToken) then
+                            InsertPayment(TempMTDPayment, NewCount, ModifiedCount);
+                end;
+                exit(true);
+            end;
+        exit(false);
     end;
 
-    local procedure ParsePayment(var MTDPayment: Record "MTD Payment"; Json: Text): Boolean
+    local procedure ParsePayment(var MTDPayment: Record "MTD Payment"; JToken: JsonToken): Boolean
     var
-        JSONMgt: Codeunit "JSON Management";
         RecordRef: RecordRef;
     begin
-        if not JSONMgt.InitializeFromString(Json) then
-            exit(false);
-
         with MTDPayment do begin
             "Entry No." += 1;
             "Received Date" := 0D;
             Amount := 0;
             RecordRef.GETTABLE(MTDPayment);
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'received', FIELDNO("Received Date"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'amount', FIELDNO(Amount));
+            ReadJsonValue(RecordRef, JToken, 'received', FieldNo("Received Date"));
+            ReadJsonValue(RecordRef, JToken, 'amount', FieldNo(Amount));
         end;
-        RecordRef.SETTABLE(MTDPayment);
-
+        RecordRef.SetTable(MTDPayment);
         exit(true);
     end;
 
@@ -480,8 +457,7 @@ codeunit 10530 "MTD Mgt."
             end;
     end;
 
-    [Scope('OnPrem')]
-    procedure ArchiveResponseMessage(VATReportHeader: Record "VAT Report Header"; MessageText: Text)
+    internal procedure ArchiveResponseMessage(VATReportHeader: Record "VAT Report Header"; MessageText: Text)
     var
         VATReportArchive: Record "VAT Report Archive";
         TempBlob: Codeunit "Temp Blob";
@@ -493,12 +469,45 @@ codeunit 10530 "MTD Mgt."
         VATReportArchive.ArchiveResponseMessage(VATReportHeader."VAT Report Config. Code", VATReportHeader."No.", TempBlob, DummyGUID);
     end;
 
-    [Scope('OnPrem')]
-    procedure CheckReturnPeriodLink(VATReportHeader: Record "VAT Report Header")
+    internal procedure CheckReturnPeriodLink(VATReportHeader: Record "VAT Report Header")
     var
         VATReturnPeriod: Record "VAT Return Period";
     begin
         if not VATReturnPeriod.Get(VATReportHeader."Return Period No.") then
             Error(PeriodLinkErr);
+    end;
+
+    local procedure ReadJsonValue(RecordRef: RecordRef; JToken: JsonToken; KeyValue: Text; FieldNo: Integer) Result: Boolean
+    var
+        FieldRef: FieldRef;
+        GuidValue: Guid;
+    begin
+        Result := JToken.SelectToken(KeyValue, JToken);
+        if Result then begin
+            FieldRef := RecordRef.Field(FieldNo);
+            case FieldRef.Type() of
+                FieldType::Integer:
+                    FieldRef.Value(JToken.AsValue().AsInteger());
+                FieldType::Decimal:
+                    FieldRef.Value(JToken.AsValue().AsDecimal());
+                FieldType::Date:
+                    FieldRef.Value(JToken.AsValue().AsDate());
+                FieldType::Time:
+                    FieldRef.Value(JToken.AsValue().AsTime());
+                FieldType::DateTime:
+                    FieldRef.Value(JToken.AsValue().AsDateTime());
+                FieldType::Boolean:
+                    FieldRef.Value(JToken.AsValue().AsBoolean());
+                FieldType::GUID:
+                    begin
+                        Result := Evaluate(GuidValue, JToken.AsValue().AsText());
+                        FieldRef.Value(GuidValue);
+                    end;
+                FieldType::Text:
+                    FieldRef.Value(CopyStr(JToken.AsValue().AsText(), 1, FieldRef.Length()));
+                FieldType::Code:
+                    FieldRef.Value(CopyStr(JToken.AsValue().AsCode(), 1, FieldRef.Length()));
+            end;
+        end;
     end;
 }

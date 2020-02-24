@@ -41,7 +41,7 @@ Indicates whether the install operation is invoked through the UI.
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
-
+True if the extention is installed successfully; false otherwise.
 ### UninstallExtension (Method) <a name="UninstallExtension"></a> 
 
  Uninstalls an extension, based on its PackageId.
@@ -63,7 +63,7 @@ Indicates if the uninstall operation is invoked through the UI.
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
-
+True if the extention is uninstalled successfully; false otherwise.
 ### UploadExtension (Method) <a name="UploadExtension"></a> 
 
  Uploads an extension, using a File Stream and based on the Locale Identifier.
@@ -85,7 +85,7 @@ The Locale Identifier.
 
 ### DeployExtension (Method) <a name="DeployExtension"></a> 
 
- Deploys an extension, based on its PackageId and Locale Identifier.
+ Deploys an extension, based on its ID and Locale Identifier.
  This method is only applicable in SaaS environment.
  
 
@@ -124,7 +124,7 @@ The PackageId of the extension.
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
-
+True if the extention is unpublished successfully; false otherwise.
 ### DownloadExtensionSource (Method) <a name="DownloadExtensionSource"></a> 
 
  Downloads the source of an extension, based on its PackageId.
@@ -142,7 +142,7 @@ The PackageId of the extension.
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
-
+True if the operation was successful; false otherwise.
 ### IsInstalledByPackageId (Method) <a name="IsInstalledByPackageId"></a> 
 
  Checks whether an extension is installed, based on its PackageId.
@@ -257,15 +257,15 @@ The Id of the extension to configure.
 
 *AreHttpClientRqstsAllowed ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
-
+The value to set for "Allow HttpClient Requests".
 
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
-
+True configuration was successful; false otherwise.
 ### GetLatestVersionPackageIdByAppId (Method) <a name="GetLatestVersionPackageIdByAppId"></a> 
 
- Returns the PackageId of the latest Extension Version by the Extension AppId.
+ Gets the PackageId of the latest Extension Version by the Extension AppId.
  
 
 #### Syntax
@@ -280,10 +280,10 @@ The AppId of the extension.
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-
+The package ID by app ID. Empty GUID, if package with the provided app ID does not exist.
 ### GetCurrentlyInstalledVersionPackageIdByAppId (Method) <a name="GetCurrentlyInstalledVersionPackageIdByAppId"></a> 
 
- Returns the PackageId of the latest version of the extension by the extension's AppId.
+ Gets the PackageId of the latest version of the extension by the extension's AppId.
  
 
 #### Syntax
@@ -298,10 +298,10 @@ The AppId of the installed extension.
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-
+The package ID of the installed version of an extenstion. Empty GUID, if package with the provided app ID does not exist.
 ### GetSpecificVersionPackageIdByAppId (Method) <a name="GetSpecificVersionPackageIdByAppId"></a> 
 
- Returns the PackageId of the version of the extension by the extension's AppId, Name, Version Major, Version Minor, Version Build, Version Revision.
+ Gets the package ID of the version of the extension by the extension's AppId, Name, Version Major, Version Minor, Version Build, Version Revision.
  
 
 #### Syntax
@@ -336,7 +336,7 @@ The input/output Version Revision parameter  of the extension. If there is no ne
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-
+The package ID of the extension with the specified paramters.
 ### GetExtensionLogo (Method) <a name="GetExtensionLogo"></a> 
 
  Gets the logo of an extension.

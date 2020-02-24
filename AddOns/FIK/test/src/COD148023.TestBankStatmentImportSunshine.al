@@ -31,7 +31,7 @@ codeunit 148023 "Bank Statement Import Sunshine"
         GenJnlLine: Record "Gen. Journal Line";
         Amount: Decimal;
         "Count": Integer;
-        Description: Text[50];
+        Description: Text[100];
         FileName: Text;
     begin
         // Pre-Setup
@@ -119,7 +119,7 @@ codeunit 148023 "Bank Statement Import Sunshine"
             GenJnlLine.ImportBankStatement();
     end;
 
-    local procedure ValidateImportedLines(GenJnlBatch: Record "Gen. Journal Batch"; ExpectedAmount: Decimal; ExpectedDescription: Text[50]; ExpectedCount: Integer);
+    local procedure ValidateImportedLines(GenJnlBatch: Record "Gen. Journal Batch"; ExpectedAmount: Decimal; ExpectedDescription: Text[100]; ExpectedCount: Integer);
     var
         GenJnlLine: Record "Gen. Journal Line";
     begin

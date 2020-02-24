@@ -49,24 +49,24 @@ codeunit 10531 "MTD Create Return Content"
         exit(CreateRequestJson(TempMTDReturnDetails));
     end;
 
-    local procedure CreateRequestJson(MTDReturnDetails: Record "MTD Return Details"): Text;
+    local procedure CreateRequestJson(MTDReturnDetails: Record "MTD Return Details") Result: Text;
     var
-        JSONMgt: Codeunit "JSON Management";
+        JObject: JsonObject;
     begin
         with MTDReturnDetails do begin
-            JSONMgt.SetValue('periodKey', "Period Key");
-            JSONMgt.SetValue('vatDueSales', "VAT Due Sales");
-            JSONMgt.SetValue('vatDueAcquisitions', "VAT Due Acquisitions");
-            JSONMgt.SetValue('totalVatDue', "Total VAT Due");
-            JSONMgt.SetValue('vatReclaimedCurrPeriod', "VAT Reclaimed Curr Period");
-            JSONMgt.SetValue('netVatDue', Abs("Net VAT Due"));
-            JSONMgt.SetValue('totalValueSalesExVAT', "Total Value Sales Excl. VAT");
-            JSONMgt.SetValue('totalValuePurchasesExVAT', "Total Value Purchases Excl.VAT");
-            JSONMgt.SetValue('totalValueGoodsSuppliedExVAT', "Total Value Goods Suppl. ExVAT");
-            JSONMgt.SetValue('totalAcquisitionsExVAT', "Total Acquisitions Excl. VAT");
-            JSONMgt.SetValue('finalised', Finalised);
+            JObject.Add('periodKey', "Period Key");
+            JObject.Add('vatDueSales', "VAT Due Sales");
+            JObject.Add('vatDueAcquisitions', "VAT Due Acquisitions");
+            JObject.Add('totalVatDue', "Total VAT Due");
+            JObject.Add('vatReclaimedCurrPeriod', "VAT Reclaimed Curr Period");
+            JObject.Add('netVatDue', Abs("Net VAT Due"));
+            JObject.Add('totalValueSalesExVAT', "Total Value Sales Excl. VAT");
+            JObject.Add('totalValuePurchasesExVAT', "Total Value Purchases Excl.VAT");
+            JObject.Add('totalValueGoodsSuppliedExVAT', "Total Value Goods Suppl. ExVAT");
+            JObject.Add('totalAcquisitionsExVAT', "Total Acquisitions Excl. VAT");
+            JObject.Add('finalised', Finalised);
         end;
-        exit(JSONMgt.WriteObjectToString());
+        JObject.WriteTo(Result);
     end;
 
     local procedure GetVATReportBoxValue(VATReportHeader: Record "VAT Report Header"; BoxNo: Text[30]): Decimal

@@ -108,10 +108,16 @@ codeunit 421 "Data Compression Impl."
 
     procedure IsGZip(InStream: InStream): Boolean
     var
+        TempBlob: Codeunit "Temp Blob";
+        TempInStream: InStream;
+        TempOutStream: OutStream;
         ID: array[2] of Byte;
     begin
-        InStream.Read(ID[1]);
-        InStream.Read(ID[2]);
+        TempBlob.CreateOutStream(TempOutStream);
+        CopyStream(TempOutStream, InStream);
+        TempBlob.CreateInStream(TempInStream);
+        TempInStream.Read(ID[1]);
+        TempInStream.Read(ID[2]);
 
         // from GZIP file format specification version 4.3
         // Member header and trailer

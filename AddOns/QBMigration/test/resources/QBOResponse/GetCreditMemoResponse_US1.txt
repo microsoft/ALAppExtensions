@@ -1,0 +1,861 @@
+{
+  "QueryResponse": {
+    "CreditMemo": [
+      {
+        "RemainingCredit": 141.29,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "180",
+        "SyncToken": "3",
+        "MetaData": {
+          "CreateTime": "2017-05-09T10:54:57-07:00",
+          "LastUpdatedTime": "2017-05-09T11:06:51-07:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Crew #",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1051",
+        "TxnDate": "2017-05-09",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Rock Fountain",
+            "Amount": 275.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "5",
+                "name": "Rock Fountain"
+              },
+              "UnitPrice": 275,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "TAX"
+              }
+            }
+          },
+          {
+            "Id": "3",
+            "LineNum": 2,
+            "Description": "Fountain Pump",
+            "Amount": 15.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "11",
+                "name": "Pump"
+              },
+              "UnitPrice": 15,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "TAX"
+              }
+            }
+          },
+          {
+            "Amount": 290.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TxnTaxCodeRef": {
+            "value": "4"
+          },
+          "TotalTax": 21.75,
+          "TaxLine": [
+            {
+              "Amount": 5.8,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "11"
+                },
+                "PercentBased": true,
+                "TaxPercent": 2,
+                "NetAmountTaxable": 290.0
+              }
+            },
+            {
+              "Amount": 14.5,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "18"
+                },
+                "PercentBased": true,
+                "TaxPercent": 5,
+                "NetAmountTaxable": 290.0
+              }
+            },
+            {
+              "Amount": 1.45,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "6"
+                },
+                "PercentBased": true,
+                "TaxPercent": 0.5,
+                "NetAmountTaxable": 290.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "1",
+          "name": "Amy's Bird Sanctuary"
+        },
+        "CustomerMemo": {
+          "value": "Thank you for your business and have a great day!"
+        },
+        "BillAddr": {
+          "Id": "2",
+          "Line1": "4581 Finch St.",
+          "City": "Bayshore",
+          "CountrySubDivisionCode": "CA",
+          "PostalCode": "94326",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "TotalAmt": 311.75,
+        "ApplyTaxAfterDiscount": false,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "BillEmail": {
+          "Address": "Birds@Intuit.com"
+        },
+        "Balance": 141.29
+      },
+      {
+        "RemainingCredit": 0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "146",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2017-03-17T09:21:55-07:00",
+          "LastUpdatedTime": "2017-05-05T07:36:03-07:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Crew #",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1039",
+        "TxnDate": "2017-03-17",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Concrete for fountain installation",
+            "Amount": 50.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "3",
+                "name": "Concrete"
+              },
+              "UnitPrice": 50,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "TAX"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Amount": 250.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "2",
+                "name": "Hours"
+              },
+              "UnitPrice": 50,
+              "Qty": 5,
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          },
+          {
+            "Amount": 300.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 0
+        },
+        "CustomerRef": {
+          "value": "3",
+          "name": "Cool Cars"
+        },
+        "CustomerMemo": {
+          "value": "Thank you for your business and have a great day!"
+        },
+        "BillAddr": {
+          "Id": "4",
+          "Line1": "65 Ocean Dr.",
+          "City": "Half Moon Bay",
+          "CountrySubDivisionCode": "CA",
+          "PostalCode": "94213",
+          "Lat": "37.4300318",
+          "Long": "-122.4336537"
+        },
+        "TotalAmt": 300.0,
+        "ApplyTaxAfterDiscount": false,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "BillEmail": {
+          "Address": "Cool_Cars@intuit.com"
+        },
+        "Balance": 0
+      },
+      {
+        "RemainingCredit": 0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "160",
+        "SyncToken": "2",
+        "MetaData": {
+          "CreateTime": "2017-05-05T07:20:00-07:00",
+          "LastUpdatedTime": "2017-05-05T07:31:30-07:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Crew #",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1046",
+        "TxnDate": "2017-05-05",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Weekly Gardening Service",
+            "Amount": 45.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "6",
+                "name": "Gardening"
+              },
+              "UnitPrice": 45,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Custom Design",
+            "Amount": 75.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "4",
+                "name": "Design"
+              },
+              "UnitPrice": 75,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          },
+          {
+            "Amount": 120.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 0
+        },
+        "CustomerRef": {
+          "value": "2",
+          "name": "Bill's Windsurf Shop"
+        },
+        "CustomerMemo": {
+          "value": "Thank you for your business and have a great day!"
+        },
+        "BillAddr": {
+          "Id": "3",
+          "Line1": "12 Ocean Dr.",
+          "City": "Half Moon Bay",
+          "CountrySubDivisionCode": "CA",
+          "PostalCode": "94213",
+          "Lat": "37.4307072",
+          "Long": "-122.4295234"
+        },
+        "TotalAmt": 120.0,
+        "ApplyTaxAfterDiscount": false,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "BillEmail": {
+          "Address": "Surf@Intuit.com"
+        },
+        "Balance": 0
+      },
+      {
+        "RemainingCredit": 0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "159",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2017-05-05T07:19:30-07:00",
+          "LastUpdatedTime": "2017-05-05T07:22:06-07:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Crew #",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1045",
+        "TxnDate": "2017-05-05",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Fountain Pump",
+            "Amount": 15.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "11",
+                "name": "Pump"
+              },
+              "UnitPrice": 15,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "TAX"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Concrete for fountain installation",
+            "Amount": 5.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "3",
+                "name": "Concrete"
+              },
+              "UnitPrice": 1,
+              "Qty": 5,
+              "TaxCodeRef": {
+                "value": "TAX"
+              }
+            }
+          },
+          {
+            "Amount": 20.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TxnTaxCodeRef": {
+            "value": "2"
+          },
+          "TotalTax": 1.6,
+          "TaxLine": [
+            {
+              "Amount": 1.6,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "3"
+                },
+                "PercentBased": true,
+                "TaxPercent": 8,
+                "NetAmountTaxable": 20.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "1",
+          "name": "Amy's Bird Sanctuary"
+        },
+        "CustomerMemo": {
+          "value": "Thank you for your business and have a great day!"
+        },
+        "BillAddr": {
+          "Id": "2",
+          "Line1": "4581 Finch St.",
+          "City": "Bayshore",
+          "CountrySubDivisionCode": "CA",
+          "PostalCode": "94326",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "TotalAmt": 21.6,
+        "ApplyTaxAfterDiscount": false,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "BillEmail": {
+          "Address": "Birds@Intuit.com"
+        },
+        "Balance": 0
+      },
+      {
+        "RemainingCredit": 0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "156",
+        "SyncToken": "3",
+        "MetaData": {
+          "CreateTime": "2017-04-24T10:18:52-07:00",
+          "LastUpdatedTime": "2017-05-05T07:22:06-07:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Crew #",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1044",
+        "TxnDate": "2017-04-24",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Garden Rocks",
+            "Amount": 200.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "13",
+                "name": "Rocks"
+              },
+              "UnitPrice": 50,
+              "Qty": 4,
+              "TaxCodeRef": {
+                "value": "TAX"
+              }
+            }
+          },
+          {
+            "Id": "3",
+            "LineNum": 2,
+            "Description": "Fountain Pump",
+            "Amount": 15.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "11",
+                "name": "Pump"
+              },
+              "UnitPrice": 15,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "TAX"
+              }
+            }
+          },
+          {
+            "Amount": 215.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TxnTaxCodeRef": {
+            "value": "2"
+          },
+          "TotalTax": 17.2,
+          "TaxLine": [
+            {
+              "Amount": 17.2,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "3"
+                },
+                "PercentBased": true,
+                "TaxPercent": 8,
+                "NetAmountTaxable": 215.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "1",
+          "name": "Amy's Bird Sanctuary"
+        },
+        "CustomerMemo": {
+          "value": "Thank you for your business and have a great day!"
+        },
+        "BillAddr": {
+          "Id": "2",
+          "Line1": "4581 Finch St.",
+          "City": "Bayshore",
+          "CountrySubDivisionCode": "CA",
+          "PostalCode": "94326",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "TotalAmt": 232.2,
+        "ApplyTaxAfterDiscount": false,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "BillEmail": {
+          "Address": "Birds@Intuit.com"
+        },
+        "Balance": 0
+      },
+      {
+        "RemainingCredit": 304.5,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "162",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2017-05-05T07:21:30-07:00",
+          "LastUpdatedTime": "2017-05-05T07:21:30-07:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Crew #",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1047",
+        "TxnDate": "2017-05-05",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Maintenance & Repair",
+            "Amount": 304.5,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "9",
+                "name": "Maintenance & Repair"
+              },
+              "UnitPrice": 43.5,
+              "Qty": 7,
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          },
+          {
+            "Amount": 304.5,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 0
+        },
+        "CustomerRef": {
+          "value": "4",
+          "name": "Diego Rodriguez"
+        },
+        "CustomerMemo": {
+          "value": "Thank you for your business and have a great day!"
+        },
+        "BillAddr": {
+          "Id": "5",
+          "Line1": "321 Channing",
+          "City": "Palo Alto",
+          "CountrySubDivisionCode": "CA",
+          "PostalCode": "94303",
+          "Lat": "37.443231",
+          "Long": "-122.1561846"
+        },
+        "TotalAmt": 304.5,
+        "ApplyTaxAfterDiscount": false,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "BillEmail": {
+          "Address": "Diego@Rodriguez.com"
+        },
+        "Balance": 304.5
+      },
+      {
+        "RemainingCredit": 0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "154",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2017-04-24T10:17:07-07:00",
+          "LastUpdatedTime": "2017-04-24T10:17:14-07:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Crew #",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1043",
+        "TxnDate": "2017-04-24",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Weekly Gardening Service",
+            "Amount": 45.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "6",
+                "name": "Gardening"
+              },
+              "UnitPrice": 45,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          },
+          {
+            "Amount": 45.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 0
+        },
+        "CustomerRef": {
+          "value": "1",
+          "name": "Amy's Bird Sanctuary"
+        },
+        "CustomerMemo": {
+          "value": "Thank you for your business and have a great day!"
+        },
+        "BillAddr": {
+          "Id": "2",
+          "Line1": "4581 Finch St.",
+          "City": "Bayshore",
+          "CountrySubDivisionCode": "CA",
+          "PostalCode": "94326",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "TotalAmt": 45.0,
+        "ApplyTaxAfterDiscount": false,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "EmailSent",
+        "BillEmail": {
+          "Address": "Birds@Intuit.com"
+        },
+        "Balance": 0,
+        "DeliveryInfo": {
+          "DeliveryType": "Email",
+          "DeliveryTime": "2017-04-24T10:17:14-07:00"
+        }
+      },
+      {
+        "RemainingCredit": 0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "152",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2017-04-24T10:16:18-07:00",
+          "LastUpdatedTime": "2017-04-24T10:16:18-07:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Crew #",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1042",
+        "TxnDate": "2017-04-24",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Custom Design",
+            "Amount": 75.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "4",
+                "name": "Design"
+              },
+              "UnitPrice": 75,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          },
+          {
+            "Amount": 75.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 0
+        },
+        "CustomerRef": {
+          "value": "1",
+          "name": "Amy's Bird Sanctuary"
+        },
+        "CustomerMemo": {
+          "value": "Thank you for your business and have a great day!"
+        },
+        "BillAddr": {
+          "Id": "2",
+          "Line1": "4581 Finch St.",
+          "City": "Bayshore",
+          "CountrySubDivisionCode": "CA",
+          "PostalCode": "94326",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "TotalAmt": 75.0,
+        "ApplyTaxAfterDiscount": false,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "BillEmail": {
+          "Address": "Birds@Intuit.com"
+        },
+        "Balance": 0
+      },
+      {
+        "RemainingCredit": 0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "73",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2016-10-11T12:51:27-07:00",
+          "LastUpdatedTime": "2016-10-11T12:51:28-07:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Crew #",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1026",
+        "TxnDate": "2016-09-25",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Pest Control Services",
+            "Amount": 100.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "10",
+                "name": "Pest Control"
+              },
+              "UnitPrice": 100,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          },
+          {
+            "Amount": 100.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 0
+        },
+        "CustomerRef": {
+          "value": "1",
+          "name": "Amy's Bird Sanctuary"
+        },
+        "CustomerMemo": {
+          "value": "Thank you for your business and have a great day!"
+        },
+        "BillAddr": {
+          "Id": "79",
+          "Line1": "Amy Lauterbach",
+          "Line2": "Amy's Bird Sanctuary",
+          "Line3": "4581 Finch St.",
+          "Line4": "Bayshore, CA  94326",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "TotalAmt": 100.0,
+        "ApplyTaxAfterDiscount": false,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "BillEmail": {
+          "Address": "Birds@Intuit.com"
+        },
+        "Balance": 0
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 9
+  },
+  "time": "2017-05-09T14:10:28.238-07:00"
+}

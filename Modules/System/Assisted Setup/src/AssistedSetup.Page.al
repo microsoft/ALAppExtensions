@@ -31,6 +31,7 @@ page 1801 "Assisted Setup"
             {
                 IndentationColumn = NameIndent;
                 IndentationControls = Name;
+                ShowAsTree = true;
                 field(Name; Name)
                 {
                     ApplicationArea = All;
@@ -93,6 +94,7 @@ page 1801 "Assisted Setup"
                     Caption = 'Translated Name';
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name translated locally.';
+                    Visible = false;
 
                     trigger OnDrillDown()
                     var
@@ -107,6 +109,12 @@ page 1801 "Assisted Setup"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the extension which has added this setup.';
+                    Visible = false;
+                }
+                field(Description; Description)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the description of the set up.';
                 }
             }
         }
@@ -128,25 +136,6 @@ page 1801 "Assisted Setup"
                 trigger OnAction()
                 begin
                     RunPage();
-                end;
-            }
-            action("Reset Setup")
-            {
-                ApplicationArea = All;
-                Caption = 'Reset Setup';
-                Image = Setup;
-                Scope = Repeater;
-                ShortCutKey = 'Return';
-                ToolTip = 'Resets the assisted setup guide.';
-
-                trigger OnAction()
-                var
-                    AssistedSetupImpl: Codeunit "Assisted Setup Impl.";
-                begin
-                    if AssistedSetupImpl.IsSetupRecord(Rec) then begin
-                        AssistedSetupImpl.RunAndRefreshRecord(Rec);
-                        CurrPage.Update(false);
-                    end;
                 end;
             }
             action("General videos")

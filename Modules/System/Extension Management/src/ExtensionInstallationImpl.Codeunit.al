@@ -7,7 +7,7 @@ codeunit 2500 "Extension Installation Impl"
 {
     Access = Internal;
     Permissions = TableData "NAV App Installed App" = rimd,
-                  TableData "NAV App" = rimd;
+                  TableData "Published Application" = rimd;
     SingleInstance = false;
 
     var
@@ -52,13 +52,15 @@ codeunit 2500 "Extension Installation Impl"
 
     procedure InstallExtension(PackageId: Guid; Lcid: Integer; IsUIEnabled: Boolean): Boolean
     var
-        NavApp: Record "NAV App";
+        PublishedApplication: Record "Published Application";
     begin
         CheckPermissions();
         if IsUIEnabled = true then
             exit(InstallExtensionWithConfirmDialog(PackageId, Lcid));
 
-        if not NAVApp.Get(PackageId) then
+        PublishedApplication.SetRange("Package ID", PackageId);
+        PublishedApplication.SetRange("Tenant Visible", true);
+        if PublishedApplication.IsEmpty() then
             exit(false);
 
         exit(InstallExtensionSilently(PackageId, Lcid));
@@ -78,17 +80,20 @@ codeunit 2500 "Extension Installation Impl"
 
     procedure InstallExtensionWithConfirmDialog(PackageId: Guid; Lcid: Integer): Boolean
     var
-        NAVApp: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         ConfirmManagement: Codeunit "Confirm Management";
         Dependencies: Text;
         CanChange: Boolean;
     begin
         CheckPermissions();
-        if not NAVApp.Get(PackageId) then
+
+        PublishedApplication.SetRange("Package ID", PackageId);
+        PublishedApplication.SetRange("Tenant Visible", true);
+        if not PublishedApplication.FindFirst() then
             exit(false);
 
         if IsInstalledByPackageId(PackageId) then begin
-            Message(StrSubstNo(AlreadyInstalledMsg, NAVApp.Name));
+            Message(StrSubstNo(AlreadyInstalledMsg, PublishedApplication.Name));
             exit(false);
         end;
 
@@ -98,14 +103,14 @@ codeunit 2500 "Extension Installation Impl"
         CanChange := true;
         if StrLen(Dependencies) <> 0 then
             CanChange := ConfirmManagement.GetResponse(StrSubstNo(DependenciesFoundQst,
-                  NAVApp.Name, Dependencies), false);
+                  PublishedApplication.Name, Dependencies), false);
 
         if CanChange then
             InstallExtensionSilently(PackageId, Lcid);
 
         // If successfully installed, message users to restart activity for menusuites
         if IsInstalledByPackageId(PackageId) then
-            Message(StrSubstNo(RestartActivityInstallMsg, NAVApp.Name))
+            Message(StrSubstNo(RestartActivityInstallMsg, PublishedApplication.Name))
         else
             exit(false);
 
@@ -141,28 +146,36 @@ codeunit 2500 "Extension Installation Impl"
     end;
 
     local procedure CheckPermissions()
-    var
-        NAVAppObjectMetadata: Record "NAV App Object Metadata";
     begin
-        if not NavAppObjectMetadata.ReadPermission() then
+        if not CanManageExtensions() then
             Error(NotSufficientPermissionErr);
+    end;
+
+    procedure CanManageExtensions(): Boolean
+    var
+        ApplicationObjectMetadata: Record "Application Object Metadata";
+    begin
+        exit(ApplicationObjectMetadata.ReadPermission());
     end;
 
     procedure UninstallExtension(PackageID: Guid; IsUIEnabled: Boolean): Boolean
     var
-        NAVApp: Record "NAV App";
+        PublishedApplication: Record "Published Application";
     begin
         CheckPermissions();
         if IsUIEnabled = true then
             exit(UninstallExtensionWithConfirmDialog(PackageID));
 
-        if not NAVApp.Get(PackageId) then
+        PublishedApplication.SetRange("Package ID", PackageID);
+        PublishedApplication.SetRange("Tenant Visible", true);
+
+        if PublishedApplication.IsEmpty() then
             exit(false);
 
         exit(UninstallExtensionSilently(PackageID));
     end;
 
-    procedure UninstallExtensionSilently(PackageID: Guid): Boolean
+    local procedure UninstallExtensionSilently(PackageID: Guid): Boolean
     begin
         CheckPermissions();
         AssertIsInitialized();
@@ -176,17 +189,20 @@ codeunit 2500 "Extension Installation Impl"
 
     procedure UninstallExtensionWithConfirmDialog(PackageId: Guid): Boolean
     var
-        NAVApp: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         ConfirmManagement: Codeunit "Confirm Management";
         Dependents: Text;
         CanChange: Boolean;
     begin
         CheckPermissions();
-        if not NAVApp.Get(PackageId) then
+
+        PublishedApplication.SetRange("Package ID", PackageId);
+        PublishedApplication.SetRange("Tenant Visible", true);
+        if not PublishedApplication.FindFirst() then
             exit(false);
 
         if not IsInstalledByPackageId(PackageId) then begin
-            Message(StrSubstNo(AlreadyUninstalledMsg, NAVApp.Name));
+            Message(StrSubstNo(AlreadyUninstalledMsg, PublishedApplication.Name));
             exit(false);
         end;
 
@@ -197,7 +213,7 @@ codeunit 2500 "Extension Installation Impl"
         CanChange := true;
         if StrLen(Dependents) <> 0 then
             CanChange := ConfirmManagement.GetResponse(StrSubstNo(DependentsFoundQst,
-                  NAVApp.Name, Dependents), false);
+                  PublishedApplication.Name, Dependents), false);
 
         if CanChange then
             UninstallExtensionSilently(PackageId)
@@ -206,7 +222,7 @@ codeunit 2500 "Extension Installation Impl"
 
         // If successfully uninstalled, message users to restart activity for menusuites
         if not IsInstalledByPackageId(PackageId) then
-            Message(StrSubstNo(RestartActivityUninstallMsg, NAVApp.Name))
+            Message(StrSubstNo(RestartActivityUninstallMsg, PublishedApplication.Name))
         else
             exit(false);
 
@@ -241,31 +257,23 @@ codeunit 2500 "Extension Installation Impl"
         exit(newDependentsText);
     end;
 
-    procedure GetVersionDisplayString(NAVApp: Record "NAV App"): Text
+    procedure GetVersionDisplayString(PublishedApplication: Record "Published Application"): Text
     begin
-        if NAVApp."Version Build" <= -1 then
-            exit(StrSubstNo(NoBuildVersionStringTxt, NAVApp."Version Major", NAVApp."Version Minor"));
+        if PublishedApplication."Version Build" <= -1 then
+            exit(StrSubstNo(NoBuildVersionStringTxt, PublishedApplication."Version Major", PublishedApplication."Version Minor"));
 
-        if NAVApp."Version Revision" <= -1 then
-            exit(StrSubstNo(NoRevisionVersionStringTxt, NAVApp."Version Major", NAVApp."Version Minor", NAVApp."Version Build"));
+        if PublishedApplication."Version Revision" <= -1 then
+            exit(StrSubstNo(NoRevisionVersionStringTxt, PublishedApplication."Version Major", PublishedApplication."Version Minor", PublishedApplication."Version Build"));
 
-        exit(StrSubstNo(FullVersionStringTxt, NAVApp."Version Major",
-            NAVApp."Version Minor", NAVApp."Version Build", NAVApp."Version Revision"));
+        exit(StrSubstNo(FullVersionStringTxt, PublishedApplication."Version Major",
+            PublishedApplication."Version Minor", PublishedApplication."Version Build", PublishedApplication."Version Revision"));
     end;
 
-    procedure IsInstalledNoPermissionCheck(ExtensionName: Text[250]): Boolean
-    var
-        NAVAppInstalledApp: Record "NAV App Installed App";
-    begin
-        NAVAppInstalledApp.SetFilter(Name, '%1', ExtensionName);
-        exit(not NAVAppInstalledApp.IsEmpty());
-    end;
-
-    procedure RunExtensionInstallation(NAVApp: Record "NAV App"): Boolean
+    procedure RunExtensionInstallation(PublishedApplication: Record "Published Application"): Boolean
     var
         ExtensionDetails: Page "Extension Details";
     begin
-        ExtensionDetails.SetRecord(NAVApp);
+        ExtensionDetails.SetRecord(PublishedApplication);
         ExtensionDetails.Run();
         exit(ExtensionDetails.Editable());
     end;
