@@ -30,12 +30,15 @@ page 9824 Plans
                 }
             }
         }
-        area(factboxes) { }
-    }
-
-    actions
-    {
-        area(navigation) { }
+        area(factboxes)
+        {
+            part("Users in the Plan"; "User Plan Members FactBox")
+            {
+                Caption = 'Users in Plan';
+                ApplicationArea = All;
+                SubPageLink = "Plan ID" = field("Plan ID");
+            }
+        }
     }
 }
 

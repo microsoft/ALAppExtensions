@@ -46,7 +46,13 @@
                              "name":  "Upgrade Tags",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
-                         }
+                         },
+                         {
+                            "id":  "901c89b7-132b-4c59-bb3f-2bfa4fbc70b5",
+                            "name":  "Navigation Bar Subscribers",
+                            "publisher":  "Microsoft",
+                            "version":  "16.0.0.0"
+                        }
                      ],
     "screenshots":  [
 

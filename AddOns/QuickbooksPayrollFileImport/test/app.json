@@ -1,0 +1,44 @@
+{
+    "id":  "b2773b45-eb80-4632-b1e6-9738fd197e9f",
+    "name":  "Quickbooks Payroll File Import Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the Quickbooks Payroll File Import extension.",
+    "description":  "Tests for the Quickbooks Payroll File Import extension.",
+    "version":  "16.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "bc45ae22-3b5b-44b5-beb4-2a42bf79cc34",
+                             "name":  "Quickbooks Payroll File Import",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "name":  "Tests-TestLibraries",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "11.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  139500,
+                         "to":  139899
+                     },
+                     {
+                         "from":  148000,
+                         "to":  148499
+                     }
+                 ],
+    "target":  "OnPrem",
+    "showMyCode":  false,
+    "application":  "16.0.0.0"
+}

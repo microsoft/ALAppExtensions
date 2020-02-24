@@ -5,16 +5,13 @@
 
 table 1436 "Ess. Business Headline Per Usr"
 {
-
     fields
     {
-
         field(1; "Headline Name"; Option)
         {
             OptionMembers = MostPopularItem,BusiestResource,LargestSale,LargestOrder,SalesIncrease,TopCustomer,OpenVATReturn,OverdueVATReturn,RecentlyOverdueInvoices;
             DataClassification = SystemMetadata;
         }
-
         field(2; "Headline Text"; Text[250])
         {
             DataClassification = CustomerContent;
@@ -26,18 +23,17 @@ table 1436 "Ess. Business Headline Per Usr"
         field(4; "Headline Computation Date"; DateTime)
         {
             DataClassification = SystemMetadata;
+            ObsoleteState = Pending;
+            ObsoleteReason = 'Replaced with the Last Computed field on the RC Headlines User Data table';
         }
-
         field(5; "Headline Computation WorkDate"; Date)
         {
             DataClassification = SystemMetadata;
         }
-
         field(6; "Headline Computation Period"; Integer)
         {
             DataClassification = SystemMetadata;
         }
-
         field(7; "User Id"; Guid)
         {
             DataClassification = EndUserPseudonymousIdentifiers;

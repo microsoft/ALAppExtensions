@@ -17,18 +17,18 @@ codeunit 148099 "SAF-T Test Helper"
         UnexpectedElementNameErr: Label 'Unexpected element name. Expected element name: %1. Actual element name: %2.', Comment = '%1=Expetced XML Element Name;%2=Actual XML Element Name';
         UnexpectedElementValueErr: Label 'Unexpected element value for element %1. Expected element value: %2. Actual element value: %3.', Comment = '%1=XML Element Name;%2=Expected XML Element Value;%3=Actual XML element Value';
 
-    procedure SetupMasterData()
+    procedure SetupMasterData(NumberOfMasterDataRecords: Integer)
     var
         TempGLAccount: Record "G/L Account" temporary;
     begin
         SetupCompanyInformation();
-        SetupGLAccounts(TempGLAccount);
+        SetupGLAccounts(TempGLAccount, NumberOfMasterDataRecords);
         // Use same G/L accounts for customer and vendor posting to avoid creation of new accounts
         SetupVATPostingSetupMapping();
         SetupCompanyBankAccount();
         TempGLAccount.FindSet();
-        SetupCustomers(TempGLAccount);
-        SetupVendors(TempGLAccount);
+        SetupCustomers(TempGLAccount, NumberOfMasterDataRecords);
+        SetupVendors(TempGLAccount, NumberOfMasterDataRecords);
         SetupDimensions();
     end;
 
@@ -70,6 +70,15 @@ codeunit 148099 "SAF-T Test Helper"
         Codeunit.Run(Codeunit::"SAF-T Export Mgt.", SAFTExportHeader);
     end;
 
+    procedure IncludesNoSourceCodeToTheFirstSAFTSourceCode()
+    var
+        SAFTSourceCode: Record "SAF-T Source Code";
+    begin
+        SAFTSourceCode.FindFirst();
+        SAFTSourceCode.Validate("Includes No Source Code", true);
+        SAFTSourceCode.Modify(true);
+    end;
+
     procedure PostRandomAmountForNumberOfMasterDataRecords(PostingDate: Date; NumberOfMasterDataRecords: Integer)
     var
         GLAccount: Record "G/L Account";
@@ -100,7 +109,7 @@ codeunit 148099 "SAF-T Test Helper"
         Customer: Record Customer;
         Vendor: Record Vendor;
     begin
-        GLAccount.SetRange("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
+        GLAccount.SetRange("Income/Balance", IncomeBalance);
         GLAccount.FindFirst();
         Customer.FindFirst();
         Vendor.FindFirst();
@@ -115,6 +124,16 @@ codeunit 148099 "SAF-T Test Helper"
     end;
 
     procedure MockGLEntry(PostingDate: Date; DocNo: Code[20]; GLAccNo: Code[20]; TransactionNo: Integer; DimSetID: Integer; VATBusPostingGroupCode: Code[20]; VATProdPostingGroupCode: Code[20]; SourceType: Integer; SourceNo: Code[20]; SourceCode: Code[10]; DebitAmount: Decimal; CreditAmount: Decimal)
+    begin
+        MockGLEntryLocal(PostingDate, DocNo, GLAccNo, TransactionNo, DimSetID, 0, VATBusPostingGroupCode, VATProdPostingGroupCode, SourceType, SourceNo, SourceCode, DebitAmount, CreditAmount);
+    end;
+
+    procedure MockGLEntry(PostingDate: Date; DocNo: Code[20]; GLAccNo: Code[20]; TransactionNo: Integer; DimSetID: Integer; GenPostingType: Integer; VATBusPostingGroupCode: Code[20]; VATProdPostingGroupCode: Code[20]; SourceType: Integer; SourceNo: Code[20]; SourceCode: Code[10]; DebitAmount: Decimal; CreditAmount: Decimal)
+    begin
+        MockGLEntryLocal(PostingDate, DocNo, GLAccNo, TransactionNo, DimSetID, GenPostingType, VATBusPostingGroupCode, VATProdPostingGroupCode, SourceType, SourceNo, SourceCode, DebitAmount, CreditAmount);
+    end;
+
+    local procedure MockGLEntryLocal(PostingDate: Date; DocNo: Code[20]; GLAccNo: Code[20]; TransactionNo: Integer; DimSetID: Integer; GenPostingType: Integer; VATBusPostingGroupCode: Code[20]; VATProdPostingGroupCode: Code[20]; SourceType: Integer; SourceNo: Code[20]; SourceCode: Code[10]; DebitAmount: Decimal; CreditAmount: Decimal)
     var
         GLEntry: Record "G/L Entry";
     begin
@@ -129,13 +148,16 @@ codeunit 148099 "SAF-T Test Helper"
         GLEntry.Description := LibraryUtility.GenerateGUID();
         GLEntry."External Document No." := LibraryUtility.GenerateGUID();
         GLEntry."User ID" := copystr(UserId(), 1, MaxStrLen(GLEntry."User ID"));
+        GLEntry."Source Type" := SourceType;
+        GLEntry."Source No." := SourceNo;
         GLEntry."Source Code" := SourceCode;
+        GLEntry."Gen. Posting Type" := GenPostingType;
         GLEntry."VAT Bus. Posting Group" := VATBusPostingGroupCode;
         GLEntry."VAT Prod. Posting Group" := VATProdPostingGroupCode;
         GLEntry."Debit Amount" := DebitAmount;
         GLEntry."Credit Amount" := CreditAmount;
         GLEntry.Amount := DebitAmount + CreditAmount;
-        GLEntry.Insert()
+        GLEntry.Insert();
     end;
 
     procedure MockVATEntry(var VATEntry: Record "VAT Entry"; PostingDate: Date; Type: Integer; TransactionNo: Integer)
@@ -281,7 +303,7 @@ codeunit 148099 "SAF-T Test Helper"
         CompanyInformation.Modify();
     end;
 
-    local procedure SetupGLAccounts(var TempGLAccount: Record "G/L Account" temporary)
+    local procedure SetupGLAccounts(var TempGLAccount: Record "G/L Account" temporary; NumberOfMasterDataRecords: Integer)
     var
         GLAccount: Record "G/L Account";
         SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
@@ -293,7 +315,7 @@ codeunit 148099 "SAF-T Test Helper"
         TempGLAccount.Reset();
         TempGLAccount.DeleteAll();
         for IncomeBalance := GLAccount."Income/Balance"::"Income Statement" to GLAccount."Income/Balance"::"Balance Sheet" do
-            for i := 1 to LibraryRandom.RandIntInRange(5, 10) do begin
+            for i := 1 to NumberOfMasterDataRecords do begin
                 LibraryERM.CreateGLAccount(GLAccount);
                 GLAccount.Validate("Account Type", GLAccount."Account Type"::Posting);
                 GLAccount.Validate("Income/Balance", IncomeBalance);
@@ -304,7 +326,7 @@ codeunit 148099 "SAF-T Test Helper"
             end;
     end;
 
-    local procedure SetupCustomers(var TempGLAccount: Record "G/L Account" temporary)
+    local procedure SetupCustomers(var TempGLAccount: Record "G/L Account" temporary; NumberOfMasterDataRecords: Integer)
     var
         Customer: Record Customer;
         CustomerBankAccount: Record "Customer Bank Account";
@@ -315,7 +337,7 @@ codeunit 148099 "SAF-T Test Helper"
         j: Integer;
     begin
         Customer.DeleteAll();
-        for i := 1 to LibraryRandom.RandInt(5) do begin
+        for i := 1 to NumberOfMasterDataRecords do begin
             LibrarySales.CreateCustomer(Customer);
             Customer."VAT Registration No." := LibraryUtility.GenerateGUID();
             Customer.Validate(Address, LibraryUtility.GenerateGUID());
@@ -343,7 +365,7 @@ codeunit 148099 "SAF-T Test Helper"
         end;
     end;
 
-    local procedure SetupVendors(var TempGLAccount: Record "G/L Account" temporary)
+    local procedure SetupVendors(var TempGLAccount: Record "G/L Account" temporary; NumberOfMasterDataRecords: Integer)
     var
         Vendor: Record Vendor;
         VendorPostingGroup: Record "Vendor Posting Group";
@@ -354,7 +376,7 @@ codeunit 148099 "SAF-T Test Helper"
         j: Integer;
     begin
         Vendor.DeleteAll();
-        for i := 1 to LibraryRandom.RandInt(5) do begin
+        for i := 1 to NumberOfMasterDataRecords do begin
             LibraryPurchase.CreateVendor(Vendor);
             Vendor."VAT Registration No." := LibraryUtility.GenerateGUID();
             Vendor.Validate(Address, LibraryUtility.GenerateGUID());
@@ -405,18 +427,6 @@ codeunit 148099 "SAF-T Test Helper"
         LibraryDimension.CreateDimensionValue(DimensionValue, Dimension.Code);
         LibraryDimension.CreateDefaultDimension(
             DefaultDimension, TableID, SourceNo, DimensionValue."Dimension Code", DimensionValue.Code);
-    end;
-
-    local procedure CreateCurrencyWithISOCode(): Code[10]
-    var
-        Currency: Record Currency;
-    begin
-        LibraryERM.CreateCurrency(Currency);
-        Currency."ISO Code" :=
-            copystr(LibraryUtility.GenerateRandomCodeWithLength(
-                Currency.FieldNo("ISO Code"), Database::Currency, MaxStrLen(Currency."ISO Code")), 1, MaxStrLen(Currency."ISO Code"));
-        Currency.Modify(true);
-        exit(Currency.Code);
     end;
 
     local procedure CreatePaymentTerms(): Code[10]

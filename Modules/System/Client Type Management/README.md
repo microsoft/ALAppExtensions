@@ -30,4 +30,4 @@ procedure GetCurrentClientType(): ClientType
 #### Return Value
 *[ClientType](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/clienttype/clienttype-option)*
 
-
+The client type of the current session.

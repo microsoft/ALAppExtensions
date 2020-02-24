@@ -1,0 +1,279 @@
+{
+  "QueryResponse": {
+    "TaxRate": [
+      {
+        "Name": "GST EP",
+        "Description": "GST",
+        "Active": true,
+        "RateValue": 0,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "SpecialTaxType": "ZERO_RATE",
+        "DisplayType": "HideInTransactionForms",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "1",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "GST ES",
+        "Description": "GST",
+        "Active": true,
+        "RateValue": 0,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "SpecialTaxType": "ZERO_RATE",
+        "DisplayType": "HideInTransactionForms",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "2",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "GST/HST (ITC) ZR",
+        "Description": "GST",
+        "Active": true,
+        "RateValue": 0,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "TaxReturnLineRef": {
+          "value": "5"
+        },
+        "SpecialTaxType": "ZERO_RATE",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "3",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "GST/HST Line 104 Adjustment",
+        "Description": "GST",
+        "Active": true,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "TaxReturnLineRef": {
+          "value": "3"
+        },
+        "SpecialTaxType": "ADJUSTMENT_RATE",
+        "DisplayType": "HideInAll",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "5",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "GST/HST Line 107 Adjustment",
+        "Description": "GST",
+        "Active": true,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "TaxReturnLineRef": {
+          "value": "6"
+        },
+        "SpecialTaxType": "ADJUSTMENT_RATE",
+        "DisplayType": "HideInAll",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "6",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "GST/HST Line 110 Adjustment",
+        "Description": "GST",
+        "Active": true,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "TaxReturnLineRef": {
+          "value": "9"
+        },
+        "SpecialTaxType": "ADJUSTMENT_RATE",
+        "DisplayType": "HideInAll",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "7",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "GST/HST Line 111 Adjustment",
+        "Description": "GST",
+        "Active": true,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "TaxReturnLineRef": {
+          "value": "10"
+        },
+        "SpecialTaxType": "ADJUSTMENT_RATE",
+        "DisplayType": "HideInAll",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "8",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "GST/HST Line 205 Adjustment",
+        "Description": "GST",
+        "Active": true,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "TaxReturnLineRef": {
+          "value": "13"
+        },
+        "SpecialTaxType": "ADJUSTMENT_RATE",
+        "DisplayType": "HideInAll",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "9",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "GST/HST Line 405 Adjustment",
+        "Description": "GST",
+        "Active": true,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "TaxReturnLineRef": {
+          "value": "14"
+        },
+        "SpecialTaxType": "ADJUSTMENT_RATE",
+        "DisplayType": "HideInAll",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "10",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "GST/HST ZR",
+        "Description": "GST",
+        "Active": true,
+        "RateValue": 0,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "TaxReturnLineRef": {
+          "value": "2"
+        },
+        "SpecialTaxType": "ZERO_RATE",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "4",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "HST (ITC) ON",
+        "Description": "HST (ON)",
+        "Active": true,
+        "RateValue": 13,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "TaxReturnLineRef": {
+          "value": "5"
+        },
+        "SpecialTaxType": "NONE",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "11",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "HST ON",
+        "Description": "HST (ON)",
+        "Active": true,
+        "RateValue": 13,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "TaxReturnLineRef": {
+          "value": "2"
+        },
+        "SpecialTaxType": "NONE",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "12",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:45-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:45-08:00"
+        }
+      },
+      {
+        "Name": "HST-ON1 (Sales)",
+        "Description": "GST/HST",
+        "Active": true,
+        "RateValue": 3,
+        "AgencyRef": {
+          "value": "1"
+        },
+        "TaxReturnLineRef": {
+          "value": "2"
+        },
+        "SpecialTaxType": "NONE",
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "13",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2017-05-24T08:47:07-07:00",
+          "LastUpdatedTime": "2017-05-24T08:47:07-07:00"
+        }
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 13,
+    "totalCount": 13
+  },
+  "time": "2017-05-31T14:16:14.691-07:00"
+}

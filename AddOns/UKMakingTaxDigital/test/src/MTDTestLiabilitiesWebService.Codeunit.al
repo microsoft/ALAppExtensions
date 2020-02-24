@@ -20,7 +20,6 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         IsInitialized: Boolean;
         GetLiabilitiesLbl: Label 'Get VAT Liabilities';
         RetrieveLiabilitiesErr: Label 'Not possible to retrieve VAT liabilities.';
-        RetrieveLiabilitiesMsg: Label 'Retrieve VAT liabilities successful';
         RetrieveLiabilitiesUpToDateMsg: Label 'Retrieve VAT liabilities are up to date.';
         RetrieveVATLiabilitiesTxt: Label 'Retrieve VAT Liabilities.', Locked = true;
 
@@ -30,14 +29,14 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     var
         DummyMTDLiability: Record "MTD Liability";
     begin
-        // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of http error response and disabled message output
-        // MockServicePacket303 MockService\MakingTaxDigital\400_blanked.txt
+        // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of HTTP error response and disabled message output
+        // <parse key="Packet303" compare="MockServicePacket303" response="MakingTaxDigital\400_blanked.txt"/>
         InitGetOneLiabilityScenario(DummyMTDLiability, 'MockServicePacket303');
 
         GetVATLiabilities(DummyMTDLiability, false, false, 0, 0, 0);
 
         Assert.RecordIsEmpty(DummyMTDLiability);
-        VerifyLatestHttpLogFailure('Http error 400 (BadRequest)\Bad Request');
+        VerifyLatestHttpLogFailure('HTTP error 400 (Bad Request)');
     end;
 
     [Test]
@@ -47,8 +46,8 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: Record "MTD Liability";
         HttpError: Text;
     begin
-        // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of http error response with details
-        // MockServicePacket310 MockService\MakingTaxDigital\400_vrn_invalid.txt
+        // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of HTTP error response with details
+        // <parse key="Packet310" compare="MockServicePacket310" response="MakingTaxDigital\400_vrn_invalid.txt"/>
         HttpError := 'The provided VRN is invalid.';
         InitGetOneLiabilityScenario(DummyMTDLiability, 'MockServicePacket310');
 
@@ -56,7 +55,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
 
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(StrSubstNo('%1\%2%3', RetrieveLiabilitiesErr, LibraryMakingTaxDigital.GetResonLbl(), HttpError));
-        VerifyLatestHttpLogFailure('Http error 400 (BadRequest). The provided VRN is invalid.');
+        VerifyLatestHttpLogFailure('HTTP error 400 (Bad Request). The provided VRN is invalid.');
     end;
 
     [Test]
@@ -66,7 +65,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of blanked http json response
-        // MockServicePacket301 MockService\MakingTaxDigital\200_blanked.txt
+        // <parse key="Packet301" compare="MockServicePacket301" response="MakingTaxDigital\200_blanked.txt"/>
         InitGetOneLiabilityScenario(DummyMTDLiability, 'MockServicePacket301');
 
         asserterror GetVATLiabilitiesAndShowResult(DummyMTDLiability, 0, 0, 0);
@@ -81,7 +80,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of wrong http json response
-        // MockServicePacket302 MockService\MakingTaxDigital\200_dummyjson.txt
+        // <parse key="Packet302" compare="MockServicePacket302" response="MakingTaxDigital\200_dummyjson.txt"/>
         InitGetOneLiabilityScenario(DummyMTDLiability, 'MockServicePacket302');
 
         asserterror GetVATLiabilitiesAndShowResult(DummyMTDLiability, 0, 0, 0);
@@ -96,13 +95,13 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: Record "MTD Liability";
     begin
         // [SCENARIO 258181] PAG 10530 "MTD Liabilities" action "Get Liabilities" in case of a one new liability
-        // MockServicePacket336 MockService\MakingTaxDigital\200_liability.txt
+        // <parse key="Packet336" compare="MockServicePacket336" response="MakingTaxDigital\200_liability.txt"/>
         InitGetOneLiabilityScenario(DummyMTDLiability, 'MockServicePacket336');
 
         GetVATLiabilities(DummyMTDLiability, false, true, 1, 1, 0);
 
         VerifyOneLiability(DummyMTDLiability);
-        VerifyLatestHttpLogSucess(GetRetrieveLiabilitiesMsg(1, 0));
+        VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(1, 0));
     end;
 
     [Test]
@@ -114,16 +113,16 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     begin
         // [FEATURE] [UI]
         // [SCENARIO 258181] PAG 10530 "MTD Liabilities" action "Get Liabilities" in case of a one new liability
-        // MockServicePacket336 MockService\MakingTaxDigital\200_liability.txt
+        // <parse key="Packet336" compare="MockServicePacket336" response="MakingTaxDigital\200_liability.txt"/>
         InitGetOneLiabilityScenario(DummyMTDLiability, 'MockServicePacket336');
 
         GetVATLiabilitiesAndShowResultViaPage(DummyMTDLiability);
 
         VerifyGetLiabilitiesRequestJson(DummyMTDLiability);
         VerifyOneLiability(DummyMTDLiability);
-        VerifyLatestHttpLogSucess(GetRetrieveLiabilitiesMsg(1, 0));
+        VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(1, 0));
         Assert.ExpectedMessage(GetLiabilitiesLbl, LibraryVariableStorage.DequeueText());
-        Assert.ExpectedMessage(GetRetrieveLiabilitiesMsg(1, 0), LibraryVariableStorage.DequeueText());
+        Assert.ExpectedMessage(LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(1, 0), LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
     end;
 
@@ -134,9 +133,9 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: Record "MTD Liability";
     begin
         // [SCENARIO 258181] PAG 10530 "MTD Liabilities" action "Get Liabilities" in case of a one new liability and expired access token
-        // MockServicePacket304 MockService\MakingTaxDigital\401_unauthorized.txt
-        // MockServicePacket244 MockService\MakingTaxDigital\200_authorize_liability.txt
-        // MockServicePacket336 MockService\MakingTaxDigital\200_liability.txt
+        // <parse key="Packet349" compare="MockServicePacket349" response="MakingTaxDigital\200_liability.txt"/>
+        // <parse key="Packet350" compare="MockServicePacket350" response="MakingTaxDigital\401_unauthorized.txt"/>
+        // <parse key="Packet351" compare="MockServicePacket351" response="MakingTaxDigital\200_authorize_349.txt"/>
         Initialize();
         LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket351', 'MockServicePacket350');
         InitDummyVATLiability(DummyMTDLiability);
@@ -144,7 +143,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         GetVATLiabilities(DummyMTDLiability, false, true, 1, 1, 0);
 
         VerifyOneLiability(DummyMTDLiability);
-        VerifyLatestHttpLogSucess(GetRetrieveLiabilitiesMsg(1, 0));
+        VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(1, 0));
     end;
 
     [Test]
@@ -155,7 +154,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of a one up to date liability
-        // MockServicePacket336 MockService\MakingTaxDigital\200_liability.txt
+        // <parse key="Packet336" compare="MockServicePacket336" response="MakingTaxDigital\200_liability.txt"/>
         InitGetOneLiabilityScenario(DummyMTDLiability, 'MockServicePacket336');
         with DummyMTDLiability do
             MockVATLiability(DummyMTDLiability, "Original Amount", "Outstanding Amount", "Due Date");
@@ -173,14 +172,14 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of a one modified liability ("Original Amount")
-        // MockServicePacket336 MockService\MakingTaxDigital\200_liability.txt
+        // <parse key="Packet336" compare="MockServicePacket336" response="MakingTaxDigital\200_liability.txt"/>
         InitGetOneLiabilityScenario(DummyMTDLiability, 'MockServicePacket336');
         with DummyMTDLiability do
             MockVATLiability(DummyMTDLiability, "Original Amount" + 0.01, "Outstanding Amount", "Due Date");
 
         GetVATLiabilitiesAndShowResult(DummyMTDLiability, 1, 0, 1);
 
-        VerifyGetOneLblScenario(DummyMTDLiability, GetRetrieveLiabilitiesMsg(0, 1));
+        VerifyGetOneLblScenario(DummyMTDLiability, LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(0, 1));
     end;
 
     [Test]
@@ -191,14 +190,14 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of a one modified liability ("Outstanding Amount")
-        // MockServicePacket336 MockService\MakingTaxDigital\200_liability.txt
+        // <parse key="Packet336" compare="MockServicePacket336" response="MakingTaxDigital\200_liability.txt"/>
         InitGetOneLiabilityScenario(DummyMTDLiability, 'MockServicePacket336');
         with DummyMTDLiability do
             MockVATLiability(DummyMTDLiability, "Original Amount", "Outstanding Amount" + 0.01, "Due Date");
 
         GetVATLiabilitiesAndShowResult(DummyMTDLiability, 1, 0, 1);
 
-        VerifyGetOneLblScenario(DummyMTDLiability, GetRetrieveLiabilitiesMsg(0, 1));
+        VerifyGetOneLblScenario(DummyMTDLiability, LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(0, 1));
     end;
 
     [Test]
@@ -209,14 +208,14 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of a one modified liability ("Due Date")
-        // MockServicePacket336 MockService\MakingTaxDigital\200_liability.txt
+        // <parse key="Packet336" compare="MockServicePacket336" response="MakingTaxDigital\200_liability.txt"/>
         InitGetOneLiabilityScenario(DummyMTDLiability, 'MockServicePacket336');
         with DummyMTDLiability do
             MockVATLiability(DummyMTDLiability, "Original Amount", "Outstanding Amount", "Due Date" + 1);
 
         GetVATLiabilitiesAndShowResult(DummyMTDLiability, 1, 0, 1);
 
-        VerifyGetOneLblScenario(DummyMTDLiability, GetRetrieveLiabilitiesMsg(0, 1));
+        VerifyGetOneLblScenario(DummyMTDLiability, LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(0, 1));
     end;
 
     [Test]
@@ -227,12 +226,12 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: array[2] of Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of a two new liabilities
-        // MockServicePacket337 MockService\MakingTaxDigital\200_liabilities.txt
+        // <parse key="Packet337" compare="MockServicePacket337" response="MakingTaxDigital\200_liabilities.txt"/>
         InitGetTwoLiabilitiesScenario(DummyMTDLiability, 'MockServicePacket337');
 
         GetVATLiabilitiesAndShowResult(DummyMTDLiability[1], 2, 2, 0);
 
-        VerifyGetTwoLblScenario(DummyMTDLiability, GetRetrieveLiabilitiesMsg(2, 0));
+        VerifyGetTwoLblScenario(DummyMTDLiability, LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(2, 0));
     end;
 
     [Test]
@@ -243,7 +242,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: array[2] of Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of a two up to date liabilities
-        // MockServicePacket337 MockService\MakingTaxDigital\200_liabilities.txt
+        // <parse key="Packet337" compare="MockServicePacket337" response="MakingTaxDigital\200_liabilities.txt"/>
         InitGetTwoLiabilitiesScenario(DummyMTDLiability, 'MockServicePacket337');
         with DummyMTDLiability[1] do
             MockVATLiability(DummyMTDLiability[1], "Original Amount", "Outstanding Amount", "Due Date");
@@ -263,7 +262,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: array[2] of Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of a two modified liabilities
-        // MockServicePacket337 MockService\MakingTaxDigital\200_liabilities.txt
+        // <parse key="Packet337" compare="MockServicePacket337" response="MakingTaxDigital\200_liabilities.txt"/>
         InitGetTwoLiabilitiesScenario(DummyMTDLiability, 'MockServicePacket337');
         with DummyMTDLiability[1] do
             MockVATLiability(DummyMTDLiability[1], "Original Amount" + 0.01, "Outstanding Amount", "Due Date");
@@ -272,7 +271,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
 
         GetVATLiabilitiesAndShowResult(DummyMTDLiability[1], 2, 0, 2);
 
-        VerifyGetTwoLblScenario(DummyMTDLiability, GetRetrieveLiabilitiesMsg(0, 2));
+        VerifyGetTwoLblScenario(DummyMTDLiability, LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(0, 2));
     end;
 
     [Test]
@@ -283,14 +282,14 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: array[2] of Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of a two liabilities including one new
-        // MockServicePacket337 MockService\MakingTaxDigital\200_liabilities.txt
+        // <parse key="Packet337" compare="MockServicePacket337" response="MakingTaxDigital\200_liabilities.txt"/>
         InitGetTwoLiabilitiesScenario(DummyMTDLiability, 'MockServicePacket337');
         with DummyMTDLiability[1] do
             MockVATLiability(DummyMTDLiability[1], "Original Amount", "Outstanding Amount", "Due Date");
 
         GetVATLiabilitiesAndShowResult(DummyMTDLiability[1], 2, 1, 0);
 
-        VerifyGetTwoLblScenario(DummyMTDLiability, GetRetrieveLiabilitiesMsg(1, 0));
+        VerifyGetTwoLblScenario(DummyMTDLiability, LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(1, 0));
     end;
 
     [Test]
@@ -301,7 +300,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: array[2] of Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of a two liabilities including one modified
-        // MockServicePacket337 MockService\MakingTaxDigital\200_liabilities.txt
+        // <parse key="Packet337" compare="MockServicePacket337" response="MakingTaxDigital\200_liabilities.txt"/>
         InitGetTwoLiabilitiesScenario(DummyMTDLiability, 'MockServicePacket337');
         with DummyMTDLiability[1] do
             MockVATLiability(DummyMTDLiability[1], "Original Amount", "Outstanding Amount", "Due Date");
@@ -310,7 +309,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
 
         GetVATLiabilitiesAndShowResult(DummyMTDLiability[1], 2, 0, 1);
 
-        VerifyGetTwoLblScenario(DummyMTDLiability, GetRetrieveLiabilitiesMsg(0, 1));
+        VerifyGetTwoLblScenario(DummyMTDLiability, LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(0, 1));
     end;
 
     [Test]
@@ -321,14 +320,14 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         DummyMTDLiability: array[2] of Record "MTD Liability";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveLiabilities() in case of a two liabilities including one new and one modified
-        // MockServicePacket337 MockService\MakingTaxDigital\200_liabilities.txt
+        // <parse key="Packet337" compare="MockServicePacket337" response="MakingTaxDigital\200_liabilities.txt"/>
         InitGetTwoLiabilitiesScenario(DummyMTDLiability, 'MockServicePacket337');
         with DummyMTDLiability[2] do
             MockVATLiability(DummyMTDLiability[2], "Original Amount", "Outstanding Amount" + 0.01, "Due Date");
 
         GetVATLiabilitiesAndShowResult(DummyMTDLiability[1], 2, 1, 1);
 
-        VerifyGetTwoLblScenario(DummyMTDLiability, GetRetrieveLiabilitiesMsg(1, 1));
+        VerifyGetTwoLblScenario(DummyMTDLiability, LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(1, 1));
     end;
 
     local procedure Initialize()
@@ -432,11 +431,6 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         MTDLiabilities.Close();
     end;
 
-    local procedure GetRetrieveLiabilitiesMsg(NewCount: Integer; ModifiedCount: Integer): Text
-    begin
-        exit(StrSubstNo('%1,\%2', RetrieveLiabilitiesMsg, StrSubstNo(LibraryMakingTaxDigital.GetIncludingLbl(), NewCount, ModifiedCount)));
-    end;
-
     local procedure FormatValue(Value: Variant): Text
     begin
         exit(LibraryMakingTaxDigital.FormatValue(Value));
@@ -453,7 +447,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
             '/organisations/vat/%1/liabilities?from=%2&to=%3',
             CompanyInformation."VAT Registration No.",
             FormatValue(DummyMTDLiability."From Date"), FormatValue(DummyMTDLiability."To Date"));
-        LibraryMakingTaxDigital.VerifyRequestJson('GET', ExpectedURLRequestPath);
+        LibraryMakingTaxDigital.VerifyRequestJson('GET', ExpectedURLRequestPath, false);
     end;
 
     local procedure VerifyGetLblFailureScenario(ExpectedMessage: Text)

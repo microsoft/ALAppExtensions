@@ -67,6 +67,7 @@ codeunit 135080 "AMC Bank Stmt E2E Web Serv"
         LibraryXPathXMLReader.VerifyNodeAbsence(CremulPathTxt);
     end;
 
+    /*
     [Test]
     [Scope('OnPrem')]
     procedure SendEmptyBankStmtToWebService()
@@ -104,7 +105,7 @@ codeunit 135080 "AMC Bank Stmt E2E Web Serv"
         BankStmtTempBlob: Codeunit "Temp Blob";
         AMCBankImpSTMTHndl: Codeunit "AMC Bank Imp.STMT. Hndl";
         BankStmtOutStream: OutStream;
-    begin
+    begin        
         // [SCENARIO 4] Send a non-supported bank statement file to AMC web service.
         // [GIVEN] Bank statement file on disk.
         // [WHEN] Run the ConvertBankStatementToAMCFormat function.
@@ -122,7 +123,8 @@ codeunit 135080 "AMC Bank Stmt E2E Web Serv"
         // Verify
         Assert.ExpectedError(SyslogErrorsErr);
         Assert.ExpectedError(SupportURLErr);
-        Assert.ExpectedError(FileNotRecognizedErr);
+        Assert.ExpectedError(FileNotRecognizedErr);        
     end;
+    */
 }
 

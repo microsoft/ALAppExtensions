@@ -47,7 +47,7 @@ codeunit 148081 "MTDTestOAuthWebService"
         ReasonTxt: Label 'Reason: ';
 
     [Test]
-    [HandlerFunctions('ConfirmHandler')]
+    [HandlerFunctions('ConfirmHandler,HyperlinkHandler')]
     [Scope('OnPrem')]
     procedure CheckVATRegNoAfterAuthorization_Deny()
     var
@@ -57,25 +57,28 @@ codeunit 148081 "MTDTestOAuthWebService"
         // [FEATURE] [UI] [Authorization]
         // [SCENARIO 258181] PAG 1140 "OAuth 2.0 Setup" confirm about check VAT Reg. No. is shown after success authorization (deny confirm)
         // [SCENARIO 324828] New Access Token Due DateTime is 2 hours from now (previous value is a blanked datetime)
-        // MockServicePacket399 MockService\MakingTaxDigital\200_authorize.txt
+        // <parse key="Packet399" compare="MockServicePacket399" response="MakingTaxDigital\200_authorize.txt"/>
         Initialize();
         LibraryMakingTaxDigital.CreateOAuthSetup(OAuth20Setup, OAuth20Setup.Status::Disabled, '', 0DT);
         LibraryMakingTaxDigital.MockAzureClientToken('MockServicePacket399');
         OpenOAuthSetupPage(OAuth20SetupPage, OAuth20Setup);
 
         LibraryVariableStorage.Enqueue(false); // deny confirm
+        LibraryMakingTaxDigital.EnableSaaS(true);
+        OAuth20SetupPage.RequestAuthorizationCode.Invoke(); // sync client tokens from azure
         OAuth20SetupPage."Enter Authorization Code".SetValue('Test Authorization Code');
         OAuth20SetupPage.Close();
+        LibraryMakingTaxDigital.EnableSaaS(false);
 
         OAuth20Setup.Find();
         OAuth20Setup.TestField(Status, OAuth20Setup.Status::Enabled);
         Assert.ExpectedMessage(CheckCompanyVATNoAfterSuccessAuthorizationQst, LibraryVariableStorage.DequeueText());
-        VerifyAccessTokenDueDateTime(OAuth20Setup); // TFS 324828
+        VerifyAccessTokenDueDateTime(OAuth20Setup, 2); // TFS 324828
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,CompanyInformation_MPH')]
+    [HandlerFunctions('ConfirmHandler,CompanyInformation_MPH,HyperlinkHandler')]
     [Scope('OnPrem')]
     procedure CheckVATRegNoAfterAuthorization_Accept()
     var
@@ -85,20 +88,23 @@ codeunit 148081 "MTDTestOAuthWebService"
         // [FEATURE] [UI] [Authorization]
         // [SCENARIO 258181] PAG 1140 "OAuth 2.0 Setup" confirm about check VAT Reg. No. is shown after success authorization (accept confirm)
         // [SCENARIO 324828] New Access Token Due DateTime is 2 hours from now (previous value is 2+ hours old)
-        // MockServicePacket399 MockService\MakingTaxDigital\200_authorize.txt
+        // <parse key="Packet399" compare="MockServicePacket399" response="MakingTaxDigital\200_authorize.txt"/>
         Initialize();
         LibraryMakingTaxDigital.CreateOAuthSetup(OAuth20Setup, OAuth20Setup.Status::Disabled, '', CreateDateTime(Today() - 1, Time()));
         LibraryMakingTaxDigital.MockAzureClientToken('MockServicePacket399');
         OpenOAuthSetupPage(OAuth20SetupPage, OAuth20Setup);
 
         LibraryVariableStorage.Enqueue(true); // accept confirm
+        LibraryMakingTaxDigital.EnableSaaS(true);
+        OAuth20SetupPage.RequestAuthorizationCode.Invoke(); // sync client tokens from azure
         OAuth20SetupPage."Enter Authorization Code".SetValue('Test Authorization Code');
         OAuth20SetupPage.Close();
+        LibraryMakingTaxDigital.EnableSaaS(false);
 
         OAuth20Setup.Find();
         OAuth20Setup.TestField(Status, OAuth20Setup.Status::Enabled);
         Assert.ExpectedMessage(CheckCompanyVATNoAfterSuccessAuthorizationQst, LibraryVariableStorage.DequeueText());
-        VerifyAccessTokenDueDateTime(OAuth20Setup); // TFS 324828
+        VerifyAccessTokenDueDateTime(OAuth20Setup, 2); // TFS 324828
         LibraryVariableStorage.AssertEmpty();
     end;
 
@@ -111,7 +117,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     begin
         // [FEATURE] [UI]
         // [SCENARIO 258181] COD 10530 "MTD Mgt.".RetrievePayments() confirms to open OAuth setup (accept open, set Enabled setup)
-        // MockServicePacket330 MockService\MakingTaxDigital\200_payment.txt
+        // <parse key="Packet330" compare="MockServicePacket330" response="MakingTaxDigital\200_payment.txt"/>
         Initialize();
         LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(false, '', 'MockServicePacket330');
 
@@ -128,7 +134,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     procedure ParseErrors_Basic()
     begin
         // [SCENARIO 258181] Parsing of basic HMRC json error response in case of error code = 400\403\404
-        // MockServicePacket310..Packet327
+        // MockServicePacket310..MockServicePacket327
         PerformParseErrorScenario('MockServicePacket310', Error_VRN_INVALID_Txt);
         PerformParseErrorScenario('MockServicePacket311', Error_INVALID_DATE_FROM_Txt);
         PerformParseErrorScenario('MockServicePacket312', Error_INVALID_DATE_FROM_Txt);
@@ -158,7 +164,7 @@ codeunit 148081 "MTDTestOAuthWebService"
         Value: array[6] of Text;
     begin
         // [SCENARIO 258181] Parsing of custom HMRC json error response
-        // MockServicePacket328 MockService\MakingTaxDigital\400_custom.txt
+        // <parse key="Packet328" compare="MockServicePacket328" response="MakingTaxDigital\400_custom.txt"/>
         Initialize();
         LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket328');
 
@@ -167,7 +173,7 @@ codeunit 148081 "MTDTestOAuthWebService"
         Value[3] := '400_custom_err2_msg';
         Value[4] := '400_custom_err2_path';
         Value[5] := '400';
-        Value[6] := 'BadRequest';
+        Value[6] := 'Bad Request';
 
         asserterror InvokeRetrievePayments(true);
 
@@ -175,7 +181,7 @@ codeunit 148081 "MTDTestOAuthWebService"
         LibraryMakingTaxDigital.VerifyLatestHttpLogForSandbox(
             false,
             InvokeRequestMsg + ' ' + RetrieveVATPaymentsTxt,
-            StrSubstNo('Http error %1 (%2). %3\%4\%5 (path %6)', Value[5], Value[6], Value[1], Value[2], Value[3], Value[4]),
+            StrSubstNo('HTTP error %1 (%2). %3\%4\%5 (path %6)', Value[5], Value[6], Value[1], Value[2], Value[3], Value[4]),
             true);
     end;
 
@@ -185,12 +191,12 @@ codeunit 148081 "MTDTestOAuthWebService"
     var
         Value: array[2] of Text;
     begin
-        // [SCENARIO 258181] Parsing of http error 429 "Too Many Requests"
-        // MockServicePacket329 MockService\MakingTaxDigital\429_too_many_requests.txt
+        // [SCENARIO 258181] Parsing of HTTP error 429 "Too Many Requests"
+        // <parse key="Packet329" compare="MockServicePacket329" response="MakingTaxDigital\429_too_many_requests.txt"/>
         Initialize();
         LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket329');
         Value[1] := 'The request for the API is throttled as you have exceeded your quota.';
-        Value[2] := '429';
+        Value[2] := 'Too Many Requests';
 
         asserterror InvokeRetrievePayments(true);
 
@@ -198,7 +204,7 @@ codeunit 148081 "MTDTestOAuthWebService"
         LibraryMakingTaxDigital.VerifyLatestHttpLogForSandbox(
             false,
             InvokeRequestMsg + ' ' + RetrieveVATPaymentsTxt,
-            StrSubstNo('Http error %1 (%2). %3', 429, Value[2], Value[1]),
+            StrSubstNo('HTTP error %1 (%2). %3', 429, Value[2], Value[1]),
             true);
     end;
 
@@ -221,7 +227,7 @@ codeunit 148081 "MTDTestOAuthWebService"
         LibraryMakingTaxDigital.CreateOAuthSetup(
             OAuth20Setup, OAuth20Setup.Status::Enabled, '/MockServicePacket304', AccessTokenDueDateTime);
 
-        HttpError := 'Http error 401 (Unauthorized)\invalid client id or secret';
+        HttpError := 'HTTP error 401 (Unauthorized)\invalid client id or secret';
 
         Assert.IsFalse(MTDConnection.InvokeRequest_RefreshAccessToken(ActualMessage), '');
         Assert.AreEqual(STRSUBSTNO('%1\%2%3', RefreshFailedTxt, ReasonTxt, HttpError), ActualMessage, '');
@@ -240,15 +246,36 @@ codeunit 148081 "MTDTestOAuthWebService"
     begin
         // [FEATURE] [UT]
         // [SCENARIO 313380] COD 10537 "MTD Connection".InvokeRequest_RefreshAccessToken() in case of positive response
-        // [SCENARIO 324828] New Access Token Due DateTime is 2 hours from now (previous value is 2+ hours newer)
+        // [SCENARIO 324828] New Access Token Due DateTime is 2 hours from now (previous value is 1 hour from now)
         // MockServicePacket399 MockService\MakingTaxDigital\200_authorize.txt
         Initialize();
         LibraryMakingTaxDigital.CreateOAuthSetup(
-            OAuth20Setup, OAuth20Setup.Status::Enabled, '/MockServicePacket399', CreateDateTime(Today() + 1, Time()));
+            OAuth20Setup, OAuth20Setup.Status::Enabled, '/MockServicePacket399', CurrentDateTime() + 60 * 60 * 1000); // now + 1 hour
         Assert.IsTrue(MTDConnection.InvokeRequest_RefreshAccessToken(ActualMessage), '');
 
         Assert.AreEqual(RefreshSuccessfulTxt, ActualMessage, '');
-        VerifyAccessTokenDueDateTime(OAuth20Setup); // TFS 324828
+        VerifyAccessTokenDueDateTime(OAuth20Setup, 2); // TFS 324828
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure MTDConnection_InvokeRequest_RefreshAccessToken_Positive_ExpireInSec()
+    var
+        OAuth20Setup: Record "OAuth 2.0 Setup";
+        MTDConnection: Codeunit "MTD Connection";
+        ActualMessage: Text;
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 313380] COD 10537 "MTD Connection".InvokeRequest_RefreshAccessToken() in case of positive response
+        // [SCENARIO 324828] New Access Token Due DateTime is 4 hours from now (parsed from http response 4 hours from now)
+        // MockServicePacket398 MockService\MakingTaxDigital\200_authorize_expiresinsec.txt
+        Initialize();
+        LibraryMakingTaxDigital.CreateOAuthSetup(
+            OAuth20Setup, OAuth20Setup.Status::Enabled, '/MockServicePacket398', CurrentDateTime() + 60 * 60 * 1000); // now + 1 hour
+        Assert.IsTrue(MTDConnection.InvokeRequest_RefreshAccessToken(ActualMessage), '');
+
+        Assert.AreEqual(RefreshSuccessfulTxt, ActualMessage, '');
+        VerifyAccessTokenDueDateTime(OAuth20Setup, 4); // TFS 324828
     end;
 
     [Test]
@@ -286,22 +313,22 @@ codeunit 148081 "MTDTestOAuthWebService"
     procedure FraudPreventionHeadersDisabled()
     var
         VATReportSetup: Record "VAT Report Setup";
-        JSONMgt: Codeunit "JSON Management";
+        JToken: JsonToken;
     begin
         // [FEATURE] [Fraud Prevention]
         // [SCENARIO 316966] Fraud Prevention Headers are not sent in case of VAT Report Setup "Disable Fraud Prevention Headers" = true
         // [SCENARIO 324828] Fraud Prevention Headers are not stored
-        // MockServicePacket340 MockService\MakingTaxDigital\200_period_open.txt
+        // <parse key="Packet340" compare="MockServicePacket340" response="MakingTaxDigital\200_period_open.txt"/>
         Initialize();
         LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket340');
         ClearFraudPreventionHeaders();
 
         RetrieveVATReturnPeriodsForGivenClientType(ClientType::Web);
 
-        JSONMgt.InitializeFromString(LibraryMakingTaxDigital.GetLatestHttpLogText());
-        Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-Connection-Method'), 'Gov-Client-Connection-Method');
-        Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Vendor-Version'), 'Gov-Vendor-Version');
-        VerifyCommonBlankedCustomFPHeaders(JSONMgt.GetValue('Request.Header'));
+        JToken.ReadFrom(LibraryMakingTaxDigital.GetLatestHttpLogText());
+        AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Connection-Method');
+        AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Vendor-Version');
+        VerifyCommonBlankedCustomFPHeaders(ReadJsonValue(JToken, 'Request.Header'));
 
         // TFS 324828: Fraud Prevention Headers are not stored
         VATReportSetup.Get();
@@ -315,7 +342,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     begin
         // [FEATURE] [Fraud Prevention]
         // [SCENARIO 324828] Not expired but blanked Fraud Prevention Headers (system invokes WMI and stores the result)
-        // MockServicePacket340 MockService\MakingTaxDigital\200_period_open.txt
+        // <parse key="Packet340" compare="MockServicePacket340" response="MakingTaxDigital\200_period_open.txt"/>
         Initialize();
         LibraryMakingTaxDigital.DisableFraudPreventionHeaders(false);
         LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket340');
@@ -336,7 +363,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     begin
         // [FEATURE] [Fraud Prevention]
         // [SCENARIO 324828] Not expired Fraud Prevention Headers (system loads headers)
-        // MockServicePacket340 MockService\MakingTaxDigital\200_period_open.txt
+        // <parse key="Packet340" compare="MockServicePacket340" response="MakingTaxDigital\200_period_open.txt"/>
         Initialize();
         LibraryMakingTaxDigital.DisableFraudPreventionHeaders(false);
         HeadersDateTime := CreateDateTime(LibraryRandom.RandDate(10), 0T);
@@ -356,7 +383,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     begin
         // [FEATURE] [Fraud Prevention]
         // [SCENARIO 324828] Expired Fraud Prevention Headers (system invokes WMI and stores the result)
-        // MockServicePacket340 MockService\MakingTaxDigital\200_period_open.txt
+        // <parse key="Packet340" compare="MockServicePacket340" response="MakingTaxDigital\200_period_open.txt"/>
         Initialize();
         LibraryMakingTaxDigital.DisableFraudPreventionHeaders(false);
         LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket340');
@@ -455,17 +482,17 @@ codeunit 148081 "MTDTestOAuthWebService"
     local procedure SetDummyFPHeaders(DueDateTime: DateTime; GovClientPublicIP: text)
     var
         VATReportSetup: Record "VAT Report Setup";
-        JSONMgt: Codeunit "JSON Management";
         TempBlob: Codeunit "Temp Blob";
         RecordRef: RecordRef;
+        JObject: JsonObject;
         OutStream: OutStream;
     begin
         VATReportSetup.Get();
         VATReportSetup."MTD FP WebClient Due DateTime" := DueDateTime;
         if GovClientPublicIP <> '' then begin
-            JSONMgt.SetValue('Gov-Client-Public-IP', GovClientPublicIP);
+            JObject.Add('Gov-Client-Public-IP', GovClientPublicIP);
             TempBlob.CreateOutStream(OutStream);
-            OutStream.Write(JSONMgt.WriteObjectToString());
+            JObject.WriteTo(OutStream);
             RecordRef.GetTable(VATReportSetup);
             TempBlob.ToRecordRef(RecordRef, VATReportSetup.FieldNo("MTD FP WebClient Json"));
             RecordRef.SetTable(VATReportSetup);
@@ -479,133 +506,134 @@ codeunit 148081 "MTDTestOAuthWebService"
         Assert.ExpectedError(StrSubstNo('%1\%2%3', RetrievePaymentsErr, LibraryMakingTaxDigital.GetResonLbl(), ExpectedMessage));
     end;
 
-    local procedure VerifyAccessTokenDueDateTime(OAuth20Setup: Record "OAuth 2.0 Setup")
+    local procedure VerifyAccessTokenDueDateTime(OAuth20Setup: Record "OAuth 2.0 Setup"; Hours: Integer)
     begin
         OAuth20Setup.Find();
         // +- 1 minute for test delay
         Assert.IsTrue(
-            Abs(OAuth20Setup."Access Token Due DateTime" - CurrentDateTime() - 2 * 60 * 60 * 1000) < 60 * 1000,
+            Abs(OAuth20Setup."Access Token Due DateTime" - CurrentDateTime() - Hours * 60 * 60 * 1000) < 60 * 1000,
             'Access Token Due DateTime should be 2 hours from now');
     end;
 
     local procedure VerifyDefaultFPHeadersInLatestHttpLog(GivenClientType: ClientType)
     var
-        JSONMgt: Codeunit "JSON Management";
+        JToken: JsonToken;
     begin
-        JSONMgt.InitializeFromString(LibraryMakingTaxDigital.GetLatestHttpLogText());
-        Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Client-Connection-Method'), 'Gov-Client-Connection-Method');
-        Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Vendor-Version'), 'Gov-Vendor-Version');
-        Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Client-User-IDs'), 'Gov-Client-User-IDs');
-        Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Client-User-Agent'), 'Gov-Client-User-Agent');
-        Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Vendor-License-IDs'), 'Gov-Vendor-License-IDs');
-        Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-Public-IP'), 'Gov-Client-Public-IP');
+        JToken.ReadFrom(LibraryMakingTaxDigital.GetLatestHttpLogText());
+        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-Connection-Method'), 'Gov-Client-Connection-Method');
+        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Vendor-Version'), 'Gov-Vendor-Version');
+        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-User-IDs'), 'Gov-Client-User-IDs');
+        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-User-Agent'), 'Gov-Client-User-Agent');
+        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Vendor-License-IDs'), 'Gov-Vendor-License-IDs');
+        AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Public-IP');
 
         case GivenClientType of
             ClientType::Windows:
                 begin
-                    Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-Timezone'), 'Gov-Client-Timezone');
-                    Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-Device-ID'), 'Gov-Client-Device-ID');
-                    Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-Local-IPs'), 'Gov-Client-Local-IPs');
-                    Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-MAC-Addresses'), 'Gov-Client-MAC-Addresses');
-                    Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-Screens'), 'Gov-Client-Screens');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Timezone');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Device-ID');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Local-IPs');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-MAC-Addresses');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Screens');
                 end;
             ClientType::Web:
                 begin
-                    Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Client-Timezone'), 'Gov-Client-Timezone');
-                    Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Client-Device-ID'), 'Gov-Client-Device-ID');
-                    Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-Local-IPs'), 'Gov-Client-Local-IPs');
-                    Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-MAC-Addresses'), 'Gov-Client-MAC-Addresses');
-                    Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Client-Screens'), 'Gov-Client-Screens');
+                    Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-Timezone'), 'Gov-Client-Timezone');
+                    Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-Device-ID'), 'Gov-Client-Device-ID');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Local-IPs');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-MAC-Addresses');
+                    Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-Screens'), 'Gov-Client-Screens');
                 end;
             ClientType::Background:
                 begin
-                    Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Client-Timezone'), 'Gov-Client-Timezone');
-                    Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Client-Device-ID'), 'Gov-Client-Device-ID');
-                    Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-Local-IPs'), 'Gov-Client-Local-IPs');
-                    Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-MAC-Addresses'), 'Gov-Client-MAC-Addresses');
-                    Assert.AreEqual('', JSONMgt.GetValue('Request.Header.Gov-Client-Screens'), 'Gov-Client-Screens');
+                    Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-Timezone'), 'Gov-Client-Timezone');
+                    Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-Device-ID'), 'Gov-Client-Device-ID');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Local-IPs');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-MAC-Addresses');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Screens');
                 end;
         end;
     end;
 
     local procedure VerifyDefaultStoredFPHeaders(GivenClientType: ClientType; ExpectedDueDateTime: DateTime)
     var
-        JSONMgt: Codeunit "JSON Management";
+        JToken: JsonToken;
         JsonText: Text;
     begin
         VerifyStoredFPHeadersDateTimeAndReadJson(JsonText, GivenClientType, ExpectedDueDateTime);
-        JSONMgt.InitializeFromString(JsonText);
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Connection-Method'), 'ov-Client-Connection-Method');
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Vendor-Version'), 'Gov-Vendor-Version');
-        Assert.IsTrue(JSONMgt.GetValue('Gov-Client-User-IDs') <> '', 'Gov-Client-User-IDs');
-        Assert.IsTrue(JSONMgt.GetValue('Gov-Client-User-Agent') <> '', 'Gov-Client-User-Agent');
-        Assert.IsTrue(JSONMgt.GetValue('Gov-Vendor-License-IDs') <> '', 'Gov-Vendor-License-IDs');
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Public-IP'), 'Gov-Client-Public-IP');
+        JToken.ReadFrom(JsonText);
+        AssertBlankedJsonValue(JToken, 'Gov-Client-Connection-Method');
+        AssertBlankedJsonValue(JToken, 'Gov-Vendor-Version');
+        Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-User-IDs') <> '', 'Gov-Client-User-IDs');
+        Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-User-Agent') <> '', 'Gov-Client-User-Agent');
+        Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Vendor-License-IDs') <> '', 'Gov-Vendor-License-IDs');
+        AssertBlankedJsonValue(JToken, 'Gov-Client-Public-IP');
 
         case GivenClientType of
             ClientType::Windows:
                 begin
-                    Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Timezone'), 'Gov-Client-Timezone');
-                    Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Device-ID'), 'Gov-Client-Device-ID');
-                    Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Local-IPs'), 'Gov-Client-Local-IPs');
-                    Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-MAC-Addresses'), 'Gov-Client-MAC-Addresses');
-                    Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Screens'), 'Gov-Client-Screens');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-Timezone');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-Device-ID');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-Local-IPs');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-MAC-Addresses');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-Screens');
                 end;
             ClientType::Web:
                 begin
-                    Assert.IsTrue(JSONMgt.GetValue('Gov-Client-Timezone') <> '', 'Gov-Client-Timezone');
-                    Assert.IsTrue(JSONMgt.GetValue('Gov-Client-Device-ID') <> '', 'Gov-Client-Device-ID');
-                    Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Local-IPs'), 'Gov-Client-Local-IPs');
-                    Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-MAC-Addresses'), 'Gov-Client-MAC-Addresses');
-                    Assert.IsTrue(JSONMgt.GetValue('Gov-Client-Screens') <> '', 'Gov-Client-Screens');
+                    Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-Timezone') <> '', 'Gov-Client-Timezone');
+                    Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-Device-ID') <> '', 'Gov-Client-Device-ID');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-Local-IPs');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-MAC-Addresses');
+                    Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-Screens') <> '', 'Gov-Client-Screens');
                 end;
             ClientType::Background:
                 begin
-                    Assert.IsTrue(JSONMgt.GetValue('Gov-Client-Timezone') <> '', 'Gov-Client-Timezone');
-                    Assert.IsTrue(JSONMgt.GetValue('Gov-Client-Device-ID') <> '', 'Gov-Client-Device-ID');
-                    Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Local-IPs'), 'Gov-Client-Local-IPs');
-                    Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-MAC-Addresses'), 'Gov-Client-MAC-Addresses');
-                    Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Screens'), 'Gov-Client-Screens');
+                    Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-Timezone') <> '', 'Gov-Client-Timezone');
+                    Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-Device-ID') <> '', 'Gov-Client-Device-ID');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-Local-IPs');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-MAC-Addresses');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-Screens');
                 end;
         end;
     end;
 
     local procedure VerifyCustomFPHeadersInLatestHttpLog()
     var
-        JSONMgt: Codeunit "JSON Management";
+        JToken: JsonToken;
     begin
-        JSONMgt.InitializeFromString(LibraryMakingTaxDigital.GetLatestHttpLogText());
-        Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Client-Connection-Method'), 'Gov-Client-Connection-Method');
-        Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Vendor-Version'), 'Gov-Vendor-Version');
-        Assert.AreEqual('***', JSONMgt.GetValue('Request.Header.Gov-Client-Public-IP'), 'Gov-Client-Public-IP');
-        VerifyCommonBlankedCustomFPHeaders(JSONMgt.GetValue('Request.Header'));
+        JToken.ReadFrom(LibraryMakingTaxDigital.GetLatestHttpLogText());
+        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-Connection-Method'), 'Gov-Client-Connection-Method');
+        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Vendor-Version'), 'Gov-Vendor-Version');
+        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-Public-IP'), 'Gov-Client-Public-IP');
+        VerifyCommonBlankedCustomFPHeaders(ReadJsonValue(JToken, 'Request.Header'));
     end;
 
     local procedure VerifyCustomStoredFPHeaders(GivenClientType: ClientType; ExpectedDueDateTime: DateTime)
     var
-        JSONMgt: Codeunit "JSON Management";
+        JToken: JsonToken;
         JsonText: Text;
     begin
         VerifyStoredFPHeadersDateTimeAndReadJson(JsonText, GivenClientType, ExpectedDueDateTime);
-        JSONMgt.InitializeFromString(JsonText);
-        Assert.IsTrue(JSONMgt.GetValue('Gov-Client-Public-IP') <> '', 'Gov-Client-Public-IP');
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Connection-Method'), 'Gov-Client-Connection-Method');
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Vendor-Version'), 'Gov-Vendor-Version');
-        VerifyCommonBlankedCustomFPHeaders(JSONMgt.WriteObjectToString());
+        JToken.ReadFrom(JsonText);
+        Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-Public-IP') <> '', 'Gov-Client-Public-IP');
+        AssertBlankedJsonValue(JToken, 'Gov-Client-Connection-Method');
+        AssertBlankedJsonValue(JToken, 'Gov-Vendor-Version');
+        VerifyCommonBlankedCustomFPHeaders(JsonText);
     end;
 
     local procedure VerifyCommonBlankedCustomFPHeaders(JsonText: Text)
     var
-        JSONMgt: Codeunit "JSON Management";
+        JToken: JsonToken;
     begin
-        JSONMgt.InitializeFromString(JsonText);
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-User-IDs'), 'Gov-Client-User-IDs');
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Timezone'), 'Gov-Client-Timezone');
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-User-Agent'), 'Gov-Client-User-Agent');
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Vendor-License-IDs'), 'Gov-Vendor-License-IDs');
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Local-IPs'), 'Gov-Client-Local-IPs');
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-MAC-Addresses'), 'Gov-Client-MAC-Addresses');
-        Assert.AreEqual('', JSONMgt.GetValue('Gov-Client-Screens'), 'Gov-Client-Screens');
+        JToken.ReadFrom(JsonText);
+        AssertBlankedJsonValue(JToken, 'Gov-Client-User-IDs');
+        AssertBlankedJsonValue(JToken, 'Gov-Client-User-IDs');
+        AssertBlankedJsonValue(JToken, 'Gov-Client-Timezone');
+        AssertBlankedJsonValue(JToken, 'Gov-Client-User-Agent');
+        AssertBlankedJsonValue(JToken, 'Gov-Vendor-License-IDs');
+        AssertBlankedJsonValue(JToken, 'Gov-Client-Local-IPs');
+        AssertBlankedJsonValue(JToken, 'Gov-Client-MAC-Addresses');
+        AssertBlankedJsonValue(JToken, 'Gov-Client-Screens');
     end;
 
     local procedure VerifyStoredFPHeadersDateTimeAndReadJson(var JsonText: Text; GivenClientType: ClientType; ExpectedDueDateTime: DateTime)
@@ -660,6 +688,16 @@ codeunit 148081 "MTDTestOAuthWebService"
         InStream.Read(JsonText);
     end;
 
+    local procedure AssertBlankedJsonValue(JToken: JsonToken; Path: Text)
+    begin
+        LibraryMakingTaxDigital.AssertBlankedJsonValue(JToken, Path);
+    end;
+
+    local procedure ReadJsonValue(JToken: JsonToken; Path: Text): Text
+    begin
+        exit(LibraryMakingTaxDigital.ReadJsonValue(JToken, Path));
+    end;
+
     [ModalPageHandler]
     procedure OAuth20SetupSetStatus_MPH(var OAuth20SetupPage: TestPage "OAuth 2.0 Setup")
     var
@@ -681,5 +719,10 @@ codeunit 148081 "MTDTestOAuthWebService"
     begin
         LibraryVariableStorage.Enqueue(Question);
         Reply := LibraryVariableStorage.DequeueBoolean();
+    end;
+
+    [HyperlinkHandler]
+    procedure HyperlinkHandler(Message: Text[1024])
+    begin
     end;
 }

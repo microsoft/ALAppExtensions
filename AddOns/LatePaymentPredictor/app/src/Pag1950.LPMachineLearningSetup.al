@@ -19,19 +19,19 @@ page 1950 "LP Machine Learning Setup"
                 field(Enabled; "Make Predictions")
                 {
                     Caption = 'Enable Predictions';
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies whether to use the Late Payment Prediction extension to predict if an invoice will be paid on time.';
                 }
 
                 field(SelectedModel; "Selected Model")
                 {
                     Enabled = CustomModelExists;
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the predictive model to use. This can be the standard model that we provide, or your own custom model if you have created one by using the Create My Model action.';
 
                     trigger OnValidate();
                     begin
-                        ModelQuality := GetModelQuality();
+                        ModelQualityVal := GetModelQuality();
                         CurrPage.Update();
                     end;
                 }
@@ -39,15 +39,15 @@ page 1950 "LP Machine Learning Setup"
                 field(ThresholdModelQuality; "Model Quality Threshold")
                 {
                     ToolTip = 'Specifies the minimum model quality you require. The value is a percentage between zero and one, and indicates how accurate predictions will be. Typically, this field is useful when you create a custom model. If the quality of a model is below this threshold, it will not be used.';
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                 }
 
-                field(ModelQuality; ModelQuality)
+                field(ModelQuality; ModelQualityVal)
                 {
                     Caption = 'Model Quality';
                     Enabled = false;
                     ToolTip = 'Specifies the quality value for the model you are using. For custom models, the predictive experiment determines this value when training the model. The value is a percentage between zero and one, and indicates how accurate predictions will be.';
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                 }
             }
 
@@ -59,27 +59,27 @@ page 1950 "LP Machine Learning Setup"
                     Enabled = false;
                     Caption = 'Remaining Compute Time';
                     ToolTip = 'The number of seconds of compute time that you have not yet used.';
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                 }
                 field(Original; AzureAIUsage."Original Resource Limit")
                 {
                     Enabled = false;
                     Caption = 'Original Compute Time';
                     ToolTip = 'The number of seconds of compute time that was originally available for the standard model, or the model for your custom experiment.';
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                 }
                 field(LastDateTimeUpdated; AzureAIUsage."Last DateTime Updated")
                 {
                     Enabled = false;
                     Caption = 'Date of Last Compute';
                     ToolTip = 'The date on which you last used Azure compute time.';
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                 }
                 field(UseMyCredentials; "Use My Model Credentials")
                 {
                     Caption = 'Use My Azure Subscription';
                     ToolTip = 'Use a model that you created, rather than the standard model that we provide. To use your model, you must provide your API URI and API Key. You must also choose My Model in the Selected Model field in the Late Payment Prediction Setup window.';
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                 }
             }
 
@@ -91,7 +91,7 @@ page 1950 "LP Machine Learning Setup"
                 {
                     Caption = 'API URI';
                     ToolTip = 'Use your own Azure Machine Learning subscription, rather than the subscription you get through Business Central. For example, this is useful when you need more computing time. To use your subscription, provide your API URI and API key. You must also choose My Model in the Selected Model field on the Late Payment Prediction Setup page.';
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     ShowMandatory = true;
 
                     trigger OnValidate();
@@ -107,7 +107,7 @@ page 1950 "LP Machine Learning Setup"
                 {
                     Caption = 'API Key';
                     ToolTip = 'Specifies the API key to connect to the Azure Machine Learning service';
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     ShowMandatory = true;
 
                     trigger OnValidate();
@@ -129,7 +129,7 @@ page 1950 "LP Machine Learning Setup"
         {
             action(Train)
             {
-                ApplicationArea = Basic, Suite, Invoicing;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Create My Model';
                 Enabled = true;
                 Image = Task;
@@ -149,7 +149,7 @@ page 1950 "LP Machine Learning Setup"
 
             action(Evaluate)
             {
-                ApplicationArea = Basic, Suite, Invoicing;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Evaluate Selected Model';
                 Enabled = true;
                 Image = Check;
@@ -267,7 +267,7 @@ page 1950 "LP Machine Learning Setup"
         AzureAIUsage.GetSingleInstance(AzureAIUsage.Service::"Machine Learning");
         RemainingTime := AzureAIUsage."Original Resource Limit" - AzureAIUsage."Total Resource Usage";
         CustomModelExists := MyModelExists();
-        ModelQuality := GetModelQuality();
+        ModelQualityVal := GetModelQuality();
     end;
 
     local procedure CheckCustomCredentialsAreSet()
@@ -284,7 +284,7 @@ page 1950 "LP Machine Learning Setup"
         AzureAIUsage: Record "Azure AI Usage";
         CryptographyManagement: Codeunit "Cryptography Management";
         CustomModelExists: Boolean;
-        ModelQuality: Decimal;
+        ModelQualityVal: Decimal;
         ApiURIText: Text[250];
         ApiKeyText: Text[200];
         RemainingTime: Decimal;

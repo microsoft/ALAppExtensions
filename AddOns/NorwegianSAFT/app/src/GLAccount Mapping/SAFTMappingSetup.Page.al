@@ -28,7 +28,7 @@ page 10679 "SAF-T Mapping Setup"
                 field(RangeType; "Range Type")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specified the range type.';
+                    ToolTip = 'Specifies the range type.';
                 }
                 field(AccountingPeriod; "Accounting Period")
                 {

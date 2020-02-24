@@ -1188,7 +1188,7 @@ codeunit 148027 "TestPmtExport Validation DK UT"
         SetVendorBankCountryToDomestic(Vendor);
         CreatePaymentExportBatch(GenJnlBatch);
         GenJnlLine.INIT();
-        GenJnlLine.VALIDATE("Document Type",GenJnlLine."Document Type"::Payment);
+        GenJnlLine.VALIDATE("Document Type", GenJnlLine."Document Type"::Payment);
         GenJnlLine.VALIDATE("Account Type", GenJnlLine."Account Type"::Vendor);
 
         // Exercise
@@ -1266,7 +1266,7 @@ codeunit 148027 "TestPmtExport Validation DK UT"
         SetVendorBankCountryToDomestic(Vendor);
         CreatePaymentExportBatch(GenJnlBatch);
         GenJnlLine.INIT();
-        GenJnlLine.VALIDATE("Document Type",GenJnlLine."Document Type"::Payment);
+        GenJnlLine.VALIDATE("Document Type", GenJnlLine."Document Type"::Payment);
         GenJnlLine.VALIDATE("Account Type", GenJnlLine."Account Type"::Vendor);
 
         // Exercise
@@ -2606,7 +2606,7 @@ codeunit 148027 "TestPmtExport Validation DK UT"
         Assert.AreEqual(ExpectedCount, LibraryVariableStorage.DequeueInteger(), 'Incorrect no. of batch validation')
     end;
 
-    local procedure VerifyPaymentDetails(GenJnlLine: Record "Gen. Journal Line"; PaymentTypeValidation: Option; ExpBankAccNo: Code[20]; ExpCreditorNo: Code[8]; ExpGiroAccNo: Code[8]);
+    local procedure VerifyPaymentDetails(GenJnlLine: Record "Gen. Journal Line"; PaymentTypeValidation: Option; ExpBankAccNo: Code[20]; ExpCreditorNo: Code[20]; ExpGiroAccNo: Code[8]);
     var
         PaymentMethod: Record "Payment Method";
     begin

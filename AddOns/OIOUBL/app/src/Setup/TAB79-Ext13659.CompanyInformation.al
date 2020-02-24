@@ -49,7 +49,7 @@ tableextension 13659 "OIOUBL-Company Information" extends "Company Information"
         exit(TRUE);
     end;
 
-    procedure GetOIOUBLPaymentChannelCode(): Text[7];
+    procedure GetOIOUBLPaymentChannelCode(): Text;
     var
         CountryRegion: Record 9;
     begin

@@ -16,7 +16,6 @@ begin
         SKU.insert();
     end;
 end;
-
 procedure GetPlansBySKUs()
 var
     Plan: Record "YOUR PLAN TABLE";

@@ -13,6 +13,7 @@ codeunit 13646 "OIOUBL-Management"
         XmlFilterTxt: Label 'XML File(*.xml)|*.xml', Locked = true;
         ZipArchiveFilterTxt: Label 'Zip File (*.zip)|*.zip', Locked = true;
         ZipArchiveSaveDialogTxt: Label 'Export OIOUBL archive';
+        NonExistingDocumentFormatErr: Label 'The electronic document format %1 does not exist for the document type %2.';
 
     procedure ClearRecordExportBuffer()
     var
@@ -89,6 +90,22 @@ codeunit 13646 "OIOUBL-Management"
         end;
     end;
 
+    procedure GetExportCodeunitID(DocumentVariant: Variant): Integer;
+    var
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+        DocumentUsage: Option;
+    begin
+        ElectronicDocumentFormat.GetDocumentUsage(DocumentUsage, DocumentVariant);
+        ElectronicDocumentFormat.SetFilter(Code, GetOIOUBLElectronicDocumentFormatCode());
+        ElectronicDocumentFormat.SetRange(Usage, DocumentUsage);
+        if ElectronicDocumentFormat.FindFirst() then
+            exit(ElectronicDocumentFormat."Codeunit ID")
+        else begin
+            ElectronicDocumentFormat.Usage := DocumentUsage;
+            Error(NonExistingDocumentFormatErr, OIOUBLFormatNameTxt, Format(ElectronicDocumentFormat.Usage));
+        end;
+    end;
+
     procedure IsOIOUBLCheckRequired(GLN: Code[13]; CustomerNo: Code[20]): Boolean;
     var
         Customer: Record 18;
@@ -116,6 +133,26 @@ codeunit 13646 "OIOUBL-Management"
           (DocumentSendingProfile."Electronic Format" = OIOUBLFormatNameTxt) OR
           (DocumentSendingProfile."E-Mail Format" = OIOUBLFormatNameTxt) OR
           (DocumentSendingProfile."Disk Format" = OIOUBLFormatNameTxt));
+    end;
+
+    procedure IsStandardExportCodeunitID(ExportCodeunitID: Integer): Boolean;
+    begin
+        exit(
+          ExportCodeunitID in
+            [Codeunit::"OIOUBL-Export Sales Invoice",
+            Codeunit::"OIOUBL-Export Sales Cr. Memo",
+            Codeunit::"OIOUBL-Export Service Invoice",
+            Codeunit::"OIOUBL-Export Service Cr.Memo"]);
+    end;
+
+    procedure IsAllowedDocumentType(RecRef: RecordRef): Boolean;
+    begin
+        exit(
+          RecRef.Number() in
+            [Database::"Sales Invoice Header",
+            Database::"Sales Cr.Memo Header",
+            Database::"Service Invoice Header",
+            Database::"Service Cr.Memo Header"]);
     end;
 
     procedure UpdateRecordExportBuffer(RecID: RecordID; ServerFilePath: Text[250]; ClientFileName: Text[250]);
@@ -204,9 +241,13 @@ codeunit 13646 "OIOUBL-Management"
         TempBlob: Codeunit "Temp Blob";
         ZipInStream: InStream;
     begin
-        FileManagement.BLOBImportFromServerFile(TempBlob, ServerZipFilePath);
-        TempBlob.CreateInStream(ZipInStream);
-        DownloadFromStream(ZipInStream, ZipArchiveSaveDialogTxt, ClientZipFolder, ZipArchiveFilterTxt, ClientZipFileName);
+        if FileManagement.IsLocalFileSystemAccessible() then
+            FileManagement.CopyServerFile(ServerZipFilePath, StrSubstNo('%1\%2', ClientZipFolder, ClientZipFileName), true)
+        else begin
+            FileManagement.BLOBImportFromServerFile(TempBlob, ServerZipFilePath);
+            TempBlob.CreateInStream(ZipInStream);
+            DownloadFromStream(ZipInStream, ZipArchiveSaveDialogTxt, ClientZipFolder, ZipArchiveFilterTxt, ClientZipFileName);
+        end;
     end;
 
     [IntegrationEvent(true, false)]

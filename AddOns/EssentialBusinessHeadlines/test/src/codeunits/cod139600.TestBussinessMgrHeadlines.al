@@ -16,6 +16,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
 
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
+        RCHeadlinesUserData: Record "RC Headlines User Data";
         SalesHeader: Record "Sales Header";
         Assert: Codeunit Assert;
         TypeHelper: Codeunit "Type Helper";
@@ -62,6 +63,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         // [THEN] the headline is hidden because we only have 2 items
         Assert.IsFalse(GetVisibility(EssentialBusinessHeadline."Headline Name"::MostPopularItem), 'Expected most popular item headline not to be visible');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsFalse(HeadlineRcBusinessManagerPage.MostPopularItemText.Visible(), 'Expected most popular item headline not to be visible in the page');
         HeadlineRcBusinessManagerPage.Close();
@@ -74,6 +76,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::MostPopularItem), 'Expected most popular item headline to be visible now');
         Assert.IsTrue(StrPos(GetHeadlineText(EssentialBusinessHeadline."Headline Name"::MostPopularItem), Item2.Description) > 0, 'Expected message to contain item 2 description');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsTrue(HeadlineRcBusinessManagerPage.MostPopularItemText.Visible(), 'Expected most popular item headline to be visible in the page');
         HeadlineRcBusinessManagerPage.Close();
@@ -113,6 +116,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         // [THEN] The headline is hidden
         Assert.IsFalse(GetVisibility(EssentialBusinessHeadline."Headline Name"::BusiestResource), 'Expected most busy resource headline not to be visible');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsFalse(HeadlineRcBusinessManagerPage.BusiestResourceText.Visible(), 'Expected most busy resource headline not to be visible in the page');
         HeadlineRcBusinessManagerPage.Close();
@@ -124,6 +128,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::BusiestResource), 'Expected most busy resource headline to be visible now');
         Assert.IsTrue(StrPos(GetHeadlineText(EssentialBusinessHeadline."Headline Name"::BusiestResource), Resource2.Name) > 0, 'Expected message to contain resource 2 name');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsTrue(HeadlineRcBusinessManagerPage.BusiestResourceText.Visible(), 'Expected most busy resource headline to be visible in the page');
         HeadlineRcBusinessManagerPage.Close();
@@ -171,14 +176,17 @@ codeunit 139600 "Test Essential Bus. Headlines"
         // [THEN] The headline is hidden
         Assert.IsFalse(GetVisibility(EssentialBusinessHeadline."Headline Name"::LargestOrder), 'Expected largest order headline not to be visible');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsFalse(HeadlineRcBusinessManagerPage.LargestOrderText.Visible(), 'Expected largest order headline not to be visible in the page');
         HeadlineRcBusinessManagerPage.Close();
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcOrderProcessorPage.OpenView();
         Assert.IsFalse(HeadlineRcOrderProcessorPage.LargestOrderText.Visible(), 'Expected largest order headline not to be visible in the page');
         HeadlineRcOrderProcessorPage.Close();
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcAccountantPage.OpenView();
         Assert.IsFalse(HeadlineRcAccountantPage.LargestOrderText.Visible(), 'Expected largest order headline not to be visible in the page');
         HeadlineRcAccountantPage.Close();
@@ -193,14 +201,17 @@ codeunit 139600 "Test Essential Bus. Headlines"
         Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::LargestOrder), 'Expected largest order headline to be visible now');
         Assert.IsTrue(StrPos(GetHeadlineText(EssentialBusinessHeadline."Headline Name"::LargestOrder), Format(HighestAmount, 0, TypeHelper.GetAmountFormatLCYWithUserLocale())) > 0, 'Incorrect amount of the largest order');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsTrue(HeadlineRcBusinessManagerPage.LargestOrderText.Visible(), 'Expected largest order headline to be visible in the page');
         HeadlineRcBusinessManagerPage.Close();
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcOrderProcessorPage.OpenView();
         Assert.IsTrue(HeadlineRcOrderProcessorPage.LargestOrderText.Visible(), 'Expected largest order headline to be visible in the page');
         HeadlineRcOrderProcessorPage.Close();
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcAccountantPage.OpenView();
         Assert.IsTrue(HeadlineRcAccountantPage.LargestOrderText.Visible(), 'Expected largest order headline to be visible in the page');
         HeadlineRcAccountantPage.Close();
@@ -251,14 +262,17 @@ codeunit 139600 "Test Essential Bus. Headlines"
         // [THEN] The headline is hidden
         Assert.IsFalse(GetVisibility(EssentialBusinessHeadline."Headline Name"::LargestSale), 'Expected largest sale headline not to be visible');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsFalse(HeadlineRcBusinessManagerPage.LargestSaleText.Visible(), 'Expected largest sale headline not to be visible in the page');
         HeadlineRcBusinessManagerPage.Close();
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcOrderProcessorPage.OpenView();
         Assert.IsFalse(HeadlineRcOrderProcessorPage.LargestSaleText.Visible(), 'Expected largest sale headline not to be visible in the page');
         HeadlineRcOrderProcessorPage.Close();
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcAccountantPage.OpenView();
         Assert.IsFalse(HeadlineRcAccountantPage.LargestSaleText.Visible(), 'Expected largest sale headline not to be visible in the page');
         HeadlineRcAccountantPage.Close();
@@ -274,14 +288,17 @@ codeunit 139600 "Test Essential Bus. Headlines"
         Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::LargestSale), 'Expected largest sale headline to be visible now');
         Assert.IsTrue(StrPos(GetHeadlineText(EssentialBusinessHeadline."Headline Name"::LargestSale), Format(HighestAmount, 0, TypeHelper.GetAmountFormatLCYWithUserLocale())) > 0, 'Incorrect amount of the largest sale');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsTrue(HeadlineRcBusinessManagerPage.LargestSaleText.Visible(), 'Expected largest sale headline to be visible in the page');
         HeadlineRcBusinessManagerPage.Close();
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcOrderProcessorPage.OpenView();
         Assert.IsTrue(HeadlineRcOrderProcessorPage.LargestSaleText.Visible(), 'Expected largest sale headline to be visible in the page');
         HeadlineRcOrderProcessorPage.Close();
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcAccountantPage.OpenView();
         Assert.IsTrue(HeadlineRcAccountantPage.LargestSaleText.Visible(), 'Expected largest sale headline to be visible in the page');
         HeadlineRcAccountantPage.Close();
@@ -322,10 +339,12 @@ codeunit 139600 "Test Essential Bus. Headlines"
         // [THEN] The headline is hidden
         Assert.IsFalse(GetVisibility(EssentialBusinessHeadline."Headline Name"::SalesIncrease), 'Expected sales increase not to be visible');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsFalse(HeadlineRcBusinessManagerPage.SalesIncreaseText.Visible(), 'Expected sales increase not to be visible in the page');
         HeadlineRcBusinessManagerPage.Close();
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcAccountantPage.OpenView();
         Assert.IsFalse(HeadlineRcAccountantPage.SalesIncreaseText.Visible(), 'Expected sales increase headline not to be visible in the page');
         HeadlineRcAccountantPage.Close();
@@ -339,10 +358,12 @@ codeunit 139600 "Test Essential Bus. Headlines"
         Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::SalesIncrease), 'Expected sales increase to be visible now');
         Assert.IsTrue(StrPos(GetHeadlineText(EssentialBusinessHeadline."Headline Name"::SalesIncrease), '<emphasize>1</emphasize> ') > 0, 'Incorrect increase of sales');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsTrue(HeadlineRcBusinessManagerPage.SalesIncreaseText.Visible(), 'Expected sales increase to be visible in the page');
         HeadlineRcBusinessManagerPage.Close();
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcAccountantPage.OpenView();
         Assert.IsTrue(HeadlineRcAccountantPage.SalesIncreaseText.Visible(), 'Expected sales increase headline to be visible in the page');
         HeadlineRcAccountantPage.Close();
@@ -407,6 +428,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         // [THEN] the headline is hidden because we only have 1 customer buying from us
         Assert.IsFalse(GetVisibility(EssentialBusinessHeadline."Headline Name"::TopCustomer), 'Expected best customer headline not to be visible');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcRelationshipMgtPage.OpenView();
         Assert.IsFalse(HeadlineRcRelationshipMgtPage.TopCustomerText.Visible(), 'Expected best customer headline not to be visible in the page');
         HeadlineRcRelationshipMgtPage.Close();
@@ -428,6 +450,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         until CustLedgerEntry.Next() = 0;
         Assert.IsTrue(StrPos(GetHeadlineText(EssentialBusinessHeadline."Headline Name"::TopCustomer), Format(AmountLcy, 0, TypeHelper.GetAmountFormatLCYWithUserLocale())) > 0, 'Expected message to contain correct amount for customer');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcRelationshipMgtPage.OpenView();
         Assert.IsTrue(HeadlineRcRelationshipMgtPage.TopCustomerText.Visible(), 'Expected best customer headline to be visible in the page');
         HeadlineRcRelationshipMgtPage.Close();
@@ -699,7 +722,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         EssentialBusHeadlineMgt.HandleRecentlyOverdueInvoices();
 
         // [THEN] The headline is visible and the message is correct
-        EssentialBusinessHeadline.Get(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
+        EssentialBusinessHeadline.Get(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices, UserSecurityId());
 
         Assert.IsTrue(EssentialBusinessHeadline."Headline Visible", 'Expected recently overdue invoices headline to be visible');
         Assert.IsTrue(StrPos(EssentialBusinessHeadline."Headline Text", OverdueInvoicesTxt) > 0, 'Wrong number of sales invoices');
@@ -780,6 +803,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         for Count := 1 to NumberOfInvoices do
             TotalAmount := TotalAmount + CreateInvoiceWithDueDate(Yesterday);
 
+        SetDueDateInCasePaymentTermsAreUsed(Yesterday);
         exit(TotalAmount);
     end;
 
@@ -797,6 +821,23 @@ codeunit 139600 "Test Essential Bus. Headlines"
 
         LibrarySales.PostSalesDocument(SalesHeaderLocal, false, true);
         exit(Amount);
+    end;
+
+    local procedure SetDueDateInCasePaymentTermsAreUsed(DueDate: Date)
+    var
+        CustomerLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        // For some countries (currently only Italy) the original sales invoices are split into [potentially]
+        // multiple payment lines - and then payment lines are inserted into customer ledger entry instead
+        // (with its own due date which is different from the due date of the sales invoice).
+        // Ensure that the due date is set correctly by setting it in the customer ledger entry.
+        CustomerLedgerEntry.SetRange(Open, true);
+        CustomerLedgerEntry.SetRange("Document Type", CustomerLedgerEntry."Document Type"::Invoice);
+        CustomerLedgerEntry.FindSet();
+        repeat
+            CustomerLedgerEntry."Due Date" := DueDate;
+            CustomerLedgerEntry.Modify();
+        until CustomerLedgerEntry.Next() = 0;
     end;
 
     local procedure CreateRandomNumberOfOlderOverdueInvoices()
@@ -909,6 +950,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
             'Expected message to contain "VAT return is overdue since"');
 
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsTrue(HeadlineRcBusinessManagerPage.OverdueVATReturnText.Visible(), 'OverdueVATReturn headline should be visible');
         HeadlineRcBusinessManagerPage.Close();
@@ -918,6 +960,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
     begin
         Assert.IsFalse(GetVisibility(EssentialBusinessHeadline."Headline Name"::OverdueVATReturn), 'OverdueVATReturn headline should not be visible');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsFalse(HeadlineRcBusinessManagerPage.OverdueVATReturnText.Visible(), 'OverdueVATReturn headline should not be visible');
         HeadlineRcBusinessManagerPage.Close();
@@ -936,6 +979,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
             'Expected message to contain "Your VAT return is due"');
 
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsTrue(HeadlineRcBusinessManagerPage.OpenVATReturnText.Visible(), 'OpenVATReturnText headline should be visible');
         HeadlineRcBusinessManagerPage.Close();
@@ -945,6 +989,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
     begin
         Assert.IsFalse(GetVisibility(EssentialBusinessHeadline."Headline Name"::OpenVATReturn), 'OpenVATReturn headline should not be visible');
         EssentialBusinessHeadline.DeleteAll();
+        RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
         Assert.IsFalse(HeadlineRcBusinessManagerPage.OpenVATReturnText.Visible(), 'OpenVATReturnText headline should not be visible');
         HeadlineRcBusinessManagerPage.Close();

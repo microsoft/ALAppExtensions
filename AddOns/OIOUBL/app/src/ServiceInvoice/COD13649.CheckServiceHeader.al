@@ -76,8 +76,8 @@ codeunit 13649 "OIOUBL-Check Service Header"
     local procedure ReadGLSetup();
     begin
         if NOT GLSetupRead then begin
-            GLSetup.GET();
-            GLSetupRead := TRUE;
+            GLSetup.Get();
+            GLSetupRead := true;
         end;
     end;
 
@@ -88,14 +88,14 @@ codeunit 13649 "OIOUBL-Check Service Header"
         TotalLineAmount: Decimal;
         TotalLineDiscountAmount: Decimal;
     begin
-        EmptyLineFound := FALSE;
+        EmptyLineFound := false;
         TotalLineAmount := 0;
         TotalLineDiscountAmount := 0;
         WITH ServiceLine do begin
-            RESET();
-            SETRANGE("Document Type", ServiceHeader."Document Type");
-            SETRANGE("Document No.", ServiceHeader."No.");
-            if FINDSET() then
+            Reset();
+            SetRange("Document Type", ServiceHeader."Document Type");
+            SetRange("Document No.", ServiceHeader."No.");
+            if FindSet() then
                 repeat
                     if (Type <> Type::" ") AND ("No." <> '') AND ("Unit of Measure" = '') then
                         if Type <> Type::"G/L Account" then
@@ -105,20 +105,19 @@ codeunit 13649 "OIOUBL-Check Service Header"
                             ERROR(EmptyDescriptionErr, "Document Type", "Document No.");
                     TotalLineAmount += "Line Amount";
                     TotalLineDiscountAmount += "Line Discount Amount";
-                    if (Type = Type::" ") OR ("No." = '')
-                    then
+                    if (Type = Type::" ") OR ("No." = '') then
                         EmptyLineFound := TRUE;
                     if "Line Discount %" < 0 then
-                        FIELDERROR("Line Discount %", CannotBeNegativeErr);
-                until (NEXT() = 0);
+                        FieldError("Line Discount %", CannotBeNegativeErr);
+                until (Next() = 0);
             if TotalLineAmount < 0 then
-                ERROR(AmountCannotBeNegativeErr);
+                Error(AmountCannotBeNegativeErr);
             if TotalLineDiscountAmount < 0 then
-                ERROR(DiscountAmountCannotBeNegativeErr);
+                Error(DiscountAmountCannotBeNegativeErr);
 
             if EmptyLineFound then
-                if NOT CONFIRM(EmptyFieldsQst, TRUE, "Document Type", "Document No.") then
-                    ERROR(WarningExistErr);
+                if NOT Confirm(EmptyFieldsQst, true, "Document Type", "Document No.") then
+                    Error(WarningExistErr);
         end;
     end;
 
@@ -129,9 +128,9 @@ codeunit 13649 "OIOUBL-Check Service Header"
     begin
         Customer.GET(ServiceHeader."Customer No.");
         if Customer."OIOUBL-Profile Code Required" then begin
-            ServiceHeader.TESTFIELD("OIOUBL-Profile Code");
+            ServiceHeader.TestField("OIOUBL-Profile Code");
             OIOUBLProfile.GET(ServiceHeader."OIOUBL-Profile Code");
-            OIOUBLProfile.TESTFIELD("OIOUBL-Profile ID");
+            OIOUBLProfile.TestField("OIOUBL-Profile ID");
         end;
     end;
 }

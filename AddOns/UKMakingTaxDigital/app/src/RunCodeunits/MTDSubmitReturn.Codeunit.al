@@ -62,13 +62,17 @@ codeunit 10532 "MTD Submit Return"
     var
         ConfirmSubmitQst: Label 'When you submit this VAT information you are making a legal declaration that the information is true and complete. A false declaration can result in prosecution. Do you want to continue?';
 
-    local procedure CombineSubmissionRequestResponse(RequestJson: Text; ResponseJson: Text): Text
+    local procedure CombineSubmissionRequestResponse(RequestJson: Text; ResponseJson: Text) Result: Text
     var
-        JSONMgt: Codeunit "JSON Management";
+        JObject: JsonObject;
+        RequestJObject: JsonObject;
+        ResponseJObject: JsonObject;
     begin
-        JSONMgt.AddJson('SubmissionRequest', RequestJson);
-        JSONMgt.AddJson('SubmissionResponse', ResponseJson);
-        exit(JSONMgt.WriteObjectToString())
+        if RequestJObject.ReadFrom(RequestJson) then;
+        if ResponseJObject.ReadFrom(ResponseJson) then;
+        JObject.Add('SubmissionRequest', RequestJObject);
+        JObject.Add('SubmissionResponse', ResponseJObject);
+        JObject.WriteTo(Result);
     end;
 
 }

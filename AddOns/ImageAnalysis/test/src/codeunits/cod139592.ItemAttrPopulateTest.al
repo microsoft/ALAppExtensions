@@ -24,6 +24,7 @@ codeunit 139592 "Item Attr Populate Test"
         JsonManagement: Codeunit "JSON Management";
         ConfidencePercent: Decimal;
         AnalysisType: Option Tags,Faces,Color;
+        UpdatedDescription: Text[100];
     begin
         // [Scenario] Check the item is populated correctly in a success case
         // [Given] An item and an analysis result with high confidence for color and chair
@@ -73,7 +74,8 @@ codeunit 139592 "Item Attr Populate Test"
         ImageAnalyzerTagsTestPage.OK.Invoke();
         */
         // [When] the user modifies the description and presses OK in the tags page
-        ImageAnalysisTags.ApplyChanges(Item.Description + ' Blue');
+        UpdatedDescription := CopyStr(Item.Description + ' Blue', 1, MaxStrLen(UpdatedDescription));
+        ImageAnalysisTags.ApplyChanges(UpdatedDescription);
 
         // [Then] The item is populated as expected
         Item.Get(Item.RecordId());

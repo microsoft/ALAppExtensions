@@ -17,7 +17,7 @@ table 1866 "C5 InvenDiscGroup"
         {
             Caption = 'Last changed';
         }
-        field(3; DiscGroup; Code[10])
+        field(3; DiscGroup; Code[20])
         {
             Caption = 'Discount group';
         }

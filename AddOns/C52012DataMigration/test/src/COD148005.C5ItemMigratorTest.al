@@ -519,7 +519,7 @@ codeunit 148005 "C5 Item Migrator Test"
         SalesLineDiscount.SetRange("Sales Type", SalesLineDiscount."Sales Type"::"Customer Disc. Group");
         SalesLineDiscount.SetRange("Sales Code", 'SuperC');
         SalesLineDiscount.SetRange("Line Discount %", 12.1);
-        SalesLineDiscount.FindFirst();
+        Assert.IsFalse(SalesLineDiscount.IsEmpty(), 'The discount was not created.');
 
         Assert.AreEqual(Item."Costing Method"::FIFO, Item."Costing Method", 'Costing Method incorrect');
         Assert.AreEqual(111.11, Item."Unit Cost", 'Unit Cost incorrect');
@@ -566,7 +566,7 @@ codeunit 148005 "C5 Item Migrator Test"
         SalesPrice.SetRange("Item No.", ItemNumTxt);
         SalesPrice.SetRange("Unit Price", 1600.80);
         SalesPrice.SetRange("Currency Code", 'EUR');
-        SalesPrice.FindFirst();
+        Assert.IsFalse(SalesPrice.IsEmpty(), 'The price was not created.');
 
         // check customer price group is created
         CustomerPriceGroup.Get('Premium');

@@ -12,7 +12,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
     {
         dataitem("Sales VAT Advance Notif."; "Sales VAT Advance Notif.")
         {
-            DataItemTableView = sorting ("No.")
+            DataItemTableView = sorting("No.")
                                 order(Ascending);
 
             trigger OnPreDataItem()
@@ -220,7 +220,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
             AddAddressText(1, 'ElsterOnline-Portal: ' + CompanyInfo."VAT Representative" + '; ')
         else
             AddAddressText(1, CompanyInfo."VAT Representative" + '; ');
-        AddAddressText(1, CompanyInfo.Address + '; ');
+        AddAddressText(1, CopyStr(CompanyInfo.Address + '; ', 1, 80));
         AddAddressText(1, '; ');
         AddAddressText(1, '; ');
         AddAddressText(1, CompanyInfo."Address 2" + '; ');
@@ -231,7 +231,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
         AddAddressText(1, CompanyInfo."E-Mail");
 
         AddAddressText(2, ContactForTaxOffice + '; ');
-        AddAddressText(2, CompanyInfo.Address + '; ');
+        AddAddressText(2, CopyStr(CompanyInfo.Address + '; ', 1, 80));
         AddAddressText(2, '; ');
         AddAddressText(2, '; ');
         AddAddressText(2, CompanyInfo."Address 2" + '; ');

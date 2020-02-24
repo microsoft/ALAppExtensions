@@ -56,7 +56,7 @@ codeunit 13690 "MS - ECSL Report Export File"
         ECSLVATReportLine.SetAscending("Customer VAT Reg. No.", true);
         ECSLVATReportLine.FindSet();
 
-        AddHeader(TxtBuilder, VATReportHeader);
+        AddHeader(TxtBuilder);
 
         repeat
             CurrentVAT := ECSLVATReportLine."Customer VAT Reg. No.";
@@ -116,7 +116,7 @@ codeunit 13690 "MS - ECSL Report Export File"
         end;
     end;
 
-    local procedure AddHeader(var txtBuilder: TextBuilder; VATReportHeader: Record "VAT Report Header");
+    local procedure AddHeader(var txtBuilder: TextBuilder);
     begin
         txtBuilder.AppendLine(
           StrSubstNo('0,%1,LISTE,,,,,,', CompanyVATRegNo));

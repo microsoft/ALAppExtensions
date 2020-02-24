@@ -49,7 +49,7 @@ page 1850 "Sales Forecast"
                 end;
             }
 
-            field(StatusText; StatusText)
+            field(StatusText; StatusTextValue)
             {
                 ApplicationArea = Basic, Suite;
                 CaptionClass = LastUpdatedText;
@@ -200,7 +200,7 @@ page 1850 "Sales Forecast"
         StartingDate: Date;
         EndingDate: Date;
         NeedsUpdate: Boolean;
-        StatusText: Text;
+        StatusTextValue: Text;
         LastUpdatedText: Text;
         ForecastType: Option Sales,Inventory;
         UpdateSuccessfulFactboxMsg: Label 'Update Successful';
@@ -367,9 +367,8 @@ page 1850 "Sales Forecast"
     begin
         MSSalesForecast.SetRange("Forecast Data", MSSalesForecast."Forecast Data"::Result);
         MSSalesForecast.SetRange("Item No.", "No.");
-        if MSSalesForecast.FindFirst() then
-            exit(true);
-        exit(false);
+
+        exit(not MSSalesForecast.IsEmpty());
     end;
 
     local procedure GetTimeSeriesPeriodType(): Text[1]
@@ -508,7 +507,7 @@ page 1850 "Sales Forecast"
         MSSalesForecast.SetRange("Item No.", "No.");
         MSSalesForecast.SetRange("Forecast Data", MSSalesForecast."Forecast Data"::Result);
         MSSalesForecast.SetFilter("Variance %", '<=%1', VariancePercSetup);
-        if not MSSalesForecast.FindFirst() then
+        if MSSalesForecast.IsEmpty() then
             SetStatusText(StatusType::"No columns due to high variance");
 
         // forecast exists, check if Period Type has been changed in Setup
@@ -525,21 +524,21 @@ page 1850 "Sales Forecast"
         StatusType := Status;
         case Status of
             StatusType::"No columns due to high variance":
-                StatusText := VarianceHigherDefinedLevelFactboxMsg;
+                StatusTextValue := VarianceHigherDefinedLevelFactboxMsg;
             StatusType::"Limited columns due to high variance":
-                StatusText := ForecastPeriodFilterFactboxMsg;
+                StatusTextValue := ForecastPeriodFilterFactboxMsg;
             StatusType::"Forecast expired":
-                StatusText := ExistingForecastExpiredFactboxMsg;
+                StatusTextValue := ExistingForecastExpiredFactboxMsg;
             StatusType::"Forecast period type changed":
-                StatusText := StrSubstNo(ForecastPeriodTypeChangedFactboxMsg, MSSalesForecastSetup.FIELDCAPTION("Period Type"));
+                StatusTextValue := StrSubstNo(ForecastPeriodTypeChangedFactboxMsg, MSSalesForecastSetup.FIELDCAPTION("Period Type"));
             StatusType::"Not enough historical data":
-                StatusText := NotEnoughHistoricalDataFactboxMsg;
+                StatusTextValue := NotEnoughHistoricalDataFactboxMsg;
             StatusType::"Zero Forecast":
-                StatusText := ZeroForecastFactboxMsg;
+                StatusTextValue := ZeroForecastFactboxMsg;
             StatusType::"No Forecast available":
-                StatusText := NoForecastFactboxMsg;
+                StatusTextValue := NoForecastFactboxMsg;
             else
-                StatusText := UpdateSuccessfulFactboxMsg;
+                StatusTextValue := UpdateSuccessfulFactboxMsg;
         end;
         if StatusType = StatusType::" " then
             IsStatusTextEnabled := false
@@ -552,7 +551,7 @@ page 1850 "Sales Forecast"
 
     procedure TestGetStatusText(): Text
     begin
-        exit(StatusText);
+        exit(StatusTextValue);
     end;
 
     [IntegrationEvent(false, false)]

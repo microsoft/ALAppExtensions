@@ -15,6 +15,7 @@ codeunit 148104 "SAF-T Check Tests"
         SAFTTestHelper: Codeunit "SAF-T Test Helper";
         LibraryDimension: Codeunit "Library - Dimension";
         LibraryERM: Codeunit "Library - ERM";
+        LibraryRandom : Codeunit "Library - Random";
         SAFTMappingType: Enum "SAF-T Mapping Type";
         IsInitialized: Boolean;
         MappingNotDoneErr: Label 'One or more G/L accounts do not have a mapping setup. Open the SAF-T Mapping Setup page for the selected mapping range and map each G/L account either to the  standard account or the grouping code.';
@@ -97,7 +98,7 @@ codeunit 148104 "SAF-T Check Tests"
 
     local procedure SetupSAFT(var SAFTMappingRange: Record "SAF-T Mapping Range"; MappingType: Enum "SAF-T Mapping Type"): Code[20]
     begin
-        SAFTTestHelper.SetupMasterData();
+        SAFTTestHelper.SetupMasterData(LibraryRandom.RandInt(5));
         SAFTTestHelper.InsertSAFTMappingRangeFullySetup(
             SAFTMappingRange, MappingType,
             CalcDate('<-CY>', WorkDate()), CalcDate('<CY>', WorkDate()));

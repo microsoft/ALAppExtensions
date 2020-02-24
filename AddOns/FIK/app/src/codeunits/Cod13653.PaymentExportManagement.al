@@ -16,7 +16,7 @@ codeunit 13653 PaymentExportManagement
         FieldIsNotEmptyErr: Label '%1 must have a value';
         SimultaneousPaymentDetailsErr: Label '%1 and %2 cannot be used simultaneously for payments.', Comment = '%1=Field;%2=Field';
 
-        //cod1206
+    //cod1206
     PROCEDURE ExportDataFromBuffer(BalAccountNo: Code[20]; DataExchEntryNo: Integer; LineCount: Integer; TotalAmount: Decimal; TransferDate: Date; var Handled: Boolean);
     VAR
         BankAccount: Record "Bank Account";
@@ -46,7 +46,6 @@ codeunit 13653 PaymentExportManagement
     VAR
         TempPaymentExportData: Record "Payment Export Data" temporary;
         PmtExportMgtGenJnlLine: Codeunit "Pmt Export Mgt Gen. Jnl Line";
-        PaymentExportMgt: Codeunit "Payment Export Mgt";
     BEGIN
         WITH GenJnlLine DO BEGIN
             PmtExportMgtGenJnlLine.PreparePaymentExportDataJnl(TempPaymentExportData, GenJnlLine, DataExchEntryNo, LineNo);

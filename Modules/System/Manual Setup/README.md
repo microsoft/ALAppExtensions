@@ -101,3 +101,7 @@ The category enum is used to navigate the setup page, which can have many record
 
 ### Uncategorized (value: 0)
 
+
+ A default category, specifying that the manual setup is not categorized.
+ 
+

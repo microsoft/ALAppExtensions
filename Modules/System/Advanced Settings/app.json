@@ -1,0 +1,49 @@
+{
+    "id":  "87c6506c-a822-4ce9-a1c4-aba1b3822e09",
+    "name":  "Advanced Settings",
+    "publisher":  "Microsoft",
+    "brief":  "Support for Advanced Settings page",
+    "description":  "Support for Advanced Settings page",
+    "version":  "16.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "901c89b7-132b-4c59-bb3f-2bfa4fbc70b5",
+                            "name":  "Navigation Bar Subscribers",
+                            "publisher":  "Microsoft",
+                            "version":  "16.0.0.0"
+                        },
+                        {
+                            "id":  "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
+                            "name":  "Extension Management",
+                            "publisher":  "Microsoft",
+                            "version":  "16.0.0.0"
+                        },
+                        {
+                            "id":  "1e913197-559f-45ad-8075-4f9e4511f50f",
+                            "name":  "Manual Setup",
+                            "publisher":  "Microsoft",
+                            "version":  "16.0.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "16.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  9202,
+                         "to":  9202
+                     },
+                     {
+                         "from": 1817,
+                         "to": 1817
+                     }
+                 ],
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
+}

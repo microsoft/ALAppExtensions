@@ -202,7 +202,7 @@ page 2026 "Image Analysis Tags"
     end;
 
     var
-        PageItemDescription: Text[50];
+        PageItemDescription: Text[100];
         AppendTagTxt: Label 'Add to the item description';
         ConfidencePercent: Decimal;
         [InDataSet]
@@ -237,7 +237,7 @@ page 2026 "Image Analysis Tags"
         CurrPage.Update();
     end;
 
-    procedure GetItemDescription(): Text[50]
+    procedure GetItemDescription(): Text[100]
 
     begin
         exit(PageItemDescription);

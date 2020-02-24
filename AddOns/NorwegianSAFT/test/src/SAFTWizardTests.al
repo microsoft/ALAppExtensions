@@ -324,11 +324,4 @@ codeunit 148101 "SAF-T Wizard Tests"
         Dimensions.Filter.SetFilter(Code, LibraryVariableStorage.DequeueText());
         Dimensions.ExportToSAFT.SetValue(false);
     end;
-
-    [ConfirmHandler]
-    procedure ConfirmYesHandler(Question: Text; var Reply: Boolean)
-    begin
-        Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Question);
-        Reply := true;
-    end;
 }

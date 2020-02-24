@@ -14,13 +14,13 @@ codeunit 2504 "Extension Management"
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
 
-
     /// <summary>
     /// Installs an extension, based on its PackageId and Locale Identifier.
     /// </summary>
     /// <param name="PackageId">The ID of the extension package.</param>
     /// <param name="lcid">The Locale Identifier.</param>
     /// <param name="IsUIEnabled">Indicates whether the install operation is invoked through the UI.</param>
+    /// <returns>True if the extention is installed successfully; false otherwise.</returns>
     procedure InstallExtension(PackageId: Guid; lcid: Integer; IsUIEnabled: Boolean): Boolean
     begin
         exit(ExtensionInstallationImpl.InstallExtension(PackageId, lcid, IsUIEnabled));
@@ -31,6 +31,7 @@ codeunit 2504 "Extension Management"
     /// </summary>
     /// <param name="PackageId">The ID of the extension package.</param>
     /// <param name="IsUIEnabled">Indicates if the uninstall operation is invoked through the UI.</param>
+    /// <returns>True if the extention is uninstalled successfully; false otherwise.</returns>
     procedure UninstallExtension(PackageId: Guid; IsUIEnabled: Boolean): Boolean
     begin
         exit(ExtensionInstallationImpl.UninstallExtension(PackageId, IsUIEnabled));
@@ -48,7 +49,7 @@ codeunit 2504 "Extension Management"
     end;
 
     /// <summary>
-    /// Deploys an extension, based on its PackageId and Locale Identifier.
+    /// Deploys an extension, based on its ID and Locale Identifier.
     /// This method is only applicable in SaaS environment.
     /// </summary>
     /// <param name="AppId">The AppId of the extension.</param>
@@ -64,6 +65,7 @@ codeunit 2504 "Extension Management"
     /// An extension can only be unpublished, if it is a per-tenant one and it has been uninstalled first.
     /// </summary>
     /// <param name="PackageId">The PackageId of the extension.</param>
+    /// <returns>True if the extention is unpublished successfully; false otherwise.</returns>
     procedure UnpublishExtension(PackageId: Guid): Boolean
     begin
         exit(ExtensionOperationImpl.UnpublishExtension(PackageId));
@@ -73,6 +75,7 @@ codeunit 2504 "Extension Management"
     /// Downloads the source of an extension, based on its PackageId.
     /// </summary>
     /// <param name="PackageId">The PackageId of the extension.</param>
+    /// <returns>True if the operation was successful; false otherwise.</returns>
     procedure DownloadExtensionSource(PackageId: Guid): Boolean
     begin
         exit(ExtensionOperationImpl.DownloadExtensionSource(PackageId));
@@ -134,31 +137,35 @@ codeunit 2504 "Extension Management"
     /// Allows or disallows Http Client requests against the specified extension.
     /// </summary>
     /// <param name="PackageId">The Id of the extension to configure.</param>
+    /// <param name="AreHttpClientRqstsAllowed">The value to set for "Allow HttpClient Requests".</param>
+    /// <returns>True configuration was successful; false otherwise.</returns>
     procedure ConfigureExtensionHttpClientRequestsAllowance(PackageId: Text; AreHttpClientRqstsAllowed: Boolean): Boolean
     begin
         ExtensionOperationImpl.ConfigureExtensionHttpClientRequestsAllowance(PackageId, AreHttpClientRqstsAllowed);
     end;
 
     /// <summary>
-    /// Returns the PackageId of the latest Extension Version by the Extension AppId.
+    /// Gets the PackageId of the latest Extension Version by the Extension AppId.
     /// </summary>
     /// <param name="AppId">The AppId of the extension.</param>
+    /// <returns>The package ID by app ID. Empty GUID, if package with the provided app ID does not exist.</returns>
     procedure GetLatestVersionPackageIdByAppId(AppId: Guid): Guid
     begin
         exit(ExtensionOperationImpl.GetLatestVersionPackageIdByAppId(AppId));
     end;
 
     /// <summary>
-    /// Returns the PackageId of the latest version of the extension by the extension's AppId.
+    /// Gets the PackageId of the latest version of the extension by the extension's AppId.
     /// </summary>
     /// <param name="AppId">The AppId of the installed extension.</param>
+    /// <returns>The package ID of the installed version of an extenstion. Empty GUID, if package with the provided app ID does not exist.</returns>
     procedure GetCurrentlyInstalledVersionPackageIdByAppId(AppId: Guid): Guid
     begin
         exit(ExtensionOperationImpl.GetCurrentlyInstalledVersionPackageIdByAppId(AppId));
     end;
 
     /// <summary>
-    /// Returns the PackageId of the version of the extension by the extension's AppId, Name, Version Major, Version Minor, Version Build, Version Revision.
+    /// Gets the package ID of the version of the extension by the extension's AppId, Name, Version Major, Version Minor, Version Build, Version Revision.
     /// </summary>
     /// <param name="AppId">The AppId of the extension.</param>
     /// <param name="Name">The input/output Name parameter of the extension. If there is no need to filter by this parameter, the default value is ''.</param>
@@ -166,6 +173,7 @@ codeunit 2504 "Extension Management"
     /// <param name="VersionMinor">The input/output Version Minor parameter  of the extension. If there is no need to filter by this parameter, the default value is "0"..</param>
     /// <param name="VersionBuild">The input/output Version Build parameter  of the extension. If there is no need to filter by this parameter, the default value is "0".</param>
     /// <param name="VersionRevision">The input/output Version Revision parameter  of the extension. If there is no need to filter by this parameter, the default value is "0".</param>
+    /// <returns>The package ID of the extension with the specified paramters.</returns>
     procedure GetSpecificVersionPackageIdByAppId(AppId: Guid; Name: Text; VersionMajor: Integer; VersionMinor: Integer; VersionBuild: Integer; VersionRevision: Integer): Guid
     begin
         exit(ExtensionOperationImpl.GetSpecificVersionPackageIdByAppId(AppId, Name,

@@ -123,12 +123,58 @@ OnRemoveUserGroupsForUserAndPlan
 #### Syntax
 ```
 [Scope('OnPrem')]
+procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo; AppendPermissions: Boolean)
+```
+#### Parameters
+*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The user to update.
+
+*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+
+The graph user corresponding to the user to update, and containing the information about the plans assigned to the user.
+
+*AppendPermissions ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Append permissions from the new plan to the user.
+
+### UpdateUserPlans (Method) <a name="UpdateUserPlans"></a> 
+OnRemoveUserGroupsForUserAndPlan
+
+
+ Updates plans for user.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
 procedure UpdateUserPlans(UserSecurityId: Guid)
 ```
 #### Parameters
 *UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
 
 The user to update.
+
+### UpdateUserPlans (Method) <a name="UpdateUserPlans"></a> 
+OnRemoveUserGroupsForUserAndPlan
+
+
+ Updates plans for user.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissions: Boolean)
+```
+#### Parameters
+*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The user to update.
+
+*AppendPermissions ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Append permissions from the new plan to the user.
 
 ### UpdateUserPlans (Method) <a name="UpdateUserPlans"></a> 
 OnRemoveUserGroupsForUserAndPlan
@@ -247,7 +293,7 @@ The user GUID.
 Returns true if the given user has at least one plan.
 ### GetAvailablePlansCount (Method) <a name="GetAvailablePlansCount"></a> 
 
- Returns the total number of available plans.
+ Gets the total number of available plans.
  
 
 #### Syntax
@@ -260,10 +306,10 @@ procedure GetAvailablePlansCount(): Integer
 
 Returns the total number of available plans.
 ### CheckMixedPlans (Method) <a name="CheckMixedPlans"></a> 
-OnCanCurrentUserManagePlansAndGroups
+The OnCanCurrentUserManagePlansAndGroups event to ensure this API is called with the proper authorization.
 
 
- Checks if mixed plans are correctly set.
+ Checks whether the plan configuration mixes different plans.
  
 
 #### Syntax
@@ -285,6 +331,66 @@ procedure MixedPlansExist(): Boolean
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 Returns true if a mixed plan exists.
+### GetPlanNames (Method) <a name="GetPlanNames"></a> 
+
+ Get plans that are assigned to a user in Office 365.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure GetPlanNames(GraphUser: DotNet UserInfo; var PlanNames: List of [Text])
+```
+#### Parameters
+*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+
+The Graph user to get plans for.
+
+*PlanNames ([List of [Text]]())* 
+
+The names of the plans that are assigned to the user in Office 365.
+
+### GetPlanNames (Method) <a name="GetPlanNames"></a> 
+
+ Get plans that are assigned to a Business Central user.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure GetPlanNames(UserSecID: Guid; var PlanNames: List of [Text])
+```
+#### Parameters
+*UserSecID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The security ID of the user whose plans we are getting.
+
+*PlanNames ([List of [Text]]())* 
+
+The plan names of plans assigned to the Office 365 user.
+
+### CheckIfPlansDifferent (Method) <a name="CheckIfPlansDifferent"></a> 
+
+ Checks whether a user is assigned to different plans in Business Central and Graph.
+ 
+
+#### Syntax
+```
+procedure CheckIfPlansDifferent(GraphUser: DotNet UserInfo; UserSecID: Guid): Boolean
+```
+#### Parameters
+*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+
+The user in Graph to check plans for.
+
+*UserSecID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The security ID of the user to get plans for.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True, if the plans differ, false otherwise.
 ### SetTestInProgress (Method) <a name="SetTestInProgress"></a> 
 
  Sets this codeunit in test mode (for running unit tests).

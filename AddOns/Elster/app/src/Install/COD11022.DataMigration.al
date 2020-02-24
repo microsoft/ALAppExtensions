@@ -5,9 +5,26 @@
 
 codeunit 11022 "Elster - Data Migration"
 {
-    trigger OnRun()
+    Subtype = Upgrade;
+
+    trigger OnUpgradePerCompany()
     begin
+        UpgradeOldTables();
+        CleanupOldTables();
+    end;
+
+    local procedure UpgradeOldTables()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        ElsterManagement: Codeunit "Elster Management";
+    begin
+        if UpgradeTag.HasUpgradeTag(ElsterManagement.GetElsterUpgradeTag()) then
+            exit;
+
         MigrateSalesVATAdvanceNotification();
+        MigrateElecVATDeclSetup();
+
+        UpgradeTag.SetUpgradeTag(ElsterManagement.GetElsterUpgradeTag());
     end;
 
     local procedure MigrateSalesVATAdvanceNotification()
@@ -15,6 +32,9 @@ codeunit 11022 "Elster - Data Migration"
         SalesVATAdvanceNotification: Record "Sales VAT Advance Notification";
         SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
     begin
+        if not SalesVATAdvanceNotif.IsEmpty() then
+            exit;
+
         if SalesVATAdvanceNotification.FindSet() then
             repeat
                 SalesVATAdvanceNotif.TransferFields(SalesVATAdvanceNotification, true);
@@ -29,11 +49,30 @@ codeunit 11022 "Elster - Data Migration"
         ElectronicVATDeclSetup: Record "Electronic VAT Decl. Setup";
         ElecVATDeclSetup: Record "Elec. VAT Decl. Setup";
     begin
+        if ElecVATDeclSetup.Get() then
+            exit;
+
         if not ElectronicVATDeclSetup.Get() then
             exit;
-        ElecVATDeclSetup.Get();
+
         ElecVATDeclSetup.Validate("Sales VAT Adv. Notif. Path", ElectronicVATDeclSetup."Sales VAT Adv. Notif. Path");
         ElecVATDeclSetup.Validate("XML File Default Name", ElectronicVATDeclSetup."Sales VAT Adv. Notif. Path");
-        ElecVATDeclSetup.Modify(true);
+        ElecVATDeclSetup.insert(true);
+    end;
+
+    local procedure CleanupOldTables()
+    var
+        SalesVATAdvanceNotification: Record "Sales VAT Advance Notification";
+        ElectronicVATDeclSetup: Record "Electronic VAT Decl. Setup";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        ElsterManagement: Codeunit "Elster Management";
+    begin
+        if UpgradeTag.HasUpgradeTag(ElsterManagement.GetCleanupElsterTag()) then
+            exit;
+
+        SalesVATAdvanceNotification.DeleteAll();
+        ElectronicVATDeclSetup.DeleteAll();
+
+        UpgradeTag.SetUpgradeTag(ElsterManagement.GetCleanupElsterTag());
     end;
 }

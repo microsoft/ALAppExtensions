@@ -96,7 +96,7 @@ procedure GetApplicationFamily(): Text
 #### Return Value
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
-
+The application family.
 
 ## Tenant Information (Codeunit 417)
 

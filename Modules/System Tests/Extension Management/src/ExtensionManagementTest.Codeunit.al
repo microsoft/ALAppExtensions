@@ -144,21 +144,24 @@ codeunit 133100 "Extension Management Test"
     [Scope('OnPrem')]
     procedure GetLatestVersionPackageIdByAppId()
     var
-        NAVApp: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         PackageId: Guid;
     begin
         SetNavAppIds();
 
         PackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(MainAppId);
-        Assert.IsTrue(NAVApp.GET(PackageId), PackageIdExistsErr);
-        Assert.AreEqual(NAVApp."Version Major", 1, PackageIdExtensionVersionErr);
+        PublishedApplication.SetRange("Package ID", PackageId);
+        PublishedApplication.SetRange("Tenant Visible", true);
+
+        Assert.IsTrue(PublishedApplication.FindFirst(), PackageIdExistsErr);
+        Assert.AreEqual(PublishedApplication."Version Major", 1, PackageIdExtensionVersionErr);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure GetCurrentlyInstalledVersionPackageIdByAppId()
     var
-        NAVApp: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         PackageId: Guid;
     begin
         SetNavAppIds();
@@ -170,15 +173,18 @@ codeunit 133100 "Extension Management Test"
         PackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(MainAppId);
         ExtensionManagement.InstallExtension(PackageId, GlobalLanguage(), FALSE);
         PackageId := ExtensionManagement.GetCurrentlyInstalledVersionPackageIdByAppId(MainAppId);
-        Assert.IsTrue(NAVApp.GET(PackageId), PackageIdExistsErr);
-        Assert.AreEqual(NAVApp."Version Major", 1, PackageIdExtensionVersionErr);
+        PublishedApplication.SetRange("Package ID", PackageId);
+        PublishedApplication.SetRange("Tenant Visible", true);
+
+        Assert.IsTrue(PublishedApplication.FindFirst(), PackageIdExistsErr);
+        Assert.AreEqual(PublishedApplication."Version Major", 1, PackageIdExtensionVersionErr);
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure GetSpecificVersionPackageIdByAppId()
     var
-        NAVApp: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         PackageId: Guid;
         NullGuid: Guid;
     begin
@@ -186,14 +192,26 @@ codeunit 133100 "Extension Management Test"
 
         PackageId := ExtensionManagement.GetSpecificVersionPackageIdByAppId(NullGuid, '', 0, 0, 0, 0);
         Assert.IsTrue(ISNULLGUID(PackageId), NullPackageIdErr);
+
         PackageId := ExtensionManagement.GetSpecificVersionPackageIdByAppId(MainAppId, '', 0, 0, 0, 0);
-        Assert.IsTrue(NAVApp.GET(PackageId), PackageIdExistsErr);
+        PublishedApplication.SetRange("Package ID", PackageId);
+        PublishedApplication.SetRange("Tenant Visible", true);
+
+        Assert.IsFalse(PublishedApplication.IsEmpty(), PackageIdExistsErr);
+
         PackageId := ExtensionManagement.GetSpecificVersionPackageIdByAppId(MainAppId, '', 1, 0, 0, 0);
-        Assert.IsTrue(NAVApp.GET(PackageId), PackageIdExistsErr);
-        Assert.AreEqual(NAVApp."Version Major", 1, PackageIdExtensionVersionErr);
+        PublishedApplication.SetRange("Package ID", PackageId);
+        PublishedApplication.SetRange("Tenant Visible", true);
+
+        Assert.IsTrue(PublishedApplication.FindFirst(), PackageIdExistsErr);
+        Assert.AreEqual(PublishedApplication."Version Major", 1, PackageIdExtensionVersionErr);
+
         PackageId := ExtensionManagement.GetSpecificVersionPackageIdByAppId(MainAppId, '', 1, 0, 0, 0);
-        Assert.IsTrue(NAVApp.GET(PackageId), PackageIdExistsErr);
-        Assert.AreEqual(NAVApp."Version Major", 1, PackageIdExtensionVersionErr);
+        PublishedApplication.SetRange("Package ID", PackageId);
+        PublishedApplication.SetRange("Tenant Visible", true);
+
+        Assert.IsTrue(PublishedApplication.FindFirst(), PackageIdExistsErr);
+        Assert.AreEqual(PublishedApplication."Version Major", 1, PackageIdExtensionVersionErr);
     end;
 }
 

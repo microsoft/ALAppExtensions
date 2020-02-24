@@ -61,7 +61,7 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
         SOAPWebServiceRequestMgt.SetGlobals(InStream,
           AMCBankServiceSetup."Service URL", AMCBankServiceSetup.GetUserName(), AMCBankServiceSetup.GetPassword());
         SOAPWebServiceRequestMgt.SetContentType(ContentTypeTxt);
-        
+
         if not SOAPWebServiceRequestMgt.SendRequestToWebService() then
             SOAPWebServiceRequestMgt.ProcessFaultResponse(StrSubstNo(AddnlInfoTxt, AMCBankServiceSetup."Support URL"));
 

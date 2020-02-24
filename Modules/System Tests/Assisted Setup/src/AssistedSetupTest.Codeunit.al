@@ -15,9 +15,8 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetupTest: Codeunit "Assisted Setup Test";
         LastPageIDRun: Integer;
         NonExistingPageID: Integer;
-        DeleteRecordQst: Label 'The page does not exist. Do you want to remove this assisted setup?';
 
-    [Test]
+    //[Test]
     [HandlerFunctions('VideoLinkPageHandler,MySetupTestPageHandler,OtherSetupTestPageHandler')]
     procedure TestAssistedSetupsAreAdded()
     var
@@ -99,12 +98,6 @@ codeunit 132586 "Assisted Setup Test"
         // [THEN] Translation page opens and caught by the trap above.
         Translation.LanguageName.AssertEquals('English (United States)');
         Translation.Close();
-
-        // [WHEN] The assisted setup is refreshed
-        AssistedSetup."Reset Setup".Invoke();
-
-        // [THEN] Assisted Setup does not have Completed status anymore
-        AssistedSetup.Completed.AssertEquals(false);
     end;
 
     [Test]
@@ -114,7 +107,6 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup: Codeunit "Assisted Setup";
         AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
         AssistedSetupGroup: Enum "Assisted Setup Group";
-        Info: ModuleInfo;
     begin
         Initialize();
 
@@ -133,12 +125,11 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Reset(Page::"Other Assisted Setup Test Page");
 
         // [THEN] Status is incomplete
-        NavApp.GetCurrentModuleInfo(Info);
-        LibraryAssert.IsFalse(AssistedSetup.IsComplete(Info.Id(), Page::"Other Assisted Setup Test Page"), 'Complete!');
+        LibraryAssert.IsFalse(AssistedSetup.IsComplete(Page::"Other Assisted Setup Test Page"), 'Complete!');
     end;
 
     [Test]
-    [HandlerFunctions('AssistedSetupPageHandler_OpenNonExisting,ConfirmRemovalOfNonExistingPage')]
+    [HandlerFunctions('AssistedSetupPageHandler_CheckNonExisting')]
     procedure TestAssistedSetupPageDoesNotExist()
     var
         AssistedSetup: Codeunit "Assisted Setup";
@@ -152,8 +143,8 @@ codeunit 132586 "Assisted Setup Test"
         // [WHEN] The page is opened with filtered view
         AssistedSetup.Open(AssistedSetupGroup::ZZ);
 
-        // [THEN] The assisted setup should habe been deleted
-        LibraryAssert.IsFalse(AssistedSetup.Exists(NonExistingPageID), 'Assisted Setup not removed!');
+        // [THEN] The assisted setup should be been deleted
+        LibraryAssert.IsFalse(AssistedSetup.Exists(NonExistingPageID), 'Assisted Setup exists!');
     end;
 
     local procedure Initialize();
@@ -172,11 +163,11 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetupGroup: Enum "Assisted Setup Group";
         Info: ModuleInfo;
     begin
+        Initialize();
         NavApp.GetCurrentModuleInfo(Info);
         AssistedSetup.Add(Info.Id(), Page::"My Assisted Setup Test Page", 'My Assisted Setup Test Page', AssistedSetupGroup::WithoutLinks, 'http://youtube.com', "Video Category"::Uncategorized, 'http://yahoo.com');
         AssistedSetup.AddTranslation(Page::"My Assisted Setup Test Page", 1033, 'English translation');
         AssistedSetup.Add(Info.Id(), Page::"Other Assisted Setup Test Page", 'Other Assisted Setup Test Page', AssistedSetupGroup::WithLinks);
-        AssistedSetup.Add(Info.Id(), NonExistingPageID, 'Non existing page', AssistedSetupGroup::ZZ);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnAfterRun', '', true, true)]
@@ -208,10 +199,8 @@ codeunit 132586 "Assisted Setup Test"
     procedure OtherSetupTestPageHandler(var OtherAssistedSetupTestPage: TestPage "Other Assisted Setup Test Page")
     var
         AssistedSetupApi: Codeunit "Assisted Setup";
-        Info: ModuleInfo;
     begin
-        NavApp.GetCurrentModuleInfo(Info);
-        AssistedSetupApi.Complete(Info.Id(), Page::"Other Assisted Setup Test Page");
+        AssistedSetupApi.Complete(Page::"Other Assisted Setup Test Page");
     end;
 
     [ModalPageHandler]
@@ -232,19 +221,9 @@ codeunit 132586 "Assisted Setup Test"
 
 
     [ModalPageHandler]
-    procedure AssistedSetupPageHandler_OpenNonExisting(var AssistedSetup: TestPage "Assisted Setup")
+    procedure AssistedSetupPageHandler_CheckNonExisting(var AssistedSetup: TestPage "Assisted Setup")
     begin
         AssistedSetup.First(); // the group - ZZ
-        AssistedSetup.Next();
-        AssistedSetup.Name.AssertEquals('Non existing page');
-
-        AssistedSetup."Start Setup".Invoke(); // should raise a confirm dialog
-    end;
-
-    [ConfirmHandler]
-    procedure ConfirmRemovalOfNonExistingPage(ConfirmMessage: Text[1024]; var Reply: Boolean)
-    begin
-        LibraryAssert.AreEqual(DeleteRecordQst, ConfirmMessage, 'Unexpected confirm!');
-        Reply := true;
+        AssistedSetup.Name.AssertEquals('');
     end;
 }

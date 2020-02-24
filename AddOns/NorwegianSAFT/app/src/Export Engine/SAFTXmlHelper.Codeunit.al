@@ -3,6 +3,7 @@ codeunit 10674 "SAF-T XML Helper"
     var
         XMLDoc: XmlDocument;
         CurrXMLElement: array[100] of XmlElement;
+        SavedXMLElement: XmlElement;
         Depth: Integer;
         NamespaceFullName: Text;
         SAFTNameSpaceTxt: Label 'urn:StandardAuditFile-Taxation-Financial:NO', Locked = true;
@@ -47,6 +48,22 @@ codeunit 10674 "SAF-T XML Helper"
         if NodeText = '' then
             exit;
         InsertXMLNode(NewXMLElement, Name, NodeText);
+    end;
+
+    procedure AppendToSavedXMLNode(Name: Text; NodeText: Text)
+    var
+        NewXMLElement: XmlElement;
+    begin
+        if NodeText = '' then
+            exit;
+        NewXMLElement := XmlElement.Create(Name, NamespaceFullName, NodeText);
+        if (not SavedXMLElement.AddFirst(NewXMLElement)) then
+            error(StrSubstNo('Not possible to insert element %1', NodeText));
+    end;
+
+    procedure SaveCurrXmlElement()
+    begin
+        SavedXMLElement := CurrXMLElement[Depth];
     end;
 
     procedure FinalizeXMLNode()

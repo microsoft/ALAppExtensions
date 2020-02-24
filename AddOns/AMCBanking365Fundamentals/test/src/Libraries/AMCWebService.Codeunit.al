@@ -7,8 +7,7 @@ codeunit 130103 "Library - Amc Web Service"
 
     var
         AMCBankingMgt: Codeunit "AMC Banking Mgt.";
-        //LocalhostURLTxt: Label 'https://localhost:8080/', Locked = true;
-        LocalhostURLTxt: Label 'https://host.docker.internal:8088/', Locked = true; //TODO - Put back to above when finished testing
+        LocalhostURLTxt: Label 'https://localhost:8080/', Locked = true;
 
         DemoFileLine01_EncodUTF8Txt: Label '<paymentExportBank xmlns="%1"><amcpaymentreq xmlns=''''><banktransjournal>', Locked = true;
         DemoFileLine02_EncodUTF8Txt: Label '<journalname>200106</journalname><journalnumber>journal-02</journalnumber><transmissionref1>01</transmissionref1><uniqueid>DE-01</uniqueid>', Locked = true;

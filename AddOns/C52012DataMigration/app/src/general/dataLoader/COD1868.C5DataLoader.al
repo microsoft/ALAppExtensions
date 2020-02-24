@@ -94,7 +94,7 @@ codeunit 1868 "C5 Data Loader"
         C5DataLoaderStatus.IncrementProccessedRecords(C5SchemaParameters."Total Item Entries" mod 1000);
 
         DataMigrationStatus.SetRange("Destination Table ID", Database::"C5 LedTrans");
-        if DataMigrationStatus.FindFirst() then begin
+        if not DataMigrationStatus.IsEmpty() then begin
             if not AccountsLoaded then
                 LoadC5Accounts();
             LoadC5LedTrans();

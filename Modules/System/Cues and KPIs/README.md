@@ -89,7 +89,7 @@ The amount for which the style will be calculated based on the threshold values 
 
  Converts a Cues And KPIs Style enum to a style text.
  Enum values 0,7,8,9,10 are defined by default, if custom values are needed take a look at OnConvertStyleToStyleText event.
- OnConvertStyleToStyleTextA Cues And KPIs Style enum from which the style text will be converted.
+ 
 
 #### Syntax
 ```
@@ -103,7 +103,7 @@ A Cues And KPIs Style enum from which the style text will be converted.
 #### Return Value
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
-
+The converted style
 ### InsertData (Method) <a name="InsertData"></a> 
 
  Inserts cue setup data. The entries inserted via this method will have no value for the userid field.
@@ -121,7 +121,7 @@ The ID of the table where the cue is defined.
 
 *FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
 
-
+The ID of the field which the cue is based on.
 
 *LowRangeStyle ([Enum "Cues And KPIs Style"]())* 
 

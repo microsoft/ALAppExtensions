@@ -41,7 +41,7 @@ codeunit 148024 "Pmt Export Fixed-Width UT"
 
         // Verify
         VerifyPmtFileLineCount(FileName, 1, '3', 1, 1);
-        VerifySDCPmtFileContent(DataExchEntryNo, FileName, 1);
+        VerifySDCPmtFileContent(DataExchEntryNo, FileName);
     end;
 
     [Test]
@@ -63,7 +63,7 @@ codeunit 148024 "Pmt Export Fixed-Width UT"
 
         // Verify
         VerifyPmtFileLineCount(FileName, 1, 'IB030202000005', 1, 14);
-        VerifyBankDataPmtFileContent(DataExchEntryNo, FileName, 1);
+        VerifyBankDataPmtFileContent(DataExchEntryNo, FileName);
     end;
 
     [Test]
@@ -236,7 +236,7 @@ codeunit 148024 "Pmt Export Fixed-Width UT"
         EXIT(CopyStr(LibraryTextFileValidation.ReadValue(Line, StartingPosition, Length), 1, 1024));
     end;
 
-    local procedure VerifySDCPmtFileContent(DataExchNo: Integer; FileName: Text[1024]; LineCount: Integer);
+    local procedure VerifySDCPmtFileContent(DataExchNo: Integer; FileName: Text[1024]);
     var
         Actual: Text;
         Line: Text[1024];
@@ -260,7 +260,7 @@ codeunit 148024 "Pmt Export Fixed-Width UT"
         CheckColumnValue(DataExchNo, Line, 1, 10, 76, 20);
     end;
 
-    local procedure VerifyBankDataPmtFileContent(DataExchNo: Integer; FileName: Text[1024]; LineCount: Integer);
+    local procedure VerifyBankDataPmtFileContent(DataExchNo: Integer; FileName: Text[1024]);
     var
         Line: Text[1024];
         Actual: Text;

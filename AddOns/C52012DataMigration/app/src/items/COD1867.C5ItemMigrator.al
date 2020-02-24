@@ -15,7 +15,7 @@ codeunit 1867 "C5 Item Migrator"
         BatchTrackingCodeTxt: Label 'BATCH', Comment = 'All caps, 10 characters max because Code[10] in baseapp';
         BatchTrackingDescriptionTxt: Label 'Batch tracking';
         InventPriceGroupNotFoundErr: Label 'The InventPriceGroup ''%1'' was not found.', Comment = '%1 = invent price group group';
-        ItemType: Option Inventory,Service;
+        ItemTypeOption: Option Inventory,Service;
         ItemJournalBatchNameTxt: Label 'ITEMMIGR', Locked = true;
         FakeProductPostingGroupPrefixLbl: Label 'MIGRATION', Locked = true;
         UnitOfMeasureNotSpecifiedErr: Label 'A unit of measure is not specified for item %1.', Comment = '%1 is the current item number';
@@ -41,7 +41,7 @@ codeunit 1867 "C5 Item Migrator"
             exit;
         C5InvenTable.Get(RecordIdToMigrate);
 
-        if ConvertItemType(C5InvenTable.ItemType) = ItemType::Inventory then begin // only FIFO is valid for services
+        if ConvertItemType(C5InvenTable.ItemType) = ItemTypeOption::Inventory then begin // only FIFO is valid for services
             Sender.SetCostingMethod(ConvertCostingMethod(C5InvenTable));
             Sender.ModifyItem(false);
         end;
@@ -438,7 +438,7 @@ codeunit 1867 "C5 Item Migrator"
         UninitializedItemDataMigrationFacade.CreateCustDiscGroupIfNeeded(C5CustDiscountGroupCode, GroupDescription);
     end;
 
-    local procedure CreateItemDiscGroupIfNeeded(C5DiscountGroupCode: Code[10])
+    local procedure CreateItemDiscGroupIfNeeded(C5DiscountGroupCode: Code[20])
     var
         C5InvenDiscGroup: Record "C5 InvenDiscGroup";
         GroupDescription: Text[50];
@@ -539,9 +539,9 @@ codeunit 1867 "C5 Item Migrator"
             C5ItemType::BOM,
             C5ItemType::Item,
             C5ItemType::Kit:
-                exit(ItemType::Inventory);
+                exit(ItemTypeOption::Inventory);
             C5ItemType::Service:
-                exit(ItemType::Service);
+                exit(ItemTypeOption::Service);
         end;
     end;
 

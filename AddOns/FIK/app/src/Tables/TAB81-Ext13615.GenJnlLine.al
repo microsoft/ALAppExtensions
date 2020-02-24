@@ -143,6 +143,8 @@ tableextension 13615 GeneralJournalLine extends "Gen. Journal Line"
                         "Creditor No." := '';
                         GiroAccNo := '';
                     END;
+                else
+                    OnUpdateVendorPaymentDetailsCasePaymentTypeValidationElse(Rec, PaymentMethod.PaymentTypeValidation);
             END;
     END;
 
@@ -157,4 +159,8 @@ tableextension 13615 GeneralJournalLine extends "Gen. Journal Line"
         EXIT(FALSE);
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdateVendorPaymentDetailsCasePaymentTypeValidationElse(var GenJournalLine: Record "Gen. Journal Line"; PaymentTypeValidation: Enum "Payment Type Validation")
+    begin
+    end;
 }

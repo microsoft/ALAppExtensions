@@ -12,22 +12,12 @@
     "logo":  "ExtensionLogo.png",
     "showMyCode":  false,
     "dependencies":  [
-                         {
-                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
-                             "name":  "Base Application",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         },
-                         {
-                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
-                             "name":  "System Application",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         }
+
                      ],
     "screenshots":  [
 
                     ],
     "platform":  "11.0.0.0",
-    "target":  "OnPrem"
+    "target":  "OnPrem",
+    "application":  "16.0.0.0"
 }

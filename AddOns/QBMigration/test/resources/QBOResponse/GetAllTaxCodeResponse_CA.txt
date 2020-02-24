@@ -1,0 +1,157 @@
+{
+  "QueryResponse": {
+    "TaxCode": [
+      {
+        "Name": "Exempt",
+        "Description": "Tax-exempt",
+        "Active": true,
+        "Taxable": true,
+        "TaxGroup": true,
+        "SalesTaxRateList": {
+          "TaxRateDetail": [
+            {
+              "TaxRateRef": {
+                "value": "2",
+                "name": "GST ES"
+              },
+              "TaxTypeApplicable": "TaxOnAmount",
+              "TaxOrder": 0
+            }
+          ]
+        },
+        "PurchaseTaxRateList": {
+          "TaxRateDetail": [
+            {
+              "TaxRateRef": {
+                "value": "1",
+                "name": "GST EP"
+              },
+              "TaxTypeApplicable": "TaxOnAmount",
+              "TaxOrder": 0
+            }
+          ]
+        },
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "2",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:46-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:46-08:00"
+        }
+      },
+      {
+        "Name": "HST ON",
+        "Description": "Harmonized federal and provincial tax (Ontario)",
+        "Active": true,
+        "Taxable": true,
+        "TaxGroup": true,
+        "SalesTaxRateList": {
+          "TaxRateDetail": [
+            {
+              "TaxRateRef": {
+                "value": "12",
+                "name": "HST ON"
+              },
+              "TaxTypeApplicable": "TaxOnAmount",
+              "TaxOrder": 0
+            }
+          ]
+        },
+        "PurchaseTaxRateList": {
+          "TaxRateDetail": [
+            {
+              "TaxRateRef": {
+                "value": "11",
+                "name": "HST (ITC) ON"
+              },
+              "TaxTypeApplicable": "TaxOnAmount",
+              "TaxOrder": 0
+            }
+          ]
+        },
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "5",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:46-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:46-08:00"
+        }
+      },
+      {
+        "Name": "HST-ON1",
+        "Description": "HST-ON1",
+        "Active": true,
+        "Taxable": true,
+        "TaxGroup": true,
+        "SalesTaxRateList": {
+          "TaxRateDetail": [
+            {
+              "TaxRateRef": {
+                "value": "13",
+                "name": "HST-ON1 (Sales)"
+              },
+              "TaxTypeApplicable": "TaxOnAmount",
+              "TaxOrder": 0
+            }
+          ]
+        },
+        "PurchaseTaxRateList": {
+          "TaxRateDetail": []
+        },
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "6",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2017-05-24T08:47:07-07:00",
+          "LastUpdatedTime": "2017-05-24T08:47:07-07:00"
+        }
+      },
+      {
+        "Name": "Zero-rated",
+        "Description": "Zero-rated",
+        "Active": true,
+        "Taxable": true,
+        "TaxGroup": true,
+        "SalesTaxRateList": {
+          "TaxRateDetail": [
+            {
+              "TaxRateRef": {
+                "value": "4",
+                "name": "GST/HST ZR"
+              },
+              "TaxTypeApplicable": "TaxOnAmount",
+              "TaxOrder": 0
+            }
+          ]
+        },
+        "PurchaseTaxRateList": {
+          "TaxRateDetail": [
+            {
+              "TaxRateRef": {
+                "value": "3",
+                "name": "GST/HST (ITC) ZR"
+              },
+              "TaxTypeApplicable": "TaxOnAmount",
+              "TaxOrder": 0
+            }
+          ]
+        },
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "3",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-20T21:58:46-08:00",
+          "LastUpdatedTime": "2016-12-20T21:58:46-08:00"
+        }
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 4,
+    "totalCount": 4
+  },
+  "time": "2017-05-31T12:44:28.169-07:00"
+}

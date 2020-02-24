@@ -15,13 +15,11 @@ codeunit 132558 "AMC Banking Credential UT"
         LibraryXPathXMLReader: Codeunit "Library - XPath XML Reader";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         AMCBankingMgt: Codeunit "AMC Banking Mgt.";
-        //LocalhostURLTxt: Label 'https://localhost:8080/', Locked = true;
-        LocalhostURLTxt: Label 'https://host.docker.internal:8088/', Locked = true; //TODO - Put back to above when finished testing (AMC-JN)
+        LocalhostURLTxt: Label 'https://localhost:8080/', Locked = true;
         MissingCredentialsQst: Label 'The %1 is missing the user name or password. Do you want to open the %1 page?';
         MissingCredentialsErr: Label 'The user name and password must be filled in %1 page.';
         NoConnectionErr: Label 'The expected data was not received from the web service.';
         SamplePmtXmlFile_EncodUTF8Txt: Label '<paymentExportBank xmlns="http://nav03.soap.xml.link.amc.dk/"><amcpaymentreq xmlns=''''><banktransjournal><uniqueid>%1</uniqueid></banktransjournal></amcpaymentreq><bank>Danske DK</bank><language>ENU</language></paymentExportBank>', Locked = true;
-        //TODO REMOVE NordeaCorporateEnCodWinTxt: Label '"NDEADKKKXXX","2999","9999940560","DKK","Demo User","","20030221","20030221","15757.25","+","15757.25","","68","","Order 12345","4","500","MEDDELNR 2001219","0","99999999999903","501","","502","KON konto 0979999035","0","","0","","0","","","","","","","266787.12","+","266787.12","","","Driftskonto","DK3420009999940560","N","Test Testsen","Testvej 10","9999 Testrup","","","","Ordrenr. 65656","99999999999903","1170200109040120000018","7","Betaling af f¹lgende fakturaer:","Fakturanr. Bel¹b:","12345 2500,35","22345 1265,66","32345 5825,00","42345 3635,88","52345 2530,36","","","","","","","","","","","","","","","","","","","","","","","",""', Locked = true;
         CremulPathTxt: Label '/ns:reportExportResponse/return/cremul', Locked = true;
         EndBalanceNodePathTxt: Label '/ns:reportExportResponse/return/finsta/statement/', Locked = true;
 
@@ -421,7 +419,7 @@ codeunit 132558 "AMC Banking Credential UT"
 
         // Setup.
         ClearAMCBankingSetup(TempAMCBankingSetup);
-        CreateDataExchWithContentCT(TempDataExch, 'MissingSetup');
+        CreateDataExchWithContentCT(TempDataExch, 'CredentialsUpdated');
 
         // Exercise.
         asserterror CODEUNIT.Run(CODEUNIT::"AMC Bank Exp. CT Hndl", TempDataExch);
@@ -524,12 +522,9 @@ codeunit 132558 "AMC Banking Credential UT"
         BodyOutputStream: OutStream;
     begin
         BodyTempBlob.CreateOutStream(BodyOutputStream, TEXTENCODING::Windows);
-        //TODO REMOVE BodyOutputStream.WriteText(StrSubstNo(NordeaCorporateEnCodWinTxt, testword));
         BodyOutputStream.WriteText(testword);
-
         DataExchMapping.SetRange("Pre-Mapping Codeunit", CODEUNIT::"AMC Bank Imp.-Pre-Mapping");
         DataExchMapping.FindFirst();
-
         TempDataExch.Init();
         RecordRef.GetTable(TempDataExch);
         BodyTempBlob.ToRecordRef(RecordRef, TempDataExch.FieldNo("File Content"));

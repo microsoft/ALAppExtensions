@@ -8,10 +8,10 @@ codeunit 1910 "File Helper"
     Access = Internal;
 
     var
-        FileTempBlob: Codeunit "Temp Blob";
         FilePath: Text;
         FileNotAvailableErr: Label 'The file is not available.';
 
+    [TryFunction]
     procedure GetFile(var TempBlob: Codeunit "Temp Blob")
     var
         File: File;
@@ -27,10 +27,11 @@ codeunit 1910 "File Helper"
         File.Close();
     end;
 
-    procedure GetFile(Stream: InStream)
+    procedure FileExists(): Boolean
     begin
-        GetFile(FileTempBlob);
-        FileTempBlob.CreateInStream(Stream);
+        if FilePath = '' then
+            exit(false);
+        exit(Exists(FilePath));
     end;
 
     procedure SetPath(SavedFilePath: Text)

@@ -452,7 +452,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
           CompanyInformation.City, '', CompanyInformation.FIELDCAPTION("Post Code"));
     end;
 
-    local procedure PostSalesInvoiceWithDiffCompanyInfo(Name: Text[50]; VATRegistrationNo: Code[20]; Address: Text[50]; City: Text[30]; PostCode: Code[20]; FieldCaption: Text);
+    local procedure PostSalesInvoiceWithDiffCompanyInfo(Name: Text[100]; VATRegistrationNo: Code[20]; Address: Text[100]; City: Text[30]; PostCode: Code[20]; FieldCaption: Text);
     var
         SalesLine: Record "Sales Line";
         CompanyInformation: Record "Company Information";
@@ -747,14 +747,14 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         ServiceHeader.MODIFY(true);
     end;
 
-    local procedure ModifySalesLine(SalesLine: Record "Sales Line"; Description: Code[50]; UnitOfMeasure: Code[10]);
+    local procedure ModifySalesLine(SalesLine: Record "Sales Line"; Description: Code[100]; UnitOfMeasure: Code[50]);
     begin
         SalesLine.VALIDATE(Description, Description);
         SalesLine.VALIDATE("Unit of Measure", UnitOfMeasure);
         SalesLine.MODIFY(true);
     end;
 
-    local procedure ModifyServiceLine(ServiceLine: Record "Service Line"; Description: Code[50]; UnitOfMeasure: Code[10]);
+    local procedure ModifyServiceLine(ServiceLine: Record "Service Line"; Description: Code[100]; UnitOfMeasure: Code[50]);
     begin
         ServiceLine.VALIDATE(Description, Description);
         ServiceLine.VALIDATE("Unit of Measure", UnitOfMeasure);

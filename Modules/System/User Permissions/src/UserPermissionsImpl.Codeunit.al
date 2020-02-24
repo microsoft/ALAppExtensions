@@ -13,6 +13,7 @@ codeunit 153 "User Permissions Impl."
     var
         SUPERTok: Label 'SUPER', Locked = true;
         SUPERPermissionErr: Label 'There should be at least one enabled ''SUPER'' user.';
+        SECURITYPermissionSetTxt: Label 'SECURITY', Locked = true;
 
     procedure IsSuper(UserSecurityId: Guid): Boolean
     var
@@ -159,6 +160,36 @@ codeunit 153 "User Permissions Impl."
     begin
         // Sync Deamon is the only user with license "External User"
         exit(User."License Type" = User."License Type"::"External User");
+    end;
+
+    procedure CanManageUsersOnTenant(UserSID: Guid): Boolean
+    var
+        AccessControl: Record "Access Control";
+        User: Record User;
+    begin
+        if User.IsEmpty() then
+            exit(true);
+
+        if IsSuper(UserSID) then
+            exit(true);
+
+        AccessControl.SetRange("Role ID", SECURITYPermissionSetTxt);
+        AccessControl.SetFilter("Company Name", '%1|%2', '', CompanyName);
+        AccessControl.SetRange("User Security ID", UserSID);
+        exit(not AccessControl.IsEmpty());
+    end;
+
+    procedure HasUserCustomPermissions(UserSecId: Guid): Boolean
+    var
+        AccessControl: Record "Access Control";
+        BlankGuid: Guid;
+    begin
+        // Check if the user is assigned any custom permission sets
+        AccessControl.SetRange("User Security ID", UserSecId);
+        AccessControl.SetRange(Scope, AccessControl.Scope::Tenant);
+        AccessControl.SetRange("App ID", BlankGuid);
+        if not AccessControl.IsEmpty() then
+            exit(true);
     end;
 }
 

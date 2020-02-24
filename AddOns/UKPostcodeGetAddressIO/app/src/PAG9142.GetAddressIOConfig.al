@@ -14,7 +14,7 @@ page 9142 "GetAddress.io Config"
         {
             field("API Key"; APIKeyText)
             {
-                ApplicationArea = Basic, Suite, Invoicing;
+                ApplicationArea = Basic, Suite;
 
                 trigger OnValidate()
                 begin
@@ -26,11 +26,11 @@ page 9142 "GetAddress.io Config"
             }
             field("Endpoint URL"; EndpointURL)
             {
-                ApplicationArea = Basic, Suite, Invoicing;
+                ApplicationArea = Basic, Suite;
             }
             field(TermsAndConditions; TermsAndCondsLbl)
             {
-                ApplicationArea = Basic, Suite, Invoicing;
+                ApplicationArea = Basic, Suite;
                 Editable = false;
                 ShowCaption = false;
 
@@ -42,7 +42,7 @@ page 9142 "GetAddress.io Config"
             }
             field(GetAPIKey; GetAPIKeyLbl)
             {
-                ApplicationArea = Basic, Suite, Invoicing;
+                ApplicationArea = Basic, Suite;
                 Editable = false;
                 ShowCaption = false;
 

@@ -97,15 +97,4 @@ codeunit 1439 Headlines
     begin
         exit(HeadlinesImpl.GetMaxPayloadLength());
     end;
-
-    /// <summary>
-    /// Integration event, emitted from <see cref="ScheduleHeadlineTask"/>.
-    /// Subscribe to this event to perform any action with codeunit id (for example, run the codeunit).
-    /// </summary>
-    /// <seealso cref="ScheduleHeadlineTask"/>
-    /// <param name="CodeunitId">The id of the codeunit that will be scheduled to run.</param>
-    local procedure OnBeforeScheduleHeadlineTask(CodeunitId: Integer);
-    begin
-    end;
 }
-

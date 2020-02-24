@@ -1,0 +1,50 @@
+{
+    "id":  "4f8b23f1-cde9-4de7-9194-a758e05c1c26",
+    "name":  "Dynamics GP Data Migration Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the Dynamics GP Data Migration extension.",
+    "description":  "Tests for the Dynamics GP Data Migration extension.",
+    "version":  "16.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "936d57e3-05fe-4aff-8459-35aa9367abec",
+                             "name":  "Dynamics GP Data Migration",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                             "id":  "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
+                             "name":  "Sales and Inventory Forecast",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "name":  "Tests-TestLibraries",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "11.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  139500,
+                         "to":  139899
+                     },
+                     {
+                         "from":  148000,
+                         "to":  148499
+                     }
+                 ],
+    "target":  "OnPrem",
+    "showMyCode":  false,
+    "application":  "16.0.0.0"
+}

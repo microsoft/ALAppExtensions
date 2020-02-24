@@ -39,6 +39,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
     var
         ServInvHeader2: Record "Service Invoice Header";
         RecordExportBuffer: Record "Record Export Buffer";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
         RBMgt: Codeunit "File Management";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         EnvironmentInfo: Codeunit "Environment Information";
@@ -55,7 +56,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         OIOUBLManagement.UpdateRecordExportBuffer(
             ServiceInvoiceHeader.RecordId(),
             CopyStr(FromFile, 1, MaxStrLen(RecordExportBuffer.ServerFilePath)),
-            StrSubstNo('%1.xml', ServiceInvoiceHeader."No."));
+            ElectronicDocumentFormat.GetAttachmentFileName(ServiceInvoiceHeader."No.", 'Invoice', 'xml'));
 
         OIOUBLManagement.ExportXMLFile(ServiceInvoiceHeader."No.", FromFile, ServiceMgtSetup."OIOUBL-Service Invoice Path");
 
@@ -77,7 +78,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         RootElement.Add(ChildElement);
     end;
 
-    local procedure InsertInvoiceTaxTotal(var InvoiceElement: XmlElement; ServiceInvoiceHeader: Record "Service Invoice Header"; var ServiceInvoiceLine: Record "Service Invoice Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);
+    local procedure InsertInvoiceTaxTotal(var InvoiceElement: XmlElement; var ServiceInvoiceLine: Record "Service Invoice Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);
     var
         TaxTotalElement: XmlElement;
         TaxableAmount: Decimal;
@@ -163,8 +164,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         InvoiceLineElement.Add(
           XmlElement.Create('LineExtensionAmount', DocNameSpace,
             XmlAttribute.Create('currencyID', CurrencyCode),
-            OIOUBLDocumentEncode.DecimalToText(ServiceInvoiceLine.Amount + ServiceInvoiceLine."Inv. Discount Amount" +
-              ServiceInvoiceLine."Line Discount Amount")));
+            OIOUBLDocumentEncode.DecimalToText(ServiceInvoiceLine.Amount + ServiceInvoiceLine."Inv. Discount Amount")));
         InvoiceLineElement.Add(XmlElement.Create('AccountingCost', DocNameSpace, ServiceInvoiceLine."OIOUBL-Account Code"));
         InsertOrderLineReference(InvoiceLineElement, ServiceInvoiceHeader, ServiceInvoiceLine);
 
@@ -176,10 +176,10 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
           ServiceInvoiceLine."VAT %",
           CurrencyCode);
         OIOUBLXMLGenerator.InsertItem(InvoiceLineElement, ServiceInvoiceLine.Description, ServiceInvoiceLine."No.");
-        OIOUBLXMLGenerator.InsertPrice(InvoiceLineElement,
-          ServiceInvoiceLine."Unit Price",
-          UnitOfMeasureCode,
-          CurrencyCode);
+        OIOUBLXMLGenerator.InsertPrice(
+            InvoiceLineElement,
+            Round((ServiceInvoiceLine.Amount + ServiceInvoiceLine."Inv. Discount Amount") / ServiceInvoiceLine.Quantity),
+            UnitOfMeasureCode, CurrencyCode);
 
         InvoiceElement.Add(InvoiceLineElement);
     end;
@@ -198,7 +198,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         XMLdocOut: XmlDocument;
         CurrencyCode: Code[10];
         UnitOfMeasureCode: Code[10];
-        TaxableAmount: Decimal;
+        LineAmount: Decimal;
         TaxAmount: Decimal;
         TotalAmount: Decimal;
         TotalInvDiscountAmount: Decimal;
@@ -289,7 +289,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
             DeliveryAddress.City := "Ship-to City";
             DeliveryAddress."Post Code" := "Ship-to Post Code";
             DeliveryAddress."Country/Region Code" := "Ship-to Country/Region Code";
-            OIOUBLXMLGenerator.InsertDelivery(XMLCurrNode, DeliveryAddress, CalcDate('0D'));
+            OIOUBLXMLGenerator.InsertDelivery(XMLCurrNode, DeliveryAddress, CalcDate('<0D>'));
 
             // Invoice->PaymentMeans
             OIOUBLXMLGenerator.InsertPaymentMeans(XMLCurrNode, "Due Date");
@@ -313,7 +313,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
             if ServInvLine2.FINDSET() then
                 repeat
                     ExcludeVAT(ServInvLine2, "Prices Including VAT");
-                    TotalInvDiscountAmount := TotalInvDiscountAmount + GetDiscountAmount(ServInvLine2);
+                    TotalInvDiscountAmount += ServInvLine2."Inv. Discount Amount";
                 until ServInvLine2.NEXT() = 0;
         end;
 
@@ -336,24 +336,24 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
             ServInvLine2.CALCSUMS(Amount, "Amount Including VAT");
             TotalTaxAmount := ServInvLine2."Amount Including VAT" - ServInvLine2.Amount;
 
-            InsertInvoiceTaxTotal(XMLCurrNode, ServiceInvoiceHeader, ServInvLine2, TotalTaxAmount, CurrencyCode);
+            InsertInvoiceTaxTotal(XMLCurrNode, ServInvLine2, TotalTaxAmount, CurrencyCode);
         end;
 
         // Invoice->LegalMonetaryTotal
-        TaxableAmount := 0;
+        LineAmount := 0;
         TaxAmount := 0;
 
         ServInvLine2.RESET();
         ServInvLine2.COPY(ServInvLine);
         if ServInvLine2.FINDSET() then
             repeat
-                TaxableAmount := TaxableAmount + ServInvLine2.Amount + ServInvLine2."Inv. Discount Amount" +
-                  ServInvLine2."Line Discount Amount";
-                TotalAmount := TotalAmount + ServInvLine2."Amount Including VAT";
-                TaxAmount := TaxAmount + ServInvLine2."Amount Including VAT" - ServInvLine2.Amount;
+                ExcludeVAT(ServInvLine2, ServiceInvoiceHeader."Prices Including VAT");
+                LineAmount += ServInvLine2.Amount + ServInvLine2."Inv. Discount Amount";
+                TotalAmount += ServInvLine2."Amount Including VAT";
+                TaxAmount += ServInvLine2."Amount Including VAT" - ServInvLine2.Amount;
             until ServInvLine2.NEXT() = 0;
 
-        OIOUBLXMLGenerator.InsertLegalMonetaryTotal(XMLCurrNode, TaxableAmount, TaxAmount, TotalAmount, TotalInvDiscountAmount, CurrencyCode);
+        OIOUBLXMLGenerator.InsertLegalMonetaryTotal(XMLCurrNode, LineAmount, TaxAmount, TotalAmount, TotalInvDiscountAmount, CurrencyCode);
 
         // Invoice->InvoiceLine
         repeat
@@ -364,6 +364,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
             else
                 UnitOfMeasureCode := ServInvLine."Unit of Measure Code";
 
+            ExcludeVAT(ServInvLine, ServiceInvoiceHeader."Prices Including VAT");
             InsertInvoiceLine(XMLCurrNode, ServiceInvoiceHeader, ServInvLine, CurrencyCode, UnitOfMeasureCode);
         until ServInvLine.NEXT() = 0;
 
@@ -389,7 +390,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         end;
     end;
 
-    procedure GetPaymentChannelCode(): Text[7];
+    procedure GetPaymentChannelCode(): Text;
     begin
         exit(CompanyInfo.GetOIOUBLPaymentChannelCode());
     end;
@@ -411,15 +412,6 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
             "Line Discount Amount" := ROUND("Line Discount Amount" / ExclVATFactor, Currency."Amount Rounding Precision");
             "Inv. Discount Amount" := ROUND("Inv. Discount Amount" / ExclVATFactor, Currency."Amount Rounding Precision");
             "Unit Price" := ROUND("Unit Price" / ExclVATFactor, Currency."Amount Rounding Precision");
-        end;
-    end;
-
-    local procedure GetDiscountAmount(ServInvLine: Record "Service Invoice Line"): Decimal;
-    begin
-        WITH ServInvLine do begin
-            if "Line Discount %" = 100 then
-                exit(Quantity * "Unit Price");
-            exit("Inv. Discount Amount" + "Line Discount Amount");
         end;
     end;
 

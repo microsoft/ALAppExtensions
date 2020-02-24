@@ -11,7 +11,7 @@ report 13635 "OIOUBL-Create Elec Srv Cr Memo"
     {
         dataitem("Service Cr.Memo Header"; "Service Cr.Memo Header")
         {
-            DataItemTableView = SORTING ("No.");
+            DataItemTableView = SORTING("No.");
             RequestFilterFields = "No.", "Customer No.", "Bill-to Customer No.", "OIOUBL-GLN", "OIOUBL-Electronic Credit Memo Created";
 
             trigger OnAfterGetRecord();
@@ -51,7 +51,7 @@ report 13635 "OIOUBL-Create Elec Srv Cr Memo"
 
                 // Some already sent?
                 ServCrMemoHeader.SETRANGE("OIOUBL-Electronic Credit Memo Created", TRUE);
-                if ServCrMemoHeader.FINDFIRST() then
+                if NOT ServCrMemoHeader.IsEmpty() then
                     if NOT CONFIRM(DocumentAlreadyCreatedQst) then
                         CurrReport.QUIT();
 

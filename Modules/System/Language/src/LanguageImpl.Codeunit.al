@@ -163,7 +163,25 @@ codeunit 54 "Language Impl."
     var
         CultureInfo: DotNet CultureInfo;
     begin
-        ParentLanguageId := CultureInfo.CultureInfo(LanguageId).Parent.LCID;
+        ParentLanguageId := CultureInfo.CultureInfo(LanguageId).Parent().LCID();
+    end;
+
+    procedure SetPreferredLanguageID(UserSecID: Guid; NewLanguageID: Integer)
+    var
+        UserPersonalization: Record "User Personalization";
+    begin
+        if not UserPersonalization.Get(UserSecID) then
+            exit;
+
+        // Only lock the table if there is a change
+        if UserPersonalization."Language ID" = NewLanguageId then
+            exit; // No changes required
+
+        UserPersonalization.LockTable();
+        UserPersonalization.Get(UserSecID);
+        UserPersonalization.Validate("Language ID", NewLanguageId);
+        UserPersonalization.Validate("Locale ID", NewLanguageId);
+        UserPersonalization.Modify(true);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, 2000000004, 'GetApplicationLanguage', '', false, false)]

@@ -101,7 +101,7 @@ procedure SaveZipArchive(var TempBlob: Codeunit "Temp Blob")
 #### Parameters
 *TempBlob ([Codeunit "Temp Blob"]())* 
 
-
+The instance of the Temp Blob codeunit to which the ZipArchive is saved.
 
 ### CloseZipArchive (Method) <a name="CloseZipArchive"></a> 
 
@@ -168,7 +168,7 @@ The path that the added entry should have within the ZipArchive.
 
 ### IsGZip (Method) <a name="IsGZip"></a> 
 
- Returns true if and only if the given InStream is compressed with GZip.
+ Determines whether the given InStream is compressed with GZip.
  
 
 #### Syntax
@@ -183,7 +183,7 @@ An InStream that contains binary content.
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
-
+Returns true if and only if the given InStream is compressed with GZip
 ### GZipCompress (Method) <a name="GZipCompress"></a> 
 
  Compresses a stream with GZip algorithm.

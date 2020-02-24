@@ -609,7 +609,7 @@ codeunit 148021 "Payment Export Sunshine"
         Amount: Decimal;
         CustomerNo: Code[20];
         DocumentNo: Code[20];
-        MessageToRecipient: Text[70];
+        MessageToRecipient: Text[140];
         RecipientBankAccount: Code[20];
     begin
         // 1.7
@@ -670,7 +670,7 @@ codeunit 148021 "Payment Export Sunshine"
         DataExchDef: Record "Data Exch. Def";
         Amount: Decimal;
         DocumentNo: Code[20];
-        MessageToRecipient: Text[70];
+        MessageToRecipient: Text[140];
         RecipientBankAccount: Code[20];
         VendorNo: Code[20];
     begin
@@ -757,7 +757,7 @@ codeunit 148021 "Payment Export Sunshine"
         VendorBankAccountList.OK().INVOKE();
     end;
 
-    local procedure VerifyCustomerLedgerEntry(CustomerNo: Code[20]; DocumentNo: Code[20]; Amount: Decimal; RecipientBankAccount: Code[20]; MessageToRecipient: Text[70]);
+    local procedure VerifyCustomerLedgerEntry(CustomerNo: Code[20]; DocumentNo: Code[20]; Amount: Decimal; RecipientBankAccount: Code[20]; MessageToRecipient: Text[140]);
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
     begin
@@ -771,7 +771,7 @@ codeunit 148021 "Payment Export Sunshine"
         END;
     end;
 
-    local procedure VerifyVendorLedgerEntry(VendorNo: Code[20]; DocumentNo: Code[20]; Amount: Decimal; RecipientBankAccount: Code[20]; MessageToRecipient: Text[70]);
+    local procedure VerifyVendorLedgerEntry(VendorNo: Code[20]; DocumentNo: Code[20]; Amount: Decimal; RecipientBankAccount: Code[20]; MessageToRecipient: Text[140]);
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin

@@ -47,7 +47,7 @@ page 10677 "SAF-T G/L Mapping Subpage"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Update G/L Entry Availability';
-                ToolTip = 'Mark G/L accounts that have posted G/L entries in the reported period in green.';
+                ToolTip = 'Mark G/L accounts that have posted G/L entries in green. If option Include Incoming Balance enabled then all posted G/L entries are considered for calculation. Otherwise only G/L entries of the reporting period are considered.';
                 Image = PostingEntries;
                 Promoted = true;
                 PromotedCategory = Process;

@@ -35,7 +35,6 @@ codeunit 10673 "Generate SAF-T File"
     end;
 
     var
-        CompanyInformation: Record "Company Information";
         SAFTXMLHelper: Codeunit "SAF-T XML Helper";
         Window: Dialog;
         GeneratingHeaderTxt: Label 'Generating header...';
@@ -56,6 +55,7 @@ codeunit 10673 "Generate SAF-T File"
     local procedure ExportHeader(SAFTExportHeader: Record "SAF-T Export Header")
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
+        CompanyInformation: Record "Company Information";
     begin
         SAFTXMLHelper.Initialize();
         if GuiAllowed() then
@@ -189,7 +189,7 @@ codeunit 10673 "Generate SAF-T File"
         SAFTXMLHelper.FinalizeXMLNode();
     end;
 
-    local procedure ExportGLAccount(GLAccNo: Code[20]; StandardAccNo: Text[4]; GroupingCategory: Code[20]; GroupingNo: Code[20]; StartingDate: Date; EndingDate: Date)
+    local procedure ExportGLAccount(GLAccNo: Code[20]; StandardAccNo: Text; GroupingCategory: Code[20]; GroupingNo: Code[20]; StartingDate: Date; EndingDate: Date)
     var
         GLAccount: Record "G/L Account";
         OpeningDebitBalance: Decimal;
@@ -469,7 +469,10 @@ codeunit 10673 "Generate SAF-T File"
     end;
 
     local procedure ExportTaxCodeDetail(SAFTTaxCode: Integer; StandardTaxCode: Code[10]; Description: Text; VATRate: Decimal; Compensation: Boolean; VATDeductionRate: Decimal)
+    var
+        CompanyInformation: Record "Company Information";
     begin
+        CompanyInformation.Get();
         SAFTXMLHelper.AddNewXMLNode('TaxCodeDetails', '');
         SAFTXMLHelper.AppendXMLNode('TaxCode', Format(SAFTTaxCode));
         SAFTXMLHelper.AppendXMLNode('Description', Description);
@@ -520,10 +523,11 @@ codeunit 10673 "Generate SAF-T File"
         SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
         GLEntryProgressStep: Decimal;
         GLEntryProgress: Decimal;
+        NumberOfEntries: Integer;
     begin
         GLEntry.CalcSums("Debit Amount", "Credit Amount");
         SAFTXMLHelper.AddNewXMLNode('GeneralLedgerEntries', '');
-        SAFTXMLHelper.AppendXMLNode('NumberOfEntries', format(GLEntry.Count()));
+        SAFTXMLHelper.SaveCurrXmlElement();
         SAFTXMLHelper.AppendXMLNode('TotalDebit', FormatAmount(GLEntry."Debit Amount"));
         SAFTXMLHelper.AppendXMLNode('TotalCredit', FormatAmount(GLEntry."Credit Amount"));
         if GLEntry.IsEmpty() then begin
@@ -559,19 +563,20 @@ codeunit 10673 "Generate SAF-T File"
             GLEntryProgress += GLEntryProgressStep;
             if GuiAllowed() then
                 Window.Update(2, GLEntryProgress);
-            if ExportGLEntriesBySourceCodeBuffer(TempSourceCode, GLEntry, SAFTSourceCode) then begin
-                SAFTExportLine.Find();
+            if ExportGLEntriesBySourceCodeBuffer(TempSourceCode, GLEntry, NumberOfEntries, SAFTSourceCode) then begin
+                SAFTExportLine.Get(SAFTExportLine.ID, SAFTExportLine."Line No.");
                 SAFTExportLine.LockTable();
                 SAFTExportLine.Validate(Progress, GLEntryProgress);
                 SAFTExportLine.Modify(true);
                 Commit();
             end;
         until SAFTSourceCode.Next() = 0;
+        SAFTXMLHelper.AppendToSavedXMLNode('NumberOfEntries', format(NumberOfEntries));
 
         SAFTXMLHelper.FinalizeXMLNode();
     end;
 
-    local procedure ExportGLEntriesBySourceCodeBuffer(var TempSourceCode: Record "Source Code" temporary; var GLEntry: Record "G/L Entry"; SAFTSourceCode: Record "SAF-T Source Code"): Boolean
+    local procedure ExportGLEntriesBySourceCodeBuffer(var TempSourceCode: Record "Source Code" temporary; var GLEntry: Record "G/L Entry"; var NumberOfEntries: Integer; SAFTSourceCode: Record "SAF-T Source Code"): Boolean
     var
         SourceCodeFilter: Text;
         GLEntriesExists: Boolean;
@@ -582,7 +587,10 @@ codeunit 10673 "Generate SAF-T File"
         repeat
             if SourceCodeFilter <> '' then
                 SourceCodeFilter += '|';
-            SourceCodeFilter += TempSourceCode.Code;
+            if TempSourceCode.Code = '' then
+                SourceCodeFilter += ''' '''
+            else
+                SourceCodeFilter += TempSourceCode.Code;
         until TempSourceCode.Next() = 0;
         GLEntry.SetFilter("Source Code", SourceCodeFilter);
         GLEntriesExists := GLEntry.FindSet();
@@ -593,13 +601,13 @@ codeunit 10673 "Generate SAF-T File"
         SAFTXMLHelper.AppendXMLNode('JournalID', SAFTSourceCode.Code);
         SAFTXMLHelper.AppendXMLNode('Description', SAFTSourceCode.Description);
         SAFTXMLHelper.AppendXMLNode('Type', SAFTSourceCode.Code);
-        ExportGLEntriesByTransaction(GLEntry);
+        ExportGLEntriesByTransaction(GLEntry, NumberOfEntries);
         if SAFTSourceCode.Code <> '' then
             SAFTXMLHelper.FinalizeXMLNode();
         exit(true);
     end;
 
-    local procedure ExportGLEntriesByTransaction(var GLEntry: Record "G/L Entry")
+    local procedure ExportGLEntriesByTransaction(var GLEntry: Record "G/L Entry"; var NumberOfEntries: Integer)
     var
         TempDimCodeAmountBuffer: Record "Dimension Code Amount Buffer" temporary;
         VATEntry: Record "VAT Entry";
@@ -610,6 +618,7 @@ codeunit 10673 "Generate SAF-T File"
     begin
         repeat
             if LastTransactionNo <> GLEntry."Transaction No." then begin
+                NumberOfEntries += 1;
                 if LastTransactionNo <> 0 then
                     SAFTXMLHelper.FinalizeXMLNode();
                 ExportGLEntryTransactionInfo(GLEntry);
@@ -621,16 +630,16 @@ codeunit 10673 "Generate SAF-T File"
             CopyDimeSetIDToDimCodeAmountBuffer(TempDimCodeAmountBuffer, GLEntry."Dimension Set ID");
             ExportAnalysisInfo(TempDimCodeAmountBuffer);
             SAFTXMLHelper.AppendXMLNode('SourceDocumentID', GLEntry."Document No.");
-            case GLEntry."Source Type" of
-                GLEntry."Source Type"::Customer:
-                    SAFTXMLHelper.AppendXMLNode('CustomerID', GLEntry."Source No.");
-                GLEntry."Source Type"::Vendor:
-                    SAFTXMLHelper.AppendXMLNode('SupplierID', GLEntry."Source No.");
-            end;
+            if GLEntry."Gen. Posting Type" <> 0 then
+                case GLEntry."Source Type" of
+                    GLEntry."Source Type"::Customer:
+                        SAFTXMLHelper.AppendXMLNode('CustomerID', GLEntry."Source No.");
+                    GLEntry."Source Type"::Vendor:
+                        SAFTXMLHelper.AppendXMLNode('SupplierID', GLEntry."Source No.");
+                end;
             SAFTXMLHelper.AppendXMLNode('Description', GLEntry.Description);
             SAFTExportMgt.GetAmountInfoFromGLEntry(AmountXMLNode, Amount, GLEntry);
             ExportAmountInfo(AmountXMLNode, Amount);
-            SAFTXMLHelper.AppendXMLNode('ReferenceNumber', GLEntry."External Document No.");
             if (GLEntry."VAT Bus. Posting Group" <> '') or (GLEntry."VAT Prod. Posting Group" <> '') then begin
                 VATEntry.SetCurrentKey("Document No.", "Posting Date");
                 VATEntry.SetRange("Document No.", GLEntry."Document No.");
@@ -639,6 +648,7 @@ codeunit 10673 "Generate SAF-T File"
                 if VATEntry.FindFirst() then
                     ExportTaxInformation(VATEntry);
             end;
+            SAFTXMLHelper.AppendXMLNode('ReferenceNumber', GLEntry."External Document No.");
             SAFTXMLHelper.FinalizeXMLNode();
         until GLEntry.Next() = 0;
         SAFTXMLHelper.FinalizeXMLNode();
@@ -838,7 +848,7 @@ codeunit 10673 "Generate SAF-T File"
         SAFTExportMgt: Codeunit "SAF-T Export Mgt.";
         TypeHelper: Codeunit "Type Helper";
     begin
-        SAFTExportLine.Find();
+        SAFTExportLine.Get(SAFTExportLine.ID, SAFTExportLine."Line No.");
         SAFTExportLine.LockTable();
         SAFTXMLHelper.ExportXMLDocument(SAFTExportLine, SAFTExportHeader);
         SAFTExportLine.Validate(Status, SAFTExportLine.Status::Completed);
@@ -849,7 +859,7 @@ codeunit 10673 "Generate SAF-T File"
         SAFTExportMgt.UpdateExportStatus(SAFTExportHeader);
         SAFTExportMgt.LogSuccess(SAFTExportLine);
         SAFTExportMgt.StartExportLinesNotStartedYet(SAFTExportHeader);
-        SAFTExportHeader.find();
+        SAFTExportHeader.Get(SAFTExportHeader.Id);
         if SAFTExportHeader.Status = SAFTExportHeader.Status::Completed then
             if SAFTExportHeader.AllowedToExportIntoFolder() then
                 SAFTExportMgt.GenerateZipFileFromSavedFiles(SAFTExportHeader)

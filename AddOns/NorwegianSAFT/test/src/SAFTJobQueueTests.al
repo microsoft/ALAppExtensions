@@ -78,7 +78,7 @@ codeunit 148105 "SAF-T Job Queue Tests"
     var
         SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
     begin
-        SAFTTestHelper.SetupMasterData();
+        SAFTTestHelper.SetupMasterData(LibraryRandom.RandInt(5));
         SAFTMappingHelper.MapRestSourceCodesToAssortedJournals();
         SAFTTestHelper.InsertSAFTMappingRangeFullySetup(
             SAFTMappingRange, MappingType,
@@ -116,12 +116,6 @@ codeunit 148105 "SAF-T Job Queue Tests"
     begin
         Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Question);
         Reply := true;
-    end;
-
-    [MessageHandler]
-    procedure MessageHandler(Message: Text)
-    begin
-        Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Message);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, 10675, 'OnBeforeScheduleTask', '', false, false)]

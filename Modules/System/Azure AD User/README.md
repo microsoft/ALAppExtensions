@@ -98,6 +98,111 @@ The Azure AD user.
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if the user record has been updated. Otherwise, false.
+### GetAuthenticationEmail (Method) <a name="GetAuthenticationEmail"></a> 
+    
+ Gets the authentication email of the provided Graph user.
+ 
+
+Authentication email corresponds to userPrincipalName property on the Graph user.
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure GetAuthenticationEmail(GraphUser: DotNet UserInfo): Text[250]
+```
+#### Parameters
+*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+
+The Azure AD user.
+
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The authentication email of the provided Graph user. Can be used to assign to "Authentication Email" field on the User table.
+### GetDisplayName (Method) <a name="GetDisplayName"></a> 
+    
+ Gets the display name of the provided Graph user.
+ 
+
+Display name corresponds to displayName property on the Graph user.
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure GetDisplayName(GraphUser: DotNet UserInfo): Text[50]
+```
+#### Parameters
+*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+
+The Azure AD user.
+
+#### Return Value
+*[Text[50]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The display name of the provided Graph user. Can be used to assign to "User Name" field on the User table.
+### GetContactEmail (Method) <a name="GetContactEmail"></a> 
+    
+ Gets the contact email of the provided Graph user.
+ 
+
+Contact email corresponds to Mail property on the Graph user.
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure GetContactEmail(GraphUser: DotNet UserInfo): Text[250]
+```
+#### Parameters
+*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+
+The Azure AD user.
+
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The contact email of the provided Graph user. Can be used to assign to "Contact Email" field on the User table.
+### GetFullName (Method) <a name="GetFullName"></a> 
+    
+ Gets the full name of the provided Graph user.
+ 
+
+Full name is composed from the combination of givenName and surname properties on the Graph user.
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure GetFullName(GraphUser: DotNet UserInfo): Text[80]
+```
+#### Parameters
+*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+
+The Azure AD user.
+
+#### Return Value
+*[Text[80]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The full name of the provided Graph user. Can be used to assign to "Full Name" field on the User table.
+### GetPreferredLanguageID (Method) <a name="GetPreferredLanguageID"></a> 
+    
+ Gets the preferred language ID of the provided Graph user.
+ 
+
+Preferred language ID is derived from preferredLanguage property on the Graph user.
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure GetPreferredLanguageID(GraphUser: DotNet UserInfo): Integer
+```
+#### Parameters
+*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+
+The Azure AD user.
+
+#### Return Value
+*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+
+The preferred language ID of the provided Graph user. Can be used to set the preferred language using the Language module.
 ### EnsureAuthenticationEmailIsNotInUse (Method) <a name="EnsureAuthenticationEmailIsNotInUse"></a> 
     
  Ensures that an email address specified for authorization is not already in use by another database user.
@@ -128,5 +233,5 @@ procedure SetTestInProgress(TestInProgress: Boolean)
 #### Parameters
 *TestInProgress ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
-
+The value to be set to the flag.
 

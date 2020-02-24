@@ -18,11 +18,12 @@ page 2500 "Extension Management"
     PageType = List;
     PromotedActionCategories = 'New,Process,Report,Details,Manage';
     RefreshOnActivate = true;
-    SourceTable = "NAV App";
+    SourceTable = "Published Application";
     SourceTableView = SORTING(Name)
                       ORDER(Ascending)
                       WHERE(Name = FILTER(<> '_Exclude_*'),
-                            "Package Type" = FILTER(= 0 | 2));
+                            "Package Type" = FILTER(= Extension | Designer),
+                            "Tenant Visible" = CONST(true));
     UsageCategory = Administration;
     ContextSensitiveHelpPage = 'ui-extensions';
 
@@ -80,8 +81,7 @@ page 2500 "Extension Management"
         {
             group(ActionGroup13)
             {
-                Enabled = false;
-                Visible = false;
+                Caption = 'Process';
                 action(Install)
                 {
                     ApplicationArea = All;
@@ -89,6 +89,7 @@ page 2500 "Extension Management"
                     Enabled = ActionsEnabled AND (NOT IsInstalled);
                     Image = NewRow;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedCategory = Category5;
                     Scope = Repeater;
                     ToolTip = 'Install the extension for the current tenant.';
@@ -107,6 +108,7 @@ page 2500 "Extension Management"
                     Enabled = ActionsEnabled AND IsInstalled;
                     Image = RemoveLine;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedCategory = Category5;
                     Scope = Repeater;
                     ToolTip = 'Remove the extension from the current tenant.';
@@ -124,6 +126,7 @@ page 2500 "Extension Management"
                     Enabled = ActionsEnabled;
                     Image = RemoveLine;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedCategory = Category5;
                     Scope = Repeater;
                     ToolTip = 'Unpublish the extension from the tenant.';
@@ -145,6 +148,7 @@ page 2500 "Extension Management"
                     Caption = 'Configure';
                     Image = Setup;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedCategory = Category5;
                     RunObject = Page "Extension Settings";
                     RunPageLink = "App ID" = FIELD(ID);
@@ -158,6 +162,7 @@ page 2500 "Extension Management"
                     Enabled = IsTenantExtension AND "Show My Code";
                     Image = ExportFile;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedCategory = Category5;
                     Scope = Repeater;
                     ToolTip = 'Download the source code for the extension.';
@@ -175,6 +180,7 @@ page 2500 "Extension Management"
                     Enabled = ActionsEnabled;
                     Image = Info;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedCategory = Category5;
                     Scope = Repeater;
                     ToolTip = 'View information from the extension provider.';
@@ -206,6 +212,7 @@ page 2500 "Extension Management"
                     Enabled = IsSaaS;
                     Image = NewItem;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedCategory = Category5;
                     PromotedIsBig = true;
                     ToolTip = 'Browse the extension marketplace for new extensions to install.';
@@ -225,6 +232,7 @@ page 2500 "Extension Management"
                     Caption = 'Upload Extension';
                     Image = Import;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedCategory = Category5;
                     PromotedIsBig = true;
                     RunObject = Page "Upload And Deploy Extension";
@@ -237,6 +245,7 @@ page 2500 "Extension Management"
                     Caption = 'Deployment Status';
                     Image = View;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedCategory = Category5;
                     PromotedIsBig = true;
                     RunObject = Page "Extension Deployment Status";
@@ -250,6 +259,7 @@ page 2500 "Extension Management"
                     Enabled = ActionsEnabled;
                     Image = View;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedCategory = Category4;
                     ShortCutKey = 'Return';
                     ToolTip = 'View extension details.';
@@ -305,16 +315,13 @@ page 2500 "Extension Management"
         IsSaaS: Boolean;
         VersionFormatTxt: Label 'v. %1', Comment = 'v=version abbr, %1=Version string';
         SaaSCaptionTxt: Label 'Installed Extensions', Comment = 'The caption to display when on SaaS';
-        IsSaaSInstallAllowed: Boolean;
         IsTenantExtension: Boolean;
         CannotUnpublishIfInstalledMsg: Label 'The extension %1 cannot be unpublished because it is installed.', Comment = '%1 = name of extension';
         IsMarketplaceEnabled: Boolean;
         IsOnPremDisplay: Boolean;
         VersionPerTenantTxt: Label 'v. %1 - %2', Comment = '%1=formatted version string, %2=not installed constant', Locked = true;
         IsInstalled: Boolean;
-        IsSandbox: Boolean;
         IsInstallAllowed: Boolean;
-        InstallAllowed: Boolean;
         InfoText: Text;
         InfoStyle: Boolean;
         [InDataSet]
@@ -325,9 +332,7 @@ page 2500 "Extension Management"
         // Set installed filter if we are not displaying like on-prem
         FilterGroup(2);
         if not IsInstallAllowed then
-            SetRange("PerTenant Or Installed", true)
-        else
-            SetRange("Tenant Visible", true);
+            SetRange("PerTenant Or Installed", true);
         FilterGroup(0);
     end;
 
@@ -336,17 +341,16 @@ page 2500 "Extension Management"
         EnvironmentInfo: Codeunit "Environment Information";
         ExtensionMarketplace: Codeunit "Extension Marketplace";
         ServerSetting: Codeunit "Server Setting";
+        IsSaaSInstallAllowed: Boolean;
     begin
         IsSaaS := EnvironmentInfo.IsSaaS();
-        IsSandbox := EnvironmentInfo.IsSandbox();
-        InstallAllowed := ServerSetting.GetEnableSaaSExtensionInstallSetting();
+        IsSaaSInstallAllowed := ServerSetting.GetEnableSaaSExtensionInstallSetting();
 
         IsMarketplaceEnabled := ExtensionMarketplace.IsMarketplaceEnabled();
 
         // Composed configurations for the simplicity of representation
-        IsSaaSInstallAllowed := IsSandbox or InstallAllowed;
-        IsOnPremDisplay := (not IsMarketplaceEnabled or not IsSaaS);
-        IsInstallAllowed := (IsOnPremDisplay or IsSaaSInstallAllowed);
+        IsOnPremDisplay := not IsMarketplaceEnabled or not IsSaaS;
+        IsInstallAllowed := IsOnPremDisplay or IsSaaSInstallAllowed;
     end;
 
     local procedure DetermineExtensionConfigurations()
@@ -355,10 +359,10 @@ page 2500 "Extension Management"
         IsInstalled := ExtensionInstallationImpl.IsInstalledByPackageId("Package ID");
         InstalledStatus := ExtensionInstallationImpl.GetExtensionInstalledDisplayString("Package ID");
         // Currently using the "Tenant ID" field to identify development extensions
-        if Scope = 1 then
-            IsTenantExtension := true
+        if "Published As" = "Published As"::Global then
+            IsTenantExtension := false
         else
-            IsTenantExtension := false;
+            IsTenantExtension := true;
     end;
 
     local procedure GetVersionDisplayText(): Text
@@ -374,7 +378,7 @@ page 2500 "Extension Management"
     local procedure SetAdditionalInfoProperties()
     begin
         // Set Name styling if on prem display (shows green)
-        if IsOnPremDisplay or IsSaaSInstallAllowed then begin
+        if IsInstallAllowed then begin
             InfoText := InstalledStatus;
             InfoStyle := IsInstalled
         end else begin

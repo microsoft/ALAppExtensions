@@ -65,7 +65,7 @@ table 1470 "Product Video Buffer"
         {
             Caption = 'Extension Name';
             FieldClass = FlowField;
-            CalcFormula = Lookup ("NAV App".Name where("Package ID" = FIELD("App ID")));
+            CalcFormula = Lookup ("Published Application".Name where(ID = FIELD("App ID"), "Tenant Visible" = CONST(true)));
             Editable = false;
         }
         field(10; Category; Enum "Video Category")

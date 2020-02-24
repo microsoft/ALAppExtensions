@@ -210,7 +210,7 @@ Codeunit 13651 FIK_MatchBankRecLines
             END;
     END;
 
-    LOCAL PROCEDURE GetUpdatedFIKDescription(TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary): Text[50];
+    LOCAL PROCEDURE GetUpdatedFIKDescription(TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary): Text[140];
     VAR
         StatusText: Text;
     BEGIN
@@ -229,7 +229,7 @@ Codeunit 13651 FIK_MatchBankRecLines
                 MatchStatus::Duplicate:
                     StatusText := FIKDescriptionDuplicateTxt;
                 ELSE
-                    EXIT(DescriptionBankStatment);
+                    EXIT(COPYSTR(DescriptionBankStatment, 1, 140));
             END;
 
             EXIT(CopyStr(STRSUBSTNO('%1 - %2', StatusText, DescriptionBankStatment), 1, 50));

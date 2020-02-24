@@ -11,6 +11,7 @@ codeunit 1909 "Media Upload Impl."
         FileHelper: Codeunit "File Helper";
         CameraOptions: DotNet CameraOptions;
         AreCameraOptionsInitialized: Boolean;
+        NoMediaWasSelectedErr: Label 'No media was selected.';
 
     procedure MediaInteractionOnOpenPage(var CameraProvider: DotNet CameraProvider; var MediaUploadAvailable: Boolean)
     begin
@@ -63,12 +64,21 @@ codeunit 1909 "Media Upload Impl."
 
     procedure GetMedia(var TempBlob: Codeunit "Temp Blob")
     begin
-        FileHelper.GetFile(TempBlob);
+        if not FileHelper.GetFile(TempBlob) then
+            Error(NoMediaWasSelectedErr);
     end;
 
     procedure GetMedia(Stream: InStream)
+    var
+        FileTempBlob: Codeunit "Temp Blob";
     begin
-        FileHelper.GetFile(Stream);
+        GetMedia(FileTempBlob);
+        FileTempBlob.CreateInStream(Stream);
+    end;
+
+    procedure HasMedia(): Boolean
+    begin
+        exit(FileHelper.FileExists());
     end;
 
     procedure MediaInteractionOnPictureAvailable(FilePath: Text)
