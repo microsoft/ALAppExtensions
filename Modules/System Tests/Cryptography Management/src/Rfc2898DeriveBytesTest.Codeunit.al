@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 50101 "Rfc2898DeriveBytes"
+codeunit 132576 "Rfc2898DeriveBytes"
 {
     procedure FuncCreateHashWithRfc2898DeriveBytes(Password: Text; InputText: Text; PsuedoRandomNumber: Integer; FillCharacter: Integer) Hash: Text
     var
