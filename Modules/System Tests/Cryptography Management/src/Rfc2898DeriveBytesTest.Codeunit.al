@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 132576 "Rfc2898DeriveBytes"
+codeunit 132576 "Rfc2898DeriveBytes Test"
 {
     Subtype = Test;
 
@@ -14,7 +14,7 @@ codeunit 132576 "Rfc2898DeriveBytes"
         ExpectedEncryptedText: Label 'RgIsn9T5fqPK8bsXjzlmWqinRxg=';
     begin
         // Encrypt Text 
-        EncryptedText := CodRfc2898DeriveBytes.FuncCreateHashWithRfc2898DeriveBytes('Test', 'Test123', 23, 10);
+        EncryptedText := CodRfc2898DeriveBytes.HashRfc2898DeriveBytes('Test', 'Test123', 23, 10);
         // Verify Result 
         IF (EncryptedText <> ExpectedEncryptedText) THEN
             ERROR('Failed to encrypt text');

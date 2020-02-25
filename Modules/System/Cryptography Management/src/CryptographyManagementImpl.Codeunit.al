@@ -590,4 +590,11 @@ codeunit 1279 "Cryptography Management Impl."
         if IsNull(RijndaelProvider) then
             InitRijndaelProvider();
     end;
+
+    procedure HashRfc2898DeriveBytes(Password: Text; Salt: Text; DesiredSaltLength: Integer; PsuedoRandomNumber: Integer)
+    var
+        Rfc2898DeriveBytes: Codeunit "Rfc2898DeriveBytes";
+    begin
+        Rfc2898DeriveBytes.HashRfc2898DeriveBytes(Password, Salt, DesiredSaltLength, PsuedoRandomNumber);
+    end;
 }
