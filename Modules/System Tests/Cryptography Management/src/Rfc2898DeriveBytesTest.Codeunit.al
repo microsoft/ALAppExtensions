@@ -11,10 +11,10 @@ codeunit 132576 "Rfc2898DeriveBytes Test"
     var
         CodRfc2898DeriveBytes: Codeunit Rfc2898DeriveBytes;
         EncryptedText: Text;
-        ExpectedEncryptedText: Label 'RgIsn9T5fqPK8bsXjzlmWqinRxg=';
+        ExpectedEncryptedText: Label 'fzBagIx5+suJx7TQ/wLi98ZQHik=';
     begin
         // Encrypt Text 
-        EncryptedText := CodRfc2898DeriveBytes.HashRfc2898DeriveBytes('Test', 'Test123', 23, 10);
+        EncryptedText := CodRfc2898DeriveBytes.HashRfc2898DeriveBytes('Test', 'Test1234', 23);
         // Verify Result 
         IF (EncryptedText <> ExpectedEncryptedText) THEN
             ERROR('Failed to encrypt text');
