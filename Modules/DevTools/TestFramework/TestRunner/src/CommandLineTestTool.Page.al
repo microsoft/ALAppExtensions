@@ -9,6 +9,7 @@ page 130455 "Command Line Test Tool"
     DeleteAllowed = true;
     ModifyAllowed = true;
     PageType = Worksheet;
+    SaveValues = true;
     SourceTable = "Test Method Line";
     UsageCategory = Administration;
 
