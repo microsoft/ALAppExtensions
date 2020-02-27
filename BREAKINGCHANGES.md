@@ -67,7 +67,7 @@ SaaS: access the table using the `query 774 "Users in Plans"`.
 
 **Error**: _'Codeunit \"Azure AD User Management\"' does not contain a definition for 'TryGetAzureUserPlanRoleCenterId'_
 
-**Solution**: Function has moved to `codeunit 9016 "Azure AD Plan"`, function `TryGetAzureUserPlanRoleCenterId`.
+**Solution**: Function has been moved to `codeunit 9016 "Azure AD Plan"`, function `TryGetAzureUserPlanRoleCenterId`.
 
 **Error**: _'Record Plan' does not contain a definition for 'GetInternalAdminPlanId'_
 
@@ -857,14 +857,13 @@ CalendarMgmt.CalcDateBOC2(Format("Shipping Time"), "Planned Delivery Date", Cust
 **Solution**: The function has been removed. If you require it, you can create a function that does the same functionality.
 
 ```
+// <summary>
+// TryFunction for setting the global language.
+// </summary>
+// <param name="LanguageId">The id of the language to be set as global</param>
 [TryFunction]
 local procedure TrySetGlobalLanguage(LanguageId: Integer)
 begin
-    // <summary>
-    // TryFunction for setting the global language.
-    // </summary>
-    // <param name="LanguageId">The id of the language to be set as global</param>
-
     GlobalLanguage(LanguageId);
 end;
 ```
