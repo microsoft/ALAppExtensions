@@ -591,7 +591,7 @@ codeunit 1279 "Cryptography Management Impl."
             InitRijndaelProvider();
     end;
 
-    procedure HashRfc2898DeriveBytes(Password: Text; Salt: Text; NoOfBytes: Integer)
+    procedure HashRfc2898DeriveBytes(Password: Text; Salt: Text; NoOfBytes: Integer; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512) Hash: Text;
     var
         ByteArray: DotNet Array;
         Convert: DotNet Convert;
@@ -606,8 +606,8 @@ codeunit 1279 "Cryptography Management Impl."
         Rfc2898DeriveBytes := Rfc2898DeriveBytes.Rfc2898DeriveBytes(Password, Encoding.ASCII.GetBytes(Salt));
 
         //Return a Base64 encoded string of the SHA1 hash of the first X bytes (X = NoOfBytes) returned from the generator.
-        SHA1Managed := SHA1Managed.SHA1Managed;
-        ByteArray := SHA1Managed.ComputeHash(Rfc2898DeriveBytes.GetBytes(NoOfBytes));
+        if not TryGenerateHash(ByteArray, Rfc2898DeriveBytes.GetBytes(NoOfBytes), Format(HashAlgorithmType)) then
+            Error(GetLastErrorText());
         Hash := Convert.ToBase64String(ByteArray);
     end;
 }

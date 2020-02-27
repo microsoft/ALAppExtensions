@@ -18,7 +18,7 @@ codeunit 11111567 "Test Rfc2898DeriveBytes"
         // [GIVEN] With Encryption Key 
         ExpectedEncryptedText := GetRfc2898DeriveBytesEncryptedText();
         // [WHEN] Encrypt Text 
-        EncryptedText := CodRfc2898DeriveBytes.HashRfc2898DeriveBytes('Test', 'Test1234', 23);
+        EncryptedText := CodRfc2898DeriveBytes.HashRfc2898DeriveBytes('Test', 'Test1234', 23, 1);
         // [THEN] Verify Result 
         LibraryAssert.AreEqual(ExpectedEncryptedText, EncryptedText, 'Failed to encrypt text with Rfc2898DeriveBytes');
     end;
