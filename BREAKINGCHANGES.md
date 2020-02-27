@@ -65,6 +65,18 @@ SaaS: access the table using the `query 774 "Users in Plans"`.
 
 **Solution**: Access the table through the facade APIs, `codeunit 9016 "Azure AD Plan"`, or using the `query 775 Plan`.
 
+**Error**: _'Codeunit \"Azure AD User Management\"' does not contain a definition for 'TryGetAzureUserPlanRoleCenterId'_
+
+**Solution**: Function has moved to `codeunit 9016 "Azure AD Plan"`, function `TryGetAzureUserPlanRoleCenterId`.
+
+**Error**: _'Record Plan' does not contain a definition for 'GetInternalAdminPlanId'_
+
+**Solution**: Function has been moved to `codeunit 9027 "Plan Ids"`, function `GetInternalAdminPlanId`.
+
+**Error**: _'Record Plan' does not contain a definition for 'GetDelegatedAdminPlanId'_
+
+**Solution**: Function has been moved to `codeunit 9027 "Plan Ids"`, function `GetDelegatedAdminPlanId`.
+
 ---
 
 ## Azure AD Tenant Module
@@ -216,6 +228,13 @@ CopyStream(OutStream, InStream);
 
 ---
 
+## Confirm Management Module
+**Error**: _'Codeunit "Confirm Management"' does not contain a definition for 'ConfirmProcess'_\
+
+**Solution**: Function has been renamed to `GetResponseOrDefault`.
+
+---
+
 ## Cryptography Management Module
 **Error**: _Codeunit 'Encryption Management' is missing_
 
@@ -289,10 +308,7 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Solution**: Function has been moved to `codeunit 457 "Environment Information"`, function `IsSaaS`.
 
-**Error**: _'Codeunit "Permission Manager"' does not contain a definition for 'IsSandboxConfiguration'_
-
-**Solution**: Function has been moved to `codeunit 457 "Environment Information"`, function `IsSandbox`.
-
+**Error**: _'Codeunit "Permission Manager"' does not contain a definition for 'IsSandboxConfiguration'_\
 **Error**: _'Codeunit "Tenant Settings"' does not contain a definition for 'IsSandbox'_
 
 **Solution**: Function has been moved to `codeunit 457 "Environment Information"`, function `IsSandbox`.
@@ -378,7 +394,7 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Error**: _'Record Language' does not contain a definition for 'GetUserLanguage'_
 
-**Solution**: Function has been moved to `codeunit 43 Language`, function `GetUserLanguageCode`.
+**Solution**: Function has been replaced by `GetUserLanguageCode` in `codeunit 43 Language`.
 
 **Error**: _'Record Language' does not contain a definition for 'GetLanguageID'_
 
@@ -397,6 +413,18 @@ begin
     CultureName := DotNet_CultureInfo.Name();
 end;
 ```
+
+**Error**: _'Codeunit Language' does not contain a definition for 'GetWindowsLanguageNameFromLanguageID'_
+
+**Solution**: Function has been replaced by `GetWindowsLanguageName` in `codeunit 43 Language`.
+
+**Error**: _'Codeunit Language' does not contain a definition for 'LookupWindowsLocale'_
+
+**Solution**: Function has been replaced by `LookupWindowsLanguageId` in `codeunit 43 Language`
+
+**Error**: _'Codeunit Language' does not contain a definition for 'GetLanguageCodeFromLanguageID'_
+
+**Solution**: Function has been replaced by `GetLanguageCode` in `codeunit 43 Language`.
 
 ---
 
@@ -465,6 +493,15 @@ end;
 **Error**: _'Codeunit "System Initialization"' does not contain a definition for 'SetLogonInProgress'_
 
 **Solution**: Function has been removed.
+
+---
+
+## Tenant License State Module
+
+**Error**: _No overload for method 'GetStartDate' takes 1 arguments_\
+**Error**: _No overload for method 'GetEndDate' takes 1 arguments_\
+
+**Solution**: Method has been moved to `codeunit 2300 "Tenant License State"` without any parameters.
 
 ---
 
@@ -743,6 +780,18 @@ CustomCalendarChange[2].SetSource(CalChange."Source Type"::Location, "Location C
 CalendarMgmt.CalcDateBOC2(Format("Shipping Time"), "Planned Delivery Date", CustomCalendarChange, true);
 ```
 
+**Error**: 'Codeunit Language' does not contain a definition for 'SetGlobalLanguageByCode'
+
+**Solution**: Function has been moved to `codeunit 53 "Translation Helper"`, function `SetGlobalLanguageByCode`.
+
+**Error**: 'Codeunit Language' does not contain a definition for 'RestoreGlobalLanguage'
+
+**Solution**: Function has been moved to `codeunit 53 "Translation Helper"`, function `RestoreGlobalLanguage`.
+
+**Error**: 'Codeunit Language' does not contain a definition for 'GetTranslatedFieldCaption'
+
+**Solution**: Function has been moved to `codeunit 53 "Translation Helper"`, function `GetTranslatedFieldCaption`.
+
 ---
 
 ## Removed Functionality
@@ -802,3 +851,28 @@ CalendarMgmt.CalcDateBOC2(Format("Shipping Time"), "Planned Delivery Date", Cust
 **Error**: _'"System Indicator"' does not contain a definition for 'Company+Database'_
 
 **Solution**: Option has been removed. You may use the 'Custom' option and include 4 characters in "Custom System Indicator Text".
+
+**Error**: _'Codeunit Language' does not contain a definition for 'TrySetGlobalLanguage'_
+
+**Solution**: The function has been removed. If you require it, you can create a function that does the same functionality.
+
+```
+[TryFunction]
+local procedure TrySetGlobalLanguage(LanguageId: Integer)
+begin
+    // <summary>
+    // TryFunction for setting the global language.
+    // </summary>
+    // <param name="LanguageId">The id of the language to be set as global</param>
+
+    GlobalLanguage(LanguageId);
+end;
+```
+
+**Error**: _'Codeunit Language' does not contain a definition for 'TryGetCultureName'_
+
+**Solution**: The function has been removed.
+
+**Error**: _'Record "User Login"' does not contain a definition for 'UpdateLastLoginInfo'_
+
+**Solution**: The function has been moved to `codeunit 9026 "User Login Time Tracker"`, function `CreateOrUpdateLoginInfo` and has OnPrem scope. 
