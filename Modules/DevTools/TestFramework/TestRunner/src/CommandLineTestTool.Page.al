@@ -253,6 +253,7 @@ page 130455 "Command Line Test Tool"
     trigger OnOpenPage()
     begin
         SetCurrentTestSuite();
+        ClearAllGlobalVars();
     end;
 
     var
@@ -370,6 +371,15 @@ page 130455 "Command Line Test Tool"
         end;
 
         CurrPage.Update();
+    end;
+
+    local procedure ClearAllGlobalVars()
+    begin
+        Clear(TestCodeunitRangeFilter);
+        Clear(TestRunnerCodeunitId);
+        Clear(ExtensionId);
+        Clear(RemoveTestMethod);
+        Clear(TestResultsJSONText);
     end;
 }
 
