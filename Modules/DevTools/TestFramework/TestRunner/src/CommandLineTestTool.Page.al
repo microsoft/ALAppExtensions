@@ -281,6 +281,7 @@ page 130455 "Command Line Test Tool"
         if not GlobalALTestSuite.Get(CurrentSuiteName) then begin
             TestSuiteMgt.CreateTestSuite(CurrentSuiteName);
             Commit();
+            GlobalALTestSuite.Get(CurrentSuiteName);
         end;
 
         GlobalALTestSuite.CalcFields("Tests to Execute");
