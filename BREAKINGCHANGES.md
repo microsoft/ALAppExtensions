@@ -386,7 +386,6 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Solution**: Function has been removed as it had no callers.
 
-
 ---
 
 ## Headlines Module
