@@ -370,6 +370,23 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Solution**: Use the event `OnResolveTimeFilterToken` instead.
 
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeText'_
+
+**Solution**: Function has been removed as it had no callers.
+
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeDateText'_
+
+**Solution**: Function has been removed as it had no callers.
+
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeTimeText'_
+
+**Solution**: Function has been removed as it had no callers.
+
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeDateTimeText'_
+
+**Solution**: Function has been removed as it had no callers.
+
+
 ---
 
 ## Headlines Module
