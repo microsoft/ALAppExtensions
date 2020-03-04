@@ -4,27 +4,27 @@ pageextension 57645 "Team Member Role Center BF" extends "Team Member Role Cente
     {
         modify("Blanket Purchase Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Sales Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Blanket Sales Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("<Page Posted Purchase Receipts>")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("<Page Purchase Orders>")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Purchase Quotes")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

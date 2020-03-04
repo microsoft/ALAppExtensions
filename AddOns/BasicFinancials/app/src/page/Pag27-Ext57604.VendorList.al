@@ -4,35 +4,35 @@ pageextension 57604 "Vendor List BF" extends "Vendor List"
     {
         modify(Quotes)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Vendor - Order Detail")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Vendor - Order Summary")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Blanket Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(NewBlanketPurchaseOrder)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(NewPurchaseQuote)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(NewPurchaseOrder)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(OrderAddresses)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

@@ -4,23 +4,23 @@ pageextension 57602 "Customer List BF" extends "Customer List"
     {
         modify("Blanket Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(NewSalesBlanketOrder)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(NewSalesOrder)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Customer - Order Detail")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Customer - Order Summary")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

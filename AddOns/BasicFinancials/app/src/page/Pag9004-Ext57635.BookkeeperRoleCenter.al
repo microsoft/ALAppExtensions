@@ -4,27 +4,27 @@ pageextension 57635 "Bookkeeper Role Center BF" extends "Bookkeeper Role Center"
     {
         modify("Purchase Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Sales Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Posted Sales Shipments")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Posted Return Shipments")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Posted Purchase Receipts")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Posted Return Receipts")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

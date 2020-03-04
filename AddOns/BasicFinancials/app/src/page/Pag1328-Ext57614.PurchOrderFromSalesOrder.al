@@ -4,23 +4,23 @@ pageextension 57614 "PurchOrder From SalesOrder BF" extends "Purch. Order From S
     {
         modify("Event")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(Period)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(ShowAll)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(ShowUnavailable)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(Timeline)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

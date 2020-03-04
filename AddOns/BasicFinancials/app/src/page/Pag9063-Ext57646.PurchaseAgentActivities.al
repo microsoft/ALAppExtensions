@@ -4,15 +4,15 @@ pageextension 57646 "Purchase Agent Activities BF" extends "Purchase Agent Activ
     {
         modify("New Purchase Order")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("New Purchase Quote")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("New Purchase Return Order")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

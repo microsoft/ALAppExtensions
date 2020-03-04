@@ -4,7 +4,7 @@ pageextension 57610 "Resource Card BF" extends "Resource Card"
     {
         modify("Resource Allocated per Service &Order")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

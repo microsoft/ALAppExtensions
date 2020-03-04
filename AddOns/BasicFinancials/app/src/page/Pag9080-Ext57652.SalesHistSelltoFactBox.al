@@ -4,19 +4,19 @@ pageextension 57652 "Sales Hist. Sell-to FactBox BF" extends "Sales Hist. Sell-t
     {
         modify("No. of Blanket Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("No. of Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(NoofOrdersTile)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(NoofBlanketOrdersTile)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

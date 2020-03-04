@@ -4,7 +4,7 @@ pageextension 57608 "Sales Invoice Subform BF" extends "Sales Invoice Subform"
     {
         modify(GetShipmentLines)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

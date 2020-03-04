@@ -4,7 +4,7 @@ pageextension 57643 "Sales Relation ship Mgr RC BF" extends "Sales & Relationshi
     {
         modify("Blanket Sales Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

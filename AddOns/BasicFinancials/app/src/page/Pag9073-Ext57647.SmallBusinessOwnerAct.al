@@ -4,11 +4,11 @@ pageextension 57647 "Small Business Owner Act BF" extends "Small Business Owner 
     {
         modify("New Purchase Order")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("New Sales Order")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

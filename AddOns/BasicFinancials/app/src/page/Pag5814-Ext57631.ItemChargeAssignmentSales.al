@@ -4,7 +4,7 @@ pageextension 57631 "Item Charge Ass. (Sales) BF" extends "Item Charge Assignmen
     {
         modify(GetShipmentLines)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

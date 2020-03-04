@@ -4,11 +4,11 @@ pageextension 57605 "Item Card BF" extends "Item Card"
     {
         modify(Orders)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify(Action83)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

@@ -4,7 +4,7 @@ pageextension 57613 "Reminder BF" extends "Reminder"
     {
         modify("Customer - Order Summary")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

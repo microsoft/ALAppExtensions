@@ -1,12 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en-US" target-language="en-US" original="Basic Financialss">
+  <file datatype="xml" source-language="en-US" target-language="en-US" original="Basic Financials">
     <body>
       <group id="body">
-        <trans-unit id="TableExtension 1875593177 - Field 730853065 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3548822581">
+        <trans-unit id="TableExtension 1875593177 - Field 3376354272 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3548822581">
           <source>Basic Financials</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension BF Experience Tier Setup - Field BF Basic Financials - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 4222890194 - Field 3376354272 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 627389406">
+          <source>Basic Financials</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension BF Application Area Setup - Field BF Basic Financials - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 4222890194 - Field 1564560419 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 627389406">
+          <source>Orders</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension BF Application Area Setup - Field BF Orders - Property Caption</note>
         </trans-unit>
       </group>
     </body>

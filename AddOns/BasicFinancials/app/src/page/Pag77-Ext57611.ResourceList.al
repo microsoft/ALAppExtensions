@@ -4,7 +4,7 @@ pageextension 57611 "Resource List BF" extends "Resource List"
     {
         modify("Resource Allocated per Service &Order")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

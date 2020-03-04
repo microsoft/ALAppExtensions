@@ -4,7 +4,7 @@ pageextension 57607 "Sales Quote BF" extends "Sales Quote"
     {
         modify(MakeOrder)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

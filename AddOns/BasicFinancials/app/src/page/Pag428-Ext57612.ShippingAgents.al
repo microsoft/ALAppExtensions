@@ -4,7 +4,7 @@ pageextension 57612 "Shipping Agents BF" extends "Shipping Agents"
     {
         modify(ShippingAgentServices)
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

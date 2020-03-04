@@ -4,11 +4,11 @@ pageextension 57632 "Acc Manager RoleCenter BF" extends "Accounting Manager Role
     {
         modify("Purchase Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Sales Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

@@ -4,7 +4,7 @@ pageextension 57644 "Accountant Role Center BF" extends "Accountant Role Center"
     {
         modify("Purchase Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

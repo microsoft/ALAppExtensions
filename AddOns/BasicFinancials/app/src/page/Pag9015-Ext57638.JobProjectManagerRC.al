@@ -4,7 +4,7 @@ pageextension 57638 "Job Project Manager RC BF" extends "Job Project Manager RC"
     {
         modify("Purchase Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

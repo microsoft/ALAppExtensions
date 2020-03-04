@@ -4,7 +4,7 @@ pageextension 57618 "Name Details BF" extends "Name Details"
     {
         modify("&Salutations")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

@@ -4,11 +4,11 @@ pageextension 57651 "O365 Activities BF" extends "O365 Activities"
     {
         modify("Ongoing Sales Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
         modify("Purchase Orders")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }

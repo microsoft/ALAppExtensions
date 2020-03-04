@@ -4,7 +4,7 @@ pageextension 57639 "Administrator Role Center BF" extends "Administrator Role C
     {
         modify("Purchase &Order")
         {
-            ApplicationArea = BFOrders;
+            ApplicationArea = Advanced, BFOrders;
         }
     }
 }
