@@ -707,7 +707,10 @@ end;
 
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'TextEndsWith'_
 
-**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `TextEndsWith`.
+**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `IsMatch`.
+
+Example:
+`TypeHelper.TextEndsWith(InputString, EndingString)` becomes `DotNet_Regex.IsMatch(InputString, EndingString + '$')`
 
 **Error**:  _Codeunit "Item Tracking Management" does not contain a definition for 'CopyItemTracking2'_
 
