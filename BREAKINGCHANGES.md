@@ -370,6 +370,18 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Solution**: Use the event `OnResolveTimeFilterToken` instead.
 
+**Error**: _'Filter Tokens' does not contain a definition for 'EvaluateIncStr'_
+
+**Solution**: The function has been removed. Please create a copy of the function if you need it.
+
+```
+procedure EvaluateIncStr(StringToIncrement: Code[50]; ErrorHint: Text)
+begin
+    if IncStr(StringToIncrement) = '' then
+        Error('%1 contains no number and cannot be incremented.', ErrorHint);
+end;
+```
+
 ---
 
 ## Headlines Module
