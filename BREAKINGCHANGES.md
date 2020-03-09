@@ -1,14 +1,47 @@
 # Breaking Changes
 ### ...and how to resolve them
-In this help document, you will find a list of known breaking changes which were introduced in the latest major release. You will also get help on the changes you need to do to your code to make it compile again against the latest version of the Business Central System Application and Base Application.
-
-# Work in progress
-The breaking changes are currently being identified. We will update this site with more help on this topic very soon.
+This document contains a list of the breaking changes that we know were introduced since 2019 release wave 2. For each breaking change we’ve provided some information about what you need to do to your code so that it will compile again against the latest version of the System Application and Base Application in Business central.
 
 # Can’t find what you’re looking for?
-We’re working hard to make this a comprehensive list, but there’s always a chance that something is missing. If you can’t find what you’re looking for here, we suggest that you engage with other members of the Business Central community on Yammer, or reach out to us on GitHub to let us know.
+This document is a work in progress because earlier changes are still being identified, and because sometimes a change can’t be avoided, for example, when addressing a performance issue. We will continue to update this list whenever we, or one of our partners, discover new issues. We’re working hard to make this a comprehensive list, but there’s always a chance that something is missing. If you can’t find what you’re looking for here, we suggest that you engage with other members of the Business Central community on [Yammer](https://www.yammer.com/dynamicsnavdev/), or reach out to us on [GitHub](https://github.com/microsoft/ALAppExtensions/issues) to let us know.
 
-# Modules
+# 2020 release wave 1
+
+## General
+
+**Error**: _Field * is removed. Reason: *_\
+**Error**: _Table * is removed. Reason: *_
+
+**Solution**: Please review the reason for how to resolve this error.
+
+**Error**: _cannot convert from 'Decimal' to the type of Argument 1 'Enum *'_
+
+**Solution**: Convert a Decimal through the Enum's FromInteger functionality.
+
+```
+procedure EnumFromDecimal()
+var
+    d: Decimal;
+    e: Enum MyEnum;
+begin
+    e := MyEnum.FromInteger(d);
+end;
+```
+
+**Error**: _cannot convert from 'Enum 1' to the type of Argument 1 'Enum 2'_\
+**Error**: _Cannot implicitly convert type 'Enum 1' to 'Enum 2'_
+
+**Solution**: Set the AssignmentCompatibility option on the Enum to true;
+
+**Error**: _A member of type Action with name * is already defined in Page * by the extension *_\
+**Error**: _A member of type Field with name * is already defined in Page * by the extension *_\
+**Error**: _A member of type Part with name * is already defined in Page * by the extension *_
+
+**Solution**: Rename your Action/Field/Part to avoid duplicating the name. Names of Action/Field/Part must be unique.
+
+# 2019 release wave 2
+
+We’ve organized the breaking changes in this list according to the modules that they apply to. For example, we moved the TextManagement codeunit to the Filter Tokens module, so we’ve included the description of the change in the group for the module.
 
 ## Assisted Setup Module
 **Error**: _'Assisted Setup' is inaccessible due to its protection level_
@@ -385,6 +418,18 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 **Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeDateTimeText'_
 
 **Solution**: Function has been removed as it had no callers.
+
+**Error**: _'Filter Tokens' does not contain a definition for 'EvaluateIncStr'_
+
+**Solution**: The function has been removed. Please create a copy of the function if you need it.
+
+```
+procedure EvaluateIncStr(StringToIncrement: Code[50]; ErrorHint: Text)
+begin
+    if IncStr(StringToIncrement) = '' then
+        Error('%1 contains no number and cannot be incremented.', ErrorHint);
+end;
+```
 
 ---
 
