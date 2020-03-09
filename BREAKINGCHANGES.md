@@ -403,6 +403,22 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Solution**: Use the event `OnResolveTimeFilterToken` instead.
 
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeText'_
+
+**Solution**: Function has been removed as it had no callers.
+
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeDateText'_
+
+**Solution**: Function has been removed as it had no callers.
+
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeTimeText'_
+
+**Solution**: Function has been removed as it had no callers.
+
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeDateTimeText'_
+
+**Solution**: Function has been removed as it had no callers.
+
 **Error**: _'Filter Tokens' does not contain a definition for 'EvaluateIncStr'_
 
 **Solution**: The function has been removed. Please create a copy of the function if you need it.
@@ -736,7 +752,10 @@ end;
 
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'TextEndsWith'_
 
-**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `TextEndsWith`.
+**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `IsMatch`.
+
+Example:
+`TypeHelper.TextEndsWith(InputString, EndingString)` becomes `DotNet_Regex.IsMatch(InputString, EndingString + '$')`
 
 **Error**:  _Codeunit "Item Tracking Management" does not contain a definition for 'CopyItemTracking2'_
 
