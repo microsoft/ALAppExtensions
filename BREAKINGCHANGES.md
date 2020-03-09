@@ -1,9 +1,43 @@
 # Breaking Changes
 ### ...and how to resolve them
-This document contains a list of the breaking changes that we know were introduced in 2019 release wave 2. For each breaking change we’ve provided some information about what you need to do to your code so that it will compile again against the latest version of the System Application and Base Application in Business central.
+This document contains a list of the breaking changes that we know were introduced since 2019 release wave 2. For each breaking change we’ve provided some information about what you need to do to your code so that it will compile again against the latest version of the System Application and Base Application in Business central.
 
 # Can’t find what you’re looking for?
-This document is a work in progress. Not because we’re introducing new breaking changes, but because earlier changes are still being identified. We will continue to update this list whenever we, or one of our partners, discover new issues. We’re working hard to make this a comprehensive list, but there’s always a chance that something is missing. If you can’t find what you’re looking for here, we suggest that you engage with other members of the Business Central community on [Yammer](https://www.yammer.com/dynamicsnavdev/), or reach out to us on [GitHub](https://github.com/microsoft/ALAppExtensions/issues) to let us know.
+This document is a work in progress because earlier changes are still being identified, and because sometimes a change can’t be avoided, for example, when addressing a performance issue. We will continue to update this list whenever we, or one of our partners, discover new issues. We’re working hard to make this a comprehensive list, but there’s always a chance that something is missing. If you can’t find what you’re looking for here, we suggest that you engage with other members of the Business Central community on [Yammer](https://www.yammer.com/dynamicsnavdev/), or reach out to us on [GitHub](https://github.com/microsoft/ALAppExtensions/issues) to let us know.
+
+# 2020 release wave 1
+
+## General
+
+**Error**: _Field * is removed. Reason: *_\
+**Error**: _Table * is removed. Reason: *_
+
+**Solution**: Please review the reason for how to resolve this error.
+
+**Error**: _cannot convert from 'Decimal' to the type of Argument 1 'Enum *'_
+
+**Solution**: Convert a Decimal through the Enum's FromInteger functionality.
+
+```
+procedure EnumFromDecimal()
+var
+    d: Decimal;
+    e: Enum MyEnum;
+begin
+    e := MyEnum.FromInteger(d);
+end;
+```
+
+**Error**: _cannot convert from 'Enum 1' to the type of Argument 1 'Enum 2'_\
+**Error**: _Cannot implicitly convert type 'Enum 1' to 'Enum 2'_
+
+**Solution**: Set the AssignmentCompatibility option on the Enum to true;
+
+**Error**: _A member of type Action with name * is already defined in Page * by the extension *_\
+**Error**: _A member of type Field with name * is already defined in Page * by the extension *_\
+**Error**: _A member of type Part with name * is already defined in Page * by the extension *_
+
+**Solution**: Rename your Action/Field/Part to avoid duplicating the name. Names of Action/Field/Part must be unique.
 
 # 2019 release wave 2
 
