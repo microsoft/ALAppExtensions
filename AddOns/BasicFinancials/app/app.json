@@ -4,7 +4,7 @@
   "publisher":  "Microsoft",
   "brief":  "Basic Financials",
   "description":  "Basic Financials",
-  "version":  "16.0.0.0",
+  "version":  "16.0.0.18",
   "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA":  "https://go.microsoft.com/fwlink/?linkid=",
   "help":  "https://go.microsoft.com/fwlink/?linkid=",
@@ -29,7 +29,7 @@
   "idRanges": [
     {
       "from": 57600,
-      "to": 57699
+      "to": 57799
     }
   ],
   "contextSensitiveHelpUrl": "https://AL16.com/help/",
