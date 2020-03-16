@@ -10,5 +10,21 @@ pageextension 57620 "Finance Manager Role Center BF" extends "Finance Manager Ro
         {
             ApplicationArea = Advanced, BFOrders;
         }
+        modify("Customer - Order Summary")
+        {
+            ApplicationArea = Advanced, BFOrders;
+        }
+        modify("Customer - Order Detail")
+        {
+            ApplicationArea = Advanced, BFOrders;
+        }
+        modify("Vendor - Order Detail")
+        {
+            ApplicationArea = Advanced, BFOrders;
+        }
+        modify("Vendor - Order Summary")
+        {
+            ApplicationArea = Advanced, BFOrders;
+        }
     }
 }

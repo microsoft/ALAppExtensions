@@ -9,6 +9,10 @@ pageextension 57630 "Order Processor Role Center BF" extends "Order Processor Ro
     }
     actions
     {
+        modify("Customer - &Order Summary")
+        {
+            ApplicationArea = Advanced, BFOrders;
+        }
         modify("Purchase Return Orders")
         {
             ApplicationArea = Advanced, BFOrders;

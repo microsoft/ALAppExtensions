@@ -1,7 +1,8 @@
 codeunit 57600 "BF Experience Tier"
 {
-    // Workaround, Unfortunately it's pretty ugly solution.
-    // EssentialTempApplicationAreaSetup
+    // Workaround, Unfortunately it's pretty ugly AL-coding solution, but the user Experience is working as intended.
+    // It is not possible to get the Essential Experience Application Areas, but when the function 'IsEssentialExperienceEnabled' is called, the event trigger OnGetEssentialExperienceAppAreas() is trigged, 
+    // and then it is possible to "save" the Essential Experience Application Areas by setting this codeunit as a SingleInstance codeunit.
 
     SingleInstance = true; // Workaround
 
@@ -14,6 +15,17 @@ codeunit 57600 "BF Experience Tier"
     begin
         Clear(EssentialTempApplicationAreaSetup); // Workaround
         EssentialTempApplicationAreaSetup := TempApplicationAreaSetup; // Workaround
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt. Facade", 'OnValidateApplicationAreas', '', true, true)]
+    local procedure OnValidateApplicationAreas(ExperienceTierSetup: Record "Experience Tier Setup"; TempApplicationAreaSetup: Record "Application Area Setup")
+    var
+    begin
+        if not ExperienceTierSetup."BF Basic Financials" then
+            exit;
+
+        TempApplicationAreaSetup.TestField("BF Orders", false);
+        TempApplicationAreaSetup.TestField("BF Basic Financials", true);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt. Facade", 'OnSetExperienceTier', '', true, true)]
