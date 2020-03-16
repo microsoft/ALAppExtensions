@@ -1,23 +1,47 @@
 codeunit 57601 "BF Experience Tier"
 {
+    // Workaround, Unfortunately it's pretty ugly solution.
+    // EssentialTempApplicationAreaSetup
+
+    SingleInstance = true; // Workaround
+
+    var
+        EssentialTempApplicationAreaSetup: Record "Application Area Setup" temporary; // Workaround
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt.", 'OnGetEssentialExperienceAppAreas', '', true, true)] // Workaround
+    local procedure OnGetBasicExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
+    var
+    begin
+        Clear(EssentialTempApplicationAreaSetup); // Workaround
+        EssentialTempApplicationAreaSetup := TempApplicationAreaSetup; // Workaround
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt. Facade", 'OnSetExperienceTier', '', true, true)]
     local procedure SetApplicationAreas(ExperienceTierSetup: Record "Experience Tier Setup"; var ApplicationAreasSet: Boolean; var TempApplicationAreaSetup: Record "Application Area Setup")
     var
-    //ApplicationAreaMgmt: Codeunit "Application Area Mgmt.";
+        ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
     begin
         if not ExperienceTierSetup."BF Basic Financials" then
             exit;
 
-        //>> TEST
-        //ApplicationAreaMgmt.GetEssentialExperienceAppAreas(TempApplicationAreaSetup);
-        GetEssentialExperienceAppAreas(TempApplicationAreaSetup);
-        //<< TEST
+        Clear(EssentialTempApplicationAreaSetup); // Workaround
+        ApplicationAreaMgmtFacade.IsEssentialExperienceEnabled(); // Workaround
+        TempApplicationAreaSetup := EssentialTempApplicationAreaSetup; // Workaround
+
         DisableExperienceAppAreas(TempApplicationAreaSetup);
         GetBasicFinancialsExperienceAppAreas(TempApplicationAreaSetup);
         ApplicationAreasSet := true;
     end;
 
+    local procedure GetBasicFinancialsExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
+    var
+    begin
+        TempApplicationAreaSetup."BF Orders" := false;
+        TempApplicationAreaSetup."BF Basic Financials" := true;
+    end;
+
     local procedure DisableExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
+    var
     begin
         TempApplicationAreaSetup."Relationship Mgmt" := false;
         TempApplicationAreaSetup.Assembly := false;
@@ -36,54 +60,5 @@ codeunit 57601 "BF Experience Tier"
         TempApplicationAreaSetup."Order Promising" := false;
         TempApplicationAreaSetup.Reservation := false;
         TempApplicationAreaSetup.ADCS := false;
-    end;
-
-    local procedure GetBasicFinancialsExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
-    begin
-        TempApplicationAreaSetup."BF Orders" := false;
-        TempApplicationAreaSetup."BF Basic Financials" := true;
-    end;
-
-    local procedure GetBasicExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
-    begin
-        TempApplicationAreaSetup.Basic := true;
-        TempApplicationAreaSetup.VAT := true;
-        TempApplicationAreaSetup."Basic EU" := true;
-        TempApplicationAreaSetup."Basic DK" := true;
-        TempApplicationAreaSetup."Relationship Mgmt" := true;
-        TempApplicationAreaSetup."Record Links" := true;
-        TempApplicationAreaSetup.Notes := true;
-    end;
-
-    local procedure GetEssentialExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
-    begin
-        GetBasicExperienceAppAreas(TempApplicationAreaSetup);
-        TempApplicationAreaSetup.Suite := true;
-        TempApplicationAreaSetup.Jobs := true;
-        TempApplicationAreaSetup."Fixed Assets" := true;
-        TempApplicationAreaSetup.Location := true;
-        TempApplicationAreaSetup.BasicHR := true;
-        TempApplicationAreaSetup.Assembly := true;
-        TempApplicationAreaSetup."Item Charges" := true;
-        TempApplicationAreaSetup.Intercompany := true;
-        TempApplicationAreaSetup."Sales Return Order" := true;
-        TempApplicationAreaSetup."Purch Return Order" := true;
-        TempApplicationAreaSetup.Prepayments := true;
-        TempApplicationAreaSetup."Cost Accounting" := true;
-        TempApplicationAreaSetup."Sales Budget" := true;
-        TempApplicationAreaSetup."Purchase Budget" := true;
-        TempApplicationAreaSetup."Item Budget" := true;
-        TempApplicationAreaSetup."Sales Analysis" := true;
-        TempApplicationAreaSetup."Purchase Analysis" := true;
-        TempApplicationAreaSetup."Inventory Analysis" := true;
-        TempApplicationAreaSetup."Item Tracking" := true;
-        TempApplicationAreaSetup.Warehouse := true;
-        TempApplicationAreaSetup.XBRL := true;
-        TempApplicationAreaSetup."Order Promising" := true;
-        TempApplicationAreaSetup.Reservation := true;
-        TempApplicationAreaSetup.Dimensions := true;
-        TempApplicationAreaSetup.ADCS := true;
-        TempApplicationAreaSetup.Planning := true;
-        TempApplicationAreaSetup.Comments := true;
     end;
 }

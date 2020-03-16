@@ -2,11 +2,13 @@ pageextension 57641 "Small Business Owner RC BF" extends "Small Business Owner R
 {
     actions
     {
-        //modify("Sales Orders - Microsoft Dynamics 365 for Sales") //BC14
-        modify("Sales Orders - Microsoft Dynamics 365 Sales")       //BC15
+        //ES: The action '"Sales Orders - Microsoft Dynamics 365 Sales"' is not found in the target 'Small Business Owner RC'
+        /*
+        modify("Sales Orders - Microsoft Dynamics 365 Sales")
         {
             ApplicationArea = Advanced, BFOrders;
         }
+        */
         modify("Customer - Order Su&mmary")
         {
             ApplicationArea = Advanced, BFOrders;

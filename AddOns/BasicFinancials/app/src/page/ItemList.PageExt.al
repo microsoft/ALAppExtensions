@@ -6,10 +6,13 @@ pageextension 57606 "Item List BF" extends "Item List"
         {
             ApplicationArea = Advanced, BFOrders;
         }
+        //US: The action '"Inventory Order Details"' is not found in the target 'Item List'
+        /*
         modify("Inventory Order Details")
         {
             ApplicationArea = Advanced, BFOrders;
         }
+        */
         modify("Inventory Purchase Orders")
         {
             ApplicationArea = Advanced, BFOrders;
