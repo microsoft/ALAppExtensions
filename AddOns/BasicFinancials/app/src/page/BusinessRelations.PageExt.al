@@ -1,4 +1,4 @@
-pageextension 57657 "Business Relations BF" extends "Business Relations"
+pageextension 57608 "Business Relations BF" extends "Business Relations"
 {
     layout
     {

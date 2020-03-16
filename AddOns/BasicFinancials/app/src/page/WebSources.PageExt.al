@@ -1,4 +1,4 @@
-pageextension 57621 "Web Sources BF" extends "Web Sources"
+pageextension 57666 "Web Sources BF" extends "Web Sources"
 {
     layout
     {

@@ -1,4 +1,4 @@
-pageextension 57717 "Vendor Hist. Buy-from FB BF" extends "Vendor Hist. Buy-from FactBox"
+pageextension 57662 "Vendor Hist. Buy-from FB BF" extends "Vendor Hist. Buy-from FactBox"
 {
     layout
     {

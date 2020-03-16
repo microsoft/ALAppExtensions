@@ -1,4 +1,4 @@
-pageextension 57706 "Purchasing Manager RC BF" extends "Purchasing Manager Role Center"
+pageextension 57635 "Purchasing Manager RC BF" extends "Purchasing Manager Role Center"
 {
     actions
     {

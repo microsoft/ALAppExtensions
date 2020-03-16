@@ -1,4 +1,4 @@
-pageextension 57606 "Item List BF" extends "Item List"
+pageextension 57625 "Item List BF" extends "Item List"
 {
     actions
     {

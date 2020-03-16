@@ -1,4 +1,4 @@
-pageextension 57718 "Whse Ship & Receive Act. BF" extends "Whse Ship & Receive Activities"
+pageextension 57668 "Whse Ship & Receive Act. BF" extends "Whse Ship & Receive Activities"
 {
     layout
     {

@@ -1,4 +1,4 @@
-pageextension 57604 "Vendor List BF" extends "Vendor List"
+pageextension 57663 "Vendor List BF" extends "Vendor List"
 {
     actions
     {

@@ -1,4 +1,4 @@
-pageextension 57610 "Resource Card BF" extends "Resource Card"
+pageextension 57639 "Resource Card BF" extends "Resource Card"
 {
     actions
     {

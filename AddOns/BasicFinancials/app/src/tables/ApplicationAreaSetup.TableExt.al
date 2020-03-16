@@ -1,4 +1,4 @@
-tableextension 57601 "BF Application Area Setup" extends "Application Area Setup"
+tableextension 57600 "BF Application Area Setup" extends "Application Area Setup"
 {
     fields
     {

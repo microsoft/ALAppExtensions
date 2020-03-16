@@ -1,4 +1,4 @@
-pageextension 57639 "Administrator Role Center BF" extends "Administrator Role Center"
+pageextension 57605 "Administrator Role Center BF" extends "Administrator Role Center"
 {
     actions
     {

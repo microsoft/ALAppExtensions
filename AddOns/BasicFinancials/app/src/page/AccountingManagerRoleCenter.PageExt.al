@@ -1,4 +1,4 @@
-pageextension 57632 "Acc Manager RoleCenter BF" extends "Accounting Manager Role Center"
+pageextension 57602 "Acc Manager RoleCenter BF" extends "Accounting Manager Role Center"
 {
     actions
     {

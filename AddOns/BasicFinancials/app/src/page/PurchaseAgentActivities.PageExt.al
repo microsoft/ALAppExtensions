@@ -1,4 +1,4 @@
-pageextension 57646 "Purchase Agent Activities BF" extends "Purchase Agent Activities"
+pageextension 57631 "Purchase Agent Activities BF" extends "Purchase Agent Activities"
 {
     actions
     {

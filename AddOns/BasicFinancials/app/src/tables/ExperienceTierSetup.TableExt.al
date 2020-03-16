@@ -1,4 +1,4 @@
-tableextension 57600 "BF Experience Tier Setup" extends "Experience Tier Setup"
+tableextension 57601 "BF Experience Tier Setup" extends "Experience Tier Setup"
 {
     fields
     {

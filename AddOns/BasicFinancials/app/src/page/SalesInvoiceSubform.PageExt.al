@@ -1,4 +1,4 @@
-pageextension 57608 "Sales Invoice Subform BF" extends "Sales Invoice Subform"
+pageextension 57643 "Sales Invoice Subform BF" extends "Sales Invoice Subform"
 {
     actions
     {

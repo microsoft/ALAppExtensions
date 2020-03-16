@@ -1,4 +1,4 @@
-pageextension 57616 "Contact Card BF" extends "Contact Card"
+pageextension 57611 "Contact Card BF" extends "Contact Card"
 {
     layout
     {

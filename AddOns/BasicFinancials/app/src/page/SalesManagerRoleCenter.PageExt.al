@@ -1,4 +1,4 @@
-pageextension 57636 "Sales Manager Role Center BF" extends "Sales Manager Role Center"
+pageextension 57645 "Sales Manager Role Center BF" extends "Sales Manager Role Center"
 {
     actions
     {

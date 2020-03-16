@@ -1,4 +1,4 @@
-pageextension 57701 "Purchase Quotes BF" extends "Purchase Quotes"
+pageextension 57633 "Purchase Quotes BF" extends "Purchase Quotes"
 {
     actions
     {

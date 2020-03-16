@@ -1,4 +1,4 @@
-pageextension 57705 "Manufacturing Manager RC BF" extends "Manufacturing Manager RC"
+pageextension 57627 "Manufacturing Manager RC BF" extends "Manufacturing Manager RC"
 {
     actions
     {

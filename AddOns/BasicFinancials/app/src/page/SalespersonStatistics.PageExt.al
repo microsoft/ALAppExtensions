@@ -1,4 +1,4 @@
-pageextension 57623 "Salesperson Statistics BF" extends "Salesperson Statistics"
+pageextension 57649 "Salesperson Statistics BF" extends "Salesperson Statistics"
 {
     layout
     {

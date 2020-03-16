@@ -1,4 +1,4 @@
-pageextension 57716 "Vendor Statistics FactBox BF" extends "Vendor Statistics FactBox"
+pageextension 57664 "Vendor Statistics FactBox BF" extends "Vendor Statistics FactBox"
 {
     layout
     {

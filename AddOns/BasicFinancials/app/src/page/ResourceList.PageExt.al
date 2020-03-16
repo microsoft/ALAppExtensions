@@ -1,4 +1,4 @@
-pageextension 57611 "Resource List BF" extends "Resource List"
+pageextension 57640 "Resource List BF" extends "Resource List"
 {
     actions
     {

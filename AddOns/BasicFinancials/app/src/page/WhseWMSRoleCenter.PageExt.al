@@ -1,4 +1,4 @@
-pageextension 57712 "Whse. WMS Role Center BF" extends "Whse. WMS Role Center"
+pageextension 57669 "Whse. WMS Role Center BF" extends "Whse. WMS Role Center"
 {
     actions
     {

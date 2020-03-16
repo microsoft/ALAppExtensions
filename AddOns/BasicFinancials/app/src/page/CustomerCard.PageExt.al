@@ -1,4 +1,4 @@
-pageextension 57601 "Customer Card BF" extends "Customer Card"
+pageextension 57615 "Customer Card BF" extends "Customer Card"
 {
     actions
     {

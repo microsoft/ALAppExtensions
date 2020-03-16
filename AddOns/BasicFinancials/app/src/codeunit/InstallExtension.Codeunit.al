@@ -1,4 +1,4 @@
-codeunit 57600 "BF Install Extension"
+codeunit 57601 "BF Install Extension"
 {
     Subtype = Install;
     trigger OnInstallAppPerCompany()

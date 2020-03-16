@@ -1,4 +1,4 @@
-pageextension 57707 "Sales & Mark Manager RC BF" extends "Sales & Marketing Manager RC"
+pageextension 57641 "Sales & Mark Manager RC BF" extends "Sales & Marketing Manager RC"
 {
     actions
     {

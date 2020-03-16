@@ -1,4 +1,4 @@
-pageextension 57605 "Item Card BF" extends "Item Card"
+pageextension 57622 "Item Card BF" extends "Item Card"
 {
     actions
     {

@@ -1,4 +1,4 @@
-pageextension 57700 "Accountant Activities BF" extends "Accountant Activities"
+pageextension 57600 "Accountant Activities BF" extends "Accountant Activities"
 {
     layout
     {

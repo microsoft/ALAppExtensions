@@ -1,4 +1,4 @@
-pageextension 57615 "Item Availability Check BF" extends "Item Availability Check"
+pageextension 57621 "Item Availability Check BF" extends "Item Availability Check"
 {
     actions
     {

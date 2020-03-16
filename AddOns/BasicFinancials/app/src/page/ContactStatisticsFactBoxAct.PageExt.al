@@ -1,4 +1,4 @@
-pageextension 57649 "Contact Statistics FactBox BF" extends "Contact Statistics FactBox"
+pageextension 57613 "Contact Statistics FactBox BF" extends "Contact Statistics FactBox"
 {
     layout
     {

@@ -1,4 +1,4 @@
-codeunit 57601 "BF Experience Tier"
+codeunit 57600 "BF Experience Tier"
 {
     // Workaround, Unfortunately it's pretty ugly solution.
     // EssentialTempApplicationAreaSetup

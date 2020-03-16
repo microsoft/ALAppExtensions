@@ -1,4 +1,4 @@
-pageextension 57652 "Sales Hist. Sell-to FactBox BF" extends "Sales Hist. Sell-to FactBox"
+pageextension 57642 "Sales Hist. Sell-to FactBox BF" extends "Sales Hist. Sell-to FactBox"
 {
     layout
     {

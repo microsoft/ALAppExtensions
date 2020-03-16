@@ -1,4 +1,4 @@
-pageextension 57614 "PurchOrder From SalesOrder BF" extends "Purch. Order From Sales Order"
+pageextension 57637 "PurchOrder From SalesOrder BF" extends "Purch. Order From Sales Order"
 {
     actions
     {

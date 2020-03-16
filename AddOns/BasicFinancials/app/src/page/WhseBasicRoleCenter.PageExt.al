@@ -1,5 +1,5 @@
 
-pageextension 57711 "Whse. Basic Role Center BF" extends "Whse. Basic Role Center"
+pageextension 57667 "Whse. Basic Role Center BF" extends "Whse. Basic Role Center"
 {
     actions
     {

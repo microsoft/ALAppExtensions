@@ -1,4 +1,4 @@
-pageextension 57618 "Name Details BF" extends "Name Details"
+pageextension 57628 "Name Details BF" extends "Name Details"
 {
     actions
     {
