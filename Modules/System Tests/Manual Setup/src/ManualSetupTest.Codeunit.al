@@ -118,12 +118,16 @@ codeunit 134934 "Manual Setup Test"
 
     local procedure AddExtension() ExtensionID: Guid
     var
-        Extension: Record "NAV App";
+        Extension: Record "Published Application";
+        TenantInformation: Codeunit "Tenant Information";
     begin
         ExtensionID := CreateGuid();
 
         Extension.Init();
         Extension.ID := ExtensionID;
+        Extension."Package ID" := ExtensionID;
+        Extension."Runtime Package ID" := ExtensionID;
+        Extension."Tenant ID" := CopyStr(TenantInformation.GetTenantId(), 1, 128);
         Extension.Name := CopyStr(TestExtensionName, 1, 250);
         Extension.Insert();
     end;

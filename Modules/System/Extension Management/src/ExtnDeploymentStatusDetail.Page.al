@@ -110,8 +110,6 @@ page 2509 "Extn Deployment Status Detail"
             group("Error Details")
             {
                 Caption = 'Error Details';
-                //The GridLayout property is only supported on controls of type Grid
-                //GridLayout = Rows;
                 Visible = ShowDetailedMessage;
                 field("Detailed Message box"; DetailedMessageText)
                 {

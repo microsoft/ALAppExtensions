@@ -43,8 +43,7 @@ table 10531 "MTD Payment"
     {
     }
 
-    [Scope('OnPrem')]
-    procedure DiffersFromPayment(MTDPayment: Record "MTD Payment"): Boolean
+    internal procedure DiffersFromPayment(MTDPayment: Record "MTD Payment"): Boolean
     begin
         exit(
           ("Received Date" <> MTDPayment."Received Date") OR

@@ -7,7 +7,7 @@ pageextension 1959 "LP Activities" extends "O365 Activities"
         {
             field("Sales Invoices Predicted Overdue"; NumberSalesInvPredictedToBeLate)
             {
-                ApplicationArea = Basic, Suite, Invoicing;
+                ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies sales invoices that are predicted to be paid late.';
                 Caption = 'Sales Invoices Predicted Overdue';
                 trigger OnDrillDown()

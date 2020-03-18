@@ -22,19 +22,6 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         OpenVATReturnPeriodTxt: Label 'Your VAT return is due %1 (in %2 days)', Comment = '%1 - date; %2 - days count';
         RecentlyOverdueInvoicesPayloadTxt: Label 'Overdue invoices up by %1. You can collect %2', Comment = '%1 is the number of recently overdue invoices, %2 is the total amount of the recently overdue invoices', MaxLength = 60; // support up to 3-digit number of overdue invoices and currencies up to 12 chars: '1,234,567 kr'
 
-
-    local procedure NeedToUpdateHeadline(LastComputeDate: DateTime; PeriodBetween2ComputationsInSeconds: Integer; LastComputeWorkdate: Date): Boolean
-    begin
-        if (LastComputeDate = 0DT) then
-            exit(true);
-
-        if CurrentDateTime() - LastComputeDate >= PeriodBetween2ComputationsInSeconds * 1000 then
-            exit(true);
-
-        if LastComputeWorkdate <> WorkDate() then
-            exit(true);
-    end;
-
     local procedure ChooseQualifier(QualifierWeek: Text; QualifierMonth: Text; Qualifier3Months: Text; DaysSearch: Integer): Text
     begin
         case DaysSearch of
@@ -55,9 +42,6 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         TimePeriodDays: Integer;
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::MostPopularItem);
-        if not NeedToUpdateHeadline(EssentialBusinessHeadline."Headline Computation Date", 10 * 60, EssentialBusinessHeadline."Headline Computation WorkDate") then
-            exit;
-
         EssentialBusinessHeadline.Validate("Headline Visible", false);
 
         // we need at least 3 items for this headline to be valid
@@ -156,9 +140,6 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         TimePeriodDays: Integer;
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::BusiestResource);
-        if not NeedToUpdateHeadline(EssentialBusinessHeadline."Headline Computation Date", 10 * 60, EssentialBusinessHeadline."Headline Computation WorkDate") then
-            exit;
-
         EssentialBusinessHeadline.Validate("Headline Visible", false);
 
         // we need at least 3 items for this headline to be valid
@@ -269,8 +250,6 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         TimePeriodDays: Integer;
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::LargestOrder);
-        if not NeedToUpdateHeadline(EssentialBusinessHeadline."Headline Computation Date", 10 * 60, EssentialBusinessHeadline."Headline Computation WorkDate") then
-            exit;
 
         EssentialBusinessHeadline.Validate("Headline Visible", false);
 
@@ -342,9 +321,6 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         TimePeriodDays: Integer;
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::LargestSale);
-        if not NeedToUpdateHeadline(EssentialBusinessHeadline."Headline Computation Date", 10 * 60, EssentialBusinessHeadline."Headline Computation WorkDate") then
-            exit;
-
         EssentialBusinessHeadline.Validate("Headline Visible", false);
 
         TimePeriods.Add(7);
@@ -360,6 +336,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
     local procedure TryHandleLargestSale(var EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr"; DaysSearch: Integer): Boolean
     var
+        [SecurityFiltering(SecurityFilter::Filtered)]
         CustomerLedgerEntry: Record "Cust. Ledger Entry";
         CurrentKeyOk: Boolean;
         HeadlineText: Text;
@@ -395,6 +372,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
     procedure OnDrillDownLargestSale()
     var
+        [SecurityFiltering(SecurityFilter::Filtered)]
         CustomerLedgerEntry: Record "Cust. Ledger Entry";
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
@@ -419,9 +397,6 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         TimePeriodDays: Integer;
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::SalesIncrease);
-        if not NeedToUpdateHeadline(EssentialBusinessHeadline."Headline Computation Date", 10 * 60, EssentialBusinessHeadline."Headline Computation WorkDate") then
-            exit;
-
         EssentialBusinessHeadline.Validate("Headline Visible", false);
 
         TimePeriods.Add(30);
@@ -521,9 +496,6 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         HeadlineText: Text;
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
-        if not NeedToUpdateHeadline(EssentialBusinessHeadline."Headline Computation Date", 10 * 60, EssentialBusinessHeadline."Headline Computation WorkDate") then
-            exit;
-
         FindRecentlyOverdueInvoices(CustomerLedgerEntry, WorkDate());
         RecentlyOverdueInvoices := CustomerLedgerEntry.Count();
 
@@ -586,9 +558,6 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         TimePeriodDays: Integer;
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::TopCustomer);
-        if not NeedToUpdateHeadline(EssentialBusinessHeadline."Headline Computation Date", 10 * 60, EssentialBusinessHeadline."Headline Computation WorkDate") then
-            exit;
-
         EssentialBusinessHeadline.Validate("Headline Visible", false);
 
         TimePeriods.Add(7);
@@ -706,12 +675,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         CurrencyFormat: Text;
     begin
         GeneralLedgerSetup.Get();
-
-        if GeneralLedgerSetup.Get() and (GeneralLedgerSetup."Local Currency Symbol" <> '') then
-            CurrencyFormat := TypeHelper.GetAmountFormatWithUserLocale(GeneralLedgerSetup."Local Currency Symbol")
-        else
-            CurrencyFormat := '<Precision,0:0><Standard Format,0> ' + GeneralLedgerSetup."LCY Code";
-
+        CurrencyFormat := TypeHelper.GetAmountFormatWithUserLocale(GeneralLedgerSetup.GetCurrencySymbol());
         exit(Format(AmountToFormat, 0, CurrencyFormat));
     end;
 
@@ -723,12 +687,10 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         HeadlineText: Text[250];
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::OpenVATReturn);
-        if not NeedToUpdateHeadline(EssentialBusinessHeadline."Headline Computation Date", 10 * 60, EssentialBusinessHeadline."Headline Computation WorkDate") then
-            exit;
-
         VATReportSetup.Get();
+        VATReturnPeriod.SetFilter("Due Date", '>=%1&<=%2', WorkDate(), CalcDate(VATReportSetup."Period Reminder Calculation", WorkDate()));
         if VATReportSetup.IsPeriodReminderCalculation() AND
-           FindOpenVATReturnPeriod(VATReturnPeriod, StrSubstNo('>=%1&<=%2', WorkDate(), CalcDate(VATReportSetup."Period Reminder Calculation", WorkDate())))
+           FindOpenVATReturnPeriod(VATReturnPeriod)
         then begin
             HeadlineText :=
                 CopyStr(
@@ -750,11 +712,9 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         HeadlineText: Text[250];
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::OverdueVATReturn);
-        if not NeedToUpdateHeadline(EssentialBusinessHeadline."Headline Computation Date", 10 * 60, EssentialBusinessHeadline."Headline Computation WorkDate") then
-            exit;
-
         VATReportSetup.Get();
-        if FindOpenVATReturnPeriod(VATReturnPeriod, StrSubstNo('<%1', WorkDate())) then begin
+        VATReturnPeriod.SetFilter("Due Date", '>%1&<%2', 0D, WorkDate());
+        if FindOpenVATReturnPeriod(VATReturnPeriod) then begin
             HeadlineText :=
                 CopyStr(
                     StrSubstNo(
@@ -767,11 +727,9 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         UpdateVATReturnHeadline(EssentialBusinessHeadline, HeadlineText);
     end;
 
-    local procedure FindOpenVATReturnPeriod(var VATReturnPeriod: Record "VAT Return Period"; DueDateFilter: Text): Boolean
+    local procedure FindOpenVATReturnPeriod(var VATReturnPeriod: Record "VAT Return Period"): Boolean
     begin
-        VATReturnPeriod.Reset();
         VATReturnPeriod.SetRange(Status, VATReturnPeriod.Status::Open);
-        VATReturnPeriod.SetFilter("Due Date", DueDateFilter);
         exit(VATReturnPeriod.FindFirst());
     end;
 

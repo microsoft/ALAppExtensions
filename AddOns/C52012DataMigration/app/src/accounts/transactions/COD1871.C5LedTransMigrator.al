@@ -189,7 +189,7 @@ codeunit 1871 "C5 LedTrans Migrator"
     begin
         DataMigrationStatus.SetRange("Migration Type", C5MigrDashboardMgt.GetC5MigrationTypeTxt());
         DataMigrationStatus.SetRange("Destination Table ID", Database::"G/L Account");
-        exit(DataMigrationStatus.FindFirst());
+        exit(not DataMigrationStatus.IsEmpty());
     end;
 
     procedure GetHardCodedBatchName(): Code[10]

@@ -10,7 +10,7 @@ page 2503 "Extension Installation"
 {
     Extensible = false;
     PageType = Card;
-    SourceTable = "NAV App";
+    SourceTable = "Published Application";
     SourceTableTemporary = true;
     ContextSensitiveHelpPage = 'ui-extensions';
 

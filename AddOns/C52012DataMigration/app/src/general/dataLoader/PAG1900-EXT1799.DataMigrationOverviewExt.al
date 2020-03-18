@@ -32,7 +32,7 @@ pageextension 1900 "Data Migration Overview Ext." extends "Data Migration Overvi
     begin
         DataMigrationStatus.SetRange("Migration Type", C5MigrDashboardMgt.GetC5MigrationTypeTxt());
         DataMigrationStatus.SetRange(Status, DataMigrationStatus.Status::Pending);
-        ShouldShowProgress := DataMigrationStatus.FindFirst();
+        ShouldShowProgress := not DataMigrationStatus.IsEmpty();
     end;
 
     var

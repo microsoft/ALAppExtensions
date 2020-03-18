@@ -150,11 +150,6 @@ codeunit 139575 "LP Prediction Test"
         LPPredictionMgt: Codeunit "LP Prediction Mgt.";
         CustomerNo: Code[20];
     begin
-        if IsFirstWeekOfJanuary() then begin
-            Message(PredictionResultWillBeLateTxt);
-            exit;
-        end;
-
         // [SCENARIO] Prediction results appear when the Predict button is clicked on a new order
         if BindSubscription(LPPredictionTest) then;
         LPMLInputData.DeleteAll();
@@ -197,7 +192,7 @@ codeunit 139575 "LP Prediction Test"
         CustomerNo := LibrarySales.CreateCustomerNo();
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, CustomerNo);
         LibrarySales.CreateSalesOrder(SalesHeader);
-        SalesHeader."Due Date" := CalcDate('CD-1D', WorkDate());
+        SalesHeader."Due Date" := CalcDate('<CD-1D>', WorkDate());
         SalesHeader.Modify();
 
         // [WHEN] Click the button
@@ -222,7 +217,7 @@ codeunit 139575 "LP Prediction Test"
         CustomerNo := LibrarySales.CreateCustomerNo();
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, CustomerNo);
         LibrarySales.CreateSalesQuoteForCustomerNo(SalesHeader, CustomerNo);
-        SalesHeader."Due Date" := CalcDate('CD-1D', WorkDate());
+        SalesHeader."Due Date" := CalcDate('<CD-1D>', WorkDate());
         SalesHeader.Modify();
 
         // [WHEN] Click the button
@@ -246,7 +241,7 @@ codeunit 139575 "LP Prediction Test"
         CustomerNo := LibrarySales.CreateCustomerNo();
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, CustomerNo);
         LibrarySales.CreateSalesInvoice(SalesHeader);
-        SalesHeader."Due Date" := CalcDate('CD-1D', WorkDate());
+        SalesHeader."Due Date" := CalcDate('<CD-1D>', WorkDate());
         SalesHeader.Modify();
 
         // [WHEN] Click the button
@@ -263,11 +258,6 @@ codeunit 139575 "LP Prediction Test"
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
         LPModelManagement: Codeunit "LP Model Management";
     begin
-        if IsFirstWeekOfJanuary() then begin
-            Message(StrSubstNo(ModelReplacedMsg, 0));
-            exit;
-        end;
-
         // [SCENARIO] Training a model manually creates a model with a quality that is saved in the setup. Enabling the setup with a threshold higher than given model raises error.
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         EnsureThatMockDataIsFetchedFromKeyVault();
@@ -333,9 +323,6 @@ codeunit 139575 "LP Prediction Test"
         LPMLInputData: Record "LP ML Input Data";
         LPModelManagement: Codeunit "LP Model Management";
     begin
-        if IsFirstWeekOfJanuary() then
-            exit;
-
         // [SCENARIO] Training should error out when enough data is not available
         // [GIVEN] No sales invoices exist
         SalesInvoiceHeader.DeleteAll();
@@ -367,14 +354,7 @@ codeunit 139575 "LP Prediction Test"
     var
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
         LPModelManagement: Codeunit "LP Model Management";
-        LPConfirmation: Boolean;
     begin
-        if IsFirstWeekOfJanuary() then begin
-            LPConfirmation := Confirm(StrSubstNo(TrainedModelIsOfPoorerQualityCnfQst, Round(SomeModelQuality * 100, 1), Round(ExistingModelQuality * 100, 1)));
-            Message(StrSubstNo(ModelReplacedMsg, 0));
-            exit;
-        end;
-
         // [SCENARIO] A custom model already exists. Training a new model leads to a model of poorer quality. User confirms that he stil wishes to use the new model.
         if BindSubscription(LPPredictionTest) then;
         SomeModelQuality := 0.66;
@@ -410,9 +390,6 @@ codeunit 139575 "LP Prediction Test"
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        if IsFirstWeekOfJanuary() then
-            exit;
-
         // [SCENARIO] Test the background task calls the evaluate and train in the good sequence and when expected
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         EnsureThatMockDataIsFetchedFromKeyVault();
@@ -538,11 +515,6 @@ codeunit 139575 "LP Prediction Test"
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
         LPModelManagement: Codeunit "LP Model Management";
     begin
-        if IsFirstWeekOfJanuary() then begin
-            Message(StrSubstNo(ModelTestedMsg, Round(SomeModelQuality * 100, 1)));
-            exit;
-        end;
-
         // [SCENARIO] Testing a model saves the model quality to the Setup
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
@@ -584,9 +556,6 @@ codeunit 139575 "LP Prediction Test"
         TotalInvoiceCount: Integer;
         Result: Boolean;
     begin
-        if IsFirstWeekOfJanuary() then
-            exit;
-
         // [SCENARIO] Testing that there is enough data available as a pre-req for creating/ evaluating models
         // [GIVEN] Create 50 sales invoices, 3 of them are delayed
         SalesInvoiceHeader.DeleteAll();
@@ -620,10 +589,8 @@ codeunit 139575 "LP Prediction Test"
 
     [SendNotificationHandler]
     procedure SetupInvoiceNotificationHandler(var Notification: Notification): Boolean
-    var
-        SalesHeader: Record "Sales Header";
     begin
-        Assert.AreEqual(StrSubstNo(PredictionResultWillBeLateTxt, SalesHeader."Document Type"::Invoice), Notification.Message(), 'Receiving the predition to be true.');
+        Assert.AreEqual(PredictionResultWillBeLateTxt, Notification.Message(), 'Receiving the predition to be true.');
     end;
 
     local procedure CreateEnabledSetup()
@@ -638,10 +605,8 @@ codeunit 139575 "LP Prediction Test"
 
     [SendNotificationHandler]
     procedure SetupOrderNotificationHandler(var Notification: Notification): Boolean
-    var
-        SalesHeader: Record "Sales Header";
     begin
-        Assert.AreEqual(StrSubstNo(PredictionResultWillBeLateTxt, SalesHeader."Document Type"::Order), Notification.Message(), 'Receiving the predition to be true.');
+        Assert.AreEqual(PredictionResultWillBeLateTxt, Notification.Message(), 'Receiving the predition to be true.');
     end;
 
     [MessageHandler]
@@ -739,7 +704,6 @@ codeunit 139575 "LP Prediction Test"
     local procedure MakeSureStandardModelExists();
     var
         MediaResources: Record "Media Resources";
-        LibraryUtility: Codeunit "Library - Utility";
         File: File;
         ModelInStream: InStream;
         ModelOutStream: OutStream;
@@ -780,12 +744,15 @@ codeunit 139575 "LP Prediction Test"
         GenJournalLine: Record "Gen. Journal Line";
         LPPredictionMirrorTest: Codeunit "LP ML Input Data Test";
         CustomerNo: Code[20];
+        CustDate: Date;
     begin
         CustomerNo := LibrarySales.CreateCustomerNo();
+        CustDate := CalcDate('<CY - 6M>'); // middle of the current year
+
         if Delayed then
-            LPPredictionMirrorTest.PostPaidInvoice(CustomerNo, CalcDate('<-1W>', Today()), CalcDate('<-5D>', Today()), CalcDate('<-1D>', Today()), SalesInvoiceHeader, GenJournalLine)
+            LPPredictionMirrorTest.PostPaidInvoice(CustomerNo, CalcDate('<-1W>', CustDate), CalcDate('<-5D>', CustDate), CalcDate('<-1D>', CustDate), SalesInvoiceHeader, GenJournalLine)
         else
-            LPPredictionMirrorTest.PostPaidInvoice(CustomerNo, CalcDate('<-1W>', Today()), CalcDate('<-5D>', Today()), CalcDate('<-6D>', Today()), SalesInvoiceHeader, GenJournalLine);
+            LPPredictionMirrorTest.PostPaidInvoice(CustomerNo, CalcDate('<-1W>', CustDate), CalcDate('<-5D>', CustDate), CalcDate('<-6D>', CustDate), SalesInvoiceHeader, GenJournalLine);
         exit(CustomerNo);
     end;
 
@@ -795,17 +762,10 @@ codeunit 139575 "LP Prediction Test"
     begin
         LibraryAzureKVMockMgmt.InitMockAzureKeyvaultSecretProvider();
         LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMapping('AllowedApplicationSecrets',
-		  'machinelearning,machinelearning-default,background-ml-enabled');
+          'machinelearning,machinelearning-default,background-ml-enabled');
         LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMappingFromFile('machinelearning', LibraryUtility.GetInetRoot() + '\App\Test\Files\AzureKeyVaultSecret\AzureAIUsageSecret.txt');
         LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMappingFromFile('machinelearning-default', LibraryUtility.GetInetRoot() + '\App\Test\Files\AzureKeyVaultSecret\AzureAIUsageSecret.txt');
         LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMapping('background-ml-enabled', '{ "something":false, "mllate": true }');
         LibraryAzureKVMockMgmt.UseAzureKeyvaultSecretProvider();
-    end;
-
-    local procedure IsFirstWeekOfJanuary(): Boolean
-    begin
-        // If not first week of January, run test
-        // In NO localization, CreateSalesInvoiceHeader fails because Settled VAT Period is closed
-        exit(Date2DWY(Today(), 2) = 1);
     end;
 }

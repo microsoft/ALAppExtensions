@@ -8,8 +8,12 @@
 /// </summary>
 /// <example>
 /// <code>
-/// MediaInteraction.RunModal();
-/// MediaInteraction.GetMedia(InStream);
+/// MediaUpload.RunModal();
+/// if MediaUpload.HasMedia() then begin
+///     MediaUpload.GetMedia(InStream);
+/// ...
+/// end;
+/// Clear(MediaUpload);
 /// </code>
 /// </example>
 page 1909 "Media Upload"
@@ -93,6 +97,19 @@ page 1909 "Media Upload"
     procedure GetMedia(var TempBlob: Codeunit "Temp Blob")
     begin
         MediaInteractionImpl.GetMedia(TempBlob);
+    end;
+
+    /// <summary>
+    /// Checks if the media is available and can be obtained with a <see cref="GetMedia"/> method.
+    /// </summary>
+    /// <remarks>
+    /// The media will not be available if the page was not opened
+    /// (e. g. MediaUpload.RunModal() function was not called) or if the dialog was canceled.
+    /// </remarks>
+    /// <returns>True if the media is available, false otherwise.</returns>
+    procedure HasMedia(): Boolean
+    begin
+        exit(MediaInteractionImpl.HasMedia());
     end;
 
     /// <summary>

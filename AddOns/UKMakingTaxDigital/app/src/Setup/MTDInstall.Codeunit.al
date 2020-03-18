@@ -210,8 +210,7 @@ codeunit 10539 "MTD Install"
         SeriesCode := Code;
     end;
 
-    [Scope('OnPrem')]
-    procedure InitProductionMode(var VATReportSetup: Record "VAT Report Setup"): Boolean
+    internal procedure InitProductionMode(var VATReportSetup: Record "VAT Report Setup"): Boolean
     begin
         with VATReportSetup do begin
             if "MTD OAuth Setup Option" = "MTD OAuth Setup Option"::Production then
@@ -223,8 +222,7 @@ codeunit 10539 "MTD Install"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure InitPeriodReminderCalculation(var VATReportSetup: Record "VAT Report Setup"): Boolean
+    internal procedure InitPeriodReminderCalculation(var VATReportSetup: Record "VAT Report Setup"): Boolean
     var
         DateFormulaText: Text;
     begin

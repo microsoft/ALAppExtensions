@@ -90,6 +90,11 @@ table 10676 "SAF-T Mapping Range"
                 end;
             end;
         }
+        field(7; "Include Incoming Balance"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Include Incoming Balance';
+        }
     }
 
     keys

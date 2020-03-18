@@ -3,13 +3,9 @@ codeunit 1958 "Late Payment Upgrade"
     Subtype = Upgrade;
 
     trigger OnUpgradePerCompany();
-    var
-        AppInfo: ModuleInfo;
     begin
         FillLastPostingDateFromExactInvoiceCount();
-        NavApp.GetCurrentModuleInfo(AppInfo);
-        if (AppInfo.DataVersion().Major() = 1) and (AppInfo.DataVersion().Minor() = 0) then
-            UpgradeSecretsToIsolatedStorage();
+        UpgradeSecretsToIsolatedStorage();
     end;
 
     trigger OnUpgradePerDatabase();
@@ -18,11 +14,8 @@ codeunit 1958 "Late Payment Upgrade"
 
     trigger OnValidateUpgradePerCompany()
     var
-        AppInfo: ModuleInfo;
     begin
-        NavApp.GetCurrentModuleInfo(AppInfo);
-        if (AppInfo.DataVersion().Major() = 1) and (AppInfo.DataVersion().Minor() = 0) then
-            VerifySecretsUpgradeToIsolatedStorage();
+        VerifySecretsUpgradeToIsolatedStorage();
     end;
 
     local procedure FillLastPostingDateFromExactInvoiceCount();
@@ -31,7 +24,6 @@ codeunit 1958 "Late Payment Upgrade"
         LPFeatureTableHelper: Codeunit "LP Feature Table Helper";
         LppSalesInvoiceHeaderInput: Query "LPP Sales Invoice Header Input";
         CountedInvoices: Integer;
-        CountedTilTheLastInvoiceUsedLastTime: Boolean;
     begin
         if not LPMachineLearningSetup.Get() then // never been initialized
             exit;
@@ -41,10 +33,10 @@ codeunit 1958 "Late Payment Upgrade"
             exit;
         LPFeatureTableHelper.SetFiltersOnSalesInvoiceHeaderToAddToInput(LppSalesInvoiceHeaderInput, '');
         LppSalesInvoiceHeaderInput.Open();
-        while CountedTilTheLastInvoiceUsedLastTime or LppSalesInvoiceHeaderInput.Read() do begin
+        while LppSalesInvoiceHeaderInput.Read() do begin
             CountedInvoices += 1;
             if CountedInvoices >= LPMachineLearningSetup."Exact Invoice No OnLastML" then
-                CountedTilTheLastInvoiceUsedLastTime := true;
+                break;
         end;
         LPMachineLearningSetup."Posting Date OnLastML" := LppSalesInvoiceHeaderInput.PostingDate;
         LppSalesInvoiceHeaderInput.Close();
@@ -55,24 +47,36 @@ codeunit 1958 "Late Payment Upgrade"
     local procedure UpgradeSecretsToIsolatedStorage()
     var
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetLatePaymentPredictionSecretsToISUpgradeTag()) then
+            exit;
+
         if LPMachineLearningSetup.Get() then begin
             MoveSecretToIsolatedStorage(LPMachineLearningSetup."Custom API Key");
             MoveSecretToIsolatedStorage(LPMachineLearningSetup."Custom API Uri");
         end;
+
+        UpgradeTag.SetUpgradeTag(GetLatePaymentPredictionSecretsToISUpgradeTag());
     end;
 
     local procedure VerifySecretsUpgradeToIsolatedStorage()
     var
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetLatePaymentPredictionSecretsToISValidationTag()) then
+            exit;
+
         if LPMachineLearningSetup.Get() then begin
             VerifySecret(LPMachineLearningSetup."Custom API Key");
             VerifySecret(LPMachineLearningSetup."Custom API Uri");
         end;
+
+        UpgradeTag.SetUpgradeTag(GetLatePaymentPredictionSecretsToISValidationTag());
     end;
 
-    local procedure MoveSecretToIsolatedStorage(ServicePasswordKey: Text[200])
+    local procedure MoveSecretToIsolatedStorage(ServicePasswordKey: Text[250])
     var
         ServicePassword: Record "Service Password";
         ServicePasswordKeyGuid: Guid;
@@ -92,7 +96,7 @@ codeunit 1958 "Late Payment Upgrade"
             IsolatedStorage.Set(ServicePasswordKey, ServicePassword.GetPassword(), DataScope::Company);
     end;
 
-    local procedure VerifySecret(ServicePasswordKey: Text[200])
+    local procedure VerifySecret(ServicePasswordKey: Text[250])
     var
         ServicePassword: Record "Service Password";
         IsolatedStorageValue: Text;
@@ -115,5 +119,22 @@ codeunit 1958 "Late Payment Upgrade"
 
         if IsolatedStorageValue <> ServicePasswordValue then
             Error('The secret value for key "%1" in isolated storage does not match the one in service password.', ServicePasswordKey);
+    end;
+
+    local procedure GetLatePaymentPredictionSecretsToISUpgradeTag(): Code[250]
+    begin
+        exit('MS-328257-LatePaymentPredictionSecretsToIS-20190925');
+    end;
+
+    local procedure GetLatePaymentPredictionSecretsToISValidationTag(): Code[250]
+    begin
+        exit('MS-328257-LatePaymentPredictionSecretsToIS-Validate-20190925');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerDatabaseUpgradeTags', '', false, false)]
+    local procedure RegisterPerDatabaseTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    begin
+        PerDatabaseUpgradeTags.Add(GetLatePaymentPredictionSecretsToISUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetLatePaymentPredictionSecretsToISValidationTag());
     end;
 }

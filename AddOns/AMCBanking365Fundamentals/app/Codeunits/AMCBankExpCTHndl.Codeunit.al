@@ -36,6 +36,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         IncorrectElementErr: Label 'There is an incorrect file conversion error element in the response. Reference: %1, error text: %2.';
         BankDataConvServSysErr: Label 'The AMC Banking has returned the following error message:';
         AddnlInfoTxt: Label 'For more information, go to %1.';
+        ContentTypeTxt: Label 'text/xml; charset=utf-8', Locked = true;
 
     [Scope('OnPrem')]
     procedure ConvertPaymentDataToFormat(var TempBlobPaymentFile: Codeunit "Temp Blob"; DataExch: Record "Data Exch.")
@@ -70,6 +71,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
 
         SOAPWebServiceRequestMgt.SetGlobals(BodyInStream,
           AMCBankServiceSetup."Service URL", AMCBankServiceSetup.GetUserName(), AMCBankServiceSetup.GetPassword());
+        SOAPWebServiceRequestMgt.SetContentType(ContentTypeTxt);
 
         if not SOAPWebServiceRequestMgt.SendRequestToWebService() then
             SOAPWebServiceRequestMgt.ProcessFaultResponse(StrSubstNo(AddnlInfoTxt, AMCBankServiceSetup."Support URL"));

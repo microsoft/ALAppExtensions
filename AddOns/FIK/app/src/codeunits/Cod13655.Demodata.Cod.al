@@ -91,12 +91,12 @@ codeunit 13655 "FIK Demodata"
     var
         PaymentMethod: Record "Payment Method";
     begin
-        InsertData(CopyStr(XINTBANKTxt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XInternationalBankTransferTxt, 1, MaxStrLen(PaymentMethod.Description)), 0, 'BTI', PaymentMethod.PaymentTypeValidation::International);
-        InsertData(CopyStr(XDOMBANKTxt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XDomesticlBankTransferTxt, 1, MaxStrLen(PaymentMethod.Description)), 0, 'BTD', PaymentMethod.PaymentTypeValidation::Domestic);
-        InsertData(CopyStr(XFIK71Txt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XFik71PaymentTxt, 1, MaxStrLen(PaymentMethod.Description)), 0, '71', PaymentMethod.PaymentTypeValidation::"FIK 71");
-        InsertData(CopyStr(XGIRO01Txt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XGIRO01PaymentTxt, 1, MaxStrLen(PaymentMethod.Description)), 0, '01', PaymentMethod.PaymentTypeValidation::"FIK 01");
-        InsertData(CopyStr(XFIK73Txt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XFik73PaymentTxt, 1, MaxStrLen(PaymentMethod.Description)), 0, '73', PaymentMethod.PaymentTypeValidation::"FIK 73");
-        InsertData(CopyStr(XGIRO04Txt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XGIRO04PaymentTxt, 1, MaxStrLen(PaymentMethod.Description)), 0, '04', PaymentMethod.PaymentTypeValidation::"FIK 04");
+        InsertData(CopyStr(XINTBANKTxt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XInternationalBankTransferTxt, 1, MaxStrLen(PaymentMethod.Description)), 'BTI', PaymentMethod.PaymentTypeValidation::International);
+        InsertData(CopyStr(XDOMBANKTxt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XDomesticlBankTransferTxt, 1, MaxStrLen(PaymentMethod.Description)), 'BTD', PaymentMethod.PaymentTypeValidation::Domestic);
+        InsertData(CopyStr(XFIK71Txt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XFik71PaymentTxt, 1, MaxStrLen(PaymentMethod.Description)), '71', PaymentMethod.PaymentTypeValidation::"FIK 71");
+        InsertData(CopyStr(XGIRO01Txt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XGIRO01PaymentTxt, 1, MaxStrLen(PaymentMethod.Description)), '01', PaymentMethod.PaymentTypeValidation::"FIK 01");
+        InsertData(CopyStr(XFIK73Txt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XFik73PaymentTxt, 1, MaxStrLen(PaymentMethod.Description)), '73', PaymentMethod.PaymentTypeValidation::"FIK 73");
+        InsertData(CopyStr(XGIRO04Txt, 1, MaxStrLen(PaymentMethod.Code)), CopyStr(XGIRO04PaymentTxt, 1, MaxStrLen(PaymentMethod.Description)), '04', PaymentMethod.PaymentTypeValidation::"FIK 04");
     end;
 
     local procedure IsDataExchDefImported(DataExchDefCode: Code[20]): Boolean;
@@ -106,7 +106,7 @@ codeunit 13655 "FIK Demodata"
         exit(DataExchDef.Get(DataExchDefCode));
     end;
 
-    local procedure InsertData(Code: Code[10]; Description: Text[100]; BalAccountType: Integer; PmtExportLineDefn: Code[20]; PaymentTypeValidation: Option);
+    local procedure InsertData(Code: Code[10]; Description: Text[100]; PmtExportLineDefn: Code[20]; PaymentTypeValidation: Option);
     var
         PaymentMethod: Record "Payment Method";
     BEGIN

@@ -12,26 +12,14 @@
     "logo":  "",
     "dependencies":  [
                          {
-                             "appId":  "644f7e5b-a81c-408a-aaa2-766e655a80a3",
+                             "id":  "644f7e5b-a81c-408a-aaa2-766e655a80a3",
                              "name":  "Payment and Reconciliation Formats (DK)",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          },
                          {
-                             "appId":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         },
-                         {
-                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
-                             "name":  "Base Application",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         },
-                         {
-                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
-                             "name":  "System Application",
                              "publisher":  "Microsoft",
                              "version":  "16.0.0.0"
                          }
@@ -51,5 +39,6 @@
                      }
                  ],
     "target":  "OnPrem",
-    "showMyCode":  false
+    "showMyCode":  false,
+    "application":  "16.0.0.0"
 }

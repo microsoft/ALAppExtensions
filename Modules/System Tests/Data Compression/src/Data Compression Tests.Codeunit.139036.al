@@ -322,6 +322,8 @@ codeunit 139036 "Data Compression Tests"
         // [THEN] verify that IsGZip returns true for compressed stream and false for the uncompressed stream
         Assert.IsTrue(DataCompression.IsGZip(GZipCompressedInStream), 'IsGzip should have returned true for the GZip compressed stream.');
         Assert.IsFalse(DataCompression.IsGZip(ContentInStream), 'IsGzip should have returned false for the uncompressed stream.');
+        Assert.IsFalse(GZipCompressedInStream.EOS(), 'IsGzip should not have moved the input stream to EOS.');
+        Assert.IsFalse(ContentInStream.EOS(), 'IsGzip should not have moved the input stream to EOS.');
 
         // Clean up
         Clear(DataCompression);

@@ -36,15 +36,13 @@ codeunit 10537 "MTD Connection"
         Error_NOT_FOUND_Txt: Label 'The remote endpoint has indicated that no associated data is found.', Locked = true;
         Error_TOO_MANY_REQ_Txt: Label 'The HMRC service is busy. Try again later.', Locked = true;
 
-    [Scope('OnPrem')]
-    procedure InvokeRequest_SubmitVATReturn(var ResponseJson: Text; var RequestJson: Text; var HttpError: Text): Boolean
+    internal procedure InvokeRequest_SubmitVATReturn(var ResponseJson: Text; var RequestJson: Text; var HttpError: Text): Boolean
     begin
         CheckOAuthConfigured(false);
         exit(InvokeRequest('POST', SubmitVATReturnPath(), ResponseJson, RequestJson, HttpError, SubmitVATReturnTxt));
     end;
 
-    [Scope('OnPrem')]
-    procedure InvokeRequest_RetrieveVATReturns(PeriodKey: Code[10]; var ResponseJson: Text; ShowMessage: Boolean; var HttpError: Text): Boolean
+    internal procedure InvokeRequest_RetrieveVATReturns(PeriodKey: Code[10]; var ResponseJson: Text; ShowMessage: Boolean; var HttpError: Text): Boolean
     var
         RequestJson: Text;
     begin
@@ -52,8 +50,7 @@ codeunit 10537 "MTD Connection"
         exit(InvokeRequest('GET', RetrieveVATReturnPath(PeriodKey), ResponseJson, RequestJson, HttpError, RetrieveVATReturnTxt));
     end;
 
-    [Scope('OnPrem')]
-    procedure InvokeRequest_RetrieveVATReturnPeriods(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text; OpenOAuthSetup: Boolean): Boolean
+    internal procedure InvokeRequest_RetrieveVATReturnPeriods(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text; OpenOAuthSetup: Boolean): Boolean
     var
         RequestJson: Text;
     begin
@@ -61,8 +58,7 @@ codeunit 10537 "MTD Connection"
         exit(InvokeRequest('GET', RetrieveObligationsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATReturnPeriodsTxt));
     end;
 
-    [Scope('OnPrem')]
-    procedure InvokeRequest_RetrieveLiabilities(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text): Boolean
+    internal procedure InvokeRequest_RetrieveLiabilities(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text): Boolean
     var
         RequestJson: Text;
     begin
@@ -70,8 +66,7 @@ codeunit 10537 "MTD Connection"
         exit(InvokeRequest('GET', RetrieveLiabilitiesPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATLiabilitiesTxt));
     end;
 
-    [Scope('OnPrem')]
-    procedure InvokeRequest_RetrievePayments(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text): Boolean
+    internal procedure InvokeRequest_RetrievePayments(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text): Boolean
     var
         RequestJson: Text;
     begin
@@ -79,8 +74,7 @@ codeunit 10537 "MTD Connection"
         exit(InvokeRequest('GET', RetrievePaymentsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATPaymentsTxt));
     end;
 
-    [Scope('OnPrem')]
-    procedure InvokeRequest_RefreshAccessToken(var HttpError: Text): Boolean;
+    internal procedure InvokeRequest_RefreshAccessToken(var HttpError: Text): Boolean;
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
     begin
@@ -123,8 +117,7 @@ codeunit 10537 "MTD Connection"
             exit(OAuth20Setup.Status = OAuth20Setup.Status::Enabled);
     end;
 
-    [Scope('OnPrem')]
-    procedure GetOAuthSetupCode(): Code[20]
+    internal procedure GetOAuthSetupCode(): Code[20]
     var
         VATReportSetup: Record "VAT Report Setup";
     begin
@@ -138,24 +131,28 @@ codeunit 10537 "MTD Connection"
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
         VATReportSetup: Record "VAT Report Setup";
-        JSONMgt: Codeunit "JSON Management";
+        JObject: JsonObject;
+        JObject2: JsonObject;
         HttpLogError: Text;
     begin
         OAuth20Setup.GET(GetOAuthSetupCode());
-
-        JSONMgt.SetValue('Header.Accept', 'application/vnd.hmrc.1.0+json');
-        JSONMgt.SetValue('Header.Content-Type', 'application/json');
-        JSONMgt.SetValue('URLRequestPath', RequestPath);
-        JSONMgt.SetValue('Method', Method);
-        if RequestJson <> '' then
-            JSONMgt.AddJson('Content', RequestJson);
-
         VATReportSetup.Get();
+
         if (VATReportSetup."MTD OAuth Setup Option" = VATReportSetup."MTD OAuth Setup Option"::Sandbox) and
            (VATReportSetup."MTD Gov Test Scenario" <> '')
         then
-            JSONMgt.SetValue('Header.Gov-Test-Scenario', VATReportSetup."MTD Gov Test Scenario");
-        RequestJson := JSONMgt.WriteObjectToString();
+            JObject2.Add('Gov-Test-Scenario', VATReportSetup."MTD Gov Test Scenario");
+        JObject.Add('Header', JObject2);
+        JObject.Add('Accept', 'application/vnd.hmrc.1.0+json');
+        JObject.Add('URLRequestPath', RequestPath);
+        JObject.Add('Method', Method);
+        if RequestJson <> '' then
+            if JObject2.ReadFrom(RequestJson) then begin
+                JObject.Add('Content-Type', 'application/json');
+                JObject.Add('Content', JObject2);
+            end;
+
+        JObject.WriteTo(RequestJson);
 
         Result := OAuth20Setup.InvokeRequest(RequestJson, ResponseJson, HttpError, true);
 
@@ -182,26 +179,26 @@ codeunit 10537 "MTD Connection"
             end;
     end;
 
-    [Scope('OnPrem')]
-    procedure IsError404NotFound(ResponseJson: Text): Boolean
+    internal procedure IsError404NotFound(ResponseJson: Text): Boolean
     var
-        JSONMgt: Codeunit "JSON Management";
+        OAuth20Mgt: Codeunit "OAuth 2.0 Mgt.";
+        StatusCode: Integer;
+        StatusReason: Text;
+        StatusDetails: Text;
     begin
-        if not JSONMgt.InitializeFromString(ResponseJson) then
-            exit(false);
-
-        exit(JSONMgt.HasValue('Error.code', '404'));
+        if OAuth20Mgt.GetHttpStatusFromJsonResponse(ResponseJson, StatusCode, StatusReason, StatusDetails) then
+            exit(StatusCode = 404);
     end;
 
-    [Scope('OnPrem')]
-    procedure IsError408Timeout(ResponseJson: Text): Boolean;
+    internal procedure IsError408Timeout(ResponseJson: Text): Boolean;
     var
-        JSONMgt: Codeunit "JSON Management";
+        OAuth20Mgt: Codeunit "OAuth 2.0 Mgt.";
+        StatusCode: Integer;
+        StatusReason: Text;
+        StatusDetails: Text;
     begin
-        if not JSONMgt.InitializeFromString(ResponseJson) then
-            exit(false);
-
-        exit(JSONMgt.HasValue('Error.code', '408'));
+        if OAuth20Mgt.GetHttpStatusFromJsonResponse(ResponseJson, StatusCode, StatusReason, StatusDetails) then
+            exit(StatusCode = 408);
     end;
 
     /*
@@ -230,43 +227,58 @@ codeunit 10537 "MTD Connection"
     */
     local procedure TryParseHMRCErrors(var HttpError: Text; var HttpLogError: Text; ResponseJson: Text): Boolean
     var
-        JSONMgt: Codeunit "JSON Management";
-        HttpErrorCode: Text;
-        HttpErrorName: Text;
-        HttpErrorDescription: Text;
+        OAuth20Mgt: Codeunit "OAuth 2.0 Mgt.";
+        JObject: JsonObject;
+        JToken: JsonToken;
+        JToken2: JsonToken;
+        StatusCode: Integer;
+        StatusReason: Text;
+        StatusDetails: Text;
         JsonErrorMessage: Text;
         HMRCErrorMessage: Text;
-        i: Integer;
     begin
         HttpLogError := HttpError;
-        if not JSONMgt.GetJsonWebResponseError(ResponseJson, HttpErrorCode, HttpErrorName, HttpErrorDescription) then
+
+        if not OAuth20Mgt.GetHttpStatusFromJsonResponse(ResponseJson, StatusCode, StatusReason, StatusDetails) then
             exit(false);
 
-        JsonErrorMessage := JSONMgt.GetValue('Content.message');
+        if not JObject.ReadFrom(ResponseJson) then
+            exit(false);
+
+        if not JObject.SelectToken('Content.message', JToken) then
+            exit(false);
+
+        JsonErrorMessage := JToken.AsValue().AsText();
         if JsonErrorMessage = '' then
             exit(false);
 
-        if JSONMgt.GetValue('Content.code') <> '' then begin
-            HttpError := JsonErrorMessage;
-            if JSONMgt.SelectTokenFromRoot('Content.errors') then
-                // {"code", "message",  "errors":[{"code", "message", "path"},...]}
-                for i := 0 to JSONMgt.GetCount() - 1 do
-                    if JSONMgt.SelectItemFromRoot('Content.errors', i) then begin
-                        HttpError += '\' + JSONMgt.GetValue('message');
-                        if JSONMgt.GetValue('path') <> '' then
-                            HttpError += StrSubstNo(' (path %1)', JSONMgt.GetValue('path'));
-                    end;
-            HttpLogError := StrSubstNo('Http error %1 (%2). %3', HttpErrorCode, HttpErrorName, HttpError);
-            if (HttpErrorCode = '429') then
-                HttpError := Error_TOO_MANY_REQ_Txt;
-            exit(true);
-        end;
+        // {"code", "message",  "errors":[{"code", "message", "path"},...]}
+        if JObject.SelectToken('Content.code', JToken) then
+            if JToken.AsValue().AsText() <> '' then begin
+                HttpError := JsonErrorMessage;
+                if JObject.SelectToken('Content.errors', JToken) then
+                    if JToken.IsArray() then
+                        foreach JToken in JToken.AsArray() do begin
+                            if JToken.SelectToken('message', JToken2) then
+                                if JToken2.AsValue().AsText() <> '' then
+                                    HttpError += '\' + JToken2.AsValue().AsText();
+                            if JToken.SelectToken('path', JToken2) then
+                                if JToken2.AsValue().AsText() <> '' then
+                                    HttpError += StrSubstNo(' (path %1)', JToken2.AsValue().AsText());
+                        end;
+                HttpLogError := StrSubstNo('HTTP error %1 (%2). %3', StatusCode, StatusReason, HttpError);
+                if (StatusCode = 429) then
+                    HttpError := Error_TOO_MANY_REQ_Txt;
+                exit(true);
+            end;
 
-        if JSONMgt.GetValue('Content.statusCode') = '' then
+        if not JObject.SelectToken('Content.statusCode', JToken) then
+            exit(false);
+        if JToken.AsValue().AsText() = '' then
             exit(false);
 
-        case HttpErrorCode of
-            '400':
+        case StatusCode of
+            400:
                 case JsonErrorMessage of
                     'VRN_INVALID':
                         HMRCErrorMessage := Error_VRN_INVALID_Txt;
@@ -289,7 +301,7 @@ codeunit 10537 "MTD Connection"
                     'INVALID_NUMERIC_VALUE':
                         HMRCErrorMessage := Error_INVALID_NUMERIC_VALUE_Txt;
                 end;
-            '403':
+            403:
                 case JsonErrorMessage of
                     'DATE_RANGE_TOO_LARGE':
                         HMRCErrorMessage := Error_DATE_RANGE_TOO_LARGE_Txt;
@@ -300,7 +312,7 @@ codeunit 10537 "MTD Connection"
                     'CLIENT_OR_AGENT_NOT_AUTHORISED':
                         HMRCErrorMessage := Error_CLIENT_OR_AGENT_NOT_AUTHORISED_Txt;
                 end;
-            '404':
+            404:
                 case JsonErrorMessage of
                     'NOT_FOUND':
                         HMRCErrorMessage := Error_NOT_FOUND_Txt;
@@ -309,7 +321,7 @@ codeunit 10537 "MTD Connection"
 
         if HMRCErrorMessage <> '' then begin
             HttpError := HMRCErrorMessage;
-            HttpLogError := StrSubstNo('Http error %1 (%2). %3', HttpErrorCode, HttpErrorName, HttpError);
+            HttpLogError := StrSubstNo('HTTP error %1 (%2). %3', StatusCode, StatusReason, HttpError);
             exit(true);
         end;
 

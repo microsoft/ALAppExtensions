@@ -214,8 +214,9 @@ report 11016 "Create XML-File VAT Adv.Notif."
         CheckAddressData(4, CompanyInfo.City, 30);
         CheckAddressData(7, AdditionalInformation, 250);
 
-        AddAddressText(1, 'ElsterOnline-Portal: ' + CompanyInfo."VAT Representative" + '; ');
-        AddAddressText(1, CompanyInfo.Address + '; ');
+
+        AddAddressText(1, 'ElsterOnline-Portal: ' + CompanyInfo."VAT Representative" + '; ')
+        AddAddressText(1, CopyStr(CompanyInfo.Address + '; ', 1, 80));
         AddAddressText(1, '; ');
         AddAddressText(1, '; ');
         AddAddressText(1, CompanyInfo."Address 2" + '; ');
@@ -226,7 +227,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
         AddAddressText(1, CompanyInfo."E-Mail");
 
         AddAddressText(2, ContactForTaxOffice + '; ');
-        AddAddressText(2, CompanyInfo.Address + '; ');
+        AddAddressText(2, CopyStr(CompanyInfo.Address + '; ', 1, 80));
         AddAddressText(2, '; ');
         AddAddressText(2, '; ');
         AddAddressText(2, CompanyInfo."Address 2" + '; ');

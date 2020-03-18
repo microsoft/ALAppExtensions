@@ -52,9 +52,11 @@ page 10688 "SAF-T Export Subpage"
                 PromotedIsBig = true;
                 trigger OnAction();
                 var
+                    SAFTExportLine: Record "SAF-T Export Line";
                     SAFTExportMgt: Codeunit "SAF-T Export Mgt.";
                 begin
-                    SAFTExportMgt.RestartTaskOnExportLine(Rec);
+                    CurrPage.SetSelectionFilter(SAFTExportLine);
+                    SAFTExportMgt.RestartTaskOnExportLine(SAFTExportLine);
                     CurrPage.Update();
                 end;
             }

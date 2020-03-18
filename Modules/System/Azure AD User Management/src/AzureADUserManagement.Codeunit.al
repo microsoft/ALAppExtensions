@@ -60,8 +60,8 @@ codeunit 9010 "Azure AD User Management"
     end;
 
     /// <summary>    
-    /// Synchronizes all the users from the database with the ones from Azure AD. If 
-    /// the users do not exist in the database, they get created.
+    /// Synchronizes all the users from the database with the ones from Azure AD.
+    /// Azure AD users that do not exist in the database are created.
     /// </summary>
     procedure SynchronizeAllLicensedUsersFromDirectory()
     begin
@@ -78,13 +78,22 @@ codeunit 9010 "Azure AD User Management"
     end;
 
     /// <summary>
-    /// Sets a flag that is used to determine whether a test is in progress or not.
+    /// Sets a flag that is used to determine whether a test is in progress.
     /// </summary>
     /// <param name="TestInProgress">The value to be set to the flag.</param>
     [Scope('OnPrem')]
     procedure SetTestInProgress(TestInProgress: Boolean)
     begin
         AzureADUserMgmtImpl.SetTestInProgress(TestInProgress);
+    end;
+
+    /// <summary>
+    /// Integration event, raised from "Azure AD User Update Wizard" page when the changes are applied.
+    /// </summary>
+    /// <param name="UserSecurityID">The ID of the user whos permission sets will be restored.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnRestoreDefaultPermissions(UserSecurityID: Guid)
+    begin
     end;
 }
 

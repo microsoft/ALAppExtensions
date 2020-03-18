@@ -14,7 +14,7 @@ page 10674 "SAF-T Setup Wizard"
                 Caption = '';
                 Editable = false;
                 Visible = TopBannerVisible and not FinishActionEnabled;
-                field(MediaResourcesStandard; MediaResourcesStandard."Media Reference")
+                field(MediaResourcesStandard; MediaResourcesStd."Media Reference")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
@@ -26,7 +26,7 @@ page 10674 "SAF-T Setup Wizard"
                 Caption = '';
                 Editable = false;
                 Visible = TopBannerVisible and FinishActionEnabled;
-                field(MediaResourcesDone; MediaResourcesDone."Media Reference")
+                field(MediaResourcesDone; MediaResourcesFinished."Media Reference")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
@@ -59,13 +59,13 @@ page 10674 "SAF-T Setup Wizard"
                 }
                 group(MappingSourceOnPrem)
                 {
-                    Visible = not MappingSourceLoaded;
+                    Visible = not MappingSourceImported;
                     ShowCaption = false;
                     InstructionalText = 'Specify the preferred mapping type and then choose the Import the source files for mapping button. Import the mapping codes for standard tax and according to the mapping type specified in the field. Then choose Next.';
                 }
                 group(MappingSourceLoaded)
                 {
-                    Visible = MappingSourceLoaded;
+                    Visible = MappingSourceImported;
                     ShowCaption = false;
                     InstructionalText = 'Specify the preferred mapping type and choose Next.';
                 }
@@ -83,6 +83,7 @@ page 10674 "SAF-T Setup Wizard"
                             CurrPage.Update(true);
                             SAFTStandardAccMappingSelected := IsStandardAccountMapping();
                             MappingTypeSpecified := "Mapping Type" <> 0;
+                            CalcMappingTypeNextStepVisibility();
                         end;
                     }
                 }
@@ -151,7 +152,7 @@ page 10674 "SAF-T Setup Wizard"
                             UpdateGLAccountsMappedInfo();
                         end;
                     }
-                    field(GLAccountsMappedInfo; GLAccountsMappedInfo)
+                    field(GLAccountsMappedInfo; GLAccountsMapped)
                     {
                         Caption = 'G/L Accounts Mapped:';
                         Editable = false;
@@ -197,7 +198,7 @@ page 10674 "SAF-T Setup Wizard"
                             UpdateVATPostingSetupMappedInfo();
                         end;
                     }
-                    field(VATMappedInfo; VATMappedInfo)
+                    field(VATMappedInfo; VATMapped)
                     {
                         Caption = 'VAT Posting Setup mapped:';
                         Editable = false;
@@ -356,7 +357,7 @@ page 10674 "SAF-T Setup Wizard"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Import the source files for mapping';
-                Visible = MappingTypeStepVisible and MappingTypeSpecified and (not MappingSourceLoaded);
+                Visible = MappingTypeStepVisible and MappingTypeSpecified and (not MappingSourceImported);
                 Image = ImportCodes;
                 InFooterBar = true;
                 trigger OnAction();
@@ -375,13 +376,11 @@ page 10674 "SAF-T Setup Wizard"
     trigger OnQueryClosePage(CloseAction: Action): Boolean;
     var
         AssistedSetup: Codeunit "Assisted Setup";
-        Info: ModuleInfo;
     begin
-        NavApp.GetCurrentModuleInfo(Info);
         if GetLastErrorText() <> '' then
             exit(true);
         if CloseAction = CloseAction::OK then
-            If not AssistedSetup.IsComplete(Info.Id(), PAGE::"SAF-T Setup Wizard") then
+            If not AssistedSetup.IsComplete(PAGE::"SAF-T Setup Wizard") then
                 if not Confirm(SetupNotCompletedQst) then
                     Error('');
     end;
@@ -410,8 +409,8 @@ page 10674 "SAF-T Setup Wizard"
         CompanyInformation: Record "Company Information";
         MediaRepositoryDone: Record "Media Repository";
         MediaRepositoryStandard: Record "Media Repository";
-        MediaResourcesDone: Record "Media Resources";
-        MediaResourcesStandard: Record "Media Resources";
+        MediaResourcesFinished: Record "Media Resources";
+        MediaResourcesStd: Record "Media Resources";
         Step: Option Start,MappingType,MappingSourceLoaded,MappingAccount,MappingVAT,DimensionExport,Contact,Finish;
         BackActionEnabled: Boolean;
         FinishActionEnabled: Boolean;
@@ -428,10 +427,10 @@ page 10674 "SAF-T Setup Wizard"
         SAFTStandardAccMappingSelected: Boolean;
         AccountingPeriodVisible: Boolean;
         DateRangeVisible: Boolean;
-        MappingSourceLoaded: Boolean;
+        MappingSourceImported: Boolean;
         MappingTypeSpecified: Boolean;
-        GLAccountsMappedInfo: Text[20];
-        VATMappedInfo: Text[20];
+        GLAccountsMapped: Text[20];
+        VATMapped: Text[20];
         MappingTypeNotSpecifiedErr: Label 'A mapping type is not specified.';
         SetupNotCompletedQst: Label 'Set up SAF-T has not been completed.\\Are you sure that you want to exit?', Comment = '%1 = Set-up of SAFT';
         MappingSourceNotLoadedMsg: Label 'A source for mapping was not loaded due to the following error: %1.';
@@ -470,10 +469,8 @@ page 10674 "SAF-T Setup Wizard"
     local procedure FinishAction();
     var
         AssistedSetup: Codeunit "Assisted Setup";
-        Info: ModuleInfo;
     begin
-        NavApp.GetCurrentModuleInfo(Info);
-        AssistedSetup.Complete(Info.Id(), PAGE::"SAF-T Setup Wizard");
+        AssistedSetup.Complete(PAGE::"SAF-T Setup Wizard");
         CurrPage.Close();
     end;
 
@@ -659,31 +656,32 @@ page 10674 "SAF-T Setup Wizard"
         if MediaRepositoryStandard.GET('AssistedSetup-NoText-400px.png', FORMAT(CurrentClientType())) AND
            MediaRepositoryDone.GET('AssistedSetupDone-NoText-400px.png', FORMAT(CurrentClientType()))
         then
-            if MediaResourcesStandard.GET(MediaRepositoryStandard."Media Resources Ref") AND
-                MediaResourcesDone.GET(MediaRepositoryDone."Media Resources Ref")
+            if MediaResourcesStd.GET(MediaRepositoryStandard."Media Resources Ref") AND
+                MediaResourcesFinished.GET(MediaRepositoryDone."Media Resources Ref")
             then
-                TopBannerVisible := MediaResourcesDone."Media Reference".HasValue();
+                TopBannerVisible := MediaResourcesFinished."Media Reference".HasValue();
     end;
 
     local procedure CalcMappingTypeNextStepVisibility()
     var
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
-        MappingSourceLoaded := SAFTXMLImport.MappingSourceLoaded(Rec);
-        NextActionEnabled := MappingSourceLoaded;
+        MappingSourceImported := SAFTXMLImport.MappingSourceLoaded(Rec);
+        if not (Step in [Step::Start, Step::Finish]) then
+            NextActionEnabled := MappingSourceImported;
     end;
 
     local procedure UpdateGLAccountsMappedInfo()
     var
         SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
     begin
-        GLAccountsMappedInfo := SAFTMappingHelper.GetGLAccountsMappedInfo(Code);
+        GLAccountsMapped := SAFTMappingHelper.GetGLAccountsMappedInfo(Code);
     end;
 
     local procedure UpdateVATPostingSetupMappedInfo()
     var
         SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
     begin
-        VATMappedInfo := SAFTMappingHelper.GetVATPostingSetupMappedInfo();
+        VATMapped := SAFTMappingHelper.GetVATPostingSetupMappedInfo();
     end;
 }

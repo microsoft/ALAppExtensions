@@ -25,13 +25,13 @@ page 1904 "C5 Company Settings"
                 Style=Subordinate;
                 ApplicationArea=All;
             }
-            field(CurrentPeriod;CurrentPeriod)
+            field(CurrentPeriod;CurrentPeriodValue)
             {
                 ApplicationArea=All;
                 Caption='Current Period';
                 ToolTip='Specifies the start date of the current accounting period. Transactions after this date are migrated individually. Transactions before this date are aggregated per account, and migrated as a single amount.';
             }
-            field(LocalCurrencyCode;LocalCurrencyCode)
+            field(LocalCurrencyCode;LocalCurrencyCodeValue)
             {
                 ApplicationArea=All;
                 Caption='Local Currency Code';
@@ -60,8 +60,8 @@ page 1904 "C5 Company Settings"
     }
 
     var
-        CurrentPeriod: Date;
-        LocalCurrencyCode: Code[3];
+        CurrentPeriodValue: Date;
+        LocalCurrencyCodeValue: Code[3];
         IsLocalCurrencyFieldVisible: Boolean;
 
     trigger OnOpenPage();
@@ -77,15 +77,15 @@ page 1904 "C5 Company Settings"
         AccountingPeriod.SetFilter("Starting Date", '<=%1', WorkDate());
         AccountingPeriod.SetAscending("Starting Date", true);
         if AccountingPeriod.FindLast() then
-           CurrentPeriod := AccountingPeriod."Starting Date"
+           CurrentPeriodValue := AccountingPeriod."Starting Date"
         else
-           CurrentPeriod := CalcDate('<CY-1Y+1D>', WorkDate());
+           CurrentPeriodValue := CalcDate('<CY-1Y+1D>', WorkDate());
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean;
     begin
         SaveCurrentPeriod();
-        SaveLocalCurrency(CloseAction);
+        SaveLocalCurrency();
         exit(true);
     end;
     
@@ -94,19 +94,19 @@ page 1904 "C5 Company Settings"
         C5SchemaParameters: Record "C5 Schema Parameters";
     begin
         C5SchemaParameters.GetSingleInstance();
-        C5SchemaParameters.Validate(CurrentPeriod, CurrentPeriod);
+        C5SchemaParameters.Validate(CurrentPeriod, CurrentPeriodValue);
         C5SchemaParameters.Modify();
     end;
 
-    local procedure SaveLocalCurrency(CloseAction: Action)
+    local procedure SaveLocalCurrency()
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
-        if LocalCurrencyCode = '' then
+        if LocalCurrencyCodeValue = '' then
             exit;
 
         GeneralLedgerSetup.Get();
-        GeneralLedgerSetup.Validate("LCY Code", LocalCurrencyCode);
+        GeneralLedgerSetup.Validate("LCY Code", LocalCurrencyCodeValue);
         GeneralLedgerSetup.Modify(true);
     end;
 }

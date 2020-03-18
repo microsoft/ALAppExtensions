@@ -39,8 +39,8 @@ codeunit 1956 "LPP Scheduler"
     var
         JobQueueEntry: Record "Job Queue Entry";
         JobQueueManagement: Codeunit "Job Queue Management";
-        UserLoginTimeTracker : Codeunit "User Login Time Tracker";
-        FromDate : Date;
+        UserLoginTimeTracker: Codeunit "User Login Time Tracker";
+        FromDate: Date;
     begin
         FromDate := CalcDate('<-2W>');
 
@@ -59,7 +59,7 @@ codeunit 1956 "LPP Scheduler"
         CreateJobQueueEntry(JobQueueEntry, true);
         Codeunit.Run(Codeunit::"Job Queue - Enqueue", JobQueueEntry);
         Date.Get(Date."Period Type"::Date, DT2Date(JobQueueEntry."Earliest Start Date/Time"));
-        Message(ScheduledLPPEnabledMsg, Date."Period Name");
+        Message(ScheduledLPPEnabledMsg);
     end;
 
     procedure DeactivateNotification(SetupNotification: Notification)

@@ -69,15 +69,18 @@ page 358 Objects
     // in case the object comes from an installed extension.
     trigger OnAfterGetRecord()
     var
-        NAVApp: Record "NAV App";
+        PublishedApplication: Record "Published Application";
     begin
         AppName := '';
 
         if IsNullGuid("App Package ID") then
             exit;
 
-        if NAVApp.Get("App Package ID") then
-            AppName := NAVApp.Name;
+        PublishedApplication.SetRange("Package ID", "App Package ID");
+        PublishedApplication.SetRange("Tenant Visible", true);
+
+        if PublishedApplication.FindFirst() then
+            AppName := PublishedApplication.Name;
     end;
 
     var

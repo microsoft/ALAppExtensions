@@ -46,3 +46,39 @@ procedure RemoveSuperPermissions(UserSecurityId: Guid)
 
 The security ID of the user to modify.
 
+### CanManageUsersOnTenant (Method) <a name="CanManageUsersOnTenant"></a> 
+
+ Checks whether the user has permission to manage users in the tenant.
+ 
+
+#### Syntax
+```
+procedure CanManageUsersOnTenant(UserSecurityId: Guid): Boolean
+```
+#### Parameters
+*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The security ID of the user to check for.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the user with the given user security ID can manage users on tenant; false otherwise.
+### HasUserCustomPermissions (Method) <a name="HasUserCustomPermissions"></a> 
+
+ Checks whether custom permissions are assigned to the user.
+ 
+
+#### Syntax
+```
+procedure HasUserCustomPermissions(UserSecurityId: Guid): Boolean
+```
+#### Parameters
+*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The security ID of the user to check for.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the user with the given user security ID has custom permissions; false otherwise.

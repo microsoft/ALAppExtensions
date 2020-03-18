@@ -116,6 +116,8 @@ A boolean that indicates whether the user was retrieved.
  Gets the assigned plans for the specified user from Azure AD.
  
 
+If the provided user is null, the output parameter holding the assigned plans remains unchanged.
+
 #### Syntax
 ```
 [Scope('OnPrem')]
@@ -134,6 +136,8 @@ The assigned plans for the user.
 
  Gets the roles assigned to the user from Azure AD.
  
+
+If the provided user is null, the output parameter holding the user roles remains unchanged.
 
 #### Syntax
 ```

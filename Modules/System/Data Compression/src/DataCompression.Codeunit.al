@@ -65,7 +65,7 @@ codeunit 425 "Data Compression"
     /// <summary>
     /// Saves the ZipArchive to the given instance of Temp Blob codeunit.
     /// </summary>
-    /// <param name="Temp Blob">The instance of the Temp Blob codeunit to which the ZipArchive is saved.</param>
+    /// <param name="TempBlob">The instance of the Temp Blob codeunit to which the ZipArchive is saved.</param>
     procedure SaveZipArchive(var TempBlob: Codeunit "Temp Blob")
     begin
         DataCompressionImpl.SaveZipArchive(TempBlob);
@@ -111,9 +111,10 @@ codeunit 425 "Data Compression"
 
 
     /// <summary>
-    /// Returns true if and only if the given InStream is compressed with GZip.
+    /// Determines whether the given InStream is compressed with GZip.
     /// </summary>
     /// <param name="InStream">An InStream that contains binary content.</param>
+    /// <returns>Returns true if and only if the given InStream is compressed with GZip</returns>
     procedure IsGZip(InStream: InStream): Boolean
     begin
         EXIT(DataCompressionImpl.IsGZip(InStream));

@@ -42,7 +42,7 @@ report 10671 "SAF-T Copy Mapping"
                                 FromMappingRangeCode := NewSAFTMappingRange.Code;
                         end;
                     }
-                    field(Replace; Replace)
+                    field(ReplaceControl; Replace)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Replace Existing Mapping';

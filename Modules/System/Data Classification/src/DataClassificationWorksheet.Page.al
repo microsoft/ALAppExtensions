@@ -215,6 +215,22 @@ page 1751 "Data Classification Worksheet"
                         SetSensitivityToSelection("Data Sensitivity"::"Company Confidential");
                     end;
                 }
+                action("Set as Unclassified")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Set as Unclassified';
+                    Image = ApplyEntries;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+                    PromotedOnly = true;
+                    ToolTip = 'Set the data sensitivity of the selected fields to Unclassified.';
+
+                    trigger OnAction()
+                    begin
+                        SetSensitivityToSelection("Data Sensitivity"::Unclassified);
+                    end;
+                }
             }
             group(View)
             {

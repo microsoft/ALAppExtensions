@@ -39,7 +39,7 @@ table 3700 "Manual Setup"
         {
             Caption = 'Extension Name';
             FieldClass = FlowField;
-            CalcFormula = Lookup ("NAV App".Name where(ID = FIELD("App ID")));
+            CalcFormula = Lookup ("Published Application".Name where(ID = FIELD("App ID")));
             Editable = false;
         }
         field(8; Category; Enum "Manual Setup Category")

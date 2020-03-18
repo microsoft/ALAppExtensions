@@ -20,9 +20,19 @@ codeunit 148080 "Library - Making Tax Digital"
         IncludingLbl: Label 'including %1 new and %2 modified records.', Comment = '%1, %2 - records count';
         ReasonLbl: Label 'Reason from the HMRC server: ';
         InvokeRequestLbl: Label 'Invoke %1 request.', Locked = true;
+        RetrieveLiabilitiesMsg: Label 'Retrieve VAT liabilities successful';
+        RetrievePaymentsMsg: Label 'Retrieve VAT payments successful';
+        RetrievePeriodsMsg: Label 'Retrieve VAT return periods successful';
+        RetrieveReturnsMsg: Label 'Retrieve submitted VAT returns successful';
 
-    [Scope('OnPrem')]
-    procedure DisableFraudPreventionHeaders(DisableFPHeaders: Boolean)
+    internal procedure EnableSaaS(Enable: Boolean)
+    var
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+    begin
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(Enable);
+    end;
+
+    internal procedure DisableFraudPreventionHeaders(DisableFPHeaders: Boolean)
     var
         VATReportSetup: Record "VAT Report Setup";
     begin
@@ -33,8 +43,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure SetupOAuthAndVATRegNo(EnabledOAuth: Boolean; URL: Text; VATRegNo: Text)
+    internal procedure SetupOAuthAndVATRegNo(EnabledOAuth: Boolean; URL: Text; VATRegNo: Text)
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
     begin
@@ -47,8 +56,7 @@ codeunit 148080 "Library - Making Tax Digital"
             UpdateCompanyInformation(VATRegNo);
     end;
 
-    [Scope('OnPrem')]
-    procedure CreateOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup"; NewStatus: Option; URLPath: Text; AccessTokenDueDateTime: DateTime)
+    internal procedure CreateOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup"; NewStatus: Option; URLPath: Text; AccessTokenDueDateTime: DateTime)
     begin
         with OAuth20Setup do begin
             if not Get(OAuthSandboxSetupLbl) then begin
@@ -75,8 +83,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure MockVATPayment(var MTDPayment: Record "MTD Payment"; StartDate: Date; EndDate: Date; EntryNo: Integer; ReceivedDate: Date; NewAmount: Decimal)
+    internal procedure MockVATPayment(var MTDPayment: Record "MTD Payment"; StartDate: Date; EndDate: Date; EntryNo: Integer; ReceivedDate: Date; NewAmount: Decimal)
     begin
         with MTDPayment do begin
             Init();
@@ -89,8 +96,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure MockVATLiability(var MTDLiability: Record "MTD Liability"; StartDate: Date; EndDate: Date; NewType: Option; OriginalAmount: Decimal; OutstandingAmount: Decimal; DueDate: Date)
+    internal procedure MockVATLiability(var MTDLiability: Record "MTD Liability"; StartDate: Date; EndDate: Date; NewType: Option; OriginalAmount: Decimal; OutstandingAmount: Decimal; DueDate: Date)
     begin
         with MTDLiability do begin
             Init();
@@ -104,8 +110,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure MockVATReturnPeriod(var VATReturnPeriod: Record "VAT Return Period"; StartDate: Date; EndDate: Date; DueDate: Date; PeriodKey: Code[10]; NewStatus: Option; ReceivedDate: Date)
+    internal procedure MockVATReturnPeriod(var VATReturnPeriod: Record "VAT Return Period"; StartDate: Date; EndDate: Date; DueDate: Date; PeriodKey: Code[10]; NewStatus: Option; ReceivedDate: Date)
     begin
         with VATReturnPeriod do begin
             Init();
@@ -120,8 +125,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure MockVATReturnDetail(var MTDReturnDetails: Record "MTD Return Details"; StartDate: Date; EndDate: Date; PeriodKey: Code[10]; VATDueSales: Decimal; VATDueAcquisitions: Decimal; TotalVATDue: Decimal; VATReclaimedCurrPeriod: Decimal; NetVATDue: Decimal; TotalValueSalesExclVAT: Decimal; TotalValuePurchasesExclVAT: Decimal; TotalValueGoodsSupplExVAT: Decimal; TotalAcquisitionsExclVAT: Decimal; NewFinalised: Boolean)
+    internal procedure MockVATReturnDetail(var MTDReturnDetails: Record "MTD Return Details"; StartDate: Date; EndDate: Date; PeriodKey: Code[10]; VATDueSales: Decimal; VATDueAcquisitions: Decimal; TotalVATDue: Decimal; VATReclaimedCurrPeriod: Decimal; NetVATDue: Decimal; TotalValueSalesExclVAT: Decimal; TotalValuePurchasesExclVAT: Decimal; TotalValueGoodsSupplExVAT: Decimal; TotalAcquisitionsExclVAT: Decimal; NewFinalised: Boolean)
     begin
         with MTDReturnDetails do begin
             Init();
@@ -142,8 +146,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure MockLinkedVATReturnHeader(var VATReportHeader: Record "VAT Report Header"; var VATReturnPeriod: Record "VAT Return Period")
+    internal procedure MockLinkedVATReturnHeader(var VATReportHeader: Record "VAT Report Header"; var VATReturnPeriod: Record "VAT Return Period")
     begin
         with VATReportHeader do begin
             "VAT Report Config. Code" := "VAT Report Config. Code"::"VAT Return";
@@ -156,16 +159,14 @@ codeunit 148080 "Library - Making Tax Digital"
         VATReturnPeriod.Modify();
     end;
 
-    [Scope('OnPrem')]
-    procedure MockLinkedVATReturnHeader(var VATReportHeader: Record "VAT Report Header"; var VATReturnPeriod: Record "VAT Return Period"; NewStatus: Option)
+    internal procedure MockLinkedVATReturnHeader(var VATReportHeader: Record "VAT Report Header"; var VATReturnPeriod: Record "VAT Return Period"; NewStatus: Option)
     begin
         MockLinkedVATReturnHeader(VATReportHeader, VATReturnPeriod);
         VATReportHeader.Status := NewStatus;
         VATReportHeader.Modify();
     end;
 
-    [Scope('OnPrem')]
-    procedure MockVATStatementReportLine(VATReportHeader: Record "VAT Report Header"; LineNo: Integer; BoxNo: Text[30]; NewAmount: Decimal)
+    internal procedure MockVATStatementReportLine(VATReportHeader: Record "VAT Report Header"; LineNo: Integer; BoxNo: Text[30]; NewAmount: Decimal)
     var
         VATStatementReportLine: Record "VAT Statement Report Line";
     begin
@@ -180,8 +181,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure MockVATStatementReportLinesWithRandomValues(VATReportHeader: Record "VAT Report Header")
+    internal procedure MockVATStatementReportLinesWithRandomValues(VATReportHeader: Record "VAT Report Header")
     var
         i: Integer;
     begin
@@ -189,8 +189,7 @@ codeunit 148080 "Library - Making Tax Digital"
             MockVATStatementReportLine(VATReportHeader, i, Format(i), LibraryRandom.RandDecInRange(10000, 20000, 2));
     end;
 
-    [Scope('OnPrem')]
-    procedure MockAzureClientToken(ClientToken: Text)
+    internal procedure MockAzureClientToken(ClientToken: Text)
     begin
         LibraryAzureKVMockMgmt.InitMockAzureKeyvaultSecretProvider();
         LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMapping('UKHMRC-MTDVAT-Sandbox-ClientID', ClientToken);
@@ -198,8 +197,7 @@ codeunit 148080 "Library - Making Tax Digital"
         LibraryAzureKVMockMgmt.UseAzureKeyvaultSecretProvider();
     end;
 
-    [Scope('OnPrem')]
-    procedure UpdateCompanyInformation(VATRegNo: Text)
+    internal procedure UpdateCompanyInformation(VATRegNo: Text)
     var
         CompanyInformation: Record "Company Information";
     begin
@@ -210,38 +208,32 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure GetOAuthSandboxSetupCode(): Code[20]
+    internal procedure GetOAuthSandboxSetupCode(): Code[20]
     begin
         exit(CopyStr(OAuthSandboxSetupLbl, 1, 20));
     end;
 
-    [Scope('OnPrem')]
-    procedure GetOAuthProdSetupCode(): Code[20]
+    internal procedure GetOAuthProdSetupCode(): Code[20]
     begin
         exit(CopyStr(OAuthPRODSetupLbl, 1, 20));
     end;
 
-    [Scope('OnPrem')]
-    procedure GetResonLbl(): Text
+    internal procedure GetResonLbl(): Text
     begin
         exit(ReasonLbl);
     end;
 
-    [Scope('OnPrem')]
-    procedure GetIncludingLbl(): Text
+    internal procedure GetIncludingLbl(): Text
     begin
         exit(IncludingLbl);
     end;
 
-    [Scope('OnPrem')]
-    procedure GetInvokeRequestLbl(Method: Text): Text
+    internal procedure GetInvokeRequestLbl(Method: Text): Text
     begin
         exit(StrSubstNo(InvokeRequestLbl, Method));
     end;
 
-    [Scope('OnPrem')]
-    procedure GetVATStatementReportLineAmount(VATReportHeader: Record "VAT Report Header"; BoxNo: Text[30]): Decimal
+    internal procedure GetVATStatementReportLineAmount(VATReportHeader: Record "VAT Report Header"; BoxNo: Text[30]): Decimal
     var
         VATStatementReportLine: Record "VAT Statement Report Line";
     begin
@@ -249,8 +241,7 @@ codeunit 148080 "Library - Making Tax Digital"
         exit(VATStatementReportLine.Amount);
     end;
 
-    [Scope('OnPrem')]
-    procedure FindVATStatementReportLine(var VATStatementReportLine: Record "VAT Statement Report Line"; VATReportHeader: Record "VAT Report Header"; BoxNo: Text[30])
+    internal procedure FindVATStatementReportLine(var VATStatementReportLine: Record "VAT Statement Report Line"; VATReportHeader: Record "VAT Report Header"; BoxNo: Text[30])
     begin
         with VATStatementReportLine do begin
             SetRange("VAT Report No.", VATReportHeader."No.");
@@ -260,8 +251,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure GetVATReportSubmissionText(VATReportHeader: Record "VAT Report Header"): Text
+    internal procedure GetVATReportSubmissionText(VATReportHeader: Record "VAT Report Header"): Text
     var
         VATReportArchive: Record "VAT Report Archive";
         TempBlob: Codeunit "Temp Blob";
@@ -277,8 +267,7 @@ codeunit 148080 "Library - Making Tax Digital"
         exit(TypeHelper.ReadAsTextWithSeparator(InStream, ''));
     end;
 
-    [Scope('OnPrem')]
-    procedure GetVATReportResponseText(VATReportHeader: Record "VAT Report Header"): Text
+    internal procedure GetVATReportResponseText(VATReportHeader: Record "VAT Report Header"): Text
     var
         VATReportArchive: Record "VAT Report Archive";
         TempBlob: Codeunit "Temp Blob";
@@ -294,8 +283,7 @@ codeunit 148080 "Library - Making Tax Digital"
         exit(TypeHelper.ReadAsTextWithSeparator(InStream, ''));
     end;
 
-    [Scope('OnPrem')]
-    procedure GetLatestHttpLogText(): Text
+    internal procedure GetLatestHttpLogText(): Text
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
         ActivityLog: Record "Activity Log";
@@ -311,44 +299,37 @@ codeunit 148080 "Library - Making Tax Digital"
         exit(TypeHelper.ReadAsTextWithSeparator(InStream, ''));
     end;
 
-    [Scope('OnPrem')]
-    procedure HttpStartDate(): Date
+    internal procedure HttpStartDate(): Date
     begin
         exit(20200101D);
     end;
 
-    [Scope('OnPrem')]
-    procedure HttpEndDate(): Date
+    internal procedure HttpEndDate(): Date
     begin
         exit(20200331D);
     end;
 
-    [Scope('OnPrem')]
-    procedure HttpDueDate(): Date
+    internal procedure HttpDueDate(): Date
     begin
         exit(20200507D);
     end;
 
-    [Scope('OnPrem')]
-    procedure HttpReceivedDate(): Date
+    internal procedure HttpReceivedDate(): Date
     begin
         exit(20200504D);
     end;
 
-    [Scope('OnPrem')]
-    procedure HttpPeriodKey(): Code[10]
+    internal procedure HttpPeriodKey(): Code[10]
     begin
         exit('20A1');
     end;
 
-    [Scope('OnPrem')]
-    procedure HttpAmount1(): Decimal
+    internal procedure HttpAmount1(): Decimal
     begin
         exit(1234.56);
     end;
 
-    [Scope('OnPrem')]
-    procedure HttpAmount2(): Decimal
+    internal procedure HttpAmount2(): Decimal
     begin
         exit(2345.67);
     end;
@@ -363,8 +344,7 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure SetOAuthSetupSandbox(IsSandbox: Boolean)
+    internal procedure SetOAuthSetupSandbox(IsSandbox: Boolean)
     var
         VATReportSetup: Record "VAT Report Setup";
     begin
@@ -378,38 +358,35 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure FormatValue(Value: Variant): Text
+    internal procedure FormatValue(Value: Variant): Text
     begin
         exit(Format(Value, 0, 9));
     end;
 
-    [Scope('OnPrem')]
-    procedure ParseVATReturnDetailsJson(var MTDReturnDetails: Record "MTD Return Details"; JsonString: Text)
+    internal procedure ParseVATReturnDetailsJson(var MTDReturnDetails: Record "MTD Return Details"; JsonString: Text)
     var
-        JsonMgt: Codeunit "JSON Management";
         RecordRef: RecordRef;
+        JToken: JsonToken;
     begin
-        Assert.IsTrue(JsonMgt.InitializeFromString(JsonString), 'JsonMgt.InitializeFromString');
+        Assert.IsTrue(JToken.ReadFrom(JsonString), 'JToken.ReadFrom()');
 
         RecordRef.GetTable(MTDReturnDetails);
         with MTDReturnDetails do begin
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'periodKey', FIELDNO("Period Key"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'vatDueSales', FIELDNO("VAT Due Sales"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'vatDueAcquisitions', FIELDNO("VAT Due Acquisitions"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalVatDue', FIELDNO("Total VAT Due"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'vatReclaimedCurrPeriod', FIELDNO("VAT Reclaimed Curr Period"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'netVatDue', FIELDNO("Net VAT Due"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalValueSalesExVAT', FIELDNO("Total Value Sales Excl. VAT"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalValuePurchasesExVAT', FIELDNO("Total Value Purchases Excl.VAT"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalValueGoodsSuppliedExVAT', FIELDNO("Total Value Goods Suppl. ExVAT"));
-            JSONMgt.GetValueAndSetToRecFieldNo(RecordRef, 'totalAcquisitionsExVAT', FIELDNO("Total Acquisitions Excl. VAT"));
+            ReadJsonValueToRecRef(RecordRef, JToken, 'periodKey', FieldNo("Period Key"));
+            ReadJsonValueToRecRef(RecordRef, JToken, 'vatDueSales', FieldNo("VAT Due Sales"));
+            ReadJsonValueToRecRef(RecordRef, JToken, 'vatDueAcquisitions', FieldNo("VAT Due Acquisitions"));
+            ReadJsonValueToRecRef(RecordRef, JToken, 'totalVatDue', FieldNo("Total VAT Due"));
+            ReadJsonValueToRecRef(RecordRef, JToken, 'vatReclaimedCurrPeriod', FieldNo("VAT Reclaimed Curr Period"));
+            ReadJsonValueToRecRef(RecordRef, JToken, 'netVatDue', FieldNo("Net VAT Due"));
+            ReadJsonValueToRecRef(RecordRef, JToken, 'totalValueSalesExVAT', FieldNo("Total Value Sales Excl. VAT"));
+            ReadJsonValueToRecRef(RecordRef, JToken, 'totalValuePurchasesExVAT', FieldNo("Total Value Purchases Excl.VAT"));
+            ReadJsonValueToRecRef(RecordRef, JToken, 'totalValueGoodsSuppliedExVAT', FieldNo("Total Value Goods Suppl. ExVAT"));
+            ReadJsonValueToRecRef(RecordRef, JToken, 'totalAcquisitionsExVAT', FieldNo("Total Acquisitions Excl. VAT"));
         end;
         RecordRef.SetTable(MTDReturnDetails);
     end;
 
-    [Scope('OnPrem')]
-    procedure VerifyLatestHttpLogForSandbox(ExpectedResult: Boolean; ExpectedDescription: Text; ExpectedMessage: Text; HasDetails: Boolean)
+    internal procedure VerifyLatestHttpLogForSandbox(ExpectedResult: Boolean; ExpectedDescription: Text; ExpectedMessage: Text; HasDetails: Boolean)
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
         ActivityLog: Record "Activity Log";
@@ -431,17 +408,88 @@ codeunit 148080 "Library - Making Tax Digital"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure VerifyRequestJson(ExpectedMethod: Text; ExpectedURLRequestPath: Text)
+    internal procedure VerifyRequestJson(ExpectedMethod: Text; ExpectedURLRequestPath: Text; ContentType: Boolean)
     var
-        JSONMgt: Codeunit "JSON Management";
+        JToken: JsonToken;
     begin
-        JSONMgt.InitializeFromString(GetLatestHttpLogText());
-        JSONMgt.InitializeFromString(JSONMgt.GetValue('Request'));
-        Assert.ExpectedMessage(ExpectedMethod, JSONMgt.GetValue('Method'));
-        Assert.ExpectedMessage(ExpectedURLRequestPath, JSONMgt.GetValue('URLRequestPath'));
-        Assert.ExpectedMessage('***', JSONMgt.GetValue('Header.Accept'));
-        Assert.ExpectedMessage('***', JSONMgt.GetValue('Header.Content-Type'));
-        Assert.ExpectedMessage('***', JSONMgt.GetValue('Header.Authorization'));
+        JToken.ReadFrom(GetLatestHttpLogText());
+        JToken.SelectToken('Request', JToken);
+        Assert.ExpectedMessage(ExpectedMethod, ReadJsonValue(JToken, 'Method'));
+        Assert.ExpectedMessage(ExpectedURLRequestPath, ReadJsonValue(JToken, 'URLRequestPath'));
+        Assert.ExpectedMessage('application/vnd.hmrc.1.0+json', ReadJsonValue(JToken, 'Accept'));
+        if ContentType then
+            Assert.ExpectedMessage('application/json', ReadJsonValue(JToken, 'Content-Type'))
+        else
+            AssertBlankedJsonValue(JToken, 'Content-Type');
+        Assert.ExpectedMessage('***', ReadJsonValue(JToken, 'Header.Authorization'));
+    end;
+
+    internal procedure ReadJsonValue(JToken: JsonToken; Path: Text) Result: Text
+    begin
+        if JToken.SelectToken(Path, JToken) then
+            if JToken.IsValue() then
+                exit(JToken.AsValue().AsText())
+            else
+                JToken.WriteTo(Result);
+    end;
+
+    internal procedure AssertBlankedJsonValue(JToken: JsonToken; Path: Text)
+    begin
+        if JToken.SelectToken(Path, JToken) then
+            Error(StrSubstNo('Json value for the path ''%1'' should be blanked.', Path));
+    end;
+
+    local procedure ReadJsonValueToRecRef(RecordRef: RecordRef; JToken: JsonToken; KeyValue: Text; FieldNo: Integer) Result: Boolean
+    var
+        FieldRef: FieldRef;
+        GuidValue: Guid;
+    begin
+        Result := JToken.SelectToken(KeyValue, JToken);
+        if Result then begin
+            FieldRef := RecordRef.Field(FieldNo);
+            case FieldRef.Type() of
+                FieldType::Integer:
+                    FieldRef.Value(JToken.AsValue().AsInteger());
+                FieldType::Decimal:
+                    FieldRef.Value(JToken.AsValue().AsDecimal());
+                FieldType::Date:
+                    FieldRef.Value(JToken.AsValue().AsDate());
+                FieldType::Time:
+                    FieldRef.Value(JToken.AsValue().AsTime());
+                FieldType::DateTime:
+                    FieldRef.Value(JToken.AsValue().AsDateTime());
+                FieldType::Boolean:
+                    FieldRef.Value(JToken.AsValue().AsBoolean());
+                FieldType::GUID:
+                    begin
+                        Result := Evaluate(GuidValue, JToken.AsValue().AsText());
+                        FieldRef.Value(GuidValue);
+                    end;
+                FieldType::Text:
+                    FieldRef.Value(CopyStr(JToken.AsValue().AsText(), 1, FieldRef.Length()));
+                FieldType::Code:
+                    FieldRef.Value(CopyStr(JToken.AsValue().AsCode(), 1, FieldRef.Length()));
+            end;
+        end;
+    end;
+
+    internal procedure GetRetrieveLiabilitiesMsg(NewCount: Integer; ModifiedCount: Integer): Text
+    begin
+        exit(StrSubstNo('%1,\%2', RetrieveLiabilitiesMsg, StrSubstNo(IncludingLbl, NewCount, ModifiedCount)));
+    end;
+
+    internal procedure GetRetrievePaymentsMsg(NewCount: Integer; ModifiedCount: Integer): Text
+    begin
+        exit(StrSubstNo('%1,\%2', RetrievePaymentsMsg, StrSubstNo(IncludingLbl, NewCount, ModifiedCount)));
+    end;
+
+    internal procedure GetRetrievePeriodsMsg(NewCount: Integer; ModifiedCount: Integer): Text
+    begin
+        exit(StrSubstNo('%1,\%2', RetrievePeriodsMsg, StrSubstNo(IncludingLbl, NewCount, ModifiedCount)));
+    end;
+
+    internal procedure GetRetrieveReturnMsg(NewCount: Integer; ModifiedCount: Integer): Text
+    begin
+        exit(StrSubstNo('%1,\%2', RetrieveReturnsMsg, StrSubstNo(IncludingLbl, NewCount, ModifiedCount)));
     end;
 }

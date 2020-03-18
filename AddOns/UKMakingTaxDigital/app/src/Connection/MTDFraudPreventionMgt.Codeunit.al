@@ -13,8 +13,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         ClientLocalIPsBuffer: Record "Name/Value Buffer" temporary;
         ServerPublicIPsBuffer: Record "Name/Value Buffer" temporary;
         TypeHelper: Codeunit "Type Helper";
-        TargetJsonMgt: Codeunit "JSON Management";
-        SourceJsonMgt: Codeunit "JSON Management";
+        JObject: JsonObject;
         OnPrem: Boolean;
         WebClient: Boolean;
         WinClient: Boolean;
@@ -65,8 +64,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure AddFraudPreventionHeaders(var RequestJson: Text)
+    internal procedure GenerateFraudPreventionHeaders() Result: Text
     var
         ConnectionMethod: Text;
     begin
@@ -78,11 +76,9 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
             exit;
 
         CollectData();
-        TargetJsonMgt.InitializeFromString(RequestJson);
-        TargetJsonMgt.SetValue('Header.Gov-Client-Connection-Method', ConnectionMethod);
-        TargetJsonMgt.SetValue('Header.Gov-Vendor-Version', GetVendorVersion());
-        CopyJson();
-        RequestJson := TargetJsonMgt.WriteObjectToString();
+        JObject.Add('Gov-Client-Connection-Method', ConnectionMethod);
+        JObject.Add('Gov-Vendor-Version', GetVendorVersion());
+        JObject.WriteTo(Result);
     end;
 
     local procedure CollectData()
@@ -115,7 +111,8 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
             InvokeWMIQueries();
             CreateSourceJson();
             TempBlob.CreateOutStream(OutStream);
-            OutStream.Write(SourceJsonMgt.WriteObjectToString());
+            if JObject.WriteTo(JsonText) then
+                OutStream.Write(JsonText);
             RecordRef.GetTable(VATReportSetup);
             TempBlob.ToRecordRef(RecordRef, JsonFieldNo);
             RecordRef.SetTable(VATReportSetup);
@@ -123,8 +120,8 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
             VATReportSetup.Modify();
         end else begin
             TempBlob.CreateInStream(InStream);
-            InStream.Read(JsonText);
-            SourceJsonMgt.InitializeFromString(JsonText);
+            if InStream.Read(JsonText) <> 0 then
+                JObject.ReadFrom(JsonText);
         end;
     end;
 
@@ -138,57 +135,25 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         TextValue: Text;
     begin
         if GetClientPublicIPs(TextValue) then
-            SourceJsonMgt.SetValue('Gov-Client-Public-IP', TextValue);
+            JObject.Add('Gov-Client-Public-IP', TextValue);
         if GetClientDeviceID(TextValue) then
-            SourceJsonMgt.SetValue('Gov-Client-Device-ID', TextValue);
+            JObject.Add('Gov-Client-Device-ID', TextValue);
         if GetClientUserIDs(TextValue) then
-            SourceJsonMgt.SetValue('Gov-Client-User-IDs', TextValue);
+            JObject.Add('Gov-Client-User-IDs', TextValue);
         if GetClientTimezone(TextValue) then
-            SourceJsonMgt.SetValue('Gov-Client-Timezone', TextValue);
+            JObject.Add('Gov-Client-Timezone', TextValue);
         if GetClientLocalIPs(TextValue) then
-            SourceJsonMgt.SetValue('Gov-Client-Local-IPs', TextValue);
+            JObject.Add('Gov-Client-Local-IPs', TextValue);
         if GetClientMACAddresses(TextValue) then
-            SourceJsonMgt.SetValue('Gov-Client-MAC-Addresses', TextValue);
+            JObject.Add('Gov-Client-MAC-Addresses', TextValue);
         if GetClientScreens(TextValue) then
-            SourceJsonMgt.SetValue('Gov-Client-Screens', TextValue);
+            JObject.Add('Gov-Client-Screens', TextValue);
         if GetClientUserAgent(TextValue) then
-            SourceJsonMgt.SetValue('Gov-Client-User-Agent', TextValue);
+            JObject.Add('Gov-Client-User-Agent', TextValue);
         if GetVendorLicenseIDs(TextValue) then
-            SourceJsonMgt.SetValue('Gov-Vendor-License-IDs', TextValue);
+            JObject.Add('Gov-Vendor-License-IDs', TextValue);
         if GetVendorPublicIPs(TextValue) then
-            SourceJsonMgt.SetValue('Gov-Vendor-Public-IP', TextValue);
-    end;
-
-    local procedure CopyJson()
-    var
-        TextValue: Text;
-    begin
-        if GetSourceJsonValue('Gov-Client-Public-IP', TextValue) then
-            TargetJsonMgt.SetValue('Header.Gov-Client-Public-IP', TextValue);
-        if GetSourceJsonValue('Gov-Client-Device-ID', TextValue) then
-            TargetJsonMgt.SetValue('Header.Gov-Client-Device-ID', TextValue);
-        if GetSourceJsonValue('Gov-Client-User-IDs', TextValue) then
-            TargetJsonMgt.SetValue('Header.Gov-Client-User-IDs', TextValue);
-        if GetSourceJsonValue('Gov-Client-Timezone', TextValue) then
-            TargetJsonMgt.SetValue('Header.Gov-Client-Timezone', TextValue);
-        if GetSourceJsonValue('Gov-Client-Local-IPs', TextValue) then
-            TargetJsonMgt.SetValue('Header.Gov-Client-Local-IPs', TextValue);
-        if GetSourceJsonValue('Gov-Client-MAC-Addresses', TextValue) then
-            TargetJsonMgt.SetValue('Header.Gov-Client-MAC-Addresses', TextValue);
-        if GetSourceJsonValue('Gov-Client-Screens', TextValue) then
-            TargetJsonMgt.SetValue('Header.Gov-Client-Screens', TextValue);
-        if GetSourceJsonValue('Gov-Client-User-Agent', TextValue) then
-            TargetJsonMgt.SetValue('Header.Gov-Client-User-Agent', TextValue);
-        if GetSourceJsonValue('Gov-Vendor-License-IDs', TextValue) then
-            TargetJsonMgt.SetValue('Header.Gov-Vendor-License-IDs', TextValue);
-        if GetSourceJsonValue('Gov-Vendor-Public-IP', TextValue) then
-            TargetJsonMgt.SetValue('Header.Gov-Vendor-Public-IP', TextValue);
-    end;
-
-    local procedure GetSourceJsonValue(Path: Text; var Result: Text): Boolean;
-    begin
-        Result := SourceJsonMgt.GetValue(Path);
-        exit(Result <> '');
+            JObject.Add('Gov-Vendor-Public-IP', TextValue);
     end;
 
     local procedure GetConnectionMethod(var Result: Text): Boolean

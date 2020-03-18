@@ -9,6 +9,9 @@ enum 3710 "Video Category"
 {
     Extensible = true;
 
+    /// <summary>
+    /// A default category, specifying that the video is not categorized.
+    /// </summary>
     value(0; Uncategorized)
     {
         Caption = 'Uncategorized';

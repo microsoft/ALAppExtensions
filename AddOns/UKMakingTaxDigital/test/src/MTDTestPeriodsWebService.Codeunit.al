@@ -22,7 +22,6 @@ codeunit 148084 "MTDTestPeriodsWebService"
         GetReturnPeriodsLbl: Label 'Get VAT Return Periods';
         RetrievePeriodsUpToDateMsg: Label 'Retrieve VAT return periods are up to date.';
         RetrievePeriodsErr: Label 'Not possible to retrieve VAT return periods.';
-        RetrievePeriodsMsg: Label 'Retrieve VAT return periods successful';
         RetrieveVATReturnPeriodsTxt: Label 'Retrieve VAT Return Periods.', Locked = true;
 
     [Test]
@@ -31,14 +30,14 @@ codeunit 148084 "MTDTestPeriodsWebService"
     var
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
-        // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of http error response and disabled message output
-        // MockServicePacket303 MockService\MakingTaxDigital\400_blanked.txt
+        // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of HTTP error response and disabled message output
+        // <parse key="Packet303" compare="MockServicePacket303" response="MakingTaxDigital\400_blanked.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket303', false);
 
         GetVATReturnPeriods(DummyVATReturnPeriod, false, false, 0, 0, 0);
 
         Assert.RecordIsEmpty(DummyVATReturnPeriod);
-        VerifyLatestHttpLogFailure('Http error 400 (BadRequest)\Bad Request');
+        VerifyLatestHttpLogFailure('HTTP error 400 (Bad Request)');
     end;
 
     [Test]
@@ -48,8 +47,8 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
         HttpError: Text;
     begin
-        // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of http error response with details
-        // MockServicePacket310 MockService\MakingTaxDigital\400_vrn_invalid.txt
+        // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of HTTP error response with details
+        // <parse key="Packet310" compare="MockServicePacket310" response="MakingTaxDigital\400_vrn_invalid.txt"/>
         HttpError := 'The provided VRN is invalid.';
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket310', false);
 
@@ -57,7 +56,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(StrSubstNo('%1\%2%3', RetrievePeriodsErr, LibraryMakingTaxDigital.GetResonLbl(), HttpError));
-        VerifyLatestHttpLogFailure('Http error 400 (BadRequest). The provided VRN is invalid.');
+        VerifyLatestHttpLogFailure('HTTP error 400 (Bad Request). The provided VRN is invalid.');
     end;
 
     [Test]
@@ -67,7 +66,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of blanked http json response
-        // MockServicePacket301 MockService\MakingTaxDigital\200_blanked.txt
+        // <parse key="Packet301" compare="MockServicePacket301" response="MakingTaxDigital\200_blanked.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket301', false);
 
         asserterror GetVATReturnPeriodsAndShowResult(DummyVATReturnPeriod, 0, 0, 0);
@@ -82,7 +81,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of wrong http json response
-        // MockServicePacket302 MockService\MakingTaxDigital\200_dummyjson.txt
+        // <parse key="Packet302" compare="MockServicePacket302" response="MakingTaxDigital\200_dummyjson.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket302', false);
 
         asserterror GetVATReturnPeriodsAndShowResult(DummyVATReturnPeriod, 0, 0, 0);
@@ -97,13 +96,13 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a one new return period and disabled message output
-        // MockServicePacket340 MockService\MakingTaxDigital\200_period_open.txt
+        // <parse key="Packet340" compare="MockServicePacket340" response="MakingTaxDigital\200_period_open.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket340', false);
 
         GetVATReturnPeriods(DummyVATReturnPeriod, false, true, 1, 1, 0);
 
         VerifyOnePeriod(DummyVATReturnPeriod);
-        VerifyLatestHttpLogSucess(GetRetrievePeriodsMsg(1, 0));
+        VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0));
     end;
 
     [Test]
@@ -115,16 +114,16 @@ codeunit 148084 "MTDTestPeriodsWebService"
     begin
         // [FEATURE] [UI]
         // [SCENARIO 258181] PAG 737 "VAT Return Period List" action "Get VAT Return Periods" in case of a one new return period
-        // MockServicePacket341 MockService\MakingTaxDigital\200_period_closed.txt
+        // <parse key="Packet341" compare="MockServicePacket341" response="MakingTaxDigital\200_period_closed.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket341', true);
 
         GetVATReturnPeriodsAndShowResultViaPage(DummyVATReturnPeriod);
 
         VerifyGetVATReturnPeriodsRequestJson(DummyVATReturnPeriod);
         VerifyOnePeriod(DummyVATReturnPeriod);
-        VerifyLatestHttpLogSucess(GetRetrievePeriodsMsg(1, 0));
+        VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0));
         Assert.ExpectedMessage(GetReturnPeriodsLbl, LibraryVariableStorage.DequeueText());
-        Assert.ExpectedMessage(GetRetrievePeriodsMsg(1, 0), LibraryVariableStorage.DequeueText());
+        Assert.ExpectedMessage(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0), LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
     end;
 
@@ -135,9 +134,9 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a one new return period and expired access token
-        // MockServicePacket304 MockService\MakingTaxDigital\401_unauthorized.txt
-        // MockServicePacket245 MockService\MakingTaxDigital\200_authorize_period.txt
-        // MockServicePacket340 MockService\MakingTaxDigital\200_period_open.txt
+        // <parse key="Packet352" compare="MockServicePacket352" response="MakingTaxDigital\200_period_open.txt"/>
+        // <parse key="Packet353" compare="MockServicePacket353" response="MakingTaxDigital\401_unauthorized.txt"/>
+        // <parse key="Packet354" compare="MockServicePacket354" response="MakingTaxDigital\200_authorize_352.txt"/>
         Initialize();
         LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket354', 'MockServicePacket353');
         InitDummyVATPeriod(DummyVATReturnPeriod, false);
@@ -145,7 +144,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         GetVATReturnPeriods(DummyVATReturnPeriod, false, true, 1, 1, 0);
 
         VerifyOnePeriod(DummyVATReturnPeriod);
-        VerifyLatestHttpLogSucess(GetRetrievePeriodsMsg(1, 0));
+        VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0));
     end;
 
     [Test]
@@ -156,7 +155,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a one up to date return period
-        // MockServicePacket340 MockService\MakingTaxDigital\200_period_open.txt
+        // <parse key="Packet340" compare="MockServicePacket340" response="MakingTaxDigital\200_period_open.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket340', false);
         with DummyVATReturnPeriod do
             MockVATPeriod(DummyVATReturnPeriod, "Due Date", "Period Key", Status, "Received Date");
@@ -174,14 +173,14 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a one modified return period ("Due Date")
-        // MockServicePacket340 MockService\MakingTaxDigital\200_period_open.txt
+        // <parse key="Packet340" compare="MockServicePacket340" response="MakingTaxDigital\200_period_open.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket340', false);
         with DummyVATReturnPeriod do
             MockVATPeriod(DummyVATReturnPeriod, "Due Date" + 1, "Period Key", Status, "Received Date");
 
         GetVATReturnPeriodsAndShowResult(DummyVATReturnPeriod, 1, 0, 1);
 
-        VerifyGetOnePeriodScenario(DummyVATReturnPeriod, GetRetrievePeriodsMsg(0, 1));
+        VerifyGetOnePeriodScenario(DummyVATReturnPeriod, LibraryMakingTaxDigital.GetRetrievePeriodsMsg(0, 1));
     end;
 
     [Test]
@@ -192,14 +191,14 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a one modified return period ("Period Key")
-        // MockServicePacket340 MockService\MakingTaxDigital\200_period_open.txt
+        // <parse key="Packet340" compare="MockServicePacket340" response="MakingTaxDigital\200_period_open.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket340', false);
         with DummyVATReturnPeriod do
             MockVATPeriod(DummyVATReturnPeriod, "Due Date", LibraryUtility.GenerateGUID(), Status, "Received Date");
 
         GetVATReturnPeriodsAndShowResult(DummyVATReturnPeriod, 1, 0, 1);
 
-        VerifyGetOnePeriodScenario(DummyVATReturnPeriod, GetRetrievePeriodsMsg(0, 1));
+        VerifyGetOnePeriodScenario(DummyVATReturnPeriod, LibraryMakingTaxDigital.GetRetrievePeriodsMsg(0, 1));
     end;
 
     [Test]
@@ -210,14 +209,14 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a one modified return period ("Status")
-        // MockServicePacket341 MockService\MakingTaxDigital\200_period_closed.txt
+        // <parse key="Packet341" compare="MockServicePacket341" response="MakingTaxDigital\200_period_closed.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket341', true);
         with DummyVATReturnPeriod do
             MockVATPeriod(DummyVATReturnPeriod, "Due Date", "Period Key", Status::Open, "Received Date");
 
         GetVATReturnPeriodsAndShowResult(DummyVATReturnPeriod, 1, 0, 1);
 
-        VerifyGetOnePeriodScenario(DummyVATReturnPeriod, GetRetrievePeriodsMsg(0, 1));
+        VerifyGetOnePeriodScenario(DummyVATReturnPeriod, LibraryMakingTaxDigital.GetRetrievePeriodsMsg(0, 1));
     end;
 
     [Test]
@@ -228,14 +227,14 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a one modified return period ("Received Date")
-        // MockServicePacket341 MockService\MakingTaxDigital\200_period_closed.txt
+        // <parse key="Packet341" compare="MockServicePacket341" response="MakingTaxDigital\200_period_closed.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket341', true);
         with DummyVATReturnPeriod do
             MockVATPeriod(DummyVATReturnPeriod, "Due Date", "Period Key", Status, "Received Date" + 1);
 
         GetVATReturnPeriodsAndShowResult(DummyVATReturnPeriod, 1, 0, 1);
 
-        VerifyGetOnePeriodScenario(DummyVATReturnPeriod, GetRetrievePeriodsMsg(0, 1));
+        VerifyGetOnePeriodScenario(DummyVATReturnPeriod, LibraryMakingTaxDigital.GetRetrievePeriodsMsg(0, 1));
     end;
 
     [Test]
@@ -246,12 +245,12 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: array[2] of Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a two new return periods
-        // MockServicePacket342 MockService\MakingTaxDigital\200_periods.txt
+        // <parse key="Packet342" compare="MockServicePacket342" response="MakingTaxDigital\200_periods.txt"/>
         InitGetTwoPeriodsScenario(DummyVATReturnPeriod, 'MockServicePacket342');
 
         GetVATReturnPeriodsAndShowResult(DummyVATReturnPeriod[1], 2, 2, 0);
 
-        VerifyGetTwoPeriodsScenario(DummyVATReturnPeriod, GetRetrievePeriodsMsg(2, 0));
+        VerifyGetTwoPeriodsScenario(DummyVATReturnPeriod, LibraryMakingTaxDigital.GetRetrievePeriodsMsg(2, 0));
     end;
 
     [Test]
@@ -262,7 +261,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: array[2] of Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a two up to date return periods
-        // MockServicePacket342 MockService\MakingTaxDigital\200_periods.txt
+        // <parse key="Packet342" compare="MockServicePacket342" response="MakingTaxDigital\200_periods.txt"/>
         InitGetTwoPeriodsScenario(DummyVATReturnPeriod, 'MockServicePacket342');
         with DummyVATReturnPeriod[1] do
             MockVATPeriod(DummyVATReturnPeriod[1], "Due Date", "Period Key", Status, "Received Date");
@@ -282,7 +281,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: array[2] of Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a two modified return periods
-        // MockServicePacket342 MockService\MakingTaxDigital\200_periods.txt
+        //<parse key="Packet342" compare="MockServicePacket342" response="MakingTaxDigital\200_periods.txt"/>
         InitGetTwoPeriodsScenario(DummyVATReturnPeriod, 'MockServicePacket342');
         with DummyVATReturnPeriod[1] do
             MockVATPeriod(DummyVATReturnPeriod[1], "Due Date" + 1, "Period Key", Status, "Received Date");
@@ -291,7 +290,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
         GetVATReturnPeriodsAndShowResult(DummyVATReturnPeriod[1], 2, 0, 2);
 
-        VerifyGetTwoPeriodsScenario(DummyVATReturnPeriod, GetRetrievePeriodsMsg(0, 2));
+        VerifyGetTwoPeriodsScenario(DummyVATReturnPeriod, LibraryMakingTaxDigital.GetRetrievePeriodsMsg(0, 2));
     end;
 
     [Test]
@@ -302,14 +301,14 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: array[2] of Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a two return periods including one new
-        // MockServicePacket342 MockService\MakingTaxDigital\200_periods.txt
+        // <parse key="Packet342" compare="MockServicePacket342" response="MakingTaxDigital\200_periods.txt"/>
         InitGetTwoPeriodsScenario(DummyVATReturnPeriod, 'MockServicePacket342');
         with DummyVATReturnPeriod[1] do
             MockVATPeriod(DummyVATReturnPeriod[1], "Due Date", "Period Key", Status, "Received Date");
 
         GetVATReturnPeriodsAndShowResult(DummyVATReturnPeriod[1], 2, 1, 0);
 
-        VerifyGetTwoPeriodsScenario(DummyVATReturnPeriod, GetRetrievePeriodsMsg(1, 0));
+        VerifyGetTwoPeriodsScenario(DummyVATReturnPeriod, LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0));
     end;
 
     [Test]
@@ -320,7 +319,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: array[2] of Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a two return periods including one modified
-        // MockServicePacket342 MockService\MakingTaxDigital\200_periods.txt
+        // <parse key="Packet342" compare="MockServicePacket342" response="MakingTaxDigital\200_periods.txt"/>
         InitGetTwoPeriodsScenario(DummyVATReturnPeriod, 'MockServicePacket342');
         with DummyVATReturnPeriod[1] do
             MockVATPeriod(DummyVATReturnPeriod[1], "Due Date", "Period Key", Status, "Received Date");
@@ -329,7 +328,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
         GetVATReturnPeriodsAndShowResult(DummyVATReturnPeriod[1], 2, 0, 1);
 
-        VerifyGetTwoPeriodsScenario(DummyVATReturnPeriod, GetRetrievePeriodsMsg(0, 1));
+        VerifyGetTwoPeriodsScenario(DummyVATReturnPeriod, LibraryMakingTaxDigital.GetRetrievePeriodsMsg(0, 1));
     end;
 
     [Test]
@@ -340,14 +339,14 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: array[2] of Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturnPeriods() in case of a two return periods including one new and one modified
-        // MockServicePacket342 MockService\MakingTaxDigital\200_periods.txt
+        // <parse key="Packet342" compare="MockServicePacket342" response="MakingTaxDigital\200_periods.txt"/>
         InitGetTwoPeriodsScenario(DummyVATReturnPeriod, 'MockServicePacket342');
         with DummyVATReturnPeriod[1] do
             MockVATPeriod(DummyVATReturnPeriod[1], "Due Date", "Period Key", Status::Open, "Received Date");
 
         GetVATReturnPeriodsAndShowResult(DummyVATReturnPeriod[1], 2, 1, 1);
 
-        VerifyGetTwoPeriodsScenario(DummyVATReturnPeriod, GetRetrievePeriodsMsg(1, 1));
+        VerifyGetTwoPeriodsScenario(DummyVATReturnPeriod, LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 1));
     end;
 
     [Test]
@@ -357,16 +356,16 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10535 "MTD Auto Receive Period" in case of negative response on the first request
-        // MockServicePacket301 MockService\MakingTaxDigital\200_blanked.txt
+        // <parse key="Packet301" compare="MockServicePacket301" response="MakingTaxDigital\200_blanked.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket301', false);
 
         asserterror GetVATReturnPeriodsAutoJob();
 
         DummyVATReturnPeriod."Start Date" := CalcDate('<-CY>', WorkDate());
         DummyVATReturnPeriod."End Date" := CalcDate('<CY>', WorkDate());
-        VerifyGetVATReturnPeriodsRequestJson(DummyVATReturnPeriod);
 
         VerifyGetPeriodsFailureScenario(RetrievePeriodsErr);
+        VerifyGetVATReturnPeriodsRequestJson(DummyVATReturnPeriod);
     end;
 
     [Test]
@@ -377,7 +376,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         DummyVATReturnPeriod: Record "VAT Return Period";
     begin
         // [SCENARIO 258181] COD 10535 "MTD Auto Receive Period" in case of positive response
-        // MockServicePacket340 MockService\MakingTaxDigital\200_period_open.txt
+        //  <parse key="Packet340" compare="MockServicePacket340" response="MakingTaxDigital\200_period_open.txt"/>
         InitGetOnePeriodScenario(DummyVATReturnPeriod, 'MockServicePacket340', false);
 
         GetVATReturnPeriodsAutoJob();
@@ -385,9 +384,9 @@ codeunit 148084 "MTDTestPeriodsWebService"
         VerifyGetVATReturnPeriodsRequestJsonForAutoJob();
 
         VerifyOnePeriod(DummyVATReturnPeriod);
-        Assert.ExpectedMessage(GetRetrievePeriodsMsg(1, 0), LibraryVariableStorage.DequeueText());
+        Assert.ExpectedMessage(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0), LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
-        VerifyLatestHttpLogSucess(GetRetrievePeriodsMsg(1, 0));
+        VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0));
     end;
 
     [Test]
@@ -398,7 +397,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         VATReportHeader: Record "VAT Report Header";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() updates linked VATReturn.Status from "Accepted" to "Closed"
-        // MockServicePacket341 MockService\MakingTaxDigital\200_period_closed.txt
+        // <parse key="Packet341" compare="MockServicePacket341" response="MakingTaxDigital\200_period_closed.txt"/>
         InitGetOnePeriodScenario(VATReturnPeriod, 'MockServicePacket341', false);
         with VATReturnPeriod do
             MockAndGetVATPeriod(VATReturnPeriod, "Start Date", "End Date", "Due Date", "Period Key", Status::Open, "Received Date");
@@ -525,11 +524,6 @@ codeunit 148084 "MTDTestPeriodsWebService"
         Codeunit.Run(Codeunit::"MTD Auto Receive Period");
     end;
 
-    local procedure GetRetrievePeriodsMsg(NewCount: Integer; ModifiedCount: Integer): Text
-    begin
-        exit(StrSubstNo('%1,\%2', RetrievePeriodsMsg, StrSubstNo(LibraryMakingTaxDigital.GetIncludingLbl(), NewCount, ModifiedCount)));
-    end;
-
     local procedure FormatValue(Value: Variant): Text
     begin
         exit(LibraryMakingTaxDigital.FormatValue(Value));
@@ -547,7 +541,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
             CompanyInformation."VAT Registration No.",
             FormatValue(DummyVATReturnPeriod."Start Date"), FormatValue(DummyVATReturnPeriod."End Date"));
 
-        LibraryMakingTaxDigital.VerifyRequestJson('GET', ExpectedURLRequestPath);
+        LibraryMakingTaxDigital.VerifyRequestJson('GET', ExpectedURLRequestPath, false);
     end;
 
     local procedure VerifyGetVATReturnPeriodsRequestJsonForAutoJob()

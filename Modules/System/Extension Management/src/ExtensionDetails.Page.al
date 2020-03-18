@@ -12,7 +12,7 @@ page 2501 "Extension Details"
     DeleteAllowed = false;
     InsertAllowed = false;
     PageType = NavigatePage;
-    SourceTable = "NAV App";
+    SourceTable = "Published Application";
     SourceTableTemporary = true;
     ContextSensitiveHelpPage = 'ui-extensions';
 
@@ -318,17 +318,19 @@ page 2501 "Extension Details"
 
     trigger OnOpenPage()
     begin
-        NAVAppTable.SetRange("Package ID", "Package ID");
-        if not NAVAppTable.FindFirst() then
+        PublishedApplication.SetRange("Package ID", "Package ID");
+        PublishedApplication.SetRange("Tenant Visible", true);
+
+        if not PublishedApplication.FindFirst() then
             CurrPage.Close();
 
-        SetNavAppRecord();
+        SetPublishedAppRecord();
         SetPageConfig();
         SetLanguageConfig();
     end;
 
     var
-        NAVAppTable: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         AppDescription: BigText;
         AppIdDisplay: Text;
@@ -353,17 +355,17 @@ page 2501 "Extension Details"
         OnPremEULALbl: Label 'https://go.microsoft.com/fwlink/?linkid=2009120', Locked = true;
         OnPremPrivacyLbl: Label 'https://go.microsoft.com/fwlink/?LinkId=724009', Locked = true;
 
-    local procedure SetNavAppRecord()
+    local procedure SetPublishedAppRecord()
     var
         DescriptionStream: InStream;
     begin
-        TransferFields(NAVAppTable, true);
+        TransferFields(PublishedApplication, true);
 
         AppIdDisplay := LowerCase(DelChr(Format(ID), '=', '{}'));
         VersionDisplay :=
-          ExtensionInstallationImpl.GetVersionDisplayString(NAVAppTable);
-        NAVAppTable.CalcFields(Description);
-        NAVAppTable.Description.CreateInStream(DescriptionStream, TEXTENCODING::UTF8);
+          ExtensionInstallationImpl.GetVersionDisplayString(PublishedApplication);
+        PublishedApplication.CalcFields(Description);
+        PublishedApplication.Description.CreateInStream(DescriptionStream, TEXTENCODING::UTF8);
         AppDescription.Read(DescriptionStream);
 
         Insert();

@@ -1,0 +1,102 @@
+{
+  "QueryResponse": {
+    "CreditMemo": [
+      {
+        "RemainingCredit": 300.0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "146",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2017-03-17T09:21:55-07:00",
+          "LastUpdatedTime": "2017-03-17T09:21:55-07:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Crew #",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1039",
+        "TxnDate": "2017-03-17",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Concrete for fountain installation",
+            "Amount": 50.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "3",
+                "name": "Concrete"
+              },
+              "UnitPrice": 50,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "TAX"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Amount": 250.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "2",
+                "name": "Hours"
+              },
+              "UnitPrice": 50,
+              "Qty": 5,
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          },
+          {
+            "Amount": 300.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 0
+        },
+        "CustomerRef": {
+          "value": "3",
+          "name": "Cool Cars"
+        },
+        "CustomerMemo": {
+          "value": "Thank you for your business and have a great day!"
+        },
+        "BillAddr": {
+          "Id": "4",
+          "Line1": "65 Ocean Dr.",
+          "City": "Half Moon Bay",
+          "CountrySubDivisionCode": "CA",
+          "PostalCode": "94213",
+          "Lat": "37.4300318",
+          "Long": "-122.4336537"
+        },
+        "TotalAmt": 300.0,
+        "ApplyTaxAfterDiscount": false,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "BillEmail": {
+          "Address": "Cool_Cars@intuit.com"
+        },
+        "Balance": 300.0
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 1
+  },
+  "time": "2017-04-22T20:42:20.163-07:00"
+}

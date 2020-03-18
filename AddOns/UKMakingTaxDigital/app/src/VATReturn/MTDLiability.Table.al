@@ -48,8 +48,7 @@ table 10530 "MTD Liability"
     {
     }
 
-    [Scope('OnPrem')]
-    procedure DiffersFromLiability(MTDLiability: Record "MTD Liability"): Boolean
+    internal procedure DiffersFromLiability(MTDLiability: Record "MTD Liability"): Boolean
     begin
         exit(
           (Type <> MTDLiability.Type) OR

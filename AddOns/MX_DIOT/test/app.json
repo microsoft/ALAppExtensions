@@ -1,0 +1,33 @@
+{
+    "id":  "f838764f-73b0-4f49-ae42-6c3b29f842c9",
+    "name":  "Tests for MX DIOT Extension.",
+    "publisher":  "Microsoft",
+    "version":  "16.0.0.0",
+    "brief":  "Tests for MX DIOT Extension.",
+    "description":  "Tests for MX DIOT Extension.",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "adc18994-073b-4840-a144-2a5e3a0d9d1e",
+                             "name":  "DIOT - Localization for Mexico",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "name":  "Tests-TestLibraries",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "13.0.0.0",
+    "showMyCode":  true,
+    "application":  "16.0.0.0"
+}

@@ -200,7 +200,7 @@ codeunit 1266 "Cryptography Management"
     /// Verifies that a digital signature is valid.
     /// </summary>
     /// <param name="InputString">Input string.</param>
-    /// <param name="KeyStream">Public key to use in the hash algorithm.</param>
+    /// <param name="Key">Public key to use in the hash algorithm.</param>
     /// <param name="HashAlgorithmType">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
     /// <param name="SignatureStream">The stream of signature.</param>
     /// <returns>True if the digital signature is valid.</returns>
@@ -213,7 +213,7 @@ codeunit 1266 "Cryptography Management"
     /// Verifies that a digital signature is valid.
     /// </summary>
     /// <param name="DataStream">The stream of input data.</param>
-    /// <param name="KeyStream">Public key to use in the hash algorithm.</param>
+    /// <param name="Key">Public key to use in the hash algorithm.</param>
     /// <param name="HashAlgorithmType">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
     /// <param name="SignatureStream">The stream of digital signature.</param>
     /// <returns>True if the digital signature is valid.</returns>

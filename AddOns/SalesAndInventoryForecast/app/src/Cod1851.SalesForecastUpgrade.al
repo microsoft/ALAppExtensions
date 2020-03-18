@@ -20,64 +20,46 @@ codeunit 1851 "Sales Forecast Upgrade"
                 // The "Has Sales Forecast" field on the item table is populated through triggers on request and does never persist any data.
                 NavApp.DeleteArchiveData(Database::Item);
             end;
-            if (ModuleInfo.DataVersion().Major() < 2) or ((ModuleInfo.DataVersion().Major() = 2) and (ModuleInfo.DataVersion().Minor() = 0)) then
-                UpgradeSecretsToIsolatedStorage();
+            UpgradeSecretsToIsolatedStorage();
         end;
 
-        DeleteCachedAPIKeysAndURIValues();
     end;
 
     trigger OnValidateUpgradePerCompany()
-    var
-        ModuleInfo: ModuleInfo;
     begin
-        NavApp.GetCurrentModuleInfo(ModuleInfo);
-        if (ModuleInfo.DataVersion().Major() < 2) or ((ModuleInfo.DataVersion().Major() = 2) and (ModuleInfo.DataVersion().Minor() = 0)) then
-            VerifySecretsUpgradeToIsolatedStorage();
-    end;
-
-    local procedure DeleteCachedAPIKeysAndURIValues();
-    var
-        ServicePassword: Record "Service Password";
-        SalesForecastSetup: Record "MS - Sales Forecast Setup";
-        NullGuid: Guid;
-    begin
-        SalesForecastSetup.GetSingleInstance();
-        if not IsNullGuid(SalesForecastSetup."Service Pass API Key ID") then
-            if ServicePassword.Get(SalesForecastSetup."Service Pass API Key ID") then begin
-                ServicePassword.Delete();
-                SalesForecastSetup."Service Pass API Key ID" := NullGuid;
-                SalesForecastSetup.Modify();
-            end;
-
-        if not IsNullGuid(SalesForecastSetup."Service Pass API Uri ID") then
-            if ServicePassword.Get(SalesForecastSetup."Service Pass API Uri ID") then begin
-                ServicePassword.Delete();
-                SalesForecastSetup."Service Pass API Uri ID" := NullGuid;
-                SalesForecastSetup.Modify();
-            end;
+        VerifySecretsUpgradeToIsolatedStorage();
     end;
 
     local procedure UpgradeSecretsToIsolatedStorage()
     var
         ServicePassword: Record "Service Password";
         SalesForecastSetup: Record "MS - Sales Forecast Setup";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetSalesForecastSecretsToISUpgradeTag()) then
+            exit;
+
         if SalesForecastSetup.Get() then
             if ServicePassword.Get(SalesForecastSetup."API Key ID") then
                 if EncryptionEnabled() then
                     IsolatedStorage.SetEncrypted(SalesForecastSetup."API Key ID", ServicePassword.GetPassword(), DataScope::Company)
                 else
                     IsolatedStorage.Set(SalesForecastSetup."API Key ID", ServicePassword.GetPassword(), DataScope::Company);
+
+        UpgradeTag.SetUpgradeTag(GetSalesForecastSecretsToISUpgradeTag());
     end;
 
     local procedure VerifySecretsUpgradeToIsolatedStorage()
     var
         ServicePassword: Record "Service Password";
         SalesForecastSetup: Record "MS - Sales Forecast Setup";
+        UpgradeTag: Codeunit "Upgrade Tag";
         IsolatedStorageValue: Text;
         ServicePasswordValue: Text;
     begin
+        if UpgradeTag.HasUpgradeTag(GetSalesForecastSecretsToISValidationTag()) then
+            exit;
+
         if SalesForecastSetup.Get() then
             if ServicePassword.Get(SalesForecastSetup."API Key ID") then begin
                 if not IsolatedStorage.Get(SalesForecastSetup."API Key ID", DataScope::Company, IsolatedStorageValue) then
@@ -86,6 +68,25 @@ codeunit 1851 "Sales Forecast Upgrade"
                 if IsolatedStorageValue <> ServicePasswordValue then
                     Error('The secret value for key "%1" in isolated storage does not match the one in service password.', SalesForecastSetup."API Key ID");
             end;
+
+        UpgradeTag.SetUpgradeTag(GetSalesForecastSecretsToISValidationTag());
+    end;
+
+    local procedure GetSalesForecastSecretsToISUpgradeTag(): Code[250]
+    begin
+        exit('MS-328257-SalesForecastSecretsToIS-20190925');
+    end;
+
+    local procedure GetSalesForecastSecretsToISValidationTag(): Code[250]
+    begin
+        exit('MS-328257-SalesForecastSecretsToIS-Validate-20190925');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerDatabaseUpgradeTags', '', false, false)]
+    local procedure RegisterPerDatabaseTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    begin
+        PerDatabaseUpgradeTags.Add(GetSalesForecastSecretsToISUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetSalesForecastSecretsToISValidationTag());
     end;
 }
 

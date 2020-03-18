@@ -16,18 +16,22 @@ codeunit 9018 "Azure AD Plan Impl."
         UserLoginTimeTracker: Codeunit "User Login Time Tracker";
         AzureADGraph: Codeunit "Azure AD Graph";
         AzureADGraphUser: Codeunit "Azure AD Graph User";
+        BasicPlanExist: Boolean;
         IsTest: Boolean;
         UserSetupCategoryTxt: Label 'User Setup', Locked = true;
         DeviceGroupNameTxt: Label 'Dynamics 365 Business Central Device Users', Locked = true;
         DevicePlanFoundMsg: Label 'Device plan %1 found for user %2', Locked = true;
         NotBCUserMsg: Label 'User %1 is not a Business Central user', Locked = true;
-        MixedSKUsWithBasicErr: Label 'You cannot mix plans of type Basic, Essential, and Premium. Contact your system administrator or Microsoft partner for assistance.\\You will be logged out when you choose the OK button.';
-        MixedSKUsWithoutBasicErr: Label 'You cannot mix plans of type Essential and Premium. Contact your system administrator or Microsoft partner for assistance.\\You will be logged out when you choose the OK button.';
+        MixedSKUsWithBasicErr: Label 'You cannot mix plans of type Basic, Essential, and Premium. User %1 and user %2 have conflicting plans. Contact your system administrator or Microsoft partner for assistance.\\You will be logged out when you choose the OK button.', Comment = '%1 = First user name with conflict (guid); %2 = Second user name with conflict (guid);';
+        MixedSKUsWithoutBasicErr: Label 'You cannot mix plans of type Essential and Premium. User %1 and user %2 have conflicting plans. Contact your system administrator or Microsoft partner for assistance.\\You will be logged out when you choose the OK button.', Comment = '%1 = First user name with conflict (guid); %2 = Second user name with conflict (guid);';
         ChangesInPlansDetectedMsg: Label 'Changes in users plans were detected. Choose the Refresh all User Groups action in the Users window.';
         UserPlanAssignedMsg: Label 'User %1 is assigned plan %2', Locked = true;
         UserHasNoPlansMsg: Label 'User %1 has no Business Central plans assigned', Locked = true;
         DeviceUserCannotBeFirstUserErr: Label 'The device user cannot be the first user to log into the system.';
-        NoMixPlans: array[3] of Guid;
+        UserGotPlanTxt: Label 'The Graph User with the authentication email %1 has a plan with ID %2 named %3.', Comment = '%1 = Authentication email (email); %2 = subscription plan ID (guid); %3 = Plan name (tex1t)', Locked = true;
+        PlansDifferentCheckTxt: Label 'Checking if plans different for graph user with authentication email %1 and BC user with security ID %2.', Comment = '%1 = Authentication email (email); %2 = user security ID (guid)', Locked = true;
+        PlanCountDifferentTxt: Label 'The count of plans in BC is %1 and count of plans in Graph is %2.', Locked = true;
+        GraphUserHasExtraPlanTxt: Label 'Graph user has plan with ID %1 and named %2 that BC user does not have.', Locked = true, Comment = '%1 = Plan ID (guid); %2 = Plan name';
 
     procedure IsPlanAssigned(PlanGUID: Guid): Boolean
     var
@@ -73,31 +77,31 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(FALSE);
     end;
 
-    procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo)
+    procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo; AppendPermissions: Boolean)
     var
-        TempO365Plan: Record Plan temporary;
+        TempPlan: Record Plan temporary;
         UserPlan: Record "User Plan";
         HasUserBeenSetupBefore: Boolean;
     begin
-        GetGraphUserPlans(TempO365Plan, GraphUser, false);
+        GetGraphUserPlans(TempPlan, GraphUser);
 
         // Has the user been setup earlier?
         UserPlan.SetRange("User Security ID", UserSecurityId);
         HasUserBeenSetupBefore := not (UserPlan.IsEmpty() and UserLoginTimeTracker.IsFirstLogin(UserSecurityId));
 
         // Have any plans been removed from this user in O365, since last time he logged-in to NAV?
-        RemoveUnassignedUserPlans(TempO365Plan, UserSecurityId);
+        RemoveUnassignedUserPlans(TempPlan, UserSecurityId);
 
         // Have any plans been added to this user in O365, since last time he logged-in to NAV?
-        AddNewlyAssignedUserPlans(TempO365Plan, UserSecurityId, HasUserBeenSetupBefore);
+        AddNewlyAssignedUserPlans(TempPlan, UserSecurityId, HasUserBeenSetupBefore, AppendPermissions);
     end;
 
-    procedure UpdateUserPlans(UserSecurityId: Guid)
+    procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissions: Boolean)
     var
         GraphUser: DotNet UserInfo;
     begin
-        if AzureADGraphUser.GetGraphUser(UserSecurityID, GraphUser) then
-            UpdateUserPlans(UserSecurityId, GraphUser);
+        if AzureADGraphUser.GetGraphUser(UserSecurityID, true, GraphUser) then
+            UpdateUserPlans(UserSecurityId, GraphUser, AppendPermissions);
     end;
 
     procedure UpdateUserPlans()
@@ -111,7 +115,7 @@ codeunit 9018 "Azure AD Plan Impl."
             exit;
 
         repeat
-            UpdateUserPlans(User."User Security ID");
+            UpdateUserPlans(User."User Security ID", true);
         until User.Next() = 0;
     end;
 
@@ -138,7 +142,7 @@ codeunit 9018 "Azure AD Plan Impl."
                 Error(DeviceUserCannotBeFirstUserErr);
 
         UpdateUserFromAzureGraph(User, GraphUser);
-        UpdateUserPlans(User."User Security ID", GraphUser);
+        UpdateUserPlans(User."User Security ID", GraphUser, true);
     end;
 
     [TryFunction]
@@ -193,9 +197,12 @@ codeunit 9018 "Azure AD Plan Impl."
     procedure CheckMixedPlans()
     var
         Company: Record Company;
-        PlanIds: Codeunit "Plan Ids";
+        UserFirst: Record User;
+        UserSecond: Record User;
         AzureADPlan: Codeunit "Azure AD Plan";
         EnvironmentInfo: Codeunit "Environment Information";
+        UserSecurityIDFirstConflicting: Guid;
+        UserSecurityIDSecondConflicting: Guid;
         CanManage: Boolean;
     begin
         if not EnvironmentInfo.IsSaaS() then
@@ -214,14 +221,16 @@ codeunit 9018 "Azure AD Plan Impl."
         if not DoUserPlansExist() then
             exit;
 
-        if not MixedPlansExist() then
+        if not MixedPlansExist(UserSecurityIDFirstConflicting, UserSecurityIDSecondConflicting) then
             exit;
 
         AzureADPlan.OnCanCurrentUserManagePlansAndGroups(CanManage);
         if not CanManage then begin
-            if PlansExist(PlanIds.GetBasicPlanId()) then
-                Error(MixedSKUsWithBasicErr);
-            Error(MixedSKUsWithoutBasicErr);
+            UserFirst.Get(UserSecurityIDFirstConflicting);
+            UserSecond.Get(UserSecurityIDSecondConflicting);
+            if BasicPlanExist then
+                Error(MixedSKUsWithBasicErr, UserFirst."User Name", UserSecond."User Name");
+            Error(MixedSKUsWithoutBasicErr, UserFirst."User Name", UserSecond."User Name");
         end;
 
         Message(ChangesInPlansDetectedMsg);
@@ -229,54 +238,54 @@ codeunit 9018 "Azure AD Plan Impl."
 
     procedure MixedPlansExist(): Boolean
     var
-        i: Integer;
+        UserSecurityIDFirstConflicting: Guid;
+        UserSecurityIDSecondConflicting: Guid;
     begin
-        if IsNullGuid(NoMixPlans[1]) then
-            FillNoMixPlans();
-
-        for i := 1 to ArrayLen(NoMixPlans) do
-            if IsMixedPlan(NoMixPlans[i]) then
-                exit(true);
+        exit(MixedPlansExist(UserSecurityIDFirstConflicting, UserSecurityIDSecondConflicting));
     end;
 
-    local procedure PlansExist(PlanId: Guid): Boolean
+    local procedure MixedPlansExist(var UserSecurityIDFirstConflicting: Guid; var UserSecurityIDSecondConflicting: Guid): Boolean
+    var
+        PlanIds: Codeunit "Plan Ids";
+        FirstBasicUserSecurityID: Guid;
+        FirstEssentialsUserSecurityID: Guid;
+        FirstPremiumUserSecurityID: Guid;
+        EssentialsPlanExist: Boolean;
+        PremiumPlanExist: Boolean;
+    begin
+        BasicPlanExist := PlansExist(PlanIds.GetBasicPlanId(), FirstBasicUserSecurityID);
+        EssentialsPlanExist := PlansExist(PlanIds.GetEssentialPlanId(), FirstEssentialsUserSecurityID);
+        PremiumPlanExist := PlansExist(PlanIds.GetPremiumPlanId(), FirstPremiumUserSecurityID);
+
+        if BasicPlanExist then begin
+            UserSecurityIDFirstConflicting := FirstBasicUserSecurityID;
+            if EssentialsPlanExist then
+                UserSecurityIDSecondConflicting := FirstEssentialsUserSecurityID
+            else
+                UserSecurityIDSecondConflicting := FirstPremiumUserSecurityID;
+            exit(EssentialsPlanExist or PremiumPlanExist);
+        end else begin
+            UserSecurityIDFirstConflicting := FirstEssentialsUserSecurityID;
+            UserSecurityIDSecondConflicting := FirstPremiumUserSecurityID;
+            exit(EssentialsPlanExist and PremiumPlanExist);
+        end;
+    end;
+
+    local procedure PlansExist(PlanId: Guid; var FirstUserSecurityID: Guid) Result: Boolean
     var
         UsersInPlans: Query "Users in Plans";
     begin
         UsersInPlans.SetRange(User_State, UsersInPlans.User_State::Enabled);
         UsersInPlans.SetRange(Plan_ID, PlanId);
 
-        if UsersInPlans.Open() then
-            exit(UsersInPlans.Read());
+        if UsersInPlans.Open() then begin
+            Result := UsersInPlans.Read();
+            if (Result) then
+                FirstUserSecurityID := UsersInPlans.User_Security_ID;
+        end;
     end;
 
-    local procedure FillNoMixPlans()
-    var
-        PlanIds: Codeunit "Plan Ids";
-    begin
-        NoMixPlans[1] := PlanIds.GetBasicPlanId();
-        NoMixPlans[2] := PlanIds.GetEssentialPlanId();
-        NoMixPlans[3] := PlanIds.GetPremiumPlanId();
-    end;
-
-    local procedure IsMixedPlan(PlanId: Guid): Boolean
-    begin
-        exit(PlansExist(PlanId) and PlansApartFromExist(PlanId));
-    end;
-
-    procedure PlansApartFromExist(PlanId: Guid): Boolean
-    var
-        i: Integer;
-    begin
-        if IsNullGuid(NoMixPlans[1]) then
-            FillNoMixPlans();
-
-        for i := 1 to ArrayLen(NoMixPlans) do
-            if (NoMixPlans[i] <> PlanId) and PlansExist(NoMixPlans[i]) then
-                exit(true);
-    end;
-
-    local procedure RemoveUnassignedUserPlans(var TempPlan: Record "Plan" temporary; UserSecurityID: Guid)
+    local procedure RemoveUnassignedUserPlans(var TempPlan: Record Plan temporary; UserSecurityID: Guid)
     var
         NavUserPlan: Record "User Plan";
         TempNavUserPlan: Record "User Plan" temporary;
@@ -318,7 +327,7 @@ codeunit 9018 "Azure AD Plan Impl."
             until TempNavUserPlan.Next() = 0;
     end;
 
-    local procedure GetGraphUserPlans(var TempPlan: Record "Plan" temporary; var GraphUser: DotNet UserInfo; IncludePlansWithoutEntitlement: Boolean)
+    local procedure GetGraphUserPlans(var TempPlan: Record "Plan" temporary; var GraphUser: DotNet UserInfo)
     var
         AssignedPlan: DotNet ServicePlanInfo;
         DirectoryRole: DotNet RoleInfo;
@@ -337,25 +346,25 @@ codeunit 9018 "Azure AD Plan Impl."
             foreach AssignedPlan in GraphUser.AssignedPlans() do
                 if Format(AssignedPlan.CapabilityStatus()) = 'Enabled' then begin
                     ServicePlanIdValue := AssignedPlan.ServicePlanId();
-                    if IncludePlansWithoutEntitlement or IsBCServicePlan(ServicePlanIdValue) or IsTest then begin
+                    if IsBCServicePlan(ServicePlanIdValue) or IsTest then begin
                         HaveAssignedPlans := true;
                         AddToTempPlan(ServicePlanIdValue, Format(AssignedPlan.ServicePlanName()), TempPlan);
                         SendTraceTag('00009KY', UserSetupCategoryTxt, Verbosity::Normal,
-                          StrSubstNo(UserPlanAssignedMsg, Format(GraphUser.DisplayName()), Format(ServicePlanIdValue)), DataClassification::CustomerContent);
+                          StrSubstNo(UserPlanAssignedMsg, Format(GraphUser.DisplayName()), Format(ServicePlanIdValue)), DataClassification::EndUserIdentifiableInformation);
                     end;
                 end;
 
         if not HaveAssignedPlans then
             SendTraceTag('00009KZ', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(UserHasNoPlansMsg, Format(GraphUser.DisplayName())),
-                DataClassification::CustomerContent);
+                DataClassification::EndUserIdentifiableInformation);
 
         // Loop through Azure AD Roles
         if not IsNull(GraphUser.Roles()) then
             foreach DirectoryRole in GraphUser.Roles() do
-                if IncludePlansWithoutEntitlement or IsBCServicePlan(DirectoryRole.RoleTemplateId()) then begin
+                if IsBCServicePlan(DirectoryRole.RoleTemplateId()) then begin
                     AddToTempPlan(Format(DirectoryRole.RoleTemplateId()), Format(DirectoryRole.DisplayName()), TempPlan);
                     SendTraceTag('00009L0', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(UserPlanAssignedMsg, Format(GraphUser.DisplayName()), Format(DirectoryRole.RoleTemplateId())),
-                        DataClassification::CustomerContent);
+                        DataClassification::EndUserIdentifiableInformation);
                     SystemRoleAdded := true;
                 end;
 
@@ -365,10 +374,10 @@ codeunit 9018 "Azure AD Plan Impl."
 
         if IsDeviceRole(GraphUser) then begin
             GetDevicesPlanInfo(DevicesPlanId, DevicesPlanName);
-            SendTraceTag('00009L6', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(DevicePlanFoundMsg, DevicesPlanName, Format(GraphUser.DisplayName())), DataClassification::CustomerContent);
+            SendTraceTag('00009L6', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(DevicePlanFoundMsg, DevicesPlanName, Format(GraphUser.DisplayName())), DataClassification::EndUserIdentifiableInformation);
             AddToTempPlan(DevicesPlanId, DevicesPlanName, TempPlan);
         end else
-            SendTraceTag('00009L7', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(NotBCUserMsg, Format(GraphUser.DisplayName())), DataClassification::CustomerContent);
+            SendTraceTag('00009L7', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(NotBCUserMsg, Format(GraphUser.DisplayName())), DataClassification::EndUserIdentifiableInformation);
     end;
 
     local procedure IsDeviceRole(var GraphUser: DotNet UserInfo): Boolean
@@ -406,12 +415,11 @@ codeunit 9018 "Azure AD Plan Impl."
 
     end;
 
-    local procedure InsertFromTempPlan(var TempPlan: Record Plan temporary)
+    local procedure InsertFromTempPlan(TempPlan: Record Plan temporary)
     var
         Plan: Record Plan;
     begin
         if not Plan.Get(TempPlan."Plan ID") then begin
-            Plan.Init();
             Plan.Copy(TempPlan);
             Plan.Insert();
         end;
@@ -448,7 +456,7 @@ codeunit 9018 "Azure AD Plan Impl."
         if not AzureADGraphUser.GetGraphUser(UserSecurityID, GraphUser) then
             exit(0);
 
-        GetGraphUserPlans(TempPlan, GraphUser, FALSE);
+        GetGraphUserPlans(TempPlan, GraphUser);
 
         TempPlan.SetFilter("Role Center ID", '<>0');
 
@@ -458,7 +466,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(TempPlan."Role Center ID");
     end;
 
-    local procedure AddNewlyAssignedUserPlans(var TempO365Plan: Record Plan temporary; UserSecurityID: Guid; UserHadBeenSetupBefore: Boolean)
+    local procedure AddNewlyAssignedUserPlans(var Plan: Record Plan; UserSecurityID: Guid; UserHadBeenSetupBefore: Boolean; AppendPermissions: Boolean)
     var
         UserPlan: Record "User Plan";
         AzureADPlan: Codeunit "Azure AD Plan";
@@ -467,23 +475,24 @@ codeunit 9018 "Azure AD Plan Impl."
     begin
         // Have any plans been added to this user in O365, since last time he logged-in to NAV?
         // For each plan assigned to the user in Office
-        if TempO365Plan.FindSet() then
+        if Plan.FindSet() then
             repeat
                 // Does this assignment exist in NAV? If not, add it.
-                UserPlan.SetRange("Plan ID", TempO365Plan."Plan ID");
+                UserPlan.SetRange("Plan ID", Plan."Plan ID");
                 UserPlan.SetRange("User Security ID", UserSecurityID);
                 if UserPlan.IsEmpty() then begin
-                    InsertFromTempPlan(TempO365Plan);
+                    InsertFromTempPlan(Plan);
                     UserPlan.LockTable();
                     UserPlan.Init();
-                    UserPlan."Plan ID" := TempO365Plan."Plan ID";
+                    UserPlan."Plan ID" := Plan."Plan ID";
                     UserPlan."User Security ID" := UserSecurityID;
                     UserPlan.Insert();
                     // The SUPER role is replaced with O365 FULL ACCESS for new users.
                     // This happens only for users who are created from O365 (i.e. are added to plans)
-                    AzureADPlan.OnUpdateUserAccessForSaaS(UserPlan."User Security ID", UserGroupsAdded);
+                    if AppendPermissions then
+                        AzureADPlan.OnUpdateUserAccessForSaaS(UserPlan."User Security ID", UserGroupsAdded);
                 end;
-            until TempO365Plan.Next() = 0;
+            until Plan.Next() = 0;
 
         // Only remove SUPER if other permissions are granted (to avoid user lockout)
         if UserGroupsAdded then begin
@@ -524,5 +533,66 @@ codeunit 9018 "Azure AD Plan Impl."
             IsPlanAssignedToUser(PlanIds.GetInternalAdminPlanId(), SecurityID)
             or IsPlanAssignedToUser(PlanIds.GetDelegatedAdminPlanId(), SecurityID));
     end;
+
+    procedure GetPlanNames(GraphUser: DotNet UserInfo; var PlanNames: List of [Text])
+    var
+        TempPlan: Record Plan temporary;
+        Plan: Record Plan;
+    begin
+        GetGraphUserPlans(TempPlan, GraphUser);
+        if TempPlan.FindSet() then
+            repeat
+                // use the Business Central plan name instead of the Office Plan name, if possible.
+                if Plan.Get(TempPlan."Plan ID") then begin
+                    PlanNames.Add(Plan.Name);
+                    SendTraceTag('0000BK0', UserSetupCategoryTxt, Verbosity::Verbose, StrSubstNo(UserGotPlanTxt, AzureADGraphUser.GetAuthenticationEmail(GraphUser), Plan."Plan ID", Plan.Name), DataClassification::EndUserIdentifiableInformation);
+                end else begin
+                    PlanNames.Add(TempPlan.Name);
+                    SendTraceTag('0000BK1', UserSetupCategoryTxt, Verbosity::Verbose, StrSubstNo(UserGotPlanTxt, AzureADGraphUser.GetAuthenticationEmail(GraphUser), TempPlan."Plan ID", TempPlan.Name), DataClassification::EndUserIdentifiableInformation);
+                end;
+
+            until TempPlan.Next() = 0;
+    end;
+
+    procedure GetPlanNames(UserSecID: Guid; var PlanNames: List of [Text])
+    var
+        UserPlan: Record "User Plan";
+    begin
+        UserPlan.SetRange("User Security ID", UserSecID);
+        if UserPlan.FindSet() then
+            repeat
+                UserPlan.CalcFields("Plan Name");
+                PlanNames.Add(UserPlan."Plan Name");
+            until UserPlan.Next() = 0;
+    end;
+
+    procedure CheckIfPlansDifferent(GraphUser: DotNet UserInfo; UserSecID: Guid): Boolean
+    var
+        TempPlan: Record Plan temporary;
+        UserPlan: Record "User Plan";
+        UserPlanCount: Integer;
+        TempPlanCount: Integer;
+    begin
+        SendTraceTag('0000BK2', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(PlansDifferentCheckTxt, AzureADGraphUser.GetAuthenticationEmail(GraphUser), UserSecID), DataClassification::EndUserIdentifiableInformation);
+
+        GetGraphUserPlans(TempPlan, GraphUser);
+
+        UserPlan.SetRange("User Security ID", UserSecID);
+        UserPlanCount := UserPlan.Count();
+        TempPlanCount := TempPlan.Count();
+        if UserPlanCount <> TempPlanCount then begin
+            SendTraceTag('0000BK3', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(PlanCountDifferentTxt, UserPlanCount, TempPlanCount), DataClassification::SystemMetadata);
+            exit(true);
+        end;
+
+        if TempPlan.FindSet() then
+            repeat
+                if not UserPlan.Get(TempPlan."Plan ID", UserSecID) then begin
+                    SendTraceTag('0000BK4', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(GraphUserHasExtraPlanTxt, TempPlan."Plan ID", TempPlan.Name), DataClassification::SystemMetadata);
+                    exit(true);
+                end;
+            until TempPlan.Next() = 0;
+    end;
+
 }
 

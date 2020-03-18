@@ -117,7 +117,25 @@ codeunit 13625 "OIOUBL-Document Encode"
             ERROR(NonDanishCustomerErr);
     end;
 
-    procedure GetCompanyVATRegNo(VATRegNo: Text[20]): Text[20];
+    [Obsolete('Kept for testing and potentially dealing with dependency issues')]
+    procedure GetCompanyVATRegNoOld(VATRegNo: Text[20]): Text[20];
+    begin
+        ReadCompanyInfo();
+        if COPYSTR(VATRegNo, 1, 2) <> CompanyInfo."Country/Region Code" then
+            exit(Format(CompanyInfo."Country/Region Code" + VATRegNo));
+        exit(VATRegNo);
+    end;
+
+    [Obsolete('Kept for testing and potentially dealing with dependency issues')]
+    procedure GetCustomerVATRegNoOld(VATRegNo: Text[20]): Text[20];
+    begin
+        ReadCompanyInfo();
+        if COPYSTR(VATRegNo, 1, 2) <> CompanyInfo."Country/Region Code" then
+            exit(Format(CompanyInfo."Country/Region Code" + VATRegNo));
+        exit(VATRegNo);
+    end;
+
+    procedure GetCompanyVATRegNo(VATRegNo: Text[20]): Text[30];
     begin
         ReadCompanyInfo();
         if COPYSTR(VATRegNo, 1, 2) <> CompanyInfo."Country/Region Code" then
@@ -125,11 +143,19 @@ codeunit 13625 "OIOUBL-Document Encode"
         exit(VATRegNo);
     end;
 
-    procedure GetCustomerVATRegNo(VATRegNo: Text[20]): Text[20];
+    [Obsolete('GetCustomerVATRegNoIncCustomerCountryCode is the new correct version of the function')]
+    procedure GetCustomerVATRegNo(VATRegNo: Text[20]): Text[30];
     begin
         ReadCompanyInfo();
         if COPYSTR(VATRegNo, 1, 2) <> CompanyInfo."Country/Region Code" then
             exit(CompanyInfo."Country/Region Code" + VATRegNo);
+        exit(VATRegNo);
+    end;
+
+    procedure GetCustomerVATRegNoIncCustomerCountryCode(VATRegNo: Text[20]; CountryRegionCode: Code[10]): Text[30];
+    begin
+        if COPYSTR(VATRegNo, 1, 2) <> CountryRegionCode then
+            exit(CountryRegionCode + VATRegNo);
         exit(VATRegNo);
     end;
 

@@ -261,7 +261,7 @@ procedure FromFieldRef(BlobFieldRef: FieldRef)
 #### Parameters
 *BlobFieldRef ([FieldRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/fieldref/fieldref-data-type))* 
 
-
+A FieldRef variable attached to a field for a record.
 
 ### ToFieldRef (Method) <a name="ToFieldRef"></a> 
 
@@ -275,7 +275,7 @@ procedure ToFieldRef(var BlobFieldRef: FieldRef)
 #### Parameters
 *BlobFieldRef ([FieldRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/fieldref/fieldref-data-type))* 
 
-
+A FieldRef variable attached to a field for a record.
 
 
 ## Temp Blob List (Codeunit 4102)

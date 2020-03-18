@@ -257,7 +257,7 @@ codeunit 148002 "C5 LedTable Migrator Test"
         C5LedTable.Insert();
     end;
 
-    local procedure CheckDefaultDimensionExists(GLAccountNo: Text[10])
+    local procedure CheckDefaultDimensionExists(GLAccountNo: Text[20])
     var
         DefaultDimension: Record "Default Dimension";
     begin

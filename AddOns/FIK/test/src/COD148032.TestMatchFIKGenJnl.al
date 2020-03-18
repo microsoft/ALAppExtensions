@@ -38,7 +38,7 @@ Codeunit 148032 TestMatchFIKGenJnl
         Amount: Decimal;
         DocumentNo: Code[20];
         CustomerNo: Code[20];
-        FIKStatusDescriptionExpected: Text[50];
+        FIKStatusDescriptionExpected: Text;
     BEGIN
         Initialize();
 
@@ -58,7 +58,7 @@ Codeunit 148032 TestMatchFIKGenJnl
 
         // Verify
         VerifyGenJnlLine(GenJnlLine, GenJnlLine."Document No.", GenJnlLine."Account Type"::Customer,
-          CustomerNo, TRUE, FIKStatusDescriptionExpected, DocumentNo);
+          CustomerNo, TRUE, FIKStatusDescriptionExpected);
     END;
 
     [Test]
@@ -71,7 +71,7 @@ Codeunit 148032 TestMatchFIKGenJnl
         PaymentAmount: Decimal;
         DocumentNo: Code[20];
         CustomerNo: Code[20];
-        FIKStatusDescriptionExpected: Text[50];
+        FIKStatusDescriptionExpected: Text;
     BEGIN
         Initialize();
 
@@ -92,7 +92,7 @@ Codeunit 148032 TestMatchFIKGenJnl
 
         // Verify
         VerifyGenJnlLine(GenJnlLine, GenJnlLine."Document No.", GenJnlLine."Account Type"::Customer,
-          CustomerNo, TRUE, FIKStatusDescriptionExpected, DocumentNo);
+          CustomerNo, TRUE, FIKStatusDescriptionExpected);
     END;
 
     [Test]
@@ -105,7 +105,7 @@ Codeunit 148032 TestMatchFIKGenJnl
         PaymentAmount: Decimal;
         DocumentNo: Code[20];
         CustomerNo: Code[20];
-        FIKStatusDescriptionExpected: Text[50];
+        FIKStatusDescriptionExpected: Text;
     BEGIN
         Initialize();
 
@@ -126,7 +126,7 @@ Codeunit 148032 TestMatchFIKGenJnl
 
         // Verify
         VerifyGenJnlLine(GenJnlLine, GenJnlLine."Document No.", GenJnlLine."Account Type"::Customer,
-          CustomerNo, TRUE, FIKStatusDescriptionExpected, DocumentNo);
+          CustomerNo, TRUE, FIKStatusDescriptionExpected);
     END;
 
     [Test]
@@ -138,7 +138,7 @@ Codeunit 148032 TestMatchFIKGenJnl
         GenLedgerAmount: Decimal;
         DocumentNo: Code[20];
         CustomerNo: Code[20];
-        FIKStatusDescriptionExpected: Text[50];
+        FIKStatusDescriptionExpected: Text;
     BEGIN
         Initialize();
 
@@ -159,7 +159,7 @@ Codeunit 148032 TestMatchFIKGenJnl
 
         // Verify
         VerifyGenJnlLine(GenJnlLine, '', GenJnlLine."Account Type"::Customer,
-          CustomerNo, FALSE, FIKStatusDescriptionExpected, DocumentNo);
+          CustomerNo, FALSE, FIKStatusDescriptionExpected);
     END;
 
     [Test]
@@ -170,7 +170,7 @@ Codeunit 148032 TestMatchFIKGenJnl
         GenJnlBatch: Record "Gen. Journal Batch";
         GenLedgerAmount: Decimal;
         PaymentAmount: Decimal;
-        FIKStatusDescriptionExpected: Text[50];
+        FIKStatusDescriptionExpected: Text;
         CustomerNo: Code[20];
         DocumentNo: Code[20];
     BEGIN
@@ -194,7 +194,7 @@ Codeunit 148032 TestMatchFIKGenJnl
 
         // Verify
         VerifyGenJnlLine(GenJnlLine, '', GenJnlLine."Account Type"::"G/L Account",
-          '', FALSE, FIKStatusDescriptionExpected, DocumentNo);
+          '', FALSE, FIKStatusDescriptionExpected);
     END;
 
     [Test]
@@ -206,7 +206,7 @@ Codeunit 148032 TestMatchFIKGenJnl
         Amount: Decimal;
         DocumentNo: Code[20];
         CustomerNo: Code[20];
-        FIKStatusDescriptionExpected: Text[50];
+        FIKStatusDescriptionExpected: Text;
     BEGIN
         Initialize();
 
@@ -233,7 +233,7 @@ Codeunit 148032 TestMatchFIKGenJnl
 
         // Verify
         VerifyGenJnlLine(GenJnlLine, '', GenJnlLine."Account Type"::Customer,
-          CustomerNo, FALSE, FIKStatusDescriptionExpected, DocumentNo);
+          CustomerNo, FALSE, FIKStatusDescriptionExpected);
     END;
 
     LOCAL PROCEDURE Initialize();
@@ -305,7 +305,7 @@ Codeunit 148032 TestMatchFIKGenJnl
         EXIT('FIK - ' + String + FORMAT(CheckSum));
     END;
 
-    LOCAL PROCEDURE VerifyGenJnlLine(VAR GenJnlLine: Record "Gen. Journal Line"; DocNo: Code[50]; AccountType: Option; AccountNo: Code[20]; Applied: Boolean; FIKDescription: Text[50]; PaymentReference: Code[20]);
+    LOCAL PROCEDURE VerifyGenJnlLine(VAR GenJnlLine: Record "Gen. Journal Line"; DocNo: Code[50]; AccountType: Option; AccountNo: Code[20]; Applied: Boolean; FIKDescription: Text);
     BEGIN
         GenJnlLine.SETFILTER(Description, FIKDescription);
         GenJnlLine.FINDSET();

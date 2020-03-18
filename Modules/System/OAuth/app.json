@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "version": "16.0.0.0",
   "brief": "Contains methods supporting authentication via OAuth 1.0 protocol.",
-  "description": "Contains helper methods for obtainig the authentication key and secret, or the authorization header in respect to the OAuth 1.0 authorization protocol.",
+  "description": "Contains helper methods for obtaining the authentication key and secret, or the authorization header in respect to the OAuth 1.0 authorization protocol.",
   "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help":  "",
@@ -19,7 +19,7 @@
     }
   ],
   "screenshots": [],
-  "platform": "15.0.0.0",
+  "platform": "16.0.0.0",
   "idRanges": [
     {
       "from": 1288,

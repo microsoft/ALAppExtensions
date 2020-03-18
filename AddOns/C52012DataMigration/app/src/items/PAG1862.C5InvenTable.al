@@ -100,7 +100,7 @@ page 1862 "C5 InvenTable"
                     PromotedOnly = true;
                     Image = Discount;
                     RunObject = Page "C5 InvenDiscGroup";
-                    RunPageLink = DiscGroup = field (DiscGroup);
+                    RunPageLink = DiscGroup = field(DiscGroup);
                     RunPageMode = Edit;
                     Enabled = DiscGroup <> '';
                 }
@@ -114,7 +114,7 @@ page 1862 "C5 InvenTable"
                     PromotedOnly = true;
                     Image = Price;
                     RunObject = Page "C5 InvenPrice";
-                    RunPageLink = ItemNumber = field (ItemNumber);
+                    RunPageLink = ItemNumber = field(ItemNumber);
                     RunPageMode = Edit;
                 }
 
@@ -127,7 +127,7 @@ page 1862 "C5 InvenTable"
                     PromotedOnly = true;
                     Image = BarCode;
                     RunObject = Page "C5 CN8Code";
-                    RunPageLink = CN8Code = field (TariffNumber);
+                    RunPageLink = CN8Code = field(TariffNumber);
                     RunPageMode = Edit;
                     Enabled = TariffNumber <> '';
                 }
@@ -141,7 +141,7 @@ page 1862 "C5 InvenTable"
                     PromotedOnly = true;
                     Image = Group;
                     RunObject = Page "C5 InvenItemGroup";
-                    RunPageLink = Group = field (Group);
+                    RunPageLink = Group = field(Group);
                     RunPageMode = Edit;
                     Enabled = Group <> '';
                 }
@@ -155,7 +155,7 @@ page 1862 "C5 InvenTable"
                     PromotedOnly = true;
                     Image = EntriesList;
                     RunObject = Page "C5 InvenTrans";
-                    RunPageLink = ItemNumber = field (ItemNumber), Open = const (Yes), BudgetCode = const (Actual);
+                    RunPageLink = ItemNumber = field(ItemNumber), Open = const(Yes), BudgetCode = const(Actual);
                     RunPageMode = Edit;
                 }
 
@@ -168,7 +168,7 @@ page 1862 "C5 InvenTable"
                     PromotedOnly = true;
                     Image = BOM;
                     RunObject = Page "C5 InvenBOM List";
-                    RunPageLink = BOMItemNumber = field (ItemNumber);
+                    RunPageLink = BOMItemNumber = field(ItemNumber);
                     RunPageMode = Edit;
                     Enabled = BOMActionEnabled;
                 }
@@ -181,7 +181,7 @@ page 1862 "C5 InvenTable"
         C5InvenBOM: Record "C5 InvenBOM";
     begin
         C5InvenBOM.SetRange(BOMItemNumber, ItemNumber);
-        BOMActionEnabled := C5InvenBOM.FindFirst();
+        BOMActionEnabled := not C5InvenBOM.IsEmpty();
     end;
 
     var

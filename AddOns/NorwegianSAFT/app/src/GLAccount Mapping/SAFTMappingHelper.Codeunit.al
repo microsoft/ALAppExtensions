@@ -20,6 +20,11 @@ codeunit 10672 "SAF-T Mapping Helper"
         SourceCodeWithoutSAFTCodeErr: Label 'One or more source codes do not have a SAF-T source code. Open the Source Codes page and specify a SAF-T source code for each source code.';
         ChartOfAccountsAlreadyExistsErr: Label 'A chart of accounts must be empty to be created based on SAF-T standard accounts.';
         AssortedJournalsSourceCodeDescriptionLbl: Label 'Assorted Journals';
+        GeneralLedgerJournalsSourceCodeDescriptionLbl: Label 'General Ledger Journals';
+        AccountReceivablesSourceCodeDescriptionLbl: Label 'Account Receivables';
+        AccountPayablesSourceCodeDescriptionLbl: Label 'Account Payables';
+        SAFTSetupGuideTxt: Label 'Set up SAF-T';
+        SAFTDimLbl: Label 'SAF-T Dimension No Series.';
         DefaultLbl: Label 'DEFAULT';
 
     trigger OnRun()
@@ -152,7 +157,8 @@ codeunit 10672 "SAF-T Mapping Helper"
             SAFTGLAccountMapping."Mapping Type" := SAFTMappingRange."Mapping Type";
             SAFTGLAccountMapping."G/L Account No." := GLAccount."No.";
             SAFTGLAccountMapping."G/L Entries Exists" :=
-                GLAccNetChangeIsNotZero(GLAccount, SAFTMappingRange."Starting Date", SAFTMappingRange."Ending Date");
+                GLAccNetChangeIsNotZero(GLAccount, SAFTMappingRange."Starting Date", SAFTMappingRange."Ending Date",
+                SAFTMappingRange."Include Incoming Balance");
             if not SAFTGLAccountMapping.find() then
                 SAFTGLAccountMapping.insert();
         until GLAccount.next() = 0;
@@ -176,28 +182,31 @@ codeunit 10672 "SAF-T Mapping Helper"
             exit;
         if not SAFTMappingRange.get(MappingRangeCode) then
             exit;
-        SAFTGLAccountMapping.SetRange("Mapping Range Code");
+        SAFTGLAccountMapping.SetRange("Mapping Range Code", SAFTMappingRange.Code);
         if SAFTGLAccountMapping.FindSet() then
             repeat
                 SAFTGLAccountMapping.Validate("G/L Entries Exists",
                     GLAccHasEntries(
                         SAFTGLAccountMapping."G/L Account No.", SAFTMappingRange."Starting Date",
-                        SAFTMappingRange."Ending Date"));
+                        SAFTMappingRange."Ending Date", SAFTMappingRange."Include Incoming Balance"));
                 SAFTGLAccountMapping.Modify(true);
             until SAFTGLAccountMapping.Next() = 0;
     end;
 
-    local procedure GLAccHasEntries(GLAccNo: Code[20]; StartingDate: Date; EndingDate: Date): Boolean
+    local procedure GLAccHasEntries(GLAccNo: Code[20]; StartingDate: Date; EndingDate: Date; IncludeIncomingBalance: Boolean): Boolean
     var
         GLAccount: Record "G/L Account";
     begin
         GLAccount.Get(GLAccNo);
-        exit(GLAccNetChangeIsNotZero(GLAccount, StartingDate, EndingDate));
+        exit(GLAccNetChangeIsNotZero(GLAccount, StartingDate, EndingDate, IncludeIncomingBalance));
     end;
 
-    local procedure GLAccNetChangeIsNotZero(GLAccount: Record "G/L Account"; StartingDate: Date; EndingDate: Date): Boolean
+    local procedure GLAccNetChangeIsNotZero(GLAccount: Record "G/L Account"; StartingDate: Date; EndingDate: Date; IncludeIncomingBalance: Boolean): Boolean
     begin
-        GLAccount.SetRange("Date Filter", StartingDate, EndingDate);
+        if (GLAccount."Income/Balance" = GLAccount."Income/Balance"::"Income Statement") or (not IncludeIncomingBalance) then
+            GLAccount.SetRange("Date Filter", StartingDate, EndingDate)
+        else
+            GLAccount.SetRange("Date Filter", 0D, ClosingDate(EndingDate));
         GLAccount.CalcFields("Net Change");
         exit(GLAccount."Net Change" <> 0);
     end;
@@ -467,6 +476,79 @@ codeunit 10672 "SAF-T Mapping Helper"
         if not GuiAllowed() then
             Error(ErrorMessage);
         ErrorMessageManagement.LogContextFieldError(0, ErrorMessage, SourceVariant, SourceFieldNo, '');
+    end;
+
+    procedure AddSAFTAssistedSetup()
+    var
+        AssistedSetup: Codeunit "Assisted Setup";
+        AssistedSetupGroup: Enum "Assisted Setup Group";
+        Info: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(Info);
+        AssistedSetup.Add(
+            Info.Id(), PAGE::"SAF-T Setup Wizard", CopyStr(SAFTSetupGuideTxt, 1, 250),
+            AssistedSetupGroup::GettingStarted);
+    end;
+
+    procedure InsertDefaultNoSeriesInSAFTSetup()
+    var
+        SAFTSetup: Record "SAF-T Setup";
+    begin
+        if not SAFTSetup.Get() then begin
+            SAFTSetup.Init();
+            SAFTSetup.Insert();
+        end;
+        if SAFTSetup."Dimension No. Series Code" = '' then
+            SAFTSetup."Dimension No. Series Code" := InsertNoSeries('DIM', SAFTDimLbl);
+        SAFTSetup.Modify();
+    end;
+
+    local procedure InsertNoSeries(NoSeriesCode: Code[20]; Description: Text[100]): Code[20]
+    var
+        NoSeries: Record "No. Series";
+        NoSeriesLine: Record "No. Series Line";
+    begin
+        NoSeries.Init();
+        NoSeries.Code := NoSeriesCode;
+        NoSeries.Description := Description;
+        NoSeries."Default Nos." := true;
+        NoSeries."Manual Nos." := true;
+        if not NoSeries.Insert() then begin
+            NoSeries.Code += '-1';
+            while (Not NoSeries.Insert()) do
+                NoSeries.Code := IncStr(NoSeries.Code);
+        end;
+
+        NoSeriesLine.Init();
+        NoSeriesLine."Series Code" := NoSeries.Code;
+        NoSeriesLine."Line No." := 10000;
+        NoSeriesLine.Validate("Starting No.", NoSeries.Code + '-10000');
+        NoSeriesLine.Validate("Ending No.", NoSeries.Code + '-99999');
+        NoSeriesLine.Validate("Increment-by No.", 1);
+        NoSeriesLine.Insert(true);
+
+        exit(NoSeries.Code)
+    end;
+
+    procedure InsertSAFTSourceCodes()
+    var
+        SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
+    begin
+        InsertSAFTSourceCode(SAFTMappingHelper.GetGLSAFTSourceCode(), GeneralLedgerJournalsSourceCodeDescriptionLbl);
+        InsertSAFTSourceCode(SAFTMappingHelper.GetARSAFTSourceCode(), AccountReceivablesSourceCodeDescriptionLbl);
+        InsertSAFTSourceCode(SAFTMappingHelper.GetAPSAFTSourceCode(), AccountPayablesSourceCodeDescriptionLbl);
+        InsertSAFTSourceCode(SAFTMappingHelper.GetASAFTSourceCode(), SAFTMappingHelper.GetASAFTSourceCodeDescription());
+    end;
+
+    local procedure InsertSAFTSourceCode(Code: Code[9]; Description: Text[100])
+    var
+        SAFTSourceCode: Record "SAF-T Source Code";
+    begin
+        SAFTSourceCode.Validate(Code, Code);
+        if SAFTSourceCode.Find() then
+            exit;
+        SAFTSourceCode.Validate(Description, Description);
+        SAFTSourceCode.Insert(true);
     end;
 
     [EventSubscriber(ObjectType::Table, 348, 'OnBeforeInsertEvent', '', false, false)]

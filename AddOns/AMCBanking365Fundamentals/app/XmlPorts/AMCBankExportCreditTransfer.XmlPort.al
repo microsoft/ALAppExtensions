@@ -21,6 +21,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                 MaxOccurs = Once;
                 XmlName = 'amcpaymentreq';
                 NamespacePrefix = '';
+
                 textelement(version)
                 {
                     MaxOccurs = Once;
@@ -64,7 +65,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
 
                         trigger OnBeforePassVariable();
                         begin
-                            batchData := GetValue("Data Exch. Field"."Data Exch. No.", "Data Exch. Field"."Line No.");
+                            batchData := GetValue(DataExchField."Data Exch. No.", DataExchField."Line No.");
                         end;
                     }
                     textelement(edireceiverid)
@@ -128,7 +129,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                         trigger OnBeforePassVariable();
                         begin
                             journalnumber := GetValue(DataExchField."Data Exch. No.", DataExchField."Line No.");
-                            journalnumber := journalnumber + '_' + FORMAT(DataExchEntryNo);
+                            journalnumber := journalnumber + '_' + FORMAT(DataExchEntryNo); //Making it a unique Journal
                         end;
                     }
                     fieldelement(legalregistrationnumber; "Company Information"."VAT Registration No.")
@@ -309,7 +310,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
 
                                     trigger OnBeforePassVariable();
                                     begin
-                                        regrepcode := GetValue(DataExchField."Data Exch. No.", DataExchField."Line No.");
+                                        regrepcode := GetValue("Data Exch. Field"."Data Exch. No.", "Data Exch. Field"."Line No.");
                                     end;
                                 }
                                 textelement(regrepdate)
@@ -467,6 +468,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                             {
                                 MinOccurs = Zero;
                                 XmlName = 'banktransspec';
+
                                 textelement(cardref)
                                 {
                                     MaxOccurs = Unbounded;
@@ -494,7 +496,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                                     trigger OnBeforePassVariable();
                                     begin
                                         if (CVLedgEntryBuffer."Entry No." <> 0) then
-                                            invoiceref := CVLedgEntryBuffer."External Document No."
+                                            invoiceref := CVLedgEntryBuffer.Description
                                         else
                                             invoiceref := "Credit Transfer Entry"."Message to Recipient";
                                     end;
@@ -591,9 +593,15 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                                 trigger OnPreXmlItem();
                                 var
                                 begin
+                                    ManualMessage := false;
                                     "Credit Transfer Entry".SETRANGE("Credit Transfer Entry"."Data Exch. Entry No.", "Data Exch. Field"."Data Exch. No.");
                                     "Credit Transfer Entry".SETRANGE("Credit Transfer Entry"."Transaction ID", TransThemUniqueId);
+                                    if ("Credit Transfer Entry".Count() = 0) then begin
+                                        ManualMessage := true;
+                                        currXMLport.skip();
+                                    end;
                                 end;
+
                             }
                             textelement(emailadvice)
                             {
@@ -648,7 +656,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                                     }
                                 }
                             }
-                            textelement(paymentmessage) //Always skipped because of banktransspec hold info about payments
+                            textelement(paymentmessage) //Only Skip if banktransspec hold info about payments, otherwise output
                             {
                                 MinOccurs = Zero;
                                 textelement(pmtlinenum)
@@ -659,7 +667,10 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
 
                                     trigger OnBeforePassVariable();
                                     begin
-                                        currXMLport.SKIP()
+                                        if (ManualMessage) then
+                                            pmtlinenum := GetValue("Data Exch. Field"."Data Exch. No.", "Data Exch. Field"."Line No.")
+                                        else
+                                            currXMLport.SKIP()
                                     end;
                                 }
                                 textelement(pmtmsgtext)
@@ -670,13 +681,17 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
 
                                     trigger OnBeforePassVariable();
                                     begin
-                                        currXMLport.SKIP()
+                                        if (ManualMessage) then
+                                            pmtmsgtext := GetValue("Data Exch. Field"."Data Exch. No.", "Data Exch. Field"."Line No.")
+                                        else
+                                            currXMLport.SKIP()
                                     end;
                                 }
 
                                 trigger OnBeforePassVariable();
                                 begin
-                                    currXMLport.SKIP();
+                                    if (not ManualMessage) then
+                                        currXMLport.SKIP();
                                 end;
                             }
                             textelement(chequeinfo)
@@ -743,7 +758,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                                 begin
                                     chequeinfo := GetValue("Data Exch. Field"."Data Exch. No.", "Data Exch. Field"."Line No.");
                                     if (chequeinfo = 'FALSE') then
-                                        currXMLport.SKIP()
+                                        currXMLport.Skip()
                                     else
                                         chequeinfo := '';
                                 end;
@@ -989,7 +1004,10 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
 
                                 trigger OnBeforePassVariable();
                                 begin
-                                    messagestructure := GetValue("Data Exch. Field"."Data Exch. No.", "Data Exch. Field"."Line No.");
+                                    if (not ManualMessage) then
+                                        messagestructure := GetValue("Data Exch. Field"."Data Exch. No.", "Data Exch. Field"."Line No.")
+                                    else
+                                        messagestructure := 'manual';
                                 end;
                             }
                         }
@@ -1197,6 +1215,7 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
         DataExchFieldDetails: Query "Data Exch. Field Details";
         DataExchEntryNo: Integer;
         CurrentLineNo: Integer;
+        ManualMessage: Boolean;
 
     local procedure InitializeGlobals();
     begin
@@ -1235,20 +1254,32 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
         Clear(CVLedgerEntryBuffer);
         if (CreditTransferEntry."Account Type" = CreditTransferEntry."Account Type"::Vendor) then begin
             VendLedgEntry.SetAutoCalcFields("Remaining Amount", "Original Amount");
-            if (VendLedgEntry.get(CreditTransferEntry."Applies-to Entry No.")) then
-                CVLedgerEntryBuffer.CopyFromVendLedgEntry(VendLedgEntry)
+            if (VendLedgEntry.get(CreditTransferEntry."Applies-to Entry No.")) then begin
+                CVLedgerEntryBuffer.CopyFromVendLedgEntry(VendLedgEntry);
+                if (VendLedgEntry."External Document No." <> '') then
+                    CVLedgerEntryBuffer.Description := VendLedgEntry."External Document No." //1. Prio
+                else
+                    CVLedgerEntryBuffer.Description := VendLedgEntry.Description; //2. Prio
+            end
         end
         else
             if (CreditTransferEntry."Account Type" = CreditTransferEntry."Account Type"::Customer) then begin
                 CustLedgEntry.SetAutoCalcFields("Remaining Amount", "Original Amount");
-                if (CustLedgEntry.Get(CreditTransferEntry."Applies-to Entry No.")) then
-                    CVLedgerEntryBuffer.CopyFromCustLedgEntry(CustLedgEntry)
+                if (CustLedgEntry.Get(CreditTransferEntry."Applies-to Entry No.")) then begin
+                    CVLedgerEntryBuffer.CopyFromCustLedgEntry(CustLedgEntry);
+                    if (CustLedgEntry."Document Date" <> 0D) then
+                        CVLedgerEntryBuffer."Document Date" := CustLedgEntry."Document Date"
+                    else
+                        CVLedgerEntryBuffer."Document Date" := CustLedgEntry."Posting Date";
+                end
             end
             else
                 if (CreditTransferEntry."Account Type" = CreditTransferEntry."Account Type"::Employee) then begin
                     EmplLedgEntry.SetAutoCalcFields("Remaining Amount", "Original Amount");
-                    if (EmplLedgEntry.Get(CreditTransferEntry."Applies-to Entry No.")) then
+                    if (EmplLedgEntry.Get(CreditTransferEntry."Applies-to Entry No.")) then begin
                         CVLedgerEntryBuffer.CopyFromEmplLedgEntry(EmplLedgEntry);
+                        CVLedgerEntryBuffer."Document Date" := EmplLedgEntry."Posting Date";
+                    end;
                 end;
     end;
 }

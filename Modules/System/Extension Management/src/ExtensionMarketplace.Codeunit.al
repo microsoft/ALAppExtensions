@@ -193,12 +193,14 @@ codeunit 2501 "Extension Marketplace"
 
     procedure InstallMarketplaceExtension(ApplicationId: Guid; ResponseURL: Text; lcid: Integer)
     var
-        NavAppTable: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
     begin
 
-        if not NavAppTable.Get(ExtensionOperationImpl.GetLatestVersionPackageIdByAppId(ApplicationId)) then begin
+        PublishedApplication.SetRange("Package ID", ExtensionOperationImpl.GetLatestVersionPackageIdByAppId(ApplicationId));
+        PublishedApplication.SetRange("Tenant Visible", true);
+        if not PublishedApplication.FindFirst() then begin
             // If the extension is not found, send the request to the regional service.
             ExtensionOperationImpl.DeployExtension(ApplicationId, lcid, true);
             exit;
@@ -206,13 +208,13 @@ codeunit 2501 "Extension Marketplace"
 
         // Check if the extension is already installed
         if ExtensionInstallationImpl.IsInstalledByAppId(ApplicationId) then begin
-            Message(StrSubstNo(AlreadyInstalledMsg, NavAppTable.Name));
+            Message(StrSubstNo(AlreadyInstalledMsg, PublishedApplication.Name));
             exit;
         end;
 
         // If it is a first party extension, install it locally
-        if IsFirstPartyExtension(NavAppTable) then
-            InstallApp(NavAppTable."Package ID", ResponseURL, lcid)
+        if IsFirstPartyExtension(PublishedApplication) then
+            InstallApp(PublishedApplication."Package ID", ResponseURL, lcid)
         else
             // If the extension is found and it's from a third party, then send the request to regional service.
             ExtensionOperationImpl.DeployExtension(ApplicationId, lcid, true);
@@ -303,9 +305,9 @@ codeunit 2501 "Extension Marketplace"
             MakeMarketplaceTelemetryCallback(ResponseURL, OperationResult::DeploymentFailedDueToPackage);
     end;
 
-    local procedure IsFirstPartyExtension(NAVAppTable: Record "NAV App"): Boolean
+    local procedure IsFirstPartyExtension(PublishedApplication: Record "Published Application"): Boolean
     begin
-        if NAVAppTable.Publisher = 'Microsoft' then
+        if PublishedApplication.Publisher = 'Microsoft' then
             exit(true);
 
         exit(false);

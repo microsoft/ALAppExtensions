@@ -58,6 +58,7 @@ Codeunit 13650 FIKManagement
     VAR
         PaymentMethod: Record "Payment Method";
         Result: Boolean;
+        IsHandled: Boolean;
     BEGIN
         IF PaymentReference = '' THEN
             EXIT;
@@ -78,8 +79,11 @@ Codeunit 13650 FIKManagement
                 END;
             PaymentMethod.PaymentTypeValidation::"FIK 01", PaymentMethod.PaymentTypeValidation::"FIK 73":
                 ERROR(PmtReferenceErr, PaymentMethod.PaymentTypeValidation);
-            ELSE
-                ERROR(FIKPmtErr);
+            ELSE begin
+                    OnEvaluateFIKCasePaymentTypeValidationElse(PaymentReference, PaymentMethod, Result, IsHandled);
+                    if not IsHandled then
+                        ERROR(FIKPmtErr);
+                end;
         END;
         IF NOT Result THEN
             ERROR(WrongCheckCypherErr);
@@ -253,7 +257,7 @@ Codeunit 13650 FIKManagement
             END;
     end;
 
-    procedure AddMatchCandidateWithDescription(VAR TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary; LineNo: Integer; EntryNo: Integer; Quality: Integer; Type: Option; AccountNo: Code[20]; NewDescription: Text[50]; Status: Option);
+    procedure AddMatchCandidateWithDescription(VAR TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary; LineNo: Integer; EntryNo: Integer; Quality: Integer; Type: Option; AccountNo: Code[20]; NewDescription: Text[100]; Status: Option);
     BEGIN
         TempBankStatementMatchingBuffer.AddMatchCandidate(LineNo, EntryNo, Quality, Type, AccountNo);
         TempBankStatementMatchingBuffer.DescriptionBankStatment := NewDescription;
@@ -263,8 +267,13 @@ Codeunit 13650 FIKManagement
 
     //cod1210
     PROCEDURE CheckBankTransferCountryRegion(BankAccCountryRegionCode: Code[10]; RecipientBankAccCountryRegionCode: Code[10]; PaymentMethod: Record "Payment Method");
+    var
+        CompanyInformation: Record "Company Information";
     BEGIN
-        IF (RecipientBankAccCountryRegionCode <> BankAccCountryRegionCode) THEN
+        CompanyInformation.GET();
+
+        IF (CompanyInformation.GetCountryRegionCode(RecipientBankAccCountryRegionCode) <>
+           CompanyInformation.GetCountryRegionCode(BankAccCountryRegionCode)) THEN
             PaymentMethod.TESTFIELD(PaymentTypeValidation, PaymentMethod.PaymentTypeValidation::International)
         ELSE
             IF PaymentMethod.PaymentTypeValidation = PaymentMethod.PaymentTypeValidation::International THEN
@@ -291,6 +300,11 @@ Codeunit 13650 FIKManagement
         IF STRLEN(CreditorNo) > GetCreditorNoLength() THEN
             ERROR(STRSUBSTNO(CreditorNumberLengthErr, GetCreditorNoLength()));
         EXIT(PADSTR('', GetCreditorNoLength() - STRLEN(CreditorNo), '0') + CreditorNo);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnEvaluateFIKCasePaymentTypeValidationElse(var PaymentReference: Text[50]; PaymentMethod: Record "Payment Method"; var Result: Boolean; var IsHandled: Boolean)
+    begin
     end;
 }
 

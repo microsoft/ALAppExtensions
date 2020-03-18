@@ -1,0 +1,2730 @@
+{
+  "QueryResponse": {
+    "Invoice": [
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "178",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2017-01-22T09:04:58-08:00",
+          "LastUpdatedTime": "2017-01-22T09:12:10-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1015",
+        "TxnDate": "2016-12-21",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [
+          {
+            "TxnId": "181",
+            "TxnType": "Payment"
+          }
+        ],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Name Badges",
+            "Amount": 900.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "21",
+                "name": "General services:Badges:Name Badges"
+              },
+              "ClassRef": {
+                "value": "200200000000000016354",
+                "name": "South"
+              },
+              "UnitPrice": 3,
+              "Qty": 300,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Water bottles - generic",
+            "Amount": 3000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "20",
+                "name": "General services:Water Bottles - Generic"
+              },
+              "ClassRef": {
+                "value": "200200000000000016354",
+                "name": "South"
+              },
+              "UnitPrice": 10,
+              "Qty": 300,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 3900.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 507.0,
+          "TaxLine": [
+            {
+              "Amount": 507.0,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 3900.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "60",
+          "name": "Anilkumar Pillai"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "50",
+          "Line1": "Studio 299",
+          "City": "Wimbledon",
+          "Country": "CA",
+          "PostalCode": "SW97 0BA",
+          "Lat": "36.778261",
+          "Long": "-119.4179324"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2017-01-20",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 4407.0,
+        "HomeTotalAmt": 4407.0,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 0,
+        "HomeBalance": 0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "180",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2017-01-22T09:08:02-08:00",
+          "LastUpdatedTime": "2017-01-22T09:08:02-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1016",
+        "TxnDate": "2017-01-22",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Name Badges",
+            "Amount": 900.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "21",
+                "name": "General services:Badges:Name Badges"
+              },
+              "ClassRef": {
+                "value": "200200000000000016354",
+                "name": "South"
+              },
+              "UnitPrice": 3,
+              "Qty": 300,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Water bottles - generic",
+            "Amount": 3000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "20",
+                "name": "General services:Water Bottles - Generic"
+              },
+              "ClassRef": {
+                "value": "200200000000000016354",
+                "name": "South"
+              },
+              "UnitPrice": 10,
+              "Qty": 300,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 3900.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 507.0,
+          "TaxLine": [
+            {
+              "Amount": 507.0,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 3900.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "60",
+          "name": "Anilkumar Pillai"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "50",
+          "Line1": "Studio 299",
+          "City": "Wimbledon",
+          "Country": "CA",
+          "PostalCode": "SW97 0BA",
+          "Lat": "36.778261",
+          "Long": "-119.4179324"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2017-02-21",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 4407.0,
+        "HomeTotalAmt": 4407.0,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "Balance": 4407.0,
+        "HomeBalance": 4407.0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "174",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2017-01-22T09:01:14-08:00",
+          "LastUpdatedTime": "2017-01-22T09:06:59-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1012",
+        "TxnDate": "2016-12-18",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [
+          {
+            "TxnId": "179",
+            "TxnType": "Payment"
+          }
+        ],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Monthly consulting agreement",
+            "Amount": 1200.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "1",
+                "name": "General services:Services"
+              },
+              "ClassRef": {
+                "value": "200200000000000016357",
+                "name": "Admin"
+              },
+              "UnitPrice": 150,
+              "Qty": 8,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 1200.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 156.0,
+          "TaxLine": [
+            {
+              "Amount": 156.0,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 1200.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "5",
+          "name": "Whitehead and Sons"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "6",
+          "Line1": "6 Cudmore Ln.",
+          "City": "Ottawa",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "K2H 3J4",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "ShipAddr": {
+          "Id": "6",
+          "Line1": "6 Cudmore Ln.",
+          "City": "Ottawa",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "K2H 3J4",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2017-01-17",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 1356.0,
+        "HomeTotalAmt": 1356.0,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 0,
+        "HomeBalance": 0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "177",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2017-01-22T09:04:24-08:00",
+          "LastUpdatedTime": "2017-01-22T09:04:24-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1014",
+        "TxnDate": "2016-12-21",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Name Badges",
+            "Amount": 750.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "21",
+                "name": "General services:Badges:Name Badges"
+              },
+              "ClassRef": {
+                "value": "200200000000000016353",
+                "name": "North"
+              },
+              "UnitPrice": 3,
+              "Qty": 250,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Water bottles - generic",
+            "Amount": 2500.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "20",
+                "name": "General services:Water Bottles - Generic"
+              },
+              "ClassRef": {
+                "value": "200200000000000016353",
+                "name": "North"
+              },
+              "UnitPrice": 10,
+              "Qty": 250,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 3250.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 422.5,
+          "TaxLine": [
+            {
+              "Amount": 422.5,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 3250.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "5",
+          "name": "Whitehead and Sons"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "6",
+          "Line1": "6 Cudmore Ln.",
+          "City": "Ottawa",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "K2H 3J4",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "ShipAddr": {
+          "Id": "6",
+          "Line1": "6 Cudmore Ln.",
+          "City": "Ottawa",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "K2H 3J4",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2017-01-20",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 3672.5,
+        "HomeTotalAmt": 3672.5,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 3672.5,
+        "HomeBalance": 3672.5
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "175",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2017-01-22T09:01:28-08:00",
+          "LastUpdatedTime": "2017-01-22T09:01:28-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1013",
+        "TxnDate": "2017-01-22",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Monthly consulting agreement",
+            "Amount": 1200.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "1",
+                "name": "General services:Services"
+              },
+              "ClassRef": {
+                "value": "200200000000000016357",
+                "name": "Admin"
+              },
+              "UnitPrice": 150,
+              "Qty": 8,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 1200.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 156.0,
+          "TaxLine": [
+            {
+              "Amount": 156.0,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 1200.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "5",
+          "name": "Whitehead and Sons"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "6",
+          "Line1": "6 Cudmore Ln.",
+          "City": "Ottawa",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "K2H 3J4",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "ShipAddr": {
+          "Id": "6",
+          "Line1": "6 Cudmore Ln.",
+          "City": "Ottawa",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "K2H 3J4",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2017-02-21",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 1356.0,
+        "HomeTotalAmt": 1356.0,
+        "PrintStatus": "NeedToPrint",
+        "EmailStatus": "NotSet",
+        "Balance": 1356.0,
+        "HomeBalance": 1356.0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "128",
+        "SyncToken": "6",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:31:46-08:00",
+          "LastUpdatedTime": "2016-12-21T13:00:23-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1007",
+        "TxnDate": "2016-10-27",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [
+          {
+            "TxnId": "83",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "84",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "85",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "87",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "146",
+            "TxnType": "Payment"
+          }
+        ],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Employee training off site",
+            "Amount": 1500.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "5",
+                "name": "Employee events:Employee Training"
+              },
+              "ClassRef": {
+                "value": "200200000000000016353",
+                "name": "North"
+              },
+              "UnitPrice": 1500,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Promotional items - engraved padfolios",
+            "Amount": 562.5,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-10-17",
+              "ItemRef": {
+                "value": "12",
+                "name": "Promotional items:Pad folios"
+              },
+              "ClassRef": {
+                "value": "200200000000000016353",
+                "name": "North"
+              },
+              "UnitPrice": 7.5,
+              "Qty": 75,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "3",
+            "LineNum": 3,
+            "Description": "100% markup for Promotional items - engraved padfolios",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-10-17",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "4",
+            "LineNum": 4,
+            "Description": "Promotional items -- pens engraved",
+            "Amount": 300.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-10-17",
+              "ItemRef": {
+                "value": "14",
+                "name": "Promotional items:Pens"
+              },
+              "ClassRef": {
+                "value": "200200000000000016353",
+                "name": "North"
+              },
+              "UnitPrice": 4,
+              "Qty": 75,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "5",
+            "LineNum": 5,
+            "Description": "100% markup for Promotional items -- pens engraved",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-10-17",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "6",
+            "LineNum": 6,
+            "Description": "promotional items -- misc engraved items",
+            "Amount": 506.25,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-10-17",
+              "ItemRef": {
+                "value": "13",
+                "name": "Promotional items:Misc"
+              },
+              "ClassRef": {
+                "value": "200200000000000016353",
+                "name": "North"
+              },
+              "UnitPrice": 6.75,
+              "Qty": 75,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "7",
+            "LineNum": 7,
+            "Description": "20% markup for promotional items -- misc engraved items",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-10-17",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "8",
+            "LineNum": 8,
+            "Description": "Catering -- food & beverage",
+            "Amount": 3750.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-10-27",
+              "ItemRef": {
+                "value": "3",
+                "name": "General services:Catering"
+              },
+              "ClassRef": {
+                "value": "200200000000000016353",
+                "name": "North"
+              },
+              "UnitPrice": 50,
+              "Qty": 75,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "9",
+            "LineNum": 9,
+            "Description": "20% markup for Catering -- food & beverage",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-10-27",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 7470.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 971.1,
+          "TaxLine": [
+            {
+              "Amount": 971.1,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 7470.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "12",
+          "name": "Hazel Robinson"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "13",
+          "Line1": "4234 King Cole Blvd.",
+          "City": "Toronto",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "M3P 3M3",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2016-11-26",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 8441.1,
+        "HomeTotalAmt": 8441.1,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 0,
+        "HomeBalance": 0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "125",
+        "SyncToken": "4",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:22:37-08:00",
+          "LastUpdatedTime": "2016-12-21T12:58:58-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1004",
+        "TxnDate": "2016-07-15",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [
+          {
+            "TxnId": "49",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "50",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "51",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "53",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "149",
+            "TxnType": "Payment"
+          }
+        ],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Employee training off site",
+            "Amount": 750.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "5",
+                "name": "Employee events:Employee Training"
+              },
+              "ClassRef": {
+                "value": "200200000000000016355",
+                "name": "East"
+              },
+              "UnitPrice": 750,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Promotional items - engraved padfolios",
+            "Amount": 262.5,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "ItemRef": {
+                "value": "12",
+                "name": "Promotional items:Pad folios"
+              },
+              "ClassRef": {
+                "value": "200200000000000016355",
+                "name": "East"
+              },
+              "UnitPrice": 7.5,
+              "Qty": 35,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "3",
+            "LineNum": 3,
+            "Description": "100% markup for Promotional items - engraved padfolios",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "4",
+            "LineNum": 4,
+            "Description": "Promotional items -- pens engraved",
+            "Amount": 140.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "ItemRef": {
+                "value": "14",
+                "name": "Promotional items:Pens"
+              },
+              "ClassRef": {
+                "value": "200200000000000016355",
+                "name": "East"
+              },
+              "UnitPrice": 4,
+              "Qty": 35,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "5",
+            "LineNum": 5,
+            "Description": "100% markup for Promotional items -- pens engraved",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "6",
+            "LineNum": 6,
+            "Description": "promotional items -- misc engraved items",
+            "Amount": 236.25,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "ItemRef": {
+                "value": "13",
+                "name": "Promotional items:Misc"
+              },
+              "ClassRef": {
+                "value": "200200000000000016355",
+                "name": "East"
+              },
+              "UnitPrice": 6.75,
+              "Qty": 35,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "7",
+            "LineNum": 7,
+            "Description": "20% markup for promotional items -- misc engraved items",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "8",
+            "LineNum": 8,
+            "Description": "Catering -- food & beverage",
+            "Amount": 1225.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "ItemRef": {
+                "value": "3",
+                "name": "General services:Catering"
+              },
+              "ClassRef": {
+                "value": "200200000000000016355",
+                "name": "East"
+              },
+              "UnitPrice": 35,
+              "Qty": 35,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "9",
+            "LineNum": 9,
+            "Description": "20% markup for Catering -- food & beverage",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 2906.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 377.78,
+          "TaxLine": [
+            {
+              "Amount": 377.78,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 2906.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "10",
+          "name": "Lew Plumbing"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "11",
+          "Line1": "4202 England Road",
+          "City": "Ottawa",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "K3K 2K3",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "ShipAddr": {
+          "Id": "11",
+          "Line1": "4202 England Road",
+          "City": "Ottawa",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "K3K 2K3",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2016-08-14",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 3283.78,
+        "HomeTotalAmt": 3283.78,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 0,
+        "HomeBalance": 0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "122",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:19:30-08:00",
+          "LastUpdatedTime": "2016-12-21T11:13:40-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType",
+            "StringValue": "Michelle"
+          }
+        ],
+        "DocNumber": "1001",
+        "TxnDate": "2016-04-12",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [
+          {
+            "TxnId": "118",
+            "TxnType": "Estimate"
+          },
+          {
+            "TxnId": "152",
+            "TxnType": "Payment"
+          }
+        ],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Holiday party - gold level",
+            "Amount": 2000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "8",
+                "name": "Holiday party:Gold party"
+              },
+              "UnitPrice": 2000,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Venue rental",
+            "Amount": 10000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "18",
+                "name": "General services:Venue Rental"
+              },
+              "UnitPrice": 10000,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "3",
+            "LineNum": 3,
+            "Description": "promotional items -- misc engraved items",
+            "Amount": 1012.5,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "13",
+                "name": "Promotional items:Misc"
+              },
+              "UnitPrice": 13.5,
+              "Qty": 75,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 13012.5,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 1691.63,
+          "TaxLine": [
+            {
+              "Amount": 1691.63,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 13012.5
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "8",
+          "name": "Ecker Designs"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "9",
+          "Line1": "8227 Dunant Road",
+          "City": "Halifax",
+          "CountrySubDivisionCode": "NS",
+          "PostalCode": "B1B 2B0",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "ShipAddr": {
+          "Id": "9",
+          "Line1": "8227 Dunant Road",
+          "City": "Halifax",
+          "CountrySubDivisionCode": "NS",
+          "PostalCode": "B1B 2B0",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2016-05-12",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 14704.13,
+        "HomeTotalAmt": 14704.13,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 0,
+        "HomeBalance": 0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "123",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:20:06-08:00",
+          "LastUpdatedTime": "2016-12-21T11:13:21-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType",
+            "StringValue": "Michelle"
+          }
+        ],
+        "DocNumber": "1002",
+        "TxnDate": "2016-04-30",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [
+          {
+            "TxnId": "119",
+            "TxnType": "Estimate"
+          },
+          {
+            "TxnId": "151",
+            "TxnType": "Payment"
+          }
+        ],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Holiday party - platinum level",
+            "Amount": 3000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "9",
+                "name": "Holiday party:Platinum party"
+              },
+              "UnitPrice": 3000,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "promotional items -- misc engraved items - Camelbak water bottles engraved",
+            "Amount": 1000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "13",
+                "name": "Promotional items:Misc"
+              },
+              "UnitPrice": 10,
+              "Qty": 100,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "3",
+            "LineNum": 3,
+            "Description": "Venue rental",
+            "Amount": 5000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "18",
+                "name": "General services:Venue Rental"
+              },
+              "UnitPrice": 5000,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 9000.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 1170.0,
+          "TaxLine": [
+            {
+              "Amount": 1170.0,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 9000.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "65",
+          "name": "Oxon - Holiday Party"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "61",
+          "Line1": "348 Worthington St. E.",
+          "City": "Toronto",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "M4H 2H2",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "ShipAddr": {
+          "Id": "61",
+          "Line1": "348 Worthington St. E.",
+          "City": "Toronto",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "M4H 2H2",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2016-05-30",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 10170.0,
+        "HomeTotalAmt": 10170.0,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 0,
+        "HomeBalance": 0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "124",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:21:29-08:00",
+          "LastUpdatedTime": "2016-12-21T11:13:02-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1003",
+        "TxnDate": "2016-06-09",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [
+          {
+            "TxnId": "31",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "32",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "33",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "35",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "37",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "150",
+            "TxnType": "Payment"
+          }
+        ],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Employee training off site",
+            "Amount": 1500.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "5",
+                "name": "Employee events:Employee Training"
+              },
+              "UnitPrice": 1500,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Promotional items - engraved padfolios",
+            "Amount": 112.5,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-06-04",
+              "ItemRef": {
+                "value": "12",
+                "name": "Promotional items:Pad folios"
+              },
+              "UnitPrice": 7.5,
+              "Qty": 15,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "3",
+            "LineNum": 3,
+            "Description": "100% markup for Promotional items - engraved padfolios",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-06-04",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "4",
+            "LineNum": 4,
+            "Description": "Promotional items -- pens engraved",
+            "Amount": 60.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-06-04",
+              "ItemRef": {
+                "value": "14",
+                "name": "Promotional items:Pens"
+              },
+              "UnitPrice": 4,
+              "Qty": 15,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "5",
+            "LineNum": 5,
+            "Description": "100% markup for Promotional items -- pens engraved",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-06-04",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "6",
+            "LineNum": 6,
+            "Description": "promotional items -- misc engraved items",
+            "Amount": 101.25,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-06-04",
+              "ItemRef": {
+                "value": "13",
+                "name": "Promotional items:Misc"
+              },
+              "UnitPrice": 6.75,
+              "Qty": 15,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "7",
+            "LineNum": 7,
+            "Description": "Catering -- food & beverage",
+            "Amount": 700.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-06-09",
+              "ItemRef": {
+                "value": "3",
+                "name": "General services:Catering"
+              },
+              "UnitPrice": 35,
+              "Qty": 20,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "8",
+            "LineNum": 8,
+            "Description": "20% markup for Catering -- food & beverage",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-06-09",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "9",
+            "LineNum": 9,
+            "Description": "Venue Rental",
+            "Amount": 750.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-06-09",
+              "ItemRef": {
+                "value": "18",
+                "name": "General services:Venue Rental"
+              },
+              "UnitPrice": 750,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "10",
+            "LineNum": 10,
+            "Description": "20% markup for Venue Rental",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-06-09",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 3686.25,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 479.22,
+          "TaxLine": [
+            {
+              "Amount": 479.22,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 3686.25
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "3",
+          "name": "Benjamin Yeung"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "4",
+          "Line1": "4895 King Edward Ave.",
+          "City": "Barrie",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "M2H 4G4",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2016-07-09",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 4165.47,
+        "HomeTotalAmt": 4165.47,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 0,
+        "HomeBalance": 0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "126",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:23:11-08:00",
+          "LastUpdatedTime": "2016-12-21T11:12:19-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1005",
+        "TxnDate": "2016-07-15",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [
+          {
+            "TxnId": "45",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "46",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "47",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "55",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "57",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "148",
+            "TxnType": "Payment"
+          }
+        ],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Retreat - platinum level",
+            "Amount": 5000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "16",
+                "name": "Retreat:Platinum retreat"
+              },
+              "UnitPrice": 5000,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Promotional items - engraved padfolios",
+            "Amount": 187.5,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "ItemRef": {
+                "value": "12",
+                "name": "Promotional items:Pad folios"
+              },
+              "UnitPrice": 7.5,
+              "Qty": 25,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "3",
+            "LineNum": 3,
+            "Description": "100% markup for Promotional items - engraved padfolios",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "4",
+            "LineNum": 4,
+            "Description": "Promotional items -- pens engraved",
+            "Amount": 100.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "ItemRef": {
+                "value": "14",
+                "name": "Promotional items:Pens"
+              },
+              "UnitPrice": 4,
+              "Qty": 25,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "5",
+            "LineNum": 5,
+            "Description": "100% markup for Promotional items -- pens engraved",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "6",
+            "LineNum": 6,
+            "Description": "promotional items -- misc engraved items",
+            "Amount": 83.25,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "ItemRef": {
+                "value": "13",
+                "name": "Promotional items:Misc"
+              },
+              "UnitPrice": 3.33,
+              "Qty": 25,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "7",
+            "LineNum": 7,
+            "Description": "100% markup for promotional items -- misc engraved items",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-07-15",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "8",
+            "LineNum": 8,
+            "Description": "Catering -- food & beverage",
+            "Amount": 1062.5,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-07-29",
+              "ItemRef": {
+                "value": "3",
+                "name": "General services:Catering"
+              },
+              "UnitPrice": 42.5,
+              "Qty": 25,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "9",
+            "LineNum": 9,
+            "Description": "20% markup for Catering -- food & beverage",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-07-29",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "10",
+            "LineNum": 10,
+            "Description": "Venue Rental",
+            "Amount": 1000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-07-29",
+              "ItemRef": {
+                "value": "18",
+                "name": "General services:Venue Rental"
+              },
+              "UnitPrice": 1000,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "11",
+            "LineNum": 11,
+            "Description": "20% markup for Venue Rental",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-07-29",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 8216.5,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 1068.16,
+          "TaxLine": [
+            {
+              "Amount": 1068.16,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 8216.5
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "66",
+          "name": "Oxon - Retreat"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "62",
+          "Line1": "348 Worthington St. E.",
+          "City": "Toronto",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "M4H 2H2",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "ShipAddr": {
+          "Id": "62",
+          "Line1": "348 Worthington St. E.",
+          "City": "Toronto",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "M4H 2H2",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2016-08-14",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 9284.66,
+        "HomeTotalAmt": 9284.66,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 0,
+        "HomeBalance": 0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "127",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:26:03-08:00",
+          "LastUpdatedTime": "2016-12-21T11:10:48-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1006",
+        "TxnDate": "2016-09-12",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [
+          {
+            "TxnId": "63",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "64",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "65",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "70",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "72",
+            "TxnType": "ReimburseCharge"
+          },
+          {
+            "TxnId": "147",
+            "TxnType": "Payment"
+          }
+        ],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Retreat - gold level",
+            "Amount": 2000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "15",
+                "name": "Retreat:Gold retreat"
+              },
+              "UnitPrice": 2000,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Promotional items - engraved padfolios",
+            "Amount": 375.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-08-07",
+              "ItemRef": {
+                "value": "12",
+                "name": "Promotional items:Pad folios"
+              },
+              "UnitPrice": 7.5,
+              "Qty": 50,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "3",
+            "LineNum": 3,
+            "Description": "100% markup for Promotional items - engraved padfolios",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-08-07",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "4",
+            "LineNum": 4,
+            "Description": "Promotional items -- pens engraved",
+            "Amount": 200.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-08-07",
+              "ItemRef": {
+                "value": "14",
+                "name": "Promotional items:Pens"
+              },
+              "UnitPrice": 4,
+              "Qty": 50,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "5",
+            "LineNum": 5,
+            "Description": "100% markup for Promotional items -- pens engraved",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-08-07",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "6",
+            "LineNum": 6,
+            "Description": "promotional items -- misc engraved items",
+            "Amount": 166.5,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-08-07",
+              "ItemRef": {
+                "value": "13",
+                "name": "Promotional items:Misc"
+              },
+              "UnitPrice": 3.33,
+              "Qty": 50,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "7",
+            "LineNum": 7,
+            "Description": "20% markup for promotional items -- misc engraved items",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-08-07",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "8",
+            "LineNum": 8,
+            "Description": "Catering -- food & beverage",
+            "Amount": 3750.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-09-05",
+              "ItemRef": {
+                "value": "3",
+                "name": "General services:Catering"
+              },
+              "UnitPrice": 75,
+              "Qty": 50,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "9",
+            "LineNum": 9,
+            "Description": "20% markup for Catering -- food & beverage",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-09-05",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "10",
+            "LineNum": 10,
+            "Description": "Venue Rental",
+            "Amount": 1000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ServiceDate": "2016-09-05",
+              "ItemRef": {
+                "value": "18",
+                "name": "General services:Venue Rental"
+              },
+              "UnitPrice": 1000,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "11",
+            "LineNum": 11,
+            "Description": "20% markup for Venue Rental",
+            "DetailType": "DescriptionOnly",
+            "DescriptionLineDetail": {
+              "ServiceDate": "2016-09-05",
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 9049.8,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 1176.48,
+          "TaxLine": [
+            {
+              "Amount": 1176.48,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 9049.8
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "4",
+          "name": "Cathy's Consulting Company"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "5",
+          "Line1": "317 Pearce St.",
+          "City": "Toronto",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "M3E 3E4",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "ShipAddr": {
+          "Id": "5",
+          "Line1": "317 Pearce St.",
+          "City": "Toronto",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "M3E 3E4",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2016-10-12",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 10226.28,
+        "HomeTotalAmt": 10226.28,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 0,
+        "HomeBalance": 0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "132",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:34:09-08:00",
+          "LastUpdatedTime": "2016-12-21T01:34:09-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1011",
+        "TxnDate": "2016-12-07",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "consult on event options and considerations",
+            "Amount": 400.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "1",
+                "name": "General services:Services"
+              },
+              "UnitPrice": 200,
+              "Qty": 2,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 400.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 52.0,
+          "TaxLine": [
+            {
+              "Amount": 52.0,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 400.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "16",
+          "name": "Jordan Burgess"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "16",
+          "Line1": "320 Croydon Ave.",
+          "City": "Ottawa",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "K5J 6T5",
+          "Lat": "45.3656042",
+          "Long": "-75.7900427"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2017-01-06",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 452.0,
+        "HomeTotalAmt": 452.0,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 452.0,
+        "HomeBalance": 452.0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "131",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:33:36-08:00",
+          "LastUpdatedTime": "2016-12-21T01:33:36-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1010",
+        "TxnDate": "2016-12-07",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Name Badges",
+            "Amount": 1500.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "21",
+                "name": "General services:Badges:Name Badges"
+              },
+              "UnitPrice": 3,
+              "Qty": 500,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 1500.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 195.0,
+          "TaxLine": [
+            {
+              "Amount": 195.0,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 1500.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "1",
+          "name": "Adwin Ko"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "2",
+          "Line1": "6412 av des Erables",
+          "City": "Vancouver",
+          "CountrySubDivisionCode": "BC",
+          "PostalCode": "V5M 5M5",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2017-01-06",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 1695.0,
+        "HomeTotalAmt": 1695.0,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 1695.0,
+        "HomeBalance": 1695.0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "130",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:33:07-08:00",
+          "LastUpdatedTime": "2016-12-21T01:33:07-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1009",
+        "TxnDate": "2016-11-07",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Name Badges",
+            "Amount": 1500.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "21",
+                "name": "General services:Badges:Name Badges"
+              },
+              "UnitPrice": 3,
+              "Qty": 500,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "LineNum": 2,
+            "Description": "Water bottles - generic",
+            "Amount": 5000.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "20",
+                "name": "General services:Water Bottles - Generic"
+              },
+              "UnitPrice": 10,
+              "Qty": 500,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 6500.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 845.0,
+          "TaxLine": [
+            {
+              "Amount": 845.0,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 6500.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "3",
+          "name": "Benjamin Yeung"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "4",
+          "Line1": "4895 King Edward Ave.",
+          "City": "Barrie",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "M2H 4G4",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2016-12-07",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 7345.0,
+        "HomeTotalAmt": 7345.0,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 7345.0,
+        "HomeBalance": 7345.0
+      },
+      {
+        "Deposit": 0,
+        "AllowIPNPayment": false,
+        "AllowOnlinePayment": false,
+        "AllowOnlineCreditCardPayment": false,
+        "AllowOnlineACHPayment": false,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "129",
+        "SyncToken": "1",
+        "MetaData": {
+          "CreateTime": "2016-12-21T01:32:21-08:00",
+          "LastUpdatedTime": "2016-12-21T01:32:31-08:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1008",
+        "TxnDate": "2016-11-07",
+        "CurrencyRef": {
+          "value": "CAD",
+          "name": "Canadian Dollar"
+        },
+        "ExchangeRate": 1,
+        "LinkedTxn": [],
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "consulting for their upcoming event",
+            "Amount": 800.0,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "1",
+                "name": "General services:Services"
+              },
+              "UnitPrice": 200,
+              "Qty": 4,
+              "TaxCodeRef": {
+                "value": "5"
+              }
+            }
+          },
+          {
+            "Amount": 800.0,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 104.0,
+          "TaxLine": [
+            {
+              "Amount": 104.0,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "12"
+                },
+                "PercentBased": true,
+                "TaxPercent": 13,
+                "NetAmountTaxable": 800.0
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "3",
+          "name": "Benjamin Yeung"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "4",
+          "Line1": "4895 King Edward Ave.",
+          "City": "Barrie",
+          "CountrySubDivisionCode": "ON",
+          "PostalCode": "M2H 4G4",
+          "Lat": "INVALID",
+          "Long": "INVALID"
+        },
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2016-12-07",
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 904.0,
+        "HomeTotalAmt": 904.0,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 904.0,
+        "HomeBalance": 904.0
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 16,
+    "totalCount": 16
+  },
+  "time": "2017-04-20T09:09:35.063-07:00"
+}

@@ -20,7 +20,7 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
         DocNameSpace: Text[250];
         DocNameSpace2: Text[250];
 
-    local procedure InsertReminderTaxTotal(var ReminderElement: XmlElement; IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header"; var IssuedFinChargeMemoLineLocal: Record "Issued Fin. Charge Memo Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);
+    local procedure InsertReminderTaxTotal(var ReminderElement: XmlElement; var IssuedFinChargeMemoLineLocal: Record "Issued Fin. Charge Memo Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);
     var
         TaxTotalElement: XmlElement;
         TaxableAmount: Decimal;
@@ -178,7 +178,7 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
                 TotalAmount := TotalAmount + IssuedFinChargeMemoLine2.Amount + IssuedFinChargeMemoLine2."VAT Amount";
             until IssuedFinChargeMemoLine2.NEXT() = 0;
         OIOUBLXMLGenerator.InsertPaymentTerms(
-          XMLCurrNode, '', 0, CurrencyCode, CalcDate('0D'), "Due Date", TotalAmount);
+          XMLCurrNode, '', 0, CurrencyCode, CalcDate('<0D>'), "Due Date", TotalAmount);
 
         // FinCharge->TaxTotal (for ("Normal VAT" AND "VAT %" <> 0) OR "Full VAT")
         IssuedFinChargeMemoLine2.RESET();
@@ -193,7 +193,7 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
             IssuedFinChargeMemoLine2.CALCSUMS(Amount, Amount);
             TotalTaxAmount := IssuedFinChargeMemoLine2.Amount - IssuedFinChargeMemoLine2.Amount;
 
-            InsertReminderTaxTotal(XMLCurrNode, Rec, IssuedFinChargeMemoLine2, TotalTaxAmount, CurrencyCode);
+            InsertReminderTaxTotal(XMLCurrNode, IssuedFinChargeMemoLine2, TotalTaxAmount, CurrencyCode);
         end;
 
         // FinCharge->LegalMonetaryTotal

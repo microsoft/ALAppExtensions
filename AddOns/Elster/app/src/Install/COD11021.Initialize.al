@@ -20,13 +20,10 @@ codeunit 11021 "Elster - Initialize"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure CompanyInitialize()
-    var
-        ElsterDataMigration: Codeunit "Elster - Data Migration";
     begin
         UpdateElecVATDeclSetupSalesVATAdvNotifNos();
         UpdateVATStatementName();
         ApplyEvaluationClassificationsForPrivacy();
-        ElsterDataMigration.Run();
     end;
 
     local procedure InitializeDone(): Boolean

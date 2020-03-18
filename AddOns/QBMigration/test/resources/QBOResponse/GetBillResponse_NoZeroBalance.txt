@@ -1,0 +1,256 @@
+{
+  "QueryResponse": {
+    "Bill": [
+      {
+        "DueDate": "2016-11-26",
+        "Balance": 205.0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "126",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-11-26T13:10:36-08:00",
+          "LastUpdatedTime": "2016-11-26T13:10:36-08:00"
+        },
+        "TxnDate": "2016-11-26",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "Description": "Fountain Pump",
+            "Amount": 80.0,
+            "DetailType": "ItemBasedExpenseLineDetail",
+            "ItemBasedExpenseLineDetail": {
+              "BillableStatus": "NotBillable",
+              "ItemRef": {
+                "value": "11",
+                "name": "Pump"
+              },
+              "UnitPrice": 10,
+              "Qty": 8,
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          },
+          {
+            "Id": "2",
+            "Description": "Rock Fountain",
+            "Amount": 125.0,
+            "DetailType": "ItemBasedExpenseLineDetail",
+            "ItemBasedExpenseLineDetail": {
+              "BillableStatus": "NotBillable",
+              "ItemRef": {
+                "value": "5",
+                "name": "Rock Fountain"
+              },
+              "UnitPrice": 125,
+              "Qty": 1,
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          }
+        ],
+        "VendorRef": {
+          "value": "46",
+          "name": "Norton Lumber and Building Materials"
+        },
+        "APAccountRef": {
+          "value": "33",
+          "name": "Accounts Payable (A/P)"
+        },
+        "TotalAmt": 205.0
+      },
+      {
+        "DueDate": "2016-11-26",
+        "Balance": 315.0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "108",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-11-26T12:36:59-08:00",
+          "LastUpdatedTime": "2016-11-26T12:36:59-08:00"
+        },
+        "TxnDate": "2016-11-26",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "Amount": 315.0,
+            "DetailType": "AccountBasedExpenseLineDetail",
+            "AccountBasedExpenseLineDetail": {
+              "AccountRef": {
+                "value": "69",
+                "name": "Legal & Professional Fees:Accounting"
+              },
+              "BillableStatus": "NotBillable",
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          }
+        ],
+        "VendorRef": {
+          "value": "49",
+          "name": "Robertson & Associates"
+        },
+        "APAccountRef": {
+          "value": "33",
+          "name": "Accounts Payable (A/P)"
+        },
+        "TotalAmt": 315.0
+      },
+      {
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2016-11-11",
+        "Balance": 86.44,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "78",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-11-25T13:00:36-08:00",
+          "LastUpdatedTime": "2016-11-25T13:00:36-08:00"
+        },
+        "TxnDate": "2016-10-12",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "Amount": 86.44,
+            "DetailType": "AccountBasedExpenseLineDetail",
+            "AccountBasedExpenseLineDetail": {
+              "AccountRef": {
+                "value": "76",
+                "name": "Utilities:Gas and Electric"
+              },
+              "BillableStatus": "NotBillable",
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          }
+        ],
+        "VendorRef": {
+          "value": "48",
+          "name": "PG&E"
+        },
+        "APAccountRef": {
+          "value": "33",
+          "name": "Accounts Payable (A/P)"
+        },
+        "TotalAmt": 86.44
+      },
+      {
+        "SalesTermRef": {
+          "value": "3"
+        },
+        "DueDate": "2016-12-24",
+        "Balance": 755.0,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "44",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-11-24T11:31:42-08:00",
+          "LastUpdatedTime": "2016-11-24T11:31:42-08:00"
+        },
+        "TxnDate": "2016-11-24",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "Description": "Repairs on the truck",
+            "Amount": 755.0,
+            "DetailType": "AccountBasedExpenseLineDetail",
+            "AccountBasedExpenseLineDetail": {
+              "AccountRef": {
+                "value": "75",
+                "name": "Maintenance and Repair:Equipment Repairs"
+              },
+              "BillableStatus": "NotBillable",
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          }
+        ],
+        "VendorRef": {
+          "value": "36",
+          "name": "Diego's Road Warrior Bodyshop"
+        },
+        "APAccountRef": {
+          "value": "33",
+          "name": "Accounts Payable (A/P)"
+        },
+        "TotalAmt": 755.0
+      },
+      {
+        "SalesTermRef": {
+          "value": "5"
+        },
+        "DueDate": "2016-11-29",
+        "Balance": 241.23,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "19",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2016-11-23T15:24:48-08:00",
+          "LastUpdatedTime": "2016-11-23T15:24:48-08:00"
+        },
+        "TxnDate": "2016-11-19",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "Line": [
+          {
+            "Id": "1",
+            "Amount": 241.23,
+            "DetailType": "AccountBasedExpenseLineDetail",
+            "AccountBasedExpenseLineDetail": {
+              "AccountRef": {
+                "value": "11",
+                "name": "Insurance"
+              },
+              "BillableStatus": "NotBillable",
+              "TaxCodeRef": {
+                "value": "NON"
+              }
+            }
+          }
+        ],
+        "VendorRef": {
+          "value": "31",
+          "name": "Brosnahan Insurance Agency"
+        },
+        "APAccountRef": {
+          "value": "33",
+          "name": "Accounts Payable (A/P)"
+        },
+        "TotalAmt": 241.23
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 5,
+    "totalCount": 5
+  },
+  "time": "2017-04-24T20:36:00.02-07:00"
+}

@@ -169,7 +169,7 @@ codeunit 148086 "MTDTestOAuth"
         // [FEATURE] [UI] [OnPrem]
         // [SCENARIO 258181] PAG 1140 "OAuth 2.0 Setup" client tokens are visible in case of OnPrem
         Initialize();
-        EnableSaaS(false);
+        LibraryMakingTaxDigital.EnableSaaS(false);
         OAuth20Setup.Get(LibraryMakingTaxDigital.GetOAuthSandboxSetupCode());
 
         OAuth20SetupPage.Trap();
@@ -189,7 +189,7 @@ codeunit 148086 "MTDTestOAuth"
         // [FEATURE] [UI] [SaaS]
         // [SCENARIO 258181] PAG 1140 "OAuth 2.0 Setup" client tokens are hidden in case of SaaS
         Initialize();
-        EnableSaaS(true);
+        LibraryMakingTaxDigital.EnableSaaS(true);
         OAuth20Setup.Get(LibraryMakingTaxDigital.GetOAuthSandboxSetupCode());
 
         OAuth20SetupPage.Trap();
@@ -197,6 +197,7 @@ codeunit 148086 "MTDTestOAuth"
         Assert.IsFalse(OAuth20SetupPage."HMRC VAT Client ID".Visible(), '"HMRC VAT Client ID".Visible');
         Assert.IsFalse(OAuth20SetupPage."HMRC VAT Client Secret".Visible(), '"HMRC VAT Client Secret".Visible');
         OAuth20SetupPage.Close();
+        LibraryMakingTaxDigital.EnableSaaS(false);
     end;
 
     [Test]
@@ -264,8 +265,8 @@ codeunit 148086 "MTDTestOAuth"
         // [FEATURE] [UT]
         // [SCENARIO 312780] COD 10537 "MTD Connection".IsError408Timeout()
         Assert.IsFalse(MTDConnection.IsError408Timeout(''), '');
-        Assert.IsFalse(MTDConnection.IsError408Timeout('{"Error":{"code":"401"}}'), '');
-        Assert.IsTrue(MTDConnection.IsError408Timeout('{"Error":{"code":"408"}}'), '');
+        Assert.IsFalse(MTDConnection.IsError408Timeout('{"Status":{"code":"401"}}'), '');
+        Assert.IsTrue(MTDConnection.IsError408Timeout('{"Status":{"code":"408"}}'), '');
     end;
 
     [Test]
@@ -322,13 +323,6 @@ codeunit 148086 "MTDTestOAuth"
 
         LibraryMakingTaxDigital.SetOAuthSetupSandbox(true);
         LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(false, '', '');
-    end;
-
-    local procedure EnableSaaS(Enable: Boolean)
-    var
-        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
-    begin
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(Enable);
     end;
 
     local procedure InvokeRetrievePayments(ShowMessage: Boolean)

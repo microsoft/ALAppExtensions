@@ -3,7 +3,7 @@
     "name":  "Camera and Media Interaction",
     "publisher":  "Microsoft",
     "brief":  "Provides access to the camera and saved media on the client device.",
-    "description":  "Invoke the Camera page to open the camera view and take a picture on your client device. The page will communicate the availibility of the camera and progress in saving the picture to the user. Invoke the Media Upload page to upload saved media from your client device. The underlying implementation uses Apache Cordova plugin.",
+    "description":  "Invoke the Camera page to open the camera view and take a picture on your client device. The page will communicate the availability of the camera and progress in saving the picture to the user. Invoke the Media Upload page to upload saved media from your client device. The underlying implementation uses Apache Cordova plugin.",
     "version":  "16.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
@@ -21,7 +21,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "15.0.0.0",
+    "platform":  "16.0.0.0",
     "idRanges":  [
                      {
                          "from":  1908,

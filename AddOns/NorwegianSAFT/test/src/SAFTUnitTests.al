@@ -193,6 +193,7 @@ codeunit 148102 "SAF-T Unit Tests"
     begin
         // [SCENARIO 309923] SAF-T Export Lines and activity log related to SAF-T Export Header are remove on Header's deletion
 
+        Initialize();
         SAFTExportHeader.Init();
         SAFTExportHeader.Insert();
         SAFTExportLine.Init();
@@ -206,6 +207,143 @@ codeunit 148102 "SAF-T Unit Tests"
 
         Assert.IsTrue(SAFTExportLine.IsEmpty(), 'SAF-T Export Line stil exist');
         Assert.IsTrue(ActivityLog.IsEmpty(), 'Activity log stil exist');
+    end;
+
+    [Test]
+    procedure GLEntriesExistsIncomeStatementAccount()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        GLAccount: Record "G/L Account";
+        SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
+    begin
+        // [SCENARIO 326720] A function UpdateGLEntriesExistStateForGLAccMapping correctly enables field "G/L Entries Exists" for G/L Account with type "Income Statement"
+        // if there are G/L Entries posted withing reported period
+
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        GLAccount.Validate("Income/Balance", GLAccount."Income/Balance"::"Income Statement");
+        GLAccount.Modify(true);
+        SAFTTestHelper.InsertSAFTMappingRangeWithSource(
+            SAFTMappingRange, SAFTMappingRange."Mapping Type"::"Four Digit Standard Account",
+            CalcDate('<-CY>', WorkDate()), CalcDate('<-CY>', WorkDate()));
+        SAFTMappingHelper.Run(SAFTMappingRange);
+        SAFTTestHelper.MockGLEntryNoVAT(
+            SAFTMappingRange."Starting Date", GLAccount."No.", 0, 0, 0, '', '', LibraryRandom.RandDec(100, 2), 0);
+        SAFTMappingHelper.UpdateGLEntriesExistStateForGLAccMapping(SAFTMappingRange.Code);
+
+        SAFTGLAccountMapping.Get(SAFTMappingRange.Code, GLAccount."No.");
+        SAFTGLAccountMapping.TestField("G/L Entries Exists");
+    end;
+
+    [Test]
+    procedure GLEntriesDoesNotExistIncomeStatementAccount()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        GLAccount: Record "G/L Account";
+        SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
+    begin
+        // [SCENARIO 326720] A function UpdateGLEntriesExistStateForGLAccMapping correctly disables field "G/L Entries Exists" for G/L Account with type "Income Statement"
+        // if there are no G/L Entries posted withing reported period
+
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        GLAccount.Validate("Income/Balance", GLAccount."Income/Balance"::"Income Statement");
+        GLAccount.Modify(true);
+        SAFTTestHelper.InsertSAFTMappingRangeWithSource(
+            SAFTMappingRange, SAFTMappingRange."Mapping Type"::"Four Digit Standard Account",
+            CalcDate('<-CY>', WorkDate()), CalcDate('<-CY>', WorkDate()));
+        SAFTMappingHelper.Run(SAFTMappingRange);
+        SAFTTestHelper.MockGLEntryNoVAT(
+            SAFTMappingRange."Starting Date" - 1, GLAccount."No.", 0, 0, 0, '', '', LibraryRandom.RandDec(100, 2), 0);
+        SAFTMappingHelper.UpdateGLEntriesExistStateForGLAccMapping(SAFTMappingRange.Code);
+
+        SAFTGLAccountMapping.Get(SAFTMappingRange.Code, GLAccount."No.");
+        SAFTGLAccountMapping.TestField("G/L Entries Exists", false);
+    end;
+
+    [Test]
+    procedure GLEntriesExistsBalanceSheetAccount()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        GLAccount: Record "G/L Account";
+        SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
+    begin
+        // [SCENARIO 326720] A function UpdateGLEntriesExistStateForGLAccMapping correctly enables field "G/L Entries Exists" for G/L Account with type "Balance Sheet"
+        // if there are G/L Entries posted withing reported period
+
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        GLAccount.Validate("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
+        GLAccount.Modify(true);
+        SAFTTestHelper.InsertSAFTMappingRangeWithSource(
+            SAFTMappingRange, SAFTMappingRange."Mapping Type"::"Four Digit Standard Account",
+            CalcDate('<-CY>', WorkDate()), CalcDate('<-CY>', WorkDate()));
+        SAFTMappingHelper.Run(SAFTMappingRange);
+        SAFTTestHelper.MockGLEntryNoVAT(
+            SAFTMappingRange."Starting Date", GLAccount."No.", 0, 0, 0, '', '', LibraryRandom.RandDec(100, 2), 0);
+        SAFTMappingHelper.UpdateGLEntriesExistStateForGLAccMapping(SAFTMappingRange.Code);
+
+        SAFTGLAccountMapping.Get(SAFTMappingRange.Code, GLAccount."No.");
+        SAFTGLAccountMapping.TestField("G/L Entries Exists");
+    end;
+
+    [Test]
+    procedure GLEntriesDoesNotExistBalanceSheetAccount()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        GLAccount: Record "G/L Account";
+        SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
+    begin
+        // [SCENARIO 326720] A function UpdateGLEntriesExistStateForGLAccMapping correctly disables field "G/L Entries Exists" for G/L Account with type "Balance Sheet"
+        // if there are not G/L Entries posted withing reported period
+
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        GLAccount.Validate("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
+        GLAccount.Modify(true);
+        SAFTTestHelper.InsertSAFTMappingRangeWithSource(
+            SAFTMappingRange, SAFTMappingRange."Mapping Type"::"Four Digit Standard Account",
+            CalcDate('<-CY>', WorkDate()), CalcDate('<-CY>', WorkDate()));
+        SAFTMappingHelper.Run(SAFTMappingRange);
+        SAFTTestHelper.MockGLEntryNoVAT(
+            SAFTMappingRange."Starting Date" - 1, GLAccount."No.", 0, 0, 0, '', '', LibraryRandom.RandDec(100, 2), 0);
+        SAFTMappingHelper.UpdateGLEntriesExistStateForGLAccMapping(SAFTMappingRange.Code);
+
+        SAFTGLAccountMapping.Get(SAFTMappingRange.Code, GLAccount."No.");
+        SAFTGLAccountMapping.TestField("G/L Entries Exists", false);
+    end;
+
+    [Test]
+    procedure GLEntriesExistsBalanceSheetAccountIncludeIncomingBalance()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        GLAccount: Record "G/L Account";
+        SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
+    begin
+        // [SCENARIO 326720] A function UpdateGLEntriesExistStateForGLAccMapping correctly enables field "G/L Entries Exists" for G/L Account with type "Balance Sheet"
+        // if there are not G/L Entries posted withing reported period but there are G/L entries posted before the reporting period
+
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        GLAccount.Validate("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
+        GLAccount.Modify(true);
+        SAFTTestHelper.InsertSAFTMappingRangeWithSource(
+            SAFTMappingRange, SAFTMappingRange."Mapping Type"::"Four Digit Standard Account",
+            CalcDate('<-CY>', WorkDate()), CalcDate('<-CY>', WorkDate()));
+        SAFTMappingRange.Validate("Include Incoming Balance", true);
+        SAFTMappingRange.Modify(true);
+        SAFTMappingHelper.Run(SAFTMappingRange);
+        SAFTTestHelper.MockGLEntryNoVAT(
+            SAFTMappingRange."Starting Date" - 1, GLAccount."No.", 0, 0, 0, '', '', LibraryRandom.RandDec(100, 2), 0);
+        SAFTMappingHelper.UpdateGLEntriesExistStateForGLAccMapping(SAFTMappingRange.Code);
+
+        SAFTGLAccountMapping.Get(SAFTMappingRange.Code, GLAccount."No.");
+        SAFTGLAccountMapping.TestField("G/L Entries Exists");
     end;
 
     local procedure Initialize()

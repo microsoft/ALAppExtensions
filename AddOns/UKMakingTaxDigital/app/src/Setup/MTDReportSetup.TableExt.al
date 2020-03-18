@@ -49,8 +49,7 @@ tableextension 10539 "MTD Report Setup" extends "VAT Report Setup"
         }
     }
 
-    [Scope('OnPrem')]
-    procedure GetMTDOAuthSetupCode(): Code[20]
+    internal procedure GetMTDOAuthSetupCode(): Code[20]
     var
         MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
     begin

@@ -219,7 +219,7 @@ table 2028 "MS - Image Analyzer Tags"
         end;
     end;
 
-    procedure ApplyChanges(ItemDescription: Text[50])
+    procedure ApplyChanges(ItemDescription: Text[100])
     var
         ImageAnalysisTags: Record "MS - Image Analyzer Tags";
     begin
@@ -277,7 +277,7 @@ table 2028 "MS - Image Analyzer Tags"
         ItemAttrPopulate.SetItemCategory(Item, ImageAnalysisTags."Item Category Code");
     end;
 
-    local procedure ApplyItemDescriptionToItem(DescriptionText: Text[50])
+    local procedure ApplyItemDescriptionToItem(DescriptionText: Text[100])
     var
         ImageAnalysisTags: Record "MS - Image Analyzer Tags";
         Item: Record Item;

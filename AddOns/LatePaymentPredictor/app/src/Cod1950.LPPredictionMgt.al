@@ -39,9 +39,9 @@ codeunit 1950 "LP Prediction Mgt."
             Error(ModelTrainingInProgressNotificationErr);
 
         if PredictIsLate(SalesHeader, LPMachineLearningSetup, Confidence) then
-            MessageTxt := StrSubstNo(PredictionResultWillBeLateTxt, FORMAT(GetConfidenceOptionFromConfidencePercent(Confidence)))
+            MessageTxt := StrSubstNo(PredictionResultWillBeLateTxt, GetConfidenceOptionTextFromConfidencePercent(Confidence))
         else
-            MessageTxt := StrSubstNo(PredictionResultWillNotBeLateTxt, FORMAT(GetConfidenceOptionFromConfidencePercent(Confidence)));
+            MessageTxt := StrSubstNo(PredictionResultWillNotBeLateTxt, GetConfidenceOptionTextFromConfidencePercent(Confidence));
 
         if GuiAllowed() then
             Message(MessageTxt);
@@ -262,6 +262,19 @@ codeunit 1950 "LP Prediction Mgt."
             exit(CustomerLedgerEntry."Prediction Confidence"::Medium);
 
         exit(CustomerLedgerEntry."Prediction Confidence"::Low);
+    end;
+
+    procedure GetConfidenceOptionTextFromConfidencePercent(Confidence: decimal): Text
+    var
+        CustomerLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        if (Confidence >= 0.9) then
+            exit(Format(CustomerLedgerEntry."Prediction Confidence"::High));
+
+        if (Confidence >= 0.8) then
+            exit(Format(CustomerLedgerEntry."Prediction Confidence"::Medium));
+
+        exit(Format(CustomerLedgerEntry."Prediction Confidence"::Low));
     end;
 
     [EventSubscriber(ObjectType::Page, 1518, 'OnInitializingNotificationWithDefaultState', '', true, true)]
