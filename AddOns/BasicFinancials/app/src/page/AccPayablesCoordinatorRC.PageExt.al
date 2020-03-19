@@ -1,4 +1,4 @@
-pageextension 57603 "Acc Payables Coordinator RC BF" extends "Acc. Payables Coordinator RC"
+pageextension 20603 "Acc Payables Coordinator RC BF" extends "Acc. Payables Coordinator RC"
 {
     actions
     {

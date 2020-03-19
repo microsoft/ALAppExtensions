@@ -1,4 +1,4 @@
-pageextension 57638 "Reminder BF" extends "Reminder"
+pageextension 20638 "Reminder BF" extends "Reminder"
 {
     actions
     {

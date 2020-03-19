@@ -1,4 +1,4 @@
-pageextension 57646 "Sales Order Archive BF" extends "Sales Order Archive"
+pageextension 20646 "Sales Order Archive BF" extends "Sales Order Archive"
 {
     layout
     {

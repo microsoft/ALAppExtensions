@@ -1,4 +1,4 @@
-codeunit 57602 "BF Upgrade Extension"
+codeunit 20602 "BF Upgrade Extension"
 {
     Subtype = Upgrade;
     trigger OnUpgradePerCompany()

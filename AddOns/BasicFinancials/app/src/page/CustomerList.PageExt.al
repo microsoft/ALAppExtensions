@@ -1,4 +1,4 @@
-pageextension 57616 "Customer List BF" extends "Customer List"
+pageextension 20616 "Customer List BF" extends "Customer List"
 {
     actions
     {

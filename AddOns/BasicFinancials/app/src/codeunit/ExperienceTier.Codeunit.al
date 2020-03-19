@@ -1,4 +1,4 @@
-codeunit 57600 "BF Experience Tier"
+codeunit 20600 "BF Experience Tier"
 {
     // Workaround, Unfortunately it's pretty ugly AL-coding solution, but the user Experience is working as intended.
     // It is not possible to get the Essential Experience Application Areas, but when the function 'IsEssentialExperienceEnabled' is called, the event trigger OnGetEssentialExperienceAppAreas() is trigged, 

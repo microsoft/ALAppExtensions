@@ -1,4 +1,4 @@
-pageextension 57604 "Acc Receivables Adm RC BF" extends "Acc. Receivables Adm. RC"
+pageextension 20604 "Acc Receivables Adm RC BF" extends "Acc. Receivables Adm. RC"
 {
     actions
     {

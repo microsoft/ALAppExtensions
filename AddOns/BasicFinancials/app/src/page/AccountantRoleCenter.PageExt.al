@@ -1,4 +1,4 @@
-pageextension 57601 "Accountant Role Center BF" extends "Accountant Role Center"
+pageextension 20601 "Accountant Role Center BF" extends "Accountant Role Center"
 {
     actions
     {

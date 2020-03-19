@@ -1,4 +1,4 @@
-pageextension 57636 "Purch Invoice Subform BF" extends "Purch. Invoice Subform"
+pageextension 20636 "Purch Invoice Subform BF" extends "Purch. Invoice Subform"
 {
     actions
     {

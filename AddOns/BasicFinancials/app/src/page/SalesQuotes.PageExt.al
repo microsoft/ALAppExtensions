@@ -1,4 +1,4 @@
-pageextension 57652 "Sales Quotes BF" extends "Sales Quotes"
+pageextension 20652 "Sales Quotes BF" extends "Sales Quotes"
 {
     actions
     {

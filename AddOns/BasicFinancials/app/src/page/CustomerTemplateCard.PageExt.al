@@ -1,4 +1,4 @@
-pageextension 57618 "Customer Template Card BF" extends "Customer Template Card"
+pageextension 20618 "Customer Template Card BF" extends "Customer Template Card"
 {
     layout
     {

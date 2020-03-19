@@ -1,4 +1,4 @@
-pageextension 57619 "Customer Template List BF" extends "Customer Template List"
+pageextension 20619 "Customer Template List BF" extends "Customer Template List"
 {
     layout
     {

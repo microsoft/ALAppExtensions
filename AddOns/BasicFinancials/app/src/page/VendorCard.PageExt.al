@@ -1,4 +1,4 @@
-pageextension 57661 "Vendor Card BF" extends "Vendor Card"
+pageextension 20661 "Vendor Card BF" extends "Vendor Card"
 {
     actions
     {

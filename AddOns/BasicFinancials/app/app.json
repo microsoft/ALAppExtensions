@@ -1,10 +1,10 @@
 {
-  "id": "8e5725a0-8b4b-499b-b58e-0068c070df60",
+  "id": "0242c240-2336-450f-9678-2f13f4ce9a6e",
   "name": "Basic Financials",
   "publisher":  "Microsoft",
   "brief":  "Basic Financial Extensions aligns the User Experience to the license limitations",
   "description": "This extension aligns the User Experience to the Basic Financial license limitations, by disabling certain Essential Experience Application Areas And by creating two new Experience Application Areas 'Basic Financials' and 'Orders'. The 'Basic Financials' Application Areas is used to enable Layout and Actions, where the 'Orders' Application Areas is used to disable Layout and Actions.",
-  "version":  "16.0.0.35",
+  "version":  "16.0.0.0",
   "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA":  "https://go.microsoft.com/fwlink/?linkid=",
   "help":  "https://go.microsoft.com/fwlink/?linkid=",
@@ -28,8 +28,8 @@
   "platform": "16.0.0.0",
   "idRanges": [
     {
-      "from": 57600,
-      "to": 57669
+      "from": 20600,
+      "to": 20669
     }
   ],
   "contextSensitiveHelpUrl": "https://AL16.com/help/",

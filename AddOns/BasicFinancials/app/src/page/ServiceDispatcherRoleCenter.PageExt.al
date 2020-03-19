@@ -1,4 +1,4 @@
-pageextension 57655 "Service Dispatcher RC BF" extends "Service Dispatcher Role Center"
+pageextension 20655 "Service Dispatcher RC BF" extends "Service Dispatcher Role Center"
 {
     actions
     {

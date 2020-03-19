@@ -1,4 +1,4 @@
-pageextension 57610 "Contact Alt. Address List BF" extends "Contact Alt. Address List"
+pageextension 20610 "Contact Alt. Address List BF" extends "Contact Alt. Address List"
 {
     layout
     {

@@ -1,4 +1,4 @@
-pageextension 57665 "Warehouse Manager RC BF" extends "Warehouse Manager Role Center"
+pageextension 20665 "Warehouse Manager RC BF" extends "Warehouse Manager Role Center"
 {
     actions
     {

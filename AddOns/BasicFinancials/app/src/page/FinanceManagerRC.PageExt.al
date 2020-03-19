@@ -1,4 +1,4 @@
-pageextension 57620 "Finance Manager Role Center BF" extends "Finance Manager Role Center"
+pageextension 20620 "Finance Manager Role Center BF" extends "Finance Manager Role Center"
 {
     actions
     {

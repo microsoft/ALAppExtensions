@@ -1,4 +1,4 @@
-pageextension 57656 "Shipping Agents BF" extends "Shipping Agents"
+pageextension 20656 "Shipping Agents BF" extends "Shipping Agents"
 {
     actions
     {

@@ -1,4 +1,4 @@
-pageextension 57660 "Team Member Role Center BF" extends "Team Member Role Center"
+pageextension 20660 "Team Member Role Center BF" extends "Team Member Role Center"
 {
     actions
     {

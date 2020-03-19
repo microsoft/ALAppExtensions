@@ -1,4 +1,4 @@
-pageextension 57612 "Contact List BF" extends "Contact List"
+pageextension 20612 "Contact List BF" extends "Contact List"
 {
     actions
     {

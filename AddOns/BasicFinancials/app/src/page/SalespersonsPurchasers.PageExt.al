@@ -1,4 +1,4 @@
-pageextension 57648 "Salespersons/Purchasers BF" extends "Salespersons/Purchasers"
+pageextension 20648 "Salespersons/Purchasers BF" extends "Salespersons/Purchasers"
 {
     layout
     {

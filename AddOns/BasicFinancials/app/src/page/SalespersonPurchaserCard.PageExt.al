@@ -1,4 +1,4 @@
-pageextension 57647 "Salesperson/Purchaser Card BF" extends "Salesperson/Purchaser Card"
+pageextension 20647 "Salesperson/Purchaser Card BF" extends "Salesperson/Purchaser Card"
 {
     layout
     {
