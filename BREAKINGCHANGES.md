@@ -748,7 +748,9 @@ end;
 
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'IsAlphanumeric'_
 
-**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `IsAlphanumeric`.
+**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `IsMatch`.
+
+Example: `TypeHelper.IsAlphanumeric(InputString)` becomes `DotNet_Regex.IsMatch(InputString,'^[a-zA-Z0-9]*$')`
 
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'TextEndsWith'_
 
