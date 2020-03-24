@@ -1,4 +1,4 @@
-codeunit 20601 "BF Install Extension"
+codeunit 20601 "Install Extension BF"
 {
     Subtype = Install;
     trigger OnInstallAppPerCompany()
@@ -16,16 +16,18 @@ codeunit 20601 "BF Install Extension"
     begin
         Clear(AllProfile);
         AllProfile.SetRange(Enabled, true);
-        AllProfile.SetFilter("Profile ID", '%1|%2|%3|%4|%5|%6|%7|%8|%9',
-            'MANUFACTURING',                // 8903 MANUFACTURING (Manufacturing)
-            'PROJECTS',                     // 8904 PROJECTS (Project)
-            'SERVICES',                     // 8908 SERVICES (Service)
-            'WAREHOUSE',                    // 8909 WAREHOUSE (Warehouse)
-            'SHIPPING AND RECEIVING - WMS', // 9000 SHIPPING AND RECEIVING - WMS (Shipping and Receiving - Warehouse Management System)
-            'SHIPPING AND RECEIVING',       // 9008 SHIPPING AND RECEIVING (Shipping and Receiving - Order-by-Order)
-            'WAREHOUSE WORKER - WMS',       // 9009 WAREHOUSE WORKER - WMS (Warehouse Worker - Warehouse Management System)
-            'PRODUCTION PLANNER',           // 9010 PRODUCTION PLANNER (Production Planner)
-            'PROJECT MANAGER');             // 9015 PROJECT MANAGER (Project Manager)
+        AllProfile.SetFilter("Profile ID", '%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11',
+            'MANUFACTURING',                    // 8903 MANUFACTURING (Manufacturing)
+            'PROJECTS',                         // 8904 PROJECTS (Project)
+            'SERVICES',                         // 8908 SERVICES (Service)
+            'WAREHOUSE',                        // 8909 WAREHOUSE (Warehouse)
+            'SHIPPING AND RECEIVING - WMS',     // 9000 SHIPPING AND RECEIVING - WMS (Shipping and Receiving - Warehouse Management System)
+            'SHIPPING AND RECEIVING',           // 9008 SHIPPING AND RECEIVING (Shipping and Receiving - Order-by-Order)
+            'WAREHOUSE WORKER - WMS',           // 9009 WAREHOUSE WORKER - WMS (Warehouse Worker - Warehouse Management System)
+            'PRODUCTION PLANNER',               // 9010 PRODUCTION PLANNER (Production Planner)
+            'PROJECT MANAGER',                  // 9015 PROJECT MANAGER (Project Manager)
+            'DISPATCHER',	                    // 9016 Dispatcher - Customer Service
+            'SALES AND RELATIONSHIP MANAGER');  // 9026 Sales and Relationship Manager
 
         if AllProfile.FindSet() then
             repeat
