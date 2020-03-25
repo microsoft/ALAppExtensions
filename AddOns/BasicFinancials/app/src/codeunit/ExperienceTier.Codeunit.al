@@ -1,21 +1,6 @@
-codeunit 20600 "Experience Tier BF"
+codeunit 20602 "Experience Tier BF"
 {
-    // Workaround, Unfortunately it's pretty ugly AL-coding solution, but the user Experience is working as intended.
-    // It is not possible to get the Essential Experience Application Areas, but when the function 'IsEssentialExperienceEnabled' is called, the event trigger OnGetEssentialExperienceAppAreas() is trigged, 
-    // and then it is possible to "save" the Essential Experience Application Areas by setting this codeunit as a SingleInstance codeunit.
-
-    SingleInstance = true; // Workaround
-
-    var
-        EssentialTempApplicationAreaSetup: Record "Application Area Setup" temporary; // Workaround
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt.", 'OnGetEssentialExperienceAppAreas', '', true, true)] // Workaround
-    local procedure OnGetBasicExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
-    var
-    begin
-        Clear(EssentialTempApplicationAreaSetup); // Workaround
-        EssentialTempApplicationAreaSetup := TempApplicationAreaSetup; // Workaround
-    end;
+    Access = Internal;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt. Facade", 'OnValidateApplicationAreas', '', true, true)]
     local procedure OnValidateApplicationAreas(ExperienceTierSetup: Record "Experience Tier Setup"; TempApplicationAreaSetup: Record "Application Area Setup")
@@ -31,15 +16,12 @@ codeunit 20600 "Experience Tier BF"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt. Facade", 'OnSetExperienceTier', '', true, true)]
     local procedure SetApplicationAreas(ExperienceTierSetup: Record "Experience Tier Setup"; var ApplicationAreasSet: Boolean; var TempApplicationAreaSetup: Record "Application Area Setup")
     var
-        ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
+        AppAreaMgmt: Codeunit "App Area Mgmt BF";
     begin
         if not ExperienceTierSetup."BF Basic Financials" then
             exit;
 
-        Clear(EssentialTempApplicationAreaSetup); // Workaround
-        ApplicationAreaMgmtFacade.IsEssentialExperienceEnabled(); // Workaround
-        TempApplicationAreaSetup := EssentialTempApplicationAreaSetup; // Workaround
-
+        AppAreaMgmt.GetEssentialExperienceAppAreas(TempApplicationAreaSetup);
         DisableExperienceAppAreas(TempApplicationAreaSetup);
         GetBasicFinancialsExperienceAppAreas(TempApplicationAreaSetup);
         ApplicationAreasSet := true;

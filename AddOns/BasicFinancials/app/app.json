@@ -35,6 +35,6 @@
   "contextSensitiveHelpUrl": "https://AL16.com/help/",
   "showMyCode": true,
   "runtime": "4.0",
-  "supportedLocales": ["en-US"],
+  "supportedLocales": ["en-US","da-DK","is-IS"],
   "features": ["TranslationFile"]
 }

@@ -3,20 +3,40 @@
   <file datatype="xml" source-language="en-US" target-language="en-US" original="Basic Financials">
     <body>
       <group id="body">
-        <trans-unit id="TableExtension 4222890194 - Field 3376354272 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 627389406">
+        <trans-unit id="Codeunit 1304803449 - Method 2569781341 - NamedType 3024544721" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The Basic Financials Extension can only be deployed for the follovwing Countries: Denmark, Iceland</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - Method TestSupportedLocales - NamedType ErrLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1304803449 - Method 2403848212 - NamedType 3024544721" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The Basic Financials Extension can only be deployed, when at least one user has been assigned to a Basic Financials license</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - Method TestSupportedLicenses - NamedType ErrLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1304803449 - Method 1855032803 - NamedType 3024544721" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The Basic Financials Extension can only be deployed with Super User Permissions</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - Method TestSupportedUser - NamedType ErrLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1304803449 - Method 1455874603 - NamedType 3024544721" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The Basic Financials Extension, can only be deployed, when exactly one Company is present in the Environment</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - Method TestSupportedCompanies - NamedType ErrLbl</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3931722514 - Field 3376354272 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 627389406">
           <source>Basic Financials</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">TableExtension BF Application Area Setup - Field BF Basic Financials - Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Application Area Setup BF - Field BF Basic Financials - Property Caption</note>
         </trans-unit>
-        <trans-unit id="TableExtension 4222890194 - Field 1564560419 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 627389406">
+        <trans-unit id="TableExtension 3931722514 - Field 1564560419 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 627389406">
           <source>Orders</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">TableExtension BF Application Area Setup - Field BF Orders - Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Application Area Setup BF - Field BF Orders - Property Caption</note>
         </trans-unit>
-        <trans-unit id="TableExtension 1875593177 - Field 3376354272 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3548822581">
+        <trans-unit id="TableExtension 1994908273 - Field 3376354272 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3548822581">
           <source>Basic Financials</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">TableExtension BF Experience Tier Setup - Field BF Basic Financials - Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Experience Tier Setup BF - Field BF Basic Financials - Property Caption</note>
         </trans-unit>
       </group>
     </body>
