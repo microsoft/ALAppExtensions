@@ -9,6 +9,7 @@ table 1808 "Aggregated Assisted Setup"
     Caption = 'Aggregated Assisted Setup';
     ObsoleteState = Pending;
     ObsoleteReason = 'Data available in Assisted Setup already- extensions also register in the same table.';
+    ObsoleteTag = '16.0';
 
     fields
     {

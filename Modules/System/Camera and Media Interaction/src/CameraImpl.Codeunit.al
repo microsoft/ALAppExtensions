@@ -3,90 +3,71 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 1908 "Camera Impl."
+codeunit 1922 "Camera Impl."
 {
     Access = Internal;
 
     var
-        FileHelper: Codeunit "File Helper";
-        CameraOptions: DotNet CameraOptions;
-        AreCameraOptionsInitialized: Boolean;
-        QualityOutOfRangeErr: Label 'The picture quality must be in the range from 0 to 100.';
-        NoPictureWasTakenErr: Label 'No picture was taken.';
+        Camera: Page Camera;
+        PictureFileNameTok: Label 'Picture_%1.jpeg', Comment = '%1 = String generated from current datetime to make sure file names are unique ';
+        OverrideImageQst: Label 'The existing picture will be replaced. Do you want to continue?';
+        NotAMediaFieldErr: Label 'The provided field must be of type ''Media''.';
 
-
-    procedure CameraInteractionOnOpenPage(var CameraProvider: DotNet CameraProvider; var CameraAvailable: Boolean)
-    begin
-        CameraAvailable := IsAvailable(CameraProvider);
-        if not CameraAvailable then
-            exit;
-
-        InitializeCameraOptions();
-        CameraProvider := CameraProvider.Create();
-        CameraProvider.RequestPictureAsync(CameraOptions);
-    end;
-
-    local procedure InitializeCameraOptions()
-    begin
-        if AreCameraOptionsInitialized then
-            exit;
-        CameraOptions := CameraOptions.CameraOptions();
-        AreCameraOptionsInitialized := true;
-    end;
-
-    procedure IsAvailable(CameraProvider: DotNet CameraProvider): Boolean
-    begin
-        exit(CameraProvider.IsAvailable());
-    end;
-
-    procedure SetAllowEdit(AllowEdit: Boolean)
-    begin
-        InitializeCameraOptions();
-        CameraOptions.AllowEdit := AllowEdit;
-    end;
-
-    procedure SetEncodingType(EncodingType: Enum "Image Encoding")
-    begin
-        InitializeCameraOptions();
-        case EncodingType of
-            Enum::"Image Encoding"::JPEG:
-                CameraOptions.EncodingType := 'JPEG';
-            Enum::"Image Encoding"::PNG:
-                CameraOptions.EncodingType := 'PNG';
-        end;
-    end;
-
-    procedure SetQuality(Quality: Integer)
-    begin
-        if (Quality < 0) or (Quality > 100) then
-            Error(QualityOutOfRangeErr);
-
-        InitializeCameraOptions();
-        CameraOptions.Quality := Quality;
-    end;
-
-    procedure GetPicture(var TempBlob: Codeunit "Temp Blob")
-    begin
-        if not FileHelper.GetFile(TempBlob) then
-            Error(NoPictureWasTakenErr);
-    end;
-
-    procedure HasPicture(): Boolean
-    begin
-        exit(FileHelper.FileExists());
-    end;
-
-    procedure GetPicture(Stream: InStream)
+    procedure GetPicture(PictureStream: InStream; var PictureName: Text): Boolean
     var
-        FileTempBlob: Codeunit "Temp Blob";
+        WasPictureTaken: Boolean;
     begin
-        GetPicture(FileTempBlob);
-        FileTempBlob.CreateInStream(Stream);
+        if not IsAvailable() then
+            exit(false);
+
+        Clear(Camera);
+
+        Camera.SetQuality(100); // 100%
+        Camera.RunModal();
+        if Camera.HasPicture() then begin
+            Camera.GetPicture(PictureStream);
+            PictureName := StrSubstNo(PictureFileNameTok, Format(CurrentDateTime(), 0, '<Day,2>_<Month,2>_<Year4>_<Hours24>_<Minutes,2>_<Seconds,2>'));
+            WasPictureTaken := true;
+        end;
+
+        exit(WasPictureTaken);
     end;
 
-    procedure CameraInteractionOnPictureAvailable(FilePath: Text)
+    procedure AddPicture(RecordVariant: Variant; FieldNo: Integer): Boolean
+    var
+        TempMedia: Record "Temp Media" temporary;
+        RecordWithMediaRef: RecordRef;
+        MediaFieldRef: FieldRef;
+        PictureInStream: InStream;
+        PictureName: Text;
     begin
-        FileHelper.SetPath(FilePath);
+        if not IsAvailable() then
+            exit(false);
+
+        RecordWithMediaRef.GetTable(RecordVariant);
+        MediaFieldRef := RecordWithMediaRef.Field(FieldNo);
+
+        if MediaFieldRef.Type <> FieldType::Media then
+            Error(NotAMediaFieldErr);
+
+        if not GetPicture(PictureInStream, PictureName) then
+            exit(false);
+
+        if not IsNullGuid(MediaFieldRef.Value) then
+            if not Confirm(OverrideImageQst) then
+                exit(false);
+
+        TempMedia.Media.ImportStream(PictureInStream, PictureName, 'image/jpeg');
+        MediaFieldRef.Value := TempMedia.Media;
+
+        if not RecordWithMediaRef.Modify(true) then
+            RecordWithMediaRef.Insert(true);
+
+        exit(true);
+    end;
+
+    procedure IsAvailable(): Boolean
+    begin
+        exit(Camera.IsAvailable());
     end;
 }
-

@@ -11,6 +11,7 @@ table 1810 "Assisted Setup Icons"
     ReplicateData = false;
     ObsoleteState = Pending;
     ObsoleteReason = 'Icons are added directly from the extensions that add assisted setup, so no need to aggregate the icons here.';
+    ObsoleteTag = '16.0';
 
     fields
     {

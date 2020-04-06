@@ -9,6 +9,7 @@ table 1471 "Product Video Category"
     Caption = 'Product Video Category';
     ObsoleteState = Pending;
     ObsoleteReason = 'Videos are not categorized any more in this way. The Video module handles the full listing.';
+    ObsoleteTag = '16.0';
 
     fields
     {

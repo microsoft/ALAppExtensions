@@ -44,7 +44,7 @@ page 1908 Camera
     }
 
     var
-        CameraInteractionImpl: Codeunit "Camera Impl.";
+        CameraPageImpl: Codeunit "Camera Page Impl.";
         [RunOnClient]
         [WithEvents]
         CameraProvider: DotNet CameraProvider;
@@ -59,7 +59,7 @@ page 1908 Camera
     /// <remarks>You can edit the picture if <see cref="SetAllowEdit"/> with parameter true was called.</remarks>
     trigger OnOpenPage()
     begin
-        CameraInteractionImpl.CameraInteractionOnOpenPage(CameraProvider, CameraAvailable);
+        CameraPageImpl.CameraInteractionOnOpenPage(CameraProvider, CameraAvailable);
     end;
 
     /// <summary>
@@ -68,7 +68,7 @@ page 1908 Camera
     /// <returns>True if the camera is available, false otherwise.</returns>
     procedure IsAvailable(): Boolean
     begin
-        exit(CameraInteractionImpl.IsAvailable(CameraProvider));
+        exit(CameraPageImpl.IsAvailable(CameraProvider));
     end;
 
     /// <summary>
@@ -77,7 +77,7 @@ page 1908 Camera
     /// <param name="AllowEdit">True to enable simple editing, false otherwise.</param>
     procedure SetAllowEdit(AllowEdit: Boolean)
     begin
-        CameraInteractionImpl.SetAllowEdit(AllowEdit);
+        CameraPageImpl.SetAllowEdit(AllowEdit);
     end;
 
     /// <summary>
@@ -86,7 +86,7 @@ page 1908 Camera
     /// <param name="EncodingType">The encoding to use when saving the picture.</param>
     procedure SetEncodingType(EncodingType: Enum "Image Encoding")
     begin
-        CameraInteractionImpl.SetEncodingType(EncodingType);
+        CameraPageImpl.SetEncodingType(EncodingType);
     end;
 
     /// <summary>
@@ -98,7 +98,7 @@ page 1908 Camera
     /// <error>The picture quality must be in the range from 0 to 100.</error>
     procedure SetQuality(Quality: Integer)
     begin
-        CameraInteractionImpl.SetQuality(Quality);
+        CameraPageImpl.SetQuality(Quality);
     end;
 
     /// <summary>
@@ -109,7 +109,7 @@ page 1908 Camera
     /// <error>The picture is not available.</error>
     procedure GetPicture(var TempBlob: Codeunit "Temp Blob")
     begin
-        CameraInteractionImpl.GetPicture(TempBlob);
+        CameraPageImpl.GetPicture(TempBlob);
     end;
 
     /// <summary>
@@ -122,7 +122,7 @@ page 1908 Camera
     /// <returns>True if the picture is available, false otherwise.</returns>
     procedure HasPicture(): Boolean
     begin
-        exit(CameraInteractionImpl.HasPicture());
+        exit(CameraPageImpl.HasPicture());
     end;
 
     /// <summary>
@@ -133,12 +133,12 @@ page 1908 Camera
     /// <error>The picture is not available.</error>
     procedure GetPicture(Stream: Instream)
     begin
-        CameraInteractionImpl.GetPicture(Stream);
+        CameraPageImpl.GetPicture(Stream);
     end;
 
     trigger CameraProvider::PictureAvailable(PictureName: Text; PictureFilePath: Text)
     begin
-        CameraInteractionImpl.CameraInteractionOnPictureAvailable(PictureFilePath);
+        CameraPageImpl.CameraInteractionOnPictureAvailable(PictureFilePath);
         CurrPage.Close();
     end;
 }

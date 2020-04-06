@@ -74,7 +74,7 @@ codeunit 9027 "Plan Ids"
     /// Returns the ID for the Microsoft Invoicing plan.
     /// </summary>
     /// <returns>The ID for the Microsoft Invoicing plan.</returns>
-    [Obsolete('Invoicing product has been retired.')]
+    [Obsolete('Invoicing product has been retired.', '16.0')]
     procedure GetInvoicingPlanId(): Guid
     begin
         exit(InvoicingPlanGUIDTxt);

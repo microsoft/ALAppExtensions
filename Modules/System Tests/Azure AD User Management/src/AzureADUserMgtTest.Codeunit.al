@@ -230,22 +230,19 @@ codeunit 132909 "Azure AD User Management Test"
     end;
 
     [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
-    procedure TestCodeunitRunPlansAreRefreshed()
+    procedure TestCodeunitRunUserHasAssignedPlans()
     var
         User: Record User;
         UserProperty: Record "User Property";
         AzureADUserManagementTest: Codeunit "Azure AD User Management Test";
         AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
-        AzureADPlan: Codeunit "Azure AD Plan";
         UserLoginTestLibrary: Codeunit "User Login Test Library";
-        AssignedPlans: DotNet IEnumerable;
-        Plan: DotNet ServicePlanInfo;
         UserId: Guid;
         AssignedUserPlanId: Guid;
         UnassignedUserPlanRecordId: Guid;
         UnassignedUserPlanId: Guid;
-        PlanFound: Boolean;
     begin
         Initialize(AzureADUserManagementTest);
 
@@ -290,28 +287,67 @@ codeunit 132909 "Azure AD User Management Test"
         // [WHEN] Running Azure AD User Management on the user
         AzureADUserManagementTest.RunAzureADUserManagement(UserId);
 
+        // [THEN] The user record is not updated
+        User.Get(UserId);
+        LibraryAssert.AreEqual(User.State::Disabled, User.State,
+            'The User record should not have not been updated');
+
+        UnbindSubscription(AzureADUserManagementTest);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestCodeunitRunPlansAreRefreshed()
+    var
+        User: Record User;
+        UserProperty: Record "User Property";
+        AzureADUserManagementTest: Codeunit "Azure AD User Management Test";
+        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        UserLoginTestLibrary: Codeunit "User Login Test Library";
+        UserId: Guid;
+        AssignedUserPlanId: Guid;
+    begin
+        Initialize(AzureADUserManagementTest);
+
+        AssignedUserPlanId := CreateGuid();
+
+        // [GIVEN] The User Property and User Plan tables are empty      
+        UserProperty.DeleteAll();
+        AzureADPlanTestLibrary.DeleteAllUserPlan();
+
+        // [GIVEN] Running in SaaS
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [GIVEN] The Azure AD Graph contains a user 
+        UserId := CreateGuid();
+        AzureADUserManagementTest.AddGraphUser(UserId);
+
+        // [GIVEN] The Azure AD Graph contains a User Plan that the database does not
+        AzureADUserManagementTest.AddGraphUserPlan(UserId, AssignedUserPlanId, '', 'Enabled');
+
+        // [GIVEN] The user record's state is disabled
+        DisableUserAccount(UserId);
+
+        // [GIVEN] There is an entry in the User Property table for the test user 
+        // [GIVEN] The User Authentication Object Id for the test user is not empty  
+        UserProperty.Get(UserId);
+        UserProperty."Authentication Object ID" := UserId;
+        UserProperty.Modify();
+
+        // [GIVEN] It is the first time that the test user logs in
+        UserLoginTestLibrary.DeleteAllLoginInformation(UserId);
+
+        // [WHEN] Running Azure AD User Management on the user
+        AzureADUserManagementTest.RunAzureADUserManagement(UserId);
+
         // [THEN] The user record is updated
         User.Get(UserId);
         LibraryAssert.AreEqual(User.State::Enabled, User.State, 'The User record should have been updated');
 
-        // [THEN] The User Plan that exists in the database, but not in the Azure AD Graph is deleted
-        LibraryAssert.AreEqual(false, AzureADPlan.IsPlanAssignedToUser(UnassignedUserPlanRecordId, UserId),
-            'The User Plan table should not contain the unassigned user plan');
-
-        // [THEN] The User Plan that exists both in the database and the Azure AD Graph remains in both
-        LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssigned(AssignedUserPlanId),
-            'The User Plan table should contain the assigned user plan');
-
-        AzureADUserManagementTest.GetGraphUserAssignedPlans(AssignedPlans, UserId);
-        foreach Plan in AssignedPlans do
-            if Plan.ServicePlanId() = AssignedUserPlanId then
-                PlanFound := true;
-
-        LibraryAssert.IsTrue(PlanFound, 'The plan should still be assigned to the user');
-
         // [THEN] A new entry should be inserted in the User Plan table for the plan that is assigned to 
         // the user in the Azure AD Graph
-        LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssigned(UnassignedUserPlanId),
+        LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssigned(AssignedUserPlanId),
             'There should be an entry corresponding to the unassigned plan in the User Plan table');
 
         UnbindSubscription(AzureADUserManagementTest);

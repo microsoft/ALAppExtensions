@@ -16,7 +16,6 @@ codeunit 3702 "Environment Information Impl."
         IsSaaSConfig: Boolean;
         IsSandboxConfig: Boolean;
         IsSandboxInitialized: Boolean;
-        MemberShipEntitlementValueTxt: Label 'Membership Entitlement. IsEmpty returned %1.', Locked = true;
         DefaultSandboxEnvironmentNameTxt: Label 'Sandbox', Locked = true;
         DefaultProductionEnvironmentNameTxt: Label 'Production', Locked = true;
 
@@ -70,8 +69,6 @@ codeunit 3702 "Environment Information Impl."
 
         if not IsSaasInitialized then begin
             IsSaaSConfig := not MembershipEntitlement.IsEmpty();
-            SendTraceTag('00008TO', 'SaaS', VERBOSITY::Normal, StrSubstNo(MemberShipEntitlementValueTxt, not IsSaaSConfig),
-              DATACLASSIFICATION::SystemMetadata);
             IsSaasInitialized := true;
         end;
 
