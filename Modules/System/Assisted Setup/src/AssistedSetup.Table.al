@@ -24,6 +24,7 @@ table 1803 "Assisted Setup"
             Caption = 'Order';
             ObsoleteState = Pending;
             ObsoleteReason = 'Order cannot be determined at compile time because the extensions that add to the table are unknown and can insert records in any order.';
+            ObsoleteTag = '16.0';
         }
         field(4; Status; Option)
         {
@@ -32,18 +33,21 @@ table 1803 "Assisted Setup"
             OptionMembers = "Not Completed",Completed,"Not Started",Seen,Watched,Read," ";
             ObsoleteState = Pending;
             ObsoleteReason = 'Only option used is Complete- new boolean field with that name created.';
+            ObsoleteTag = '16.0';
         }
         field(5; Visible; Boolean)
         {
             Caption = 'Visible';
             ObsoleteState = Pending;
             ObsoleteReason = 'Only those setup records that are visible should be added.';
+            ObsoleteTag = '16.0';
         }
         field(6; Parent; Integer)
         {
             Caption = 'Parent';
             ObsoleteState = Pending;
             ObsoleteReason = 'Hierarchy is removed. Instead the Group Name is populated for each record.';
+            ObsoleteTag = '16.0';
         }
         field(7; "Video Url"; Text[250])
         {
@@ -61,12 +65,14 @@ table 1803 "Assisted Setup"
             OptionMembers = " ",Group,"Setup and Help";
             ObsoleteState = Pending;
             ObsoleteReason = 'No group type items anymore. Use the Group Name field instead.';
+            ObsoleteTag = '16.0';
         }
         field(10; Featured; Boolean)
         {
             Caption = 'Featured';
             ObsoleteState = Pending;
             ObsoleteReason = 'Not used in any UI component.';
+            ObsoleteTag = '16.0';
         }
         field(11; "Help Url"; Text[250])
         {
@@ -77,30 +83,35 @@ table 1803 "Assisted Setup"
             Caption = 'Assisted Setup Page ID';
             ObsoleteState = Pending;
             ObsoleteReason = 'Redundant field- duplication of Page ID field.';
+            ObsoleteTag = '16.0';
         }
         field(13; "Tour Id"; Integer)
         {
             Caption = 'Tour Id';
             ObsoleteState = Pending;
             ObsoleteReason = 'Not used in any UI component.';
+            ObsoleteTag = '16.0';
         }
         field(14; "Video Status"; Boolean)
         {
             Caption = 'Video Status';
             ObsoleteState = Pending;
             ObsoleteReason = 'Not needed to track if user has seen video.';
+            ObsoleteTag = '16.0';
         }
         field(15; "Help Status"; Boolean)
         {
             Caption = 'Help Status';
             ObsoleteState = Pending;
             ObsoleteReason = 'Not needed to track if user has seen help.';
+            ObsoleteTag = '16.0';
         }
         field(16; "Tour Status"; Boolean)
         {
             Caption = 'Tour Status';
             ObsoleteState = Pending;
             ObsoleteReason = 'Not used in any UI component.';
+            ObsoleteTag = '16.0';
         }
         field(19; "App ID"; Guid)
         {

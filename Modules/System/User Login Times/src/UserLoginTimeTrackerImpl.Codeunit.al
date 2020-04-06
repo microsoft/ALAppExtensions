@@ -8,10 +8,6 @@ codeunit 9013 "User Login Time Tracker Impl."
     Access = Internal;
     Permissions = TableData "User Login" = rimd;
 
-    var
-        UserLoginTelemetryCategoryLbl: Label 'User Login', Locked = true;
-        ChildSessionLoginInfoNotUpdatedTelemetryTxt: Label 'User Login information was not updated for user %1 as it is in a child session.', Locked = true;
-
     trigger OnRun()
     begin
     end;
@@ -62,13 +58,8 @@ codeunit 9013 "User Login Time Tracker Impl."
         UserLogin: Record "User Login";
         UserLoginTimeTracker: Codeunit "User Login Time Tracker";
     begin
-        if CurrentClientType() = ClientType::ChildSession then begin
-            SendTraceTag('00009V1', UserLoginTelemetryCategoryLbl, Verbosity::Warning,
-              StrSubstNo(ChildSessionLoginInfoNotUpdatedTelemetryTxt, UserSecurityId()), DataClassification::AccountData);
-            exit;
-        end;
+        UserLogin.LockTable(); // to ensure that the latest version is picked up and the other users logging in wait here
 
-        UserLogin.LockTable(); // to ensure that the latest version is picked up and the other users logging in wait here,
         if UserLogin.Get(UserSecurityId()) then begin
             UserLogin."Penultimate Login Date" := UserLogin."Last Login Date";
             UserLogin."Last Login Date" := CurrentDateTime();

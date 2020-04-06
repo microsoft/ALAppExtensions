@@ -23,7 +23,7 @@ codeunit 151 "System Initialization Impl."
         // This needs to be the very first thing to run before company open
         CODEUNIT.Run(CODEUNIT::"Azure AD User Management");
 
-        if not (Session.CurrentClientType() in [ClientType::Background, ClientType::ChildSession]) then begin
+        if Session.CurrentClientType() in [ClientType::Web, ClientType::Windows, ClientType::Desktop, ClientType::Tablet, ClientType::Phone] then begin
             UserLoginTimeTracker.CreateOrUpdateLoginInfo();
 
             // This commit needs to be performed before the password modal dialog is displayed, otherwise an error occurs

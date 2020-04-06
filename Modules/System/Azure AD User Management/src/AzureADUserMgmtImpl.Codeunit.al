@@ -39,7 +39,6 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         CompanyAdminRoleTemplateIdTok: Label '62e90394-69f5-4237-9190-012177145e10', Locked = true;
         UserSetupCategoryTxt: Label 'User Setup', Locked = true;
         UserCreatedMsg: Label 'User %1 has been created', Locked = true;
-        UserNotFoundMsg: Label 'User %1 was not found in Office 365. We will turn off the user account.', Comment = '%1=user name';
         AuthenticationEmailUpdateShouldBeTheFirstForANewUserErr: Label 'Authentication email should be the first entity to update.';
         ApplyingUserUpdateTxt: Label 'Applying update for user %1 with authentication object ID %2.', Comment = '%1 = user security ID (guid) and %2 = authentication object ID (guid)', Locked = true;
         UserNotFoundWhenApplyingTxt: Label 'User not found. Creating a new user from authentication object ID %1 and authentication email %2.', Comment = '%1 = authentication object ID (guid), %2 = authentication email (email)', Locked = true;
@@ -62,6 +61,9 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             exit;
 
         if not UserLoginTimeTracker.IsFirstLogin(ForUserSecurityId) then
+            exit;
+
+        if AzureADPlan.DoesUserHavePlans(ForUserSecurityId) then
             exit;
 
         if AzureADGraphUser.GetUserAuthenticationObjectId(ForUserSecurityId) = '' then
@@ -190,18 +192,10 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     procedure UpdateUserFromGraph(var User: Record User)
     var
         AzureADGraphUserToFetch: Codeunit "Azure AD Graph User";
-        PlanIds: Codeunit "Plan Ids";
         GraphUser: DotNet UserInfo;
     begin
         if AzureADGraphUserToFetch.GetGraphUser(User."User Security ID", GraphUser) then
-            AzureADGraphUserToFetch.UpdateUserFromAzureGraph(User, GraphUser)
-        else
-            if not (AzureADPlan.IsPlanAssignedToUser(PlanIds.GetDelegatedAdminPlanId(), User."User Security ID") or
-                    AzureADPlan.IsPlanAssignedToUser(PlanIds.GetHelpDeskPlanId(), User."User Security ID")) then begin
-                Message(UserNotFoundMsg, User."User Name");
-                User.State := User.State::Disabled;
-                User.Modify();
-            end;
+            AzureADGraphUserToFetch.UpdateUserFromAzureGraph(User, GraphUser);
     end;
 
     local procedure InitializeAsNewUser(NewUserSecurityId: Guid; var GraphUser: DotNet UserInfo)

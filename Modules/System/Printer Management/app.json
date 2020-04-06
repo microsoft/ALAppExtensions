@@ -1,0 +1,28 @@
+{
+    "id": "7e134a60-9d64-4edd-8b5c-77253fb49fce",
+    "name": "Printer Management",  
+    "publisher":  "Microsoft",
+    "brief":  "Manages printers",
+    "description":  "Contains functionality for managing printers available for a tenant.",
+    "version":  "16.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo":  "",
+    "dependencies":  [
+                     ],
+    "internalsVisibleTo":  [
+                           ],
+    "screenshots":  [
+                    ],
+    "platform":  "16.0.0.0",
+    "target": "OnPrem",
+    "idRanges":  [
+                     {
+                         "from": 2616,
+                         "to": 2620
+                     }
+                 ],
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
+}

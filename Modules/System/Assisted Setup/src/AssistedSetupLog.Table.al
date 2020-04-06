@@ -32,6 +32,7 @@ table 1807 "Assisted Setup Log"
             OptionMembers = " ",Video,Help,Tour,"Assisted Setup";
             ObsoleteState = Pending;
             ObsoleteReason = 'Only videos opened are logged.';
+            ObsoleteTag = '16.0';
         }
     }
 

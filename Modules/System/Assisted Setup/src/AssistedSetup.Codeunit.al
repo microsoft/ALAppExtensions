@@ -62,7 +62,7 @@ codeunit 3725 "Assisted Setup"
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <param name="LanguageID">The language ID for which the translation is made.</param>
     /// <param name="TranslatedName">The translated text of the name.</param>
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
     procedure AddTranslation(ExtensionID: Guid; PageID: Integer; LanguageID: Integer; TranslatedName: Text)
     begin
         AddTranslation(PageID, LanguageID, TranslatedName);
@@ -81,7 +81,7 @@ codeunit 3725 "Assisted Setup"
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <returns>Returns true if the given setup guide has been completed by the user, otherwise false.</returns> 
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
     procedure IsComplete(ExtensionID: Guid; PageID: Integer): Boolean
     begin
         exit(IsComplete(PageID));
@@ -99,7 +99,7 @@ codeunit 3725 "Assisted Setup"
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <returns>True if an assisted setup guide for provided extension and page IDs exists; false otherwise.</returns>
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
     procedure Exists(ExtensionID: Guid; PageID: Integer): Boolean
     begin
         exit(Exists(PageID));
@@ -117,7 +117,7 @@ codeunit 3725 "Assisted Setup"
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <returns>True if it exists and is incomplete, false otherwise.</returns>
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
     procedure ExistsAndIsNotComplete(ExtensionID: Guid; PageID: Integer): Boolean
     begin
         exit(ExistsAndIsNotComplete(PageID));
@@ -135,7 +135,7 @@ codeunit 3725 "Assisted Setup"
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <remarks>This is typically called from inside the assisted setup guide when the setup is finished.</remarks>
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
     procedure Complete(ExtensionID: Guid; PageID: Integer)
     begin
         Complete(PageID);
@@ -159,7 +159,7 @@ codeunit 3725 "Assisted Setup"
     /// <summary>Issues the call to execute the setup.</summary>
     /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
     procedure Run(ExtensionID: Guid; PageID: Integer)
     begin
         Run(PageID);

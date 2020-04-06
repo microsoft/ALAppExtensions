@@ -18,14 +18,29 @@
                             "version":  "16.0.0.0"
                         }
                      ],
+    "internalsVisibleTo":  [
+                        {
+                            "id":  "29fa62c7-4a89-454a-b21d-f1a83d27c86e",
+                            "name":  "Camera and Media Interaction Test Library",
+                            "publisher":  "Microsoft"
+                        }
+                    ],
     "screenshots":  [
 
                     ],
     "platform":  "16.0.0.0",
     "idRanges":  [
                      {
-                         "from":  1908,
-                         "to":  19109
+                         "from":  1907,
+                         "to":  1910
+                     },
+                     {
+                        "from":  4152,
+                        "to":  4152
+                     },
+                     {
+                        "from":  1922,
+                        "to":  1922
                      }
                  ],
     "target":  "OnPrem",

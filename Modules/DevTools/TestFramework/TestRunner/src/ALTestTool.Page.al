@@ -304,7 +304,6 @@ page 130451 "AL Test Tool"
                         TestSuiteMgt: Codeunit "Test Suite Mgt.";
                     begin
                         TestSuiteMgt.LookupTestRunner(GlobalALTestSuite);
-                        TestRunnerDisplayName := TestSuiteMgt.GetTestRunnerDisplayName(GlobalALTestSuite);
                     end;
                 }
             }
