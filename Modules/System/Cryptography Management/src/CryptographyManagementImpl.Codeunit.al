@@ -22,6 +22,7 @@ codeunit 1279 "Cryptography Management Impl."
         DisableEncryptionConfirmQst: Label 'Disabling encryption will decrypt the encrypted data and store it in the database in an unsecure way.\\Do you want to continue?';
         EncryptionCheckFailErr: Label 'Encryption is either not enabled or the encryption key cannot be found.';
         EncryptionIsNotActivatedQst: Label 'Data encryption is not activated. It is recommended that you encrypt data. \Do you want to open the Data Encryption Management window?';
+        CertInitializeErr: Label 'Unable to initialize certificate!';
 
     procedure Encrypt(InputString: Text): Text
     begin
@@ -609,5 +610,79 @@ codeunit 1279 "Cryptography Management Impl."
             Error(GetLastErrorText());
 
         exit(Convert.ToBase64String(ByteArray));
+    end;
+
+    procedure VerifyCertificate(var CertBase64Value: Text; Password: Text; ContentType: Enum "X509 Content Type"): Boolean
+    var
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        if not TryInitializeCertificate(CertBase64Value, Password, X509Certificate2) then
+            Error(CertInitializeErr);
+        if not TryExportToBase64String(X509Certificate2, ContentType, CertBase64Value) then
+            Error(GetLastErrorText());
+        exit(true);
+    end;
+
+    procedure GetCertificateDetails(CertBase64Value: Text; var FriendlyName: Text; var Thumbprint: Text; var Issuer: Text; var Expiration: DateTime)
+    var
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        CreateX509Certificate(CertBase64Value, X509Certificate2);
+        FriendlyName := X509Certificate2.FriendlyName();
+        Thumbprint := X509Certificate2.Thumbprint();
+        Issuer := X509Certificate2.Issuer();
+        Evaluate(Expiration, X509Certificate2.GetExpirationDateString());
+    end;
+
+    procedure GetCertificatePropertiesAsJson(CertBase64Value: Text): Text
+    var
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        CreateX509Certificate(CertBase64Value, X509Certificate2);
+        exit(CreateCertificatePropertyJson(X509Certificate2));
+    end;
+
+    [TryFunction]
+    local procedure TryInitializeCertificate(CertBase64Value: Text; Password: Text; var X509Certificate2: DotNet X509Certificate2)
+    var
+        X509KeyStorageFlags: DotNet X509KeyStorageFlags;
+        Convert: DotNet Convert;
+    begin
+        X509Certificate2 := X509Certificate2.X509Certificate2(Convert.FromBase64String(CertBase64Value), Password, X509KeyStorageFlags.Exportable);
+        if IsNull(X509Certificate2) then
+            Error('');
+    end;
+
+    [TryFunction]
+    local procedure TryExportToBase64String(X509Certificate2: DotNet X509Certificate2; ContentType: Enum "X509 Content Type"; var CertBase64Value: Text)
+    var
+        Convert: DotNet Convert;
+        X509ContentType: DotNet X509ContentType;
+        Enum: DotNet Enum;
+    begin
+        X509ContentType := Enum.Parse(GetDotNetType(X509ContentType), Format(ContentType));
+        CertBase64Value := Convert.ToBase64String(X509Certificate2.Export(X509ContentType));
+    end;
+
+    local procedure CreateX509Certificate(CertBase64Value: Text; var X509Certificate2: DotNet X509Certificate2)
+    var
+        Convert: DotNet Convert;
+    begin
+        X509Certificate2 := X509Certificate2.X509Certificate2(Convert.FromBase64String(CertBase64Value));
+    end;
+
+    local procedure CreateCertificatePropertyJson(X509Certificate2: DotNet X509Certificate2): Text
+    var
+        JObject: DotNet JObject;
+        JProperty: DotNet JProperty;
+        PropertyInfo: DotNet PropertyInfo;
+    begin
+        JObject := JObject.JObject();
+        foreach PropertyInfo in X509Certificate2.GetType().GetProperties() do
+            if PropertyInfo.PropertyType().ToString() in ['System.Boolean', 'System.String', 'System.DateTime', 'System.Int32'] then begin
+                JProperty := JProperty.JProperty(PropertyInfo.Name(), Format(PropertyInfo.GetValue(X509Certificate2), 0, 9));
+                JObject.Add(JProperty);
+            end;
+        exit(JObject.ToString());
     end;
 }
