@@ -1,0 +1,59 @@
+{
+    "id":  "798a05da-4249-48b7-a85c-70dd5e508fa2",
+    "platform":  "16.0.0.0",
+    "version":  "16.1.0.0",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2101583",
+    "showMyCode":  false,
+    "description":  "AMC Banking Fundamentals Test automations",
+    "dependencies":  [
+                         {
+                             "appId":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+                             "publisher":  "Microsoft",
+                             "name":  "System Application",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                             "appId":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
+                             "publisher":  "Microsoft",
+                             "name":  "Base Application",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                            "appId":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
+                            "name":  "AMC Banking 365 Fundamentals",
+                            "publisher":  "Microsoft",
+                            "version":  "16.0.0.0"
+                        },
+                        {
+                            "appId":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                            "name":  "Tests-TestLibraries",
+                            "publisher":  "Microsoft",
+                            "version":  "16.0.0.0"
+                        },
+                        {
+                           "appId":  "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+                           "name":  "System Application Test Library",
+                           "publisher":  "Microsoft",
+                           "version":  "16.0.0.0"
+                       }
+                     ],
+    "logo":  "./AppResources/amctestlogo.png",
+    "target":  "OnPrem",
+    "idRanges": [
+                    {
+                        "from": 130000,
+                        "to": 139999
+                    }
+                ],
+    "brief":  "AMC Banking 365 Fundamentals Test automations",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "name":  "AMC Banking 365 Fundamentals Test Automations",
+    "runtime":  "4.0",
+    "publisher":  "Microsoft",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "contextSensitiveHelpUrl":  "https://amcbanking.com/kb/",
+    "features":  [
+                     "TranslationFile"
+                 ]
+}

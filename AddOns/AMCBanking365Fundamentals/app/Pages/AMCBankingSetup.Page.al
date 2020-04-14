@@ -65,9 +65,17 @@ page 20101 "AMC Banking Setup"
                         {
                             ApplicationArea = Basic, Suite;
                             Visible = true;
-                            Enabled = false;
+                            Enabled = true;
+                            Editable = false;
+                            AssistEdit = true;
                             Caption = 'License';
                             ToolTip = 'License number of Business Central for AMC Banking';
+                            trigger OnAssistEdit()
+                            begin
+                                if CurrPage.Editable() then
+                                    if CONFIRM(StrSubstNo(CopyBCLicenseQst, BCLicenseNumberText)) then
+                                        "User Name" := CopyStr(BCLicenseNumberText, 1, 50);
+                            end;
                         }
                     }
                 }
@@ -156,6 +164,25 @@ page 20101 "AMC Banking Setup"
                 RunPageMode = View;
                 ToolTip = 'Enable or disable data encryption. Data encryption helps make sure that unauthorized users cannot read business data.';
             }
+            action(ActivityLog)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Activity Log';
+                Image = Log;
+                ToolTip = 'View AMC Banking 365 service activities.';
+
+                trigger OnAction();
+                var
+                    ActivityLog: Record "Activity Log";
+                    DataTypeManagement: Codeunit "Data Type Management";
+                    RecRef: RecordRef;
+                begin
+                    IF DataTypeManagement.GetRecordRef(Rec, RecRef) THEN BEGIN
+                        ActivityLog.SETRANGE(ActivityLog."Record ID", RecRef.RECORDID());
+                        PAGE.RUNMODAL(PAGE::"AMC Bank Webcall Log", ActivityLog);
+                    END;
+                end;
+            }
             action(Support)
             {
                 ApplicationArea = Basic, Suite;
@@ -169,6 +196,7 @@ page 20101 "AMC Banking Setup"
                     Hyperlink("Support URL");
                 end;
             }
+
         }
     }
 
@@ -194,6 +222,7 @@ page 20101 "AMC Banking Setup"
         AMCBankServMgt: Codeunit "AMC Banking Mgt.";
         PasswordText: Text[50];
         CheckedEncryption: Boolean;
+        CopyBCLicenseQst: Label 'Do you want to copy the License %1 to the User name field?';
         EncryptionIsNotActivatedQst: Label 'Data encryption is not activated. It is recommended that you encrypt data. \Do you want to open the Data Encryption Management page?';
         CurrPageEditable: Boolean;
         BCLicenseNumberText: Text;

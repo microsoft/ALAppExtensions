@@ -112,7 +112,6 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                 else
                     "Currency Code" := GeneralLedgerSetup.GetCurrencyCode(GenJnlLine."Currency Code");
 
-                "Currency Code" := GeneralLedgerSetup.GetCurrencyCode(GenJnlLine."Currency Code");
                 "Transfer Date" := GenJnlLine."Posting Date";
                 "Costs Distribution" := 'Shared';
                 "Message Structure" := 'auto';
@@ -161,6 +160,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                         CreditTransferEntry."Data Exch. Entry No." := GenJournalLine."Data Exch. Entry No.";
                         CreditTransferEntry."Pmt. Disc. Possible" := CVLedgerEntryBuffer."Remaining Pmt. Disc. Possible";
                         CreditTransferEntry.Modify();
+                        OnAfterMakeBankSpecTrans(PaymentExportData, GenJournalLine, SpecLineNo, CreditTransferRegister, CreditTransferEntry, CVLedgerEntryBuffer);
                     end;
                     CVLedgerEntryBuffer.Delete(false);
                 until CVLedgerEntryBuffer.Next() = 0;
@@ -180,6 +180,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                 CreditTransferEntry."Data Exch. Entry No." := GenJournalLine."Data Exch. Entry No.";
                 CreditTransferEntry."Pmt. Disc. Possible" := 0;
                 CreditTransferEntry.Modify();
+                OnAfterMakeBankSpecTrans(PaymentExportData, GenJournalLine, SpecLineNo, CreditTransferRegister, CreditTransferEntry, CVLedgerEntryBuffer);
             end;
         end;
     end;
@@ -270,6 +271,11 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertPaymentExoprtData(var PaymentExportData: Record "Payment Export Data"; GenJournalLine: Record "Gen. Journal Line"; GeneralLedgerSetup: Record "General Ledger Setup")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnAfterMakeBankSpecTrans(PaymentExportData: Record "Payment Export Data"; GenJournalLine: Record "Gen. Journal Line"; SpecLineNo: Integer; CreditTransferRegister: Record "Credit Transfer Register"; VAR CreditTransferEntry: Record "Credit Transfer Entry"; CVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary)
     begin
     end;
 }

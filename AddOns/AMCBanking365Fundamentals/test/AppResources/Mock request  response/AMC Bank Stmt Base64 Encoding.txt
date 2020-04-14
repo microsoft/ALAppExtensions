@@ -1,0 +1,138 @@
+﻿HTTP/1.1 200 OK
+Content-Type: text/xml
+Server: Jetty(8.1.7.v20120910)
+Content-Length: 7007
+
+<soap:Envelope
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <ns3:reportExportResponse
+            xmlns:ns2="amc/xml/pay03_keyvaluerequest"
+            xmlns:ns3="http://nav03.soap.xml.link.amc.dk/"
+            xmlns:ns4="amc/xml/pay03_paymentrequest"
+            xmlns:ns5="amc/xml/pay03_paymentresponse"
+            xmlns:ns6="amc/xml/pay03_journalresponse"
+            xmlns:ns7="amc/xml/pay03_reportresponse"
+            xmlns:ns8="amc/xml/pay03_entryrequest"
+            xmlns:ns9="amc/xml/pay03_global"
+            xmlns:ns10="amc/xml/pay03_reportrequest"
+            xmlns:ns11="amc/xml/pay03_bankresponse"
+            xmlns:ns12="amc/xml/pay03_dataexchangeresponse"
+            xmlns:ns13="amc/xml/pay03_entryresponse"
+            xmlns:ns14="amc/xml/pay03_keyvalueresponse"
+            xmlns:ns15="amc/xml/pay03_tokenresponse">
+            <return>
+                <version>3.0</version>
+                <finsta>
+                    <journalnumber>6a4e403d-d90f-44a6-b3ee-554c21f309a6</journalnumber>
+                    <statement>
+                        <balanceend>266787.1200</balanceend>
+                        <balanceenddate>2003-02-21T00:00:00.000</balanceenddate>
+                        <balancestart>251029.8700</balancestart>
+                        <balancestartdate>2003-02-21T00:00:00.000</balancestartdate>
+                        <statementno>20030221-03052-1</statementno>
+                        <finstatransus>
+                            <uniqueustecref></uniqueustecref>
+                            <amountposting>
+                                <amount>15757.2500</amount>
+                                <date>2003-02-21T00:00:00.000</date>
+                            </amountposting>
+                            <references>
+                                <reference>99999999999903</reference>
+                                <type>ACK</type>
+                            </references>
+                            <addressunstruct>
+                                <address1>Testvej 10</address1>
+                                <address2>9999 Testrup</address2>
+                                <name>Test Testsen</name>
+                            </addressunstruct>
+                            <finstatransthem>
+                                <uniquethemtecref></uniquethemtecref>
+                                <message>
+                                    <linenum>1</linenum>
+                                    <text>MEDDELNR 2001æ¹å</text>
+                                </message>
+                                <message>
+                                    <linenum>2</linenum>
+                                    <text>99999999999903</text>
+                                </message>
+                                <message>
+                                    <linenum>3</linenum>
+                                    <text>KON konto 0979999035</text>
+                                </message>
+                                <message>
+                                    <linenum>4</linenum>
+                                    <text>Betaling af f¹lgende fakturaer:</text>
+                                </message>
+                                <message>
+                                    <linenum>5</linenum>
+                                    <text>Fakturanr. Bel¹b:</text>
+                                </message>
+                                <message>
+                                    <linenum>6</linenum>
+                                    <text>12345 2500,35</text>
+                                </message>
+                                <message>
+                                    <linenum>7</linenum>
+                                    <text>22345 1265,66</text>
+                                </message>
+                                <message>
+                                    <linenum>8</linenum>
+                                    <text>32345 5825,00</text>
+                                </message>
+                                <message>
+                                    <linenum>9</linenum>
+                                    <text>42345 3635,88</text>
+                                </message>
+                                <message>
+                                    <linenum>10</linenum>
+                                    <text>52345 2530,36</text>
+                                </message>
+                                <amountdetail>
+                                    <amount>15757.2500</amount>
+                                    <currency>DKK</currency>
+                                    <date>2003-02-21T00:00:00.000</date>
+                                    <type>postingpart</type>
+                                </amountdetail>
+                                <amountdetail>
+                                    <amount>15757.2500</amount>
+                                    <currency>DKK</currency>
+                                    <date>2003-02-21T00:00:00.000</date>
+                                    <type>transfer</type>
+                                </amountdetail>
+                                <references>
+                                    <reference>Ordrenr. 65656</reference>
+                                    <type>DOC</type>
+                                </references>
+                                <addressunstruct>
+                                    <address1>Test Testsen</address1>
+                                    <address2>Testvej 10</address2>
+                                    <address3>9999 Testrup</address3>
+                                    <address4></address4>
+                                </addressunstruct>
+                            </finstatransthem>
+                            <transferdetail>
+                                <paymenttype>Transfer</paymenttype>
+                                <paymenttypeorg>68</paymenttypeorg>
+                            </transferdetail>
+                        </finstatransus>
+                        <ownbankaccount>
+                            <bankaccount>DK3420009999940560</bankaccount>
+                            <currency>DKK</currency>
+                        </ownbankaccount>
+                    </statement>
+                </finsta>
+                <header>
+                    <result>ok</result>
+                </header>
+                <syslog>
+                    <hinttext></hinttext>
+                    <messageid>@10866</messageid>
+                    <text>Bank for incoming format created: DkNordea EDI4v430, DkNordea EDI4v430 (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/10866</url>
+                    <syslogtype>info</syslogtype>
+                </syslog>
+            </return>
+        </ns3:reportExportResponse>
+    </soap:Body>
+</soap:Envelope>

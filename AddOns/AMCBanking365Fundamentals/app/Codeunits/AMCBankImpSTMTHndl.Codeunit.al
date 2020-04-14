@@ -17,16 +17,16 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
     end;
 
     var
+        AMCBankServiceRequestMgt: Codeunit "AMC Bank Service Request Mgt.";
         AMCBankServMgt: Codeunit "AMC Banking Mgt.";
         NoRequestBodyErr: Label 'The request body is not set.';
         FileFilterTxt: Label 'All Files(*.*)|*.*|XML Files(*.xml)|*.xml|Text Files(*.txt;*.csv;*.asc)|*.txt;*.csv;*.asc';
         FileFilterExtensionTxt: Label 'txt,csv,asc,xml', Locked = true;
-        FinstaNotCollectedErr: Label 'The AMC Banking has not returned any statement transactions.\\For more information, go to %1.';
-        ResponseNodeTxt: Label 'reportExportResponse', Locked = true;
+        FinstaNotCollectedErr: Label 'The AMC Banking has not returned any statement transactions.\\For more information, go to %1.', comment = '%1=Support URl';
         ImportBankStmtTxt: Label 'Select a file to import.';
         BankDataConvServSysErr: Label 'The AMC Banking has returned the following error message:';
-        AddnlInfoTxt: Label 'For more information, go to %1.';
-        ContentTypeTxt: Label 'text/xml; charset=utf-8', Locked = true;
+        AddnlInfoTxt: Label 'For more information, go to %1.', Comment = '%1=Support URL';
+        ReportExportWebCallTxt: Label 'reportExport', locked = true;
 
     [Scope('OnPrem')]
     procedure ConvertBankStatementToFormat(var TempBlobBankStatement: Codeunit "Temp Blob"; var DataExch: Record "Data Exch.")
@@ -34,76 +34,78 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
         TempBlobResult: Codeunit "Temp Blob";
         RecordRef: RecordRef;
     begin
-        SendDataToWebService(TempBlobResult, TempBlobBankStatement);
+        SendReportExportRequestToWebService(TempBlobResult, TempBlobBankStatement, AMCBankServMgt.GetAppCaller());
         RecordRef.GetTable(DataExch);
         TempBlobResult.ToRecordRef(RecordRef, DataExch.FieldNo("File Content"));
         RecordRef.SetTable(DataExch);
     end;
 
-    local procedure SendDataToWebService(var TempBlobStatement: Codeunit "Temp Blob"; var TempBlobBody: Codeunit "Temp Blob")
+    local procedure SendReportExportRequestToWebService(var TempBlobStatement: Codeunit "Temp Blob"; var TempBlobBody: Codeunit "Temp Blob"; AppCaller: text[30])
     var
         AMCBankServiceSetup: Record "AMC Banking Setup";
-        SOAPWebServiceRequestMgt: Codeunit "SOAP Web Service Request Mgt.";
-        ResponseInStream: InStream;
-        InStream: InStream;
+        ReportExportRequestMessage: HttpRequestMessage;
+        ReportExportResponseMessage: HttpResponseMessage;
+        Handled: Boolean;
+        Result: Text;
     begin
-        AMCBankServMgt.CheckCredentials();
-
         if not TempBlobBody.HasValue() then
             Error(NoRequestBodyErr);
 
-        PrepareSOAPRequestBody(TempBlobBody);
-
+        AMCBankServMgt.CheckCredentials();
         AMCBankServiceSetup.Get();
 
-        TempBlobBody.CreateInStream(InStream);
+        AMCBankServiceRequestMgt.InitializeHttp(ReportExportRequestMessage, AMCBankServiceSetup."Service URL", 'POST');
 
-        SOAPWebServiceRequestMgt.SetGlobals(InStream,
-          AMCBankServiceSetup."Service URL", AMCBankServiceSetup.GetUserName(), AMCBankServiceSetup.GetPassword());
-        SOAPWebServiceRequestMgt.SetContentType(ContentTypeTxt);
+        PrepareSOAPRequestBody(ReportExportRequestMessage, TempBlobBody);
 
-        if not SOAPWebServiceRequestMgt.SendRequestToWebService() then
-            SOAPWebServiceRequestMgt.ProcessFaultResponse(StrSubstNo(AddnlInfoTxt, AMCBankServiceSetup."Support URL"));
+        //Set Content-Type header
+        AMCBankServiceRequestMgt.SetHttpContentsDefaults(ReportExportRequestMessage);
 
-        SOAPWebServiceRequestMgt.GetResponseContent(ResponseInStream);
-
-        CheckIfErrorsOccurred(ResponseInStream);
-
-        ReadContentFromResponse(TempBlobStatement, ResponseInStream);
+        //Send Request to webservice
+        Handled := false;
+        AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, ReportExportRequestMessage, ReportExportResponseMessage, ReportExportWebCallTxt, AppCaller, true);
+        AMCBankServiceRequestMgt.GetWebServiceResponse(ReportExportResponseMessage, TempBlobStatement, ReportExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), true);
+        if (AMCBankServiceRequestMgt.HasResponseErrors(TempBlobStatement, AMCBankServiceRequestMgt.GetHeaderXPath(), ReportExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), Result, AppCaller)) then
+            DisplayErrorFromResponse(TempBlobStatement)
+        else
+            ReadContentFromResponse(TempBlobStatement);
     end;
 
-    local procedure PrepareSOAPRequestBody(var TempBlob: Codeunit "Temp Blob")
+    local procedure PrepareSOAPRequestBody(var ReportExportRequestMessage: HttpRequestMessage; var TempBlob: Codeunit "Temp Blob")
     var
-        XMLDOMMgt: Codeunit "XML DOM Management";
-        BodyContentOutputStream: OutStream;
-        BodyContentXmlDoc: DotNet XmlDocument;
-        EnvelopeXmlNode: DotNet XmlNode;
-        HeaderXmlNode: DotNet XmlNode;
-        ClientCodeXmlNode: DotNet XmlNode;
-        PackXmlNode: DotNet XmlNode;
-        DataXmlNode: DotNet XmlNode;
-        MsgTypeXmlNode: DotNet XmlNode;
+        AMCBankingSetup: Record "AMC Banking Setup";
+        ContentHttpContent: HttpContent;
+        BodyContentXmlDoc: XmlDocument;
+        BodyDeclaration: Xmldeclaration;
+        EnvelopeXmlElement: XmlElement;
+        HeaderXmlElement: XmlElement;
+        AmcReportReqXMLElement: XmlElement;
+        BodyXMLElement: XmlElement;
+        ChildXmlElement: XmlElement;
+        PackXmlElement: XmlElement;
+        TempXmlDocText: Text;
     begin
-        BodyContentXmlDoc := BodyContentXmlDoc.XmlDocument();
 
-        with XMLDOMMgt do begin
-            AddRootElementWithPrefix(BodyContentXmlDoc, 'reportExport', '', AMCBankServMgt.GetNamespace(), EnvelopeXmlNode);
+        BodyContentXmlDoc := XmlDocument.Create();
+        BodyDeclaration := XmlDeclaration.Create('1.0', 'UTF-8', 'No');
+        BodyContentXmlDoc.SetDeclaration(BodyDeclaration);
 
-            AddElementWithPrefix(EnvelopeXmlNode, 'amcreportreq', '', '', '', HeaderXmlNode);
-            AddAttribute(HeaderXmlNode, 'xmlns', '');
+        AMCBankingSetup.Get();
+        AMCBankServiceRequestMgt.CreateEnvelope(BodyContentXmlDoc, EnvelopeXmlElement, AMCBankingSetup.GetUserName(), AMCBankingSetup.GetPassword(), '');
+        AMCBankServiceRequestMgt.AddElement(EnvelopeXMLElement, EnvelopeXMLElement.NamespaceUri(), 'Body', '', BodyXMLElement, '', '', '');
+        AMCBankServiceRequestMgt.AddElement(BodyXMLElement, AMCBankServMgt.GetNamespace(), ReportExportWebCallTxt, '', HeaderXmlElement, '', '', '');
+        AMCBankServiceRequestMgt.AddElement(HeaderXmlElement, '', 'amcreportreq', '', AmcReportReqXMLElement, '', '', '');
+        AMCBankServiceRequestMgt.AddElement(AmcReportReqXMLElement, '', 'clientcode', AMCBankServMgt.GetAMCClientCode(), ChildXmlElement, '', '', '');
+        AMCBankServiceRequestMgt.AddElement(AmcReportReqXMLElement, '', 'pack', '', PackXmlElement, '', '', '');
 
-            AddElementWithPrefix(HeaderXmlNode, 'clientcode', AMCBankServMgt.GetAMCClientCode(), '', '', ClientCodeXmlNode);
-            AddElementWithPrefix(HeaderXmlNode, 'pack', '', '', '', PackXmlNode);
+        AMCBankServiceRequestMgt.AddElement(PackXmlElement, '', 'journalnumber', DelChr(LowerCase(Format(CreateGuid())), '=', '{}'), ChildXmlElement, '', '', '');
+        AMCBankServiceRequestMgt.AddElement(PackXmlElement, '', 'data', EncodeBankStatementFile(TempBlob), ChildXmlElement, '', '', '');
+        AMCBankServiceRequestMgt.AddElement(HeaderXmlElement, '', 'messagetype', 'finsta', ChildXmlElement, '', '', '');
 
-            AddNode(PackXmlNode, 'journalnumber', DelChr(LowerCase(Format(CreateGuid())), '=', '{}'));
-            AddElementWithPrefix(PackXmlNode, 'data', EncodeBankStatementFile(TempBlob), '', '', DataXmlNode);
-
-            AddElementWithPrefix(EnvelopeXmlNode, 'messagetype', 'finsta', '', '', MsgTypeXmlNode);
-        end;
-
-        Clear(TempBlob);
-        TempBlob.CreateOutStream(BodyContentOutputStream);
-        BodyContentXmlDoc.Save(BodyContentOutputStream);
+        BodyContentXmlDoc.WriteTo(TempXmlDocText);
+        AMCBankServiceRequestMgt.RemoveUTF16(TempXmlDocText);
+        contentHttpContent.WriteFrom(TempXmlDocText);
+        ReportExportRequestMessage.Content(contentHttpContent);
     end;
 
     local procedure EncodeBankStatementFile(TempBlob: Codeunit "Temp Blob"): Text
@@ -119,64 +121,50 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
         exit(Convert.ToBase64String(File.ReadAllBytes(FileName)));
     end;
 
-    local procedure CheckIfErrorsOccurred(var ResponseInStream: InStream)
+    local procedure DisplayErrorFromResponse(TempBlobStatementFile: Codeunit "Temp Blob")
     var
-        XMLDOMManagement: Codeunit "XML DOM Management";
-        ResponseXmlDoc: DotNet XmlDocument;
-    begin
-        XMLDOMManagement.LoadXMLDocumentFromInStream(ResponseInStream, ResponseXmlDoc);
-
-        if ResponseHasErrors(ResponseXmlDoc) then
-            DisplayErrorFromResponse(ResponseXmlDoc);
-    end;
-
-    local procedure ResponseHasErrors(ResponseXmlDoc: DotNet XmlDocument): Boolean
-    var
-        XMLDOMMgt: Codeunit "XML DOM Management";
-        XmlNode: DotNet XmlNode;
-    begin
-        exit(XMLDOMMgt.FindNodeWithNamespace(ResponseXmlDoc.DocumentElement(),
-            AMCBankServMgt.GetErrorXPath(ResponseNodeTxt), 'amc', AMCBankServMgt.GetNamespace(), XmlNode));
-    end;
-
-    local procedure DisplayErrorFromResponse(ResponseXmlDoc: DotNet XmlDocument)
-    var
-        XMLDOMMgt: Codeunit "XML DOM Management";
-        XMLNodeList: DotNet XmlNodeList;
+        ResponseXmlDoc: XmlDocument;
+        SysLogXMLNodeList: XmlNodeList;
+        SyslogXmlNode: XmlNode;
+        InStreamData: InStream;
         Found: Boolean;
         ErrorText: Text;
         i: Integer;
     begin
-        Found := XMLDOMMgt.FindNodesWithNamespace(ResponseXmlDoc.DocumentElement(),
-            AMCBankServMgt.GetErrorXPath(ResponseNodeTxt), 'amc', AMCBankServMgt.GetNamespace(), XMLNodeList);
+
+        TempBlobStatementFile.CreateInStream(InStreamData);
+        XmlDocument.ReadFrom(InStreamData, ResponseXmlDoc);
+
+        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetSysErrXPath(ReportExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
+                                                       ReportExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), SysLogXMLNodeList);
         if Found then begin
             ErrorText := BankDataConvServSysErr;
-            for i := 1 to XMLNodeList.Count() do
-                ErrorText += '\\' + XMLDOMMgt.FindNodeText(XMLNodeList.Item(i - 1), 'text') + '\' +
-                  XMLDOMMgt.FindNodeText(XMLNodeList.Item(i - 1), 'hinttext') + '\\' +
-                  StrSubstNo(AddnlInfoTxt, AMCBankServMgt.GetSupportURL(XMLNodeList.Item(i - 1)));
-
+            for i := 1 to SysLogXMLNodeList.Count() do begin
+                SysLogXMLNodeList.Get(i, SyslogXmlNode);
+                ErrorText += '\\' + CopyStr(AMCBankServiceRequestMgt.getNodeValue(SyslogXmlNode, 'text'), 1, 250) + '\' +
+                  CopyStr(AMCBankServiceRequestMgt.getNodeValue(SyslogXmlNode, 'hinttext'), 1, 250) + '\\' +
+                  StrSubstNo(AddnlInfoTxt, AMCBankServMgt.GetSupportURL(ResponseXmlDoc));
+            end;
             Error(ErrorText);
         end;
     end;
 
-    local procedure ReadContentFromResponse(var TempBlob: Codeunit "Temp Blob"; ResponseInStream: InStream)
+    local procedure ReadContentFromResponse(var TempBlob: Codeunit "Temp Blob")
     var
-        XMLDOMMgt: Codeunit "XML DOM Management";
-        FinstaXmlNode: DotNet XmlNode;
-        ResponseXmlDoc: DotNet XmlDocument;
+        ResponseInStream: InStream;
+        FinstaXmlNode: XmlNode;
+        ResponseXmlDoc: XmlDocument;
         ResponseOutStream: OutStream;
         Found: Boolean;
     begin
-        XMLDOMMgt.LoadXMLDocumentFromInStream(ResponseInStream, ResponseXmlDoc);
+        TempBlob.CreateInStream(ResponseInStream);
+        XmlDocument.ReadFrom(ResponseInStream, ResponseXmlDoc);
 
-        Found := XMLDOMMgt.FindNodeWithNamespace(ResponseXmlDoc.DocumentElement(),
-            AMCBankServMgt.GetFinstaXPath(ResponseNodeTxt), 'amc', AMCBankServMgt.GetNamespace(), FinstaXmlNode);
+        Found := ResponseXmlDoc.SelectSingleNode(STRSUBSTNO(AMCBankServiceRequestMgt.GetFinstaXPath(ReportExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag())), FinstaXmlNode);
         if not Found then
-            Error(FinstaNotCollectedErr, AMCBankServMgt.GetSupportURL(FinstaXmlNode));
+            Error(FinstaNotCollectedErr, AMCBankServMgt.GetSupportURL(ResponseXmlDoc));
 
-        TempBlob.CreateOutStream(ResponseOutStream);
-        CopyStream(ResponseOutStream, ResponseInStream);
     end;
+
 }
 
