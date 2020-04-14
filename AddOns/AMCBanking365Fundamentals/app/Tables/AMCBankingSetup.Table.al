@@ -92,8 +92,7 @@ table 20101 "AMC Banking Setup"
         DemoUserNameTxt: Label 'demouser', Locked = true;
         DemoPasswordTxt: Label 'DemoPassword', Locked = true;
 
-    [Scope('OnPrem')]
-    procedure SavePassword(PasswordText: Text)
+    internal procedure SavePassword(PasswordText: Text)
     begin
         if IsNullGuid("Password Key") then
             "Password Key" := CreateGuid();
@@ -109,8 +108,7 @@ table 20101 "AMC Banking Setup"
                 DeletePassword();
     end;
 
-    [Scope('OnPrem')]
-    procedure GetUserName(): Text[50]
+    internal procedure GetUserName(): Text[50]
     begin
         if ("User Name" = '') then
             exit(GetDemoUserName());
@@ -118,8 +116,7 @@ table 20101 "AMC Banking Setup"
         exit("User Name");
     end;
 
-    [Scope('OnPrem')]
-    procedure GetPassword(): Text
+    internal procedure GetPassword(): Text
     var
         Value: Text;
     begin
@@ -130,8 +127,7 @@ table 20101 "AMC Banking Setup"
         exit(Value);
     end;
 
-    [Scope('OnPrem')]
-    local procedure DeletePassword()
+    internal procedure DeletePassword()
     begin
         if IsolatedStorage.Contains(CopyStr("Password Key", 1, 200), Datascope::Company) then
             IsolatedStorage.Delete(CopyStr("Password Key", 1, 200), DataScope::Company);
@@ -142,8 +138,7 @@ table 20101 "AMC Banking Setup"
         exit("User Name" <> '');
     end;
 
-    [Scope('OnPrem')]
-    procedure HasPassword(): Boolean
+    internal procedure HasPassword(): Boolean
     begin
         if ("User Name" = GetDemoUserName()) then
             exit(true);

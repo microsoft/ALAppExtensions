@@ -1,0 +1,40 @@
+HTTP/1.1 200 OK
+Content-Type: text/xml
+Server: Jetty(8.1.7.v20120910)
+Content-Length: 2426
+
+<soap:Envelope
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <ns3:paymentExportBankResponse
+            xmlns:ns2="amc/xml/pay03_keyvaluerequest"
+            xmlns:ns3="http://nav03.soap.xml.link.amc.dk/"
+            xmlns:ns4="amc/xml/pay03_paymentrequest"
+            xmlns:ns5="amc/xml/pay03_paymentresponse"
+            xmlns:ns6="amc/xml/pay03_journalresponse"
+            xmlns:ns7="amc/xml/pay03_global"
+            xmlns:ns8="amc/xml/pay03_tokenresponse"
+            xmlns:ns9="amc/xml/pay03_reportresponse"
+            xmlns:ns10="amc/xml/pay03_reportrequest"
+            xmlns:ns11="amc/xml/pay03_bankresponse"
+            xmlns:ns12="amc/xml/pay03_keyvalueresponse"
+            xmlns:ns13="amc/xml/pay03_entryrequest"
+            xmlns:ns14="amc/xml/pay03_entryresponse"
+            xmlns:ns15="amc/xml/pay03_dataexchangeresponse">
+            <return>
+                <version>3.0</version>
+                <pack>
+                    <checksum>01b3ef5e9b27f2ac2bef5344f14a7b0d755fc9b2a8f2cc0220d0e1f96ec37c15fe34120e6c5621f171eaac39e825b9a39219944430dd1b14b4fd71cba47b391d</checksum>
+                    <data>IkNNQk8iLCI5NjEwNzA1OTIyMTQxMCIsIjc0MDQ3MDMxMjQwODc2IiwiNS4wMCIsIjE4MTAyMDE5IiwiVVNEIiwiIiwiVSIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIkdMMDAwMDAwMDAgICAgICAgICAgICAgICAgICAgICAgICAgIiwiIiwiIiwiIiwiR0wwMDAwMDAwMCAgICAgICAgICAiLCIiLCJEZWNvZGluZyDmueUgICAgICAgICIsIiIsIiIsIkdMMDAwMDAwMDAgICAgICAgICAgICAgICAgICAgICAgICAgIiwiIiwiSW52LiBkYXRlICBJbnZvaWNlIG5vICAgQW1vdW50IHBhaWQiLCIgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMCwwMCIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIkRlY29kaW5nIOa55SAgICAgICAgICAgICAgICAgICAgICAgIiwiNzEyMiBTb3V0aCBBc2hmb3JkIFN0cmVldCAgICAgICAgICAiLCJXZXN0bWluc3RlciAgICAgICAgICAgICAgICAgICAgICAgICIsIjMxNzcyIEF0bGFudGEgICAgICAgICAgICAgICAgICAgICAgIg0K</data>
+                    <date>2019-10-18T07:05:28.442Z</date>
+                    <journalnumber>GUAAAAAABD_482</journalnumber>
+                    <signprocess>false</signprocess>
+                    <journalstatus>imported</journalstatus>
+                </pack>
+                <header>
+                    <result>ok</result>
+                </header>
+            </return>
+        </ns3:paymentExportBankResponse>
+    </soap:Body>
+</soap:Envelope>

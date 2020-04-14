@@ -220,7 +220,6 @@ codeunit 134423 "Payment Export XMLPort"
                 if (ExportData[i] [j] <> '') and DataExchColumnDef.Get(DataExchDefCode, DataExchDefCode, j) then
                     LibraryXPathXMLReader.VerifyNodeCountWithValueByXPath(PrefixXPath(DataExchColumnDef.Path, '/', '/ns:'), ExportData[i] [j], 1);
 
-        //TODO ??
         CompanyInformation.Get();
         LibraryXPathXMLReader.VerifyNodeCountWithValueByXPath(
           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/legalregistrationnumber', '/', '/ns:'),

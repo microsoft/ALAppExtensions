@@ -7,13 +7,8 @@ codeunit 20105 "AMC Banking Mgt."
     end;
 
     var
-        MissingCredentialsQst: Label 'The %1 is missing the user name or password. Do you want to open the %2 page?';
-        MissingCredentialsErr: Label 'The user name and password must be filled in %1 page.';
-        ResultPathTxt: Label '/amc:%1/return/syslog[syslogtype[text()="error"]]', Locked = true;
-        FinstaPathTxt: Label '/amc:%1/return/finsta/statement/finstatransus', Locked = true;
-        HeaderErrPathTxt: Label '/amc:%1/return/header/result[text()="error"]', Locked = true;
-        ConvErrPathTxt: Label '/amc:%1/return/pack/convertlog[syslogtype[text()="error"]]', Locked = true;
-        DataPathTxt: Label '/amc:%1/return/pack/data/text()', Locked = true;
+        MissingCredentialsQst: Label 'The %1 is missing the user name or password. Do you want to open the %2 page?', comment = '%1=Tablename, %2=Pagename';
+        MissingCredentialsErr: Label 'The user name and password must be filled in %1 page.', comment = '%1=Pagename';
         ApiVersionTxt: Label 'nav03', Locked = true;
         ClientCodeTxt: Label 'amcbanking fundamentals bc', Locked = true;
         DemoSolutionTxt: Label 'demo', Locked = true;
@@ -45,6 +40,8 @@ codeunit 20105 "AMC Banking Mgt."
         AMCBankingPmtTypeCode9Tok: Label 'EurAcc2AccSepa', Locked = true;
         AMCBankingPmtTypeDesc9Txt: Label 'SEPA credit transfer';
 
+        NoDetailsMsg: Label 'The log does not contain any more details.';
+
     procedure InitDefaultURLs(var AMCBankServiceSetup: Record "AMC Banking Setup")
     begin
 
@@ -71,18 +68,35 @@ codeunit 20105 "AMC Banking Mgt."
     end;
 
     [Scope('OnPrem')]
-    procedure GetSupportURL(XmlNode: DotNet XmlNode): Text
+    [Obsolete('This method is obsolete. A new GetSupportURL overload is available, which is called with an XmlDocument instead of a XmlNode object')]
+    procedure GetSupportURL(XmlNode: XmlNode): Text
     var
-        AMCBankServiceSetup: Record "AMC Banking Setup";
-        XMLDOMMgt: Codeunit "XML DOM Management";
+        AMCBankingSetup: Record "AMC Banking Setup";
+        SupportXmlDoc: XmlDocument;
+    begin
+        if (XmlNode.GetDocument(SupportXmlDoc)) then
+            exit(GetSupportURL(SupportXmlDoc))
+        else begin
+            AMCBankingSetup.GET();
+            EXIT(AMCBankingSetup."Support URL");
+        end;
+    end;
+
+    procedure GetSupportURL(SupportXmlDoc: XmlDocument): Text;
+    var
+        AMCBankingSetup: Record "AMC Banking Setup";
+        AMCBankServiceRequestMgt: Codeunit "AMC Bank Service Request Mgt.";
+        SysLogXmlNode: XmlNode;
         SupportURL: Text;
     begin
-        SupportURL := XMLDOMMgt.FindNodeText(XmlNode, 'url');
-        if SupportURL <> '' then
-            exit(SupportURL);
+        if (SupportXmlDoc.SelectSingleNode(AMCBankServiceRequestMgt.GetSyslogXPath(), SysLogXmlNode)) then
+            SupportURL := AMCBankServiceRequestMgt.getNodeValue(SysLogXmlNode, './url');
 
-        AMCBankServiceSetup.Get();
-        exit(AMCBankServiceSetup."Support URL");
+        IF SupportURL <> '' THEN
+            EXIT(SupportURL);
+
+        AMCBankingSetup.GET();
+        EXIT(AMCBankingSetup."Support URL");
     end;
 
     procedure CheckCredentials()
@@ -105,31 +119,6 @@ codeunit 20105 "AMC Banking Mgt."
             if not AMCBankServiceSetup.Get() or not AMCBankServiceSetup.HasPassword() then
                 Error(MissingCredentialsErr, AMCBankServiceSetup.TableCaption());
         end;
-    end;
-
-    procedure GetErrorXPath(ResponseNode: Text): Text
-    begin
-        exit(StrSubstNo(ResultPathTxt, ResponseNode));
-    end;
-
-    procedure GetFinstaXPath(ResponseNode: Text): Text
-    begin
-        exit(StrSubstNo(FinstaPathTxt, ResponseNode));
-    end;
-
-    procedure GetHeaderErrXPath(ResponseNode: Text): Text
-    begin
-        exit(StrSubstNo(HeaderErrPathTxt, ResponseNode));
-    end;
-
-    procedure GetConvErrXPath(ResponseNode: Text): Text
-    begin
-        exit(StrSubstNo(ConvErrPathTxt, ResponseNode));
-    end;
-
-    procedure GetDataXPath(ResponseNode: Text): Text
-    begin
-        exit(StrSubstNo(DataPathTxt, ResponseNode));
     end;
 
     [EventSubscriber(ObjectType::Table, 1400, 'OnRegisterServiceConnection', '', false, false)]
@@ -422,5 +411,33 @@ codeunit 20105 "AMC Banking Mgt."
     begin
         EXIT(DataExchNameCremTxt);
     end;
+
+    procedure ShowDetailedLogInfo(ActivityLog: Record "Activity Log"; DefaultFileName: Text; ShowFileDialog: Boolean): Text;
+    var
+        TempBlob: Codeunit "Temp Blob";
+        FileMgt: Codeunit "File Management";
+    begin
+        ActivityLog.CALCFIELDS(ActivityLog."Detailed Info");
+        IF NOT ActivityLog."Detailed Info".HASVALUE() THEN BEGIN
+            MESSAGE(NoDetailsMsg);
+            EXIT;
+        END;
+
+        IF DefaultFileName = '' THEN
+            DefaultFileName := 'Log.xml';
+
+        TempBlob.FromRecord(ActivityLog, ActivityLog.FieldNo("Detailed Info"));
+
+        EXIT(FileMgt.BLOBExport(TempBlob, DefaultFileName, ShowFileDialog));
+    end;
+
+    procedure GetAppCaller(): Text[30]
+    var
+        AppInfo: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(AppInfo);
+        exit(CopyStr(AppInfo.Name(), 1, 30));
+    end;
+
 }
 

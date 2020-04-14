@@ -5,6 +5,8 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
     trigger OnRun()
     var
         GenJnlLine: Record "Gen. Journal Line";
+        PaymentMethod: record "Payment Method";
+        PaymentExportGenJnlCheck: Codeunit "Payment Export Gen. Jnl Check";
     begin
         DeletePaymentFileBatchErrors();
         DeletePaymentFileErrors();
@@ -13,6 +15,11 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
         if GenJnlLine.FindSet() then
             repeat
                 CODEUNIT.Run(CODEUNIT::"Payment Export Gen. Jnl Check", GenJnlLine);
+                if "Payment Method Code" <> '' then
+                    if (PaymentMethod.Get(GenJnlLine."Payment Method Code")) then
+                        if (PaymentMethod."AMC Bank Pmt. Type" = '') then
+                            PaymentExportGenJnlCheck.AddFieldEmptyError(GenJnlLine, PaymentMethod.TableCaption, PaymentMethod.FieldCaption("AMC Bank Pmt. Type"), '');
+
             until GenJnlLine.Next() = 0;
 
         if GenJnlLine.HasPaymentFileErrorsInBatch() then begin
