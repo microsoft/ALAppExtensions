@@ -121,7 +121,12 @@ codeunit 9702 "Cues And KPIs Impl."
     local procedure GetCustomizedCueStyleOption(TableId: Integer; FieldNo: Integer; CueValue: Decimal): Integer
     var
         CueSetup: Record "Cue Setup";
+        Style: Enum "Cues And KPIs Style";
+        Handled: Boolean;
     begin
+        OnBeforeGetCustomizedCueStyleOption(TableId, FieldNo, CueValue, Style, Handled);
+        if Handled then
+            exit(Style);
         FindCueSetup(CueSetup, TableId, FieldNo);
         if CueValue < CueSetup."Threshold 1" then
             exit(CueSetup."Low Range Style");
@@ -258,5 +263,10 @@ codeunit 9702 "Cues And KPIs Impl."
               WrongThresholdsErr,
               CueSetup.FieldCaption("Threshold 2"),
               CueSetup.FieldCaption("Threshold 1"));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetCustomizedCueStyleOption(TableId: Integer; FieldNo: Integer; CueValue: Decimal; var Style: Enum "Cues And KPIs Style"; var Handled: Boolean)
+    begin
     end;
 }
