@@ -164,7 +164,7 @@ codeunit 132587 "X509Certificate2 Test"
         X509CertificateCryptography.VerifyCertificate(CertBase64Value, '', X509ContentType::Pkcs12);
 
         // [WHEN] Return Json object with certificate properties
-        CertPropertyJson := X509CertificateCryptography.GetCertificatePropertiesAsJson(CertBase64Value);
+        X509CertificateCryptography.GetCertificatePropertiesAsJson(CertBase64Value, CertPropertyJson);
 
         // [THEN] Verify Results
         LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'FriendlyName'), GetFriendlyName(), 'Failed to create certificate.');

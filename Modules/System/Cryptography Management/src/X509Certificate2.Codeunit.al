@@ -11,18 +11,18 @@ codeunit 1286 "X509Certificate2"
     Access = Public;
 
     var
-        CryptographyManagementImpl: Codeunit "Cryptography Management Impl.";
+        X509Certificate2Impl: Codeunit "X509Certificate2 Impl.";
 
-    /// <summary>
-    /// Verify that Certificate is initialized and exportable
-    /// </summary>
-    /// <param name="CertBase64Value">Certificate Base64 value</param>
-    /// <param name="Password">Certificate Password</param>
-    /// <param name="ContentType">Specifies the format of an X.509 certificate</param>
-    /// <returns>True if Certificate is verified</returns>
+        /// <summary>
+        /// Verify that Certificate is initialized and exportable
+        /// </summary>
+        /// <param name="CertBase64Value">Certificate Base64 value</param>
+        /// <param name="Password">Certificate Password</param>
+        /// <param name="ContentType">Specifies the format of an X.509 certificate</param>
+        /// <returns>True if Certificate is verified</returns>
     procedure VerifyCertificate(var CertBase64Value: Text; Password: Text; ContentType: Enum "X509 Content Type"): Boolean
     begin
-        exit(CryptographyManagementImpl.VerifyCertificate(CertBase64Value, Password, ContentType));
+        exit(X509Certificate2Impl.VerifyCertificate(CertBase64Value, Password, ContentType));
     end;
 
     /// <summary>
@@ -32,7 +32,7 @@ codeunit 1286 "X509Certificate2"
     /// <param name="FriendlyName">Certificate Friendly Name</param>    
     procedure GetCertificateFriendlyName(CertBase64Value: Text; var FriendlyName: Text)
     begin
-        CryptographyManagementImpl.GetCertificateFriendlyName(CertBase64Value, FriendlyName);
+        X509Certificate2Impl.GetCertificateFriendlyName(CertBase64Value, FriendlyName);
     end;
 
     /// <summary>
@@ -42,7 +42,7 @@ codeunit 1286 "X509Certificate2"
     /// <param name="Thumbprint">Certificate Thumbprint</param>    
     procedure GetCertificateThumbprint(CertBase64Value: Text; var Thumbprint: Text)
     begin
-        CryptographyManagementImpl.GetCertificateThumbprint(CertBase64Value, Thumbprint);
+        X509Certificate2Impl.GetCertificateThumbprint(CertBase64Value, Thumbprint);
     end;
 
     /// <summary>
@@ -52,7 +52,7 @@ codeunit 1286 "X509Certificate2"
     /// <param name="Issuer">Certificate Issuer</param>    
     procedure GetCertificateIssuer(CertBase64Value: Text; var Issuer: Text)
     begin
-        CryptographyManagementImpl.GetCertificateIssuer(CertBase64Value, Issuer);
+        X509Certificate2Impl.GetCertificateIssuer(CertBase64Value, Issuer);
     end;
 
     /// <summary>
@@ -62,7 +62,7 @@ codeunit 1286 "X509Certificate2"
     /// <param name="Expiration">Certificate Expiration Date</param>   
     procedure GetCertificateExpiration(CertBase64Value: Text; var Expiration: DateTime)
     begin
-        CryptographyManagementImpl.GetCertificateExpiration(CertBase64Value, Expiration);
+        X509Certificate2Impl.GetCertificateExpiration(CertBase64Value, Expiration);
     end;
 
     /// <summary>
@@ -72,7 +72,7 @@ codeunit 1286 "X509Certificate2"
     /// <param name="NotBefore">Certificate NotBefore Date</param>   
     procedure GetCertificateNotBefore(CertBase64Value: Text; var NotBefore: DateTime)
     begin
-        CryptographyManagementImpl.GetCertificateNotBefore(CertBase64Value, NotBefore);
+        X509Certificate2Impl.GetCertificateNotBefore(CertBase64Value, NotBefore);
     end;
 
     /// <summary>
@@ -82,16 +82,16 @@ codeunit 1286 "X509Certificate2"
     /// <returns>True if Certificate has private key</returns>      
     procedure HasPrivateKey(CertBase64Value: Text): Boolean
     begin
-        exit(CryptographyManagementImpl.HasPrivateKey(CertBase64Value));
+        exit(X509Certificate2Impl.HasPrivateKey(CertBase64Value));
     end;
 
     /// <summary>
     /// Get Certificate details in Json object
     /// </summary>
     /// <param name="CertBase64Value">Certificate Base64 value</param>
-    /// <returns>Certificate details in json</returns>
-    procedure GetCertificatePropertiesAsJson(CertBase64Value: Text) CertPropertyJson: Text
+    /// <param name="CertPropertyJson">Certificate details in json</param>
+    procedure GetCertificatePropertiesAsJson(CertBase64Value: Text; var CertPropertyJson: Text)
     begin
-        CertPropertyJson := CryptographyManagementImpl.GetCertificatePropertiesAsJson(CertBase64Value);
+        X509Certificate2Impl.GetCertificatePropertiesAsJson(CertBase64Value, CertPropertyJson);
     end;
 }
