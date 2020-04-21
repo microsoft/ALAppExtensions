@@ -623,15 +623,52 @@ codeunit 1279 "Cryptography Management Impl."
         exit(true);
     end;
 
-    procedure GetCertificateDetails(CertBase64Value: Text; var FriendlyName: Text; var Thumbprint: Text; var Issuer: Text; var Expiration: DateTime)
+    procedure GetCertificateFriendlyName(CertBase64Value: Text; var FriendlyName: Text)
     var
         X509Certificate2: DotNet X509Certificate2;
     begin
         CreateX509Certificate(CertBase64Value, X509Certificate2);
         FriendlyName := X509Certificate2.FriendlyName();
+    end;
+
+    procedure GetCertificateThumbprint(CertBase64Value: Text; var Thumbprint: Text)
+    var
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        CreateX509Certificate(CertBase64Value, X509Certificate2);
         Thumbprint := X509Certificate2.Thumbprint();
+    end;
+
+    procedure GetCertificateIssuer(CertBase64Value: Text; var Issuer: Text)
+    var
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        CreateX509Certificate(CertBase64Value, X509Certificate2);
         Issuer := X509Certificate2.Issuer();
+    end;
+
+    procedure GetCertificateExpiration(CertBase64Value: Text; var Expiration: DateTime)
+    var
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        CreateX509Certificate(CertBase64Value, X509Certificate2);
         Evaluate(Expiration, X509Certificate2.GetExpirationDateString());
+    end;
+
+    procedure GetCertificateNotBefore(CertBase64Value: Text; var NotBefore: DateTime)
+    var
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        CreateX509Certificate(CertBase64Value, X509Certificate2);
+        Evaluate(NotBefore, X509Certificate2.GetEffectiveDateString());
+    end;
+
+    procedure HasPrivateKey(CertBase64Value: Text): Boolean
+    var
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        CreateX509Certificate(CertBase64Value, X509Certificate2);
+        exit(X509Certificate2.HasPrivateKey());
     end;
 
     procedure GetCertificatePropertiesAsJson(CertBase64Value: Text): Text
