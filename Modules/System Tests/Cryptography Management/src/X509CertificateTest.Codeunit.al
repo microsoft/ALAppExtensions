@@ -35,11 +35,8 @@ codeunit 132587 "X509Certificate2 Test"
         // [GIVEN] Get Test Certificate Base64 value
         CertBase64Value := GetCertificateBase64();
 
-        // [GIVEN] Verify Certificate
-        X509CertificateCryptography.VerifyCertificate(CertBase64Value, '', X509ContentType::Pkcs12);
-
         // [WHEN]  Get Certificate FriendlyName
-        X509CertificateCryptography.GetCertificateFriendlyName(CertBase64Value, FriendlyName);
+        X509CertificateCryptography.GetCertificateFriendlyName(CertBase64Value, '', FriendlyName);
 
         // [THEN] Verify Results
         LibraryAssert.AreEqual(FriendlyName, GetFriendlyName(), 'Failed to create certificate.');
@@ -56,11 +53,8 @@ codeunit 132587 "X509Certificate2 Test"
         // [GIVEN] Get Test Certificate Base64 value
         CertBase64Value := GetCertificateBase64();
 
-        // [GIVEN] Verify Certificate
-        X509CertificateCryptography.VerifyCertificate(CertBase64Value, '', X509ContentType::Pkcs12);
-
         // [WHEN]  Get Certificate Thumbprint
-        X509CertificateCryptography.GetCertificateThumbprint(CertBase64Value, Thumbprint);
+        X509CertificateCryptography.GetCertificateThumbprint(CertBase64Value, '', Thumbprint);
 
         // [THEN] Verify Results        
         LibraryAssert.AreEqual(Thumbprint, GetThumbprint(), 'Failed to create certificate.');
@@ -76,11 +70,8 @@ codeunit 132587 "X509Certificate2 Test"
         // [GIVEN] Get Test Certificate Base64 value
         CertBase64Value := GetCertificateBase64();
 
-        // [GIVEN] Verify Certificate
-        X509CertificateCryptography.VerifyCertificate(CertBase64Value, '', X509ContentType::Pkcs12);
-
         // [WHEN]  Get Certificate Issuer
-        X509CertificateCryptography.GetCertificateIssuer(CertBase64Value, Issuer);
+        X509CertificateCryptography.GetCertificateIssuer(CertBase64Value, '', Issuer);
 
         // [THEN] Verify Results        
         LibraryAssert.AreEqual(Issuer, GetIssuer(), 'Failed to create certificate.');
@@ -97,11 +88,8 @@ codeunit 132587 "X509Certificate2 Test"
         // [GIVEN] Get Test Certificate Base64 value
         CertBase64Value := GetCertificateBase64();
 
-        // [GIVEN] Verify Certificate
-        X509CertificateCryptography.VerifyCertificate(CertBase64Value, '', X509ContentType::Pkcs12);
-
         // [WHEN]  Get Certificate Expiration
-        X509CertificateCryptography.GetCertificateExpiration(CertBase64Value, Expiration);
+        X509CertificateCryptography.GetCertificateExpiration(CertBase64Value, '', Expiration);
 
         // [THEN] Verify Results        
         LibraryAssert.AreEqual(Expiration, GetExpirationDate(), 'Failed to create certificate.');
@@ -118,11 +106,8 @@ codeunit 132587 "X509Certificate2 Test"
         // [GIVEN] Get Test Certificate Base64 value
         CertBase64Value := GetCertificateBase64();
 
-        // [GIVEN] Verify Certificate
-        X509CertificateCryptography.VerifyCertificate(CertBase64Value, '', X509ContentType::Pkcs12);
-
         // [WHEN]  Get Certificate NotBefore
-        X509CertificateCryptography.GetCertificateNotBefore(CertBase64Value, NotBefore);
+        X509CertificateCryptography.GetCertificateNotBefore(CertBase64Value, '', NotBefore);
 
         // [THEN] Verify Results        
         LibraryAssert.AreEqual(NotBefore, GetNotBeforeDate(), 'Failed to create certificate.');
@@ -139,11 +124,8 @@ codeunit 132587 "X509Certificate2 Test"
         // [GIVEN] Get Test Certificate Base64 value
         CertBase64Value := GetCertificateBase64();
 
-        // [GIVEN] Verify Certificate
-        X509CertificateCryptography.VerifyCertificate(CertBase64Value, '', X509ContentType::Pkcs12);
-
         // [WHEN]  Get Certificate HasPrivateKey property value
-        HasPrivateKey := X509CertificateCryptography.HasPrivateKey(CertBase64Value);
+        HasPrivateKey := X509CertificateCryptography.HasPrivateKey(CertBase64Value, '');
 
         // [THEN] Verify Results        
         LibraryAssert.AreEqual(HasPrivateKey, GetHasPrivateKey(), 'Failed to create certificate.');
@@ -160,11 +142,8 @@ codeunit 132587 "X509Certificate2 Test"
         // [GIVEN] Get Test Certificate Base64
         CertBase64Value := GetCertificateBase64();
 
-        // [GIVEN] Verify Certificate
-        X509CertificateCryptography.VerifyCertificate(CertBase64Value, '', X509ContentType::Pkcs12);
-
         // [WHEN] Return Json object with certificate properties
-        X509CertificateCryptography.GetCertificatePropertiesAsJson(CertBase64Value, CertPropertyJson);
+        X509CertificateCryptography.GetCertificatePropertiesAsJson(CertBase64Value, '', CertPropertyJson);
 
         // [THEN] Verify Results
         LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'FriendlyName'), GetFriendlyName(), 'Failed to create certificate.');

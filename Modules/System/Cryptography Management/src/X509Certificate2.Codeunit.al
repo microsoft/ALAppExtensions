@@ -29,69 +29,76 @@ codeunit 1286 "X509Certificate2"
     /// Get Certificate Friendly Name based on Certificate Base64 value
     /// </summary>
     /// <param name="CertBase64Value">Certificate Base64 value</param>
+    /// <param name="Password">Certificate Password</param>
     /// <param name="FriendlyName">Certificate Friendly Name</param>    
-    procedure GetCertificateFriendlyName(CertBase64Value: Text; var FriendlyName: Text)
+    procedure GetCertificateFriendlyName(CertBase64Value: Text; Password: Text; var FriendlyName: Text)
     begin
-        X509Certificate2Impl.GetCertificateFriendlyName(CertBase64Value, FriendlyName);
+        X509Certificate2Impl.GetCertificateFriendlyName(CertBase64Value, Password, FriendlyName);
     end;
 
     /// <summary>
     /// Get Certificate Thumbprint based on Certificate Base64 value
     /// </summary>
-    /// <param name="CertBase64Value">Certificate Base64 value</param>    
+    /// <param name="CertBase64Value">Certificate Base64 value</param>
+    /// <param name="Password">Certificate Password</param>    
     /// <param name="Thumbprint">Certificate Thumbprint</param>    
-    procedure GetCertificateThumbprint(CertBase64Value: Text; var Thumbprint: Text)
+    procedure GetCertificateThumbprint(CertBase64Value: Text; Password: Text; var Thumbprint: Text)
     begin
-        X509Certificate2Impl.GetCertificateThumbprint(CertBase64Value, Thumbprint);
+        X509Certificate2Impl.GetCertificateThumbprint(CertBase64Value, Password, Thumbprint);
     end;
 
     /// <summary>
     /// Get Certificate Issuer based on Certificate Base64 value
     /// </summary>
-    /// <param name="CertBase64Value">Certificate Base64 value</param>    
+    /// <param name="CertBase64Value">Certificate Base64 value</param>
+    /// <param name="Password">Certificate Password</param>    
     /// <param name="Issuer">Certificate Issuer</param>    
-    procedure GetCertificateIssuer(CertBase64Value: Text; var Issuer: Text)
+    procedure GetCertificateIssuer(CertBase64Value: Text; Password: Text; var Issuer: Text)
     begin
-        X509Certificate2Impl.GetCertificateIssuer(CertBase64Value, Issuer);
+        X509Certificate2Impl.GetCertificateIssuer(CertBase64Value, Password, Issuer);
     end;
 
     /// <summary>
     /// Get Certificate Expiration Date based on Certificate Base64 value
     /// </summary>
-    /// <param name="CertBase64Value">Certificate Base64 value</param>    
+    /// <param name="CertBase64Value">Certificate Base64 value</param>   
+    /// <param name="Password">Certificate Password</param> 
     /// <param name="Expiration">Certificate Expiration Date</param>   
-    procedure GetCertificateExpiration(CertBase64Value: Text; var Expiration: DateTime)
+    procedure GetCertificateExpiration(CertBase64Value: Text; Password: Text; var Expiration: DateTime)
     begin
-        X509Certificate2Impl.GetCertificateExpiration(CertBase64Value, Expiration);
+        X509Certificate2Impl.GetCertificateExpiration(CertBase64Value, Password, Expiration);
     end;
 
     /// <summary>
     /// Get Certificate NotBefore Date based on Certificate Base64 value
     /// </summary>
-    /// <param name="CertBase64Value">Certificate Base64 value</param>    
+    /// <param name="CertBase64Value">Certificate Base64 value</param> 
+    /// <param name="Password">Certificate Password</param>   
     /// <param name="NotBefore">Certificate NotBefore Date</param>   
-    procedure GetCertificateNotBefore(CertBase64Value: Text; var NotBefore: DateTime)
+    procedure GetCertificateNotBefore(CertBase64Value: Text; Password: Text; var NotBefore: DateTime)
     begin
-        X509Certificate2Impl.GetCertificateNotBefore(CertBase64Value, NotBefore);
+        X509Certificate2Impl.GetCertificateNotBefore(CertBase64Value, Password, NotBefore);
     end;
 
     /// <summary>
     /// Check if certificate has private key based on Certificate Base64 value
     /// </summary>
     /// <param name="CertBase64Value">Certificate Base64 value</param>  
+    /// <param name="Password">Certificate Password</param>
     /// <returns>True if Certificate has private key</returns>      
-    procedure HasPrivateKey(CertBase64Value: Text): Boolean
+    procedure HasPrivateKey(CertBase64Value: Text; Password: Text): Boolean
     begin
-        exit(X509Certificate2Impl.HasPrivateKey(CertBase64Value));
+        exit(X509Certificate2Impl.HasPrivateKey(CertBase64Value, Password));
     end;
 
     /// <summary>
     /// Get Certificate details in Json object
     /// </summary>
     /// <param name="CertBase64Value">Certificate Base64 value</param>
+    /// <param name="Password">Certificate Password</param>
     /// <param name="CertPropertyJson">Certificate details in json</param>
-    procedure GetCertificatePropertiesAsJson(CertBase64Value: Text; var CertPropertyJson: Text)
+    procedure GetCertificatePropertiesAsJson(CertBase64Value: Text; Password: Text; var CertPropertyJson: Text)
     begin
-        X509Certificate2Impl.GetCertificatePropertiesAsJson(CertBase64Value, CertPropertyJson);
+        X509Certificate2Impl.GetCertificatePropertiesAsJson(CertBase64Value, Password, CertPropertyJson);
     end;
 }
