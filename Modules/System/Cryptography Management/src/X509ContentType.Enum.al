@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>Specifies the format of an X.509 certificate.</summary>
-enum 50100 "X509 Content Type"
+enum 1286 "X509 Content Type"
 {
     Extensible = true;
 
