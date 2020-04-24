@@ -10,7 +10,7 @@ enum 1286 "X509 Content Type"
 
     value(0; Unknown) { }
     value(1; Cert) { }
-    value(2; SerializedCert) { }
+    value(2; PFXSerializedCert) { }
     value(3; Pkcs12) { }
     value(4; SerializedStore) { }
     value(5; Pkcs7) { }

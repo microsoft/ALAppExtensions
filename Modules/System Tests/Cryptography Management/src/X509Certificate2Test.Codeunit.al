@@ -27,7 +27,6 @@ codeunit 132587 "X509Certificate2 Test"
     [Test]
     procedure VerifyCertificateFriendlyNameFromBase64Cert()
     var
-        X509ContentType: Enum "X509 Content Type";
         CertBase64Value: Text;
         FriendlyName: Text;
     begin
@@ -38,14 +37,30 @@ codeunit 132587 "X509Certificate2 Test"
         // [WHEN]  Get Certificate FriendlyName
         X509CertificateCryptography.GetCertificateFriendlyName(CertBase64Value, '', FriendlyName);
 
-        // [THEN] Verify Results
+        // [THEN] Certificate Friendly Name is retrieved
         LibraryAssert.AreEqual(FriendlyName, GetFriendlyName(), 'Failed to create certificate.');
+    end;
+
+    [Test]
+    procedure VerifyCertificateSubjectFromBase64Cert()
+    var
+        CertBase64Value: Text;
+        Subject: Text;
+    begin
+        // [SCENARIO] Create certificate from Base64, and verify Subject from certificate
+        // [GIVEN] Get Test Certificate Base64 value
+        CertBase64Value := GetCertificateBase64();
+
+        // [WHEN]  Get Certificate Subject
+        X509CertificateCryptography.GetCertificateSubject(CertBase64Value, '', Subject);
+
+        // [THEN] Certificate Subject is retrieved
+        LibraryAssert.AreEqual(Subject, GetSubject(), 'Failed to create certificate.');
     end;
 
     [Test]
     procedure VerifyCertificateThumbprintFromBase64Cert()
     var
-        X509ContentType: Enum "X509 Content Type";
         CertBase64Value: Text;
         Thumbprint: Text;
     begin
@@ -56,13 +71,12 @@ codeunit 132587 "X509Certificate2 Test"
         // [WHEN]  Get Certificate Thumbprint
         X509CertificateCryptography.GetCertificateThumbprint(CertBase64Value, '', Thumbprint);
 
-        // [THEN] Verify Results        
+        // [THEN] Certificate Thumbprint is retrieved  
         LibraryAssert.AreEqual(Thumbprint, GetThumbprint(), 'Failed to create certificate.');
     end;
 
     procedure VerifyCertificateIssuerFromBase64Cert()
     var
-        X509ContentType: Enum "X509 Content Type";
         CertBase64Value: Text;
         Issuer: Text;
     begin
@@ -73,14 +87,13 @@ codeunit 132587 "X509Certificate2 Test"
         // [WHEN]  Get Certificate Issuer
         X509CertificateCryptography.GetCertificateIssuer(CertBase64Value, '', Issuer);
 
-        // [THEN] Verify Results        
+        // [THEN] Certificate Issuer is retrieved        
         LibraryAssert.AreEqual(Issuer, GetIssuer(), 'Failed to create certificate.');
     end;
 
     [Test]
     procedure VerifyCertificateExpirationFromBase64Cert()
     var
-        X509ContentType: Enum "X509 Content Type";
         CertBase64Value: Text;
         Expiration: DateTime;
     begin
@@ -91,14 +104,13 @@ codeunit 132587 "X509Certificate2 Test"
         // [WHEN]  Get Certificate Expiration
         X509CertificateCryptography.GetCertificateExpiration(CertBase64Value, '', Expiration);
 
-        // [THEN] Verify Results        
+        // [THEN] Certificate Expiration Date is retrieved        
         LibraryAssert.AreEqual(Expiration, GetExpirationDate(), 'Failed to create certificate.');
     end;
 
     [Test]
     procedure VerifyCertificateNotBeforeFromBase64Cert()
     var
-        X509ContentType: Enum "X509 Content Type";
         CertBase64Value: Text;
         NotBefore: DateTime;
     begin
@@ -109,14 +121,13 @@ codeunit 132587 "X509Certificate2 Test"
         // [WHEN]  Get Certificate NotBefore
         X509CertificateCryptography.GetCertificateNotBefore(CertBase64Value, '', NotBefore);
 
-        // [THEN] Verify Results        
+        // [THEN] Certificate NotBefore Date is retrieved        
         LibraryAssert.AreEqual(NotBefore, GetNotBeforeDate(), 'Failed to create certificate.');
     end;
 
     [Test]
     procedure VerifyCertificateHasPrivateKeyFromBase64Cert()
     var
-        X509ContentType: Enum "X509 Content Type";
         CertBase64Value: Text;
         HasPrivateKey: Boolean;
     begin
@@ -127,14 +138,13 @@ codeunit 132587 "X509Certificate2 Test"
         // [WHEN]  Get Certificate HasPrivateKey property value
         HasPrivateKey := X509CertificateCryptography.HasPrivateKey(CertBase64Value, '');
 
-        // [THEN] Verify Results        
+        // [THEN] Certificate HasPrivateKey property is retrieved
         LibraryAssert.AreEqual(HasPrivateKey, GetHasPrivateKey(), 'Failed to create certificate.');
     end;
 
     [Test]
     procedure VerifyJsonPropertiesWithCertificate()
     var
-        X509ContentType: Enum "X509 Content Type";
         CertBase64Value: Text;
         CertPropertyJson: Text;
     begin
@@ -145,8 +155,9 @@ codeunit 132587 "X509Certificate2 Test"
         // [WHEN] Return Json object with certificate properties
         X509CertificateCryptography.GetCertificatePropertiesAsJson(CertBase64Value, '', CertPropertyJson);
 
-        // [THEN] Verify Results
+        // [THEN] Certificate properties are retrieved
         LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'FriendlyName'), GetFriendlyName(), 'Failed to create certificate.');
+        LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'Subject'), GetSubject(), 'Failed to create certificate.');
         LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'Thumbprint'), GetThumbprint(), 'Failed to create certificate.');
         LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'Issuer'), GetIssuer(), 'Failed to create certificate.');
         LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'NotAfter'), GetJsonExpirationDate(), 'Failed to create certificate.');
@@ -219,6 +230,11 @@ codeunit 132587 "X509Certificate2 Test"
     local procedure GetFriendlyName(): Text
     begin
         exit('');
+    end;
+
+    local procedure GetSubject(): Text
+    begin
+        exit('CN=Joe''s-Software-Emporium');
     end;
 
     local procedure GetThumbprint(): Text

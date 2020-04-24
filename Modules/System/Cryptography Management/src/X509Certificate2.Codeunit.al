@@ -18,11 +18,11 @@ codeunit 1286 "X509Certificate2"
         /// </summary>
         /// <param name="CertBase64Value">Certificate Base64 value</param>
         /// <param name="Password">Certificate Password</param>
-        /// <param name="ContentType">Specifies the format of an X.509 certificate</param>
+        /// <param name="X509ContentType">Specifies the format of an X.509 certificate</param>
         /// <returns>True if Certificate is verified</returns>
-    procedure VerifyCertificate(var CertBase64Value: Text; Password: Text; ContentType: Enum "X509 Content Type"): Boolean
+    procedure VerifyCertificate(var CertBase64Value: Text; Password: Text; X509ContentType: Enum "X509 Content Type"): Boolean
     begin
-        exit(X509Certificate2Impl.VerifyCertificate(CertBase64Value, Password, ContentType));
+        exit(X509Certificate2Impl.VerifyCertificate(CertBase64Value, Password, X509ContentType));
     end;
 
     /// <summary>
@@ -34,6 +34,17 @@ codeunit 1286 "X509Certificate2"
     procedure GetCertificateFriendlyName(CertBase64Value: Text; Password: Text; var FriendlyName: Text)
     begin
         X509Certificate2Impl.GetCertificateFriendlyName(CertBase64Value, Password, FriendlyName);
+    end;
+
+    /// <summary>
+    /// Get Certificate Subject based on Certificate Base64 value
+    /// </summary>
+    /// <param name="CertBase64Value">Certificate Base64 value</param>
+    /// <param name="Password">Certificate Password</param>
+    /// <param name="Subject">Certificate Subject</param>    
+    procedure GetCertificateSubject(CertBase64Value: Text; Password: Text; var Subject: Text)
+    begin
+        X509Certificate2Impl.GetCertificateSubject(CertBase64Value, Password, Subject);
     end;
 
     /// <summary>

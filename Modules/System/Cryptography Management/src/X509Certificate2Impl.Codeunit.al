@@ -10,12 +10,12 @@ codeunit 1285 "X509Certificate2 Impl."
     var
         CertInitializeErr: Label 'Unable to initialize certificate!';
 
-    procedure VerifyCertificate(var CertBase64Value: Text; Password: Text; ContentType: Enum "X509 Content Type"): Boolean
+    procedure VerifyCertificate(var CertBase64Value: Text; Password: Text; X509ContentType: Enum "X509 Content Type"): Boolean
     var
         X509Certificate2: DotNet X509Certificate2;
     begin
         InitializeX509Certificate(CertBase64Value, Password, X509Certificate2);
-        ExportToBase64String(CertBase64Value, X509Certificate2, ContentType);
+        ExportToBase64String(CertBase64Value, X509Certificate2, X509ContentType);
         exit(true);
     end;
 
@@ -25,6 +25,14 @@ codeunit 1285 "X509Certificate2 Impl."
     begin
         InitializeX509Certificate(CertBase64Value, Password, X509Certificate2);
         FriendlyName := X509Certificate2.FriendlyName();
+    end;
+
+    procedure GetCertificateSubject(CertBase64Value: Text; Password: Text; var Subject: Text)
+    var
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        InitializeX509Certificate(CertBase64Value, Password, X509Certificate2);
+        Subject := X509Certificate2.Subject;
     end;
 
     procedure GetCertificateThumbprint(CertBase64Value: Text; Password: Text; var Thumbprint: Text)
@@ -87,14 +95,14 @@ codeunit 1285 "X509Certificate2 Impl."
     end;
 
     [TryFunction]
-    local procedure TryExportToBase64String(X509Certificate2: DotNet X509Certificate2; ContentType: Enum "X509 Content Type"; var CertBase64Value: Text)
+    local procedure TryExportToBase64String(X509Certificate2: DotNet X509Certificate2; X509ContentType: Enum "X509 Content Type"; var CertBase64Value: Text)
     var
         Convert: DotNet Convert;
-        X509ContentType: DotNet X509ContentType;
+        X509ContType: DotNet X509ContentType;
         Enum: DotNet Enum;
     begin
-        X509ContentType := Enum.Parse(GetDotNetType(X509ContentType), Format(ContentType));
-        CertBase64Value := Convert.ToBase64String(X509Certificate2.Export(X509ContentType));
+        X509ContType := Enum.Parse(GetDotNetType(X509ContType), Format(X509ContentType));
+        CertBase64Value := Convert.ToBase64String(X509Certificate2.Export(X509ContType));
     end;
 
     local procedure InitializeX509Certificate(CertBase64Value: Text; Password: Text; var X509Certificate2: DotNet X509Certificate2)
@@ -103,9 +111,9 @@ codeunit 1285 "X509Certificate2 Impl."
             Error(CertInitializeErr);
     end;
 
-    local procedure ExportToBase64String(var CertBase64Value: Text; var X509Certificate2: DotNet X509Certificate2; ContentType: Enum "X509 Content Type")
+    local procedure ExportToBase64String(var CertBase64Value: Text; var X509Certificate2: DotNet X509Certificate2; X509ContentType: Enum "X509 Content Type")
     begin
-        if not TryExportToBase64String(X509Certificate2, ContentType, CertBase64Value) then
+        if not TryExportToBase64String(X509Certificate2, X509ContentType, CertBase64Value) then
             Error(GetLastErrorText());
     end;
 
