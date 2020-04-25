@@ -1,0 +1,25 @@
+{
+    "id": "5a44012f-8332-4234-9b67-1e1e5090135f",
+    "name": "XML Validation Test Library",
+    "publisher": "Microsoft",
+    "version": "16.0.0.0",
+    "brief": "",
+    "description": "Test library for the XML Validation module",
+    "privacyStatement": "",
+    "EULA": "",
+    "help": "",
+    "url": "",
+    "logo": "",
+    "dependencies": [],
+    "screenshots": [],
+    "platform": "16.0.0.0",
+    "idRanges": [
+        {
+        "from": 50100,
+        "to": 50149
+        }
+    ],
+    "contextSensitiveHelpUrl": "https://XMLValidation.com/help/",
+    "showMyCode": true,
+    "runtime": "5.0"
+}
