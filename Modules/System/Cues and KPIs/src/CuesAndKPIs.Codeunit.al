@@ -93,4 +93,9 @@ codeunit 9701 "Cues And KPIs"
     internal procedure OnConvertStyleToStyleText(CueStyle: Enum "Cues And KPIs Style"; var Result: Text; var Resolved: Boolean)
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnBeforeGetCustomizedCueStyleOption(TableId: Integer; FieldNo: Integer; CueValue: Decimal; var Style: Enum "Cues And KPIs Style"; var Handled: Boolean)
+    begin
+    end;
 }
