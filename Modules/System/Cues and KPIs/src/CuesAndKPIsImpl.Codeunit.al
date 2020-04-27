@@ -121,11 +121,11 @@ codeunit 9702 "Cues And KPIs Impl."
     local procedure GetCustomizedCueStyleOption(TableId: Integer; FieldNo: Integer; CueValue: Decimal): Integer
     var
         CueSetup: Record "Cue Setup";
-        Style: Enum "Cues And KPIs Style";
-        Handled: Boolean;
+        CueStyle: Enum "Cues And KPIs Style";
+        Resolved: Boolean;
     begin
-        CuesAndKPIs.OnBeforeGetCustomizedCueStyleOption(TableId, FieldNo, CueValue, Style, Handled);
-        if Handled then
+        CuesAndKPIs.OnBeforeGetCustomizedCueStyleOption(TableID, FieldNo, CueValue, CueStyle, Resolved);
+        if Resolved then
             exit(Style);
         FindCueSetup(CueSetup, TableId, FieldNo);
         if CueValue < CueSetup."Threshold 1" then

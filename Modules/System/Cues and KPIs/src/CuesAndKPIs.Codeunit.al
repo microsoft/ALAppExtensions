@@ -94,8 +94,16 @@ codeunit 9701 "Cues And KPIs"
     begin
     end;
 
+    /// <summary>
+    /// Event that allows definition of cue style for a cue using style enum without the usage of a cue setup table.
+    /// Subscribe to this event if you want to define a cue style for a cue using custom prerequisites.
+    /// </summary>
+    /// <param name="TableID">The ID of the table where the cue is defined.</param>
+    /// <param name="FieldNo">The ID of the field which the cue is based on.</param>
+    /// <param name="CueStyle">Exit parameter that holds newly determined cue style based on custom prerequisites.</param>
+    /// <param name="Resolved">A boolean value that describes whether or not the cue style has been determined.</param>
     [IntegrationEvent(false, false)]
-    procedure OnBeforeGetCustomizedCueStyleOption(TableId: Integer; FieldNo: Integer; CueValue: Decimal; var Style: Enum "Cues And KPIs Style"; var Handled: Boolean)
+    procedure OnBeforeGetCustomizedCueStyleOption(TableID: Integer; FieldNo: Integer; CueValue: Decimal; var CueStyle: Enum "Cues And KPIs Style"; var Resolved: Boolean)
     begin
     end;
 }
