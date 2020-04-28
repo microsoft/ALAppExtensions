@@ -100,6 +100,7 @@ codeunit 9701 "Cues And KPIs"
     /// </summary>
     /// <param name="TableID">The ID of the table where the cue is defined.</param>
     /// <param name="FieldNo">The ID of the field which the cue is based on.</param>
+    /// <param name="CueValue">Cue value parameter that can be used to determine cue style.</param>
     /// <param name="CueStyle">Exit parameter that holds newly determined cue style based on custom prerequisites.</param>
     /// <param name="Resolved">A boolean value that describes whether or not the cue style has been determined.</param>
     [IntegrationEvent(false, false)]

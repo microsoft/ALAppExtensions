@@ -126,7 +126,7 @@ codeunit 9702 "Cues And KPIs Impl."
     begin
         CuesAndKPIs.OnBeforeGetCustomizedCueStyleOption(TableID, FieldNo, CueValue, CueStyle, Resolved);
         if Resolved then
-            exit(Style);
+            exit(CueStyle);
         FindCueSetup(CueSetup, TableId, FieldNo);
         if CueValue < CueSetup."Threshold 1" then
             exit(CueSetup."Low Range Style");
