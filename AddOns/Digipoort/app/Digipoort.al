@@ -2,14 +2,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 50102 "Digipoort"
+codeunit 50102 "Digipoort" // to be added to Codeunit "Elec Tax Declaration Mgt"
 {
     trigger OnRun()
     var
     begin
     end;
 
-    procedure FuncSubmitTax(ParMessageType: Text; XmlContent: Text; FileName: Text; Reference: Text; RequestUrl: Text; ClientCertName: Text; ServiceCertName: Text; MessageType: Text; VATReg: Text; Var MessageID: Text; VAR ParError: Text)
+    procedure FuncSubmitPayrollTaxDeclaration(ParMessageType: Text; XmlContent: Text; FileName: Text; Reference: Text; RequestUrl: Text; ClientCertificateBase64: Text; ServiceCertificateBase64: Text; MessageType: Text; VATReg: Text; DotNet_SecureString: Codeunit DotNet_SecureString; Var MessageID: Text; VAR ParError: Text)
     var
         DeliveryService: DotNet digipoortServices;
         Request: DotNet aanleverRequest;
@@ -24,18 +24,19 @@ codeunit 50102 "Digipoort"
         VarSecurityProtocolTypeLoc: DotNet SecurityProtocolType;
         VarEncoding: Option "UTF-8","UTF-16","ISO-8859-1";
     begin
+        Window.Open(WindowStatusMsg);
+        Window.Update(1, WindowStatusBuildingMsg);
         Request := Request.aanleverRequest;
         Response := Response.aanleverResponse;
         Identity := Identity.identiteitType;
         Content := Content.berichtInhoudType;
         Fault := Fault.foutType;
-        VarServicePointManagerLoc.SecurityProtocol := VarSecurityProtocolTypeLoc.Tls12;  //SGN4172
 
         UTF8Encoding := UTF8Encoding.UTF8Encoding;
 
         with Identity do begin
             nummer := VATReg;
-            type := 'LHnr'; //SGN2835
+            type := 'LHnr';
         end;
 
         with Content do begin
@@ -53,10 +54,14 @@ codeunit 50102 "Digipoort"
             autorisatieAdres := 'http://geenausp.nl'
         end;
 
+        Window.Update(1, WindowStatusSendMsg);
+
+        DotNet_SecureString.GetSecureString(DotNetSecureString);
         Response := DeliveryService.Deliver(Request,
             RequestUrl,
-            ClientCertName,
-            ServiceCertName,
+            ClientCertificateBase64,
+            DotNetSecureString,
+            ServiceCertificateBase64,
             30);
 
         Fault := Response.statusFoutcode;
