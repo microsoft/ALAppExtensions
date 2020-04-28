@@ -67,5 +67,6 @@ codeunit 50102 "Digipoort" // to be added to Codeunit "Elec Tax Declaration Mgt"
         Fault := Response.statusFoutcode;
         ParError := Fault.foutcode;
         MessageID := Response.kenmerk;
+        Window.Close();
     end;
 }
