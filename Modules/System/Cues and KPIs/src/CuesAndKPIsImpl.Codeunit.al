@@ -121,7 +121,12 @@ codeunit 9702 "Cues And KPIs Impl."
     local procedure GetCustomizedCueStyleOption(TableId: Integer; FieldNo: Integer; CueValue: Decimal): Integer
     var
         CueSetup: Record "Cue Setup";
+        CueStyle: Enum "Cues And KPIs Style";
+        Resolved: Boolean;
     begin
+        CuesAndKPIs.OnBeforeGetCustomizedCueStyleOption(TableID, FieldNo, CueValue, CueStyle, Resolved);
+        if Resolved then
+            exit(CueStyle);
         FindCueSetup(CueSetup, TableId, FieldNo);
         if CueValue < CueSetup."Threshold 1" then
             exit(CueSetup."Low Range Style");
