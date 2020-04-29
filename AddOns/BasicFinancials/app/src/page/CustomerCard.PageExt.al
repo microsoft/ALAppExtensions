@@ -5,8 +5,6 @@ pageextension 20615 "Customer Card BF" extends "Customer Card"
         modify("Blanket Orders")
         {
             ApplicationArea = Advanced, BFOrders;
-            Visible = true;
-
         }
         modify(NewBlanketSalesOrder)
         {

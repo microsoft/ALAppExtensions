@@ -10,7 +10,8 @@ codeunit 20604 "Upgrade Extension BF"
         BasicFinancialsMgmt: Codeunit "Basic Financials Mgmt BF";
     begin
         BasicFinancialsMgmt.TestSupportedLocales();
-        BasicFinancialsMgmt.TestSupportedLicenses();
+        //BasicFinancialsMgmt.TestSupportedLicenses(); // The requested functionality is not supported at the trigger OnUpgrade, in the current version of Microsoft Business Central.
+        //BasicFinancialsMgmt.TestSupportedUser();  // The requested functionality is not supported at the trigger OnUpgrade, in the current version of Microsoft Business Central.
         ApplicationAreaMgmtFacade.SaveExperienceTierCurrentCompany(DummyExperienceTierSetup.FieldCaption(DummyExperienceTierSetup."BF Basic Financials"));
     end;
 }

@@ -1,10 +1,10 @@
 {
-  "id": "0242c240-2336-450f-9678-2f13f4ce9a6e",
-  "name": "Basic Financials",
-  "publisher":  "Microsoft",
+  "id": "dc356546-2335-43e6-83fa-e798bc263934",
+  "name": "ALProjectMSY1",
+  "publisher": "MSY1",
   "brief":  "Basic Financial Extensions aligns the User Experience to the license limitations",
   "description": "This extension aligns the User Experience to the Basic Financial license limitations, by disabling certain Essential Experience Application Areas And by creating two new Experience Application Areas 'Basic Financials' and 'Orders'. The 'Basic Financials' Application Areas is used to enable Layout and Actions, where the 'Orders' Application Areas is used to disable Layout and Actions.",
-  "version":  "16.0.0.0",
+  "version":  "16.0.0.11",
   "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA":  "https://go.microsoft.com/fwlink/?linkid=",
   "help":  "https://go.microsoft.com/fwlink/?linkid=",
@@ -12,13 +12,13 @@
   "logo":  "logo/ExtensionLogo.png",
   "dependencies": [
     {
-      "appId": "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+      "id": "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
       "publisher": "Microsoft",
       "name": "System Application",
       "version": "16.0.0.0"
     },
     {
-      "appId": "437dbf0e-84ff-417a-965d-ed2bb9650972",
+      "id": "437dbf0e-84ff-417a-965d-ed2bb9650972",
       "publisher": "Microsoft",
       "name": "Base Application",
       "version": "16.0.0.0"
@@ -29,12 +29,12 @@
   "idRanges": [
     {
       "from": 20600,
-      "to": 20669
+      "to": 20699
     }
   ],
   "contextSensitiveHelpUrl": "https://AL16.com/help/",
   "showMyCode": true,
-  "runtime": "4.0",
+  "runtime": "5.0",
   "supportedLocales": ["en-US","da-DK","is-IS"],
   "features": ["TranslationFile"]
 }

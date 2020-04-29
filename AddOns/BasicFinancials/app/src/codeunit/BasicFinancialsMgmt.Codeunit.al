@@ -1,6 +1,38 @@
 codeunit 20601 "Basic Financials Mgmt BF"
 {
     Access = Internal;
+
+    internal procedure IsSupportedLicenses(): Boolean
+    var
+        AzureADLic: codeunit "Azure AD Licensing";
+    begin
+        AzureADLic.ResetSubscribedSKU();
+        while AzureADLic.NextSubscribedSKU() do
+            case UpperCase(AzureADLic.SubscribedSKUId()) of
+                '{66CAD104-64F9-476E-9682-3C3518B9B6ED}': // Dynamics 365 Business Central Basic Financials:
+                    exit(true);
+                '{4dce07fd-7b07-4fb5-8fb7-d49653f7bf30}': // Dynamics 365 Business Central Basic Financials from C5 SPLA (Qualified Offer)
+                    exit(true);
+            end;
+        exit(false);
+    end;
+
+    internal procedure TestSupportedLicenses()
+    var
+        AzureADLic: codeunit "Azure AD Licensing";
+        ErrLbl: Label 'The Basic Financials Extension can only be deployed, when at least one user has been assigned to a Basic Financials license';
+    begin
+        AzureADLic.ResetSubscribedSKU();
+        while AzureADLic.NextSubscribedSKU() do
+            case UpperCase(AzureADLic.SubscribedSKUId()) of
+                '{66CAD104-64F9-476E-9682-3C3518B9B6ED}': // Dynamics 365 Business Central Basic Financials:
+                    exit;
+                '{4dce07fd-7b07-4fb5-8fb7-d49653f7bf30}': // Dynamics 365 Business Central Basic Financials from C5 SPLA (Qualified Offer)
+                    exit;
+            end;
+        Error(ErrLbl);
+    end;
+
     internal procedure TestSupportedLocales()
     var
         TempApplicationAreaSetup: Record "Application Area Setup";
@@ -15,29 +47,21 @@ codeunit 20601 "Basic Financials Mgmt BF"
         Error(ErrLbl);
     end;
 
-    internal procedure TestSupportedLicenses()
-    var
-        AzureADLic: codeunit "Azure AD Licensing";
-        ErrLbl: Label 'The Basic Financials Extension can only be deployed, when at least one user has been assigned to a Basic Financials license';
-    begin
-        while AzureADLic.NextSubscribedSKU() do
-            case UpperCase(AzureADLic.SubscribedSKUId()) of
-                '{66CAD104-64F9-476E-9682-3C3518B9B6ED}': // Dynamics 365 Business Central Basic Financials:
-                    exit;
-                '{4dce07fd-7b07-4fb5-8fb7-d49653f7bf30}': // Dynamics 365 Business Central Basic Financials from C5 SPLA (Qualified Offer)
-                    exit;
-            end;
-        Error(ErrLbl);
-    end;
-
     internal procedure TestSupportedUser()
     var
+        User: Record User;
         UserPermissions: Codeunit "User Permissions";
-        ErrLbl: Label 'The Basic Financials Extension can only be deployed with Super User Permissions';
+        ErrLbl: Label 'The Basic Financials Extension can only be deployed with Super User Permissions. The User %1 is not Super', Comment = '%1 = User Name';
     begin
         if UserPermissions.IsSuper(UserSecurityId()) then
             exit;
-        Error(ErrLbl);
+
+        if User.IsEmpty() then
+            exit;
+
+        User.Get(UserSecurityId()); // If it is not possible to get user, it will raise an exception (error message)
+
+        Error(ErrLbl, User."User Name");
     end;
 
     internal procedure TestSupportedCompanies()
@@ -55,7 +79,7 @@ codeunit 20601 "Basic Financials Mgmt BF"
     var
         AllProfile: Record "All Profile";
     begin
-        Clear(AllProfile);
+        //Clear(AllProfile);
         AllProfile.SetRange(Enabled, true);
         AllProfile.SetFilter("Profile ID", '%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11',
             'MANUFACTURING',                    // 8903 MANUFACTURING (Manufacturing)
@@ -70,7 +94,7 @@ codeunit 20601 "Basic Financials Mgmt BF"
             'DISPATCHER',	                    // 9016 Dispatcher - Customer Service
             'SALES AND RELATIONSHIP MANAGER');  // 9026 Sales and Relationship Manager
 
-        if AllProfile.FindSet() then
+        if AllProfile.FindSet(true, false) then
             repeat
                 if not IsAssignedToGroupsOrUsers(AllProfile) then begin
                     AllProfile.Enabled := false;
@@ -99,5 +123,38 @@ codeunit 20601 "Basic Financials Mgmt BF"
             exit(true);
 
         exit(false);
+    end;
+
+    internal procedure GetSupportedLicenses()
+    var
+        AzureADLic: codeunit "Azure AD Licensing";
+        ErrLbl: Label 'The Basic Financials Extension can only be deployed, when at least one user has been assigned to a Basic Financials license';
+    begin
+        AzureADLic.ResetSubscribedSKU();
+        while AzureADLic.NextSubscribedSKU() do
+            case UpperCase(AzureADLic.SubscribedSKUId()) of
+                '{66CAD104-64F9-476E-9682-3C3518B9B6ED}': // Dynamics 365 Business Central Basic Financials:
+                    exit;
+                '{4dce07fd-7b07-4fb5-8fb7-d49653f7bf30}': // Dynamics 365 Business Central Basic Financials from C5 SPLA (Qualified Offer)
+                    exit;
+            end;
+        Error(ErrLbl);
+    end;
+
+    internal procedure GetSupportedUser()
+    var
+        User: Record User;
+        UserPermissions: Codeunit "User Permissions";
+        ErrLbl: Label 'The Basic Financials Extension can only be deployed with Super User Permissions. The User %1 is not Super', Comment = '%1 = User Name';
+    begin
+        if UserPermissions.IsSuper(UserSecurityId()) then
+            Message('IsSuper');
+
+        if User.IsEmpty() then
+            Message('IsEmpty');
+
+        User.Get(UserSecurityId()); // If it is not possible to get user, it will raise an exception (error message)
+
+        Error(ErrLbl, User."User Name");
     end;
 }
