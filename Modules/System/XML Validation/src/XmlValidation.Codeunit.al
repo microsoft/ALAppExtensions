@@ -20,10 +20,8 @@ codeunit 50100 "Xml Validation"
     /// <param name="Xml">Xml string to validate.</param>
     /// <param name="XmlSchema">Xml schema string to validate against.</param>
     /// <param name="Namespace">Namespace of the xml schema.</param>
-    /// <returns>True if validation was successful, false otherwise.</returns>
     /// <error>If xml definition is not well-formed</error>
     /// <error>If xml schema definition is not well-formed</error>
-    /// <error>If schema validation fails</error>
     [TryFunction]
     procedure TryValidateAgainstSchema(Xml: Text; XmlSchema: Text; Namespace: Text)
     begin
@@ -36,8 +34,6 @@ codeunit 50100 "Xml Validation"
     /// <param name="XmlDoc">Xml document to validate.</param>
     /// <param name="XmlSchemaDoc">Xml document with the schema to validate against.</param>
     /// <param name="Namespace">Namespace of the xml schema.</param>
-    /// <returns>True if validation was successful, false otherwise.</returns>
-    /// <error>If schema validation fails</error>
     [TryFunction]
     procedure TryValidateAgainstSchema(XmlDoc: XmlDocument; XmlSchemaDoc: XmlDocument; Namespace: Text)
     begin
@@ -50,8 +46,6 @@ codeunit 50100 "Xml Validation"
     /// <param name="XmlDocStream">InStream holding the xml document to validate.</param>
     /// <param name="XmlSchemaStream">InStream holding the schema to validate against.</param>
     /// <param name="Namespace">Namespace of the xml schema.</param>
-    /// <returns>True if validation was successful, false otherwise.</returns>
-    /// <error>If schema validation fails</error>
     [TryFunction]
     procedure TryValidateAgainstSchema(XmlDocStream: InStream; XmlSchemaStream: InStream; Namespace: Text)
     begin

@@ -319,10 +319,6 @@
         {
         	"name":"XML Validation Test",
             "path":"System Tests/XML Validation"
-        },
-        {
-            "name":"XML Validation Test Libraries",
-            "path":"System Test Libraries/XML Validation"
         }
     ],
     "settings":{
