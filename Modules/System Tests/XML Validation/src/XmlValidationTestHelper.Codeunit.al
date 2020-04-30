@@ -1,4 +1,4 @@
-codeunit 50104 "Xml Validation Test Library"
+codeunit 50104 "Xml Validation Test Helper"
 {
     /// <summary>
     /// Returns an xml schema

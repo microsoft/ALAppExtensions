@@ -18,13 +18,6 @@
             "version": "16.0.0.0"
         },
         {
-            "id": "5a44012f-8332-4234-9b67-1e1e5090135f",
-            "name": "XML Validation Test Library",
-            "publisher": "Microsoft",
-            "version": "16.0.0.0"
-        
-        },
-        {
             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
             "name":  "Library Assert",
             "publisher":  "Microsoft",

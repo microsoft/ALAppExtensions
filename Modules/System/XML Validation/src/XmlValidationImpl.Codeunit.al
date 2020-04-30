@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 50101 "Xml Validation Impl."
 {
     Access = Internal;
@@ -6,7 +11,7 @@ codeunit 50101 "Xml Validation Impl."
         InvalidXmlErr: Label 'The xml definition is invalid.';
         InvalidSchemaErr: Label 'The schema definition is not valid xml.';
 
-    procedure ValidateAgainstSchema(Xml: Text; XmlSchema: Text; Namespace: Text; var ErrorText: Text): Boolean
+    procedure ValidateAgainstSchema(Xml: Text; XmlSchema: Text; Namespace: Text)
     var
         XmlDoc: XmlDocument;
         XmlSchemaDoc: XmlDocument;
@@ -17,10 +22,10 @@ codeunit 50101 "Xml Validation Impl."
         if not XmlDocument.ReadFrom(XmlSchema, XmlSchemaDoc) then
             Error(InvalidSchemaErr);
 
-        exit(ValidateAgainstSchema(XmlDoc, XmlSchemaDoc, Namespace, ErrorText));
+        ValidateAgainstSchema(XmlDoc, XmlSchemaDoc, Namespace);
     end;
 
-    procedure ValidateAgainstSchema(XmlDoc: XmlDocument; XmlSchemaDoc: XmlDocument; Namespace: Text; var ErrorText: Text): Boolean
+    procedure ValidateAgainstSchema(XmlDoc: XmlDocument; XmlSchemaDoc: XmlDocument; Namespace: Text)
     var
         XmlDocBlob, XmlSchemaBlob : Codeunit "Temp Blob";
         XmlDocOutStream, XmlSchemaOutStream : OutStream;
@@ -34,36 +39,21 @@ codeunit 50101 "Xml Validation Impl."
         XmlSchemaDoc.WriteTo(XmlSchemaOutStream);
         XmlSchemaBlob.CreateInStream(XmlSchemaInStream);
 
-        exit(ValidateAgainstSchema(XmlDocInStream, XmlSchemaInStream, Namespace, ErrorText));
+        ValidateAgainstSchema(XmlDocInStream, XmlSchemaInStream, Namespace);
     end;
 
-    procedure ValidateAgainstSchema(XmlDocStream: InStream; XmlSchemaStream: InStream; Namespace: Text; var ErrorText: Text)Result: Boolean
-    begin
-        Result := TryValidateAgainstSchema(XmlDocStream, XmlSchemaStream, Namespace);
-        if Result then
-            ErrorText := ''
-        else
-            ErrorText := GetLastErrorText();
-    end;
-
-    [TryFunction]
-    local procedure TryValidateAgainstSchema(XmlDocStream: InStream; XmlSchemaStream: InStream; Namespace: Text)
+    procedure ValidateAgainstSchema(XmlDocStream: InStream; XmlSchemaStream: InStream; Namespace: Text)
     var
         XmlDoc: DotNet XmlDocument;
-        XsdReader: DotNet XmlReader;
         XmlReader: DotNet XmlReader;
-        Settings: DotNet XmlReaderSettings;
-        ValidationType: DotNet ValidationType;
         ValidationEventHandler: DotNet ValidationEventHandler;
     begin
-        XsdReader := XsdReader.Create(XmlSchemaStream);
-        Settings := Settings.XmlReaderSettings();
-        Settings.Schemas.Add(Namespace, XsdReader);
-        Settings.ValidationType := ValidationType::Schema;
-
-        XmlReader := XmlReader.Create(XmlDocStream, Settings);
         XmlDoc := XmlDoc.XmlDocument();
-        XmlDoc.Load(XmlReader);
+        XmlDoc.Load(XmlDocStream);
+
+        XmlReader := XmlReader.Create(XmlSchemaStream);
+        XmlDoc.Schemas.Add(Namespace, XmlReader);
+
         XmlDoc.Validate(ValidationEventHandler);
     end;
 }
