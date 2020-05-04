@@ -1,8 +1,10 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 codeunit 50104 "Xml Validation Test Helper"
 {
-    /// <summary>
-    /// Returns an xml schema
-    /// </summary>
+    Access = Internal;
     procedure GetXmlSchema() SchemaText: Text
     var
         StringBuilder: TextBuilder;
@@ -40,17 +42,11 @@ codeunit 50104 "Xml Validation Test Helper"
         SchemaText := StringBuilder.ToText();
     end;
 
-    /// <summary>
-    /// Returns the namespace that is used in the xml
-    /// </summary>
     procedure GetNamespace(): Text
     begin
         exit('http://www.contoso.com/books');
     end;
 
-    /// <summary>
-    /// Returns a valid xml according the schema
-    /// </summary>
     procedure GetValidXml() Xml: Text
     var
         StringBuilder: TextBuilder;

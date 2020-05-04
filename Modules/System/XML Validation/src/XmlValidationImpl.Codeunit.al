@@ -8,8 +8,8 @@ codeunit 50101 "Xml Validation Impl."
     Access = Internal;
 
     var
-        InvalidXmlErr: Label 'The xml definition is invalid.';
-        InvalidSchemaErr: Label 'The schema definition is not valid xml.';
+        InvalidXmlErr: Label 'The XML definition is invalid.';
+        InvalidSchemaErr: Label 'The schema definition is not valid XML.';
 
     procedure ValidateAgainstSchema(Xml: Text; XmlSchema: Text; Namespace: Text)
     var

@@ -313,11 +313,11 @@
             "path":"System Tests/User Selection"
         },
         {
-        	"name":"XML Validation",
+            "name":"XML Validation",
             "path":"System/XML Validation"
         },
         {
-        	"name":"XML Validation Test",
+            "name":"XML Validation Test",
             "path":"System Tests/XML Validation"
         }
     ],

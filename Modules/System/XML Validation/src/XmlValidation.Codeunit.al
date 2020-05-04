@@ -6,7 +6,6 @@
 /// <summary>
 /// Provides helper functions for xml validation against a schema.
 /// </summary>
-
 codeunit 50100 "Xml Validation"
 {
     Access = Public;
@@ -15,7 +14,7 @@ codeunit 50100 "Xml Validation"
         XmlValidationImpl: Codeunit "Xml Validation Impl.";
 
     /// <summary>
-    /// Performs validation of an xml from a string against a schema from a string.
+    /// Performs validation of an XML from a string against a schema from a string.
     /// </summary>
     /// <param name="Xml">Xml string to validate.</param>
     /// <param name="XmlSchema">Xml schema string to validate against.</param>
