@@ -2071,6 +2071,10 @@ dotnet
         type("System.Xml.ValidationType"; "ValidationType")
         {
         }
+        
+        type("System.Xml.Schema.ValidationEventHandler"; "ValidationEventHandler")
+        {
+        }
 
         type("System.Xml.XmlAttribute"; "XmlAttribute")
         {

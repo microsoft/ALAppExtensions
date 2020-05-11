@@ -311,6 +311,14 @@
         {
             "name":"User Selection Test",
             "path":"System Tests/User Selection"
+        },
+        {
+            "name":"XML Validation",
+            "path":"System/XML Validation"
+        },
+        {
+            "name":"XML Validation Test",
+            "path":"System Tests/XML Validation"
         }
     ],
     "settings":{
