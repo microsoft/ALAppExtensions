@@ -59,11 +59,24 @@ codeunit 9024 "Azure AD Graph User"
     /// Gets the user's authentication object ID.
     /// </summary>
     /// <param name="UserSecurityId">The user's security ID.</param>
+    /// <error>User with Security ID <UserSecurityId> does not exist.</error>
     /// <returns>The user's authentication object ID.</returns>
     [Scope('OnPrem')]
     procedure GetUserAuthenticationObjectId(UserSecurityId: Guid): Text
     begin
         exit(AzureADGraphUserImpl.GetUserAuthenticationObjectId(UserSecurityId));
+    end;
+
+    /// <summary>    
+    /// Gets the user from a given Authentication object ID.
+    /// </summary>
+    /// <param name="AuthenticationObjectID">The user's Authentication object ID.</param>
+    /// <param name="User">The user that has provided Authentication object ID.</param>
+    /// <returns>True if the user was found, false otherwise.</returns>
+    [Scope('OnPrem')]
+    procedure GetUser(AuthenticationObjectID: Text; var User: Record User): Boolean
+    begin
+        exit(AzureADGraphUserImpl.GetUser(AuthenticationObjectID, User));
     end;
 
     /// <summary>    

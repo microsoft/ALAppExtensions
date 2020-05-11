@@ -3,6 +3,7 @@ codeunit 130451 "Test Runner - Isol. Disabled"
     Subtype = TestRunner;
     TableNo = "Test Method Line";
     TestIsolation = Disabled;
+    Permissions = TableData "AL Test Suite" = rimd, TableData "Test Method Line" = rimd;
 
     trigger OnRun()
     begin

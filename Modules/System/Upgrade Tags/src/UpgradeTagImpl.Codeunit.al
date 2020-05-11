@@ -83,5 +83,21 @@ codeunit 9996 "Upgrade Tag Impl."
         UpgradeTags.Validate(Company, NewCompanyName);
         UpgradeTags.Insert(true);
     end;
+
+    [EventSubscriber(ObjectType::Table, 2000000006, 'OnAfterRenameEvent', '', false, false)]
+    local procedure UpdateUpgradeTagsOnCompanyRename(var Rec: Record Company; var xRec: Record Company; RunTrigger: Boolean)
+    var
+        UpgradeTags: Record "Upgrade Tags";
+        RenameUpgradeTags: Record "Upgrade Tags";
+    begin
+        UpgradeTags.SetRange(Company, xRec.Name);
+        if not UpgradeTags.FindSet(true) then
+            exit;
+
+        repeat
+            RenameUpgradeTags.GetBySystemId(UpgradeTags.SystemId);
+            RenameUpgradeTags.Rename(RenameUpgradeTags.Tag, Rec.Name);
+        until UpgradeTags.Next() = 0;
+    end;
 }
 

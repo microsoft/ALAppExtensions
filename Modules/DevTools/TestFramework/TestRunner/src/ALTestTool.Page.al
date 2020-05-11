@@ -12,6 +12,7 @@ page 130451 "AL Test Tool"
     SaveValues = true;
     SourceTable = "Test Method Line";
     UsageCategory = Administration;
+    Permissions = TableData "AL Test Suite" = rimd, TableData "Test Method Line" = rimd;
 
     layout
     {
@@ -304,6 +305,7 @@ page 130451 "AL Test Tool"
                         TestSuiteMgt: Codeunit "Test Suite Mgt.";
                     begin
                         TestSuiteMgt.LookupTestRunner(GlobalALTestSuite);
+                        TestRunnerDisplayName := TestSuiteMgt.GetTestRunnerDisplayName(GlobalALTestSuite);
                     end;
                 }
             }

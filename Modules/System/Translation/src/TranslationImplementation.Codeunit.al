@@ -54,8 +54,10 @@ codeunit 3712 "Translation Implementation"
         GetSystemIdFromVariant(RecVariant, SystemId, TableNo);
         Exists := Translation.Get(LanguageId, SystemId, FieldId);
         if Exists then begin
-            Translation.Value := Value;
-            Translation.Modify(true);
+            if Translation.Value <> Value then begin
+                Translation.Value := Value;
+                Translation.Modify(true);
+            end;
         end else begin
             Translation.Init();
             Translation."Language ID" := LanguageId;

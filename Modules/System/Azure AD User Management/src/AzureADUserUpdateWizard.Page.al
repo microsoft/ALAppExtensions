@@ -8,7 +8,7 @@
 /// </summary>
 page 9515 "Azure AD User Update Wizard"
 {
-    Caption = 'Update users from Office';
+    Caption = 'Update users from Office 365';
     PageType = NavigatePage;
     ApplicationArea = All;
     DeleteAllowed = false;
@@ -32,11 +32,10 @@ page 9515 "Azure AD User Update Wizard"
                     Caption = 'Description';
                     InstructionalText = 'Bring changes to user information from your Office 365 organization to Business Central. Update license assignments, name changes, email addresses, preferred languages, and user access.';
                 }
-                group(FooterGroup)
+                group(NoteGroup)
                 {
-                    ShowCaption = false;
-                    Caption = 'Disclaimer';
-                    InstructionalText = 'Updates from Office 365 can take up to 72 hours to become available.';
+                    Caption = 'Note:';
+                    InstructionalText = 'It can take up to 72 hours for a change in Office 365 to become available to Business Central. If a change within that period does not appear in Business Central after you update users, try again later.';
                 }
             }
             group(AvailableUpdates)
@@ -57,12 +56,14 @@ page 9515 "Azure AD User Update Wizard"
                         ApplicationArea = All;
                         CaptionClass = TotalUpdatesToConfirm;
                         ShowCaption = false;
+                        Visible = TotalUpdatesToConfirmVisible;
                     }
                     label(TotalUpdatesReadyToApplyLbl)
                     {
                         ApplicationArea = All;
                         CaptionClass = TotalUpdatesReadyToApply;
                         ShowCaption = false;
+                        Visible = TotalUpdatesReadyToApplyVisible;
                     }
                 }
             }
@@ -73,6 +74,7 @@ page 9515 "Azure AD User Update Wizard"
                 InstructionalText = 'Apply the permissions from the new license or keep the current permissions.';
                 group(PermissionsGroup)
                 {
+                    ShowCaption = false;
                     repeater(Permissions)
                     {
                         field(DisplayName; "Display Name")
@@ -111,6 +113,7 @@ page 9515 "Azure AD User Update Wizard"
                 InstructionalText = 'These changes will be applied when you choose Finish.';
                 group(ChangesGroup)
                 {
+                    ShowCaption = false;
                     repeater(Changes)
                     {
                         field("Display Name"; "Display Name")
@@ -153,12 +156,12 @@ page 9515 "Azure AD User Update Wizard"
                 Caption = 'Good work!';
                 group(NumberOfUpdatesAppliedGroup)
                 {
-                    field(NumberOfUpdatesApplied; NumberOfUpdatesApplied)
+                    Caption = 'Summary';
+                    label(NumberOfUpdatesApplied)
                     {
                         ApplicationArea = All;
+                        CaptionClass = NumberOfUpdatesApplied;
                         ShowCaption = false;
-                        Caption = 'Number of updates';
-                        ToolTip = 'Summarizes the count of updates applied.';
                     }
                 }
             }
@@ -202,7 +205,9 @@ page 9515 "Azure AD User Update Wizard"
                     SetVisiblityOnActions();
                     TotalUpdatesAvailable := StrSubstNo(TotalUpdatesAvailableTxt, CountOfApplicableUpdates + CountOfManagedPermissionUpdates);
                     TotalUpdatesReadyToApply := StrSubstNo(TotalUpdatesReadyToApplyTxt, CountOfApplicableUpdates);
+                    TotalUpdatesReadyToApplyVisible := CountOfApplicableUpdates > 0;
                     TotalUpdatesToConfirm := StrSubstNo(TotalUpdatesToConfirmTxt, CountOfManagedPermissionUpdates);
+                    TotalUpdatesToConfirmVisible := CountOfManagedPermissionUpdates > 0;
                 end;
             }
             action(Next)
@@ -225,7 +230,9 @@ page 9515 "Azure AD User Update Wizard"
                     SetVisiblityOnActions();
                     TotalUpdatesAvailable := StrSubstNo(TotalUpdatesAvailableTxt, CountOfApplicableUpdates + CountOfManagedPermissionUpdates);
                     TotalUpdatesReadyToApply := StrSubstNo(TotalUpdatesReadyToApplyTxt, CountOfApplicableUpdates);
+                    TotalUpdatesReadyToApplyVisible := CountOfApplicableUpdates > 0;
                     TotalUpdatesToConfirm := StrSubstNo(TotalUpdatesToConfirmTxt, CountOfManagedPermissionUpdates);
+                    TotalUpdatesToConfirmVisible := CountOfManagedPermissionUpdates > 0;
                 end;
             }
             action(ManagePermissionUpdates)
@@ -345,13 +352,15 @@ page 9515 "Azure AD User Update Wizard"
         NumberOfUpdatesAppliedTxt: Label '%1 out of %2 updates have been applied in Business Central. You can close this guide.', Comment = '%1 = An integer count of total updates applied; %2 = total count of updates';
 
         TotalUpdatesAvailable: Text;
-        TotalUpdatesAvailableTxt: Label '%1 updates are available.', Comment = '%1 = An integer count of total updates to apply';
+        TotalUpdatesAvailableTxt: Label 'Number of available updates: %1.', Comment = '%1 = An integer count of total updates to apply';
 
         TotalUpdatesToConfirm: Text;
-        TotalUpdatesToConfirmTxt: Label '%1 are license updates for users who have custom permissions. The default permissions from the new license will replace the custom permissions. You must either apply the new permissions now or keep the current permissions. To do that, choose Manage permission updates.', Comment = '%1 = An integer count of total updates to get confirmation on';
+        TotalUpdatesToConfirmVisible: Boolean;
+        TotalUpdatesToConfirmTxt: Label 'Number of license updates for users who have customized permissions: %1. The default permissions from the new license will replace the custom permissions. You must either apply the new permissions now or keep the current permissions. To do that, choose Manage permission updates.', Comment = '%1 = An integer count of total updates to get confirmation on';
 
         TotalUpdatesReadyToApply: Text;
-        TotalUpdatesReadyToApplyTxt: Label '%1 changes are available. These can be name, email address, preferred language, and user access changes. Choose View changes to see the list.', Comment = '%1 = An integer count of total updates ready to apply';
+        TotalUpdatesReadyToApplyVisible: Boolean;
+        TotalUpdatesReadyToApplyTxt: Label 'Number of available changes: %1. These can be name, email address, preferred language, and user access changes. Choose View changes to see the list.', Comment = '%1 = An integer count of total updates ready to apply';
 
         CannotUpdateUsersFromOfficeErr: Label 'You do not have sufficient previleges to update users from Office 365';
 
@@ -397,5 +406,9 @@ page 9515 "Azure AD User Update Wizard"
         ManagePermissionUpdatesButtonVisible := CountOfManagedPermissionUpdates > 0;
         ViewChangesButtonVisible := CountOfApplicableUpdates > 0;
         SetRange("Needs User Review");
+        if CountOfApplicableUpdates + CountOfManagedPermissionUpdates = 0 then begin
+            CloseButtonVisible := true;
+            CancelButtonVisible := false;
+        end;
     end;
 }

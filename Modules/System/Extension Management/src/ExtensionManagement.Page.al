@@ -9,7 +9,7 @@
 page 2500 "Extension Management"
 {
     Extensible = false;
-    AdditionalSearchTerms = 'app,add-in,customize,plug-in';
+    AdditionalSearchTerms = 'app,add-in,customize,plug-in,appsource';
     ApplicationArea = All;
     DeleteAllowed = false;
     Editable = false;

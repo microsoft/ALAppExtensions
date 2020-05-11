@@ -8,6 +8,9 @@ codeunit 1807 "Assisted Setup Upgrade"
         UpgradeTag: Codeunit "Upgrade Tag";
         AssistedSetupUpgradeTag: Codeunit "Assisted Setup Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(AssistedSetupUpgradeTag.GetDeleteAssistedSetupTag(), '') then
+            exit;
+
         if UpgradeTag.HasUpgradeTag(AssistedSetupUpgradeTag.GetDeleteAssistedSetupTag()) then
             exit;
 
@@ -15,5 +18,4 @@ codeunit 1807 "Assisted Setup Upgrade"
 
         UpgradeTag.SetUpgradeTag(AssistedSetupUpgradeTag.GetDeleteAssistedSetupTag());
     end;
-
 }

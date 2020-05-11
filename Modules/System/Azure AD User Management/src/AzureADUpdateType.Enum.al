@@ -23,4 +23,12 @@ enum 9010 "Azure AD Update Type"
     {
         Caption = 'Change';
     }
+
+    /// <summary>
+    /// Represents a value that is removed in the Office 365 portal but present in Business Central.
+    /// </summary>
+    value(2; Remove)
+    {
+        Caption = 'Remove';
+    }
 }

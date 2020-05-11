@@ -40,14 +40,18 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         UserSetupCategoryTxt: Label 'User Setup', Locked = true;
         UserCreatedMsg: Label 'User %1 has been created', Locked = true;
         AuthenticationEmailUpdateShouldBeTheFirstForANewUserErr: Label 'Authentication email should be the first entity to update.';
-        ApplyingUserUpdateTxt: Label 'Applying update for user %1 with authentication object ID %2.', Comment = '%1 = user security ID (guid) and %2 = authentication object ID (guid)', Locked = true;
-        UserNotFoundWhenApplyingTxt: Label 'User not found. Creating a new user from authentication object ID %1 and authentication email %2.', Comment = '%1 = authentication object ID (guid), %2 = authentication email (email)', Locked = true;
-        UserCreatedTxt: Label 'A new user with security ID %1 has been created.', Comment = '%1 = user security ID (guid)', Locked = true;
-        ApplyingEntityUpdateTxt: Label 'Updating %1 from [%2] to [%3] for user %4', Comment = '%1 = the update entity e.g. Full name, Plan etc.; %2 = current value of entity; %3 = new value of entity; %4 = user security ID (guid)', Locked = true;
-        NewUserChangesTxt: Label 'A new user %1 has property [%2] set to [%3]. The original value from Graph is [%4].', Comment = '%1 = user security ID (guid); %2 = the update entity e.g. Full name, Plan etc.; %3 = new value of entity; %4 = original value of entity from Graph', Locked = true;
-        ExistingUserChangesTxt: Label 'Existing user %1 has %2 changed from [%3] to [%4]. The original value from Graph is [%5].', Comment = '%1 = user security ID (guid); %2 = the update entity e.g. Full name, Plan etc.; %3 = current value of entity; %4 = new value of entity; %5 = original value of entity from Graph', Locked = true;
-        AddingInformationForANewUserTxt: Label 'Adding changes for a new user %1.', Comment = '%1 = user display name (text)', Locked = true;
-        AddingInformationForAnExistingUserTxt: Label 'Adding changes for an existing user %1.', Comment = '%1 = user display name (text)', Locked = true;
+        ApplyingUserUpdateTxt: Label 'Applying update for user security ID [%1] with authentication object ID [%2]. Blank Guids indicate users not present in BC.', Comment = '%1 = user security ID (guid) and %2 = authentication object ID (guid)', Locked = true;
+        UserNotFoundWhenApplyingTxt: Label 'User not found. Creating a new user from authentication object ID [%1] and authentication email [%2].', Comment = '%1 = authentication object ID (guid), %2 = authentication email (email)', Locked = true;
+        UserCreatedTxt: Label 'A new user with security ID [%1] has been created.', Comment = '%1 = user security ID (guid)', Locked = true;
+        ApplyingEntityUpdateTxt: Label 'Updating %1 from [%2] to [%3] for user [%4]', Comment = '%1 = the update entity e.g. Full name, Plan etc.; %2 = current value of entity; %3 = new value of entity; %4 = user security ID (guid)', Locked = true;
+        NewUserChangesTxt: Label 'A new user [%1] has property [%2] set to [%3]. The original value from Graph is [%4].', Comment = '%1 = user security ID (guid); %2 = the update entity e.g. Full name, Plan etc.; %3 = new value of entity; %4 = original value of entity from Graph', Locked = true;
+        ExistingUserChangesTxt: Label 'Existing user [%1] has [%2] changed from [%3] to [%4]. The original value from Graph is [%5].', Comment = '%1 = user security ID (guid); %2 = the update entity e.g. Full name, Plan etc.; %3 = current value of entity; %4 = new value of entity; %5 = original value of entity from Graph', Locked = true;
+        ExistingUserRemovedTxt: Label 'Existing user [%1] with authentication object ID [%2] does not have a BC plan in the office portal anymore. Current plan: [%3].', Comment = '%1 = user security ID (guid); %2 = authentication object ID (guid); %3 = plan name (text).', Locked = true;
+        AddingInformationForANewUserTxt: Label 'Adding changes for a new user [%1].', Comment = '%1 = user display name (text)', Locked = true;
+        AddingInformationForAnExistingUserTxt: Label 'Adding changes for an existing user [%1].', Comment = '%1 = user display name (text)', Locked = true;
+        AddingInformationForARemovedUserTxt: Label 'Adding changes for a user removed / de-licensed in Office with user name [%1].', Comment = '%1 = User name', Locked = true;
+        PlanNamesPerUserFromGraphTxt: Label 'User with AAD Object ID [%1] has plans [%2].', Comment = '%1 = authentication object ID (guid); %2 = list of plans for the user (text)', Locked = true;
+        DelimiterTxt: Label '|', Locked = true;
 
     procedure Run(ForUserSecurityId: Guid)
     var
@@ -92,7 +96,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
 
         repeat
             foreach GraphUser in GraphUserPage.CurrentPage() do
-                if not GetUserFromAuthenticationObjectId(GraphUser.ObjectId(), User) then begin
+                if not AzureADGraphUser.GetUser(GraphUser.ObjectId(), User) then begin
                     if GuiAllowed() then begin
                         Window.Update(1, i);
                         Window.Update(2, Format(GraphUser.DisplayName()));
@@ -143,16 +147,6 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         exit(NewUserSecurityId);
     end;
 
-    local procedure GetUserFromAuthenticationObjectId(AuthenticationObjectId: Text; var FoundUser: Record User): Boolean
-    var
-        UserProperty: Record "User Property";
-    begin
-        UserProperty.SetRange("Authentication Object ID", AuthenticationObjectId);
-        if UserProperty.FindFirst() then
-            exit(FoundUser.Get(UserProperty."User Security ID"));
-        exit(false)
-    end;
-
     procedure IsUserTenantAdmin(): Boolean
     var
         GraphUser: DotNet UserInfo;
@@ -171,11 +165,11 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         if not IsNull(GraphUser.Roles()) then
             foreach GraphRoleInfo in GraphUser.Roles() do
                 if GraphRoleInfo.RoleTemplateId() = CompanyAdminRoleTemplateIdTok then begin
-                    SendTraceTag('000071T', UserCategoryTxt, VERBOSITY::Normal, UserTenantAdminMsg, DATACLASSIFICATION::CustomerContent);
+                    SendTraceTag('000071T', UserCategoryTxt, VERBOSITY::Normal, UserTenantAdminMsg, DATACLASSIFICATION::SystemMetadata);
                     exit(true);
                 end;
 
-        SendTraceTag('000071Y', UserCategoryTxt, VERBOSITY::Normal, UserNotTenantAdminMsg, DATACLASSIFICATION::CustomerContent);
+        SendTraceTag('000071Y', UserCategoryTxt, VERBOSITY::Normal, UserNotTenantAdminMsg, DATACLASSIFICATION::SystemMetadata);
 
         exit(false);
     end;
@@ -196,6 +190,14 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     begin
         if AzureADGraphUserToFetch.GetGraphUser(User."User Security ID", GraphUser) then
             AzureADGraphUserToFetch.UpdateUserFromAzureGraph(User, GraphUser);
+    end;
+
+    local procedure IsUserDelegated(UserSecID: Guid): Boolean
+    var
+        PlanIds: Codeunit "Plan Ids";
+    begin
+        exit(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetDelegatedAdminPlanId(), UserSecID) or
+                    AzureADPlan.IsPlanAssignedToUser(PlanIds.GetHelpDeskPlanId(), UserSecID));
     end;
 
     local procedure InitializeAsNewUser(NewUserSecurityId: Guid; var GraphUser: DotNet UserInfo)
@@ -225,7 +227,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         if IsNull(GraphUser) then
             exit(false);
 
-        if GetUserFromAuthenticationObjectId(GraphUser.ObjectId(), User) then begin
+        if AzureADGraphUser.GetUser(GraphUser.ObjectId(), User) then begin
             UpdateUserFromAzureGraph(User, GraphUser);
             AzureADPlan.UpdateUserPlans(User."User Security ID", GraphUser);
         end else
@@ -242,13 +244,17 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     procedure FetchUpdatesFromAzureGraph(var AzureADUserUpdate: Record "Azure AD User Update Buffer")
     var
         User: Record User;
+        PlanIDs: Codeunit "Plan Ids";
         GraphUser: DotNet UserInfo;
         GraphUserPage: Dotnet UserInfoPage;
         Window: Dialog;
+        OfficeUsersInBC: List of [Guid];
+        CurrUserPlanIDs: List of [Guid];
         UsersPerPage: Integer;
         BCUserCounter: Integer;
         TotalUserCounter: Integer;
         LastBCUserName: Text;
+        IsUserInternalAdminOnly: Boolean;
     begin
         Clear(AzureADUserUpdate);
         AzureADUserUpdate.DeleteAll();
@@ -270,18 +276,22 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         repeat
             foreach GraphUser in GraphUserPage.CurrentPage() do begin
                 TotalUserCounter += 1;
-                if AzureADPlan.IsGraphUserEntitledFromServicePlan(GraphUser) then begin
+                AzureADPlan.GetPlanIDs(GraphUser, CurrUserPlanIDs);
+                if CurrUserPlanIDs.Count() > 0 then begin
                     BCUserCounter += 1;
+                    IsUserInternalAdminOnly := (CurrUserPlanIDs.Count() = 1) and CurrUserPlanIDs.Contains(PlanIDs.GetInternalAdminPlanId());
 
-                    if not GetUserFromAuthenticationObjectId(GraphUser.ObjectId(), User) then begin
-                        SendTraceTag('0000BJR', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(AddingInformationForANewUserTxt, Format(GraphUser.DisplayName())),
-                            DataClassification::EndUserIdentifiableInformation);
-                        AddChangesForNewUser(AzureADUserUpdate, GraphUser);
-                    end else begin
+                    if AzureADGraphUser.GetUser(GraphUser.ObjectId(), User) then begin
                         SendTraceTag('0000BJS', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(AddingInformationForAnExistingUserTxt, Format(GraphUser.DisplayName())),
                             DataClassification::EndUserIdentifiableInformation);
-                        AddChangeForExistingUser(AzureADUserUpdate, GraphUser, User);
-                    end;
+                        AddChangesForExistingUser(AzureADUserUpdate, GraphUser, User);
+                        OfficeUsersInBC.Add(User."User Security ID");
+                    end else
+                        if not IsUserInternalAdminOnly then begin
+                            SendTraceTag('0000BJR', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(AddingInformationForANewUserTxt, Format(GraphUser.DisplayName())),
+                                DataClassification::EndUserIdentifiableInformation);
+                            AddChangesForNewUser(AzureADUserUpdate, GraphUser);
+                        end;
 
                     LastBCUserName := AzureADGraphUser.GetDisplayName(GraphUser);
                 end;
@@ -294,6 +304,21 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             end;
         until (not GraphUserPage.GetNextPage());
 
+        User.Reset();
+        User.SetFilter("License Type", '<>%1', User."License Type"::"External User"); // do not sync the deamon user
+        if User.FindSet() then
+            repeat
+                // if user has no plans, skip
+                if AzureADPlan.DoesUserHavePlans(User."User Security ID") then
+                    // if user has delegated plans, skip
+                    if not IsUserDelegated(User."User Security ID") then
+                        if not OfficeUsersInBC.Contains(User."User Security ID") then begin
+                            SendTraceTag('0000BNE', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(AddingInformationForARemovedUserTxt, User."User Name"),
+                                DataClassification::EndUserIdentifiableInformation);
+                            AddChangesForRemovedUser(AzureADUserUpdate, User);
+                        end;
+            until User.Next() = 0;
+
         if GuiAllowed() then
             Window.Close();
     end;
@@ -301,9 +326,15 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     procedure ApplyUpdatesFromAzureGraph(var AzureADUserUpdate: Record "Azure AD User Update Buffer") NumberOfSuccessfulUpdates: Integer
     var
         Window: Dialog;
+        PlanNamesPerUserFromGraph: Dictionary of [Text, List of [Text]];
     begin
-        if GuiAllowed() then
+        ConsolidatePlansNamesFromGraph(AzureADUserUpdate, PlanNamesPerUserFromGraph);
+        AzureADPlan.CheckMixedPlans(PlanNamesPerUserFromGraph, true);
+
+        if GuiAllowed() then begin
             Window.Open(ProgressDlgApplyUpdatesMsg);
+            Window.Update();
+        end;
         // The updates are stored in the table as [all the changes for the first user], [all the changes for the next user] etc.
         AzureADUserUpdate.SetCurrentKey("Authentication Object ID", "Update Entity");
         if AzureADUserUpdate.FindSet() then
@@ -322,6 +353,20 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             Window.Close();
     end;
 
+    local procedure ConsolidatePlansNamesFromGraph(var AzureADUserUpdate: Record "Azure AD User Update Buffer"; var PlanNamesPerUserFromGraph: Dictionary of [Text, List of [Text]])
+    var
+        PlanNameList: List of [Text];
+    begin
+        AzureADUserUpdate.SetRange("Update Entity", AzureADUserUpdate."Update Entity"::Plan);
+        if AzureADUserUpdate.FindSet() then
+            repeat
+                ConvertTextToList(AzureADUserUpdate."New Value", PlanNameList);
+                PlanNamesPerUserFromGraph.Set(AzureADUserUpdate."Authentication Object ID", PlanNameList);
+                SendTraceTag('0000BPM', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(PlanNamesPerUserFromGraphTxt, AzureADUserUpdate."Authentication Object ID", AzureADUserUpdate."New Value"), DataClassification::EndUserIdentifiableInformation);
+            until AzureADUserUpdate.Next() = 0;
+        AzureADUserUpdate.SetRange("Update Entity");
+    end;
+
     local procedure ProcessAllUpdatesForUser(var AzureADUserUpdate: Record "Azure AD User Update Buffer") NumberOfSuccessfulUpdates: Integer
     var
         User: Record User;
@@ -333,7 +378,9 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
 
         repeat
             if ApplyUpdateFromAzureGraph(AzureADUserUpdate, User, ModifyUser, SetAuthenticationObjectID) then
-                NumberOfSuccessfulUpdates += 1;
+                NumberOfSuccessfulUpdates += 1
+            else
+                SendTraceTag('0000BPA', UserSetupCategoryTxt, Verbosity::Normal, GetLastErrorCallStack, DataClassification::SystemMetadata); // to be taken out;
         until AzureADUserUpdate.Next() = 0;
 
         if ModifyUser then
@@ -359,10 +406,11 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                         if AzureADUserUpdate."Update Entity" <> Enum::"Azure AD User Update Entity"::"Authentication Email" then
                             Error(AuthenticationEmailUpdateShouldBeTheFirstForANewUserErr);
                         AuthenticationEmail := CopyStr(AzureADUserUpdate."New Value", 1, MaxStrLen(User."Authentication Email"));
-                        if not GetUserFromAuthenticationObjectId(AzureADUserUpdate."Authentication Object ID", User) then
+                        if not AzureADGraphUser.GetUser(AzureADUserUpdate."Authentication Object ID", User) then
                             CreateUser(User, AzureADUserUpdate."Authentication Object ID", AuthenticationEmail);
                     end;
-                AzureADUserUpdate."Update Type"::Change:
+                AzureADUserUpdate."Update Type"::Change,
+                AzureADUserUpdate."Update Type"::Remove:
                     User.Get(AzureADUserUpdate."User Security ID");
             end;
 
@@ -394,10 +442,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                     Language.SetPreferredLanguageID(User."User Security ID", PreferredLanguageId);
                 end;
             Enum::"Azure AD User Update Entity"::Plan:
-                begin
-                    AzureADPlan.UpdateUserPlans(User."User Security ID", AzureADUserUpdate."Permission Change Action" = AzureADUserUpdate."Permission Change Action"::Append);
-                    AzureADPlan.CheckMixedPlans();
-                end;
+                AzureADPlan.UpdateUserPlans(User."User Security ID", AzureADUserUpdate."Permission Change Action" = AzureADUserUpdate."Permission Change Action"::Append, false);
         end;
     end;
 
@@ -446,7 +491,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         end;
     end;
 
-    local procedure AddChangeForExistingUser(var AzureADUserUpdate: Record "Azure AD User Update Buffer"; GraphUser: DotNet UserInfo; User: Record User)
+    local procedure AddChangesForExistingUser(var AzureADUserUpdate: Record "Azure AD User Update Buffer"; GraphUser: DotNet UserInfo; User: Record User)
     var
         UserUpdateEntities: List of [Integer];
         CurrentUpdateEntity: Enum "Azure AD User Update Entity";
@@ -480,6 +525,21 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                 AzureADUserUpdate.Insert();
             end;
         end;
+    end;
+
+    local procedure AddChangesForRemovedUser(var AzureADUserUpdate: Record "Azure AD User Update Buffer"; User: Record User)
+    begin
+        AzureADUserUpdate.Init();
+        AzureADUserUpdate."Update Type" := Enum::"Azure AD Update Type"::Remove;
+
+        AzureADUserUpdate."Authentication Object ID" := CopyStr(AzureADGraphUser.GetUserAuthenticationObjectId(User."User Security ID"), 1, MaxStrLen(AzureADUserUpdate."Authentication Object ID"));
+        AzureADUserUpdate."User Security ID" := User."User Security ID";
+        AzureADUserUpdate.Validate("Update Entity", Enum::"Azure AD User Update Entity"::Plan);
+        AzureADUserUpdate."Current Value" := CopyStr(GetUpdateEntityFromUser(Enum::"Azure AD User Update Entity"::Plan, User), 1, MaxStrLen(AzureADUserUpdate."Current Value"));
+        AzureADUserUpdate."Display Name" := User."User Name";
+
+        SendTraceTag('0000BNF', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(ExistingUserRemovedTxt, User."User Security ID", AzureADUserUpdate."Authentication Object ID", AzureADUserUpdate."Current Value"), DataClassification::EndUserIdentifiableInformation);
+        AzureADUserUpdate.Insert();
     end;
 
     local procedure GetUpdateEntityFromUser(UpdateEntity: Enum "Azure AD User Update Entity"; User: Record User): Text
@@ -536,8 +596,14 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         Element: Text;
     begin
         foreach Element in MyList do
-            Result += StrSubstNo('%1|', Element);
+            Result += Element + DelimiterTxt;
         // TrimStart in case the plan name for the first plan is empty.
-        Result := Result.TrimEnd('|').TrimStart('|');
+        Result := Result.TrimEnd(DelimiterTxt).TrimStart(DelimiterTxt);
     end;
+
+    local procedure ConvertTextToList(InputText: Text; var MyList: List of [Text])
+    begin
+        MyList := InputText.Split(DelimiterTxt);
+    end;
+
 }

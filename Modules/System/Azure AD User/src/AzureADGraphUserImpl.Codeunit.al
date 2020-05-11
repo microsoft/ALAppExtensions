@@ -44,6 +44,15 @@ codeunit 9011 "Azure AD Graph User Impl."
         exit(UserProperty."Authentication Object ID");
     end;
 
+    procedure GetUser(AuthenticationObjectID: Text; var User: Record User): Boolean
+    var
+        UserProperty: Record "User Property";
+    begin
+        UserProperty.SetRange("Authentication Object ID", AuthenticationObjectId);
+        if UserProperty.FindFirst() then
+            exit(User.Get(UserProperty."User Security ID"));
+    end;
+
     procedure UpdateUserFromAzureGraph(var User: Record User; var GraphUser: DotNet UserInfo): Boolean
     var
         ModifyUser: Boolean;

@@ -12,7 +12,6 @@ table 9010 "Azure AD User Update Buffer"
     DataPerCompany = false;
     ReplicateData = false;
     Access = Internal;
-    DataClassification = EndUserIdentifiableInformation;
 
     fields
     {
@@ -20,20 +19,40 @@ table 9010 "Azure AD User Update Buffer"
         {
             Caption = 'Authentication Object ID';
             Editable = false;
+            DataClassification = EndUserPseudonymousIdentifiers;
         }
         field(2; "Update Entity"; Enum "Azure AD User Update Entity")
         {
             Caption = 'Update Entity';
             Editable = false;
+            DataClassification = SystemMetadata;
 
             trigger OnValidate()
             var
                 UserPermissions: Codeunit "User Permissions";
             begin
-                if "Update Entity" = "Update Entity"::Plan then begin
-                    "Needs User Review" := UserPermissions.HasUserCustomPermissions("User Security ID");
-                    if not "Needs User Review" then
-                        "Permission Change Action" := "Permission Change Action"::Append;
+                if "Update Entity" <> "Update Entity"::Plan then
+                    exit;
+
+                case "Update Type" of
+                    "Update Type"::New:
+                        begin
+                            "Needs User Review" := false;
+                            "Permission Change Action" := "Permission Change Action"::Append;
+                        end;
+                    "Update Type"::Change:
+                        begin
+                            "Needs User Review" := UserPermissions.HasUserCustomPermissions("User Security ID");
+                            if "Needs User Review" then
+                                "Permission Change Action" := "Permission Change Action"::Select
+                            else
+                                "Permission Change Action" := "Permission Change Action"::Append;
+                        end;
+                    "Update Type"::Remove:
+                        begin
+                            "Needs User Review" := false;
+                            "Permission Change Action" := "Permission Change Action"::"Keep Current";
+                        end;
                 end;
             end;
         }
@@ -42,30 +61,36 @@ table 9010 "Azure AD User Update Buffer"
             TableRelation = User."User Security ID";
             Caption = 'User Security ID';
             Editable = false;
+            DataClassification = EndUserPseudonymousIdentifiers;
         }
         field(4; "Update Type"; Enum "Azure AD Update Type")
         {
             Caption = 'Update Type';
             Editable = false;
+            DataClassification = SystemMetadata;
         }
         field(5; "Current Value"; Text[2048])
         {
             Caption = 'Current Value';
             Editable = false;
+            DataClassification = EndUserIdentifiableInformation;
         }
         field(6; "New Value"; Text[2048])
         {
             Caption = 'New Value';
             Editable = false;
+            DataClassification = EndUserIdentifiableInformation;
         }
         field(7; "Needs User Review"; Boolean)
         {
             Caption = 'Needs User Review';
             Editable = false;
+            DataClassification = SystemMetadata;
         }
         field(8; "Permission Change Action"; enum "Azure AD Permission Change Action")
         {
             Caption = 'Handle permission change';
+            DataClassification = SystemMetadata;
 
             trigger OnValidate()
             begin
@@ -76,6 +101,7 @@ table 9010 "Azure AD User Update Buffer"
         {
             Caption = 'Display Name';
             Editable = false;
+            DataClassification = EndUserIdentifiableInformation;
         }
     }
 
