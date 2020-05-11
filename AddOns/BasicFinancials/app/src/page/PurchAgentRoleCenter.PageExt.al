@@ -26,13 +26,10 @@ pageextension 20634 "Purch Agent Role Center BF" extends "Purchasing Agent Role 
         {
             ApplicationArea = Advanced, BFOrders;
         }
-        //US: The action '"Inventory &Purchase Orders"' is not found in the target 'Purchasing Agent Role Center'
-        /*
-        modify("Inventory &Purchase Orders")
+        modify("Inventory &Purchase Orders") //US: The action '"Inventory &Purchase Orders"' is not found in the target 'Purchasing Agent Role Center'
         {
             ApplicationArea = Advanced, BFOrders;
         }
-        */
         modify("Posted Purchase Receipts")
         {
             ApplicationArea = Advanced, BFOrders;

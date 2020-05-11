@@ -8,22 +8,22 @@ codeunit 20600 "App Area Mgmt BF"
     Access = Internal;
 
     var
-        EssentialTempApplicationAreaSetup: Record "Application Area Setup" temporary;
+        TempEssentialApplicationAreaSetup: Record "Application Area Setup" temporary;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt.", 'OnGetEssentialExperienceAppAreas', '', true, true)]
     local procedure OnGetEssentialExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
     var
     begin
-        Clear(EssentialTempApplicationAreaSetup);
-        EssentialTempApplicationAreaSetup := TempApplicationAreaSetup;
+        Clear(TempEssentialApplicationAreaSetup);
+        TempEssentialApplicationAreaSetup := TempApplicationAreaSetup;
     end;
 
     internal procedure GetEssentialExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
     var
         ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
     begin
-        Clear(EssentialTempApplicationAreaSetup);
+        Clear(TempEssentialApplicationAreaSetup);
         ApplicationAreaMgmtFacade.IsEssentialExperienceEnabled();
-        TempApplicationAreaSetup := EssentialTempApplicationAreaSetup;
+        TempApplicationAreaSetup := TempEssentialApplicationAreaSetup;
     end;
 }

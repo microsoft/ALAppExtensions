@@ -118,7 +118,7 @@ page 20600 "Assisted Setup BF"
         AssistedSetup: Codeunit "Assisted Setup";
         BasicFinancialsMgmt: Codeunit "Basic Financials Mgmt BF";
     begin
-        IsSupportedLicenses := BasicFinancialsMgmt.IsSupportedLicenses();
+        IsSupportedLicenses := BasicFinancialsMgmt.IsSupportedLicense();
         AssistedSetup.Reset(PAGE::"Assisted Setup BF");
         IsComplete := AssistedSetup.IsComplete(PAGE::"Assisted Setup BF");
         ConsentAccepted := IsComplete;
