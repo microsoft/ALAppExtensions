@@ -14,7 +14,7 @@ page 8700 "Table Information"
     Extensible = false;
     UsageCategory = Lists;
     SourceTable = "Table Information";
-    SourceTableView = sorting("Table Name");
+    SourceTableView = sorting("Size (KB)") order(descending);
     Editable = false;
     InsertAllowed = false;
     ModifyAllowed = false;
@@ -48,12 +48,17 @@ page 8700 "Table Information"
                 {
                     ApplicationArea = All;
                     ToolTip = 'The number of records in the table';
+
+                    trigger OnDrillDown()
+                    begin
+                        Hyperlink(GetUrl(CLIENTTYPE::Web, CompanyName, ObjectType::Table, "Table No."));
+                    end;
                 }
 
                 field("Record Size (Byte)"; "Record Size")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'A value expressing the average size of a record, calculated as 1024 x Size (KB)/Records';
+                    ToolTip = 'The average size of a record (in bytes)';
                 }
 
                 field("Size (KB)"; "Size (KB)")
@@ -71,7 +76,7 @@ page 8700 "Table Information"
     begin
         FilterGroup(2);
         if UserPermissions.IsSuper(UserSecurityId()) then
-            SetFilter("Company Name", '=%1|%2', CompanyName, '')
+            SetRange("Company Name")
         else
             SetRange("Company Name", CompanyName);
         FilterGroup(0);

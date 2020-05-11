@@ -24,6 +24,7 @@ codeunit 1813 "Assisted Setup Impl."
         ExtensionManagement: Codeunit "Extension Management";
         LogoBlob: Codeunit "Temp Blob";
         IconInStream: InStream;
+        CreatedNewAssistedSetup: Boolean;
     begin
         if not AssistedSetup.WritePermission() then
             exit;
@@ -34,6 +35,7 @@ codeunit 1813 "Assisted Setup Impl."
             AssistedSetup."Page ID" := PageID;
             AssistedSetup."App ID" := ExtensionID;
             AssistedSetup.Insert(true);
+            CreatedNewAssistedSetup := true;
         end;
 
         if (AssistedSetup."Page ID" <> PageID) or
@@ -59,12 +61,14 @@ codeunit 1813 "Assisted Setup Impl."
         if AssistedSetup."Video Url" <> VideoLink then
             Video.Register(AssistedSetup."App ID", CopyStr(AssistedSetup.Name, 1, 250), VideoLink, VideoCategory, Database::"Assisted Setup", AssistedSetup.SystemId);
 
-        ExtensionManagement.GetExtensionLogo(ExtensionId, LogoBlob);
-        if not LogoBlob.HasValue() then
-            exit;
-        LogoBlob.CreateInStream(IconInStream);
-        AssistedSetup.Icon.ImportStream(IconInStream, AssistedSetup.Name);
-        AssistedSetup.Modify(true);
+        if CreatedNewAssistedSetup then begin
+            ExtensionManagement.GetExtensionLogo(ExtensionId, LogoBlob);
+            if not LogoBlob.HasValue() then
+                exit;
+            LogoBlob.CreateInStream(IconInStream);
+            AssistedSetup.Icon.ImportStream(IconInStream, AssistedSetup.Name);
+            AssistedSetup.Modify(true);
+        end;
     end;
 
     procedure AddSetupAssistantTranslation(PageID: Integer; LanguageID: Integer; TranslatedName: Text)

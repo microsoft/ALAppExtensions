@@ -104,7 +104,7 @@ codeunit 9701 "Cues And KPIs"
     /// <param name="CueStyle">Exit parameter that holds newly determined cue style based on custom prerequisites.</param>
     /// <param name="Resolved">A boolean value that describes whether or not the cue style has been determined.</param>
     [IntegrationEvent(false, false)]
-    procedure OnBeforeGetCustomizedCueStyleOption(TableID: Integer; FieldNo: Integer; CueValue: Decimal; var CueStyle: Enum "Cues And KPIs Style"; var Resolved: Boolean)
+    internal procedure OnBeforeGetCustomizedCueStyleOption(TableID: Integer; FieldNo: Integer; CueValue: Decimal; var CueStyle: Enum "Cues And KPIs Style"; var Resolved: Boolean)
     begin
     end;
 }

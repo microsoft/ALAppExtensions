@@ -11,6 +11,7 @@ page 130455 "Command Line Test Tool"
     PageType = Worksheet;
     SourceTable = "Test Method Line";
     UsageCategory = Administration;
+    Permissions = TableData "AL Test Suite" = rimd, TableData "Test Method Line" = rimd;
 
     layout
     {
@@ -86,7 +87,6 @@ page 130455 "Command Line Test Tool"
             {
                 ApplicationArea = All;
                 Caption = 'Test Result JSON';
-                MultiLine = true;
                 Editable = false;
                 ToolTip = 'Specifies the latest execution of the test as JSON';
             }

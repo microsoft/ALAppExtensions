@@ -2,9 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 50104 "Xml Validation Test Helper"
+codeunit 135052 "Xml Validation Test Helper"
 {
     Access = Internal;
+
     procedure GetXmlSchema() SchemaText: Text
     var
         StringBuilder: TextBuilder;

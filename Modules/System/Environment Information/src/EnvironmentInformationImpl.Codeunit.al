@@ -90,6 +90,14 @@ codeunit 3702 "Environment Information Impl."
         exit(NavTenantSettingsHelper.GetApplicationFamily());
     end;
 
+    procedure VersionInstalled(AppID: Guid): Integer
+    var
+        AppInfo: ModuleInfo;
+    begin
+        NavApp.GetModuleInfo(AppId, AppInfo);
+        exit(AppInfo.DataVersion.Major());
+    end;
+
     local procedure GetAppId() AppId: Text
     begin
         OnBeforeGetApplicationIdentifier(AppId);

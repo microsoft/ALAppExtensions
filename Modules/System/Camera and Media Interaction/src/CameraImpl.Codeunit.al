@@ -68,6 +68,8 @@ codeunit 1922 "Camera Impl."
 
     procedure IsAvailable(): Boolean
     begin
-        exit(Camera.IsAvailable());
+        if GuiAllowed() then
+            exit(Camera.IsAvailable());
+        exit(false);
     end;
 }

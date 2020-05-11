@@ -2,18 +2,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 50102 "Xml Validation Test"
+codeunit 135051 "Xml Validation Test"
 {
     Subtype = Test;
 
     var
         Assert: Codeunit "Library Assert";
-        XmlValidation: Codeunit "Xml Validation";
         XmlValidationTestHelper: Codeunit "Xml Validation Test Helper";
         ValidationErrorTxt: Label 'A call to System.Xml.XmlDocument.Validate failed with this message: The element ''bookstore'' in namespace ''http://www.contoso.com/books'' has invalid child element ''anotherNode''.';
         InvalidXmlErrTxt: Label 'The XML definition is invalid.';
         InvalidSchemaErrTxt: Label 'The schema definition is not valid XML.';
-
 
     [Test]
     procedure TestValidXml()

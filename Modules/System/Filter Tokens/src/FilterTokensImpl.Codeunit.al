@@ -291,6 +291,7 @@ codeunit 58 "Filter Tokens Impl."
             RemainderOfText := DateFilter;
             DateFilter := '';
         end else begin
+            ClearLastError(); // When Evaluate fails, the error shows up in 'View the last known error'
             Position := StrPos(DateFilter, '+');
             if Position = 0 then
                 Position := StrPos(DateFilter, '-');

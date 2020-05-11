@@ -66,7 +66,7 @@ codeunit 9016 "Azure AD Plan"
     [Scope('OnPrem')]
     procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo)
     begin
-        AzureAdPlanImpl.UpdateUserPlans(UserSecurityId, GraphUser, true);
+        AzureAdPlanImpl.UpdateUserPlans(UserSecurityId, GraphUser, true, true);
     end;
 
     /// <summary>
@@ -76,11 +76,12 @@ codeunit 9016 "Azure AD Plan"
     /// <raises>OnUpdateUserAccessForSaaS</raises>
     /// <param name="UserSecurityId">The user to update.</param>
     /// <param name="GraphUser">The graph user corresponding to the user to update, and containing the information about the plans assigned to the user.</param>
-    /// <param name="AppendPermissions">Append permissions from the new plan to the user.</param>
+    /// <param name="AppendPermissionsOnNewPlan">Append permissions from the new plan to the user.</param>
+    /// <param name="RemovePermissionsOnDeletePlan">Remove permissions when removing the plan for the user.</param>
     [Scope('OnPrem')]
-    procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo; AppendPermissions: Boolean)
+    procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo; AppendPermissionsOnNewPlan: Boolean; RemovePermissionsOnDeletePlan: Boolean)
     begin
-        AzureAdPlanImpl.UpdateUserPlans(UserSecurityId, GraphUser, AppendPermissions);
+        AzureAdPlanImpl.UpdateUserPlans(UserSecurityId, GraphUser, AppendPermissionsOnNewPlan, RemovePermissionsOnDeletePlan);
     end;
 
     /// <summary>
@@ -92,7 +93,7 @@ codeunit 9016 "Azure AD Plan"
     [Scope('OnPrem')]
     procedure UpdateUserPlans(UserSecurityId: Guid)
     begin
-        AzureAdPlanImpl.UpdateUserPlans(UserSecurityId, true);
+        AzureAdPlanImpl.UpdateUserPlans(UserSecurityId, true, true);
     end;
 
     /// <summary>
@@ -101,11 +102,12 @@ codeunit 9016 "Azure AD Plan"
     /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
     /// <raises>OnUpdateUserAccessForSaaS</raises>
     /// <param name="UserSecurityId">The user to update.</param>
-    /// <param name="AppendPermissions">Append permissions from the new plan to the user.</param>
+    /// <param name="AppendPermissionsOnNewPlan">Append permissions from the new plan to the user.</param>
+    /// <param name="RemovePermissionsOnDeletePlan">Remove permissions when removing the plan for the user.</param>
     [Scope('OnPrem')]
-    procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissions: Boolean)
+    procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissionsOnNewPlan: Boolean; RemovePermissionsOnDeletePlan: Boolean)
     begin
-        AzureAdPlanImpl.UpdateUserPlans(UserSecurityId, AppendPermissions);
+        AzureAdPlanImpl.UpdateUserPlans(UserSecurityId, AppendPermissionsOnNewPlan, RemovePermissionsOnDeletePlan);
     end;
 
     /// <summary>
@@ -206,9 +208,20 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Returns true if a mixed plan exists. 
+    /// Checks whether the plan configuration mixes different plans.
     /// </summary>
-    /// <returns>Returns true if a mixed plan exists.</returns>
+    /// <param name="PlanNamesPerUser">A mapping of new plans for user identifiers.</param>
+    /// <param name="ErrorOutForAdmin">Specifies if an error (instead of a message) should be shown for an admin when this function is called.</param>
+    [Scope('OnPrem')]
+    procedure CheckMixedPlans(PlanNamesPerUser: Dictionary of [Text, List of [Text]]; ErrorOutForAdmin: Boolean)
+    begin
+        AzureAdPlanImpl.CheckMixedPlans(PlanNamesPerUser, ErrorOutForAdmin);
+    end;
+
+    /// <summary>
+    /// Returns true if there are incompatible plans in the system. 
+    /// </summary>
+    /// <returns>Returns true if there are incompatible plans in the system. </returns>
     [Scope('OnPrem')]
     procedure MixedPlansExist(): Boolean
     begin
@@ -216,7 +229,7 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Get plans that are assigned to a user in Office 365.
+    /// Gets plans that are assigned to a user in Office 365.
     /// </summary>
     /// <param name="GraphUser">The Graph user to get plans for.</param>
     /// <param name="PlanNames">The names of the plans that are assigned to the user in Office 365.</param>
@@ -227,7 +240,7 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
-    /// Get plans that are assigned to a Business Central user.
+    /// Gets plans that are assigned to a Business Central user.
     /// </summary>
     /// <param name="UserSecID">The security ID of the user whose plans we are getting.</param>
     /// <param name="PlanNames">The plan names of plans assigned to the Office 365 user.</param>
@@ -235,6 +248,17 @@ codeunit 9016 "Azure AD Plan"
     procedure GetPlanNames(UserSecID: Guid; var PlanNames: List of [Text])
     begin
         AzureAdPlanImpl.GetPlanNames(UserSecID, PlanNames);
+    end;
+
+    /// <summary>
+    /// Gets plans that are assigned to a user in Office 365.
+    /// </summary>
+    /// <param name="GraphUser">The Graph user to get plans for.</param>
+    /// <param name="PlanIDs">The IDs of the plans that are assigned to the user in Office 365.</param>
+    [Scope('OnPrem')]
+    procedure GetPlanIDs(GraphUser: DotNet UserInfo; var PlanIDs: List of [Guid])
+    begin
+        AzureAdPlanImpl.GetPlanIDs(GraphUser, PlanIDs);
     end;
 
     /// <summary>

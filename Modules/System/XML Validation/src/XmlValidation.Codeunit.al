@@ -6,7 +6,7 @@
 /// <summary>
 /// Provides helper functions for xml validation against a schema.
 /// </summary>
-codeunit 50100 "Xml Validation"
+codeunit 6240 "Xml Validation"
 {
     Access = Public;
 

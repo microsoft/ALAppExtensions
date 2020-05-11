@@ -77,4 +77,14 @@ codeunit 457 "Environment Information"
     begin
         exit(EnvironmentInformationImpl.GetApplicationFamily());
     end;
+
+    /// <summary>
+    /// Gets the version which a given app was installed in.
+    /// </summary>
+    /// <param name="AppID">The module ID of the app.</param>
+    /// <returns>The major version number when the app was installed.</returns>
+    procedure VersionInstalled(AppID: Guid): Integer
+    begin
+        exit(EnvironmentInformationImpl.VersionInstalled(AppID));
+    end;
 }

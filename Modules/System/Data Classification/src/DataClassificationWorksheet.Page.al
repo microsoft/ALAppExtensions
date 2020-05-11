@@ -20,6 +20,7 @@ page 1751 "Data Classification Worksheet"
     SourceTable = "Data Sensitivity";
     SourceTableView = WHERE("Field Caption" = FILTER(<> ''));
     UsageCategory = Administration;
+    AdditionalSearchTerms = 'GDPR,Data Privacy,Privacy,Personal Data';
     ContextSensitiveHelpPage = 'admin-classifying-data-sensitivity';
 
     layout
