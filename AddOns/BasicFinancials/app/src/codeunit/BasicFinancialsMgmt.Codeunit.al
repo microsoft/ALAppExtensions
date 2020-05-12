@@ -4,13 +4,16 @@ codeunit 20601 "Basic Financials Mgmt BF"
 
     var
         AzureADLicensing: codeunit "Azure AD Licensing";
-        NotSupportedLicenseErr: Label 'The Basic Financials Extension can only be deployed, when at least one user has been assigned to a Basic Financials license';
-        NotSupportedLocalesErr: Label 'The Basic Financials Extension can only be deployed for the follovwing Countries: Denmark, Iceland';
-        NotSupportedUserErr: Label 'The Basic Financials Extension can only be deployed with Super User Permissions. The User %1 is not Super', Comment = '%1 = User Name';
-        NotSupportedCompanyErr: Label 'The Basic Financials Extension, can only be deployed, when exactly one Company is present in the Environment';
+        NotSupportedLicenseErr: Label 'The Basic Financials Extension can only be deployed, when at least one user has been assigned to a Basic Financials license.';
+        NotSupportedLocalesErr: Label 'The Basic Financials Extension can only be deployed for the following countries: Denmark, Iceland.';
+        NotSupportedUserErr: Label 'The Basic Financials Extension can only be deployed with Super User Permissions.';
+        NotSupportedCompanyErr: Label 'The Basic Financials Extension, can only be deployed, when exactly one Company is present in the Environment.';
         AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER|SALES AND RELATIONSHIP MANAGER', Locked = true;
         BFSKUIdTxt: Label '{66CAD104-64F9-476E-9682-3C3518B9B6ED}', Locked = true, Comment = 'Dynamics 365 Business Central Basic Financials';
         BFC5SPLASKUIdTxt: Label '{4dCE07FD-7B07-4FB5-8FB7-D49653F7BF30}', Locked = true, Comment = 'Dynamics 365 Business Central Basic Financials from C5 SPLA (Qualified Offer)';
+        UserSecurityIdTxt: Label '{00000000-0000-0000-0000-000000000001}', Locked = true, Comment = 'System user';
+        NotSupportedSystemUserErr: Label 'The current user is the Microsoft System User. The Basic Financials Extension can only be deployed with a user that exist in the user table.';
+        UnknowUserErr: Label 'The current user is unknown. The Basic Financials Extension can only be deployed with a user that exist in the user table.';
 
     internal procedure IsSupportedLicense(): Boolean // A microsoft requirements: The Basic Financials Assisted Setup checks for the Basic Financials license on the AAD tenant, at least one user has been assigned to this license.
     var
@@ -40,7 +43,7 @@ codeunit 20601 "Basic Financials Mgmt BF"
         Error(NotSupportedLicenseErr);
     end;
 
-    internal procedure TestSupportedLocales() // A microsoft requirements: The extension checks for the country availability, the extension is only available to the  Countries: Denmark, Iceland';
+    internal procedure TestSupportedLocales() // A microsoft requirements: The extension checks for the country availability, the extension is only available to the Countries: Denmark, Iceland';
     var
         TempApplicationAreaSetup: Record "Application Area Setup";
         AppAreaMgmt: Codeunit "App Area Mgmt BF";
@@ -59,15 +62,16 @@ codeunit 20601 "Basic Financials Mgmt BF"
         User: Record User;
         UserPermissions: Codeunit "User Permissions";
     begin
-        User.Get(UserSecurityId()); // Something unexpected happened while trying to get the current user, it will raise an exception (error message)
+        if UserSecurityId() = UserSecurityIdTxt then
+            Error(NotSupportedSystemUserErr);
 
-        if User.IsEmpty() then
-            exit;
+        if User.Get(UserSecurityId()) then
+            Error(UnknowUserErr);
 
         if UserPermissions.IsSuper(UserSecurityId()) then
             exit;
 
-        Error(NotSupportedUserErr, User."User Name");
+        Error(NotSupportedUserErr);
     end;
 
     internal procedure TestSupportedCompanies() // A microsoft requirements: The extension checks for only 1 company is installed on the tenant, additional companies has to be added afterward. 

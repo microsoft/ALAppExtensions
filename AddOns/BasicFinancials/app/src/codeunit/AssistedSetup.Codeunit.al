@@ -36,11 +36,11 @@ codeunit 20605 "Assisted Setup BF"
 
     local procedure GetAppId(): Guid
     var
-        Info: ModuleInfo;
+        ModuleInfo: ModuleInfo;
         EmptyGuid: Guid;
     begin
-        if Info.Id() = EmptyGuid then
-            NavApp.GetCurrentModuleInfo(Info);
-        exit(Info.Id());
+        if ModuleInfo.Id() = EmptyGuid then
+            NavApp.GetCurrentModuleInfo(ModuleInfo);
+        exit(ModuleInfo.Id());
     end;
 }
