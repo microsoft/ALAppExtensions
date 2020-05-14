@@ -3,10 +3,10 @@ codeunit 20605 "Assisted Setup BF"
     Access = Internal;
 
     var
-        AssistedSetupTxt: Label 'Set up Basic Financials extension';
+        AssistedSetupTxt: Label 'Set up the Basic Financials extension';
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=', Locked = true;
         AssistedSetupDescriptionTxt: Label 'Basic Financials';
-        AlreadySetUpQst: Label 'You have already completed the Basic Financials extension assisted setup guide. Do you want to run it again ?';
+        AlreadySetUpQst: Label 'This assisted setup guide has already been completed. Do you want to run it again?';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnRegister', '', false, false)]
     local procedure SetupInitialize()

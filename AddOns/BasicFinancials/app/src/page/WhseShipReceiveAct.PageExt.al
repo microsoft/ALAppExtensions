@@ -10,6 +10,5 @@ pageextension 20668 "Whse Ship & Receive Act. BF" extends "Whse Ship & Receive A
         {
             Visible = false;
         }
-
     }
 }

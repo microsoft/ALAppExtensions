@@ -20,7 +20,7 @@ page 20600 "Assisted Setup BF"
             group(Instructional)
             {
                 Caption = ' ';
-                InstructionalText = 'The Basic Financials Extensions aligns the User Experience to the license limitations.';
+                InstructionalText = 'The Basic Financials extension enables the subset Dynamics 365 Business Central capabilities provided by the Basic Financials license.';
             }
             field(DocumentationPart; 'For more information, see the documentation.')
             {
@@ -68,21 +68,21 @@ page 20600 "Assisted Setup BF"
             {
                 ApplicationArea = Basic, Suite;
                 Editable = true;
-                Caption = 'I understand and accept these terms';
-                ToolTip = 'I understand and accept these terms';
+                Caption = 'I understand and accept the terms';
+                ToolTip = 'Acknowledge that you have read and accept the terms.';
             }
             field(IsSupportedLicenses; IsSupportedLicenses)
             {
                 ApplicationArea = Basic, Suite;
                 Editable = true;
                 Caption = 'Basic Financials license has been assigned';
-                ToolTip = 'The Basic Financials Extension setup can only be completed, when at least one user has been assigned to a Basic Financials license';
+                ToolTip = 'To complete the Basic Financials setup the Basic Financials license must be assigned to at least one user.';
                 trigger OnValidate()
                 var
                     BasicFinancialsMgmt: Codeunit "Basic Financials Mgmt BF";
-                    NotSupportedLicensesErr: Label 'No user has been assigned to a Basic Financials license';
+                    NotSupportedLicensesErr: Label 'At least one user must have the Basic Financials license.';
                 begin
-                    IsSupportedLicenses := BasicFinancialsMgmt.IsSupportedLicenses();
+                    IsSupportedLicenses := BasicFinancialsMgmt.IsSupportedLicense();
                     if not IsSupportedLicenses then
                         Error(NotSupportedLicensesErr);
                 end;
@@ -100,7 +100,7 @@ page 20600 "Assisted Setup BF"
                 Enabled = ConsentAccepted and IsSupportedLicenses;
                 Image = Close;
                 InFooterBar = true;
-                ToolTip = 'choose Finish to complete Basic Financials Assisted Setup';
+                ToolTip = 'Choose Finish to complete the Basic Financials assisted setup guide.';
 
                 trigger OnAction();
                 var

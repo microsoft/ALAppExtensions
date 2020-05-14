@@ -1,21 +1,15 @@
 codeunit 20603 "Install Extension BF"
 {
     /*
-    Installation process 
-
-    1)	The partner creates a new Business Central Tenant
-    2)	The partner adds at least one user with a Basic Financials License to ADD tenant
-    3)	The partner manually removes all companies  (incl Cronus)
-    4)	The partner creates one new production company
-    5)	The partner import a configuration packages with Basic Financials setup data  
-    6)	The partner installs the Basic Financials extension
-        a.	The extension checks for for the country availability
-        b.	The extension checks for the Basic Financials license (Not implemented due to unsupported functionality)
-        c.	The extension checks for User Permissions (Not implemented due to unsupported functionality)
-        d.	The extension checks for only 1 company is installed on the tenant
-    7)  The partner completed the Basic Financials Assisted Setup
-        a.	The Assisted Setup checks for the Basic Financials license (is implemented as a workaround due to unsupported functionality at OnInstallAppPerCompany trigger)
-    8)	The partner sends an email to the customer including log-in details
+    To install the extension, the partner does the following:
+    1.	Creates a new Business Central tenant.
+    2.	Adds at least one user who has a Basic FInancials license assigned to them in the Azure Active Directory tenant.
+    3.	Removes all companies manually, including Cronus.
+    4.	Creates one production company that does not contain data or setups.
+    5.	Imports a configuration package that includes Basic Financials setup data.
+    6.	Installs the Basic Financials extension. During installation the extension verifies the country availability that there is only one company.
+    7.	Completes the Basic Financials assisted setup guide. The assisted setup guide checks for the Basic Financials license.
+    8.	Sends sign in information to the customer in an email.
     */
 
     Access = Internal;

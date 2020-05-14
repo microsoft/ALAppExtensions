@@ -4,18 +4,18 @@ codeunit 20601 "Basic Financials Mgmt BF"
 
     var
         AzureADLicensing: codeunit "Azure AD Licensing";
-        NotSupportedLicenseErr: Label 'The Basic Financials Extension can only be deployed, when at least one user has been assigned to a Basic Financials license.';
-        NotSupportedLocalesErr: Label 'The Basic Financials Extension can only be deployed for the following countries: Denmark, Iceland.';
-        NotSupportedUserErr: Label 'The Basic Financials Extension can only be deployed with Super User Permissions.';
+        NotSupportedLicenseErr: Label 'To deploy the Basic Financials extension the Basic Financials license must be assigned to at least one user.';
+        NotSupportedLocalesErr: Label 'The Basic Financials Extension can only available in Denmark and Iceland.';
+        NotSupportedUserErr: Label 'The user who deploys the Basic Financials extension must have the Super User permission set.';
         NotSupportedCompanyErr: Label 'The Basic Financials Extension, can only be deployed, when exactly one Company is present in the Environment.';
         AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER|SALES AND RELATIONSHIP MANAGER', Locked = true;
         BFSKUIdTxt: Label '{66CAD104-64F9-476E-9682-3C3518B9B6ED}', Locked = true, Comment = 'Dynamics 365 Business Central Basic Financials';
         BFC5SPLASKUIdTxt: Label '{4dCE07FD-7B07-4FB5-8FB7-D49653F7BF30}', Locked = true, Comment = 'Dynamics 365 Business Central Basic Financials from C5 SPLA (Qualified Offer)';
         UserSecurityIdTxt: Label '{00000000-0000-0000-0000-000000000001}', Locked = true, Comment = 'System user';
         NotSupportedSystemUserErr: Label 'The current user is the Microsoft System User. The Basic Financials Extension can only be deployed with a user that exist in the user table.';
-        UnknowUserErr: Label 'The current user is unknown. The Basic Financials Extension can only be deployed with a user that exist in the user table.';
+        UnknowUserErr: Label 'The current user is unknown. The user who deploys the Basic Financials extension must exist in the user table.';
 
-    internal procedure IsSupportedLicense(): Boolean // A microsoft requirements: The Basic Financials Assisted Setup checks for the Basic Financials license on the AAD tenant, at least one user has been assigned to this license.
+    internal procedure IsSupportedLicense(): Boolean // Microsoft requirements: The Basic Financials Assisted Setup checks for the Basic Financials license on the AAD tenant, at least one user has been assigned to this license.
     var
     begin
         AzureADLicensing.ResetSubscribedSKU();
@@ -29,7 +29,7 @@ codeunit 20601 "Basic Financials Mgmt BF"
         exit(false);
     end;
 
-    internal procedure TestSupportedLicenses() // A microsoft requirements: The extension checks for the Basic Financials license on the AAD tenant, at least one user has been assigned to this license. 
+    internal procedure TestSupportedLicenses() // Microsoft requirements: The extension checks for the Basic Financials license on the AAD tenant, at least one user has been assigned to this license. 
     var
     begin
         AzureADLicensing.ResetSubscribedSKU();
@@ -43,7 +43,7 @@ codeunit 20601 "Basic Financials Mgmt BF"
         Error(NotSupportedLicenseErr);
     end;
 
-    internal procedure TestSupportedLocales() // A microsoft requirements: The extension checks for the country availability, the extension is only available to the Countries: Denmark, Iceland';
+    internal procedure TestSupportedLocales() // Microsoft requirements: The extension checks for the country availability. The extension is only available in Denmark and Iceland.;
     var
         TempApplicationAreaSetup: Record "Application Area Setup";
         AppAreaMgmt: Codeunit "App Area Mgmt BF";
@@ -57,7 +57,7 @@ codeunit 20601 "Basic Financials Mgmt BF"
         Error(NotSupportedLocalesErr);
     end;
 
-    internal procedure TestSupportedUser() // A microsoft requirements: The extension checks for User Permissions, the user which install the extension has been assigned to Super. 
+    internal procedure TestSupportedUser() // Microsoft requirements: The extension checks whether the Super User permission set is assigned to the user who is installing the extension.
     var
         User: Record User;
         UserPermissions: Codeunit "User Permissions";
@@ -74,7 +74,7 @@ codeunit 20601 "Basic Financials Mgmt BF"
         Error(NotSupportedUserErr);
     end;
 
-    internal procedure TestSupportedCompanies() // A microsoft requirements: The extension checks for only 1 company is installed on the tenant, additional companies has to be added afterward. 
+    internal procedure TestSupportedCompanies() // Microsoft requirements: The extension checks whether the tenant contains more than one company during installation, but allows additional companies to be added afterward.
     var
         Company: Record Company;
     begin
@@ -84,7 +84,7 @@ codeunit 20601 "Basic Financials Mgmt BF"
         Error(NotSupportedCompanyErr);
     end;
 
-    internal procedure TryDisableRoleCenter() // A microsoft requirements:The Extensions aligns the User Experience to the license limitations, by disable certain Role Center, which is not assigned to Groups Or Users.
+    internal procedure TryDisableRoleCenter() // Microsoft requirement: The extensions aligns the user experience with the license limitations by disabling certain Role Centers that are not assigned to groups or users.
     var
         AllProfile: Record "All Profile";
     begin

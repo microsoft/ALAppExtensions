@@ -1,6 +1,5 @@
 codeunit 20600 "App Area Mgmt BF"
 {
-    // Workaround, Unfortunately it's pretty ugly AL-coding solution, but the user Experience is working as intended.
     // It is not possible to get the Essential Experience Application Areas, but when the function 'IsEssentialExperienceEnabled' is called, the event trigger OnGetEssentialExperienceAppAreas() is trigged, 
     // and then it is possible to "save" the Essential Experience Application Areas by setting this codeunit as a SingleInstance codeunit.
 
