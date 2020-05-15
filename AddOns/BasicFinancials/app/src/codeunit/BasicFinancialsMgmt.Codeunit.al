@@ -7,7 +7,7 @@ codeunit 20601 "Basic Financials Mgmt BF"
         NotSupportedLicenseErr: Label 'To deploy the Basic Financials extension the Basic Financials license must be assigned to at least one user.';
         NotSupportedLocalesErr: Label 'The Basic Financials Extension can only available in Denmark and Iceland.';
         NotSupportedUserErr: Label 'The user who deploys the Basic Financials extension must have the Super User permission set.';
-        NotSupportedCompanyErr: Label 'The Basic Financials Extension, can only be deployed, when exactly one Company is present in the Environment.';
+        NotSupportedCompanyErr: Label 'The Basic Financials extension can only be deployed when exactly one company exists in the environment.';
         AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER|SALES AND RELATIONSHIP MANAGER', Locked = true;
         BFSKUIdTxt: Label '{66CAD104-64F9-476E-9682-3C3518B9B6ED}', Locked = true, Comment = 'Dynamics 365 Business Central Basic Financials';
         BFC5SPLASKUIdTxt: Label '{4dCE07FD-7B07-4FB5-8FB7-D49653F7BF30}', Locked = true, Comment = 'Dynamics 365 Business Central Basic Financials from C5 SPLA (Qualified Offer)';
