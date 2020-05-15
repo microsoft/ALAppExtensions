@@ -123,6 +123,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         AMCName: Text;
         AMCEmail: Text;
         AMCGUID: GUID;
+        ContentOutStream: OutStream;
         ContentInStream: InStream;
     begin
         AMCGUID := UserSecurityId();
@@ -144,17 +145,23 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         if (RequestHttpHeaders.Contains('Amcname')) THEN
             RequestHttpHeaders.Remove('Amcname');
 
+        Clear(TempBlob);
+        Clear(ContentOutStream);
         Clear(ContentInStream);
+        TempBlob.CreateOutStream(ContentOutStream);
+        ContentOutStream.WriteText(AMCName);
         TempBlob.CreateInStream(ContentInStream);
-        ContentInStream.Read(AMCName);
         RequestHttpHeaders.Add('Amcname', Base64Convert.ToBase64(ContentInStream));
 
         if (RequestHttpHeaders.Contains('Amcemail')) THEN
             RequestHttpHeaders.Remove('Amcemail');
 
+        Clear(TempBlob);
+        Clear(ContentOutStream);
         Clear(ContentInStream);
+        TempBlob.CreateOutStream(ContentOutStream);
+        ContentOutStream.WriteText(AMCEmail);
         TempBlob.CreateInStream(ContentInStream);
-        ContentInStream.Read(AMCEmail);
         RequestHttpHeaders.Add('Amcemail', Base64Convert.ToBase64(ContentInStream));
 
         if (RequestHttpHeaders.Contains('Amcguid')) THEN

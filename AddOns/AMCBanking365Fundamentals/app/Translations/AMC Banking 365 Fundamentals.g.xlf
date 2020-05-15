@@ -3,6 +3,36 @@
   <file datatype="xml" source-language="en-US" target-language="en-US" original="AMC Banking 365 Fundamentals">
     <body>
       <group id="body">
+        <trans-unit id="Table 3203079048 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>AMC Banking Banks</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 3203079048 - Field 1732083938 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Bank</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Bank - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 3203079048 - Field 2685439803 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Bank Name</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Bank Name - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 3203079048 - Field 284764054 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Country/Region Code</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Country/Region Code - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 3203079048 - Field 2501792105 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Last Update Date</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Last Update Date - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 3203079048 - Field 171145402 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Index</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Index - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Table 3704095706 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>AMC Banking Setup</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -223,231 +253,6 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Pmt. Type - Field Description - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Table 3203079048 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>AMC Banking Banks</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Table 3203079048 - Field 1732083938 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Bank</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Bank - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Table 3203079048 - Field 2685439803 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Bank Name</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Bank Name - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Table 3203079048 - Field 284764054 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Country/Region Code</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Country/Region Code - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Table 3203079048 - Field 2501792105 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Last Update Date</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Last Update Date - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Table 3203079048 - Field 171145402 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Index</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Index - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 2319047537 - NamedType 2415257204" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Please wait while the operation is being completed.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Bank Acc. Rec Lin - NamedType ProgressWindowMsg</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 2413088747 - NamedType 2779639592" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Processing line no. #1######.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Mapping - NamedType ProgressMsg</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3605141263 - NamedType 4134082808" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The file export has one or more errors.\\For each line to be exported, resolve the errors displayed to the right and then try to export again.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Valid. - NamedType HasErrorsErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3927356675 - NamedType 4096535761" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The AMC Banking has returned the following error message:</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.BankList Hndl - NamedType AMCBankServSysErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3927356675 - NamedType 2474376791" size-unit="char" translate="yes" xml:space="preserve">
-          <source>For more information, go to %1.</source>
-          <note from="Developer" annotates="general" priority="2">%1=Support URL</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.BankList Hndl - NamedType AddnlInfoTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3927356675 - NamedType 143402242" size-unit="char" translate="no" xml:space="preserve">
-          <source>bankList</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.BankList Hndl - NamedType BankListWebCallTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3857426880 - NamedType 2779639592" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Preparing line number #1#######</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Import Bank STMT - NamedType ProgressMsg</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3925124761 - NamedType 2676459513" size-unit="char" translate="no" xml:space="preserve">
-          <source>/reportExportResponse/return/finsta/statement/balanceenddate</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.-Post-Mapping - NamedType StmtDatePathFilterTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3925124761 - NamedType 809723493" size-unit="char" translate="no" xml:space="preserve">
-          <source>/reportExportResponse/return/finsta/statement/balanceend</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.-Post-Mapping - NamedType StmtAmtPathFilterTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3234607452 - NamedType 387681623" size-unit="char" translate="no" xml:space="preserve">
-          <source>/reportExportResponse/return/finsta/statement/ownbankaccount/bankaccount</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.-Pre-Mapping - NamedType StmtBankAccNoPathFilterTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3234607452 - NamedType 368446010" size-unit="char" translate="no" xml:space="preserve">
-          <source>='/reportExportResponse/return/finsta/statement/ownbankaccount/currency'|='/reportExportResponse/return/finsta/statement/finstatransus/amountdetails/currency'</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.-Pre-Mapping - NamedType CurrCodePathFilterTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3234607452 - NamedType 2159309086" size-unit="char" translate="no" xml:space="preserve">
-          <source>/reportExportResponse/return/finsta/statement/statementno</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.-Pre-Mapping - NamedType StmtNoPathFilterTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 52548103 - NamedType 1810949511" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The request body is not set.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType NoRequestBodyErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 52548103 - NamedType 3014721114" size-unit="char" translate="yes" xml:space="preserve">
-          <source>All Files(*.*)|*.*|XML Files(*.xml)|*.xml|Text Files(*.txt;*.csv;*.asc)|*.txt;*.csv;*.asc</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType FileFilterTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 52548103 - NamedType 4100096721" size-unit="char" translate="no" xml:space="preserve">
-          <source>txt,csv,asc,xml</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType FileFilterExtensionTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 52548103 - NamedType 1051517620" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The AMC Banking has not returned any statement transactions.\\For more information, go to %1.</source>
-          <note from="Developer" annotates="general" priority="2">%1=Support URl</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType FinstaNotCollectedErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 52548103 - NamedType 2711926903" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Select a file to import.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType ImportBankStmtTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 52548103 - NamedType 531377784" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The AMC Banking has returned the following error message:</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType BankDataConvServSysErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 52548103 - NamedType 2474376791" size-unit="char" translate="yes" xml:space="preserve">
-          <source>For more information, go to %1.</source>
-          <note from="Developer" annotates="general" priority="2">%1=Support URL</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType AddnlInfoTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 52548103 - NamedType 3884939420" size-unit="char" translate="no" xml:space="preserve">
-          <source>reportExport</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType ReportExportWebCallTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1873957797 - NamedType 3179812607" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The bank statement that you are importing contains transactions in %1 %2. This conflicts with the %3 %4.\\Do you want to continue?</source>
-          <note from="Developer" annotates="general" priority="2">%1 %2 = Currency Code EUR; %3 %4 = LCY Code DKK.</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType DiffCurrQst</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1873957797 - NamedType 1106260476" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The statement date was not found in the data to be imported.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType MissingStmtDateInDataMsg</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1873957797 - NamedType 742056434" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The closing balance was not found in the data to be imported.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType MissingClosingBalInDataMsg</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1873957797 - NamedType 4082076936" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Bank account %1 does not have a bank account number.\\Do you want to continue?</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType MissingBankAccNoQst</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1873957797 - NamedType 1428720056" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The bank statement that you are importing contains transactions in currencies other than the %1 %2 of bank account %3.</source>
-          <note from="Developer" annotates="general" priority="2">%1 %2 = Currency Code EUR; %3 = Bank Account No.</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType BankAccCurrErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1873957797 - NamedType 2692357613" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The file that you are trying to import contains more than one bank statement.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType MultipleStmtErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1873957797 - NamedType 2242781076" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The bank account number was not found in the data to be imported.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType MissingBankAccNoInDataErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1873957797 - NamedType 1975081983" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Bank account %1 does not have the bank account number %2, as specified in the bank statement file.\\Do you want to continue?</source>
-          <note from="Developer" annotates="general" priority="2">%1=Value; %2 = Bank account no.</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType BankAccMismatchQst</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 4228874151 - NamedType 1098773093" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The web service returned an error message:\</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType TryLoadErrorLbl</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 4228874151 - NamedType 4203108968" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Status code: %1</source>
-          <note from="Developer" annotates="general" priority="2">%1=Http Statuscode</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType WebLoadErrorLbl</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 4228874151 - NamedType 3754422060" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The expected data was not received from the web service.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType ExpectedResponseNotReceivedErrLbl</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 4228874151 - NamedType 3019894490" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Please wait while the server is processing your request.\This may take several minutes.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType ProcessingWindowMsg</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 4228874151 - NamedType 1815440819" size-unit="char" translate="no" xml:space="preserve">
-          <source>text/xml; charset=utf-8</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType ContentTypeTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 4228874151 - NamedType 2232507934" size-unit="char" translate="no" xml:space="preserve">
-          <source>//return/finsta/statement/finstatransus</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType FinstaPathTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 4228874151 - NamedType 1010824515" size-unit="char" translate="no" xml:space="preserve">
-          <source>//return/syslog[syslogtype[text()="error"]]</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType SysErrPathTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 4228874151 - NamedType 3843122408" size-unit="char" translate="no" xml:space="preserve">
-          <source>//return/pack/convertlog[syslogtype[text()="error"]]</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType ConvErrPathTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 4228874151 - NamedType 314874199" size-unit="char" translate="no" xml:space="preserve">
-          <source>//return/pack/data</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType DataPathTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 4228874151 - NamedType 215984685" size-unit="char" translate="no" xml:space="preserve">
-          <source>//return/pack/bank</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType BankPathTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 33113820 - NamedType 930138903" size-unit="char" translate="yes" xml:space="preserve">
-          <source>We have updated the AMC Banking 365 Fundamentals extension.\\Before you can use the extension you must provide some information. Go to the AMC Banking Setup page and run the Assisted Setup action.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Upg. Notification - NamedType UpgNotificationLbl</note>
-        </trans-unit>
         <trans-unit id="Codeunit 3725545329 - NamedType 82900180" size-unit="char" translate="yes" xml:space="preserve">
           <source>The Web Service Setup User Name (%1) does not match the License number (%2) or the (%3)</source>
           <note from="Developer" annotates="general" priority="2">%1=UserName, %2=License numnber, %3=DemoUser</note>
@@ -543,10 +348,160 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Assisted Mgt. - NamedType ResponseNodeTxt</note>
         </trans-unit>
+        <trans-unit id="Codeunit 2319047537 - NamedType 2415257204" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Please wait while the operation is being completed.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Bank Acc. Rec Lin - NamedType ProgressWindowMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3646414981 - NamedType 3314864117" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The file has not been saved.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType DownloadFromStreamErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3646414981 - NamedType 1810949511" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The request body is not set.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType NoRequestBodyErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3646414981 - NamedType 842108793" size-unit="char" translate="yes" xml:space="preserve">
+          <source>There is nothing to export.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType NothingToExportErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3646414981 - NamedType 3826889551" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has not returned any payment data.\\For more information, go to %1.</source>
+          <note from="Developer" annotates="general" priority="2">%1=Support URL</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType PaymentDataNotCollectedErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3646414981 - NamedType 4134082808" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has found one or more errors.\\For each line to be exported, resolve the errors that are displayed in the FactBox.\\Choose an error to see more information.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType HasErrorsErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3646414981 - NamedType 1219964534" size-unit="char" translate="yes" xml:space="preserve">
+          <source>There is an incorrect file conversion error element in the response. Reference: %1, error text: %2.</source>
+          <note from="Developer" annotates="general" priority="2">%1=Reference to payment, %2=Error text</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType IncorrectElementErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3646414981 - NamedType 531377784" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has returned the following error message:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType BankDataConvServSysErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3646414981 - NamedType 2474376791" size-unit="char" translate="yes" xml:space="preserve">
+          <source>For more information, go to %1.</source>
+          <note from="Developer" annotates="general" priority="2">%1=Support URL</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType AddnlInfoTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3646414981 - NamedType 642046912" size-unit="char" translate="no" xml:space="preserve">
+          <source>paymentExportBank</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType PaymentExportWebCallTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3646414981 - NamedType 540628993" size-unit="char" translate="yes" xml:space="preserve">
+          <source>.txt</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType FileExtTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2413088747 - NamedType 2779639592" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Processing line no. #1######.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Mapping - NamedType ProgressMsg</note>
+        </trans-unit>
         <trans-unit id="Codeunit 1051898237 - NamedType 2779639592" size-unit="char" translate="yes" xml:space="preserve">
           <source>Pre-processing line no. #1######.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Pre-Map - NamedType ProgressMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3605141263 - NamedType 4134082808" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The file export has one or more errors.\\For each line to be exported, resolve the errors displayed to the right and then try to export again.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Valid. - NamedType HasErrorsErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3927356675 - NamedType 4096535761" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has returned the following error message:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.BankList Hndl - NamedType AMCBankServSysErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3927356675 - NamedType 2474376791" size-unit="char" translate="yes" xml:space="preserve">
+          <source>For more information, go to %1.</source>
+          <note from="Developer" annotates="general" priority="2">%1=Support URL</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.BankList Hndl - NamedType AddnlInfoTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3927356675 - NamedType 143402242" size-unit="char" translate="no" xml:space="preserve">
+          <source>bankList</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.BankList Hndl - NamedType BankListWebCallTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3857426880 - NamedType 2779639592" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Preparing line number #1#######</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Import Bank STMT - NamedType ProgressMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3925124761 - NamedType 2676459513" size-unit="char" translate="no" xml:space="preserve">
+          <source>/reportExportResponse/return/finsta/statement/balanceenddate</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.-Post-Mapping - NamedType StmtDatePathFilterTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3925124761 - NamedType 809723493" size-unit="char" translate="no" xml:space="preserve">
+          <source>/reportExportResponse/return/finsta/statement/balanceend</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.-Post-Mapping - NamedType StmtAmtPathFilterTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3234607452 - NamedType 387681623" size-unit="char" translate="no" xml:space="preserve">
+          <source>/reportExportResponse/return/finsta/statement/ownbankaccount/bankaccount</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.-Pre-Mapping - NamedType StmtBankAccNoPathFilterTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3234607452 - NamedType 368446010" size-unit="char" translate="no" xml:space="preserve">
+          <source>='/reportExportResponse/return/finsta/statement/ownbankaccount/currency'|='/reportExportResponse/return/finsta/statement/finstatransus/amountdetails/currency'</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.-Pre-Mapping - NamedType CurrCodePathFilterTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3234607452 - NamedType 2159309086" size-unit="char" translate="no" xml:space="preserve">
+          <source>/reportExportResponse/return/finsta/statement/statementno</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.-Pre-Mapping - NamedType StmtNoPathFilterTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 52548103 - NamedType 1810949511" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The request body is not set.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType NoRequestBodyErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 52548103 - NamedType 3014721114" size-unit="char" translate="yes" xml:space="preserve">
+          <source>All Files(*.*)|*.*|XML Files(*.xml)|*.xml|Text Files(*.txt;*.csv;*.asc)|*.txt;*.csv;*.asc</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType FileFilterTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 52548103 - NamedType 4100096721" size-unit="char" translate="no" xml:space="preserve">
+          <source>txt,csv,asc,xml</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType FileFilterExtensionTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 52548103 - NamedType 1051517620" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has not returned any statement transactions.\\For more information, go to %1.</source>
+          <note from="Developer" annotates="general" priority="2">%1=Support URl</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType FinstaNotCollectedErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 52548103 - NamedType 2711926903" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Select a file to import.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType ImportBankStmtTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 52548103 - NamedType 531377784" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking has returned the following error message:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType BankDataConvServSysErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 52548103 - NamedType 2474376791" size-unit="char" translate="yes" xml:space="preserve">
+          <source>For more information, go to %1.</source>
+          <note from="Developer" annotates="general" priority="2">%1=Support URL</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType AddnlInfoTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 52548103 - NamedType 3884939420" size-unit="char" translate="no" xml:space="preserve">
+          <source>reportExport</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Imp.STMT. Hndl - NamedType ReportExportWebCallTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 2568490811 - NamedType 3164795350" size-unit="char" translate="yes" xml:space="preserve">
           <source>The %1 is missing the user name or password. Do you want to open the %2 page?</source>
@@ -898,55 +853,100 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Mgt. - Method InitBankClearingStandard - NamedType BankClearingStandardDesc18Txt</note>
         </trans-unit>
-        <trans-unit id="Codeunit 3646414981 - NamedType 3314864117" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The file has not been saved.</source>
+        <trans-unit id="Codeunit 1873957797 - NamedType 3179812607" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The bank statement that you are importing contains transactions in %1 %2. This conflicts with the %3 %4.\\Do you want to continue?</source>
+          <note from="Developer" annotates="general" priority="2">%1 %2 = Currency Code EUR; %3 %4 = LCY Code DKK.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType DiffCurrQst</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1873957797 - NamedType 1106260476" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The statement date was not found in the data to be imported.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType DownloadFromStreamErr</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType MissingStmtDateInDataMsg</note>
         </trans-unit>
-        <trans-unit id="Codeunit 3646414981 - NamedType 1810949511" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The request body is not set.</source>
+        <trans-unit id="Codeunit 1873957797 - NamedType 742056434" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The closing balance was not found in the data to be imported.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType NoRequestBodyErr</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType MissingClosingBalInDataMsg</note>
         </trans-unit>
-        <trans-unit id="Codeunit 3646414981 - NamedType 842108793" size-unit="char" translate="yes" xml:space="preserve">
-          <source>There is nothing to export.</source>
+        <trans-unit id="Codeunit 1873957797 - NamedType 4082076936" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Bank account %1 does not have a bank account number.\\Do you want to continue?</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType NothingToExportErr</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType MissingBankAccNoQst</note>
         </trans-unit>
-        <trans-unit id="Codeunit 3646414981 - NamedType 3826889551" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The AMC Banking has not returned any payment data.\\For more information, go to %1.</source>
-          <note from="Developer" annotates="general" priority="2">%1=Support URL</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType PaymentDataNotCollectedErr</note>
+        <trans-unit id="Codeunit 1873957797 - NamedType 1428720056" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The bank statement that you are importing contains transactions in currencies other than the %1 %2 of bank account %3.</source>
+          <note from="Developer" annotates="general" priority="2">%1 %2 = Currency Code EUR; %3 = Bank Account No.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType BankAccCurrErr</note>
         </trans-unit>
-        <trans-unit id="Codeunit 3646414981 - NamedType 4134082808" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The AMC Banking has found one or more errors.\\For each line to be exported, resolve the errors that are displayed in the FactBox.\\Choose an error to see more information.</source>
+        <trans-unit id="Codeunit 1873957797 - NamedType 2692357613" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The file that you are trying to import contains more than one bank statement.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType HasErrorsErr</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType MultipleStmtErr</note>
         </trans-unit>
-        <trans-unit id="Codeunit 3646414981 - NamedType 1219964534" size-unit="char" translate="yes" xml:space="preserve">
-          <source>There is an incorrect file conversion error element in the response. Reference: %1, error text: %2.</source>
-          <note from="Developer" annotates="general" priority="2">%1=Reference to payment, %2=Error text</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType IncorrectElementErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3646414981 - NamedType 531377784" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The AMC Banking has returned the following error message:</source>
+        <trans-unit id="Codeunit 1873957797 - NamedType 2242781076" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The bank account number was not found in the data to be imported.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType BankDataConvServSysErr</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType MissingBankAccNoInDataErr</note>
         </trans-unit>
-        <trans-unit id="Codeunit 3646414981 - NamedType 2474376791" size-unit="char" translate="yes" xml:space="preserve">
-          <source>For more information, go to %1.</source>
-          <note from="Developer" annotates="general" priority="2">%1=Support URL</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType AddnlInfoTxt</note>
+        <trans-unit id="Codeunit 1873957797 - NamedType 1975081983" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Bank account %1 does not have the bank account number %2, as specified in the bank statement file.\\Do you want to continue?</source>
+          <note from="Developer" annotates="general" priority="2">%1=Value; %2 = Bank account no.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Pre&amp;Post Process - NamedType BankAccMismatchQst</note>
         </trans-unit>
-        <trans-unit id="Codeunit 3646414981 - NamedType 642046912" size-unit="char" translate="no" xml:space="preserve">
-          <source>paymentExportBank</source>
+        <trans-unit id="Codeunit 4228874151 - NamedType 1098773093" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The web service returned an error message:\</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType PaymentExportWebCallTxt</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType TryLoadErrorLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 3646414981 - NamedType 540628993" size-unit="char" translate="yes" xml:space="preserve">
-          <source>.txt</source>
+        <trans-unit id="Codeunit 4228874151 - NamedType 4203108968" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Status code: %1</source>
+          <note from="Developer" annotates="general" priority="2">%1=Http Statuscode</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType WebLoadErrorLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 4228874151 - NamedType 3754422060" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The expected data was not received from the web service.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Exp. CT Hndl - NamedType FileExtTxt</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType ExpectedResponseNotReceivedErrLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 4228874151 - NamedType 3019894490" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Please wait while the server is processing your request.\This may take several minutes.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType ProcessingWindowMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 4228874151 - NamedType 1815440819" size-unit="char" translate="no" xml:space="preserve">
+          <source>text/xml; charset=utf-8</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType ContentTypeTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 4228874151 - NamedType 2232507934" size-unit="char" translate="no" xml:space="preserve">
+          <source>//return/finsta/statement/finstatransus</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType FinstaPathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 4228874151 - NamedType 1010824515" size-unit="char" translate="no" xml:space="preserve">
+          <source>//return/syslog[syslogtype[text()="error"]]</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType SysErrPathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 4228874151 - NamedType 3843122408" size-unit="char" translate="no" xml:space="preserve">
+          <source>//return/pack/convertlog[syslogtype[text()="error"]]</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType ConvErrPathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 4228874151 - NamedType 314874199" size-unit="char" translate="no" xml:space="preserve">
+          <source>//return/pack/data</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType DataPathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 4228874151 - NamedType 215984685" size-unit="char" translate="no" xml:space="preserve">
+          <source>//return/pack/bank</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType BankPathTxt</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 33113820 - NamedType 930138903" size-unit="char" translate="yes" xml:space="preserve">
+          <source>We have updated the AMC Banking 365 Fundamentals extension.\\Before you can use the extension you must provide some information. Go to the AMC Banking Setup page and run the Assisted Setup action.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Upg. Notification - NamedType UpgNotificationLbl</note>
         </trans-unit>
         <trans-unit id="Page 2582853259 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
@@ -1493,6 +1493,46 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Assisted Setup - Action Finished - Property ToolTip</note>
         </trans-unit>
+        <trans-unit id="Page 3327916022 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>AMC Banking Bank Name List</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 3327916022 - Property 2019332006" size-unit="char" translate="yes" xml:space="preserve">
+          <source>New,Process,Page,Setup</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Property PromotedActionCategories</note>
+        </trans-unit>
+        <trans-unit id="Page 3327916022 - Control 1732083938 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the name of the bank, and potentially its country/region code, that supports your setup for import/export of bank data using the AMC Banking feature.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Control Bank - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 3327916022 - Control 2685439803 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the name of the bank that supports your setup for import/export of bank data using the AMC Banking feature.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Control Bank Name - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 3327916022 - Control 284764054 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the country/region of the address.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Control Country/Region Code - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 3327916022 - Control 2501792105 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the last time the list of supported banks was updated.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Control Last Update Date - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 3327916022 - Action 1520941751 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Update Bank Name List</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Action UpdateBankList - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 3327916022 - Action 1520941751 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Update the bank list with any new banks in your country/region.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Action UpdateBankList - Property ToolTip</note>
+        </trans-unit>
         <trans-unit id="Page 2285503463 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>AMC Banking Payment Types</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1602,46 +1642,6 @@
           <source>Are you sure that you want to delete log activity entries?</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Webcall Log - Method DeleteEntriesAMC - NamedType DeleteLbl</note>
-        </trans-unit>
-        <trans-unit id="Page 3327916022 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>AMC Banking Bank Name List</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Page 3327916022 - Property 2019332006" size-unit="char" translate="yes" xml:space="preserve">
-          <source>New,Process,Page,Setup</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Property PromotedActionCategories</note>
-        </trans-unit>
-        <trans-unit id="Page 3327916022 - Control 1732083938 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Specifies the name of the bank, and potentially its country/region code, that supports your setup for import/export of bank data using the AMC Banking feature.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Control Bank - Property ToolTip</note>
-        </trans-unit>
-        <trans-unit id="Page 3327916022 - Control 2685439803 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Specifies the name of the bank that supports your setup for import/export of bank data using the AMC Banking feature.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Control Bank Name - Property ToolTip</note>
-        </trans-unit>
-        <trans-unit id="Page 3327916022 - Control 284764054 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Specifies the country/region of the address.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Control Country/Region Code - Property ToolTip</note>
-        </trans-unit>
-        <trans-unit id="Page 3327916022 - Control 2501792105 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Specifies the last time the list of supported banks was updated.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Control Last Update Date - Property ToolTip</note>
-        </trans-unit>
-        <trans-unit id="Page 3327916022 - Action 1520941751 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Update Bank Name List</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Action UpdateBankList - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Page 3327916022 - Action 1520941751 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Update the bank list with any new banks in your country/region.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Action UpdateBankList - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="XmlPort 417263901 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>AMC Banking Export CreditTransfer</source>
