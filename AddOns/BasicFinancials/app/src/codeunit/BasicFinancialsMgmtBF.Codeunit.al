@@ -45,7 +45,7 @@ codeunit 20601 "Basic Financials Mgmt BF"
 
     internal procedure TestSupportedLocales() // Microsoft requirements: The extension checks for the country availability. The extension is only available in Denmark and Iceland.;
     var
-        TempApplicationAreaSetup: Record "Application Area Setup";
+        TempApplicationAreaSetup: Record "Application Area Setup" temporary;
         AppAreaMgmt: Codeunit "App Area Mgmt BF";
 
     begin
