@@ -1,43 +1,38 @@
-codeunit 20601 "Basic Financials Mgmt BF"
+codeunit 20601 "Basic Mgmt BF"
 {
     Access = Internal;
 
     var
         AzureADLicensing: codeunit "Azure AD Licensing";
-        NotSupportedLicenseErr: Label 'To deploy the Basic Financials extension the Basic Financials license must be assigned to at least one user.';
-        NotSupportedLocalesErr: Label 'The Basic Financials Extension can only available in Denmark and Iceland.';
-        NotSupportedUserErr: Label 'The user who deploys the Basic Financials extension must have the Super User permission set.';
-        NotSupportedCompanyErr: Label 'The Basic Financials extension can only be deployed when exactly one company exists in the environment.';
+        NotSupportedLicenseErr: Label 'To deploy the Business Central Basic extension the Business Central Basic license must be assigned to at least one user.';
+        NotSupportedLocalesErr: Label 'The Business Central Basic Extension can only available in Denmark and Iceland.';
+        NotSupportedUserErr: Label 'The user who deploys the Business Central Basic extension must have the Super User permission set.';
+        NotSupportedCompanyErr: Label 'The Business Central Basic extension can only be deployed when exactly one company exists in the environment.';
         AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER|SALES AND RELATIONSHIP MANAGER', Locked = true;
-        BFSKUIdTxt: Label '{66CAD104-64F9-476E-9682-3C3518B9B6ED}', Locked = true, Comment = 'Dynamics 365 Business Central Basic Financials';
-        BFC5SPLASKUIdTxt: Label '{4dCE07FD-7B07-4FB5-8FB7-D49653F7BF30}', Locked = true, Comment = 'Dynamics 365 Business Central Basic Financials from C5 SPLA (Qualified Offer)';
+        BFSKUIdTxt: Label '{2ec8b6ca-ab13-4753-a479-8c2ffe4c323b}', Locked = true, Comment = 'Dynamics 365 Business Central BASIC ISVEMB';
         UserSecurityIdTxt: Label '{00000000-0000-0000-0000-000000000001}', Locked = true, Comment = 'System user';
-        NotSupportedSystemUserErr: Label 'The current user is the Microsoft System User. The Basic Financials Extension can only be deployed with a user that exist in the user table.';
-        UnknowUserErr: Label 'The current user is unknown. The user who deploys the Basic Financials extension must exist in the user table.';
+        NotSupportedSystemUserErr: Label 'The current user is the Microsoft System User. The Business Central Basic Extension can only be deployed with a user that exist in the user table.';
+        UnknowUserErr: Label 'The current user is unknown. The user who deploys the Business Central Basic extension must exist in the user table.';
 
-    internal procedure IsSupportedLicense(): Boolean // Microsoft requirements: The Basic Financials Assisted Setup checks for the Basic Financials license on the AAD tenant, at least one user has been assigned to this license.
+    internal procedure IsSupportedLicense(): Boolean // Microsoft requirements: The Basic Assisted Setup checks for the Basic license on the AAD tenant, at least one user has been assigned to this license.
     var
     begin
         AzureADLicensing.ResetSubscribedSKU();
         while AzureADLicensing.NextSubscribedSKU() do
             case UpperCase(AzureADLicensing.SubscribedSKUId()) of
                 BFSKUIdTxt:
-                    exit(true);
-                BFC5SPLASKUIdTxt:
                     exit(true);
             end;
         exit(false);
     end;
 
-    internal procedure TestSupportedLicenses() // Microsoft requirements: The extension checks for the Basic Financials license on the AAD tenant, at least one user has been assigned to this license. 
+    internal procedure TestSupportedLicenses() // Microsoft requirements: The extension checks for the Basic license on the AAD tenant, at least one user has been assigned to this license. 
     var
     begin
         AzureADLicensing.ResetSubscribedSKU();
         while AzureADLicensing.NextSubscribedSKU() do
             case UpperCase(AzureADLicensing.SubscribedSKUId()) of
                 BFSKUIdTxt:
-                    exit;
-                BFC5SPLASKUIdTxt:
                     exit;
             end;
         Error(NotSupportedLicenseErr);

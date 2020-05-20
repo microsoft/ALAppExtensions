@@ -4,11 +4,11 @@ pageextension 20614 "Contact Through BF" extends "Contact Through"
     {
         modify(Number)
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
         modify("E-Mail")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
     }
 }

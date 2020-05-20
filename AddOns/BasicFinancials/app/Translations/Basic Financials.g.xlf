@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en-US" target-language="en-US" original="Basic Financials">
+  <file datatype="xml" source-language="en-US" target-language="en-US" original="Basic ">
     <body>
       <group id="body">
         <trans-unit id="Codeunit 875245055 - NamedType 1420859235" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Set up the Basic Financials extension</source>
+          <source>Set up the Basic extension</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AssistedSetupTxt</note>
         </trans-unit>
@@ -14,7 +14,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AssistedSetupHelpTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 875245055 - NamedType 1689235809" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Basic Financials</source>
+          <source>Basic </source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AssistedSetupDescriptionTxt</note>
         </trans-unit>
@@ -24,7 +24,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AlreadySetUpQst</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Basic Financials Assisted Setup</source>
+          <source>Basic Assisted Setup</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Property Caption</note>
         </trans-unit>
@@ -39,7 +39,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Instructional - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Control 576735127 - Property 1968111052" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The Basic Financials extension enables the subset Dynamics 365 Business Central capabilities provided by the Basic Financials license.</source>
+          <source>The Basic extension enables the subset Dynamics 365 Business Central capabilities provided by the Basic license.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Instructional - Property InstructionalText</note>
         </trans-unit>
@@ -59,7 +59,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control HelpLink - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Control 754520315 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Basic Financials documentation</source>
+          <source>Basic documentation</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control HelpLink - Property ToolTip</note>
         </trans-unit>
@@ -79,7 +79,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control TermsOfUseLink - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Control 2114002185 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Basic Financials terms of use</source>
+          <source>Basic terms of use</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control TermsOfUseLink - Property ToolTip</note>
         </trans-unit>
@@ -94,17 +94,17 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control AcceptConsent - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Control 2010530552 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Basic Financials license has been assigned</source>
+          <source>Basic license has been assigned</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedLicenses - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Control 2010530552 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>To complete the Basic Financials setup the Basic Financials license must be assigned to at least one user.</source>
+          <source>To complete the Basic setup the Basic license must be assigned to at least one user.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedLicenses - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Control 2010530552 - Method 2126772001 - NamedType 1960031106" size-unit="char" translate="yes" xml:space="preserve">
-          <source>At least one user must have the Basic Financials license.</source>
+          <source>At least one user must have the Basic license.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedLicenses - Method OnValidate - NamedType NotSupportedLicensesErr</note>
         </trans-unit>
@@ -114,64 +114,64 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Action Finish - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Action 2667510389 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Choose Finish to complete the Basic Financials assisted setup guide.</source>
+          <source>Choose Finish to complete the Basic assisted setup guide.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Action Finish - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Codeunit 1304803449 - NamedType 2434750519" size-unit="char" translate="yes" xml:space="preserve">
-          <source>To deploy the Basic Financials extension the Basic Financials license must be assigned to at least one user.</source>
+          <source>To deploy the Basic extension the Basic license must be assigned to at least one user.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - NamedType NotSupportedLicenseErr</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedLicenseErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 1304803449 - NamedType 438530999" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The Basic Financials Extension can only available in Denmark and Iceland.</source>
+          <source>The Basic Extension can only available in Denmark and Iceland.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - NamedType NotSupportedLocalesErr</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedLocalesErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 1304803449 - NamedType 296042569" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The user who deploys the Basic Financials extension must have the Super User permission set.</source>
+          <source>The user who deploys the Basic extension must have the Super User permission set.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - NamedType NotSupportedUserErr</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedUserErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 1304803449 - NamedType 4099634803" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The Basic Financials Extension, can only be deployed, when exactly one Company is present in the Environment.</source>
+          <source>The Basic Extension, can only be deployed, when exactly one Company is present in the Environment.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - NamedType NotSupportedCompanyErr</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedCompanyErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 1304803449 - NamedType 4093867806" size-unit="char" translate="no" xml:space="preserve">
           <source>MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER|SALES AND RELATIONSHIP MANAGER</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - NamedType AllProfileFilterTxt</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType AllProfileFilterTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 1304803449 - NamedType 2535491656" size-unit="char" translate="no" xml:space="preserve">
           <source>{66CAD104-64F9-476E-9682-3C3518B9B6ED}</source>
-          <note from="Developer" annotates="general" priority="2">Dynamics 365 Business Central Basic Financials</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - NamedType BFSKUIdTxt</note>
+          <note from="Developer" annotates="general" priority="2">Dynamics 365 Business Central Basic </note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType BFSKUIdTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 1304803449 - NamedType 2589384304" size-unit="char" translate="no" xml:space="preserve">
           <source>{4dCE07FD-7B07-4FB5-8FB7-D49653F7BF30}</source>
-          <note from="Developer" annotates="general" priority="2">Dynamics 365 Business Central Basic Financials from C5 SPLA (Qualified Offer)</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - NamedType BFC5SPLASKUIdTxt</note>
+          <note from="Developer" annotates="general" priority="2">Dynamics 365 Business Central Basic from C5 SPLA (Qualified Offer)</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType BFC5SPLASKUIdTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 1304803449 - NamedType 1998431302" size-unit="char" translate="no" xml:space="preserve">
           <source>{00000000-0000-0000-0000-000000000001}</source>
           <note from="Developer" annotates="general" priority="2">System user</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - NamedType UserSecurityIdTxt</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType UserSecurityIdTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 1304803449 - NamedType 2020464022" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The current user is the Microsoft System User. The Basic Financials Extension can only be deployed with a user that exist in the user table.</source>
+          <source>The current user is the Microsoft System User. The Basic Extension can only be deployed with a user that exist in the user table.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - NamedType NotSupportedSystemUserErr</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedSystemUserErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 1304803449 - NamedType 3286254446" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The current user is unknown. The user who deploys the Basic Financials extension must exist in the user table.</source>
+          <source>The current user is unknown. The user who deploys the Basic extension must exist in the user table.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Financials Mgmt BF - NamedType UnknowUserErr</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType UnknowUserErr</note>
         </trans-unit>
         <trans-unit id="TableExtension 3931722514 - Field 3376354272 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 627389406">
-          <source>Basic Financials</source>
+          <source>Basic </source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Application Area Setup BF - Field BF Basic Financials - Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Application Area Setup BF - Field BF Basic- Property Caption</note>
         </trans-unit>
         <trans-unit id="TableExtension 3931722514 - Field 1564560419 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 627389406">
           <source>Orders</source>
@@ -179,9 +179,9 @@
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Application Area Setup BF - Field BF Orders - Property Caption</note>
         </trans-unit>
         <trans-unit id="TableExtension 1994908273 - Field 3376354272 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3548822581">
-          <source>Basic Financials</source>
+          <source>Basic </source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Experience Tier Setup BF - Field BF Basic Financials - Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Experience Tier Setup BF - Field BF Basic- Property Caption</note>
         </trans-unit>
       </group>
     </body>

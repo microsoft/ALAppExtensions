@@ -6,11 +6,11 @@ codeunit 20602 "Experience Tier BF"
     local procedure OnValidateApplicationAreas(ExperienceTierSetup: Record "Experience Tier Setup"; TempApplicationAreaSetup: Record "Application Area Setup" temporary)
     var
     begin
-        if not ExperienceTierSetup."BF Basic Financials" then
+        if not ExperienceTierSetup."BF Basic" then
             exit;
 
         TempApplicationAreaSetup.TestField("BF Orders", false);
-        TempApplicationAreaSetup.TestField("BF Basic Financials", true);
+        TempApplicationAreaSetup.TestField("BF Basic", true);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt. Facade", 'OnSetExperienceTier', '', true, true)]
@@ -18,20 +18,20 @@ codeunit 20602 "Experience Tier BF"
     var
         AppAreaMgmt: Codeunit "App Area Mgmt BF";
     begin
-        if not ExperienceTierSetup."BF Basic Financials" then
+        if not ExperienceTierSetup."BF Basic" then
             exit;
 
         AppAreaMgmt.GetEssentialExperienceAppAreas(TempApplicationAreaSetup);
         DisableExperienceAppAreas(TempApplicationAreaSetup);
-        GetBasicFinancialsExperienceAppAreas(TempApplicationAreaSetup);
+        GetBasicExperienceAppAreas(TempApplicationAreaSetup);
         ApplicationAreasSet := true;
     end;
 
-    local procedure GetBasicFinancialsExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
+    local procedure GetBasicExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
     var
     begin
         TempApplicationAreaSetup."BF Orders" := false;
-        TempApplicationAreaSetup."BF Basic Financials" := true;
+        TempApplicationAreaSetup."BF Basic" := true;
     end;
 
     local procedure DisableExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)

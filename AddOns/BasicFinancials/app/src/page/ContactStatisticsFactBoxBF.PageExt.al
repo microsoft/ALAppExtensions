@@ -4,27 +4,27 @@ pageextension 20613 "Contact Statistics FactBox BF" extends "Contact Statistics 
     {
         modify("No. of Opportunities")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
         modify("Calcd. Current Value (LCY)")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
         modify("No. of Job Responsibilities")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
         modify("No. of Industry Groups")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
         modify("No. of Business Relations")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
         modify("No. of Mailing Groups")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
     }
 }

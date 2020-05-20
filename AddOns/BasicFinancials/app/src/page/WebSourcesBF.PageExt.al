@@ -4,7 +4,7 @@ pageextension 20666 "Web Sources BF" extends "Web Sources"
     {
         modify(URL)
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
     }
 }

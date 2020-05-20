@@ -4,26 +4,26 @@ pageextension 20648 "Salespersons/Purchasers BF" extends "Salespersons/Purchaser
     {
         modify(Name)
         {
-            ApplicationArea = Suite, RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = Suite, RelationshipMgmt, BFBasic;
         }
         modify("Commission %")
         {
-            ApplicationArea = Suite, RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = Suite, RelationshipMgmt, BFBasic;
         }
         modify("Phone No.")
         {
-            ApplicationArea = Suite, RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = Suite, RelationshipMgmt, BFBasic;
         }
         modify("Privacy Blocked")
         {
-            ApplicationArea = Suite, RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = Suite, RelationshipMgmt, BFBasic;
         }
     }
     actions
     {
         modify("Con&tacts")
         {
-            ApplicationArea = Suite, RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = Suite, RelationshipMgmt, BFBasic;
         }
     }
 }

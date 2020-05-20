@@ -4,7 +4,7 @@ pageextension 20646 "Sales Order Archive BF" extends "Sales Order Archive"
     {
         modify("Sell-to Contact No.")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
     }
 }

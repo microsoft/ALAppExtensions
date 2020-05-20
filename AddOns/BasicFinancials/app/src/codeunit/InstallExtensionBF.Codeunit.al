@@ -3,12 +3,12 @@ codeunit 20603 "Install Extension BF"
     /*
     To install the extension, the partner does the following:
     1.	Creates a new Business Central tenant.
-    2.	Adds at least one user who has a Basic FInancials license assigned to them in the Azure Active Directory tenant.
+    2.	Adds at least one user who has a Business Central Basic license assigned to them in the Azure Active Directory tenant.
     3.	Removes all companies manually, including Cronus.
     4.	Creates one production company that does not contain data or setups.
-    5.	Imports a configuration package that includes Basic Financials setup data.
-    6.	Installs the Basic Financials extension. During installation the extension verifies the country availability that there is only one company.
-    7.	Completes the Basic Financials assisted setup guide. The assisted setup guide checks for the Basic Financials license.
+    5.	Imports a configuration package that includes Basic setup data.
+    6.	Installs the Basic extension. During installation the extension verifies the country availability that there is only one company.
+    7.	Completes the Business Central Basic assisted setup guide. The assisted setup guide checks for the Business Central Basic license.
     8.	Sends sign in information to the customer in an email.
     */
 
@@ -19,13 +19,13 @@ codeunit 20603 "Install Extension BF"
     var
         DummyExperienceTierSetup: Record "Experience Tier Setup";
         ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
-        BasicFinancialsMgmt: Codeunit "Basic Financials Mgmt BF";
+        BasicMgmt: Codeunit "Basic Mgmt BF";
     begin
-        BasicFinancialsMgmt.TestSupportedLocales();
-        //BasicFinancialsMgmt.TestSupportedLicenses(); // The requested functionality is not supported at the trigger OnInstallApp, in the current version of Microsoft Business Central.
-        //BasicFinancialsMgmt.TestSupportedUser(); // The requested functionality is not supported at the trigger OnInstallApp, in the current version of Microsoft Business Central.
-        BasicFinancialsMgmt.TestSupportedCompanies();
-        BasicFinancialsMgmt.TryDisableRoleCenter();
-        ApplicationAreaMgmtFacade.SaveExperienceTierCurrentCompany(DummyExperienceTierSetup.FieldCaption(DummyExperienceTierSetup."BF Basic Financials"));
+        BasicMgmt.TestSupportedLocales();
+        //BasicMgmt.TestSupportedLicenses(); // The requested functionality is not supported at the trigger OnInstallApp, in the current version of Microsoft Business Central.
+        //BasicMgmt.TestSupportedUser(); // The requested functionality is not supported at the trigger OnInstallApp, in the current version of Microsoft Business Central.
+        BasicMgmt.TestSupportedCompanies();
+        BasicMgmt.TryDisableRoleCenter();
+        ApplicationAreaMgmtFacade.SaveExperienceTierCurrentCompany(DummyExperienceTierSetup.FieldCaption(DummyExperienceTierSetup."BF Basic"));
     end;
 }

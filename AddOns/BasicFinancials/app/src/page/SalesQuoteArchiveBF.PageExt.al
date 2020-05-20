@@ -4,7 +4,7 @@ pageextension 20651 "Sales Quote Archive BF" extends "Sales Quote Archive"
     {
         modify("Bill-to Contact No.")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
     }
 }

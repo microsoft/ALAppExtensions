@@ -1,6 +1,6 @@
 page 20600 "Assisted Setup BF"
 {
-    Caption = 'Basic Financials Assisted Setup';
+    Caption = 'Basic Assisted Setup';
     DeleteAllowed = false;
     InsertAllowed = false;
     LinksAllowed = false;
@@ -20,7 +20,7 @@ page 20600 "Assisted Setup BF"
             group(Instructional)
             {
                 Caption = ' ';
-                InstructionalText = 'The Basic Financials extension enables the subset Dynamics 365 Business Central capabilities provided by the Basic Financials license.';
+                InstructionalText = 'The Basic extension enables the subset Dynamics 365 Business Central capabilities provided by the Basic license.';
             }
             field(DocumentationPart; 'For more information, see the documentation.')
             {
@@ -30,13 +30,13 @@ page 20600 "Assisted Setup BF"
                 Editable = false;
                 ToolTip = 'For more information, see the documentation.';
             }
-            field(HelpLink; 'Basic Financials documentation')
+            field(HelpLink; 'Basic documentation')
             {
                 ApplicationArea = Basic, Suite;
                 Caption = ' ';
                 ShowCaption = false;
                 Editable = false;
-                ToolTip = 'Basic Financials documentation';
+                ToolTip = 'Basic documentation';
 
                 trigger OnDrillDown()
                 begin
@@ -51,13 +51,13 @@ page 20600 "Assisted Setup BF"
                 Editable = false;
                 ToolTip = 'By enabling this extension you accept the terms of use. To enable the service you must read and accept the terms of use.';
             }
-            field(TermsOfUseLink; 'Basic Financials terms of use')
+            field(TermsOfUseLink; 'Basic terms of use')
             {
                 ApplicationArea = Basic, Suite;
                 Caption = ' ';
                 ShowCaption = false;
                 Editable = false;
-                ToolTip = 'Basic Financials terms of use';
+                ToolTip = 'Basic terms of use';
 
                 trigger OnDrillDown()
                 begin
@@ -75,14 +75,14 @@ page 20600 "Assisted Setup BF"
             {
                 ApplicationArea = Basic, Suite;
                 Editable = true;
-                Caption = 'Basic Financials license has been assigned';
-                ToolTip = 'To complete the Basic Financials setup the Basic Financials license must be assigned to at least one user.';
+                Caption = 'Basic license has been assigned';
+                ToolTip = 'To complete the Basic setup the Basic license must be assigned to at least one user.';
                 trigger OnValidate()
                 var
-                    BasicFinancialsMgmt: Codeunit "Basic Financials Mgmt BF";
-                    NotSupportedLicensesErr: Label 'At least one user must have the Basic Financials license.';
+                    BasicMgmt: Codeunit "Basic Mgmt BF";
+                    NotSupportedLicensesErr: Label 'At least one user must have the Basic license.';
                 begin
-                    IsSupportedLicenses := BasicFinancialsMgmt.IsSupportedLicense();
+                    IsSupportedLicenses := BasicMgmt.IsSupportedLicense();
                     if not IsSupportedLicenses then
                         Error(NotSupportedLicensesErr);
                 end;
@@ -100,7 +100,7 @@ page 20600 "Assisted Setup BF"
                 Enabled = ConsentAccepted and IsSupportedLicenses;
                 Image = Close;
                 InFooterBar = true;
-                ToolTip = 'Choose Finish to complete the Basic Financials assisted setup guide.';
+                ToolTip = 'Choose Finish to complete the Basic assisted setup guide.';
 
                 trigger OnAction();
                 var
@@ -116,9 +116,9 @@ page 20600 "Assisted Setup BF"
     trigger OnOpenPage()
     var
         AssistedSetup: Codeunit "Assisted Setup";
-        BasicFinancialsMgmt: Codeunit "Basic Financials Mgmt BF";
+        BasicMgmt: Codeunit "Basic Mgmt BF";
     begin
-        IsSupportedLicenses := BasicFinancialsMgmt.IsSupportedLicense();
+        IsSupportedLicenses := BasicMgmt.IsSupportedLicense();
         AssistedSetup.Reset(PAGE::"Assisted Setup BF");
         IsComplete := AssistedSetup.IsComplete(PAGE::"Assisted Setup BF");
         ConsentAccepted := IsComplete;

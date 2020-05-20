@@ -4,11 +4,11 @@ pageextension 20619 "Customer Template List BF" extends "Customer Template List"
     {
         modify("Country/Region Code")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
         modify("Territory Code")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
     }
 }

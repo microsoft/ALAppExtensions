@@ -4,14 +4,14 @@ pageextension 20608 "Business Relations BF" extends "Business Relations"
     {
         modify("No. of Contacts")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
     }
     actions
     {
         modify("C&ontacts")
         {
-            ApplicationArea = RelationshipMgmt, BFBasicFinancials;
+            ApplicationArea = RelationshipMgmt, BFBasic;
         }
     }
 

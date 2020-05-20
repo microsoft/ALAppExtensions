@@ -1,9 +1,9 @@
 {
   "id": "0242c240-2336-450f-9678-2f13f4ce9a6e",
-  "name": "Basic Financials",
+  "name": "Business Central Basic",
   "publisher": "Microsoft",
-  "brief":  "Basic Financial Extensions aligns the User Experience to the license limitations",
-  "description": "The Basic Financials extension gives small companies access to the Business Central features that are at the absolute core of doing business. For example, when you install this extension you can invoice customers, pay vendors, manage inventory, and keep your finances in order.",
+  "brief":  "The Business Central Basic Extensions aligns the User Experience to the license limitations",
+  "description": "The Business Central Basic extension gives small companies access to the Business Central features that are at the absolute core of doing business. For example, when you install this extension you can invoice customers, pay vendors, manage inventory, and keep your finances in order.",
   "version":  "16.1.0.0",
   "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA":  "https://go.microsoft.com/fwlink/?linkid=2130900",
