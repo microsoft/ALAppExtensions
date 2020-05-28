@@ -20,10 +20,10 @@ codeunit 50101 "GeoLocation Impl."
         GeoLocationPage.RunModal();
         if GeoLocationPage.HasGeoLocation() then begin
             GeoLocationPage.GetGeoLocation(Latitude, Longitude);
-            exit(true)
+            exit(true);
         end;
 
-        exit(false)
+        exit(false);
     end;
 
     procedure IsAvailable(): Boolean

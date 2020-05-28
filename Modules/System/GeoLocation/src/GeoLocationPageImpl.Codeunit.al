@@ -8,7 +8,7 @@ codeunit 50102 "GeoLocation Page Impl."
     Access = Internal;
 
     var
-        LocationNotRetrievedError: Label 'Location is not retrieved.';
+        LocationNotRetrievedError: Label 'The geographical location is not retrieved.';
         CachedLocation: Dotnet Location;
         LocationOptions: DotNet LocationOptions;
         LocationOptionsEnabled: Boolean;
@@ -106,19 +106,19 @@ codeunit 50102 "GeoLocation Page Impl."
     procedure GetHighAccuracy(): Boolean
     begin
         InitializeLocationOptions();
-        exit(LocationOptions.EnableHighAccuracy);
+        exit(LocationOptions.EnableHighAccuracy());
     end;
 
     procedure GetTimeout(): Integer
     begin
         InitializeLocationOptions();
-        exit(LocationOptions.Timeout);
+        exit(LocationOptions.Timeout());
     end;
 
     procedure GetMaximumAge(): Integer
     begin
         InitializeLocationOptions();
-        exit(LocationOptions.MaximumAge);
+        exit(LocationOptions.MaximumAge());
     end;
 
     [IntegrationEvent(false, false)]

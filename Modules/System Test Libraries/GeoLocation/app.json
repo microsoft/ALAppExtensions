@@ -3,7 +3,7 @@
   "name": "GeoLocation Test Library",
   "publisher": "Microsoft",
   "version": "1.0.0.0",
-  "brief": "",
+  "brief": "Library functions to initialize test data for the GeoLocation module.",
   "description": "Library functions to initialize test data for the GeoLocation module.",
   "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",

@@ -5,6 +5,12 @@
 
 /// <summary>
 /// Provides functionality for getting geographical location information from the client device.
+/// <example>
+/// <code>
+/// if GeoLocation.GetGeoLocation(Latitude, Longitude) then
+///    Message('Latitude: %1, Longitude: %2', Latitude, Longitude);
+/// </code>
+/// </example>
 /// </summary>
 codeunit 50100 GeoLocation
 {

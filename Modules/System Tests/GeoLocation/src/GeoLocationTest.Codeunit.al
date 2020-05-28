@@ -24,7 +24,7 @@ codeunit 50104 "GeoLocation Test"
         BindSubscription(GeoLocationTestLibrary);
 
         // [Then] The return value of IsAvailable is 'true'.
-        Assert.IsTrue(GeoLocation.IsAvailable(), 'The GeoLocation should be available during testing.');
+        Assert.IsTrue(GeoLocation.IsAvailable(), 'The GeoLocation is unavailable.');
     end;
 
     [Test]
@@ -41,7 +41,7 @@ codeunit 50104 "GeoLocation Test"
         GeoLocation.RunModal();
 
         // [Then] The GeoLocation page has a GeoLocation 
-        Assert.IsTrue(GeoLocation.HasGeoLocation(), 'The GeoLocation page has a location');
+        Assert.IsTrue(GeoLocation.HasGeoLocation(), 'The GeoLocation page does not have a location.');
     end;
 
     [Test]
@@ -69,10 +69,10 @@ codeunit 50104 "GeoLocation Test"
         GeoLocation.GetGeoLocation(ActualLatitude, ActualLongitude);
 
         // [Then] The latitude is equal to the expected latitude.
-        Assert.AreEqual(ExpectedLatitude, ActualLatitude, 'The latitude value is as expected.');
+        Assert.AreEqual(ExpectedLatitude, ActualLatitude, 'The latitude value is not the same as the expeceted latitude.');
 
         // [Then] The longitude is equal to the expected longitude.
-        Assert.AreEqual(ExpectedLongitude, ActualLongitude, 'The longitude value is as expected.');
+        Assert.AreEqual(ExpectedLongitude, ActualLongitude, 'The longitude value is not the same as the expeceted longitude.');
     end;
 
     [Test]
@@ -90,7 +90,7 @@ codeunit 50104 "GeoLocation Test"
         GeoLocation.RunModal();
 
         // [Then] The status of the GeoLocation is available.
-        Assert.AreEqual("GeoLocation Status"::Available, GeoLocation.GetGeoLocationStatus(), 'GeoLocation status is "Available".');
+        Assert.AreEqual("GeoLocation Status"::Available, GeoLocation.GetGeoLocationStatus(), 'The GeoLocation status is not "Available".');
     end;
 
     [Test]
@@ -105,7 +105,7 @@ codeunit 50104 "GeoLocation Test"
 
         // [When] The GeoLocation page is not run as modal before.
         // [Then] The status of the GeoLocation is available.
-        Assert.AreEqual("GeoLocation Status"::"Not Available", GeoLocation.GetGeoLocationStatus(), 'Location status is "Not Available".');
+        Assert.AreEqual("GeoLocation Status"::"Not Available", GeoLocation.GetGeoLocationStatus(), 'The GeoLocation status is not "Not Available".');
     end;
 
 
@@ -121,7 +121,7 @@ codeunit 50104 "GeoLocation Test"
 
         // [When] The GeoLocation page is not run as modal before.
         // [Then] The GeoLocation page has no GeoLocation.
-        Assert.IsFalse(GeoLocation.HasGeoLocation(), 'GeoLocation page has no location.');
+        Assert.IsFalse(GeoLocation.HasGeoLocation(), 'The GeoLocation page has a location.');
     end;
 
 
@@ -141,7 +141,7 @@ codeunit 50104 "GeoLocation Test"
         asserterror GeoLocation.GetGeoLocation(ActualLatitude, ActualLongitude);
 
         // [Then] An error is shown specifying that the GeoLocation is not retrieved.
-        Assert.ExpectedError('GeoLocation is not retrieved.');
+        Assert.ExpectedError('The geographical location is not retrieved.');
     end;
 
     [ModalPageHandler]
