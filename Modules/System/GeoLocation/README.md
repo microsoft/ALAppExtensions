@@ -149,7 +149,7 @@ The maximum length of time (milliseconds) of a cached location.
 
 
 
-## GeoLocation Status (Enum 50107)
+## GeoLocation Status (Enum 50100)
 
 Specifies the GeoLocation status of the returned location from the GeoLocation page.
  

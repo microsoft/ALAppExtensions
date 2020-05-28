@@ -8,7 +8,7 @@ codeunit 50103 "GeoLocation Test Library"
     EventSubscriberInstance = Manual;
 
     /// <summary>
-    /// Indicate that the geogrpahical location is available when test is in progress.
+    /// Indicate that the geographical location is available when test is in progress.
     /// </summary>
     /// <param name="IsAvailable">Signals whether the geographical location is available.</param>
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GeoLocation Page Impl.", 'OnIsLocationAvailable', '', false, false)]
