@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50113 "Location Test"
+codeunit 50104 "Location Test"
 {
     // [FEATURE] [Location] 
 
@@ -29,15 +29,10 @@ codeunit 50113 "Location Test"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('LocationPageHandler')]
     procedure TestHasLocationSuccess()
     var
         Location: Page Location;
         LocationTestLibrary: Codeunit "Location Test Library";
-        ActualLatitude: Decimal;
-        ActualLongitude: Decimal;
-        ExpectedLatitude: Decimal;
-        ExpectedLongitude: Decimal;
     begin
         // [Given] Location test library subscribers are binded.
         BindSubscription(LocationTestLibrary);
@@ -82,6 +77,7 @@ codeunit 50113 "Location Test"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('LocationPageHandler')]
     procedure TestGetLocationStatusIsAvailable()
     var
         Location: Page Location;
@@ -109,7 +105,7 @@ codeunit 50113 "Location Test"
 
         // [When] The location page is not run as modal before.
         // [Then] The status of the location is available.
-        Assert.AreEqual("Location Status"::NotAvailable, Location.GetLocationStatus(), 'Location status is "NotAvailable".');
+        Assert.AreEqual("Location Status"::"Not Available", Location.GetLocationStatus(), 'Location status is "Not Available".');
     end;
 
 

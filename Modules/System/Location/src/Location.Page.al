@@ -16,7 +16,7 @@
 /// Clear(Location);
 /// </code>
 /// </example>
-page 50105 "Location"
+page 50100 "Location"
 {
     Caption = 'Location request';
     PageType = Card;

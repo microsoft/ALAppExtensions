@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50114 "Location Test Library"
+codeunit 50103 "Location Test Library"
 {
     EventSubscriberInstance = Manual;
 
@@ -20,35 +20,25 @@ codeunit 50114 "Location Test Library"
     /// <summary>
     /// Save a mock location on the server instead of accessing an actual device for the location.
     /// </summary>
-    /// <param name="Handled">Signals whether taking the location was handled by the subsciber.</param>
+    /// <param name="IsHandled">Signals whether taking the location was handled by the subscriber.</param>
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Location Page Impl.", 'OnBeforeLocationInitialize', '', false, false)]
-    local procedure OnBeforeLocationInitialize(var Handled: Boolean; var Location: DotNet Location)
+    local procedure OnBeforeLocationInitialize(var Location: DotNet Location; var IsHandled: Boolean)
     begin
-        Handled := true;
+        IsHandled := true;
         GetMockLocation(Location);
     end;
 
-    procedure GetMockLocation(var Loc: DotNet Location)
+    procedure GetMockLocation(var Location: DotNet Location)
     var
         Coordinate: DotNet Coordinate;
-        Longitude: Decimal;
-        Latitude: Decimal;
-
     begin
-        Latitude := 1.5;
-        Longitude := 2.5;
-
-        Coordinate := Coordinate.Coordinate();
-        Coordinate.Latitude := Latitude;
-        Coordinate.Longitude := Longitude;
-
-        Loc := Loc.Location();
-        Loc.Coordinate := Coordinate;
+        Location := Location.Location();
+        Location.Coordinate := Coordinate.Coordinate();
+        Location.Coordinate.Latitude := 1.5;
+        Location.Coordinate.Longitude := 2.5;
     end;
 
     procedure GetMockLocation(var Latitude: Decimal; var Longitude: Decimal)
-    var
-
     begin
         Latitude := 1.5;
         Longitude := 2.5;

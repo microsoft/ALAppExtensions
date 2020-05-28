@@ -6,7 +6,7 @@
 /// <summary>
 /// Specifies the location status.
 /// </summary>
-enum 50107 "Location Status"
+enum 50100 "Location Status"
 {
     Extensible = false;
 
@@ -21,7 +21,7 @@ enum 50107 "Location Status"
     /// <summary>
     /// No data (no data could be obtained).
     /// </summary>
-    value(1; NoData)
+    value(1; "No Data")
     {
         Caption = 'No data';
     }
@@ -29,7 +29,7 @@ enum 50107 "Location Status"
     /// <summary>
     /// Timed out (location information not obtained in due time).
     /// </summary>
-    value(2; TimedOut)
+    value(2; "Timed Out")
     {
         Caption = 'Timed out';
     }
@@ -37,7 +37,7 @@ enum 50107 "Location Status"
     /// <summary>
     /// Not available (for example user denied app access to location).
     /// </summary>
-    value(3; NotAvailable)
+    value(3; "Not Available")
     {
         Caption = 'Not available';
     }

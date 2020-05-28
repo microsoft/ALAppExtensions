@@ -7,20 +7,16 @@ dotnet
 {
     assembly("Microsoft.Dynamics.Nav.ClientExtensions")
     {
-
         type("Microsoft.Dynamics.Nav.Client.Capabilities.LocationProvider"; LocationProvider)
         {
-
         }
 
         type("Microsoft.Dynamics.Nav.Client.Capabilities.Location"; Location)
         {
-
         }
 
-        type("Microsoft.Dynamics.Nav.Client.Capabilities.LocationOptions"; UT_LocationOptions)
+        type("Microsoft.Dynamics.Nav.Client.Capabilities.LocationOptions"; LocationOptions)
         {
-
         }
     }
 }

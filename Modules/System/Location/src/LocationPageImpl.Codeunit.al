@@ -3,14 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50106 "Location Page Impl."
+codeunit 50102 "Location Page Impl."
 {
-    Access = Public;
+    Access = Internal;
 
     var
         LocationNotRetrievedError: Label 'Location is not retrieved.';
         CachedLocation: Dotnet Location;
-        LocationOptions: DotNet UT_LocationOptions;
+        LocationOptions: DotNet LocationOptions;
         LocationOptionsEnabled: Boolean;
 
     procedure LocationInteractionOnOpenPage(var LocationProvider: Dotnet LocationProvider; var LocationAvailable: Boolean)
@@ -18,7 +18,7 @@ codeunit 50106 "Location Page Impl."
         Location: DotNet Location;
         HandledByTest: Boolean;
     begin
-        OnBeforeLocationInitialize(HandledByTest, Location);
+        OnBeforeLocationInitialize(Location, HandledByTest);
         if HandledByTest then begin
             LocationInteractionOnLocationAvailable(Location);
             exit;
@@ -33,7 +33,7 @@ codeunit 50106 "Location Page Impl."
         LocationProvider.RequestLocationAsync();
     end;
 
-    procedure InitializeLocationOptions()
+    local procedure InitializeLocationOptions()
     begin
         if LocationOptionsEnabled then
             exit;
@@ -80,7 +80,7 @@ codeunit 50106 "Location Page Impl."
     procedure GetLocationStatus(): Enum "Location Status"
     begin
         if (IsNull(CachedLocation)) then
-            exit("Location Status"::NotAvailable);
+            exit("Location Status"::"Not Available");
 
         exit("Location Status".FromInteger(CachedLocation.Status));
     end;
@@ -122,7 +122,7 @@ codeunit 50106 "Location Page Impl."
     end;
 
     [IntegrationEvent(false, false)]
-    procedure OnBeforeLocationInitialize(var Handled: Boolean; var Location: DotNet Location)
+    procedure OnBeforeLocationInitialize(var Location: DotNet Location; var IsHandled: Boolean)
     begin
         // Used for testing
     end;
