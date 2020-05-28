@@ -6,7 +6,7 @@
 /// <summary>
 /// Specifies the location status.
 /// </summary>
-enum 50100 "Location Status"
+enum 50100 "GeoLocation Status"
 {
     Extensible = false;
 

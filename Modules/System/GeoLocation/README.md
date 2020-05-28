@@ -1,13 +1,13 @@
-Contains functionality that enables getting the location of a client device.
+Contains functionality that enables getting the geographical location of a client device.
 # Public Objects
-## Location (Page 50105)
+## GeoLocation (Page 50100)
 
- Provides an interface for accessing the location on the client device.
+ Provides an interface for accessing the geographical location on the client device.
  
 
 ### IsAvailable (Method) <a name="IsAvailable"></a> 
 
- Checks whether location information is available on the client device.
+ Checks whether geographical location information is available on the client device.
  
 
 #### Syntax
@@ -17,52 +17,52 @@ procedure IsAvailable(): Boolean
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
-True if location information is available, false otherwise.
+True if geographical location information is available, false otherwise.
 
-### HasLocation (Method) <a name="HasLocation"></a> 
+### HasGeoLocation (Method) <a name="HasGeoLocation"></a> 
 
  Checks if a location has been retrieved from the client device and and is available.
  
 
 #### Syntax
 ```
-procedure HasLocation(): Boolean
+procedure HasGeoLocation(): Boolean
 ```
 #### Return Value
 *([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
 True if a location is retrieved and is available; false otherwise.
 
-### GetLocation (Method) <a name="GetLocation"></a> 
+### GetGeoLocation (Method) <a name="GetGeoLocation"></a> 
 
- Gets the location that was retrieved when opening the page.
+ Gets the geographical location that was retrieved when opening the page.
  An error is displayed if the function is called without opening the page first or if the location is not available.
  
 
 #### Syntax
 ```
-procedure GetLocation(var Latitude: Decimal; var Longitude: Decimal)
+procedure GetGeoLocation(var Latitude: Decimal; var Longitude: Decimal)
 ```
 #### Parameters
 *Latitude ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
 *Longitude ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
 
-The latitude and longitude value of the location.
+The latitude and longitude value of the GeoLocation.
 
 
-### GetLocationStatus (Method) <a name="GetLocationStatus"></a> 
+### GetGeoLocationStatus (Method) <a name="GetGeoLocationStatus"></a> 
 
- Gets the status of the client device location.
+ Gets the status of the client device GeoLocation.
  
 
 #### Syntax
 ```
-procedure GetLocationStatus(): Enum "Location Status"
+procedure GetGeoLocationStatus(): Enum "GeoLocation Status"
 ```
 #### Return Value
-*([Enum "Location Status"]())* 
+*([Enum "GeoLocation Status"]())* 
 
-The status of the location.
+The status of the GeoLocation.
 
 ### SetHighAccuracy (Method) <a name="SetHighAccuracy"></a> 
 
@@ -149,9 +149,9 @@ The maximum length of time (milliseconds) of a cached location.
 
 
 
-## Location Status (Enum 50107)
+## GeoLocation Status (Enum 50107)
 
-Specifies the location status of the returned location from the Location page.
+Specifies the GeoLocation status of the returned location from the GeoLocation page.
  
 
 ### Available (value: 0)

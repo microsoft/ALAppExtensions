@@ -6,22 +6,22 @@
 /// <summary>
 /// Provides functionality for getting geographical location information from the client device.
 /// </summary>
-codeunit 50100 Location
+codeunit 50100 GeoLocation
 {
     Access = Public;
 
     var
-        LocationImpl: Codeunit "Location Impl.";
+        GeoLocationImpl: Codeunit "GeoLocation Impl.";
 
     /// <summary>
     /// Gets a geographical location from the client device and returns it in the the longitude and latitude parameters.
     /// </summary>
-    /// <param name="Latitude">...</param>
-    /// <param name="Longitude">...</param>
+    /// <param name="Latitude">The latitude value of the location.</param>
+    /// <param name="Longitude">The longitude value of the location.</param>
     /// <returns>True if the location is available, the user confirmed to share the location and the location information was successfully retrieved, false otherwise.</returns>
-    procedure GetLocation(var Latitude: Decimal; var Longitude: Decimal): Boolean
+    procedure GetGeoLocation(var Latitude: Decimal; var Longitude: Decimal): Boolean
     begin
-        exit(LocationImpl.GetLocation(Latitude, Longitude));
+        exit(GeoLocationImpl.GetGeoLocation(Latitude, Longitude));
     end;
 
     /// <summary>
@@ -30,6 +30,6 @@ codeunit 50100 Location
     /// <returns>True if the location is available; false otherwise.</returns>
     procedure IsAvailable(): Boolean
     begin
-        exit(LocationImpl.IsAvailable());
+        exit(GeoLocationImpl.IsAvailable());
     end;
 }

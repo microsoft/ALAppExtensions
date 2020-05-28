@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50102 "Location Page Impl."
+codeunit 50102 "GeoLocation Page Impl."
 {
     Access = Internal;
 
@@ -56,20 +56,20 @@ codeunit 50102 "Location Page Impl."
         exit(IsAvailable);
     end;
 
-    procedure HasLocation(): Boolean
+    procedure HasGeoLocation(): Boolean
     begin
         if IsNull(CachedLocation) then
             exit(false);
 
-        if GetLocationStatus() <> "Location Status"::Available then
+        if GetGeoLocationStatus() <> "GeoLocation Status"::Available then
             exit(false);
 
         exit(true);
     end;
 
-    procedure GetLocation(var Latitude: Decimal; var Longitude: Decimal)
+    procedure GetGeoLocation(var Latitude: Decimal; var Longitude: Decimal)
     begin
-        if (not HasLocation()) then begin
+        if (not HasGeoLocation()) then begin
             Error(LocationNotRetrievedError);
         end;
 
@@ -77,12 +77,12 @@ codeunit 50102 "Location Page Impl."
         Longitude := CachedLocation.Coordinate.Longitude;
     end;
 
-    procedure GetLocationStatus(): Enum "Location Status"
+    procedure GetGeoLocationStatus(): Enum "GeoLocation Status"
     begin
         if (IsNull(CachedLocation)) then
-            exit("Location Status"::"Not Available");
+            exit("GeoLocation Status"::"Not Available");
 
-        exit("Location Status".FromInteger(CachedLocation.Status));
+        exit("GeoLocation Status".FromInteger(CachedLocation.Status));
     end;
 
     procedure SetHighAccuracy(Enable: Boolean)

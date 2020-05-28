@@ -8,17 +8,17 @@
 /// </summary>
 /// <example>
 /// <code>
-/// Location.RunModal();
-/// if Location.HasLocation() then begin
-///     Location.GetLocation(Latitude, Longitude);
+/// GeoLocation.RunModal();
+/// if GeoLocation.HasGeoLocation() then begin
+///     GeoLocation.GetGeoLocation(Latitude, Longitude);
 /// ...
 /// end;
 /// Clear(Location);
 /// </code>
 /// </example>
-page 50100 "Location"
+page 50100 GeoLocation
 {
-    Caption = 'Location request';
+    Caption = 'GeoLocation request';
     PageType = Card;
     Editable = false;
     LinksAllowed = false;
@@ -30,21 +30,21 @@ page 50100 "Location"
         {
             group(Location)
             {
-                Caption = 'Requesting location...';
-                InstructionalText = 'Please, confirm that Business Central can access the location of the device.';
+                Caption = 'Requesting geographical location...';
+                InstructionalText = 'Please, confirm that Business Central can access the geographical location of the device.';
                 Visible = LocationAvailable;
             }
             group(LocationNotSupported)
             {
-                Caption = 'Could not access the location';
-                InstructionalText = 'Could not access the location of the device. Make sure that you are using the app for Windows, Android, or iOS.';
+                Caption = 'Could not access the geographical location';
+                InstructionalText = 'Could not access the geographical location of the device. Make sure that you are using the app for Windows, Android, or iOS.';
                 Visible = NOT LocationAvailable;
             }
         }
     }
 
     var
-        LocationPageImpl: Codeunit "Location Page Impl.";
+        GeoLocationPageImpl: Codeunit "GeoLocation Page Impl.";
         [RunOnClient]
         [WithEvents]
         LocationProvider: DotNet LocationProvider;
@@ -56,7 +56,7 @@ page 50100 "Location"
     /// </summary>
     trigger OnOpenPage()
     begin
-        LocationPageImpl.LocationInteractionOnOpenPage(LocationProvider, LocationAvailable);
+        GeoLocationPageImpl.LocationInteractionOnOpenPage(LocationProvider, LocationAvailable);
     end;
 
     /// <summary>
@@ -65,16 +65,16 @@ page 50100 "Location"
     /// <returns>True if the location is available; false otherwise.</returns>
     procedure IsAvailable(): Boolean
     begin
-        exit(LocationPageImpl.IsAvailable(LocationProvider));
+        exit(GeoLocationPageImpl.IsAvailable(LocationProvider));
     end;
 
     /// <summary>
     /// Checks if a location has been retrieved from the client device and and is available.
     /// </summary>
     /// <returns>True if a location is retrieved and is available; false otherwise.</returns>
-    procedure HasLocation(): Boolean
+    procedure HasGeoLocation(): Boolean
     begin
-        exit(LocationPageImpl.HasLocation());
+        exit(GeoLocationPageImpl.HasGeoLocation());
     end;
 
     /// <summary>
@@ -84,18 +84,18 @@ page 50100 "Location"
     /// <param name="Latitude">The latitude value of the location.</param>
     /// <param name="Longitude">The longitude value of the location.</param>
     /// <error>The location is not available.</error>
-    procedure GetLocation(var Latitude: Decimal; var Longitude: Decimal)
+    procedure GetGeoLocation(var Latitude: Decimal; var Longitude: Decimal)
     begin
-        LocationPageImpl.GetLocation(Latitude, Longitude);
+        GeoLocationPageImpl.GetGeoLocation(Latitude, Longitude);
     end;
 
     /// <summary>
     /// Gets the status of the client device location.
     /// </summary>
     /// <returns>The status of the location. Either</returns>
-    procedure GetLocationStatus(): Enum "Location Status"
+    procedure GetGeoLocationStatus(): Enum "GeoLocation Status"
     begin
-        exit(LocationPageImpl.GetLocationStatus());
+        exit(GeoLocationPageImpl.GetGeoLocationStatus());
     end;
 
     /// <summary>
@@ -104,7 +104,7 @@ page 50100 "Location"
     /// <param name="Enable">A value to provide a hint to the device that this request must have the best possible location accuracy.</param>
     procedure SetHighAccuracy(Enable: Boolean)
     begin
-        LocationPageImpl.SetHighAccuracy(Enable);
+        GeoLocationPageImpl.SetHighAccuracy(Enable);
     end;
 
     /// <summary>
@@ -113,7 +113,7 @@ page 50100 "Location"
     /// <param name="Timeout">The maximum length of time (milliseconds) that is allowed to pass to a location request.</param>
     procedure SetTimeout(Timeout: Integer)
     begin
-        LocationPageImpl.SetTimeout(Timeout);
+        GeoLocationPageImpl.SetTimeout(Timeout);
     end;
 
     /// <summary>
@@ -122,7 +122,7 @@ page 50100 "Location"
     /// <param name="Age">The maximum length of time (milliseconds) of a cached location.</param>
     procedure SetMaximumAge(Age: Integer)
     begin
-        LocationPageImpl.SetMaximumAge(Age);
+        GeoLocationPageImpl.SetMaximumAge(Age);
     end;
 
     /// <summary>
@@ -131,7 +131,7 @@ page 50100 "Location"
     /// <returns>Whether high accuracy is set. A value to provide a hint to the device that this request must have the best possible location accuracy.</returns>
     procedure GetHighAccuracy(): Boolean
     begin
-        exit(LocationPageImpl.GetHighAccuracy());
+        exit(GeoLocationPageImpl.GetHighAccuracy());
     end;
 
     /// <summary>
@@ -140,7 +140,7 @@ page 50100 "Location"
     /// <returns>The maximum length of time (milliseconds) that is allowed to pass to a location request.</returns>
     procedure GetTimeout(): Integer
     begin
-        exit(LocationPageImpl.GetTimeout());
+        exit(GeoLocationPageImpl.GetTimeout());
     end;
 
     /// <summary>
@@ -149,12 +149,12 @@ page 50100 "Location"
     /// <returns>The maximum length of time (milliseconds) of a cached location.</returns>
     procedure GetMaximumAge(): Integer
     begin
-        exit(LocationPageImpl.GetMaximumAge());
+        exit(GeoLocationPageImpl.GetMaximumAge());
     end;
 
     trigger LocationProvider::LocationChanged(Location: DotNet Location)
     begin
-        LocationPageImpl.LocationInteractionOnLocationAvailable(Location);
+        GeoLocationPageImpl.LocationInteractionOnLocationAvailable(Location);
         CurrPage.Close();
     end;
 }

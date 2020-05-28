@@ -3,32 +3,32 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50103 "Location Test Library"
+codeunit 50103 "GeoLocation Test Library"
 {
     EventSubscriberInstance = Manual;
 
     /// <summary>
-    /// Indicate that the location is available when test is in progress.
+    /// Indicate that the geogrpahical location is available when test is in progress.
     /// </summary>
-    /// <param name="IsAvailable">Signals whether the location is available.</param>
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Location Page Impl.", 'OnIsLocationAvailable', '', false, false)]
+    /// <param name="IsAvailable">Signals whether the geographical location is available.</param>
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GeoLocation Page Impl.", 'OnIsLocationAvailable', '', false, false)]
     local procedure OnIsLocationAvailable(var IsAvailable: Boolean)
     begin
         IsAvailable := true;
     end;
 
     /// <summary>
-    /// Save a mock location on the server instead of accessing an actual device for the location.
+    /// Save a mock geographical location on the server instead of accessing an actual device for the location.
     /// </summary>
-    /// <param name="IsHandled">Signals whether taking the location was handled by the subscriber.</param>
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Location Page Impl.", 'OnBeforeLocationInitialize', '', false, false)]
+    /// <param name="IsHandled">Signals whether taking the geographical location was handled by the subscriber.</param>
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GeoLocation Page Impl.", 'OnBeforeLocationInitialize', '', false, false)]
     local procedure OnBeforeLocationInitialize(var Location: DotNet Location; var IsHandled: Boolean)
     begin
         IsHandled := true;
-        GetMockLocation(Location);
+        GetMockGeoLocation(Location);
     end;
 
-    procedure GetMockLocation(var Location: DotNet Location)
+    procedure GetMockGeoLocation(var Location: DotNet Location)
     var
         Coordinate: DotNet Coordinate;
     begin
@@ -38,7 +38,7 @@ codeunit 50103 "Location Test Library"
         Location.Coordinate.Longitude := 2.5;
     end;
 
-    procedure GetMockLocation(var Latitude: Decimal; var Longitude: Decimal)
+    procedure GetMockGeoLocation(var Latitude: Decimal; var Longitude: Decimal)
     begin
         Latitude := 1.5;
         Longitude := 2.5;
