@@ -10,6 +10,8 @@ codeunit 6241 "Xml Validation Impl."
     var
         InvalidXmlErr: Label 'The XML definition is invalid.';
         InvalidSchemaErr: Label 'The schema definition is not valid XML.';
+        [WithEvents]
+        XmlValidatingReader: dotnet XmlValidatingReader;
 
     procedure ValidateAgainstSchema(Xml: Text; XmlSchema: Text; Namespace: Text)
     var
@@ -46,14 +48,21 @@ codeunit 6241 "Xml Validation Impl."
     var
         XmlDoc: DotNet XmlDocument;
         XmlReader: DotNet XmlReader;
-        ValidationEventHandler: DotNet ValidationEventHandler;
+        SchemaReader: DotNet XmlReader;
+        ValidationType: dotnet ValidationType;
     begin
-        XmlDoc := XmlDoc.XmlDocument();
-        XmlDoc.Load(XmlDocStream);
+        XmlReader := XmlReader.Create(XmlDocStream);
+        SchemaReader := SchemaReader.Create(XmlSchemaStream);
 
-        XmlReader := XmlReader.Create(XmlSchemaStream);
-        XmlDoc.Schemas.Add(Namespace, XmlReader);
+        XmlValidatingReader := XmlValidatingReader.XmlValidatingReader(XmlReader);
+        XmlValidatingReader.Schemas.Add(Namespace, SchemaReader);
+        XmlValidatingReader.ValidationType := ValidationType.Schema;
+        while XmlValidatingReader.Read() do;
+        XmlValidatingReader.Close();
+    end;
 
-        XmlDoc.Validate(ValidationEventHandler);
+    trigger XmlValidatingReader::ValidationEventHandler(sender: Variant; e: DotNet ValidationEventArgs)
+    begin
+        Error(e.Message);
     end;
 }
