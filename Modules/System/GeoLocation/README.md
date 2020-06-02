@@ -1,8 +1,8 @@
-Contains functionality that enables getting the geographical location of a client device.
+Contains functionality that retrieves data about the geographical location of a client device.
 # Public Objects
-## GeoLocation (Page 50100)
+## Geolocation (Page 50100)
 
- Provides an interface for accessing the geographical location on the client device.
+ Provides an interface for accessing data about the geographical location of a client device.
  
 
 ### IsAvailable (Method) <a name="IsAvailable"></a> 
@@ -19,54 +19,54 @@ procedure IsAvailable(): Boolean
 
 True if geographical location information is available, false otherwise.
 
-### HasGeoLocation (Method) <a name="HasGeoLocation"></a> 
+### HasGeolocation (Method) <a name="HasGeolocation"></a> 
 
- Checks if a location has been retrieved from the client device and and is available.
+ Checks whether data about the geographical location of a client device has been retrieved and is available.
  
 
 #### Syntax
 ```
-procedure HasGeoLocation(): Boolean
+procedure HasGeolocation(): Boolean
 ```
 #### Return Value
 *([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
-True if a location is retrieved and is available; false otherwise.
+True if geographical location data has been retrieved and is available.
 
-### GetGeoLocation (Method) <a name="GetGeoLocation"></a> 
+### GetGeolocation (Method) <a name="GetGeolocation"></a> 
 
- Gets the geographical location that was retrieved when opening the page.
+ Gets the geographical location data that was retrieved when opening the page.
  An error is displayed if the function is called without opening the page first or if the location is not available.
  
 
 #### Syntax
 ```
-procedure GetGeoLocation(var Latitude: Decimal; var Longitude: Decimal)
+procedure GetGeolocation(var Latitude: Decimal; var Longitude: Decimal)
 ```
 #### Parameters
 *Latitude ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
 *Longitude ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
 
-The latitude and longitude value of the GeoLocation.
+The latitude and longitude value of the Geolocation.
 
 
-### GetGeoLocationStatus (Method) <a name="GetGeoLocationStatus"></a> 
+### GetGeolocationStatus (Method) <a name="GetGeolocationStatus"></a> 
 
- Gets the status of the client device GeoLocation.
+ Gets the status of the geographical location data of the client device.
  
 
 #### Syntax
 ```
-procedure GetGeoLocationStatus(): Enum "GeoLocation Status"
+procedure GetGeolocationStatus(): Enum "Geolocation Status"
 ```
 #### Return Value
-*([Enum "GeoLocation Status"]())* 
+*([Enum "Geolocation Status"]())* 
 
-The status of the GeoLocation.
+The status of the geographical location data.
 
 ### SetHighAccuracy (Method) <a name="SetHighAccuracy"></a> 
 
- Sets whether the device should have the best possible location accuracy.
+ Sets whether the geographical location data for the device should have the highest level of accuracy.
 
 #### Syntax
 ```
@@ -75,11 +75,11 @@ procedure SetQuality(Enable: Boolean)
 #### Parameters
 *Enable ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))*  
 
-A value to provide a hint to the device that this request must have the best possible location accuracy.
+Instructs the device that the geographical location data for this request must have the highest level of accuracy.
 
 ### SetTimeout (Method) <a name="SetTimeout"></a> 
 
- Sets a timeout for the location request.
+ Sets a timeout for the geographical location data request.
  
 
 #### Syntax
@@ -93,7 +93,7 @@ The maximum length of time (milliseconds) that is allowed to pass to a location 
 
 ### SetMaximumAge (Method) <a name="SetMaximumAge"></a> 
 
- Sets a maximum age for the location request.
+ Sets a maximum age for the geographical location data request.
  
 
 #### Syntax
@@ -103,15 +103,15 @@ procedure SetMaximumAge(Age: Integer)
 #### Parameters
 *Age ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
 
-The maximum length of time (milliseconds) of a cached location.
+The maximum length of time (milliseconds) of cached geographical location data.
 
 ### GetHighAccuracy (Method) <a name="GetHighAccuracy"></a> 
 
- Gets whether the device should have the best possible location accuracy.
+ Gets whether the device should have the highest level of accuracy for geographical location data.
 
 #### Syntax
 ```
-procedure GetHighQuality(): Boolean
+procedure GetHighAccuracy(): Boolean
 ```
 #### Return Value
 *([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
@@ -120,7 +120,7 @@ Whether high accuracy is set. A value to provide a hint to the device that this 
 
 ### GetTimeout (Method) <a name="GetTimeout"></a> 
 
- Gets the timeout for the location request.
+ Gets the timeout for the geographical location data request.
  
 
 #### Syntax
@@ -134,7 +134,7 @@ The maximum length of time (milliseconds) that is allowed to pass to a location 
 
 ### GetMaximumAge (Method) <a name="GetMaximumAge"></a> 
 
- Gets the maximum age for the location request.
+ Gets the maximum age for the geographical location data request.
  
 
 #### Syntax
@@ -144,14 +144,14 @@ procedure GetMaximumAge(): Integer
 #### Return Value
 *([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
 
-The maximum length of time (milliseconds) of a cached location.
+The maximum length of time (milliseconds) of geographical location data.
 
 
 
 
-## GeoLocation Status (Enum 50100)
+## Geolocation Status (Enum 50100)
 
-Specifies the GeoLocation status of the returned location from the GeoLocation page.
+Specifies status of the returned geographical location data from the Geolocation page.
  
 
 ### Available (value: 0)

@@ -3,23 +3,23 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50101 "GeoLocation Impl."
+codeunit 50101 "Geolocation Impl."
 {
     Access = Internal;
 
     var
-        GeoLocationPage: Page GeoLocation;
+        GeolocationPage: Page Geolocation;
 
-    procedure GetGeoLocation(var Latitude: Decimal; var Longitude: Decimal): Boolean
+    procedure GetGeolocation(var Latitude: Decimal; var Longitude: Decimal): Boolean
     begin
         if not IsAvailable() then
             exit(false);
 
-        Clear(GeoLocationPage);
-        GeoLocationPage.SetHighAccuracy(true);
-        GeoLocationPage.RunModal();
-        if GeoLocationPage.HasGeoLocation() then begin
-            GeoLocationPage.GetGeoLocation(Latitude, Longitude);
+        Clear(GeolocationPage);
+        GeolocationPage.SetHighAccuracy(true);
+        GeolocationPage.RunModal();
+        if GeolocationPage.HasGeolocation() then begin
+            GeolocationPage.GetGeolocation(Latitude, Longitude);
             exit(true);
         end;
 
@@ -28,6 +28,6 @@ codeunit 50101 "GeoLocation Impl."
 
     procedure IsAvailable(): Boolean
     begin
-        exit(GeoLocationPage.IsAvailable());
+        exit(GeolocationPage.IsAvailable());
     end;
 }

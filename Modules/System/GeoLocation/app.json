@@ -1,10 +1,10 @@
 {
   "id": "7f03f010-1703-47eb-a3cd-c6d28b8a806c",
-  "name": "GeoLocation",
+  "name": "Geolocation",
   "publisher": "Microsoft",
   "version": "1.0.0.0",
-  "brief": "Provides access to geographical location information on the client device.",
-  "description": "Invoke the GeoLocation page to open the page and request the geographical location on your client device. The page will communicate the availability of the location.",
+  "brief": "Provides access to geographical location data on client devices.",
+  "description": "Open the Geolocation page and request geographical location data on your client device. The page will communicate the availability of data about the location.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -14,7 +14,7 @@
   "internalsVisibleTo":  [
     {
         "id":  "ca744f73-dfb4-4702-b72f-e095cac5526e",
-        "name":  "GeoLocation Test Library",
+        "name":  "Geolocation Test Library",
         "publisher":  "Microsoft"
     }
   ],

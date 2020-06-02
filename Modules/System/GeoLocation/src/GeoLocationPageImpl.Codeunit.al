@@ -3,12 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50102 "GeoLocation Page Impl."
+codeunit 50102 "Geolocation Page Impl."
 {
     Access = Internal;
 
     var
-        LocationNotRetrievedError: Label 'The geographical location is not retrieved.';
+        LocationNotRetrievedError: Label 'The geographical location data was not retrieved.';
         CachedLocation: Dotnet Location;
         LocationOptions: DotNet LocationOptions;
         LocationOptionsEnabled: Boolean;
@@ -56,20 +56,20 @@ codeunit 50102 "GeoLocation Page Impl."
         exit(IsAvailable);
     end;
 
-    procedure HasGeoLocation(): Boolean
+    procedure HasGeolocation(): Boolean
     begin
         if IsNull(CachedLocation) then
             exit(false);
 
-        if GetGeoLocationStatus() <> "GeoLocation Status"::Available then
+        if GetGeolocationStatus() <> "Geolocation Status"::Available then
             exit(false);
 
         exit(true);
     end;
 
-    procedure GetGeoLocation(var Latitude: Decimal; var Longitude: Decimal)
+    procedure GetGeolocation(var Latitude: Decimal; var Longitude: Decimal)
     begin
-        if (not HasGeoLocation()) then begin
+        if (not HasGeolocation()) then begin
             Error(LocationNotRetrievedError);
         end;
 
@@ -77,12 +77,12 @@ codeunit 50102 "GeoLocation Page Impl."
         Longitude := CachedLocation.Coordinate.Longitude;
     end;
 
-    procedure GetGeoLocationStatus(): Enum "GeoLocation Status"
+    procedure GetGeolocationStatus(): Enum "Geolocation Status"
     begin
         if (IsNull(CachedLocation)) then
-            exit("GeoLocation Status"::"Not Available");
+            exit("Geolocation Status"::"Not Available");
 
-        exit("GeoLocation Status".FromInteger(CachedLocation.Status));
+        exit("Geolocation Status".FromInteger(CachedLocation.Status));
     end;
 
     procedure SetHighAccuracy(Enable: Boolean)

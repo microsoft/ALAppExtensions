@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Specifies the location status.
+/// Specifies the status of the geographical location data.
 /// </summary>
-enum 50100 "GeoLocation Status"
+enum 50100 "Geolocation Status"
 {
     Extensible = false;
 
@@ -23,7 +23,7 @@ enum 50100 "GeoLocation Status"
     /// </summary>
     value(1; "No Data")
     {
-        Caption = 'No data';
+        Caption = 'No Data';
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ enum 50100 "GeoLocation Status"
     /// </summary>
     value(2; "Timed Out")
     {
-        Caption = 'Timed out';
+        Caption = 'Timed Out';
     }
 
     /// <summary>
@@ -39,6 +39,6 @@ enum 50100 "GeoLocation Status"
     /// </summary>
     value(3; "Not Available")
     {
-        Caption = 'Not available';
+        Caption = 'Not Available';
     }
 }
