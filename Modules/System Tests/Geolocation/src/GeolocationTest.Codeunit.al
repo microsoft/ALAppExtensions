@@ -20,7 +20,7 @@ codeunit 50104 "Geolocation Test"
         Geolocation: Page Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
     begin
-        // [When] Geolocation test library subscribers are binded.
+        // [When] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
         // [Then] The return value of IsAvailable is 'true'.
@@ -34,7 +34,7 @@ codeunit 50104 "Geolocation Test"
         Geolocation: Page Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
     begin
-        // [Given] Geolocation test library subscribers are binded.
+        // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
         // [When] The Geolocation page is run as modal.
@@ -56,7 +56,7 @@ codeunit 50104 "Geolocation Test"
         ExpectedLatitude: Decimal;
         ExpectedLongitude: Decimal;
     begin
-        // [Given] Geolocation test library subscribers are binded.
+        // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
         // [When] The expected latitude and longitude are retrieved from the test library.
@@ -83,7 +83,7 @@ codeunit 50104 "Geolocation Test"
         Geolocation: Page Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
     begin
-        // [Given] Geolocation test library subscribers are binded.
+        // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
         // [When] The Geolocation page is run as modal.
@@ -100,14 +100,13 @@ codeunit 50104 "Geolocation Test"
         Geolocation: Page Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
     begin
-        // [Given] Geolocation test library subscribers are binded.
+        // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
         // [When] The Geolocation page has not been used.
         // [Then] The status of the geographical location data is Not Available.
         Assert.AreEqual("Geolocation Status"::"Not Available", Geolocation.GetGeolocationStatus(), 'The status of the geographical location data is not "Not Available".');
     end;
-
 
     [Test]
     [Scope('OnPrem')]
@@ -116,14 +115,13 @@ codeunit 50104 "Geolocation Test"
         Geolocation: Page Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
     begin
-        // [Given] Geolocation test library subscribers are binded.
+        // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
         // [When] The Geolocation page has not been used.
         // [Then] The Geolocation page does not contain geographical locations.
         Assert.IsFalse(Geolocation.HasGeolocation(), 'The Geolocation page has a location.');
     end;
-
 
     [Test]
     [Scope('OnPrem')]
@@ -134,7 +132,7 @@ codeunit 50104 "Geolocation Test"
         ActualLatitude: Decimal;
         ActualLongitude: Decimal;
     begin
-        // [Given] Geolocation test library subscribers are binded.
+        // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
         // [When] GetGeolocation is invocked on the Geolocation page without running the page as modal before.
