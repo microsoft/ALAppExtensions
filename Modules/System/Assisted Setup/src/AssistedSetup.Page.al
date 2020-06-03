@@ -58,6 +58,7 @@ page 1801 "Assisted Setup"
                 {
                     ApplicationArea = All;
                     Caption = 'Help';
+                    ToolTip = 'Learn more about the process.';
                     Width = 3;
 
                     trigger OnDrillDown()
@@ -71,6 +72,7 @@ page 1801 "Assisted Setup"
                 {
                     ApplicationArea = All;
                     Caption = 'Video';
+                    ToolTip = 'Play a video that describes the process.';
                     Width = 3;
 
                     trigger OnDrillDown()
@@ -85,6 +87,7 @@ page 1801 "Assisted Setup"
                 {
                     ApplicationArea = All;
                     Caption = 'Group';
+                    ToolTip = 'Group Name';
                     Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'The groups now appear as headings in the page, so this column is redundant.';

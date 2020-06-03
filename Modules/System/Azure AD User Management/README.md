@@ -170,6 +170,12 @@ Types of updates from users in the Office 365.
  Represents a value that is different in the Office 365 portal compared to Business Central.
  
 
+### Remove (value: 2)
+
+
+ Represents a value that is removed in the Office 365 portal but present in Business Central.
+ 
+
 
 ## Azure AD User Update Entity (Enum 9515)
 

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Tests for Camera and Media Interaction module",
-    "version":  "16.2.0.0",
+    "version":  "16.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,31 +15,31 @@
                              "id":  "46992a88-9fae-4e32-948b-2b07735ea10a",
                              "name":  "Camera and Media Interaction",
                              "publisher":  "Microsoft",
-                             "version":  "16.2.0.0"
+                             "version":  "16.3.0.0"
                          },
                          {
                              "id":  "29fa62c7-4a89-454a-b21d-f1a83d27c86e",
                              "name":  "Camera and Media Interaction Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "16.2.0.0"
+                             "version":  "16.3.0.0"
                          },
                          {
                              "id":  "0846d207-5dec-4c1b-afd8-6a25e1e14b9d",
                              "name":  "Base64 Convert",
                              "publisher":  "Microsoft",
-                             "version":  "16.2.0.0"
+                             "version":  "16.3.0.0"
                          },
                          {
                              "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "BLOB Storage",
                              "publisher":  "Microsoft",
-                             "version":  "16.2.0.0"
+                             "version":  "16.3.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "16.2.0.0"
+                             "version":  "16.3.0.0"
                          }
                      ],
     "screenshots":  [

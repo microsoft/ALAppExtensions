@@ -35,6 +35,30 @@ The user's security ID.
 
 The Azure AD user.
 
+### GetGraphUser (Method) <a name="GetGraphUser"></a> 
+    
+ Gets the Azure AD user with the given security ID.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+[TryFunction]
+procedure GetGraphUser(UserSecurityId: Guid; ForceFetchFromGraph: Boolean; var User: DotNet UserInfo)
+```
+#### Parameters
+*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The user's security ID.
+
+*ForceFetchFromGraph ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Forces a graph call to get the latest details for the user.
+
+*User ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+
+The Azure AD user.
+
 ### GetObjectId (Method) <a name="GetObjectId"></a> 
 
  Retrieves the user’s unique identifier, which is its object ID, from Azure AD.
@@ -57,6 +81,8 @@ The user's security ID.
  The object ID of the Azure AD user, or an empty string if the user cannot be found.
  
 ### GetUserAuthenticationObjectId (Method) <a name="GetUserAuthenticationObjectId"></a> 
+User with Security ID UserSecurityId does not exist.
+
     
  Gets the user's authentication object ID.
  
@@ -75,6 +101,29 @@ The user's security ID.
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 The user's authentication object ID.
+### GetUser (Method) <a name="GetUser"></a> 
+    
+ Gets the user from a given Authentication object ID.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure GetUser(AuthenticationObjectID: Text; var User: Record User): Boolean
+```
+#### Parameters
+*AuthenticationObjectID ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The user's Authentication object ID.
+
+*User ([Record User]())* 
+
+The user that has provided Authentication object ID.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the user was found, false otherwise.
 ### UpdateUserFromAzureGraph (Method) <a name="UpdateUserFromAzureGraph"></a> 
     
  Updates the user record with information from Azure AD.

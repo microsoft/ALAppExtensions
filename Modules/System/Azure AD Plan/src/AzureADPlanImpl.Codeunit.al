@@ -32,6 +32,7 @@ codeunit 9018 "Azure AD Plan Impl."
         PlanCountDifferentTxt: Label 'The count of plans in BC is %1 and count of plans in Graph is %2.', Locked = true;
         GraphUserHasExtraPlanTxt: Label 'Graph user has plan with ID %1 and named %2 that BC user does not have.', Locked = true, Comment = '%1 = Plan ID (guid); %2 = Plan name';
         MixedPlansExistTxt: Label 'Check for mixed plans. Basic plan exists: %1, Essentials plan exists: %2; Premium plan exists: %3.', Locked = true;
+        UserDoesNotExistTxt: Label 'User with user SID %1 does not exist or does not have an authentication object ID', Locked = true;
         UsersWithMixedPlansTxt: Label 'Check for mixed plans. First conflicting user: [%1], second conflicting user [%3].', Locked = true;
         CheckingForMixedPlansTxt: Label 'Checking for mixed plans...', Locked = true;
 
@@ -272,16 +273,17 @@ codeunit 9018 "Azure AD Plan Impl."
         // Get content of the User plan table into a new Dictionary
         UsersInPlans.SetRange(User_State, UsersInPlans.User_State::Enabled);
         if UsersInPlans.Open() then
-            while UsersInPlans.Read() do begin
-                UserAuthenticationObjectId := AzureADGraphUser.GetUserAuthenticationObjectId(UsersInPlans.User_Security_ID);
-                if UserAuthenticationObjectId <> '' then begin
-                    Clear(CurrentUserPlanList);
-                    if PlanNamesPerUser.ContainsKey(UserAuthenticationObjectId) then
-                        CurrentUserPlanList := PlanNamesPerUser.Get(UserAuthenticationObjectId);
-                    CurrentUserPlanList.Add(UsersInPlans.Plan_Name);
-                    PlanNamesPerUser.Set(UserAuthenticationObjectId, CurrentUserPlanList);
-                end;
-            end;
+            while UsersInPlans.Read() do
+                if AzureADGraphUser.TryGetUserAuthenticationObjectId(UsersInPlans.User_Security_ID, UserAuthenticationObjectId) then begin
+                    if UserAuthenticationObjectId <> '' then begin
+                        Clear(CurrentUserPlanList);
+                        if PlanNamesPerUser.ContainsKey(UserAuthenticationObjectId) then
+                            CurrentUserPlanList := PlanNamesPerUser.Get(UserAuthenticationObjectId);
+                        CurrentUserPlanList.Add(UsersInPlans.Plan_Name);
+                        PlanNamesPerUser.Set(UserAuthenticationObjectId, CurrentUserPlanList);
+                    end;
+                end else
+                    SendTraceTag('0000CMW', 'UserSetupCategoryTxt', Verbosity::Verbose, StrSubstNo(UserDoesNotExistTxt, UsersInPlans.User_Security_ID), DataClassification::EndUserPseudonymousIdentifiers);
 
         // update the dictionary with the values from input
         foreach UserAuthenticationObjectId in PlanNamesPerUserFromGraph.Keys do
@@ -385,7 +387,6 @@ codeunit 9018 "Azure AD Plan Impl."
         DevicesPlanId: Guid;
         DevicesPlanName: Text;
         SystemRoleAdded: Boolean;
-
     begin
         TempPlan.Reset();
         TempPlan.DeleteAll();

@@ -66,6 +66,12 @@ page 8700 "Table Information"
                     ApplicationArea = All;
                     ToolTip = 'How much space the table occupies in the database (in kilobytes)';
                 }
+                field("Compression"; "Compression")
+                {
+                    ApplicationArea = All;
+                    OptionCaption = 'None,Row,Page,,';
+                    ToolTip = 'The compression state of the table in the database';
+                }
             }
         }
     }

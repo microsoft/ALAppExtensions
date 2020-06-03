@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 130456 "Test Suite Mgt."
 {
     Permissions = TableData "AL Test Suite" = rimd, TableData "Test Method Line" = rimd;
@@ -256,6 +261,35 @@ codeunit 130456 "Test Suite Mgt."
         until AllObjWithCaption.Next() = 0;
     end;
 
+    procedure UpdateTestMethods(var TestMethodLine: record "Test Method Line")
+    var
+        BackupTestMethodLine: Record "Test Method Line";
+        TestRunnerGetMethods: Codeunit "Test Runner - Get Methods";
+    begin
+        BackupTestMethodLine.Copy(TestMethodLine);
+        TestMethodLine.Reset();
+        TestMethodLine.SetRange("Test Suite", BackupTestMethodLine."Test Suite");
+        TestMethodLine.SetRange("Line Type", TestMethodLine."Line Type"::Function);
+        TestMethodLine.DeleteAll();
+        TestMethodLine.SetRange("Line Type", TestMethodLine."Line Type"::Codeunit);
+        if TestMethodLine.FindSet() then
+            repeat
+                TestRunnerGetMethods.SetUpdateTests(true);
+                TestRunnerGetMethods.Run(TestMethodLine);
+            until TestMethodLine.Next() = 0;
+
+        TestMethodLine.SetRange("Test Suite", BackupTestMethodLine."Test Suite");
+        TestMethodLine.SetRange("Test Codeunit", BackupTestMethodLine."Test Codeunit");
+        TestMethodLine.SetRange(Name, BackupTestMethodLine.Name);
+        if TestMethodLine.FindFirst() then
+            exit;
+
+        TestMethodLine.SetRange(Name);
+        if TestMethodLine.FindFirst() then;
+
+        TestMethodLine.SetView(BackupTestMethodLine.GetView());
+    end;
+
     local procedure PromptUserToSelectTestsToRun(TestMethodLine: Record "Test Method Line"): Integer
     var
         Selection: Integer;
@@ -307,6 +341,21 @@ codeunit 130456 "Test Suite Mgt."
         LineNo := 0;
 
         TestMethodLine.SetRange("Test Suite", ALTestSuite.Name);
+        if TestMethodLine.FindLast() then
+            LineNo := TestMethodLine."Line No.";
+
+        exit(LineNo);
+    end;
+
+    procedure GetNextMethodNumber(TestMethodLine: Record "Test Method Line"): Integer
+    var
+        LineNo: Integer;
+    begin
+        LineNo := 0;
+
+        TestMethodLine.SetRange("Test Suite", TestMethodLine."Test Suite");
+        TestMethodLine.SetRange("Test Codeunit", TestMethodLine."Test Codeunit");
+
         if TestMethodLine.FindLast() then
             LineNo := TestMethodLine."Line No.";
 

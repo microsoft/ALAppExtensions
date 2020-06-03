@@ -80,6 +80,8 @@ codeunit 4691 "Recurrence Schedule Impl."
     var
         NextWeekDay: Integer;
         NextDate: Date;
+        NextWeekDayDateFormulaLbl: Label '<-CW+%1D>', Comment = '%1 - Next week day in integer', Locked = true;
+        NextWeekDayDateFormulaPassedLbl: Label '<-CW+%1D+%2W>', Comment = 'If the weekday has passed, this formula is used instead. %1 - Next week day in integer, %2 - Occurs every number of weeks', Locked = true;
     begin
         IF (RecurrenceSchedule."Start Date" = 0D) OR (NOT AnyWeekDaysSelected(RecurrenceSchedule)) THEN
             EXIT(0D);
@@ -91,9 +93,9 @@ codeunit 4691 "Recurrence Schedule Impl."
             NextWeekDay := GetNextWeekDay(RecurrenceSchedule, DATE2DWY(LastOccurrence, 1));
 
         IF NextWeekDay > 0 THEN
-            NextDate := CALCDATE(STRSUBSTNO('<-CW+%1D>', NextWeekDay - 1), LastOccurrence)
+            NextDate := CALCDATE(STRSUBSTNO(NextWeekDayDateFormulaLbl, NextWeekDay - 1), LastOccurrence)
         ELSE
-            NextDate := CALCDATE(STRSUBSTNO('<-CW+%1D+%2W>', GetNextWeekDay(RecurrenceSchedule, 0) - 1, RecurrenceSchedule."Recurs Every"), LastOccurrence);
+            NextDate := CALCDATE(STRSUBSTNO(NextWeekDayDateFormulaPassedLbl, GetNextWeekDay(RecurrenceSchedule, 0) - 1, RecurrenceSchedule."Recurs Every"), LastOccurrence);
 
         EXIT(NextDate);
     end;
@@ -149,6 +151,9 @@ codeunit 4691 "Recurrence Schedule Impl."
     local procedure CalculateMonthly(RecurrenceSchedule: Record "Recurrence Schedule"; LastOccurrence: Date): Date
     var
         MonthlyPattern: Enum "Recurrence - Monthly Pattern";
+        MonthlySpecificDayFirstTimeDateFormulaLbl: Label '<-CM+%1D>', Comment = '%1 - Occurence day', Locked = true;
+        MonthlySpecificDayDateFormulaLbl: Label '<-CM+%1M+%2D>', Comment = '%1 - occurs every number of months, %2 - Occurence day', Locked = true;
+        MonthlyByWeekdayDateFormulaLbl: Label '<-CM+%1M>', Comment = '%1 - Occurs every number of months', Locked = true;
     begin
         IF LastOccurrence = 0D THEN BEGIN
             CASE RecurrenceSchedule."Monthly Pattern" OF
@@ -156,7 +161,7 @@ codeunit 4691 "Recurrence Schedule Impl."
                     EXIT(CalculateMonthlyByWeekDay(RecurrenceSchedule, RecurrenceSchedule."Start Date"));
                 MonthlyPattern::"Specific Day":
                     IF DATE2DMY(RecurrenceSchedule."Start Date", 1) <= RecurrenceSchedule."Recurs on Day" THEN
-                        EXIT(CALCDATE(STRSUBSTNO('<-CM+%1D>', RecurrenceSchedule."Recurs on Day" - 1), RecurrenceSchedule."Start Date"));
+                        EXIT(CALCDATE(STRSUBSTNO(MonthlySpecificDayFirstTimeDateFormulaLbl, RecurrenceSchedule."Recurs on Day" - 1), RecurrenceSchedule."Start Date"));
             END;
 
             LastOccurrence := RecurrenceSchedule."Start Date";
@@ -164,9 +169,9 @@ codeunit 4691 "Recurrence Schedule Impl."
 
         CASE RecurrenceSchedule."Monthly Pattern" OF
             MonthlyPattern::"By Weekday":
-                EXIT(CalculateMonthlyByWeekDay(RecurrenceSchedule, CALCDATE(STRSUBSTNO('<-CM+%1M>', RecurrenceSchedule."Recurs Every"), LastOccurrence)));
+                EXIT(CalculateMonthlyByWeekDay(RecurrenceSchedule, CALCDATE(STRSUBSTNO(MonthlyByWeekdayDateFormulaLbl, RecurrenceSchedule."Recurs Every"), LastOccurrence)));
             MonthlyPattern::"Specific Day":
-                EXIT(CALCDATE(STRSUBSTNO('<-CM+%1M+%2D>', RecurrenceSchedule."Recurs Every", RecurrenceSchedule."Recurs on Day" - 1), LastOccurrence));
+                EXIT(CALCDATE(STRSUBSTNO(MonthlySpecificDayDateFormulaLbl, RecurrenceSchedule."Recurs Every", RecurrenceSchedule."Recurs on Day" - 1), LastOccurrence));
         END
     end;
 
@@ -176,14 +181,14 @@ codeunit 4691 "Recurrence Schedule Impl."
     begin
         CASE RecurrenceSchedule.Weekday OF
             DayOfWeek::Day:
-                EXIT(FindDayInMonth(LastOccurrence, RecurrenceSchedule."Ordinal Recurrence No.", DayOfWeek::Monday, DayOfWeek::Sunday));
+                EXIT(FindDayInMonth(LastOccurrence, RecurrenceSchedule."Ordinal Recurrence No.", DayOfWeek::Monday.AsInteger(), DayOfWeek::Sunday.AsInteger()));
             DayOfWeek::Weekday:
-                EXIT(FindDayInMonth(LastOccurrence, RecurrenceSchedule."Ordinal Recurrence No.", DayOfWeek::Monday, DayOfWeek::Friday));
+                EXIT(FindDayInMonth(LastOccurrence, RecurrenceSchedule."Ordinal Recurrence No.", DayOfWeek::Monday.AsInteger(), DayOfWeek::Friday.AsInteger()));
             DayOfWeek::"Weekend day":
-                EXIT(FindDayInMonth(LastOccurrence, RecurrenceSchedule."Ordinal Recurrence No.", DayOfWeek::Saturday, DayOfWeek::Sunday))
+                EXIT(FindDayInMonth(LastOccurrence, RecurrenceSchedule."Ordinal Recurrence No.", DayOfWeek::Saturday.AsInteger(), DayOfWeek::Sunday.AsInteger()))
             ELSE
                 EXIT(FindDayInMonth(LastOccurrence, RecurrenceSchedule."Ordinal Recurrence No.",
-                    RecurrenceSchedule.Weekday, RecurrenceSchedule.Weekday))
+                    RecurrenceSchedule.Weekday.AsInteger(), RecurrenceSchedule.Weekday.AsInteger()))
         END;
     end;
 
@@ -201,31 +206,33 @@ codeunit 4691 "Recurrence Schedule Impl."
             EXIT(DatesInMonth."Period Start");
         END;
 
-        DatesInMonth.FINDFIRST();
+        DatesInMonth.FindSet();
         IF WhatToFind = RecurrenceOrdinalNo::First THEN
             EXIT(DatesInMonth."Period Start");
 
-        DatesInMonth.NEXT(WhatToFind);
+        DatesInMonth.Next(WhatToFind.AsInteger());
         EXIT(DatesInMonth."Period Start");
     end;
 
     local procedure CalculateYearly(RecurrenceSchedule: Record "Recurrence Schedule"; LastOccurrence: Date): Date
     var
         MonthlyPattern: Enum "Recurrence - Monthly Pattern";
+        WeekdayDateFormulaTxt: Label '<-CM+%1Y>', comment = '%1 - Number of years', Locked = true;
+        SpecificDateDateFormulaTxt: Label '<-CM+%1Y+%2D>', Comment = '%1 - Number of years, %2 - Number of days', Locked = true;
     begin
         IF LastOccurrence = 0D THEN
             CASE RecurrenceSchedule."Monthly Pattern" OF
                 MonthlyPattern::"By Weekday":
-                    EXIT(CalculateMonthlyByWeekDay(RecurrenceSchedule, DMY2DATE(1, RecurrenceSchedule.Month, DATE2DMY(RecurrenceSchedule."Start Date", 3))));
+                    EXIT(CalculateMonthlyByWeekDay(RecurrenceSchedule, DMY2DATE(1, RecurrenceSchedule.Month.AsInteger(), DATE2DMY(RecurrenceSchedule."Start Date", 3))));
                 MonthlyPattern::"Specific Day":
-                    EXIT(DMY2DATE(RecurrenceSchedule."Recurs on Day", RecurrenceSchedule.Month, Date2DMY(RecurrenceSchedule."Start Date", 3)));
+                    EXIT(DMY2DATE(RecurrenceSchedule."Recurs on Day", RecurrenceSchedule.Month.AsInteger(), Date2DMY(RecurrenceSchedule."Start Date", 3)));
             END;
 
         CASE RecurrenceSchedule."Monthly Pattern" OF
             MonthlyPattern::"By Weekday":
-                EXIT(CalculateMonthlyByWeekDay(RecurrenceSchedule, CALCDATE(STRSUBSTNO('<-CM+%1Y>', RecurrenceSchedule."Recurs Every"), LastOccurrence)));
+                EXIT(CalculateMonthlyByWeekDay(RecurrenceSchedule, CALCDATE(STRSUBSTNO(WeekdayDateFormulaTxt, RecurrenceSchedule."Recurs Every"), LastOccurrence)));
             MonthlyPattern::"Specific Day":
-                EXIT(CALCDATE(STRSUBSTNO('<-CM+%1Y+%2D>', RecurrenceSchedule."Recurs Every", RecurrenceSchedule."Recurs on Day" - 1), LastOccurrence));
+                EXIT(CALCDATE(STRSUBSTNO(SpecificDateDateFormulaTxt, RecurrenceSchedule."Recurs Every", RecurrenceSchedule."Recurs on Day" - 1), LastOccurrence));
         END;
     end;
 

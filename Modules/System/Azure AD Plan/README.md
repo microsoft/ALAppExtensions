@@ -123,7 +123,7 @@ OnRemoveUserGroupsForUserAndPlan
 #### Syntax
 ```
 [Scope('OnPrem')]
-procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo; AppendPermissions: Boolean)
+procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo; AppendPermissionsOnNewPlan: Boolean; RemovePermissionsOnDeletePlan: Boolean)
 ```
 #### Parameters
 *UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
@@ -134,9 +134,13 @@ The user to update.
 
 The graph user corresponding to the user to update, and containing the information about the plans assigned to the user.
 
-*AppendPermissions ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*AppendPermissionsOnNewPlan ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
 Append permissions from the new plan to the user.
+
+*RemovePermissionsOnDeletePlan ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Remove permissions when removing the plan for the user.
 
 ### UpdateUserPlans (Method) <a name="UpdateUserPlans"></a> 
 OnRemoveUserGroupsForUserAndPlan
@@ -165,16 +169,20 @@ OnRemoveUserGroupsForUserAndPlan
 #### Syntax
 ```
 [Scope('OnPrem')]
-procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissions: Boolean)
+procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissionsOnNewPlan: Boolean; RemovePermissionsOnDeletePlan: Boolean)
 ```
 #### Parameters
 *UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
 
 The user to update.
 
-*AppendPermissions ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*AppendPermissionsOnNewPlan ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
 Append permissions from the new plan to the user.
+
+*RemovePermissionsOnDeletePlan ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Remove permissions when removing the plan for the user.
 
 ### UpdateUserPlans (Method) <a name="UpdateUserPlans"></a> 
 OnRemoveUserGroupsForUserAndPlan
@@ -317,9 +325,28 @@ The OnCanCurrentUserManagePlansAndGroups event to ensure this API is called with
 [Scope('OnPrem')]
 procedure CheckMixedPlans()
 ```
+### CheckMixedPlans (Method) <a name="CheckMixedPlans"></a> 
+
+ Checks whether the plan configuration mixes different plans.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure CheckMixedPlans(PlanNamesPerUser: Dictionary of [Text, List of [Text]]; ErrorOutForAdmin: Boolean)
+```
+#### Parameters
+*PlanNamesPerUser ([Dictionary of [Text, List of [Text]]]())* 
+
+A mapping of new plans for user identifiers.
+
+*ErrorOutForAdmin ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Specifies if an error (instead of a message) should be shown for an admin when this function is called.
+
 ### MixedPlansExist (Method) <a name="MixedPlansExist"></a> 
 
- Returns true if a mixed plan exists. 
+ Returns true if there are incompatible plans in the system. 
  
 
 #### Syntax
@@ -330,10 +357,10 @@ procedure MixedPlansExist(): Boolean
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
-Returns true if a mixed plan exists.
+Returns true if there are incompatible plans in the system. 
 ### GetPlanNames (Method) <a name="GetPlanNames"></a> 
 
- Get plans that are assigned to a user in Office 365.
+ Gets plans that are assigned to a user in Office 365.
  
 
 #### Syntax
@@ -352,7 +379,7 @@ The names of the plans that are assigned to the user in Office 365.
 
 ### GetPlanNames (Method) <a name="GetPlanNames"></a> 
 
- Get plans that are assigned to a Business Central user.
+ Gets plans that are assigned to a Business Central user.
  
 
 #### Syntax
@@ -368,6 +395,25 @@ The security ID of the user whose plans we are getting.
 *PlanNames ([List of [Text]]())* 
 
 The plan names of plans assigned to the Office 365 user.
+
+### GetPlanIDs (Method) <a name="GetPlanIDs"></a> 
+
+ Gets plans that are assigned to a user in Office 365.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure GetPlanIDs(GraphUser: DotNet UserInfo; var PlanIDs: List of [Guid])
+```
+#### Parameters
+*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+
+The Graph user to get plans for.
+
+*PlanIDs ([List of [Guid]]())* 
+
+The IDs of the plans that are assigned to the user in Office 365.
 
 ### CheckIfPlansDifferent (Method) <a name="CheckIfPlansDifferent"></a> 
 
@@ -530,7 +576,7 @@ The ID for the Dynamics 365 Business Central Premium plan.
 
 #### Syntax
 ```
-[Obsolete('Invoicing product has been retired.')]
+[Obsolete('Invoicing product has been retired.', '16.0')]
 procedure GetInvoicingPlanId(): Guid
 ```
 #### Return Value
@@ -738,12 +784,6 @@ The device upgrade tag.
  
 
 
-## User Plans FactBox (Page 9826)
-
- ListPart page that contains the plans assigned to users.
- 
-
-
 ## User Plan Members (Page 9822)
 
  List page that contains all users and the plans that they are assigned to.
@@ -753,6 +793,12 @@ The device upgrade tag.
 ## User Plan Members FactBox (Page 9823)
 
  ListPart page that contains all the user plan members.
+ 
+
+
+## User Plans FactBox (Page 9826)
+
+ ListPart page that contains the plans assigned to users.
  
 
 

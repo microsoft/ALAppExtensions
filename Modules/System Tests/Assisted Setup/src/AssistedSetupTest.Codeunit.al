@@ -16,7 +16,7 @@ codeunit 132586 "Assisted Setup Test"
         LastPageIDRun: Integer;
         NonExistingPageID: Integer;
 
-    //[Test]
+    [Test]
     [HandlerFunctions('VideoLinkPageHandler,MySetupTestPageHandler,OtherSetupTestPageHandler')]
     procedure TestAssistedSetupsAreAdded()
     var
@@ -29,12 +29,25 @@ codeunit 132586 "Assisted Setup Test"
         if BindSubscription(AssistedSetupTest) then;
 
         // [WHEN] The subscribers are run by opening the assisted setup page
-        AssistedSetup.Trap();
-        Page.Run(Page::"Assisted Setup");
+        AssistedSetup.OpenView();
 
         // [THEN] Two setups exist in 4 lines
         AssistedSetup.First(); // the first group - WithLinks
         AssistedSetup.Name.AssertEquals('WithLinks');
+        AssistedSetup.Completed.AssertEquals(false);
+        AssistedSetup.Help.AssertEquals('');
+        AssistedSetup.Video.AssertEquals('');
+
+        AssistedSetup.Expand(true);
+
+        AssistedSetup.Next();
+        AssistedSetup.Name.AssertEquals('My Assisted Setup Test Page');
+        AssistedSetup.Completed.AssertEquals(false);
+        AssistedSetup.Help.AssertEquals('Read');
+        AssistedSetup.Video.AssertEquals('Watch');
+
+        AssistedSetup.Next(); // the second group - WithoutLinks
+        AssistedSetup.Name.AssertEquals('WithoutLinks');
         AssistedSetup.Completed.AssertEquals(false);
         AssistedSetup.Help.AssertEquals('');
         AssistedSetup.Video.AssertEquals('');
@@ -45,18 +58,6 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Help.AssertEquals('');
         AssistedSetup.Video.AssertEquals('');
 
-        AssistedSetup.Next(); // the second group - WithoutLinks
-        AssistedSetup.Name.AssertEquals('WithoutLinks');
-        AssistedSetup.Completed.AssertEquals(false);
-        AssistedSetup.Help.AssertEquals('');
-        AssistedSetup.Video.AssertEquals('');
-
-        AssistedSetup.Next();
-        AssistedSetup.Name.AssertEquals('My Assisted Setup Test Page');
-        AssistedSetup.Completed.AssertEquals(false);
-        AssistedSetup.Help.AssertEquals('Read');
-        AssistedSetup.Video.AssertEquals('Watch');
-
         // [WHEN] Start is invoked on the first wizard
         AssistedSetup.First();
         AssistedSetup.Next();
@@ -64,24 +65,7 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup."Start Setup".Invoke();
 
         // [THEN] Check the last ID run based on the subscriber
-        LibraryAssert.AreEqual(Page::"Other Assisted Setup Test Page", LastPageIDRun, 'First wizard did not run.');
-
-        // [THEN] First wizard is completed
-        AssistedSetup.Completed.AssertEquals(true);
-
-        // [WHEN] Completed wizard is run again
-        AssistedSetup."Start Setup".Invoke();
-
-        // [THEN] As subscriber sets Handled = true, nothing happens
-
-        // [WHEN] Start is invoked on the second wizard
-        AssistedSetup.Next();
-        AssistedSetup.Next();
-        LastPageIDRun := 0;
-        AssistedSetup."Start Setup".Invoke();
-
-        // [THEN] Check the last ID run based on the subscriber
-        LibraryAssert.AreEqual(Page::"My Assisted Setup Test Page", LastPageIDRun, 'Second wizard did not run.');
+        LibraryAssert.AreEqual(Page::"My Assisted Setup Test Page", LastPageIDRun, 'First wizard did not run.');
 
         // [THEN] Second wizard is not completed
         AssistedSetup.Completed.AssertEquals(false);
@@ -98,6 +82,57 @@ codeunit 132586 "Assisted Setup Test"
         // [THEN] Translation page opens and caught by the trap above.
         Translation.LanguageName.AssertEquals('English (United States)');
         Translation.Close();
+
+        // [WHEN] Start is invoked on the second wizard
+        AssistedSetup.Next();
+        AssistedSetup.Next();
+        LastPageIDRun := 0;
+        AssistedSetup."Start Setup".Invoke();
+
+        // [THEN] Check the last ID run based on the subscriber
+        LibraryAssert.AreEqual(Page::"Other Assisted Setup Test Page", LastPageIDRun, 'Second wizard did not run.');
+        // [THEN] First wizard is completed
+        AssistedSetup.Completed.AssertEquals(true);
+
+        // [WHEN] Completed wizard is run again
+        AssistedSetup."Start Setup".Invoke();
+
+        // [THEN] As subscriber sets Handled = true, nothing happens
+    end;
+
+    [Test]
+    procedure TestAssistedSetupShowsUpOnOpenRoleBasedSetupExperience()
+    var
+        SystemActionTriggers: Codeunit "System Action Triggers";
+        AssistedSetup: TestPage "Assisted Setup";
+    begin
+        Initialize();
+
+        // [GIVEN] Subscribers are not registered
+        UnbindSubscription(AssistedSetupTest);
+
+        // [WHEN] system action OpenRoleBasedSetupExperience is triggered
+        AssistedSetup.Trap();
+        SystemActionTriggers.OpenRoleBasedSetupExperience();
+
+        // [THEN] Assisted setup is opened
+        AssistedSetup.Close();
+    end;
+
+    [Test]
+    procedure TestAssistedSetupNotShownIfHandledOnBeforeOpenRoleBasedSetupExperience()
+    var
+        SystemActionTriggers: Codeunit "System Action Triggers";
+    begin
+        Initialize();
+
+        // [GIVEN] Subscribers are registered
+        if BindSubscription(AssistedSetupTest) then;
+
+        // [WHEN] system action OpenRoleBasedSetupExperience is triggered
+        SystemActionTriggers.OpenRoleBasedSetupExperience();
+
+        // [THEN] Assisted setup is not opened
     end;
 
     [Test]
@@ -151,6 +186,7 @@ codeunit 132586 "Assisted Setup Test"
     var
         AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
     begin
+        SelectLatestVersion();
         AssistedSetupTestLibrary.DeleteAll();
         NonExistingPageID := 34636;
     end;
@@ -165,9 +201,9 @@ codeunit 132586 "Assisted Setup Test"
     begin
         Initialize();
         NavApp.GetCurrentModuleInfo(Info);
-        AssistedSetup.Add(Info.Id(), Page::"My Assisted Setup Test Page", 'My Assisted Setup Test Page', AssistedSetupGroup::WithoutLinks, 'http://youtube.com', "Video Category"::Uncategorized, 'http://yahoo.com');
+        AssistedSetup.Add(Info.Id(), Page::"My Assisted Setup Test Page", 'My Assisted Setup Test Page', AssistedSetupGroup::WithLinks, 'http://youtube.com', "Video Category"::Uncategorized, 'https://docs.microsoft.com/', 'Description of Setup Page');
         AssistedSetup.AddTranslation(Page::"My Assisted Setup Test Page", 1033, 'English translation');
-        AssistedSetup.Add(Info.Id(), Page::"Other Assisted Setup Test Page", 'Other Assisted Setup Test Page', AssistedSetupGroup::WithLinks);
+        AssistedSetup.Add(Info.Id(), Page::"Other Assisted Setup Test Page", 'Other Assisted Setup Test Page', AssistedSetupGroup::WithoutLinks);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnAfterRun', '', true, true)]
@@ -183,6 +219,13 @@ codeunit 132586 "Assisted Setup Test"
     begin
         if PageID = Page::"Other Assisted Setup Test Page" then
             Handled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnBeforeOpenRoleBasedSetupExperience', '', true, true)]
+    [Normal]
+    procedure OnBeforeOpenRoleBasedSetupExperience(var PageID: Integer; var Handled: Boolean)
+    begin
+        Handled := true;
     end;
 
     [ModalPageHandler]
@@ -213,10 +256,10 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Video.AssertEquals('');
 
         AssistedSetup.Next();
-        AssistedSetup.Name.AssertEquals('My Assisted Setup Test Page');
+        AssistedSetup.Name.AssertEquals('Other Assisted Setup Test Page');
         AssistedSetup.Completed.AssertEquals(false);
-        AssistedSetup.Help.AssertEquals('Read');
-        AssistedSetup.Video.AssertEquals('Watch');
+        AssistedSetup.Help.AssertEquals('');
+        AssistedSetup.Video.AssertEquals('');
     end;
 
 

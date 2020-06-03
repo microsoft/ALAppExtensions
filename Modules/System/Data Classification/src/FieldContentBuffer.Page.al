@@ -27,6 +27,7 @@ page 1753 "Field Content Buffer"
                 field(Value; Value)
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the field value.';
                 }
             }
         }

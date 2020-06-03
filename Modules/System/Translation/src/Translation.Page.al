@@ -44,6 +44,7 @@ page 3712 Translation
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
         LanguageNameValue := '';
+        Rec."Table ID" := TableId;
     end;
 
     trigger OnAfterGetRecord()
@@ -62,8 +63,14 @@ page 3712 Translation
     end;
 
     var
+        TableId: Integer;
         CaptionTxt: Text;
         LanguageNameValue: Text;
+
+    internal procedure SetTableId(Value: Integer)
+    begin
+        TableId := Value;
+    end;
 
     /// <summary>
     /// Sets the page's caption.

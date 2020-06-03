@@ -29,6 +29,7 @@ page 2507 "Upload And Deploy Extension"
             {
                 ApplicationArea = All;
                 Caption = 'Select .app file';
+                ToolTip = 'Specifies the file path of the extension.';
                 Editable = false;
 
                 trigger OnAssistEdit()
@@ -47,11 +48,14 @@ page 2507 "Upload And Deploy Extension"
             {
                 ApplicationArea = All;
                 Caption = 'Deploy to';
+                ToolTip = 'Specifies which version to deploy to.';
+                OptionCaption = 'Current version,Next minor version,Next major version';
             }
             field(Language; LanguageName)
             {
                 ApplicationArea = All;
                 Caption = 'Language';
+                ToolTip = 'Language.';
                 Editable = false;
 
                 trigger OnAssistEdit()
@@ -65,6 +69,8 @@ page 2507 "Upload And Deploy Extension"
             field(Disclaimer; DisclaimerLbl)
             {
                 ApplicationArea = All;
+                Caption = 'Disclaimer';
+                ToolTip = 'View the disclaimer.';
                 Editable = false;
                 ShowCaption = false;
                 Style = None;
@@ -91,6 +97,7 @@ page 2507 "Upload And Deploy Extension"
             {
                 ApplicationArea = All;
                 Caption = 'Deploy';
+                ToolTip = 'Deploy.';
                 Image = ServiceOrderSetup;
                 Enabled = IsAccepted;
                 InFooterBar = true;
@@ -114,6 +121,7 @@ page 2507 "Upload And Deploy Extension"
                 ApplicationArea = All;
                 Image = Cancel;
                 Caption = 'Cancel';
+                ToolTip = 'Cancel.';
                 InFooterBar = true;
                 RunPageMode = Edit;
 

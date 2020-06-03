@@ -11,7 +11,7 @@ codeunit 130019 "Test User Permissions Subscbr."
         CanManageUserSecIDs: List of [Guid];
 
     /// <summary>
-    /// Sets the user who shall be mocked as having the previlege to manage users on tenant.
+    /// Sets the user who will be mocked as having permission to manage users in the tenant.
     /// Uses <see cref="OnCanManageUsersOnTenant"/> event.
     /// </summary>
     /// <param name="NewCanManageUserSecID">The security ID of the user that will be able to manage users.</param>
@@ -25,7 +25,7 @@ codeunit 130019 "Test User Permissions Subscbr."
     /// Mock the user that can manage users on tenant.
     /// </summary>
     /// <param name="UserSID">The user ID that will be able to manage other users.</param>
-    /// <param name="Result">The result of the event that shall determine if the given user has the necessary previleges.</param>
+    /// <param name="Result">The result of the event that shall determine if the given user has the necessary privileges.</param>
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"User Permissions Impl.", 'OnCanManageUsersOnTenant', '', false, false)]
     local procedure OnCanManageUsersOnTenant(UserSID: Guid; var Result: Boolean)
     begin

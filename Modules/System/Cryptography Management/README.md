@@ -426,6 +426,44 @@ The stream of digital signature.
 
 True if the digital signature is valid.
 
+## Rfc2898DeriveBytes (Codeunit 1378)
+
+ Provides helper functions for the Advanced Encryption Standard.
+ 
+
+### HashRfc2898DeriveBytes (Method) <a name="HashRfc2898DeriveBytes"></a> 
+If generating the hash fails, it throws a dotnet error.
+
+
+ Generates a base64 encoded hash from a string based on the provided hash algorithm.
+ 
+
+#### Syntax
+```
+procedure HashRfc2898DeriveBytes(InputString: Text; Salt: Text; NoOfBytes: Integer; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
+```
+#### Parameters
+*InputString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the input to be hashed
+
+*Salt ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The salt used to derive the key
+
+*NoOfBytes ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The number of pseudo-random key bytes to generate
+
+*HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA512]())* 
+
+Represents the HashAlgorithmType, which returns the encrypted hash in the desired algorithm type
+
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+Hash of input
+
 ## Rijndael Cryptography (Codeunit 1258)
 
  Provides helper functions for the Advanced Encryption Standard.
@@ -697,8 +735,273 @@ The value to decrypt.
 
 Plain text.
 
+## X509Certificate2 (Codeunit 1286)
+
+ Provides helper functions to work with the X509Certificate2 class.
+ 
+
+### VerifyCertificate (Method) <a name="VerifyCertificate"></a> 
+When certificate cannot be initialized
+
+
+ Verifes that a certificate is initialized and can be exported.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure VerifyCertificate(var CertBase64Value: Text; Password: Text; X509ContentType: Enum "X509 Content Type"): Boolean
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*X509ContentType ([Enum "X509 Content Type"]())* 
+
+Specifies the format of an X.509 certificate
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if certificate is verified
+### GetCertificateFriendlyName (Method) <a name="GetCertificateFriendlyName"></a> 
+
+ Specifies the friendly name of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateFriendlyName(CertBase64Value: Text; Password: Text; var FriendlyName: Text)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*FriendlyName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents certificate Friendly Name
+
+### GetCertificateSubject (Method) <a name="GetCertificateSubject"></a> 
+
+ Specifies the subject of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateSubject(CertBase64Value: Text; Password: Text; var Subject: Text)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*Subject ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate subject distinguished name
+
+### GetCertificateThumbprint (Method) <a name="GetCertificateThumbprint"></a> 
+
+ Specifies the thumbprint of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateThumbprint(CertBase64Value: Text; Password: Text; var Thumbprint: Text)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*Thumbprint ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Thumbprint
+
+### GetCertificateIssuer (Method) <a name="GetCertificateIssuer"></a> 
+
+ Specifies the issuer of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateIssuer(CertBase64Value: Text; Password: Text; var Issuer: Text)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*Issuer ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Issuer
+
+### GetCertificateExpiration (Method) <a name="GetCertificateExpiration"></a> 
+
+ Specifies the expiration date of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateExpiration(CertBase64Value: Text; Password: Text; var Expiration: DateTime)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*Expiration ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+
+Certificate Expiration Date
+
+### GetCertificateNotBefore (Method) <a name="GetCertificateNotBefore"></a> 
+
+ Specifies the NotBefore date of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateNotBefore(CertBase64Value: Text; Password: Text; var NotBefore: DateTime)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*NotBefore ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+
+Certificate NotBefore Date
+
+### HasPrivateKey (Method) <a name="HasPrivateKey"></a> 
+
+ Checks whether the certificate has a private key based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure HasPrivateKey(CertBase64Value: Text; Password: Text): Boolean
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the certificate has private key
+### GetCertificatePropertiesAsJson (Method) <a name="GetCertificatePropertiesAsJson"></a> 
+
+ Specifies the certificate details in Json object
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificatePropertiesAsJson(CertBase64Value: Text; Password: Text; var CertPropertyJson: Text)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*CertPropertyJson ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate details in json
+
+
 ## Data Encryption Management (Page 9905)
 
  Exposes functionality that allows super users for on-premises versions to enable or disable encryption, import, export or change the encryption key.
+ 
+
+
+## X509 Content Type (Enum 1286)
+Specifies the format of an X.509 certificate.
+
+### Unknown (value: 0)
+
+
+ Specifies unknown X.509 certificate.
+ 
+
+### Cert (value: 1)
+
+
+ Specifies a single X.509 certificate.
+ 
+
+### PFXSerializedCert (value: 2)
+
+
+ Specifies a single serialized X.509 certificate.
+ 
+
+### Pkcs12 (value: 3)
+
+
+ Specifies a PKCS #12-formatted certificate. The Pkcs12 value is identical to the Pfx value.
+ 
+
+### SerializedStore (value: 4)
+
+
+ Specifies a serialized store.
+ 
+
+### Pkcs7 (value: 5)
+
+
+ Specifies a PKCS #7-formatted certificate.
+ 
+
+### Authenticode (value: 6)
+
+
+ Specifies an Authenticode X.509 certificate.
  
 

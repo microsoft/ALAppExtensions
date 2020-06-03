@@ -1,5 +1,74 @@
 Contains functionality that enables users to interact with a camera or media.
 # Public Objects
+## Camera (Codeunit 1907)
+
+ Provides the functions for getting the data from a camera on the client device.
+ 
+
+### GetPicture (Method) <a name="GetPicture"></a> 
+
+ Takes a picture from a camera on the client device and returns the data in the InStream.
+ 
+
+#### Syntax
+```
+procedure GetPicture(PictureStream: InStream; var PictureName: Text): Boolean
+```
+#### Parameters
+*PictureStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+An InStream object that will hold the image in case taking a picture was successful.
+
+*PictureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A generated name for the taken picture. It will include the current date and time (for example, "Picture_05_03_2020_12_49_23.jpeg").
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the camera is available, the user took a picture and decided to use it, false otherwise.
+### AddPicture (Method) <a name="AddPicture"></a> 
+The provided variant is not of type record.
+
+
+ Adds a picture from the camera to the field of type 'Media'or 'MediaSet' on the provided record. 
+ 
+
+
+ If the record already has its Media/MediaSet field populated, the user will be shown a prompt whether they want to replace the existing image or not.
+ 
+
+#### Syntax
+```
+procedure AddPicture(RecordVariant: Variant; FieldNo: Integer): Boolean
+```
+#### Parameters
+*RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+The record to which to add the picture to.
+
+*FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The number of the field to write the image to. Must be of type 'Media' or 'MediaSet'.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the camera is available, the user took a picture and decided to use it, false otherwise.
+### IsAvailable (Method) <a name="IsAvailable"></a> 
+
+ Checks whether the camera on the client device is available.
+ 
+
+#### Syntax
+```
+procedure IsAvailable(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the camera is available, false otherwise.
+
 ## Camera (Page 1908)
 
  Provides an interface for accessing the camera on the client device.
@@ -81,6 +150,24 @@ procedure GetPicture(var TempBlob: Codeunit "Temp Blob")
 
 The object to put the picture BLOB in.
 
+### HasPicture (Method) <a name="HasPicture"></a> 
+
+ Checks if the picture is available and can be obtained with a [GetPicture](#GetPicture) method.
+ 
+
+
+ The picture will not be available if the page was not opened
+ (e. g. Camera.RunModal() function was not called) or if the dialog was canceled.
+ 
+
+#### Syntax
+```
+procedure HasPicture(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the picture is available, false otherwise.
 ### GetPicture (Method) <a name="GetPicture"></a> 
 The picture is not available.
 
@@ -164,6 +251,24 @@ procedure GetMedia(var TempBlob: Codeunit "Temp Blob")
 
 The object to put the picture BLOB in.
 
+### HasMedia (Method) <a name="HasMedia"></a> 
+
+ Checks if the media is available and can be obtained with a [GetMedia](#GetMedia) method.
+ 
+
+
+ The media will not be available if the page was not opened
+ (e. g. MediaUpload.RunModal() function was not called) or if the dialog was canceled.
+ 
+
+#### Syntax
+```
+procedure HasMedia(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the media is available, false otherwise.
 ### GetMedia (Method) <a name="GetMedia"></a> 
 The picture is not available.
 

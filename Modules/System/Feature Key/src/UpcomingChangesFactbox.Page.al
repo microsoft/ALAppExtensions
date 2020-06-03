@@ -37,17 +37,24 @@ page 2611 "Upcoming Changes Factbox"
                     {
                         ApplicationArea = All;
                         Editable = false;
+                        Caption = 'Learn more about managing features.';
                         ShowCaption = false;
+                        ToolTip = 'Learn more about feature management.';
+
                         trigger OnDrillDown()
                         begin
                             Hyperlink(LearnMoreAboutPreviewProcessUrlTxt);
                         end;
                     }
+
                     field(ReleasePlan; ReleasePlanLbl)
                     {
                         ApplicationArea = All;
                         Editable = false;
                         ShowCaption = false;
+                        Caption = 'See the Release Plan';
+                        ToolTip = 'See the Release Plan.';
+
                         trigger OnDrillDown()
                         begin
                             Hyperlink(ReleasePlanUrlTxt);

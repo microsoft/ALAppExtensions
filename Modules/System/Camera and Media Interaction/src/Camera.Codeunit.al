@@ -25,19 +25,19 @@ codeunit 1907 Camera
     end;
 
     /// <summary>
-    /// Adds a picture from the camera to the field of type 'Media' on the provided record. 
+    /// Adds a picture from the camera to the field of type 'Media'or 'MediaSet' on the provided record. 
     /// </summary>
     /// <remarks>
-    /// If the record already has its Media field populated, the user will be shown a prompt whether they want to replace the existing image or not.
+    /// If the record already has its Media/MediaSet field populated, the user will be shown a prompt whether they want to replace the existing image or not.
     /// </remarks>
     /// <remarks>
     /// If the record variable has the primary key fields populated, and the corresponding record exists in the database,
     /// then the record will be modified, otherwise a new record will be inserted.
     /// </remarks>
     /// <param name="RecordVariant">The record to which to add the picture to.</param>
-    /// <param name="FieldNo">The number of the field to write the image to. Must be of type 'Media'.</param>
+    /// <param name="FieldNo">The number of the field to write the image to. Must be of type 'Media' or 'MediaSet'.</param>
     /// <error>The provided variant is not of type record.</error>
-    /// <error>The provided field is not of type 'Media'.</error>
+    /// <error>Unsupported field type</error>
     /// <returns>True if the camera is available, the user took a picture and decided to use it, false otherwise.</returns>
     procedure AddPicture(RecordVariant: Variant; FieldNo: Integer): Boolean
     begin

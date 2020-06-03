@@ -20,6 +20,7 @@ codeunit 2610 "Feature Management Impl."
         DotNetUri: DotNet Uri;
         QueryString: Text;
         ClientUrl: Text;
+        QueryStringLbl: Label '%1&%2', Comment = '%1 - Query string, %2 - Preview feature parameter', Locked = true;
     begin
         ClientUrl := GetUrl(ClientType::Web);
         DotNetUriBuilder := DotNetUriBuilder.UriBuilder(ClientUrl);
@@ -27,12 +28,11 @@ codeunit 2610 "Feature Management Impl."
 
         QueryString := DelChr(QueryString, '<', '?');
         if StrLen(QueryString) > 0 then
-            QueryString := StrSubstNo('%1&%2',
+            QueryString := StrSubstNo(QueryStringLbl,
                 QueryString,
                 StrSubstNo(PreviewFeatureParameterTxt, DotNetUri.EscapeDataString(FeatureKey)))
         else
-            QueryString := StrSubstNo('%1',
-                StrSubstNo(PreviewFeatureParameterTxt, DotNetUri.EscapeDataString(FeatureKey)));
+            QueryString := StrSubstNo(PreviewFeatureParameterTxt, DotNetUri.EscapeDataString(FeatureKey));
 
         DotNetUriBuilder.Query := QueryString;
         DotNetUri := DotNetUriBuilder.Uri();

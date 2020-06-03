@@ -93,6 +93,7 @@ codeunit 4470 "Record Link Impl."
             Total := Count();
             if Total = 0 then
                 exit;
+            InTransaction := false;
             if Find('-') then
                 repeat
                     i := i + 1;
