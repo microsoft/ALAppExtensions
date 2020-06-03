@@ -35,3 +35,4 @@ The following example shows how to integrate this module in an extension.
                 CurrPage.OAuthIntegration.StartAuthorization(AuthRequestUrl);
             end;
     }
+# Public Objects

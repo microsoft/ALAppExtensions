@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 page 130451 "AL Test Tool"
 {
     AccessByPermission = TableData "Test Method Line" = RIMD;
@@ -236,6 +241,25 @@ page 130451 "AL Test Tool"
                         TestSuiteMgt: Codeunit "Test Suite Mgt.";
                     begin
                         TestSuiteMgt.LookupTestMethodsByRange(GlobalALTestSuite);
+                        CurrPage.Update(false);
+                    end;
+                }
+                action(UpdateTests)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Update Test Methods';
+                    Image = RefreshLines;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+                    PromotedOnly = true;
+                    ToolTip = 'Updates the test methods for the entire test suite.';
+
+                    trigger OnAction()
+                    var
+                        TestSuiteMgt: Codeunit "Test Suite Mgt.";
+                    begin
+                        TestSuiteMgt.UpdateTestMethods(Rec);
                         CurrPage.Update(false);
                     end;
                 }

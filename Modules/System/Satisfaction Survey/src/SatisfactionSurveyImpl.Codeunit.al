@@ -443,11 +443,12 @@ codeunit 1432 "Satisfaction Survey Impl."
     local procedure AddLastError(LogMessage: Text): Text
     var
         LastErrorText: Text;
+        LogErrorTxt: Label '%1 %2', Comment = '%1 - Log message, %2 - Last error', Locked = true;
     begin
         LastErrorText := GetLastErrorText();
         if LastErrorText = '' then
             exit(LogMessage);
-        exit(StrSubstNo('%1 %2', LogMessage, LastErrorText));
+        exit(StrSubstNo(LogErrorTxt, LogMessage, LastErrorText));
     end;
 
     local procedure GetPuid(): Text
@@ -491,9 +492,10 @@ codeunit 1432 "Satisfaction Survey Impl."
     local procedure GetFullUrl(BaseUrl: Text; Data: Text): Text
     var
         FullUrl: Text;
+        UrlTxt: Label '%1%2', Comment = '%1 - Base url, %2 - Data', Locked = true;
     begin
         if (BaseUrl <> '') and (Data <> '') then
-            FullUrl := StrSubstNo('%1%2', BaseUrl, Data);
+            FullUrl := StrSubstNo(UrlTxt, BaseUrl, Data);
         exit(FullUrl);
     end;
 

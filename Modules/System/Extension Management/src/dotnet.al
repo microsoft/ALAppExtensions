@@ -29,7 +29,6 @@ dotnet
 
     assembly("Microsoft.Dynamics.Nav.ClientExtensions")
     {
-        Version = '16.0.0.0';
         Culture = 'neutral';
         PublicKeyToken = '31bf3856ad364e35';
 

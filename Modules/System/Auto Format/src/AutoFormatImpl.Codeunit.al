@@ -48,8 +48,8 @@ codeunit 59 "Auto Format Impl."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"UI Helper Triggers", 'AutoFormatTranslate', '', false, false)]
     local procedure DoResolveAutoFormat(AutoFormatType: Integer; AutoFormatExpr: Text[80]; var Translation: Text[80])
     begin
-        Translation := ResolveAutoFormat(AutoFormatType, AutoFormatExpr);
-        AutoFormat.OnAfterResolveAutoFormat(AutoFormatType, AutoFormatExpr, Translation);
+        Translation := ResolveAutoFormat("Auto Format".FromInteger(AutoFormatType), AutoFormatExpr);
+        AutoFormat.OnAfterResolveAutoFormat("Auto Format".FromInteger(AutoFormatType), AutoFormatExpr, Translation);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"UI Helper Triggers", 'GetDefaultRoundingPrecision', '', false, false)]

@@ -97,6 +97,24 @@ procedure GetApplicationFamily(): Text
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 The application family.
+### VersionInstalled (Method) <a name="VersionInstalled"></a> 
+
+ Gets the version which a given app was installed in.
+ 
+
+#### Syntax
+```
+procedure VersionInstalled(AppID: Guid): Integer
+```
+#### Parameters
+*AppID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The module ID of the app.
+
+#### Return Value
+*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+
+The major version number when the app was installed.
 
 ## Tenant Information (Codeunit 417)
 

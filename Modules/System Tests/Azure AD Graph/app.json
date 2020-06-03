@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Tests for the Azure AD Graph module",
-    "version":  "16.2.0.0",
+    "version":  "16.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,31 +15,31 @@
                              "id":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
                              "name":  "Azure AD Graph",
                              "publisher":  "Microsoft",
-                             "version":  "16.2.0.0"
+                             "version":  "16.3.0.0"
                          },
                          {
                              "id":  "cc441290-a967-4601-9a7d-b4209339415b",
                              "name":  "Environment Information Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "16.2.0.0"
+                             "version":  "16.3.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "16.2.0.0"
+                             "version":  "16.3.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "16.2.0.0"
+                             "version":  "16.3.0.0"
                          },
                          {
                              "id":  "815d5c15-02bd-4d58-a010-b66033de6625",
                              "name":  "DotNet Aliases Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "16.2.0.0"
+                             "version":  "16.3.0.0"
                          }
                      ],
     "screenshots":  [

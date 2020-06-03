@@ -34,6 +34,7 @@ page 2501 "Extension Details"
                     {
                         ApplicationArea = All;
                         Caption = 'Name';
+                        ToolTip = 'Specifies the name of the extension.';
                     }
                     field(In_Des; AppDescription)
                     {
@@ -41,27 +42,33 @@ page 2501 "Extension Details"
                         Caption = 'Description';
                         Editable = false;
                         MultiLine = true;
+                        ToolTip = 'Specifies the description of the extension.';
                     }
                     field(In_Ver; VersionDisplay)
                     {
                         ApplicationArea = All;
                         Caption = 'Version';
+                        ToolTip = 'Specifies the version of the extension.';
                     }
                     field(In_Pub; Publisher)
                     {
                         ApplicationArea = All;
                         Caption = 'Publisher';
+                        ToolTip = 'Specifies the publisher of the extension.';
                     }
                     field(In_Id; AppIdDisplay)
                     {
                         ApplicationArea = All;
                         Caption = 'App ID';
+                        ToolTip = 'Specifies the app ID of the extension.';
                     }
                     field(In_Url; UrlLbl)
                     {
                         ApplicationArea = All;
+                        Caption = 'Website';
                         Editable = false;
                         ShowCaption = false;
+                        ToolTip = 'Open a website for more information about the extension.';
 
                         trigger OnDrillDown()
                         begin
@@ -71,8 +78,10 @@ page 2501 "Extension Details"
                     field(In_Help; HelpLbl)
                     {
                         ApplicationArea = All;
+                        Caption = 'Help';
                         Editable = false;
                         ShowCaption = false;
+                        ToolTip = 'Get help with using the extension.';
 
                         trigger OnDrillDown()
                         begin
@@ -94,11 +103,13 @@ page 2501 "Extension Details"
                     {
                         ApplicationArea = All;
                         Caption = 'Name';
+                        ToolTip = 'Specifies the name of the extension.';
                     }
                     field(Un_Des; AppDescription)
                     {
                         ApplicationArea = All;
                         Caption = 'Description';
+                        ToolTip = 'Specifies the description of the extension.';
                         Editable = false;
                         MultiLine = true;
                     }
@@ -106,20 +117,25 @@ page 2501 "Extension Details"
                     {
                         ApplicationArea = All;
                         Caption = 'Version';
+                        ToolTip = 'Specifies the version of the extension.';
                     }
                     field(Un_Pub; Publisher)
                     {
                         ApplicationArea = All;
                         Caption = 'Publisher';
+                        ToolTip = 'Specifies the publisher of the extension.';
                     }
                     field(Un_Id; AppIdDisplay)
                     {
                         ApplicationArea = All;
                         Caption = 'App ID';
+                        ToolTip = 'Specifies the app ID of the extension.';
                     }
                     field(Un_Terms; TermsLbl)
                     {
                         ApplicationArea = All;
+                        Caption = 'Terms and Conditions';
+                        ToolTip = 'View the terms and conditions for the extension.';
                         Editable = false;
                         ShowCaption = false;
                         Visible = Legal;
@@ -137,6 +153,8 @@ page 2501 "Extension Details"
                     field(Un_Privacy; PrivacyLbl)
                     {
                         ApplicationArea = All;
+                        Caption = 'Privacy Statement';
+                        ToolTip = 'View the privacy statement for the extension.';
                         Editable = false;
                         ShowCaption = false;
                         Visible = Legal;
@@ -154,6 +172,8 @@ page 2501 "Extension Details"
                     field(Un_Url; UrlLbl)
                     {
                         ApplicationArea = All;
+                        Caption = 'Website';
+                        ToolTip = 'Opens the extension''s website.';
                         Editable = false;
                         ShowCaption = false;
 
@@ -165,6 +185,8 @@ page 2501 "Extension Details"
                     field(Un_Help; HelpLbl)
                     {
                         ApplicationArea = All;
+                        Caption = 'Help';
+                        ToolTip = 'Get help with using the extension.';
                         Editable = false;
                         ShowCaption = false;
 
@@ -186,18 +208,21 @@ page 2501 "Extension Details"
                     {
                         ApplicationArea = All;
                         Caption = 'Name';
+                        ToolTip = 'Specifies the name of the extension.';
                         Editable = false;
                     }
                     field(Publisher; Publisher)
                     {
                         ApplicationArea = All;
                         Caption = 'Publisher';
+                        ToolTip = 'Specifies the publisher of the extension.';
                         Editable = false;
                     }
                     field(Language; LanguageName)
                     {
                         ApplicationArea = All;
                         Caption = 'Language';
+                        ToolTip = 'Specifies the language of the extension.';
                         Editable = false;
 
                         trigger OnAssistEdit()
@@ -215,6 +240,8 @@ page 2501 "Extension Details"
                         field(Terms; TermsLbl)
                         {
                             ApplicationArea = All;
+                            Caption = 'Terms and Conditions';
+                            ToolTip = 'View the terms and conditions for the extension.';
                             Editable = false;
                             ShowCaption = false;
                             Visible = Legal;
@@ -227,6 +254,8 @@ page 2501 "Extension Details"
                         field(Privacy; PrivacyLbl)
                         {
                             ApplicationArea = All;
+                            Caption = 'Privacy Statement';
+                            ToolTip = 'View the privacy statement for the extension.';
                             Editable = false;
                             ShowCaption = false;
                             Visible = Legal;
@@ -240,6 +269,7 @@ page 2501 "Extension Details"
                         {
                             ApplicationArea = All;
                             Caption = 'I accept the terms and conditions';
+                            ToolTip = 'Acceptance of terms and conditions.';
                             Visible = Legal;
                         }
                     }
@@ -256,6 +286,7 @@ page 2501 "Extension Details"
             {
                 ApplicationArea = All;
                 Caption = 'Back';
+                ToolTip = 'Back';
                 Image = PreviousRecord;
                 InFooterBar = true;
                 Visible = BackEnabled;
@@ -272,6 +303,7 @@ page 2501 "Extension Details"
             {
                 ApplicationArea = All;
                 Caption = 'Next';
+                ToolTip = 'Next';
                 Image = NextRecord;
                 InFooterBar = true;
                 Visible = NextEnabled;
@@ -288,6 +320,7 @@ page 2501 "Extension Details"
             {
                 ApplicationArea = All;
                 Caption = 'Install';
+                ToolTip = 'Install';
                 Enabled = IsAccepted;
                 Image = Approve;
                 InFooterBar = true;
@@ -303,6 +336,7 @@ page 2501 "Extension Details"
             {
                 ApplicationArea = All;
                 Caption = 'Uninstall';
+                ToolTip = 'Uninstall';
                 Image = Approve;
                 InFooterBar = true;
                 Visible = IsInstalled;

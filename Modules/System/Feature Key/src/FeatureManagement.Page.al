@@ -37,7 +37,9 @@ page 2610 "Feature Management"
                     ShowCaption = false;
                     ApplicationArea = All;
                     Editable = false;
-                    ToolTip = 'A detailed description of new capabilities and behaviours that are available when the feature is enabled (opens in a new tab).';
+                    Caption = 'Learn more';
+                    ToolTip = 'View a detailed description of new capabilities and behaviors that are available when the feature is enabled (opens in a new tab).';
+
                     trigger OnDrillDown()
                     begin
                         Hyperlink("Learn More Link");
@@ -69,8 +71,10 @@ page 2610 "Feature Management"
                     ToolTip = 'Starts a new session with the feature temporarily enabled (opens in a new tab). This does not affect any other users.';
                     trigger OnDrillDown()
                     begin
-                        if "Can Try" then
+                        if "Can Try" then begin
                             HyperLink(FeatureManagementImpl.GetFeatureKeyUrlForWeb(ID));
+                            Message(TryItOutStartedMsg);
+                        end;
                     end;
                 }
             }
@@ -96,5 +100,6 @@ page 2610 "Feature Management"
         FeatureManagementImpl: Codeunit "Feature Management Impl.";
         LearnMoreLbl: Label 'Learn more';
         TryItOutLbl: Label 'Try it out';
+        TryItOutStartedMsg: Label 'This feature has been enabled for new sessions in your browser. When you are done, sign out or close the browser.';
         TryItOut: Text;
 }

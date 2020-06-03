@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Determines whether a confirm dialog displays when logic is run.",
     "description":  "Contains helper methods that either display a confirm dialog when logic is run, or suppresses it if UI is not allowed, such as background sessions or webservice calls.",
-    "version":  "16.2.0.0",
+    "version":  "16.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",

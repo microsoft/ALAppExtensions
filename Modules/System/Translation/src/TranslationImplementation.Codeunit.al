@@ -9,6 +9,8 @@ codeunit 3712 "Translation Implementation"
 
     var
         NoRecordIdErr: Label 'The variant passed is not a record.';
+        CannotTranslateTempRecErr: Label 'Translations cannot be added or retrieved for temporary records.';
+        NotAValidRecordForTranslationErr: Label 'Translations cannot be added for the record on table %1.', Comment = '%1 - Table number';
 
     procedure Any(): Boolean
     var
@@ -89,8 +91,6 @@ codeunit 3712 "Translation Implementation"
         RecordRef: RecordRef;
     begin
         GetRecordRefFromVariant(RecVariant, RecordRef);
-        if RecordRef.IsTemporary() then
-            exit;
 
         TranslationWithFilters.SetRange("System ID", GetSystemIdFromRecordRef(RecordRef));
         TranslationWithFilters.DeleteAll(true);
@@ -106,6 +106,7 @@ codeunit 3712 "Translation Implementation"
         GetSystemIdFromVariant(RecVariant, SystemID, TableNo);
         Translation.SetRange("System ID", SystemID);
         Translation.SetRange("Field ID", FieldId);
+        TranslationPage.SetTableId(TableNo);
         TranslationPage.SetCaption(GetRecordIdCaptionFromVariant(RecVariant));
         TranslationPage.SetTableView(Translation);
         TranslationPage.Run();
@@ -148,6 +149,10 @@ codeunit 3712 "Translation Implementation"
     begin
         if RecVariant.IsRecord() then begin
             RecordRef.GetTable(RecVariant);
+            if RecordRef.IsTemporary() then
+                Error(CannotTranslateTempRecErr);
+            if RecordRef.Number() = 0 then
+                Error(NotAValidRecordForTranslationErr, 0);
             exit;
         end;
 

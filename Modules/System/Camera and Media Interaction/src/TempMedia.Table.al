@@ -17,6 +17,11 @@ table 4152 "Temp Media"
         {
             DataClassification = SystemMetadata;
         }
+
+        field(3; MediaSet; MediaSet)
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

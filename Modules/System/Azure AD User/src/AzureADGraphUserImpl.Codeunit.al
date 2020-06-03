@@ -44,6 +44,17 @@ codeunit 9011 "Azure AD Graph User Impl."
         exit(UserProperty."Authentication Object ID");
     end;
 
+    procedure TryGetUserAuthenticationObjectId(UserSecurityId: Guid; var AuthenticationObjectId: Text): Boolean
+    var
+        UserProperty: Record "User Property";
+    begin
+        if not UserProperty.Get(UserSecurityId) then
+            exit(false);
+
+        AuthenticationObjectId := UserProperty."Authentication Object ID";
+        exit(true);
+    end;
+
     procedure GetUser(AuthenticationObjectID: Text; var User: Record User): Boolean
     var
         UserProperty: Record "User Property";
@@ -288,25 +299,18 @@ codeunit 9011 "Azure AD Graph User Impl."
         LanguageManagement: Codeunit Language;
         LanguageCode: Code[10];
         LanguageId: Integer;
-        NonDefaultLanguageId: Integer;
         PreferredLanguage: Text;
     begin
         if IsNull(GraphUserToQuery.PreferredLanguage()) then
-            PreferredLanguage := ''
-        else
-            PreferredLanguage := GraphUserToQuery.PreferredLanguage();
+            exit(0);
 
-        LanguageId := LanguageManagement.GetDefaultApplicationLanguageId();
+        PreferredLanguage := GraphUserToQuery.PreferredLanguage();
 
-        // We will use default application language if the PreferredLanguage is blank or en-us
-        // (i.e. don't spend time trying to lookup the code)
-        if not (LowerCase(PreferredLanguage) in ['', 'en-us']) then
-            if TryGetLanguageCode(PreferredLanguage, LanguageCode) then begin
+        if PreferredLanguage <> '' then
+            if TryGetLanguageCode(PreferredLanguage, LanguageCode) then
                 // If we support the language, get the language id
-                NonDefaultLanguageId := LanguageManagement.GetLanguageId(LanguageCode);
-                if NonDefaultLanguageId <> 0 then
-                    LanguageId := NonDefaultLanguageId;
-            end;
+                LanguageId := LanguageManagement.GetLanguageId(LanguageCode);
+
         exit(LanguageId);
     end;
 }

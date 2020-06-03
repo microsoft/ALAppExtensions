@@ -371,6 +371,48 @@ procedure ShouldEnableNext(): Boolean
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if the Next button should be enabled and false otherwise.
+### SetExportModeSelected (Method) <a name="SetExportModeSelected"></a> 
+
+ Setter for the IsExportModeSelectedValue.
+ 
+
+#### Syntax
+```
+procedure SetExportModeSelected(Value: Boolean)
+```
+#### Parameters
+*Value ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+The Value to set.
+
+### SetExpertModeSelected (Method) <a name="SetExpertModeSelected"></a> 
+
+ Setter for the IsExpertModeSelectedValue.
+ 
+
+#### Syntax
+```
+procedure SetExpertModeSelected(Value: Boolean)
+```
+#### Parameters
+*Value ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+The Value to set.
+
+### SetImportModeSelected (Method) <a name="SetImportModeSelected"></a> 
+
+ Setter for the SetImportModeSelected.
+ 
+
+#### Syntax
+```
+procedure SetImportModeSelected(Value: Boolean)
+```
+#### Parameters
+*Value ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+The Value to set.
+
 ### NextStep (Method) <a name="NextStep"></a> 
 
  Selects the next step.

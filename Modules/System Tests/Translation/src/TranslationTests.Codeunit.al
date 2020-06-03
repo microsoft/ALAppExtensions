@@ -16,6 +16,7 @@ codeunit 137121 "Translation Tests"
         Text3Txt: Label 'Translation 3';
         Text4Txt: Label 'Translation 4';
         Text5Txt: Label 'Translation 5';
+        CannotTranslateTempRecErr: Label 'Translations cannot be added or retrieved for temporary records.';
 
     [Test]
     [Scope('OnPrem')]
@@ -212,6 +213,26 @@ codeunit 137121 "Translation Tests"
         Assert.IsFalse(TranslationPage.Next(), 'No more records should be available.');
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestTranslateForTemporaryRecords()
+    var
+        TranslationTestTable: Record "Translation Test Table" temporary;
+    begin
+        // [SCENARIO] Checks for an error message when translation is set for a temporary record
+        Initialize();
+
+        // [GIVEN] A record in a temporary table is created
+        CreateRecord(TranslationTestTable);
+
+        // [WHEN] Translation is set on it
+        asserterror Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField),
+          CalculateValue(TranslationTestTable, Text1Txt));
+
+        // [THEN] Error is raised
+        Assert.ExpectedError(CannotTranslateTempRecErr);
+    end;
+
     local procedure Initialize()
     var
         TranslationTestTable: Record "Translation Test Table";
@@ -240,6 +261,17 @@ codeunit 137121 "Translation Tests"
     end;
 
     local procedure CreateRecordWithTranslation(var TranslationTestTable: Record "Translation Test Table")
+    begin
+        CreateRecord(TranslationTestTable);
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField),
+          CalculateValue(TranslationTestTable, Text1Txt));
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030,
+          CalculateValue(TranslationTestTable, Text2Txt));
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1078,
+          CalculateValue(TranslationTestTable, Text5Txt));
+    end;
+
+    local procedure CreateRecord(var TranslationTestTable: Record "Translation Test Table")
     var
         LastId: Integer;
     begin
@@ -248,12 +280,6 @@ codeunit 137121 "Translation Tests"
         TranslationTestTable.Init();
         TranslationTestTable.PK := LastId + 1;
         TranslationTestTable.Insert();
-        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField),
-          CalculateValue(TranslationTestTable, Text1Txt));
-        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030,
-          CalculateValue(TranslationTestTable, Text2Txt));
-        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1078,
-          CalculateValue(TranslationTestTable, Text5Txt));
     end;
 
     local procedure CalculateValue(TranslationTestTable: Record "Translation Test Table"; OrigValue: Text): Text[2048]

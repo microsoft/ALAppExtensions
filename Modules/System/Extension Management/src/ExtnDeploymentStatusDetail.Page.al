@@ -132,11 +132,13 @@ page 2509 "Extn Deployment Status Detail"
             action(Refresh)
             {
                 ApplicationArea = All;
+                ToolTip = 'Refresh the deployment details.';
                 Enabled = NOT IsFinalStatus;
                 Image = Refresh;
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                PromotedOnly = true;
 
                 trigger OnAction()
                 var
@@ -159,6 +161,7 @@ page 2509 "Extn Deployment Status Detail"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                PromotedOnly = true;
                 ToolTip = 'Download the operation status details to a file.';
 
                 trigger OnAction()

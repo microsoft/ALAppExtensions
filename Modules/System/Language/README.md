@@ -13,7 +13,7 @@ Changes the language for Windows and applications, and converts language codes t
 
 #### Syntax
 ```
-[Obsolete('Please use function with the same name from this modules facade codeunit 43 - "Language".')]
+[Obsolete('Please use function with the same name from this modules facade codeunit 43 - "Language".', '16.0')]
 procedure GetLanguageId(LanguageCode: Code[10]): Integer
 ```
 #### Parameters

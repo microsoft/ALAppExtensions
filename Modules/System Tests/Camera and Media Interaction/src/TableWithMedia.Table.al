@@ -17,6 +17,10 @@ table 135011 "Table With Media"
         {
             DataClassification = SystemMetadata;
         }
+        field(3; MediaSetField; MediaSet)
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

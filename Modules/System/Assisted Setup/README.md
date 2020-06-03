@@ -163,7 +163,7 @@ Adds the translation for the name of the setup.
 
 #### Syntax
 ```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
 procedure AddTranslation(ExtensionID: Guid; PageID: Integer; LanguageID: Integer; TranslatedName: Text)
 ```
 #### Parameters
@@ -208,7 +208,7 @@ Checks whether a user has already completed the setup.
 
 #### Syntax
 ```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
 procedure IsComplete(ExtensionID: Guid; PageID: Integer): Boolean
 ```
 #### Parameters
@@ -245,7 +245,7 @@ Checks whether an assisted setup guide exists.
 
 #### Syntax
 ```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
 procedure Exists(ExtensionID: Guid; PageID: Integer): Boolean
 ```
 #### Parameters
@@ -282,7 +282,7 @@ Checks whether as assisted setup guide exists but has not been completed.
 
 #### Syntax
 ```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
 procedure ExistsAndIsNotComplete(ExtensionID: Guid; PageID: Integer): Boolean
 ```
 #### Parameters
@@ -321,7 +321,7 @@ This is typically called from inside the assisted setup guide when the setup is 
 
 #### Syntax
 ```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
 procedure Complete(ExtensionID: Guid; PageID: Integer)
 ```
 #### Parameters
@@ -364,7 +364,7 @@ Issues the call to execute the setup.
 
 #### Syntax
 ```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.')]
+[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
 procedure Run(ExtensionID: Guid; PageID: Integer)
 ```
 #### Parameters

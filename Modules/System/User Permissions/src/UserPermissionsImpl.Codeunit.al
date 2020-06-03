@@ -196,12 +196,17 @@ codeunit 153 "User Permissions Impl."
             exit(true);
     end;
 
+    /// <summary>
+    /// An event that indicates that subscribers should set the result that should be returned when the CanManageUsersOnTenant is called.
+    /// </summary>
+    /// <remarks>
+    /// Subscribe to this event from tests if you need to verify a different flow.
+    /// This feature is for testing and is subject to a different SLA than production features.
+    /// Do not use this event in a production environment. This should be subscribed to only in tests.
+    /// </remarks>
     [IntegrationEvent(false, false)]
-    procedure OnCanManageUsersOnTenant(UserSID: Guid; var Result: Boolean)
+    local procedure OnCanManageUsersOnTenant(UserSID: Guid; var Result: Boolean)
     begin
-        // Subscribe to this event from tests if you need to verify a different flow.
-        // This feature is for testing and is subject to a different SLA than production features.
-        // Do not use this event in a production environment. This should be subscribed to only in tests.
     end;
 }
 

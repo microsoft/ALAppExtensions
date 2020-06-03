@@ -45,11 +45,11 @@ codeunit 1908 "Camera Page Impl."
 
     procedure IsAvailable(CameraProvider: DotNet CameraProvider): Boolean
     var
-        IsAvailable: Boolean;
+        IsCameraAvailable: Boolean;
     begin
-        IsAvailable := CameraProvider.IsAvailable();
-        OnIsCameraAvailable(IsAvailable);
-        exit(IsAvailable);
+        IsCameraAvailable := CameraProvider.IsAvailable();
+        OnIsCameraAvailable(IsCameraAvailable);
+        exit(IsCameraAvailable);
     end;
 
     procedure SetAllowEdit(AllowEdit: Boolean)

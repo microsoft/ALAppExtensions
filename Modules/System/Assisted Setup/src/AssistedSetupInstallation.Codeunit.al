@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 1809 "Assisted Setup Installation"
 {
     Subtype = Install;
@@ -17,6 +22,7 @@ codeunit 1809 "Assisted Setup Installation"
         UpgradeTag: Codeunit "Upgrade Tag";
         AssistedSetupUpgradeTag: Codeunit "Assisted Setup Upgrade Tag";
     begin
-        UpgradeTag.SetUpgradeTag(AssistedSetupUpgradeTag.GetDeleteAssistedSetupTag());
+        if not UpgradeTag.HasUpgradeTag(AssistedSetupUpgradeTag.GetDeleteAssistedSetupTag()) then
+            UpgradeTag.SetUpgradeTag(AssistedSetupUpgradeTag.GetDeleteAssistedSetupTag());
     end;
 }

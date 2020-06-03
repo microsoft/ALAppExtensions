@@ -78,12 +78,12 @@ codeunit 138458 "Azure AD Licensing Test"
         //Create Subscribed SKUs
         //Add Service Plan Info to the Subscribed SKUs
         CreateSubscribedSKU(SubscribedSkuOne, LicenseUnitsDetailOne, SubscribedSkuOneId,
-        'SKU Object Id One', 'SKU Capability Status One', 'SKU Part number One', 1, 1);
+        'SKU Object Id One', 'SKU Capability Status One', 'SKU Part number One', 1);
         SubscribedSkuOne.ServicePlans().Add(ServicePlanInfoOne);
         SubscribedSkuOne.ServicePlans().Add(ServicePlanInfoTwo);
 
         CreateSubscribedSKU(SubscribedSkuTwo, LicenseUnitsDetailTwo, SubscribedSkuTwoId,
-        'SKU Object Id Two', 'SKU Capability Status Two', 'SKU Part number Two', 2, 2);
+        'SKU Object Id Two', 'SKU Capability Status Two', 'SKU Part number Two', 2);
         SubscribedSkuTwo.ServicePlans().Add(ServicePlanInfoOne);
         SubscribedSkuTwo.ServicePlans().Add(ServicePlanInfoThree);
 
@@ -100,7 +100,7 @@ codeunit 138458 "Azure AD Licensing Test"
         ServicePlanInfo.ServicePlanName := Name;
     end;
 
-    local procedure CreateSubscribedSKU(var SubscribedSku: DotNet SkuInfo; LicenseUnitsDetail: DotNet LicenseUnitsInfo; SkuId: Guid; ObjectId: Text; CapabilityStatus: Text; SkuPartNumber: Text; ConsumedUnits: Integer; NrPrepaidUnitsInEnabledState: Integer)
+    local procedure CreateSubscribedSKU(var SubscribedSku: DotNet SkuInfo; LicenseUnitsDetail: DotNet LicenseUnitsInfo; SkuId: Guid; ObjectId: Text; CapabilityStatus: Text; SkuPartNumber: Text; ConsumedUnits: Integer)
     begin
         SubscribedSku := SubscribedSku.SkuInfo();
         SubscribedSku.PrepaidUnits := LicenseUnitsDetail;

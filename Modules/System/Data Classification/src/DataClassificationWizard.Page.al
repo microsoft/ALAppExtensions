@@ -67,6 +67,8 @@ page 1752 "Data Classification Wizard"
                 field(HelpLbl; LearnMoreTok)
                 {
                     ApplicationArea = All;
+                    Caption = 'Learn more';
+                    ToolTip = 'Click here to learn more.';
                     DrillDown = true;
                     Editable = false;
                     ShowCaption = false;
@@ -175,10 +177,12 @@ page 1752 "Data Classification Wizard"
                             ApplicationArea = All;
                             Caption = 'Data from posting is:';
                             ToolTip = 'Specifies the default sensitivity classifications to apply to fields that are related to posting. You can view the fields to classify them individually.';
+                            OptionCaption = 'Unclassified,Sensitive,Personal,Company Confidential,Normal';
                         }
                         field(ViewFieldsLbl; ViewFieldsTok)
                         {
                             ApplicationArea = All;
+                            ToolTip = 'View a list of fields that are used to post transactions.';
                             DrillDown = true;
                             Editable = false;
                             ShowCaption = false;
@@ -197,10 +201,12 @@ page 1752 "Data Classification Wizard"
                             ApplicationArea = All;
                             Caption = 'Data on templates is:';
                             TooltIp = 'Specifies the default sensitivity classifications to apply to templates that are used to create new records, such as customers or items. You can view the fields to classify them individually.';
+                            OptionCaption = 'Unclassified,Sensitive,Personal,Company Confidential,Normal';
                         }
                         field(Control38; ViewFieldsTok)
                         {
                             ApplicationArea = All;
+                            ToolTip = 'View a list of fields that are used on templates.';
                             DrillDown = true;
                             Editable = false;
                             ShowCaption = false;
@@ -219,10 +225,12 @@ page 1752 "Data Classification Wizard"
                             ApplicationArea = All;
                             Caption = 'Data on setup tables is:';
                             Tooltip = 'Specifies the default sensitivity classifications to apply to data on setup tables that control how you will use features, such as the tables used by the general ledger. You can view the fields to classify them individually.';
+                            OptionCaption = 'Unclassified,Sensitive,Personal,Company Confidential,Normal';
                         }
                         field(Control56; ViewFieldsTok)
                         {
                             ApplicationArea = All;
+                            ToolTip = 'View a list of fields that are used on setup tables.';
                             DrillDown = true;
                             Editable = false;
                             ShowCaption = false;
@@ -404,6 +412,7 @@ page 1752 "Data Classification Wizard"
             {
                 ApplicationArea = All;
                 Caption = 'Back';
+                ToolTip = 'Back';
                 Enabled = BackEnabled;
                 Image = PreviousRecord;
                 InFooterBar = true;
@@ -419,6 +428,7 @@ page 1752 "Data Classification Wizard"
             {
                 ApplicationArea = All;
                 Caption = 'Finish';
+                ToolTip = 'Finish';
                 Enabled = FinishEnabled;
                 Image = Approve;
                 InFooterBar = true;

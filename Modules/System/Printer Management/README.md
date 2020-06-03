@@ -1,6 +1,6 @@
 Contains functionality that enables a user to manage printers.
 # Public Objects
-## Printer Setup (Codeunit 2416)
+## Printer Setup (Codeunit 2616)
 
  Exposes functionality to manage printer settings.
  
@@ -69,13 +69,13 @@ An out value that determines the id of the Printer Selection page.
 
 
 
-## Printer Management (Page 2415)
+## Printer Management (Page 2616)
 
  Exposes the list of available printers.
  
 
 
-## Printer Paper Kind (Enum 2416)
+## Printer Paper Kind (Enum 2616)
 
  Specifies the standard paper sizes
  
@@ -217,7 +217,7 @@ An out value that determines the id of the Printer Selection page.
 ### Custom (value: 0)
 
 
-## Printer Paper Source Kind (Enum 2415)
+## Printer Paper Source Kind (Enum 2617)
 
  Standard paper sources.
  
@@ -251,7 +251,7 @@ An out value that determines the id of the Printer Selection page.
 ### Upper (value: 1)
 
 
-## Printer Type (Enum 2418)
+## Printer Type (Enum 2619)
 
  Specifies the type of a printer.
  
@@ -261,7 +261,7 @@ An out value that determines the id of the Printer Selection page.
 ### Network Printer (value: 1)
 
 
-## Printer Unit (Enum 2417)
+## Printer Unit (Enum 2618)
 
  Specifies several of the units of measure used for printing.
  

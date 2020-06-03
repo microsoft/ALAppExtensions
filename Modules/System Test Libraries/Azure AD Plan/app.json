@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Library function to initialize test data for Azure AD Plan module",
-    "version":  "16.2.0.0",
+    "version":  "16.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "c1d53fcd-ec4f-4ac5-ba49-af91a1dea38c",
                              "name":  "Azure AD Plan",
                              "publisher":  "Microsoft",
-                             "version":  "16.2.0.0"
+                             "version":  "16.3.0.0"
                          }
                      ],
     "screenshots":  [

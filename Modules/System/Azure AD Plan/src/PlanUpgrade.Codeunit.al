@@ -10,6 +10,9 @@ codeunit 9057 "Plan Upgrade"
 {
     Subtype = Upgrade;
 
+    var
+        SubscriptionPlanMsg: Label 'Subscription Plan %1 was added', Comment = '%1 - Plan Id', Locked = true;
+
     trigger OnUpgradePerDatabase()
     begin
         UpdateSubscriptionPlan();
@@ -38,7 +41,7 @@ codeunit 9057 "Plan Upgrade"
 
         CreatePlan(PlanId, PlanName, RoleCenterId);
 
-        SendTraceTag('00001PS', 'AL SaaS Upgrade', VERBOSITY::Normal, StrSubstNo('Subscription Plan %1 was added', PlanId));
+        SendTraceTag('00001PS', 'AL SaaS Upgrade', VERBOSITY::Normal, StrSubstNo(SubscriptionPlanMsg, PlanId));
 
         UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetAddDeviceISVEmbUpgradeTag());
     end;

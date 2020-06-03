@@ -11,7 +11,7 @@ codeunit 1922 "Camera Impl."
         Camera: Page Camera;
         PictureFileNameTok: Label 'Picture_%1.jpeg', Comment = '%1 = String generated from current datetime to make sure file names are unique ';
         OverrideImageQst: Label 'The existing picture will be replaced. Do you want to continue?';
-        NotAMediaFieldErr: Label 'The provided field must be of type ''Media''.';
+        UnsupportedFieldTypeErr: Label 'The field type %1 is not supported.', Comment = '%1 - The type of the field', Locked = true;
 
     procedure GetPicture(PictureStream: InStream; var PictureName: Text): Boolean
     var
@@ -47,8 +47,8 @@ codeunit 1922 "Camera Impl."
         RecordWithMediaRef.GetTable(RecordVariant);
         MediaFieldRef := RecordWithMediaRef.Field(FieldNo);
 
-        if MediaFieldRef.Type <> FieldType::Media then
-            Error(NotAMediaFieldErr);
+        if not (MediaFieldRef.Type in [FieldType::Media, FieldType::MediaSet]) then
+            Error(UnsupportedFieldTypeErr, MediaFieldRef.Type);
 
         if not GetPicture(PictureInStream, PictureName) then
             exit(false);
@@ -57,8 +57,18 @@ codeunit 1922 "Camera Impl."
             if not Confirm(OverrideImageQst) then
                 exit(false);
 
-        TempMedia.Media.ImportStream(PictureInStream, PictureName, 'image/jpeg');
-        MediaFieldRef.Value := TempMedia.Media;
+        case MediaFieldRef.Type of
+            FieldType::Media:
+                begin
+                    TempMedia.Media.ImportStream(PictureInStream, PictureName, 'image/jpeg');
+                    MediaFieldRef.Value := TempMedia.Media;
+                end;
+            FieldType::MediaSet:
+                begin
+                    TempMedia.MediaSet.ImportStream(PictureInStream, PictureName, 'image/jpeg');
+                    MediaFieldRef.Value := TempMedia.MediaSet;
+                end;
+        end;
 
         if not RecordWithMediaRef.Modify(true) then
             RecordWithMediaRef.Insert(true);

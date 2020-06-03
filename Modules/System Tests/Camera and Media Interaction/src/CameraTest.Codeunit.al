@@ -73,26 +73,29 @@ codeunit 135011 "Camera Test"
         ArbitraryFildNo := 123;
 
         // [When] AddPicture is invoked with the first parameter that is not a record.
+        ClearLastError();
         asserterror Camera.AddPicture(NonRecordVariable, ArbitraryFildNo);
         // [Then] An error is shown about not being able to convert types.
         Assert.ExpectedError('Unable to convert from Microsoft.Dynamics.Nav.Runtime.NavText');
 
         // [When] AddPicture is invoked with the first parameter of type 'Record', but non-existent field number.
+        ClearLastError();
         asserterror Camera.AddPicture(TableWithMedia, ArbitraryFildNo);
         // [Then] The error is: 'Non-existent field'.
         Assert.ExpectedError('The supplied field number ''123'' cannot be found in the ''Table With Media'' table.');
 
         // [When] AddPicture is invoked with the first parameter of type 'Record', existent field number,
         // but the field is not of the type 'Media'.
+        ClearLastError();
         asserterror Camera.AddPicture(TableWithMedia, TableWithMedia.FieldNo("Primary Key"));
         // [Then] The error is: 'The provided field must be of type ''Media''.'.
-        Assert.ExpectedError('The provided field must be of type ''Media''.');
+        Assert.ExpectedError('The field type');
     end;
 
     [Test]
     [Scope('OnPrem')]
     [HandlerFunctions('CameraPageHandler')]
-    procedure AddPictureSuccessfulyTest()
+    procedure AddPictureSuccessfullyMediaTest()
     var
         TableWithMedia: Record "Table With Media";
         Camera: Codeunit Camera;
@@ -130,8 +133,49 @@ codeunit 135011 "Camera Test"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('CameraPageHandler')]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure AddPictureSuccessfullyMediaSetTest()
+    var
+        TableWithMedia: Record "Table With Media";
+        Camera: Codeunit Camera;
+        CameraTestLibrary: Codeunit "Camera Test Library";
+        Base64Convert: Codeunit "Base64 Convert";
+        FileInStream: InStream;
+        ImageFile: File;
+        WasAddingThePictureSuccessful: Boolean;
+    begin
+        // [Given] Camera test library subscribers are binded.
+        BindSubscription(CameraTestLibrary);
+
+        // [When] AddPicture is invoked with all the correct parameters.
+        TableWithMedia."Primary Key" := 1;
+        WasAddingThePictureSuccessful := Camera.AddPicture(TableWithMedia, TableWithMedia.FieldNo(MediaSetField));
+
+        // [Then] The mock picture was added successfuly.
+        Assert.IsTrue(WasAddingThePictureSuccessful, 'Adding a picture from camera should always be successful in tests.');
+
+        // [Then] The MediaSet field has value.
+        TableWithMedia.Find(); // it's impossible to pass Variant as a reference, so we need to find the reocrd.
+        Assert.AreEqual(1, TableWithMedia.MediaSetField.Count(), 'The MediaSet field should have one Media object in it.');
+
+        // Get the value in the MediaSet through a file
+        TableWithMedia.MediaSetField.ExportFile('test.jpg');
+        ImageFile.Open('test-1.jpg');
+        ImageFile.CreateInStream(FileInStream);
+
+        // [Then] The content of the MediaSet is as expected
+        Assert.AreEqual(CameraTestLibrary.GetSmallJpeg(), Base64Convert.ToBase64(FileInStream), 'The mock picture was expected.');
+
+        // [Then] The new record is inserted into the database.
+        TableWithMedia.Reset();
+        Assert.AreEqual(1, TableWithMedia.Count(), 'Exactly one record was expected to be in the database.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     [HandlerFunctions('CameraPageHandler,ConfirmDialogHandlerYes')]
-    procedure AddPictureAndOverridePreviousTest()
+    procedure AddPictureAndOverridePreviousMediaTest()
     var
         TableWithMedia: Record "Table With Media";
         Camera: Codeunit Camera;
@@ -162,7 +206,7 @@ codeunit 135011 "Camera Test"
     [Test]
     [Scope('OnPrem')]
     [HandlerFunctions('CameraPageHandler,ConfirmDialogHandlerNo')]
-    procedure AddPictureAndNotOverridePreviousTest()
+    procedure AddPictureAndNotOverridePreviousMediaTest()
     var
         TableWithMedia: Record "Table With Media";
         Camera: Codeunit Camera;
@@ -184,6 +228,105 @@ codeunit 135011 "Camera Test"
 
         // [Then] The mock picture was added successfuly (for the second time).
         Assert.IsFalse(WasAddingThePictureSuccessful, 'Adding a picture for the record that already has Media should fail if the user chose to not override the picture.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('CameraPageHandler,ConfirmDialogHandlerYes')]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure AddPictureAndOverridePreviousMediaSetTest()
+    var
+        TableWithMedia: Record "Table With Media";
+        Camera: Codeunit Camera;
+        CameraTestLibrary: Codeunit "Camera Test Library";
+        Base64Convert: Codeunit "Base64 Convert";
+        FileInStream: InStream;
+        ImageFile: File;
+        WasAddingThePictureSuccessful: Boolean;
+    begin
+        // [Given] Camera test library subscribers are binded.
+        BindSubscription(CameraTestLibrary);
+
+        // [When] AddPicture is invoked with all the correct parameters.
+        TableWithMedia."Primary Key" := 1;
+        WasAddingThePictureSuccessful := Camera.AddPicture(TableWithMedia, TableWithMedia.FieldNo(MediaSetField));
+
+        // [Then] The mock picture was added successfuly.
+        Assert.IsTrue(WasAddingThePictureSuccessful, 'Adding a picture from camera should always be successful in tests.');
+
+        // [Then] The MediaSet field has value.
+        TableWithMedia.Find(); // it's impossible to pass Variant as a reference, so we need to find the reocrd.
+        Assert.AreEqual(1, TableWithMedia.MediaSetField.Count(), 'The MediaSet field should have one Media object in it.');
+
+        // [Then] The new record is inserted into the database.
+        TableWithMedia.Reset();
+        Assert.AreEqual(1, TableWithMedia.Count(), 'Exactly one record was expected to be in the database.');
+
+        // [When] AddPicture is invoked for the second time on the same MediaSet field
+        WasAddingThePictureSuccessful := Camera.AddPicture(TableWithMedia, TableWithMedia.FieldNo(MediaSetField));
+
+        // [Then] The mock picture was added successfuly.
+        Assert.IsTrue(WasAddingThePictureSuccessful, 'Adding a picture from camera for the second time should be successful.');
+
+        // [Then] The MediaSet field has a single Media.
+        TableWithMedia.Find(); // it's impossible to pass Variant as a reference, so we need to find the reocrd.
+        Assert.AreEqual(1, TableWithMedia.MediaSetField.Count(), 'The MediaSet field should still have one Media object in it.');
+
+        // Get the value in the MediaSet through a file
+        TableWithMedia.MediaSetField.ExportFile('test.jpg');
+        ImageFile.Open('test-1.jpg');
+        ImageFile.CreateInStream(FileInStream);
+
+        // [Then] The content of the MediaSet is as expected
+        Assert.AreEqual(CameraTestLibrary.GetSmallJpeg(), Base64Convert.ToBase64(FileInStream), 'The mock picture was expected.');
+
+        // [Then] No new record was added in the database.
+        TableWithMedia.Reset();
+        Assert.AreEqual(1, TableWithMedia.Count(), 'Exactly one record was expected to be in the database.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('CameraPageHandler,ConfirmDialogHandlerNo')]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure AddPictureAndNotOverridePreviousMediaSetTest()
+    var
+        TableWithMedia: Record "Table With Media";
+        Camera: Codeunit Camera;
+        CameraTestLibrary: Codeunit "Camera Test Library";
+        WasAddingThePictureSuccessful: Boolean;
+    begin
+        // [Given] Camera test library subscribers are binded.
+        BindSubscription(CameraTestLibrary);
+
+        // [When] AddPicture is invoked with all the correct parameters.
+        TableWithMedia."Primary Key" := 1;
+        WasAddingThePictureSuccessful := Camera.AddPicture(TableWithMedia, TableWithMedia.FieldNo(MediaSetField));
+
+        // [Then] The mock picture was added successfuly.
+        Assert.IsTrue(WasAddingThePictureSuccessful, 'Adding a picture from camera should always be successful in tests.');
+
+        // [Then] The MediaSet field has value.
+        TableWithMedia.Find(); // it's impossible to pass Variant as a reference, so we need to find the reocrd.
+        Assert.AreEqual(1, TableWithMedia.MediaSetField.Count(), 'The MediaSet field should have one Media object in it.');
+
+        // [Then] The new record is inserted into the database.
+        TableWithMedia.Reset();
+        Assert.AreEqual(1, TableWithMedia.Count(), 'Exactly one record was expected to be in the database.');
+
+        // [When] AddPicture is invoked for the second time on the same MediaSet field
+        WasAddingThePictureSuccessful := Camera.AddPicture(TableWithMedia, TableWithMedia.FieldNo(MediaSetField));
+
+        // [Then] The mock picture was added successfuly.
+        Assert.IsFalse(WasAddingThePictureSuccessful, 'Adding a picture for the record that already has MediaSet should fail if the user chose to not override the picture.');
+
+        // [Then] The MediaSet field still has value.
+        TableWithMedia.Find(); // it's impossible to pass Variant as a reference, so we need to find the reocrd.
+        Assert.AreEqual(1, TableWithMedia.MediaSetField.Count(), 'The MediaSet field should still have one Media object in it.');
+
+        // [Then] No new record was added in the database.
+        TableWithMedia.Reset();
+        Assert.AreEqual(1, TableWithMedia.Count(), 'Exactly one record was expected to be in the database.');
     end;
 
     [ModalPageHandler]

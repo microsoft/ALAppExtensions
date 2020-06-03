@@ -7,15 +7,14 @@ dotnet
 {
     assembly("Microsoft.Dynamics.Nav.Ncl")
     {
-        Version='16.0.0.0';
-        Culture='neutral';
-        PublicKeyToken='31bf3856ad364e35';
+        Culture = 'neutral';
+        PublicKeyToken = '31bf3856ad364e35';
 
-        type("Microsoft.Dynamics.Nav.Runtime.TenantLicenseStatePeriodProvider";"TenantLicenseStatePeriodProvider")
+        type("Microsoft.Dynamics.Nav.Runtime.TenantLicenseStatePeriodProvider"; "TenantLicenseStatePeriodProvider")
         {
         }
 
-        type("Microsoft.Dynamics.Nav.Runtime.TenantLicenseStateProvider";"TenantLicenseStateProvider")
+        type("Microsoft.Dynamics.Nav.Runtime.TenantLicenseStateProvider"; "TenantLicenseStateProvider")
         {
         }
     }

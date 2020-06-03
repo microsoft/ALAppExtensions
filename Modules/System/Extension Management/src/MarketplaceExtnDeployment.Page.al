@@ -31,6 +31,7 @@ page 2510 "Marketplace Extn Deployment"
             {
                 ApplicationArea = All;
                 Caption = 'Language';
+                ToolTip = 'Choose the language of the extension.';
                 Editable = false;
 
                 trigger OnAssistEdit()
@@ -53,6 +54,7 @@ page 2510 "Marketplace Extn Deployment"
                 ApplicationArea = All;
                 Image = CarryOutActionMessage;
                 Caption = 'Install';
+                ToolTip = 'Install the extension.';
                 InFooterBar = true;
 
                 trigger OnAction()
