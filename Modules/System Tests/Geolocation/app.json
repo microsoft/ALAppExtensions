@@ -33,8 +33,8 @@
   "platform": "16.0.0.0",
   "idRanges": [
     {
-      "from": 50104,
-      "to": 50104
+      "from": 50103,
+      "to": 50103
     }
   ],
   "target": "OnPrem"

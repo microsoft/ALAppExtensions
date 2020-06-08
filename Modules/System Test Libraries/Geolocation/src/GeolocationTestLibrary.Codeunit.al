@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50103 "Geolocation Test Library"
+codeunit 50102 "Geolocation Test Library"
 {
     EventSubscriberInstance = Manual;
 
@@ -11,17 +11,17 @@ codeunit 50103 "Geolocation Test Library"
     /// Indicates that the geographical location is available when a test is in progress.
     /// </summary>
     /// <param name="IsAvailable">Indicates whether the geographical location is available.</param>
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Geolocation Page Impl.", 'OnIsLocationAvailable', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Geolocation", 'OnIsLocationAvailable', '', false, false)]
     local procedure OnIsLocationAvailable(var IsAvailable: Boolean)
     begin
         IsAvailable := true;
     end;
 
     /// <summary>
-    /// Save a mock geographical location on the server instead of accessing an actual device for the location.
+    /// Use a mock geographical location instead of accessing an actual device for the location.
     /// </summary>
     /// <param name="IsHandled">Indicates whether taking the geographical location was handled by the subscriber.</param>
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Geolocation Page Impl.", 'OnBeforeLocationInitialize', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Geolocation", 'OnBeforeLocationInitialize', '', false, false)]
     local procedure OnBeforeLocationInitialize(var Location: DotNet Location; var IsHandled: Boolean)
     begin
         IsHandled := true;

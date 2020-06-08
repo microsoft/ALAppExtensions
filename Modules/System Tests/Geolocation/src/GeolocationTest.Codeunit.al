@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50104 "Geolocation Test"
+codeunit 50103 "Geolocation Test"
 {
     // [FEATURE] [Geolocation] 
 
@@ -17,7 +17,7 @@ codeunit 50104 "Geolocation Test"
     [Scope('OnPrem')]
     procedure TestIsGeolocationAvailable()
     var
-        Geolocation: Page Geolocation;
+        Geolocation: Codeunit Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
     begin
         // [When] Geolocation test library subscribers are bound.
@@ -29,19 +29,36 @@ codeunit 50104 "Geolocation Test"
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestHasGeolocationSuccess()
+    [HandlerFunctions('LocationPageHandler')]
+    procedure TestRequestGeolocationSuccess()
     var
-        Geolocation: Page Geolocation;
+        Geolocation: Codeunit Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
     begin
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
-        // [When] The Geolocation page is run as modal.
-        Geolocation.RunModal();
+        // [When] RequestGeolocation is invoked on the Geolocation object.
+        // [Then] The Geolocation object has a geographical location.
+        Assert.IsTrue(Geolocation.RequestGeolocation(), 'The Geolocation request was not succesful.');
+    end;
 
-        // [Then] The Geolocation page has a geographical location.
-        Assert.IsTrue(Geolocation.HasGeolocation(), 'The Geolocation page does not have a geographical location.');
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('LocationPageHandler')]
+    procedure TestHasGeolocationSuccess()
+    var
+        Geolocation: Codeunit Geolocation;
+        GeolocationTestLibrary: Codeunit "Geolocation Test Library";
+    begin
+        // [Given] Geolocation test library subscribers are bound.
+        BindSubscription(GeolocationTestLibrary);
+
+        // [When] RequestGeolocation is invoked on the Geolocation object.
+        Geolocation.RequestGeolocation();
+
+        // [Then] The Geolocation object has a geographical location.
+        Assert.IsTrue(Geolocation.HasGeolocation(), 'The Geolocation object does not have a geographical location.');
     end;
 
     [Test]
@@ -49,7 +66,7 @@ codeunit 50104 "Geolocation Test"
     [HandlerFunctions('LocationPageHandler')]
     procedure TestGetGeolocationSuccesss()
     var
-        Geolocation: Page Geolocation;
+        Geolocation: Codeunit Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
         ActualLatitude: Decimal;
         ActualLongitude: Decimal;
@@ -62,10 +79,10 @@ codeunit 50104 "Geolocation Test"
         // [When] The expected latitude and longitude are retrieved from the test library.
         GeolocationTestLibrary.GetMockGeolocation(ExpectedLatitude, ExpectedLongitude);
 
-        // [When] The Geolocation page is run as modal.
-        Geolocation.RunModal();
+        // [When] RequestGeolocation is invoked on the Geolocation object.
+        Geolocation.RequestGeolocation();
 
-        // [When] The actual latitude and longitude are retrieved by invoking GetGeolocation on the Geolocation page.
+        // [When] The actual latitude and longitude are retrieved by invoking GetGeolocation on the Geolocation object.
         Geolocation.GetGeolocation(ActualLatitude, ActualLongitude);
 
         // [Then] The latitude is equal to the expected latitude.
@@ -80,14 +97,14 @@ codeunit 50104 "Geolocation Test"
     [HandlerFunctions('LocationPageHandler')]
     procedure TestGetGeolocationStatusIsAvailable()
     var
-        Geolocation: Page Geolocation;
+        Geolocation: Codeunit Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
     begin
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
-        // [When] The Geolocation page is run as modal.
-        Geolocation.RunModal();
+        // [When] RequestGeolocation is invoked on the Geolocation object.
+        Geolocation.RequestGeolocation();
 
         // [Then] The status of the geographical location data is Available.
         Assert.AreEqual("Geolocation Status"::Available, Geolocation.GetGeolocationStatus(), 'The status of the geographical location data is not "Available".');
@@ -95,39 +112,39 @@ codeunit 50104 "Geolocation Test"
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestGetGeolocationStatusWithoutOpeningPageIsNotAvailable()
+    procedure TestGetGeolocationStatusWithoutRequestingGeolocationIsNotAvailable()
     var
-        Geolocation: Page Geolocation;
+        Geolocation: Codeunit Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
     begin
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
-        // [When] The Geolocation page has not been used.
+        // [When] RequestGeolocation has not been invoked on the Geolocation object.
         // [Then] The status of the geographical location data is Not Available.
         Assert.AreEqual("Geolocation Status"::"Not Available", Geolocation.GetGeolocationStatus(), 'The status of the geographical location data is not "Not Available".');
     end;
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestHasGeolocationWithoutOpeningPageIsFalse()
+    procedure TestHasGeolocationWithoutRequestingGeolocationIsFalse()
     var
-        Geolocation: Page Geolocation;
+        Geolocation: Codeunit Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
     begin
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
-        // [When] The Geolocation page has not been used.
-        // [Then] The Geolocation page does not contain geographical locations.
-        Assert.IsFalse(Geolocation.HasGeolocation(), 'The Geolocation page has a location.');
+        // [When] RequestGeolocation has not been invoked on the Geolocation object.
+        // [Then] The Geolocation object does not contain a geographical location.
+        Assert.IsFalse(Geolocation.HasGeolocation(), 'The Geolocation object has a location.');
     end;
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestGetGeolocationWithoutOpeningPageResultInError()
+    procedure TestGetGeolocationWithoutRequestingGeolocationResultInError()
     var
-        Geolocation: Page Geolocation;
+        Geolocation: Codeunit Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
         ActualLatitude: Decimal;
         ActualLongitude: Decimal;
@@ -135,7 +152,7 @@ codeunit 50104 "Geolocation Test"
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
-        // [When] GetGeolocation is invocked on the Geolocation page without running the page as modal before.
+        // [When] GetGeolocation is invocked on the Geolocation object without invoking RequestGeolocation before.
         asserterror Geolocation.GetGeolocation(ActualLatitude, ActualLongitude);
 
         // [Then] An error message specifies that data was not retrieved for the geographical location.
