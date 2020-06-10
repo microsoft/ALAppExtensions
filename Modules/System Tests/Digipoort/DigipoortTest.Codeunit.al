@@ -34,11 +34,11 @@ codeunit 132576 "Digipoort Test"
         ClientCertificate := ElecDeclarationSetup."Client Certificate Code";
 
         // [WHEN] Send Xml to Digipoort
-        Digipoort.FuncSubmitPayrollTaxDeclaration(GetXml(), ClientCertificate, ServiceCertificate, 'Aangifte_LH', '123', VarUrl, VATRegNo, MessageID);
+        Digipoort.FuncSubmitPayrollTaxDeclaration(GetXml(), ClientCertificate, ServiceCertificate, VarMessageType, VarReference, VarUrl, VATRegNo, MessageID);
 
         // [THEN] Verify Result 
         IF MessageID = '' THEN
-            ERROR('Failed to connect to Digpoort');
+            ERROR('Failed to connect to Digipoort');
     end;
 
     local procedure GetXml(): Text
