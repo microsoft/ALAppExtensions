@@ -1,0 +1,40 @@
+{
+    "id":  "2f6c4641-78af-4832-a8ce-4a55251d033e",
+    "name":  "Business Central Basic Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the Business Central Basic extension.",
+    "description":  "Tests for the Business Central Basic extension.",
+    "version":  "16.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "0242c240-2336-450f-9678-2f13f4ce9a6e",
+                             "name":  "Business Central Basic",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         },
+                         {
+                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "name":  "Tests-TestLibraries",
+                             "publisher":  "Microsoft",
+                             "version":  "16.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "16.0.0.0",
+    "idRanges": [
+        {
+          "from": 57600,
+          "to": 57699
+        }
+                 ],
+    "target":  "OnPrem",
+    "showMyCode":  false,
+    "application":  "16.0.0.0"
+}

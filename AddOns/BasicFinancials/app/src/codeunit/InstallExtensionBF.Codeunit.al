@@ -22,9 +22,6 @@ codeunit 20603 "Install Extension BF"
         BasicMgmt: Codeunit "Basic Mgmt BF";
     begin
         BasicMgmt.TestSupportedLocales();
-        //BasicMgmt.TestSupportedLicenses(); // The requested functionality is not supported at the trigger OnInstallApp, in the current version of Microsoft Business Central.
-        //BasicMgmt.TestSupportedUser(); // The requested functionality is not supported at the trigger OnInstallApp, in the current version of Microsoft Business Central.
-        BasicMgmt.TestSupportedCompanies();
         BasicMgmt.TryDisableRoleCenter();
         ApplicationAreaMgmtFacade.SaveExperienceTierCurrentCompany(DummyExperienceTierSetup.FieldCaption(DummyExperienceTierSetup."BF Basic"));
     end;

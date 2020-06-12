@@ -4,12 +4,12 @@ tableextension 20600 "Application Area Setup BF" extends "Application Area Setup
     {
         field(20600; "BF Basic"; Boolean)
         {
-            Caption = 'Basic ';
+            Caption = 'Basic Ext';
             DataClassification = SystemMetadata;
         }
         field(20601; "BF Orders"; Boolean)
         {
-            Caption = 'Orders';
+            Caption = 'Orders Ext';
             DataClassification = SystemMetadata;
         }
     }

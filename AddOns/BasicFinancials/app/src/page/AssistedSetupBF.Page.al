@@ -87,6 +87,22 @@ page 20600 "Assisted Setup BF"
                         Error(NotSupportedLicensesErr);
                 end;
             }
+            field(IsSupportedCompanies; IsSupportedCompanies)
+            {
+                ApplicationArea = Basic, Suite;
+                Editable = true;
+                Caption = 'One company exists in the environment';
+                ToolTip = 'To complete the Basic setup there must exists exactly one company in the environment.';
+                trigger OnValidate()
+                var
+                    BasicMgmt: Codeunit "Basic Mgmt BF";
+                    NotSupportedCompaniesErr: Label 'Exactly one company must exists in the environment.';
+                begin
+                    IsSupportedCompanies := BasicMgmt.IsSupportedCompanies();
+                    if not IsSupportedCompanies then
+                        Error(NotSupportedCompaniesErr);
+                end;
+            }
         }
     }
     actions
@@ -118,6 +134,7 @@ page 20600 "Assisted Setup BF"
         AssistedSetup: Codeunit "Assisted Setup";
         BasicMgmt: Codeunit "Basic Mgmt BF";
     begin
+        IsSupportedCompanies := BasicMgmt.IsSupportedCompanies();
         IsSupportedLicenses := BasicMgmt.IsSupportedLicense();
         AssistedSetup.Reset(PAGE::"Assisted Setup BF");
         IsComplete := AssistedSetup.IsComplete(PAGE::"Assisted Setup BF");
@@ -126,6 +143,7 @@ page 20600 "Assisted Setup BF"
 
     var
         IsComplete: Boolean;
+        IsSupportedCompanies: Boolean;
         IsSupportedLicenses: Boolean;
         ConsentAccepted: Boolean;
 }

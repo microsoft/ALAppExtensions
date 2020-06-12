@@ -26,6 +26,16 @@ codeunit 20601 "Basic Mgmt BF"
         exit(false);
     end;
 
+    internal procedure IsSupportedCompanies(): Boolean // Microsoft requirements: The Basic Assisted Setup checks for whether the tenant contains more than one company.
+    var
+        Company: Record Company;
+    begin
+        Clear(Company);
+        if Company.count() = 1 then
+            exit(true);
+        exit(false);
+    end;
+
     internal procedure TestSupportedLicenses() // Microsoft requirements: The extension checks for the Basic license on the AAD tenant, at least one user has been assigned to this license. 
     var
     begin

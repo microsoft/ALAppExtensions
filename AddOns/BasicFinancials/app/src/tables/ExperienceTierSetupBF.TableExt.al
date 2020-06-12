@@ -4,7 +4,7 @@ tableextension 20601 "Experience Tier Setup BF" extends "Experience Tier Setup"
     {
         field(20600; "BF Basic"; Boolean)
         {
-            Caption = 'Basic ';
+            Caption = 'Basic Ext';
             DataClassification = SystemMetadata;
         }
     }

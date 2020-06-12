@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en-US" target-language="en-US" original="Basic ">
+  <file datatype="xml" source-language="en-US" target-language="en-US" original="Business Central Basic">
     <body>
       <group id="body">
         <trans-unit id="Codeunit 875245055 - NamedType 1420859235" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Set up the Basic extension</source>
+          <source>Set up the Business Central Basic extension</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AssistedSetupTxt</note>
         </trans-unit>
@@ -14,7 +14,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AssistedSetupHelpTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 875245055 - NamedType 1689235809" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Basic </source>
+          <source>Business Central Basic</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AssistedSetupDescriptionTxt</note>
         </trans-unit>
@@ -108,6 +108,21 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedLicenses - Method OnValidate - NamedType NotSupportedLicensesErr</note>
         </trans-unit>
+        <trans-unit id="Page 875245055 - Control 2047310015 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>One company exists in the environment</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedCompanies - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 875245055 - Control 2047310015 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>To complete the Basic setup there must exists exactly one company in the environment.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedCompanies - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 875245055 - Control 2047310015 - Method 2126772001 - NamedType 2395227545" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Exactly one company must exists in the environment.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedCompanies - Method OnValidate - NamedType NotSupportedCompaniesErr</note>
+        </trans-unit>
         <trans-unit id="Page 875245055 - Action 2667510389 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Finish</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -118,70 +133,65 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Action Finish - Property ToolTip</note>
         </trans-unit>
-        <trans-unit id="Codeunit 1304803449 - NamedType 2434750519" size-unit="char" translate="yes" xml:space="preserve">
-          <source>To deploy the Basic extension the Basic license must be assigned to at least one user.</source>
+        <trans-unit id="Codeunit 2048619679 - NamedType 2434750519" size-unit="char" translate="yes" xml:space="preserve">
+          <source>To deploy the Business Central Basic extension the Business Central Basic license must be assigned to at least one user.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedLicenseErr</note>
         </trans-unit>
-        <trans-unit id="Codeunit 1304803449 - NamedType 438530999" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The Basic Extension can only available in Denmark and Iceland.</source>
+        <trans-unit id="Codeunit 2048619679 - NamedType 438530999" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The Business Central Basic Extension can only available in Denmark and Iceland.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedLocalesErr</note>
         </trans-unit>
-        <trans-unit id="Codeunit 1304803449 - NamedType 296042569" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The user who deploys the Basic extension must have the Super User permission set.</source>
+        <trans-unit id="Codeunit 2048619679 - NamedType 296042569" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The user who deploys the Business Central Basic extension must have the Super User permission set.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedUserErr</note>
         </trans-unit>
-        <trans-unit id="Codeunit 1304803449 - NamedType 4099634803" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The Basic Extension, can only be deployed, when exactly one Company is present in the Environment.</source>
+        <trans-unit id="Codeunit 2048619679 - NamedType 4099634803" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The Business Central Basic extension can only be deployed when exactly one company exists in the environment.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedCompanyErr</note>
         </trans-unit>
-        <trans-unit id="Codeunit 1304803449 - NamedType 4093867806" size-unit="char" translate="no" xml:space="preserve">
+        <trans-unit id="Codeunit 2048619679 - NamedType 4093867806" size-unit="char" translate="no" xml:space="preserve">
           <source>MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER|SALES AND RELATIONSHIP MANAGER</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType AllProfileFilterTxt</note>
         </trans-unit>
-        <trans-unit id="Codeunit 1304803449 - NamedType 2535491656" size-unit="char" translate="no" xml:space="preserve">
-          <source>{66CAD104-64F9-476E-9682-3C3518B9B6ED}</source>
-          <note from="Developer" annotates="general" priority="2">Dynamics 365 Business Central Basic </note>
+        <trans-unit id="Codeunit 2048619679 - NamedType 2535491656" size-unit="char" translate="no" xml:space="preserve">
+          <source>{2ec8b6ca-ab13-4753-a479-8c2ffe4c323b}</source>
+          <note from="Developer" annotates="general" priority="2">Dynamics 365 Business Central BASIC ISVEMB</note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType BFSKUIdTxt</note>
         </trans-unit>
-        <trans-unit id="Codeunit 1304803449 - NamedType 2589384304" size-unit="char" translate="no" xml:space="preserve">
-          <source>{4dCE07FD-7B07-4FB5-8FB7-D49653F7BF30}</source>
-          <note from="Developer" annotates="general" priority="2">Dynamics 365 Business Central Basic from C5 SPLA (Qualified Offer)</note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType BFC5SPLASKUIdTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 1304803449 - NamedType 1998431302" size-unit="char" translate="no" xml:space="preserve">
+        <trans-unit id="Codeunit 2048619679 - NamedType 1998431302" size-unit="char" translate="no" xml:space="preserve">
           <source>{00000000-0000-0000-0000-000000000001}</source>
           <note from="Developer" annotates="general" priority="2">System user</note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType UserSecurityIdTxt</note>
         </trans-unit>
-        <trans-unit id="Codeunit 1304803449 - NamedType 2020464022" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The current user is the Microsoft System User. The Basic Extension can only be deployed with a user that exist in the user table.</source>
+        <trans-unit id="Codeunit 2048619679 - NamedType 2020464022" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The current user is the Microsoft System User. The Business Central Basic Extension can only be deployed with a user that exist in the user table.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedSystemUserErr</note>
         </trans-unit>
-        <trans-unit id="Codeunit 1304803449 - NamedType 3286254446" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The current user is unknown. The user who deploys the Basic extension must exist in the user table.</source>
+        <trans-unit id="Codeunit 2048619679 - NamedType 3286254446" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The current user is unknown. The user who deploys the Business Central Basic extension must exist in the user table.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType UnknowUserErr</note>
         </trans-unit>
-        <trans-unit id="TableExtension 3931722514 - Field 3376354272 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 627389406">
-          <source>Basic </source>
+        <trans-unit id="TableExtension 3931722514 - Field 1648317658 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 627389406">
+          <source>Basic Ext</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Application Area Setup BF - Field BF Basic- Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Application Area Setup BF - Field BF Basic - Property Caption</note>
         </trans-unit>
         <trans-unit id="TableExtension 3931722514 - Field 1564560419 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 627389406">
-          <source>Orders</source>
+          <source>Orders Ext</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Application Area Setup BF - Field BF Orders - Property Caption</note>
         </trans-unit>
-        <trans-unit id="TableExtension 1994908273 - Field 3376354272 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3548822581">
-          <source>Basic </source>
+        <trans-unit id="TableExtension 1994908273 - Field 1648317658 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3548822581">
+          <source>Basic Ext</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Experience Tier Setup BF - Field BF Basic- Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Experience Tier Setup BF - Field BF Basic - Property Caption</note>
         </trans-unit>
       </group>
     </body>
