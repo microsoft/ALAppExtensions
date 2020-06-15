@@ -63,14 +63,15 @@ We have decided to focus our development efforts on a single, latest version of 
 ## What do all the labels assigned to issues mean?
 We use labels for categorizing issues into types and tracking the issue lifecycle. Issues fall into the following types:  
 
-* Enum-request - request an enum  
-* Request-for-external - request to mark a function as external  
-* Event-request - request for a new event  
-* Extensibility-enhancement - larger suggestion improving extensibility, something we might want to consider in the future  
+* Enum-request - request an enum (to be implemented in major version only) 
+* Request-for-external - request to mark a function as external (to be implemented in major version only)
+* Event-request - request for a new event (to be implemented in major and next minor version)
+* Extensibility-enhancement - larger suggestion improving extensibility, something we might want to consider in the future
+* Extensibility-bug - smaller suggestion improving extensibility, someting we consider to fix in current release
 
 The lifecycle for issues is (mix of label + milestone + open/closed state):  
 
-* Ships-in-future-update  - the issue was fixed in our source code repository and ships in the next major release
+* Ships-in-future-update  - the issue was fixed in our source code repository and ships in the next major release (or next minor update for events)
 * Call-for-contributors - we are looking for contributors willing to address reported bug/suggestion
 * Wontfix - the issue will not be fixed probably because it is our of scope of the current repository
 
