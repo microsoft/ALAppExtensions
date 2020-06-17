@@ -1,0 +1,31 @@
+{
+    "id":  "93f93dda-3177-4de6-9f6e-b38103809c6d",
+    "name":  "Tax Management",
+    "publisher":  "Microsoft",
+    "brief":  "Provides tax helper functions",
+    "description":  "Provides functions to submit tax and receive response messages",
+    "version":  "16.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo":  "",
+    "dependencies":  [
+                  {"appId": "437dbf0e-84ff-417a-965d-ed2bb9650972",
+                   "name": "Base Application",
+                   "publisher": "Microsoft",
+                   "version": "16.0.0.0"}
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  1333, //Microsoft team?
+                         "to":  1333
+                     },
+                 ],
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
+}
