@@ -113,7 +113,7 @@ page 20600 "Assisted Setup BF"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Finish';
-                Enabled = ConsentAccepted and IsSupportedLicenses;
+                Enabled = ConsentAccepted and IsSupportedLicenses and IsSupportedCompanies;
                 Image = Close;
                 InFooterBar = true;
                 ToolTip = 'Choose Finish to complete the Basic assisted setup guide.';
