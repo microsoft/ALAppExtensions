@@ -2,14 +2,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 50102 "Digipoort Payroll Tax"
+codeunit 50102 "Digipoort Management Impl."
 {
     trigger OnRun()
     var
     begin
     end;
 
-    procedure SubmitPayrollTaxDeclaration(XmlContent: Text; ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageType: Text; Reference: Text; RequestUrl: Text; VATReg: Text; Var MessageID: Text)
+    procedure SubmitPayrollTaxDeclaration(XmlContent: Text; ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageType: Text; Reference: Text; RequestUrl: Text; VATReg: Text): Text
     var
         ElecTaxDeclarationMgt: Codeunit "Elec. Tax Declaration Mgt.";
         DotNet_SecureString: Codeunit DotNet_SecureString;
@@ -26,10 +26,10 @@ codeunit 50102 "Digipoort Payroll Tax"
         IsolatedCertificate.Get(ServiceCertificateCode);
         ServiceCertificateBase64 := CertificateManagement.GetCertAsBase64String(IsolatedCertificate);
 
-        DeliverPayrollTaxDeclaration(XmlContent, MessageType, Reference, RequestUrl, ClientCertificateBase64, ServiceCertificateBase64, VATReg, DotNet_SecureString, MessageID);
+        exit(DeliverPayrollTaxDeclaration(XmlContent, MessageType, Reference, RequestUrl, ClientCertificateBase64, ServiceCertificateBase64, VATReg, DotNet_SecureString));
     end;
 
-    procedure DeliverPayrollTaxDeclaration(XmlContent: Text; MessageType: Text; Reference: Text; RequestUrl: Text; ClientCertificateBase64: Text; ServiceCertificateBase64: Text; VATReg: Text; DotNet_SecureString: Codeunit DotNet_SecureString; Var MessageID: Text)
+    procedure DeliverPayrollTaxDeclaration(XmlContent: Text; MessageType: Text; Reference: Text; RequestUrl: Text; ClientCertificateBase64: Text; ServiceCertificateBase64: Text; VATReg: Text; DotNet_SecureString: Codeunit DotNet_SecureString): Text
     var
         DeliveryService: DotNet DigipoortServices;
         Request: DotNet aanleverRequest;
@@ -89,9 +89,10 @@ codeunit 50102 "Digipoort Payroll Tax"
         if Fault.foutcode <> '' then
             Error(SubmitErr, Reference, Fault.foutcode, Fault.foutbeschrijving);
 
-        MessageID := Response.kenmerk;
-
         if GuiAllowed then
             Window.Close();
+
+        Exit(Response.kenmerk);
+
     end;
 }

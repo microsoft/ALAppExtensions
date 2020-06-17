@@ -22,8 +22,8 @@
     "platform":  "15.0.0.0",
     "idRanges":  [
                      {
-                         "from":  1333, //Microsoft team?
-                         "to":  1333
+                         "from":  50102, //Microsoft team?
+                         "to":  50102
                      },
                  ],
     "target":  "OnPrem",
