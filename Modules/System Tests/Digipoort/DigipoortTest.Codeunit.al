@@ -20,6 +20,7 @@ codeunit 132576 "Digipoort Test"
         ServiceCertificate: Code[20];
         ClientCertificate: Code[20];
         ElecDeclarationSetup: Record "Elec. Tax Declaration Setup";
+        LibraryAssert: Codeunit "Library Assert";
     begin
         // [GIVEN] Get Xml details
         VarXml := GetXml();
@@ -34,11 +35,10 @@ codeunit 132576 "Digipoort Test"
         ClientCertificate := ElecDeclarationSetup."Client Certificate Code";
 
         // [WHEN] Send Xml to Digipoort
-        Digipoort.FuncSubmitPayrollTaxDeclaration(GetXml(), ClientCertificate, ServiceCertificate, VarMessageType, VarReference, VarUrl, VATRegNo, MessageID);
+        Digipoort.SubmitPayrollTaxDeclaration(GetXml(), ClientCertificate, ServiceCertificate, VarMessageType, VarReference, VarUrl, VATRegNo, MessageID);
 
         // [THEN] Verify Result 
-        IF MessageID = '' THEN
-            ERROR('Failed to connect to Digipoort');
+        LibraryAssert.AreNotEqual(MessageID, '', 'Failed to connect to Digipoort');
     end;
 
     local procedure GetXml(): Text

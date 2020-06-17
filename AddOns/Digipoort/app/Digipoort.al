@@ -9,7 +9,7 @@ codeunit 50102 "Digipoort Payroll Tax"
     begin
     end;
 
-    procedure FuncSubmitPayrollTaxDeclaration(XmlContent: Text; ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageType: Text; Reference: Text; RequestUrl: Text; VATReg: Text; Var MessageID: Text)
+    procedure SubmitPayrollTaxDeclaration(XmlContent: Text; ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageType: Text; Reference: Text; RequestUrl: Text; VATReg: Text; Var MessageID: Text)
     var
         ElecTaxDeclarationMgt: Codeunit "Elec. Tax Declaration Mgt.";
         DotNet_SecureString: Codeunit DotNet_SecureString;
@@ -47,8 +47,10 @@ codeunit 50102 "Digipoort Payroll Tax"
         SubmitSuccessMsg: Label 'Declaration %1 was submitted successfully.';
         SubmitErr: Label 'Submission of declaration %1 failed with error code %2 and the following message: \\%3';
     begin
-        Window.Open(WindowStatusMsg);
-        Window.Update(1, WindowStatusBuildingMsg);
+        if GuiAllowed then begin
+            Window.Open(WindowStatusMsg);
+            Window.Update(1, WindowStatusBuildingMsg);
+        end;
         Request := Request.aanleverRequest;
         Response := Response.aanleverResponse;
         Identity := Identity.identiteitType;
@@ -57,27 +59,22 @@ codeunit 50102 "Digipoort Payroll Tax"
 
         UTF8Encoding := UTF8Encoding.UTF8Encoding;
 
-        with Identity do begin
-            nummer := VATReg;
-            type := 'LHnr';
-        end;
+        Identity.nummer := VATReg;
+        Identity.type := 'LHnr';
 
-        with Content do begin
-            mimeType := 'application/xml';
-            bestandsnaam := StrSubstNo('%1.xbrl', MessageType);
-            inhoud := UTF8Encoding.GetBytes(XmlContent);
-        end;
+        Content.mimeType := 'application/xml';
+        Content.bestandsnaam := StrSubstNo('%1.xbrl', MessageType);
+        Content.inhoud := UTF8Encoding.GetBytes(XmlContent);
 
-        with Request do begin
-            berichtsoort := MessageType;
-            aanleverkenmerk := Reference;
-            identiteitBelanghebbende := Identity;
-            rolBelanghebbende := 'Bedrijf';
-            berichtInhoud := Content;
-            autorisatieAdres := 'http://geenausp.nl'
-        end;
+        Request.berichtsoort := MessageType;
+        Request.aanleverkenmerk := Reference;
+        Request.identiteitBelanghebbende := Identity;
+        Request.rolBelanghebbende := 'Bedrijf';
+        Request.berichtInhoud := Content;
+        Request.autorisatieAdres := 'http://geenausp.nl';
 
-        Window.Update(1, WindowStatusSendMsg);
+        if GuiAllowed then
+            Window.Update(1, WindowStatusSendMsg);
 
         DotNet_SecureString.GetSecureString(DotNetSecureString);
 
@@ -90,9 +87,11 @@ codeunit 50102 "Digipoort Payroll Tax"
 
         Fault := Response.statusFoutcode;
         if Fault.foutcode <> '' then
-            Error(StrSubstNo(SubmitErr, Reference, Fault.foutcode, Fault.foutbeschrijving));
+            Error(SubmitErr, Reference, Fault.foutcode, Fault.foutbeschrijving);
 
         MessageID := Response.kenmerk;
-        Window.Close();
+
+        if GuiAllowed then
+            Window.Close();
     end;
 }
