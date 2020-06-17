@@ -22,15 +22,16 @@ codeunit 50102 "Digipoort Payroll Tax"
     /// <param name="XmlContent">The payroll tax declartion in XML format</param>
     /// <param name="ClientCertificateCode">The client certificate code from the certificate stored in Isolated Certificate</param>
     /// <param name="ServiceCertificateCode">The service certificate code from the certificate stored in Isolated Certificate</param>
-    /// <param name="MessageType">The MessageType of the message</param>
+    /// <param name="MessageType">The Message Type of the message</param>
+    /// <param name="IdentityType">The Identity Type of the tax declaration</param>
+    /// <param name="IdentityNumber">The Identity Number of the tax declaration</param>
     /// <param name="Reference">The delivery reference to be send to Digipoort</param>
     /// <param name="RequestUrl">The url the tax declaration needs to be send to</param>
-    /// <param name="VATReg">The VAT Registration Number to be send to Digipoort</param>
     /// <param name="MessageID">The message ID to be received back from Digipoort</param>
 
-    procedure SubmitPayrollTaxDeclaration(XmlContent: Text; ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageType: Text; Reference: Text; RequestUrl: Text; VATReg: Text): Text
+    procedure SubmitTaxDeclaration(XmlContent: Text; ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageType: Text; IdentityType: Text; IdentityNumber: Text; Reference: Text; RequestUrl: Text): Text
     begin
-        exit(DigipoortManagementImpl.DeliverPayrollTaxDeclaration(XmlContent, ClientCertificateCode, ServiceCertificateCode, MessageType, Reference, RequestUrl, VATReg));
+        exit(DigipoortManagementImpl.SubmitTaxDeclaration(XmlContent, ClientCertificateCode, ServiceCertificateCode, MessageType, IdentityType, IdentityNumber, Reference, RequestUrl));
     end;
 
 }

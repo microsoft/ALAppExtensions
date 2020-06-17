@@ -15,7 +15,8 @@ codeunit 132576 "Digipoort Test"
         VarMessageType: Text;
         VarReference: Text;
         VarUrl: Text;
-        VATRegNo: Text;
+        IdentityNumber: Text;
+        IdentityType: Text;
         MessageID: Text;
         ServiceCertificate: Code[20];
         ClientCertificate: Code[20];
@@ -26,7 +27,8 @@ codeunit 132576 "Digipoort Test"
         VarXml := GetXml();
         VarMessageType := 'Aangifte_LH';
         VarReference := 'TestXml';
-        VATRegNo := 'NL12345678';
+        IdentityNumber := 'NL12345678';
+        IdentityType := 'Lhnr';
         MessageID := 'Test';
 
         ElecDeclarationSetup.Get();
@@ -35,7 +37,7 @@ codeunit 132576 "Digipoort Test"
         ClientCertificate := ElecDeclarationSetup."Client Certificate Code";
 
         // [WHEN] Send Xml to Digipoort
-        Digipoort.SubmitPayrollTaxDeclaration(GetXml(), ClientCertificate, ServiceCertificate, VarMessageType, VarReference, VarUrl, VATRegNo, MessageID);
+        Digipoort.SubmitTaxDeclaration(GetXml(), ClientCertificate, ServiceCertificate, VarMessageType, IdentityType, IdentityNumber, VarReference, VarUrl);
 
         // [THEN] Verify Result 
         LibraryAssert.AreNotEqual(MessageID, '', 'Failed to connect to Digipoort');

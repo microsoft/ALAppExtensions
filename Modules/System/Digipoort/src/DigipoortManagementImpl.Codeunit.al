@@ -9,7 +9,7 @@ codeunit 50102 "Digipoort Management Impl."
     begin
     end;
 
-    procedure SubmitPayrollTaxDeclaration(XmlContent: Text; ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageType: Text; Reference: Text; RequestUrl: Text; VATReg: Text): Text
+    procedure SubmitTaxDeclaration(XmlContent: Text; ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageType: Text; IdentityType: Text; IdentityNumber: Text; Reference: Text; RequestUrl: Text): Text
     var
         ElecTaxDeclarationMgt: Codeunit "Elec. Tax Declaration Mgt.";
         DotNet_SecureString: Codeunit DotNet_SecureString;
@@ -26,10 +26,10 @@ codeunit 50102 "Digipoort Management Impl."
         IsolatedCertificate.Get(ServiceCertificateCode);
         ServiceCertificateBase64 := CertificateManagement.GetCertAsBase64String(IsolatedCertificate);
 
-        exit(DeliverPayrollTaxDeclaration(XmlContent, MessageType, Reference, RequestUrl, ClientCertificateBase64, ServiceCertificateBase64, VATReg, DotNet_SecureString));
+        exit(DeliverTaxDeclaration(XmlContent, MessageType, IdentityType, IdentityNumber, Reference, RequestUrl, ClientCertificateBase64, ServiceCertificateBase64, DotNet_SecureString));
     end;
 
-    procedure DeliverPayrollTaxDeclaration(XmlContent: Text; MessageType: Text; Reference: Text; RequestUrl: Text; ClientCertificateBase64: Text; ServiceCertificateBase64: Text; VATReg: Text; DotNet_SecureString: Codeunit DotNet_SecureString): Text
+    procedure DeliverTaxDeclaration(XmlContent: Text; MessageType: Text; IdentityType: Text; IdentityNumber: Text; Reference: Text; RequestUrl: Text; ClientCertificateBase64: Text; ServiceCertificateBase64: Text; DotNet_SecureString: Codeunit DotNet_SecureString): Text
     var
         DeliveryService: DotNet DigipoortServices;
         Request: DotNet aanleverRequest;
@@ -59,8 +59,8 @@ codeunit 50102 "Digipoort Management Impl."
 
         UTF8Encoding := UTF8Encoding.UTF8Encoding;
 
-        Identity.nummer := VATReg;
-        Identity.type := 'LHnr';
+        Identity.nummer := IdentityNumber;
+        Identity.type := IdentityType;
 
         Content.mimeType := 'application/xml';
         Content.bestandsnaam := StrSubstNo('%1.xbrl', MessageType);
