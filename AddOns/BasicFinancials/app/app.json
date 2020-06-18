@@ -33,6 +33,7 @@
       "to": 20699
     }
   ],
+  "target": "Cloud",
   "showMyCode": true,
   "runtime": "5.0",
   "supportedLocales": ["da-DK","is-IS"],

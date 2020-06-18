@@ -4,37 +4,52 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the Business Central Basic extension.",
     "description":  "Tests for the Business Central Basic extension.",
-    "version":  "16.0.0.0",
-    "privacyStatement":  "",
-    "EULA":  "",
-    "help":  "",
-    "url":  "",
-    "logo":  "",
+    "version":  "16.2.13509.13938",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=",
+    "contextSensitiveHelpUrl": "https://AL16.com/help/",
+    "logo":  "logo/ExtensionLogo.png",
     "dependencies":  [
-                         {
-                             "id":  "0242c240-2336-450f-9678-2f13f4ce9a6e",
-                             "name":  "Business Central Basic",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
-                         }
-                     ],
+    {
+        "id": "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+        "publisher": "Microsoft",
+        "name": "System Application",
+        "version": "16.0.0.0"
+        },
+        {
+        "id": "437dbf0e-84ff-417a-965d-ed2bb9650972",
+        "publisher": "Microsoft",
+        "name": "Base Application",
+        "version": "16.0.0.0"
+        },
+        {
+            "id":  "0242c240-2336-450f-9678-2f13f4ce9a6e",
+            "name":  "Business Central Basic",
+            "publisher":  "Microsoft",
+            "version":  "16.0.0.0"
+        },
+        {
+            "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+            "name":  "Tests-TestLibraries",
+            "publisher":  "Microsoft",
+            "version":  "16.0.0.0"
+        }
+    ],
     "screenshots":  [
 
                     ],
     "platform":  "16.0.0.0",
     "idRanges": [
         {
-          "from": 57600,
-          "to": 57699
+          "from": 139502,
+          "to": 139502
         }
-                 ],
-    "target":  "OnPrem",
-    "showMyCode":  false,
-    "application":  "16.0.0.0"
+    ],
+    "target": "Cloud",
+    "showMyCode": true,
+    "runtime": "5.0",
+    "supportedLocales": ["da-DK","is-IS"],
+    "features": ["TranslationFile"]
 }

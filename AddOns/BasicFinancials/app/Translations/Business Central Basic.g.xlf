@@ -33,12 +33,12 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Title - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Page 875245055 - Control 576735127 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Page 875245055 - Control 206735127 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Instructional - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Page 875245055 - Control 576735127 - Property 1968111052" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Page 875245055 - Control 206735127 - Property 1968111052" size-unit="char" translate="yes" xml:space="preserve">
           <source>The Basic extension enables the subset Dynamics 365 Business Central capabilities provided by the Basic license.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Instructional - Property InstructionalText</note>
