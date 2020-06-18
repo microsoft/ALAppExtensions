@@ -4,13 +4,21 @@
 // ------------------------------------------------------------------------------------------------
 codeunit 132576 "Digipoort Test"
 {
+
     Subtype = Test;
 
-    [Test]
-    procedure VerifySubmitTaxDeclaration()
+    trigger OnRun()
     var
-        Digipoort: Codeunit "Digipoort Payroll Tax";
-        EncryptedText: Text;
+        MessageId: Text;
+    begin
+        MessageId := VerifySubmitTaxDeclaration();
+        ReceiveResponseMessages(MessageId);
+    end;
+
+    [Test]
+    procedure VerifySubmitTaxDeclaration(): Text
+    var
+        Digipoort: Codeunit "Digipoort";
         VarXml: Text;
         VarMessageType: Text;
         VarReference: Text;
@@ -29,7 +37,7 @@ codeunit 132576 "Digipoort Test"
         VarReference := 'TestXml';
         IdentityNumber := 'NL12345678';
         IdentityType := 'Lhnr';
-        MessageID := 'Test';
+        MessageID := '';
 
         ElecDeclarationSetup.Get();
         VarUrl := ElecDeclarationSetup."Digipoort Delivery URL";
@@ -37,10 +45,45 @@ codeunit 132576 "Digipoort Test"
         ClientCertificate := ElecDeclarationSetup."Client Certificate Code";
 
         // [WHEN] Send Xml to Digipoort
-        Digipoort.SubmitTaxDeclaration(GetXml(), ClientCertificate, ServiceCertificate, VarMessageType, IdentityType, IdentityNumber, VarReference, VarUrl);
+        MessageID := Digipoort.SubmitTaxDeclaration(GetXml(), ClientCertificate, ServiceCertificate, VarMessageType, IdentityType, IdentityNumber, VarReference, VarUrl);
 
         // [THEN] Verify Result 
         LibraryAssert.AreNotEqual(MessageID, '', 'Failed to connect to Digipoort');
+        Exit(MessageID);
+    end;
+
+    [Test]
+    procedure ReceiveResponseMessages(MessageID: Text) // Note: This can only be run in combination with tax declaration
+    var
+        Digipoort: Codeunit "Digipoort";
+        VarReference: Text;
+        VarUrl: Text;
+        TLS: Text;
+        ResponseNo: Integer;
+        ServiceCertificateCode: Code[20];
+        ClientCertificateCode: Code[20];
+        ElecDeclarationSetup: Record "Elec. Tax Declaration Setup";
+        LibraryAssert: Codeunit "Library Assert";
+        ElecTaxDeclResponseMsg: Record "Elec. Tax Decl. Response Msg." temporary;
+    begin
+        // [GIVEN] Get the declaration details and certificate
+        VarReference := 'TestXml';
+        TLS := '';
+        ResponseNo := 1242141023;
+
+        ElecDeclarationSetup.Get();
+        VarUrl := ElecDeclarationSetup."Digipoort Status URL";
+        ServiceCertificateCode := ElecDeclarationSetup."Service Certificate Code";
+        ClientCertificateCode := ElecDeclarationSetup."Client Certificate Code";
+
+        // [WHEN] Send Xml to Digipoort
+        Digipoort.ReceiveResponseMessages(ClientCertificateCode, ServiceCertificateCode, MessageID, VarUrl, TLS, ResponseNo, ElecTaxDeclResponseMsg);
+
+        // [THEN] Verify Result 
+        ElecTaxDeclResponseMsg.SetFilter("No.", ResponseNo);
+        ElecTaxDeclResponseMsg.FindFirst();
+
+        LibraryAssert.RecordIsEmpty(ElecTaxDeclResponseMsg);
     end;
 
     local procedure GetXml(): Text

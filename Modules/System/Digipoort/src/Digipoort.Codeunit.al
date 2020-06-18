@@ -9,7 +9,7 @@
 /// Encryption is always turned on for online versions.
 /// </summary>
 
-codeunit 50102 "Digipoort Payroll Tax"
+codeunit 50102 "Digipoort"
 {
     Access = Public;
 
@@ -28,10 +28,25 @@ codeunit 50102 "Digipoort Payroll Tax"
     /// <param name="Reference">The delivery reference to be send to Digipoort</param>
     /// <param name="RequestUrl">The url the tax declaration needs to be send to</param>
     /// <param name="MessageID">The message ID to be received back from Digipoort</param>
-
-    procedure SubmitTaxDeclaration(XmlContent: Text; ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageType: Text; IdentityType: Text; IdentityNumber: Text; Reference: Text; RequestUrl: Text): Text
+    /// <param name="TLS">The VarSecurityProtocolType the request has to be send with. Leave empty to take the default value.</param>
+    procedure SubmitTaxDeclaration(XmlContent: Text; ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageType: Text; IdentityType: Text; IdentityNumber: Text; Reference: Text; RequestUrl: Text; TLS: Text): Text
     begin
-        exit(DigipoortManagementImpl.SubmitTaxDeclaration(XmlContent, ClientCertificateCode, ServiceCertificateCode, MessageType, IdentityType, IdentityNumber, Reference, RequestUrl));
+        exit(DigipoortManagementImpl.SubmitTaxDeclaration(XmlContent, ClientCertificateCode, ServiceCertificateCode, MessageType, IdentityType, IdentityNumber, Reference, RequestUrl, TLS));
+    end;
+
+    /// <summary>
+    /// Receive responses messages from Digipoort.
+    /// </summary>
+    /// <param name="ClientCertificateCode">The client certificate code from the certificate stored in Isolated Certificate</param>
+    /// <param name="ServiceCertificateCode">The service certificate code from the certificate stored in Isolated Certificate</param>
+    /// <param name="MessageID">The message ID received from Digipoort</param>
+    /// <param name="ResponseUrl">The url the response message need to be requested from</param>
+    /// <param name="TLS">The VarSecurityProtocolType the request has to be send with. Leave empty to take the default value.</param>
+    /// <param name="ResponseNo">ResponseNo of the first response message</param>
+    /// <param name="ElecTaxDeclResponseMsg">Record where the response messages will get stored in</param>
+    procedure ReceiveReponseMessages(ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageID: Text; ResponseUrl: Text; TLS: Text; ResponseNo: Integer; VAR ElecTaxDeclResponseMsg: Record "Elec. Tax Decl. Response Msg."): Text
+    begin
+        exit(DigipoortManagementImpl.ReceiveResponseMessages(ClientCertificateCode, ServiceCertificateCode, MessageID, ResponseUrl, TLS, ResponseNo, ElecTaxDeclResponseMsg));
     end;
 
 }
