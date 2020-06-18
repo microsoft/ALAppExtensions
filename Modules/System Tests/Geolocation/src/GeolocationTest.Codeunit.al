@@ -58,6 +58,9 @@ codeunit 50103 "Geolocation Test"
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
+        // [When] Location availability is set to true in the Geolocation test library.
+        GeolocationTestLibrary.SetLocationAvailability(true);
+
         // [When] RequestGeolocation is invoked on the Geolocation object.
         // [Then] The Geolocation object has a geographical location.
         Assert.IsTrue(Geolocation.RequestGeolocation(), 'The Geolocation request was not successful.');
@@ -73,6 +76,9 @@ codeunit 50103 "Geolocation Test"
     begin
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
+
+        // [When] Location availability is set to true in the Geolocation test library.
+        GeolocationTestLibrary.SetLocationAvailability(true);
 
         // [When] RequestGeolocation is invoked on the Geolocation object.
         Geolocation.RequestGeolocation();
@@ -95,6 +101,9 @@ codeunit 50103 "Geolocation Test"
     begin
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
+
+        // [When] Location availability is set to true in the Geolocation test library.
+        GeolocationTestLibrary.SetLocationAvailability(true);
 
         // [When] The expected latitude and longitude are retrieved from the test library.
         GeolocationTestLibrary.GetMockGeolocation(ExpectedLatitude, ExpectedLongitude);
@@ -123,6 +132,9 @@ codeunit 50103 "Geolocation Test"
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
+        // [When] Location availability is set to true in the Geolocation test library.
+        GeolocationTestLibrary.SetLocationAvailability(true);
+
         // [When] RequestGeolocation is invoked on the Geolocation object.
         Geolocation.RequestGeolocation();
 
@@ -140,6 +152,9 @@ codeunit 50103 "Geolocation Test"
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
 
+        // [When] Location availability is set to true in the Geolocation test library.
+        GeolocationTestLibrary.SetLocationAvailability(true);
+
         // [When] RequestGeolocation has not been invoked on the Geolocation object.
         // [Then] The status of the geographical location data is Not Available.
         Assert.AreEqual("Geolocation Status"::"Not Available", Geolocation.GetGeolocationStatus(), 'The status of the geographical location data is not "Not Available".');
@@ -154,6 +169,9 @@ codeunit 50103 "Geolocation Test"
     begin
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
+
+        // [When] Location availability is set to true in the Geolocation test library.
+        GeolocationTestLibrary.SetLocationAvailability(true);
 
         // [When] RequestGeolocation has not been invoked on the Geolocation object.
         // [Then] The Geolocation object does not contain a geographical location.
@@ -171,6 +189,9 @@ codeunit 50103 "Geolocation Test"
     begin
         // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
+
+        // [When] Location availability is set to true in the Geolocation test library.
+        GeolocationTestLibrary.SetLocationAvailability(true);
 
         // [When] GetGeolocation is invocked on the Geolocation object without invoking RequestGeolocation before.
         asserterror Geolocation.GetGeolocation(ActualLatitude, ActualLongitude);
