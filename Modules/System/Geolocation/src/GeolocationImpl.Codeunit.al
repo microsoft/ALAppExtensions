@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
 codeunit 50101 "Geolocation Impl."
 {
     Access = Internal;
@@ -29,9 +30,8 @@ codeunit 50101 "Geolocation Impl."
     var
         Location: DotNet Location;
         HandledByTest: Boolean;
-        GeoLocation: Codeunit Geolocation;
     begin
-        GeoLocation.OnBeforeLocationInitialize(Location, HandledByTest);
+        OnBeforeLocationInitialize(Location, HandledByTest);
         if HandledByTest then begin
             LocationInteractionOnLocationAvailable(Location);
             exit;
@@ -55,10 +55,9 @@ codeunit 50101 "Geolocation Impl."
     procedure IsAvailable(): Boolean
     var
         IsAvailable: Boolean;
-        GeoLocation: Codeunit Geolocation;
     begin
         IsAvailable := LocationProvider.IsAvailable();
-        GeoLocation.OnIsLocationAvailable(IsAvailable);
+        OnIsLocationAvailable(IsAvailable);
         exit(IsAvailable);
     end;
 
@@ -137,5 +136,17 @@ codeunit 50101 "Geolocation Impl."
         LocationOptions.Timeout := 600000; // 10 minutes
         LocationOptions.MaximumAge := 0;
         LocationOptionsEnabled := true;
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnBeforeLocationInitialize(var Location: DotNet Location; var IsHandled: Boolean)
+    begin
+        // Used for testing
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnIsLocationAvailable(var IsAvailable: Boolean)
+    begin
+        // Used for testing
     end;
 }

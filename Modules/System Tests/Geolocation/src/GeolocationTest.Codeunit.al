@@ -15,16 +15,36 @@ codeunit 50103 "Geolocation Test"
 
     [Test]
     [Scope('OnPrem')]
-    procedure TestIsGeolocationAvailable()
+    procedure TestGeolocationIsAvailable()
     var
         Geolocation: Codeunit Geolocation;
         GeolocationTestLibrary: Codeunit "Geolocation Test Library";
     begin
-        // [When] Geolocation test library subscribers are bound.
+        // [Given] Geolocation test library subscribers are bound.
         BindSubscription(GeolocationTestLibrary);
+
+        // [When] Location availability is set to true in the Geolocation test library.
+        GeolocationTestLibrary.SetLocationAvailability(true);
 
         // [Then] The return value of IsAvailable is 'true'.
         Assert.IsTrue(Geolocation.IsAvailable(), 'The Geolocation is unavailable.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGeolocationIsNotAvailable()
+    var
+        Geolocation: Codeunit Geolocation;
+        GeolocationTestLibrary: Codeunit "Geolocation Test Library";
+    begin
+        // [Given] Geolocation test library subscribers are bound.
+        BindSubscription(GeolocationTestLibrary);
+
+        // [When] Location availability is set to false in the Geolocation test library.
+        GeolocationTestLibrary.SetLocationAvailability(false);
+
+        // [Then] The return value of IsAvailable is 'false'.
+        Assert.IsFalse(Geolocation.IsAvailable(), 'The Geolocation is available.');
     end;
 
     [Test]
@@ -40,7 +60,7 @@ codeunit 50103 "Geolocation Test"
 
         // [When] RequestGeolocation is invoked on the Geolocation object.
         // [Then] The Geolocation object has a geographical location.
-        Assert.IsTrue(Geolocation.RequestGeolocation(), 'The Geolocation request was not succesful.');
+        Assert.IsTrue(Geolocation.RequestGeolocation(), 'The Geolocation request was not successful.');
     end;
 
     [Test]

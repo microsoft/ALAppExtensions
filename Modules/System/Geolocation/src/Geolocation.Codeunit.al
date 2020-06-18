@@ -119,16 +119,4 @@ codeunit 50100 Geolocation
     begin
         exit(GeolocationImpl.GetMaximumAge());
     end;
-
-    [IntegrationEvent(false, false)]
-    procedure OnBeforeLocationInitialize(var Location: DotNet Location; var IsHandled: Boolean)
-    begin
-        // Used for testing
-    end;
-
-    [IntegrationEvent(false, false)]
-    procedure OnIsLocationAvailable(var IsAvailable: Boolean)
-    begin
-        // Used for testing
-    end;
 }
