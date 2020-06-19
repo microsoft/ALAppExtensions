@@ -16,7 +16,13 @@ codeunit 20601 "Basic Mgmt BF"
 
     internal procedure IsSupportedLicense(): Boolean // Microsoft requirements: The Basic Assisted Setup checks for the Basic license on the AAD tenant, at least one user has been assigned to this license.
     var
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
+        // Checks for the Basic license on the AAD tenant is not possibly in Sandbox Environment
+        // Error Msg: "An error occurred while querying for external license information. For error details check the inner exception.” 
+        if EnvironmentInformation.IsSandbox() then
+            exit(false);
+
         AzureADLicensing.ResetSubscribedSKU();
         while AzureADLicensing.NextSubscribedSKU() do
             case UpperCase(AzureADLicensing.SubscribedSKUId()) of

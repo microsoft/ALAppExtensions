@@ -10,9 +10,9 @@ codeunit 139502 "Test Basic BF"
 
     var
         Assert: Codeunit Assert;
-        AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER', Locked = true, Comment = 'As default the profile "SALES AND RELATIONSHIP MANAGER" cannot disable  because it is set up as a default profile for one or more users or user groups.';
-        NotSupportedLicensesErr: Label 'At least one user must have the Basic license.', Locked = true;
-        NotSupportedCompaniesErr: Label 'Exactly one company must exists in the environment.', Locked = true;
+        AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER', Locked = true, Comment = 'As default the profile "SALES AND RELATIONSHIP MANAGER" cannot disable because it is set up as a default profile for one or more users or user groups.';
+        NotSupportedLicensesErr: Label 'Validation error for Field: IsSupportedLicenses,  Message = ''At least one user must have the Basic license.''', Locked = true;
+        NotSupportedCompaniesErr: Label 'Validation error for Field: IsSupportedCompanies,  Message = ''Exactly one company must exists in the environment.''', Locked = true;
 
     trigger OnRun();
     begin
@@ -175,6 +175,7 @@ codeunit 139502 "Test Basic BF"
     procedure TestEnableLicensesBasicAssistedSetupPage();
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
+        ERRORTEXT: Text;
     begin
         // [Scenario]
         // [Given] Basic Assisted Setup Page
@@ -232,7 +233,7 @@ codeunit 139502 "Test Basic BF"
     internal procedure TestEnabledBasicApplicationArea();
     var
         ApplicationAreaSetup: Record "Application Area Setup";
-        FieldList: Record Field;
+        Field: Record Field;
         ApplicationAreaSetupRecordRef: RecordRef;
         ApplicationAreaSetupFieldRef: FieldRef;
         IsBasicCountryTested: Boolean;
@@ -242,11 +243,11 @@ codeunit 139502 "Test Basic BF"
         CLEAR(ApplicationAreaSetupFieldRef);
         ApplicationAreaSetupRecordRef.Get(ApplicationAreaSetup.RecordId);
 
-        FieldList.SETRANGE(TableNo, ApplicationAreaSetupRecordRef.Number);
-        FieldList.SETRANGE(Type, FieldList.Type::Boolean);
-        if FieldList.FINDSET(FALSE, FALSE) then
+        Field.SETRANGE(TableNo, ApplicationAreaSetupRecordRef.Number);
+        Field.SETRANGE(Type, Field.Type::Boolean);
+        if Field.FINDSET(FALSE, FALSE) then
             repeat
-                ApplicationAreaSetupFieldRef := ApplicationAreaSetupRecordRef.FIELD(FieldList."No.");
+                ApplicationAreaSetupFieldRef := ApplicationAreaSetupRecordRef.FIELD(Field."No.");
                 case ApplicationAreaSetupFieldRef.Name() of
                     //>> Application Area must be true
                     ApplicationAreaSetup.FieldName("BF Basic"),
@@ -282,7 +283,7 @@ codeunit 139502 "Test Basic BF"
                     else
                         ApplicationAreaSetupFieldRef.TestField(false);
                 end;
-            until FieldList.NEXT() = 0;
+            until Field.NEXT() = 0;
     end;
 
     internal procedure TestDisableRoleCenter();
