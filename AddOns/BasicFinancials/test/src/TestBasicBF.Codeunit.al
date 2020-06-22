@@ -245,7 +245,7 @@ codeunit 139502 "Test Basic BF"
 
         Field.SETRANGE(TableNo, ApplicationAreaSetupRecordRef.Number);
         Field.SETRANGE(Type, Field.Type::Boolean);
-        if Field.FINDSET(FALSE, FALSE) THEN
+        if Field.FINDSET(FALSE, FALSE) then
             repeat
                 ApplicationAreaSetupFieldRef := ApplicationAreaSetupRecordRef.FIELD(Field."No.");
                 case ApplicationAreaSetupFieldRef.Name() of
@@ -272,14 +272,14 @@ codeunit 139502 "Test Basic BF"
                     //>> Only one Microsoft Basic Country Application Area must be true the others must be false         
                     ApplicationAreaSetup.FieldName("Basic DK"),
                     ApplicationAreaSetup.FieldName("Basic IS"):
-                        if IsBasicCountryTested THEN
+                        if IsBasicCountryTested then
                             ApplicationAreaSetupFieldRef.TestField(false)
                         else begin
                             ApplicationAreaSetupFieldRef.TestField(true);
                             IsBasicCountryTested := true;
                         end;
 
-                    //>> Remainder Application Area must be false, even WHEN new ones are added                
+                    //>> Remainder Application Area must be false, even when new ones are added                
                     else
                         ApplicationAreaSetupFieldRef.TestField(false);
                 end;
@@ -293,7 +293,7 @@ codeunit 139502 "Test Basic BF"
         Clear(AllProfile);
         AllProfile.SetRange(Enabled, true);
         AllProfile.SetFilter("Profile ID", AllProfileFilterTxt);
-        if AllProfile.FindSet(false, false) THEN
+        if AllProfile.FindSet(false, false) then
             repeat
                 AllProfile.TestField(Enabled, false);
             until AllProfile.Next() = 0;
