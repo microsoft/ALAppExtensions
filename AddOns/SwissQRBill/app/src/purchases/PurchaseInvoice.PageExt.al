@@ -1,0 +1,121 @@
+pageextension 11516 "Swiss QR-Bill Purchase Invoice" extends "Purchase Invoice"
+{
+    layout
+    {
+        modify("Payment Reference")
+        {
+            Editable = not "Swiss QR-Bill";
+        }
+
+        addafter("Foreign Trade")
+        {
+            group("Swiss QR-Bill Tab")
+            {
+                Caption = 'QR-Bill';
+                Visible = "Swiss QR-Bill";
+
+                field("Swiss QR-Bill IBAN"; "Swiss QR-Bill IBAN")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the IBAN or QR-IBAN account of the QR-Bill vendor.';
+
+                    trigger OnDrillDown()
+                    var
+                        SwissQRBillIncomingDoc: Codeunit "Swiss QR-Bill Incoming Doc";
+                    begin
+                        SwissQRBillIncomingDoc.DrillDownVendorIBAN("Swiss QR-Bill IBAN");
+                    end;
+                }
+                field("Swiss QR-Bill Amount"; "Swiss QR-Bill Amount")
+                {
+                    ApplicationArea = All;
+                    Importance = Promoted;
+                    ToolTip = 'Specifies the total amount including VAT of the QR-Bill.';
+                }
+                field("Swiss QR-Bill Currency"; "Swiss QR-Bill Currency")
+                {
+                    ApplicationArea = All;
+                    Importance = Promoted;
+                    ToolTip = 'Specifies the currency code of the QR-Bill.';
+                }
+                field("Swiss QR-Bill Unstr. Message"; "Swiss QR-Bill Unstr. Message")
+                {
+                    ApplicationArea = All;
+                    Importance = Additional;
+                    ToolTip = 'Specifies the unstructured message of the QR-Bill.';
+                }
+                field("Swiss QR-Bill Bill Info"; "Swiss QR-Bill Bill Info")
+                {
+                    ApplicationArea = All;
+                    Importance = Additional;
+                    ToolTip = 'Specifies the billing information of the QR-Bill.';
+
+                    trigger OnDrillDown()
+                    var
+                        SwissQRBillBillingInfo: Codeunit "Swiss QR-Bill Billing Info";
+                    begin
+                        SwissQRBillBillingInfo.DrillDownBillingInfo("Swiss QR-Bill Bill Info");
+                    end;
+                }
+            }
+        }
+    }
+
+    actions
+    {
+        addlast(processing)
+        {
+            group("Swiss QR-Bill")
+            {
+                Caption = 'QR-Bill';
+
+                action("Swiss QR-Bill Scan")
+                {
+                    Caption = 'Scan QR-Bill';
+                    ToolTip = 'Update the invoice from the scanning of QR-bill with an input scanner, or from manual (copy/paste) of the decoded QR-Code text value into a field.';
+                    ApplicationArea = All;
+                    Image = Import;
+                    PromotedCategory = Process;
+                    Promoted = true;
+
+                    trigger OnAction()
+                    begin
+                        SwissQRBillPurchases.UpdatePurchDocFromQRCode(Rec, false);
+                    end;
+                }
+                action("Swiss QR-Bill Import")
+                {
+                    Caption = 'Import Scanned QR-Bill File';
+                    ToolTip = 'Update the invoice by importing a scanned QR-bill that is saved as a text file.';
+                    ApplicationArea = All;
+                    Image = Import;
+                    PromotedCategory = Process;
+                    Promoted = true;
+
+                    trigger OnAction()
+                    begin
+                        SwissQRBillPurchases.UpdatePurchDocFromQRCode(Rec, true);
+                    end;
+                }
+                action("Swiss QR-Bill Void")
+                {
+                    Caption = 'Void the imported QR-Bill';
+                    ToolTip = 'Clear and unlink imported QR-Bill.';
+                    ApplicationArea = All;
+                    Image = VoidCheck;
+                    Visible = "Swiss QR-Bill";
+                    PromotedCategory = Process;
+                    Promoted = true;
+
+                    trigger OnAction()
+                    begin
+                        SwissQRBillPurchases.VoidPurchDocQRBill(Rec);
+                    end;
+                }
+            }
+        }
+    }
+
+    var
+        SwissQRBillPurchases: Codeunit "Swiss QR-Bill Purchases";
+}

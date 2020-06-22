@@ -27,7 +27,6 @@ codeunit 13633 "OIOUBL-Check Sales Cr. Memo"
         CompanyInfo.TESTFIELD("Country/Region Code");
 
         TESTFIELD("External Document No.");
-        TESTFIELD("Payment Terms Code");
         TESTFIELD("Sell-to Contact");
         TESTFIELD("VAT Registration No.");
         OIOUBLDocumentEncode.GetOIOUBLCountryRegionCode("Bill-to Country/Region Code");

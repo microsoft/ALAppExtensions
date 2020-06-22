@@ -12,9 +12,15 @@ table 1950 "LP Machine Learning Setup"
         {
             Caption = 'Make Predictions';
             trigger OnValidate();
+            var
+                LPModelManagement: Codeunit "LP Model Management";
             begin
                 if "Make Predictions" then begin
                     CheckSelectedModelExists();
+                    if "Standard Model Quality" = 0 then begin // ensure that the model quality of the standard model is correctly evaluated for data on this company if it has never been tried before
+                        LPModelManagement.EvaluateModel("Selected Model"::Standard, false);
+                        GetSingleInstance(); // to refresh the standard model quality after evaluation
+                    end;
                     CheckModelQuality();
                 end;
             end;
@@ -83,6 +89,7 @@ table 1950 "LP Machine Learning Setup"
             Editable = false;
             ObsoleteState = Pending;
             ObsoleteReason = 'Discontinued because of performance refactoring. Use the field Posting Date OnLastML instead.';
+            ObsoleteTag = '15.4';
         }
 
         field(12; "OverestimatedInvNo OnLastReset"; Integer)
@@ -177,9 +184,12 @@ table 1950 "LP Machine Learning Setup"
     end;
 
     procedure CheckModelQuality()
+    var
+        ModelQuality: Decimal;
     begin
-        if "Model Quality Threshold" > GetModelQuality() then
-            error(CurrentModelLowerQualityThanDesiredErr);
+        ModelQuality := GetModelQuality();
+        if "Model Quality Threshold" > ModelQuality then
+            error(CurrentModelLowerQualityThanDesiredErr, ModelQuality);
     end;
 
 
@@ -290,6 +300,6 @@ table 1950 "LP Machine Learning Setup"
     end;
 
     var
-        CurrentModelLowerQualityThanDesiredErr: Label 'Cannot use the model to make predictions. The quality of the model is below the specified quality threshold, which means that its predictions are unlikely to meet your requirements for accuracy. To use the model anyway, enter a lower value in the Model Quality Threshold field.';
+        CurrentModelLowerQualityThanDesiredErr: Label 'You cannot use the model because its quality of %1 is below the value in the Model Quality Threshold field. That means its predictions are unlikely to meet your accuracy requirements. You can evaluate the model again to confirm its quality. To use the model anyway, enter a value that is less than or equal to %1 in the Model Quality Threshold field.', Comment = '%1 = current model quality (decimal)';
         CurrentModelDoesNotExistErr: Label 'Cannot use the model because it does not exist. Try training a new model.';
 }

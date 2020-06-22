@@ -522,8 +522,6 @@ codeunit 148081 "MTDTestOAuthWebService"
         JToken.ReadFrom(LibraryMakingTaxDigital.GetLatestHttpLogText());
         Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-Connection-Method'), 'Gov-Client-Connection-Method');
         Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Vendor-Version'), 'Gov-Vendor-Version');
-        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-User-IDs'), 'Gov-Client-User-IDs');
-        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-User-Agent'), 'Gov-Client-User-Agent');
         Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Vendor-License-IDs'), 'Gov-Vendor-License-IDs');
         AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Public-IP');
 
@@ -535,6 +533,8 @@ codeunit 148081 "MTDTestOAuthWebService"
                     AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Local-IPs');
                     AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-MAC-Addresses');
                     AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Screens');
+                    Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-User-IDs'), 'Gov-Client-User-IDs');
+                    Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-User-Agent'), 'Gov-Client-User-Agent');
                 end;
             ClientType::Web:
                 begin
@@ -543,6 +543,8 @@ codeunit 148081 "MTDTestOAuthWebService"
                     AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Local-IPs');
                     AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-MAC-Addresses');
                     Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-Screens'), 'Gov-Client-Screens');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-User-IDs');
+                    AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-User-Agent');
                 end;
             ClientType::Background:
                 begin
@@ -551,6 +553,8 @@ codeunit 148081 "MTDTestOAuthWebService"
                     AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Local-IPs');
                     AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-MAC-Addresses');
                     AssertBlankedJsonValue(JToken, 'Request.Header.Gov-Client-Screens');
+                    Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-User-IDs'), 'Gov-Client-User-IDs');
+                    Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.Gov-Client-User-Agent'), 'Gov-Client-User-Agent');
                 end;
         end;
     end;
@@ -564,8 +568,6 @@ codeunit 148081 "MTDTestOAuthWebService"
         JToken.ReadFrom(JsonText);
         AssertBlankedJsonValue(JToken, 'Gov-Client-Connection-Method');
         AssertBlankedJsonValue(JToken, 'Gov-Vendor-Version');
-        Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-User-IDs') <> '', 'Gov-Client-User-IDs');
-        Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-User-Agent') <> '', 'Gov-Client-User-Agent');
         Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Vendor-License-IDs') <> '', 'Gov-Vendor-License-IDs');
         AssertBlankedJsonValue(JToken, 'Gov-Client-Public-IP');
 
@@ -577,6 +579,8 @@ codeunit 148081 "MTDTestOAuthWebService"
                     AssertBlankedJsonValue(JToken, 'Gov-Client-Local-IPs');
                     AssertBlankedJsonValue(JToken, 'Gov-Client-MAC-Addresses');
                     AssertBlankedJsonValue(JToken, 'Gov-Client-Screens');
+                    Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-User-IDs') <> '', 'Gov-Client-User-IDs');
+                    Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-User-Agent') <> '', 'Gov-Client-User-Agent');
                 end;
             ClientType::Web:
                 begin
@@ -585,6 +589,8 @@ codeunit 148081 "MTDTestOAuthWebService"
                     AssertBlankedJsonValue(JToken, 'Gov-Client-Local-IPs');
                     AssertBlankedJsonValue(JToken, 'Gov-Client-MAC-Addresses');
                     Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-Screens') <> '', 'Gov-Client-Screens');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-User-IDs');
+                    AssertBlankedJsonValue(JToken, 'Gov-Client-User-Agent');
                 end;
             ClientType::Background:
                 begin
@@ -593,6 +599,8 @@ codeunit 148081 "MTDTestOAuthWebService"
                     AssertBlankedJsonValue(JToken, 'Gov-Client-Local-IPs');
                     AssertBlankedJsonValue(JToken, 'Gov-Client-MAC-Addresses');
                     AssertBlankedJsonValue(JToken, 'Gov-Client-Screens');
+                    Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-User-IDs') <> '', 'Gov-Client-User-IDs');
+                    Assert.IsTrue(ReadJsonValue(JToken, 'Gov-Client-User-Agent') <> '', 'Gov-Client-User-Agent');
                 end;
         end;
     end;

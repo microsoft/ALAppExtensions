@@ -58,11 +58,13 @@ page 20100 "AMC Bank Bank Name List"
                     ShowErrors: Boolean;
                 begin
                     ShowErrors := true;
-                    AMCBankImpBankListHndl.GetBankListFromWebService(ShowErrors, FilterNotUsed, LongTimeout);
+                    AMCBankImpBankListHndl.GetBankListFromWebService(ShowErrors, FilterNotUsed, LongTimeout, AMCBankServMgt.GetAppCaller());
                 end;
             }
         }
     }
+    var
+        AMCBankServMgt: Codeunit "AMC Banking Mgt.";
 
     trigger OnInit()
     begin
@@ -79,7 +81,7 @@ page 20100 "AMC Bank Bank Name List"
         CountryRegionCode := IdentifyCountryRegionCode(Rec, GetFilter("Country/Region Code"));
 
         if IsEmpty() then begin
-            AMCBankImpBankListHndl.GetBankListFromWebService(HideErrors, CountryRegionCode, ShortTimeout);
+            AMCBankImpBankListHndl.GetBankListFromWebService(HideErrors, CountryRegionCode, ShortTimeout, AMCBankServMgt.GetAppCaller());
             exit;
         end;
 
@@ -115,7 +117,7 @@ page 20100 "AMC Bank Bank Name List"
             AMCBankBanks.SetFilter("Country/Region Code", CountryRegionCode);
         AMCBankBanks.SetFilter("Last Update Date", '<%1', Today());
         if not AMCBankBanks.IsEmpty() then
-            AMCBankImpBankListHndl.GetBankListFromWebService(ShowErrors, CountryRegionCode, Timeout);
+            AMCBankImpBankListHndl.GetBankListFromWebService(ShowErrors, CountryRegionCode, Timeout, AMCBankServMgt.GetAppCaller());
     end;
 }
 

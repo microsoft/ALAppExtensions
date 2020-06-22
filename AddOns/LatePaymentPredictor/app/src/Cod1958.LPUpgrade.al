@@ -49,6 +49,9 @@ codeunit 1958 "Late Payment Upgrade"
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetLatePaymentPredictionSecretsToISUpgradeTag(), '') then
+            exit;
+
         if UpgradeTag.HasUpgradeTag(GetLatePaymentPredictionSecretsToISUpgradeTag()) then
             exit;
 
@@ -65,6 +68,9 @@ codeunit 1958 "Late Payment Upgrade"
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetLatePaymentPredictionSecretsToISValidationTag(), '') then
+            exit;
+
         if UpgradeTag.HasUpgradeTag(GetLatePaymentPredictionSecretsToISValidationTag()) then
             exit;
 
@@ -121,20 +127,20 @@ codeunit 1958 "Late Payment Upgrade"
             Error('The secret value for key "%1" in isolated storage does not match the one in service password.', ServicePasswordKey);
     end;
 
-    local procedure GetLatePaymentPredictionSecretsToISUpgradeTag(): Code[250]
+    internal procedure GetLatePaymentPredictionSecretsToISUpgradeTag(): Code[250]
     begin
         exit('MS-328257-LatePaymentPredictionSecretsToIS-20190925');
     end;
 
-    local procedure GetLatePaymentPredictionSecretsToISValidationTag(): Code[250]
+    internal procedure GetLatePaymentPredictionSecretsToISValidationTag(): Code[250]
     begin
         exit('MS-328257-LatePaymentPredictionSecretsToIS-Validate-20190925');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerDatabaseUpgradeTags', '', false, false)]
-    local procedure RegisterPerDatabaseTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
-        PerDatabaseUpgradeTags.Add(GetLatePaymentPredictionSecretsToISUpgradeTag());
-        PerDatabaseUpgradeTags.Add(GetLatePaymentPredictionSecretsToISValidationTag());
+        PerCompanyUpgradeTags.Add(GetLatePaymentPredictionSecretsToISUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetLatePaymentPredictionSecretsToISValidationTag());
     end;
 }

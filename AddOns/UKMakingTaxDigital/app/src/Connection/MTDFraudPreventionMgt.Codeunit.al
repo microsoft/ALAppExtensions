@@ -202,7 +202,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
 
     local procedure GetClientPublicIPs(var Result: Text): Boolean
     begin
-        exit(GetBufferValues(Result, ClientPublicIPsBuffer, 'Win32_NetworkAdapterConfiguration.IPAddress'));
+        exit(GetBufferValues(Result, ClientPublicIPsBuffer, 'Win32_NetworkAdapterConfiguration.IPAddress', 1));
     end;
 
     local procedure GetClientDeviceID(var Result: Text): Boolean
@@ -216,6 +216,9 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
 
     local procedure GetClientUserIDs(var Result: Text): Boolean
     begin
+        if WebClient then
+            exit;
+
         if not GetBufferValue(Result, 'Win32_ComputerSystem.UserName') then
             if not GetCurrentNAVUserName(Result) then
                 exit(false);
@@ -243,12 +246,12 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
 
     local procedure GetClientLocalIPs(var Result: Text): Boolean
     begin
-        exit(GetBufferValues(Result, ClientLocalIPsBuffer, 'Win32_NetworkAdapterConfiguration.IPAddress'));
+        exit(GetBufferValues(Result, ClientLocalIPsBuffer, 'Win32_NetworkAdapterConfiguration.IPAddress', 0));
     end;
 
     local procedure GetClientMACAddresses(var Result: Text): Boolean
     begin
-        exit(GetBufferValues(Result, ClientWMIBuffer, 'Win32_NetworkAdapterConfiguration.MACAddress'));
+        exit(GetBufferValues(Result, ClientWMIBuffer, 'Win32_NetworkAdapterConfiguration.MACAddress', 0));
     end;
 
     local procedure GetClientScreens(var Result: Text): Boolean
@@ -311,6 +314,9 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         DeviceVersion: Text;
         DeviceName: Text;
     begin
+        if WebClient then
+            exit;
+
         OSFamily := DefaultOSFamilyTxt;
         GetBufferValue(OSVersion, 'Win32_OperatingSystem.Version');
         GetBufferValue(DeviceVendor, 'Win32_ComputerSystemProduct.Vendor');
@@ -353,7 +359,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         if BatchClient then
             exit(false);
 
-        exit(GetBufferValues(Result, ServerPublicIPsBuffer, 'Win32_NetworkAdapterConfiguration.IPAddress'));
+        exit(GetBufferValues(Result, ServerPublicIPsBuffer, 'Win32_NetworkAdapterConfiguration.IPAddress', 1));
     end;
 
     local procedure GetCurrentNAVUserName(var Result: Text): Boolean
@@ -413,10 +419,11 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         end;
     end;
 
-    local procedure GetBufferValues(var Result: Text; var Buffer: Record "Name/Value Buffer"; PropertyName: Text): Boolean
+    local procedure GetBufferValues(var Result: Text; var Buffer: Record "Name/Value Buffer"; PropertyName: Text; limit: Integer): Boolean
     var
         NextValue: Text;
     begin
+        // limit = 0 means unlimit, i.e. all values
         Result := '';
         with Buffer do begin
             SetRange(Name, PropertyName);
@@ -426,7 +433,8 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
                         Result += ',';
                     NextValue := Value;
                     Result += TypeHelper.UrlEncode(NextValue);
-                until Next() = 0;
+                    limit -= 1;
+                until (Next() = 0) or (limit = 0);
         end;
         exit(Result <> '');
     end;

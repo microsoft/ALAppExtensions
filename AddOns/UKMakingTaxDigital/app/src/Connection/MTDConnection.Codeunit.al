@@ -35,10 +35,23 @@ codeunit 10537 "MTD Connection"
         Error_CLIENT_OR_AGENT_NOT_AUTHORISED_Txt: Label 'The client and/or agent is not authorised.', Locked = true;
         Error_NOT_FOUND_Txt: Label 'The remote endpoint has indicated that no associated data is found.', Locked = true;
         Error_TOO_MANY_REQ_Txt: Label 'The HMRC service is busy. Try again later.', Locked = true;
+        // fault model labels
+        UKMakingTaxDigitalTok: Label 'UKMakingTaxDigitalTelemetryCategoryTok', Locked = true;
+        InvokeReqMsg: Label 'invoke request: %1', Locked = true;
+        InvokeReqSuccessMsg: Label 'https request successfully executed', Locked = true;
+        RefreshAccessTokenMsg: Label 'refreshing access token', Locked = true;
+        NoHttpStatusErr: Label 'No http status from the https response', Locked = true;
+        NoJsonResponseErr: Label 'Could not parse http response as json object', Locked = true;
+        NoContentMessageErr: Label 'No content.message in the json response', Locked = true;
+        EmptyJsonErrMsgErr: Label 'Missing error description in json response', Locked = true;
+        NoContentStatusCodeErr: Label 'No Content.statusCode in json response', Locked = true;
+        EmptyStatusCodeErr: Label 'Empty status code in json response', Locked = true;
+        CannotParseResponseErr: Label 'Cannot parse the http error response', Locked = true;
 
     internal procedure InvokeRequest_SubmitVATReturn(var ResponseJson: Text; var RequestJson: Text; var HttpError: Text): Boolean
     begin
         CheckOAuthConfigured(false);
+        SendTraceTag('0000CC0', UKMakingTaxDigitalTok, VERBOSITY::Normal, StrSubstNo(InvokeReqMsg, 'submit VAT return'), DATACLASSIFICATION::SystemMetadata);
         exit(InvokeRequest('POST', SubmitVATReturnPath(), ResponseJson, RequestJson, HttpError, SubmitVATReturnTxt));
     end;
 
@@ -47,6 +60,7 @@ codeunit 10537 "MTD Connection"
         RequestJson: Text;
     begin
         CheckOAuthConfigured(ShowMessage);
+        SendTraceTag('0000CC0', UKMakingTaxDigitalTok, VERBOSITY::Normal, StrSubstNo(InvokeReqMsg, 'retrieve VAT return'), DATACLASSIFICATION::SystemMetadata);
         exit(InvokeRequest('GET', RetrieveVATReturnPath(PeriodKey), ResponseJson, RequestJson, HttpError, RetrieveVATReturnTxt));
     end;
 
@@ -55,6 +69,7 @@ codeunit 10537 "MTD Connection"
         RequestJson: Text;
     begin
         CheckOAuthConfigured(OpenOAuthSetup);
+        SendTraceTag('0000CC0', UKMakingTaxDigitalTok, VERBOSITY::Normal, StrSubstNo(InvokeReqMsg, 'retrieve VAT return periods'), DATACLASSIFICATION::SystemMetadata);
         exit(InvokeRequest('GET', RetrieveObligationsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATReturnPeriodsTxt));
     end;
 
@@ -63,6 +78,7 @@ codeunit 10537 "MTD Connection"
         RequestJson: Text;
     begin
         CheckOAuthConfigured(true);
+        SendTraceTag('0000CC0', UKMakingTaxDigitalTok, VERBOSITY::Normal, StrSubstNo(InvokeReqMsg, 'retrieve liabilities'), DATACLASSIFICATION::SystemMetadata);
         exit(InvokeRequest('GET', RetrieveLiabilitiesPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATLiabilitiesTxt));
     end;
 
@@ -71,6 +87,7 @@ codeunit 10537 "MTD Connection"
         RequestJson: Text;
     begin
         CheckOAuthConfigured(true);
+        SendTraceTag('0000CC0', UKMakingTaxDigitalTok, VERBOSITY::Normal, StrSubstNo(InvokeReqMsg, 'retrieve payments'), DATACLASSIFICATION::SystemMetadata);
         exit(InvokeRequest('GET', RetrievePaymentsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATPaymentsTxt));
     end;
 
@@ -80,6 +97,7 @@ codeunit 10537 "MTD Connection"
     begin
         CheckOAuthConfigured(false);
         OAuth20Setup.GET(GetOAuthSetupCode());
+        SendTraceTag('0000CCE', UKMakingTaxDigitalTok, VERBOSITY::Normal, RefreshAccessTokenMsg, DATACLASSIFICATION::SystemMetadata);
         exit(OAuth20Setup.RefreshAccessToken(HttpError));
     end;
 
@@ -162,6 +180,9 @@ codeunit 10537 "MTD Connection"
         LogActivity(OAuth20Setup, ActivityLogContext, HttpLogError);
 
         Commit();
+
+        if Result then
+            SendTraceTag('0000CC5', UKMakingTaxDigitalTok, VERBOSITY::Normal, InvokeReqSuccessMsg, DATACLASSIFICATION::SystemMetadata);
     end;
 
     local procedure LogActivity(OAuth20Setup: Record "OAuth 2.0 Setup"; ActivityLogContext: Text; HttpError: Text)
@@ -239,18 +260,26 @@ codeunit 10537 "MTD Connection"
     begin
         HttpLogError := HttpError;
 
-        if not OAuth20Mgt.GetHttpStatusFromJsonResponse(ResponseJson, StatusCode, StatusReason, StatusDetails) then
+        if not OAuth20Mgt.GetHttpStatusFromJsonResponse(ResponseJson, StatusCode, StatusReason, StatusDetails) then begin
+            SendTraceTag('0000CC6', UKMakingTaxDigitalTok, VERBOSITY::Error, NoHttpStatusErr, DATACLASSIFICATION::SystemMetadata);
             exit(false);
+        end;
 
-        if not JObject.ReadFrom(ResponseJson) then
+        if not JObject.ReadFrom(ResponseJson) then begin
+            SendTraceTag('0000CC7', UKMakingTaxDigitalTok, VERBOSITY::Error, NoJsonResponseErr, DATACLASSIFICATION::SystemMetadata);
             exit(false);
+        end;
 
-        if not JObject.SelectToken('Content.message', JToken) then
+        if not JObject.SelectToken('Content.message', JToken) then begin
+            SendTraceTag('0000CC8', UKMakingTaxDigitalTok, VERBOSITY::Error, NoContentMessageErr, DATACLASSIFICATION::SystemMetadata);
             exit(false);
+        end;
 
         JsonErrorMessage := JToken.AsValue().AsText();
-        if JsonErrorMessage = '' then
+        if JsonErrorMessage = '' then begin
+            SendTraceTag('0000CC9', UKMakingTaxDigitalTok, VERBOSITY::Error, EmptyJsonErrMsgErr, DATACLASSIFICATION::SystemMetadata);
             exit(false);
+        end;
 
         // {"code", "message",  "errors":[{"code", "message", "path"},...]}
         if JObject.SelectToken('Content.code', JToken) then
@@ -269,13 +298,19 @@ codeunit 10537 "MTD Connection"
                 HttpLogError := StrSubstNo('HTTP error %1 (%2). %3', StatusCode, StatusReason, HttpError);
                 if (StatusCode = 429) then
                     HttpError := Error_TOO_MANY_REQ_Txt;
+
+                SendTraceTag('0000CCA', UKMakingTaxDigitalTok, VERBOSITY::Error, HttpError, DATACLASSIFICATION::SystemMetadata);
                 exit(true);
             end;
 
-        if not JObject.SelectToken('Content.statusCode', JToken) then
+        if not JObject.SelectToken('Content.statusCode', JToken) then begin
+            SendTraceTag('0000CCB', UKMakingTaxDigitalTok, VERBOSITY::Error, NoContentStatusCodeErr, DATACLASSIFICATION::SystemMetadata);
             exit(false);
-        if JToken.AsValue().AsText() = '' then
+        end;
+        if JToken.AsValue().AsText() = '' then begin
+            SendTraceTag('0000CCC', UKMakingTaxDigitalTok, VERBOSITY::Error, EmptyStatusCodeErr, DATACLASSIFICATION::SystemMetadata);
             exit(false);
+        end;
 
         case StatusCode of
             400:
@@ -322,9 +357,11 @@ codeunit 10537 "MTD Connection"
         if HMRCErrorMessage <> '' then begin
             HttpError := HMRCErrorMessage;
             HttpLogError := StrSubstNo('HTTP error %1 (%2). %3', StatusCode, StatusReason, HttpError);
+            SendTraceTag('0000CCD', UKMakingTaxDigitalTok, VERBOSITY::Error, HttpLogError, DATACLASSIFICATION::SystemMetadata);
             exit(true);
         end;
 
+        SendTraceTag('0000CCF', UKMakingTaxDigitalTok, VERBOSITY::Error, CannotParseResponseErr, DATACLASSIFICATION::SystemMetadata);
         exit(false);
     end;
 

@@ -39,6 +39,9 @@ codeunit 9093 "Postcode GetAddress.io Upgrade"
         PostcodeSetup: Record "Postcode GetAddress.io Config";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetUKPostcodeSecretsToISUpgradeTag(), '') then
+            exit;
+
         if UpgradeTag.HasUpgradeTag(GetUKPostcodeSecretsToISUpgradeTag()) then
             exit;
 
@@ -60,6 +63,9 @@ codeunit 9093 "Postcode GetAddress.io Upgrade"
         IsolatedStorageValue: Text;
         ServicePasswordValue: Text;
     begin
+        if UpgradeTag.HasUpgradeTag(GetUKPostcodeSecretsToISValidationTag(), '') then
+            exit;
+
         if UpgradeTag.HasUpgradeTag(GetUKPostcodeSecretsToISValidationTag()) then
             exit;
 
@@ -75,21 +81,21 @@ codeunit 9093 "Postcode GetAddress.io Upgrade"
         UpgradeTag.SetUpgradeTag(GetUKPostcodeSecretsToISValidationTag());
     end;
 
-    local procedure GetUKPostcodeSecretsToISUpgradeTag(): Code[250]
+    internal procedure GetUKPostcodeSecretsToISUpgradeTag(): Code[250]
     begin
         exit('MS-328257-UKPostcodeSecretsToIS-20190925');
     end;
 
-    local procedure GetUKPostcodeSecretsToISValidationTag(): Code[250]
+    internal procedure GetUKPostcodeSecretsToISValidationTag(): Code[250]
     begin
         exit('MS-328257-UKPostcodeSecretsToIS-Validate-20190925');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerDatabaseUpgradeTags', '', false, false)]
-    local procedure RegisterPerDatabaseTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
-        PerDatabaseUpgradeTags.Add(GetUKPostcodeSecretsToISUpgradeTag());
-        PerDatabaseUpgradeTags.Add(GetUKPostcodeSecretsToISValidationTag());
+        PerCompanyUpgradeTags.Add(GetUKPostcodeSecretsToISUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetUKPostcodeSecretsToISValidationTag());
     end;
 }
 

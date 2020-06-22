@@ -36,6 +36,9 @@ codeunit 1851 "Sales Forecast Upgrade"
         SalesForecastSetup: Record "MS - Sales Forecast Setup";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetSalesForecastSecretsToISUpgradeTag(), '') then
+            exit;
+
         if UpgradeTag.HasUpgradeTag(GetSalesForecastSecretsToISUpgradeTag()) then
             exit;
 
@@ -57,6 +60,9 @@ codeunit 1851 "Sales Forecast Upgrade"
         IsolatedStorageValue: Text;
         ServicePasswordValue: Text;
     begin
+        if UpgradeTag.HasUpgradeTag(GetSalesForecastSecretsToISValidationTag(), '') then
+            exit;
+
         if UpgradeTag.HasUpgradeTag(GetSalesForecastSecretsToISValidationTag()) then
             exit;
 
@@ -72,21 +78,21 @@ codeunit 1851 "Sales Forecast Upgrade"
         UpgradeTag.SetUpgradeTag(GetSalesForecastSecretsToISValidationTag());
     end;
 
-    local procedure GetSalesForecastSecretsToISUpgradeTag(): Code[250]
+    internal procedure GetSalesForecastSecretsToISUpgradeTag(): Code[250]
     begin
         exit('MS-328257-SalesForecastSecretsToIS-20190925');
     end;
 
-    local procedure GetSalesForecastSecretsToISValidationTag(): Code[250]
+    internal procedure GetSalesForecastSecretsToISValidationTag(): Code[250]
     begin
         exit('MS-328257-SalesForecastSecretsToIS-Validate-20190925');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerDatabaseUpgradeTags', '', false, false)]
-    local procedure RegisterPerDatabaseTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
-        PerDatabaseUpgradeTags.Add(GetSalesForecastSecretsToISUpgradeTag());
-        PerDatabaseUpgradeTags.Add(GetSalesForecastSecretsToISValidationTag());
+        PerCompanyUpgradeTags.Add(GetSalesForecastSecretsToISUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetSalesForecastSecretsToISValidationTag());
     end;
 }
 

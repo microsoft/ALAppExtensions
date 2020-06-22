@@ -40,16 +40,22 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
         VerifySecretsUpgradeToIsolatedStorage();
     end;
 
-    local procedure UpdateDataExchangeDefinition();
+    procedure UpdateDataExchangeDefinition();
     var
         MSYodleeDataExchangeDef: Record 1452;
         MSYodleeBankServiceSetup: Record 1450;
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetYodleeUpdateDataExchangeDefinitionTag()) then
+            exit;
+
         MSYodleeDataExchangeDef.ResetDataExchToDefault();
 
         IF MSYodleeBankServiceSetup.GET() THEN
             IF MSYodleeBankServiceSetup."Bank Feed Import Format" = '' THEN
                 MSYodleeDataExchangeDef.UpdateMSYodleeBankServiceSetupBankStmtImportFormat();
+
+        UpgradeTag.SetUpgradeTag(GetYodleeUpdateDataExchangeDefinitionTag());
     end;
 
     local procedure CleanupYodleeBankAccountLink();
@@ -67,11 +73,15 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
             UNTIL MSYodleeBankAccLink.NEXT() = 0;
     end;
 
-    local procedure UpdateYodleeBankSession();
+    procedure UpdateYodleeBankSession();
     var
         MSYodleeBankServiceSetup: Record 1450;
         MSYodleeBankSession: Record 1453;
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetYodleeUpdateBankSessionTableTag()) then
+            exit;
+
         IF MSYodleeBankSession.GET() THEN
             EXIT;
 
@@ -81,6 +91,8 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
         MSYodleeBankSession.INIT();
         MSYodleeBankSession.TRANSFERFIELDS(MSYodleeBankServiceSetup);
         MSYodleeBankSession.INSERT();
+
+        UpgradeTag.SetUpgradeTag(GetYodleeUpdateBankSessionTableTag());
     end;
 
     local procedure UpgradeSecretsToIsolatedStorage()
@@ -88,6 +100,9 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
         YodleeServiceSetup: Record "MS - Yodlee Bank Service Setup";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetYodleeSecretsToISUpgradeTag(), '') then
+            exit;
+
         if UpgradeTag.HasUpgradeTag(GetYodleeSecretsToISUpgradeTag()) then
             exit;
 
@@ -109,6 +124,9 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
         YodleeServiceSetup: Record "MS - Yodlee Bank Service Setup";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetYodleeSecretsToISValidationTag(), '') then
+            exit;
+
         if UpgradeTag.HasUpgradeTag(GetYodleeSecretsToISValidationTag()) then
             exit;
 
@@ -177,21 +195,42 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
         end;
     end;
 
-    local procedure GetYodleeSecretsToISUpgradeTag(): Code[250]
+    internal procedure GetYodleeSecretsToISUpgradeTag(): Code[250]
     begin
         exit('MS-328257-YodleeSecretsToIS-20190925');
     end;
 
-    local procedure GetYodleeSecretsToISValidationTag(): Code[250]
+    internal procedure GetYodleeSecretsToISValidationTag(): Code[250]
     begin
         exit('MS-328257-YodleeSecretsToIS-Validate-20190925');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerDatabaseUpgradeTags', '', false, false)]
-    local procedure RegisterPerDatabaseTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    local procedure GetYodleeUpdateBankSessionTableTag(): Code[250]
     begin
-        PerDatabaseUpgradeTags.Add(GetYodleeSecretsToISUpgradeTag());
-        PerDatabaseUpgradeTags.Add(GetYodleeSecretsToISValidationTag());
+        exit('YodleeUpdateBankSession-20200221');
+    end;
+
+    local procedure GetYodleeUpdateDataExchangeDefinitionTag(): Code[250]
+    begin
+        exit('YodleeUpdateDataExchangeDefinition-20200221');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    local procedure RegisterPerCompanyags(var PerCompanyUpgradeTags: List of [Code[250]])
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if not UpgradeTag.HasUpgradeTag(GetYodleeSecretsToISUpgradeTag()) then
+            PerCompanyUpgradeTags.Add(GetYodleeSecretsToISUpgradeTag());
+
+        if not UpgradeTag.HasUpgradeTag(GetYodleeSecretsToISValidationTag()) then
+            PerCompanyUpgradeTags.Add(GetYodleeSecretsToISValidationTag());
+
+        if not UpgradeTag.HasUpgradeTag(GetYodleeUpdateBankSessionTableTag()) then
+            PerCompanyUpgradeTags.Add(GetYodleeUpdateBankSessionTableTag());
+
+        if not UpgradeTag.HasUpgradeTag(GetYodleeUpdateDataExchangeDefinitionTag()) then
+            PerCompanyUpgradeTags.Add(GetYodleeUpdateDataExchangeDefinitionTag());
     end;
 }
 

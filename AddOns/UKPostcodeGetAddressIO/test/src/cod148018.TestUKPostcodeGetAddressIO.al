@@ -57,7 +57,7 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
     begin
         Initialize();
         LibraryLowerPermissions.SetO365Basic();
-        LibraryVariableStorage.Enqueue('The getAddress.io service is currently unavailable.');
+        LibraryVariableStorage.Enqueue('The getAddress.io service is not available right now. Try again later.');
         GeneralTestGetAddressIO('NOTAVAILABLE', '', 0);
     end;
 

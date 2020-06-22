@@ -1,6 +1,6 @@
 page 20105 "AMC Bank Assisted Setup"
 {
-    Caption = 'AMC Banking 365 Foundation Assisted Setup';
+    Caption = 'AMC Banking 365 Fundamentals Assisted Setup';
     DeleteAllowed = false;
     InsertAllowed = false;
     LinksAllowed = false;
@@ -51,14 +51,14 @@ page 20105 "AMC Bank Assisted Setup"
                     group("Para1.1.1")
                     {
                         Caption = ' ';
-                        InstructionalText = 'The AMC Banking 365 Foundation extension saves you time and reduces errors when you send data to your bank. The extension uses the AMC Banking 365 Business service to transform data from Microsoft Dynamics 365 Business Central into formats that banks require. You specify the bank, and the extension does the rest. For more information, see the documentation.';
+                        InstructionalText = 'The AMC Banking 365 Fundamentals extension saves you time and reduces errors when you send data to your bank. The extension uses the AMC Banking 365 Business service to transform data from Microsoft Dynamics 365 Business Central into formats that banks require. You specify the bank, and the extension does the rest. For more information, see the documentation.';
                     }
-                    field(AMCBankingHelpLink; 'AMC Banking 365 Foundation documentation')
+                    field(AMCBankingHelpLink; 'AMC Banking 365 Fundamentals documentation')
                     {
                         ApplicationArea = Basic, Suite;
                         ShowCaption = false;
                         Editable = false;
-                        ToolTip = 'AMC Banking 365 Foundation documentation';
+                        ToolTip = 'AMC Banking 365 Fundamentals documentation';
 
                         trigger OnDrillDown()
                         begin
@@ -73,12 +73,12 @@ page 20105 "AMC Bank Assisted Setup"
                         MultiLine = true;
                         ToolTip = 'By enabling this extension you consent to sharing your data with an external system. Your use of this extension may be subject to additional licensing terms from AMC. To enable the service you must read and accept the terms of use.';
                     }
-                    field(TermsOfUseLink; 'AMC Banking 365 Foundation terms of use')
+                    field(TermsOfUseLink; 'AMC Banking 365 Fundamentals terms of use')
                     {
                         ApplicationArea = Basic, Suite;
                         ShowCaption = false;
                         Editable = false;
-                        ToolTip = 'AMC Banking 365 Foundation terms of use';
+                        ToolTip = 'AMC Banking 365 Fundamentals terms of use';
 
                         trigger OnDrillDown()
                         begin
@@ -761,7 +761,10 @@ page 20105 "AMC Bank Assisted Setup"
         ErrorVisible := false;
 
         //Get TempOnlineBankAccLink from page AMCBankAssistBankAccount, if setup
-        CurrPage.AMCBankAssistBankAccount.Page.GetRecs(TempOnlineBankAccLink);
+        if Step = Step::Done then
+            CurrPage.AMCBankAssistBankAccount.Page.ClearRecs()
+        else
+            CurrPage.AMCBankAssistBankAccount.Page.GetRecs(TempOnlineBankAccLink);
     end;
 
     local procedure NextStep(Backwards: Boolean);
@@ -1107,7 +1110,7 @@ page 20105 "AMC Bank Assisted Setup"
         if (not UpdALL) then
             CurrPage.AMCBankAssistBankAccount.Page.GetRecs(TempOnlineBankAccLink);
 
-        BasisSetupRanOK := AMCBankAssistedMgt.RunBasisSetup(UpdURLBoolean, URLSChanged, SignupURLText, ServiceURLText, SupportURLText, UpdBankBoolean, UpdPayMethBoolean, BankCountryCodeCode, PaymCountryCodeCode,
+        BasisSetupRanOK := AMCBankAssistedMgt.RunBasisSetupV162(UpdURLBoolean, URLSChanged, SignupURLText, ServiceURLText, SupportURLText, UpdBankBoolean, UpdPayMethBoolean, BankCountryCodeCode, PaymCountryCodeCode,
                                                             UpdDataExchDefBoolean, BANKDATACONVSERVCTBoolean, BANKDATACONVSERVPPBoolean, BANKDATACONVSERVSTMTBoolean, BANKDATACONVSERVCREMBoolean, ApplVerText, BuildNoText,
                                                             UpdBankClearStdBoolean, UpdBankAccountsBoolean, TempOnlineBankAccLink, CallLicenseServer);
 

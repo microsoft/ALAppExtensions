@@ -607,6 +607,9 @@ page 1830 "MS - QBO Data Migration"
             CallBackUrl := CallBackUrl.TrimEnd('/');
         end;
 
+        if IsGuid(CallBackUrl.Substring(CallBackUrl.LastIndexOf('/') + 1, 36)) then
+            CallBackUrl := CallBackUrl.TrimEnd(CallBackUrl.Substring(CallBackUrl.LastIndexOf('/'), 37));
+
         exit(CallBackUrl);
     end;
 
@@ -615,5 +618,14 @@ page 1830 "MS - QBO Data Migration"
         MigrationQBConfig: Record "MigrationQB Config";
     begin
         MigrationQBConfig.DeleteAll();
+    end;
+
+    [TryFunction]
+    [Scope('OnPrem')]
+    local procedure IsGuid(StringToTest: Text[36])
+    var
+        GuidTest: Guid;
+    begin
+        Evaluate(GuidTest, StringToTest);
     end;
 }

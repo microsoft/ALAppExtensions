@@ -11,11 +11,14 @@ codeunit 11021 "Elster - Initialize"
         XVATADVANCENOTIFICATIONTxt: Label 'VAT Advance Notification';
 
     trigger OnInstallAppPerCompany()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
         if not InitializeDone() then
             exit;
 
         CompanyInitialize();
+        UpgradeTag.SetAllUpgradeTags();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

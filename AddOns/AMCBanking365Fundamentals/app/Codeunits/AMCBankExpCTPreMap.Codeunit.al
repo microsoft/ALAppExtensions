@@ -14,6 +14,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
 
     local procedure FillExportBuffer(DataExchEntryNo: Integer)
     var
+        GenJnlLinePerBnkAcc: Record "Gen. Journal Line";
         GenJnlLine: Record "Gen. Journal Line";
         CustLedgEntry: Record "Cust. Ledger Entry";
         VendLedgEntry: Record "Vendor Ledger Entry";
@@ -31,105 +32,117 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
         MessageID: Text[20];
         LineNo: Integer;
         SpecLineNo: Integer;
+        PrevBankAccount: Code[20];
     begin
         GeneralLedgerSetup.Get();
         CompanyInformation.Get();
 
-        GenJnlLine.SetRange("Data Exch. Entry No.", DataExchEntryNo);
-        with PaymentExportData do begin
-            GenJnlLine.FindSet();
-            GenJnlLine.TestField("Bal. Account Type", GenJnlLine."Bal. Account Type"::"Bank Account");
-            BankAccount.Get(GenJnlLine."Bal. Account No.");
-            BankAccount.TestField("AMC Bank Name");
-            BankAccount.GetBankExportImportSetup(BankExportImportSetup);
-            MessageID := BankAccount.GetCreditTransferMessageNo();
-            Window.Open(ProgressMsg);
-
+        GenJnlLinePerBnkAcc.SetCurrentKey("Data Exch. Entry No.", "Bal. Account No.");
+        GenJnlLinePerBnkAcc.SetRange("Data Exch. Entry No.", DataExchEntryNo);
+        GenJnlLinePerBnkAcc.SetRange("Data Exch. Entry No.", DataExchEntryNo);
+        if (GenJnlLinePerBnkAcc.FindSet()) then
             repeat
-                Clear(PaymentExportData);
-                Init();
-                SetPreserveNonLatinCharacters(BankExportImportSetup."Preserve Non-Latin Characters");
-                LineNo += 1;
-                "Line No." := LineNo;
-                "Data Exch Entry No." := DataExchEntryNo;
-                "Creditor No." := BankAccount."Creditor No.";
-                "Transit No." := BankAccount."Transit No.";
-                "General Journal Template" := GenJnlLine."Journal Template Name";
-                "General Journal Batch Name" := GenJnlLine."Journal Batch Name";
-                "General Journal Line No." := GenJnlLine."Line No.";
-                "Recipient ID" := GenJnlLine."Account No.";
-                "Message ID" := MessageID;
-                "Document No." := GenJnlLine."Document No.";
-                "End-to-End ID" := "Message ID" + '/' + Format("Line No.") + 'US'; // Making uniq key we added US, because we want to use the same for Payment Information Id for later use.
-                "Payment Information ID" := "Message ID" + '/' + FORMAT("Line No.") + 'TH'; // Making uniq key we added TH, because we want to use the same for End-to-end Id for later use.
-                "Applies-to Ext. Doc. No." := GenJnlLine."Applies-to Ext. Doc. No.";
-                "Short Advice" := GenJnlLine."Document No.";
-                "Recipient Creditor No." := GenJnlLine."Creditor No.";
+                if (PrevBankAccount <> GenJnlLinePerBnkAcc."Bal. Account No.") then begin
+                    PrevBankAccount := GenJnlLinePerBnkAcc."Bal. Account No.";
+                    GenJnlLine.SetRange("Data Exch. Entry No.", DataExchEntryNo);
+                    GenJnlLine.SetRange("Bal. Account No.", PrevBankAccount);
+                    with PaymentExportData do begin
+                        GenJnlLine.FindSet();
+                        GenJnlLine.TestField("Bal. Account Type", GenJnlLine."Bal. Account Type"::"Bank Account".AsInteger());
+                        BankAccount.Get(GenJnlLine."Bal. Account No.");
+                        BankAccount.TestField("AMC Bank Name");
+                        BankAccount.GetBankExportImportSetup(BankExportImportSetup);
+                        MessageID := BankAccount.GetCreditTransferMessageNo();
+                        Window.Open(ProgressMsg);
 
-                "Invoice Amount" := ABS(GenJnlLine.Amount);
-                "Invoice Date" := GenJnlLine."Posting Date";
+                        repeat
+                            Clear(PaymentExportData);
+                            Init();
+                            SetPreserveNonLatinCharacters(BankExportImportSetup."Preserve Non-Latin Characters");
+                            LineNo += 1;
+                            "Line No." := LineNo;
+                            "Data Exch Entry No." := DataExchEntryNo;
+                            "Creditor No." := BankAccount."Creditor No.";
+                            "Transit No." := BankAccount."Transit No.";
+                            "General Journal Template" := GenJnlLine."Journal Template Name";
+                            "General Journal Batch Name" := GenJnlLine."Journal Batch Name";
+                            "General Journal Line No." := GenJnlLine."Line No.";
+                            "Recipient ID" := GenJnlLine."Account No.";
+                            "Message ID" := MessageID;
+                            "Document No." := GenJnlLine."Document No.";
+                            "End-to-End ID" := "Message ID" + '/' + Format("Line No.") + 'US'; // Making uniq key we added US, because we want to use the same for Payment Information Id for later use.
+                            "Payment Information ID" := "Message ID" + '/' + FORMAT("Line No.") + 'TH'; // Making uniq key we added TH, because we want to use the same for End-to-end Id for later use.
+                            "Applies-to Ext. Doc. No." := GenJnlLine."Applies-to Ext. Doc. No.";
+                            "Short Advice" := GenJnlLine."Document No.";
+                            "Recipient Creditor No." := GenJnlLine."Creditor No.";
 
-                case GenJnlLine."Account Type" of
-                    GenJnlLine."Account Type"::Customer:
-                        begin
-                            Customer.Get(GenJnlLine."Account No.");
-                            if CustomerBankAccount.Get(Customer."No.", GenJnlLine."Recipient Bank Account") then
-                                SetCustomerAsRecipient(Customer, CustomerBankAccount);
-                            if CustLedgEntry.Get(GenJnlLine.GetAppliesToDocEntryNo()) then begin
-                                CustLedgEntry.CalcFields("Original Amount");
-                                "Invoice Amount" := Abs(CustLedgEntry."Original Amount");
-                                "Invoice Date" := CustLedgEntry."Document Date";
-                            end
-                        end;
-                    GenJnlLine."Account Type"::Vendor:
-                        begin
-                            Vendor.Get(GenJnlLine."Account No.");
-                            if VendorBankAccount.Get(Vendor."No.", GenJnlLine."Recipient Bank Account") then
-                                SetVendorAsRecipient(Vendor, VendorBankAccount);
-                            if VendLedgEntry.Get(GenJnlLine.GetAppliesToDocEntryNo()) then begin
-                                VendLedgEntry.CalcFields("Original Amount");
-                                "Invoice Amount" := Abs(VendLedgEntry."Original Amount");
-                                "Invoice Date" := VendLedgEntry."Document Date";
-                            end
-                        end;
-                    GenJnlLine."Account Type"::Employee:
-                        begin
-                            Employee.Get(GenJnlLine."Account No.");
-                            SetEmployeeAsRecipient(Employee);
-                        end;
+                            "Invoice Amount" := ABS(GenJnlLine.Amount);
+                            "Invoice Date" := GenJnlLine."Posting Date";
+
+                            case GenJnlLine."Account Type" of
+                                GenJnlLine."Account Type"::Customer:
+                                    begin
+                                        Customer.Get(GenJnlLine."Account No.");
+                                        if CustomerBankAccount.Get(Customer."No.", GenJnlLine."Recipient Bank Account") then
+                                            SetCustomerAsRecipient(Customer, CustomerBankAccount);
+                                        if CustLedgEntry.Get(GenJnlLine.GetAppliesToDocEntryNo()) then begin
+                                            CustLedgEntry.CalcFields("Original Amount");
+                                            "Invoice Amount" := Abs(CustLedgEntry."Original Amount");
+                                            "Invoice Date" := CustLedgEntry."Document Date";
+                                        end
+                                    end;
+                                GenJnlLine."Account Type"::Vendor:
+                                    begin
+                                        Vendor.Get(GenJnlLine."Account No.");
+                                        if VendorBankAccount.Get(Vendor."No.", GenJnlLine."Recipient Bank Account") then
+                                            SetVendorAsRecipient(Vendor, VendorBankAccount);
+                                        if VendLedgEntry.Get(GenJnlLine.GetAppliesToDocEntryNo()) then begin
+                                            VendLedgEntry.CalcFields("Original Amount");
+                                            "Invoice Amount" := Abs(VendLedgEntry."Original Amount");
+                                            "Invoice Date" := VendLedgEntry."Document Date";
+                                        end
+                                    end;
+                                GenJnlLine."Account Type"::Employee:
+                                    begin
+                                        Employee.Get(GenJnlLine."Account No.");
+                                        SetEmployeeAsRecipient(Employee);
+                                    end;
+                            end;
+
+                            GenJnlLine.TestField("Payment Method Code");
+                            PaymentMethod.Get(GenJnlLine."Payment Method Code");
+                            "Data Exch. Line Def Code" := PaymentMethod."Pmt. Export Line Definition";
+                            "Payment Type" := PaymentMethod."AMC Bank Pmt. Type";
+                            "Payment Reference" := GenJnlLine."Payment Reference";
+                            "Message to Recipient 1" := CopyStr(GenJnlLine."Message to Recipient", 1, 35);
+                            "Message to Recipient 2" := CopyStr(GenJnlLine."Message to Recipient", 36, 70);
+                            Amount := GenJnlLine.Amount;
+                            if (GenJnlLine."Currency Code" <> '') then // This is to handle BC users that by mistake has set CurrencyCode to the same as GeneralLedgerSetup."LCY Code"
+                                "Currency Code" := GenJnlLine."Currency Code"
+                            else
+                                "Currency Code" := GeneralLedgerSetup.GetCurrencyCode(GenJnlLine."Currency Code");
+
+                            "Transfer Date" := GenJnlLine."Posting Date";
+                            "Costs Distribution" := 'Shared';
+                            "Message Structure" := 'auto';
+                            "Own Address Info." := 'frombank';
+                            SetBankAsSenderBank(BankAccount);
+                            "Sender Bank Name - Data Conv." := BankAccount."AMC Bank Name"; // Moved here from above function SetBankAsSenderBank
+                            "Sender Bank Country/Region" := CompanyInformation.GetCountryRegionCode(BankAccount."Country/Region Code");
+                            "Sender Bank Account Currency" := GeneralLedgerSetup.GetCurrencyCode(BankAccount."Currency Code");
+                            "Importing Code" := 'FALSE'; //Never send chequeinfo in XMLPORT 20100, only used for Positive Pay
+                            SetIsoCodeValues(PaymentExportData);
+
+                            OnBeforeInsertPaymentExoprtData(PaymentExportData, GenJnlLine, GeneralLedgerSetup);
+
+                            Insert(true);
+                            MakeBankSpecTrans(PaymentExportData, GenJnlLine, SpecLineNo); // Make banktransspec in Table 1206 for use in XMLPORT 51232
+                            Window.Update(1, LineNo);
+                        until GenJnlLine.Next() = 0;
+                    end;
                 end;
+            until GenJnlLinePerBnkAcc.Next() = 0;
 
-                GenJnlLine.TestField("Payment Method Code");
-                PaymentMethod.Get(GenJnlLine."Payment Method Code");
-                "Data Exch. Line Def Code" := PaymentMethod."Pmt. Export Line Definition";
-                "Payment Type" := PaymentMethod."AMC Bank Pmt. Type";
-                "Payment Reference" := GenJnlLine."Payment Reference";
-                "Message to Recipient 1" := CopyStr(GenJnlLine."Message to Recipient", 1, 35);
-                "Message to Recipient 2" := CopyStr(GenJnlLine."Message to Recipient", 36, 70);
-                Amount := GenJnlLine.Amount;
-                if (GenJnlLine."Currency Code" <> '') then // This is to handle BC users that by mistake has set CurrencyCode to the same as GeneralLedgerSetup."LCY Code"
-                    "Currency Code" := GenJnlLine."Currency Code"
-                else
-                    "Currency Code" := GeneralLedgerSetup.GetCurrencyCode(GenJnlLine."Currency Code");
-
-                "Currency Code" := GeneralLedgerSetup.GetCurrencyCode(GenJnlLine."Currency Code");
-                "Transfer Date" := GenJnlLine."Posting Date";
-                "Costs Distribution" := 'Shared';
-                "Message Structure" := 'auto';
-                "Own Address Info." := 'frombank';
-                SetBankAsSenderBank(BankAccount);
-                "Sender Bank Name - Data Conv." := BankAccount."AMC Bank Name"; // Moved here from above function SetBankAsSenderBank
-                "Sender Bank Country/Region" := CompanyInformation.GetCountryRegionCode(BankAccount."Country/Region Code");
-                "Sender Bank Account Currency" := GeneralLedgerSetup.GetCurrencyCode(BankAccount."Currency Code");
-                "Importing Code" := 'FALSE'; //Never send chequeinfo in XMLPORT 20100, only used for Positive Pay
-
-                OnBeforeInsertPaymentExoprtData(PaymentExportData, GenJnlLine, GeneralLedgerSetup);
-
-                Insert(true);
-                MakeBankSpecTrans(PaymentExportData, GenJnlLine, SpecLineNo); // Make banktransspec in Table 1206 for use in XMLPORT 51232
-                Window.Update(1, LineNo);
-            until GenJnlLine.Next() = 0;
-        end;
 
         Window.Close();
     end;
@@ -149,7 +162,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                 repeat
                     SpecLineNo += 1;
                     CreditTransferEntry.CreateNew(CreditTransferRegister."No.", SpecLineNo,
-                        GenJournalLine."Account Type", GenJournalLine."Account No.", CVLedgerEntryBuffer."Entry No.",
+                        GenJournalLine."Account Type".AsInteger(), GenJournalLine."Account No.", CVLedgerEntryBuffer."Entry No.",
                         GenJournalLine."Posting Date", GenJournalLine."Currency Code", CVLedgerEntryBuffer."Remaining Amount", PaymentExportData."Payment Information ID",
                         GenJournalLine."Recipient Bank Account", CVLedgerEntryBuffer."External Document No.");
 
@@ -161,6 +174,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                         CreditTransferEntry."Data Exch. Entry No." := GenJournalLine."Data Exch. Entry No.";
                         CreditTransferEntry."Pmt. Disc. Possible" := CVLedgerEntryBuffer."Remaining Pmt. Disc. Possible";
                         CreditTransferEntry.Modify();
+                        OnAfterMakeBankSpecTrans(PaymentExportData, GenJournalLine, SpecLineNo, CreditTransferRegister, CreditTransferEntry, CVLedgerEntryBuffer);
                     end;
                     CVLedgerEntryBuffer.Delete(false);
                 until CVLedgerEntryBuffer.Next() = 0;
@@ -168,7 +182,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
         else begin //Only one banktransspec
             SpecLineNo += 1;
             CreditTransferEntry.CreateNew(CreditTransferRegister."No.", SpecLineNo,
-                GenJournalLine."Account Type", GenJournalLine."Account No.", GenJournalLine.GetAppliesToDocEntryNo(),
+                GenJournalLine."Account Type".AsInteger(), GenJournalLine."Account No.", GenJournalLine.GetAppliesToDocEntryNo(),
                 GenJournalLine."Posting Date", GenJournalLine."Currency Code", GenJournalLine.Amount, PaymentExportData."Payment Information ID",
                 GenJournalLine."Recipient Bank Account", GenJournalLine."Message to Recipient");
 
@@ -180,6 +194,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                 CreditTransferEntry."Data Exch. Entry No." := GenJournalLine."Data Exch. Entry No.";
                 CreditTransferEntry."Pmt. Disc. Possible" := 0;
                 CreditTransferEntry.Modify();
+                OnAfterMakeBankSpecTrans(PaymentExportData, GenJournalLine, SpecLineNo, CreditTransferRegister, CreditTransferEntry, CVLedgerEntryBuffer);
             end;
         end;
     end;
@@ -268,8 +283,47 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                 end;
     end;
 
+    //Always use Isocode as value for Country/Region and Currency
+    local procedure SetIsoCodeValues(var PaymentExportData: Record "Payment Export Data")
+    var
+        Currency: Record Currency;
+        CountryRegion: Record "Country/Region";
+    begin
+
+        Clear(Currency);
+        if (PaymentExportData."Currency Code" <> '') then
+            if (Currency.get(PaymentExportData."Currency Code")) then
+                PaymentExportData."Currency Code" := Currency."ISO Code";
+
+        Clear(Currency);
+        if (PaymentExportData."Sender Bank Account Currency" <> '') then
+            if (Currency.get(PaymentExportData."Sender Bank Account Currency")) then
+                PaymentExportData."Sender Bank Account Currency" := Currency."ISO Code";
+
+        Clear(CountryRegion);
+        if (PaymentExportData."Sender Bank Country/Region" <> '') then
+            if (CountryRegion.Get(PaymentExportData."Sender Bank Country/Region")) then
+                PaymentExportData."Sender Bank Country/Region" := CountryRegion."ISO Code";
+
+        Clear(CountryRegion);
+        if (PaymentExportData."Recipient Country/Region Code" <> '') then
+            if (CountryRegion.Get(PaymentExportData."Recipient Country/Region Code")) then
+                PaymentExportData."Recipient Country/Region Code" := CountryRegion."ISO Code";
+
+        Clear(CountryRegion);
+        if (PaymentExportData."Recipient Bank Country/Region" <> '') then
+            if (CountryRegion.Get(PaymentExportData."Recipient Bank Country/Region")) then
+                PaymentExportData."Recipient Bank Country/Region" := CountryRegion."ISO Code";
+    end;
+
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertPaymentExoprtData(var PaymentExportData: Record "Payment Export Data"; GenJournalLine: Record "Gen. Journal Line"; GeneralLedgerSetup: Record "General Ledger Setup")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnAfterMakeBankSpecTrans(PaymentExportData: Record "Payment Export Data"; GenJournalLine: Record "Gen. Journal Line"; SpecLineNo: Integer; CreditTransferRegister: Record "Credit Transfer Register"; VAR CreditTransferEntry: Record "Credit Transfer Entry"; CVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary)
     begin
     end;
 }

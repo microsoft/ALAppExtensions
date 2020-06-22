@@ -81,6 +81,16 @@ page 10687 "SAF-T Export Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the date and time when the SAF-T file generation was completed.';
                 }
+                field(LatestDataCheckDateTime; "Latest Data Check Date/Time")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies when the most recent data check was run.';
+                }
+                field(DataCheckStatus; "Data check status")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the status of the most recent data check.';
+                }
             }
             part(ExportLines; "SAF-T Export Subpage")
             {
@@ -94,6 +104,17 @@ page 10687 "SAF-T Export Card"
     {
         area(Processing)
         {
+            action(DataCheck)
+            {
+                ApplicationArea = Basic, Suite;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = True;
+                Image = CheckRulesSyntax;
+                Caption = 'Data check';
+                ToolTip = 'Check that data is ready to be exported to the SAF-T file.';
+                RunObject = Codeunit "SAF-T Data Check";
+            }
             action(Start)
             {
                 ApplicationArea = Basic, Suite;

@@ -20,6 +20,7 @@ codeunit 148102 "SAF-T Unit Tests"
         MatchChartOfAccountsQst: Label 'Do you want to match a chart of accounts with SAF-T standard account codes?';
         CreateChartOfAccountsQst: Label 'Do you want to create a chart of accounts based on SAF-T standard account codes?';
         StandardAccountsMatchedMsg: Label '%1 of %2 standard accounts have been automatically matched to the chart of accounts.', Comment = '%1,%2 = both integer values';
+        OverwriteMappingQst: Label 'Do you want to change the already defined G/L account mapping to the new mapping?';
 
     [Test]
     procedure VATPostingSetupHasTaxCodesOnInsert()
@@ -344,6 +345,77 @@ codeunit 148102 "SAF-T Unit Tests"
 
         SAFTGLAccountMapping.Get(SAFTMappingRange.Code, GLAccount."No.");
         SAFTGLAccountMapping.TestField("G/L Entries Exists");
+    end;
+
+    [Test]
+    procedure MappingNoClearsOnCategoryNoValidateInSAFTGLAccountMappingTable()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        SAFTMapping: Record "SAF-T Mapping";
+        GLAccount: Record "G/L Account";
+        SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
+    begin
+        // [SCENARIO 352458] Stan gets the blank "No." after validation of "Category No." in the "SAF-T G/L Account Mapping" table
+
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        GLAccount.Validate("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
+        GLAccount.Modify(true);
+        SAFTTestHelper.InsertSAFTMappingRangeWithSource(
+            SAFTMappingRange, SAFTMappingRange."Mapping Type"::"Four Digit Standard Account",
+            CalcDate('<-CY>', WorkDate()), CalcDate('<-CY>', WorkDate()));
+        SAFTMappingHelper.Run(SAFTMappingRange);
+        SAFTMapping.SetRange("Mapping Type", SAFTMappingRange."Mapping Type");
+        SAFTMapping.FindSet();
+        SAFTGLAccountMapping.Get(SAFTMappingRange.Code, GLAccount."No.");
+        SAFTGLAccountMapping.Validate("Category No.", SAFTMapping."Category No.");
+        SAFTGLAccountMapping.Validate("No.", SAFTMapping."No.");
+        SAFTMapping.SetFilter("Category No.", '<>%1', SAFTMapping."Category No.");
+        SAFTMapping.Next();
+        SAFTGLAccountMapping.Validate("Category No.", SAFTMapping."Category No.");
+        SAFTGLAccountMapping.TestField("No.", '');
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure MappingNosInSAFTMappingRangeTable()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        SAFTMapping: Record "SAF-T Mapping";
+        GLAccount: Record "G/L Account";
+        SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
+    begin
+        // [SCENARIO 352458] Stan can specify the mapping nos. in the "SAF-T Mapping Range" table and it reflects on the "SAF-T G/L Account Mapping" table
+
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        GLAccount.Validate("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
+        GLAccount.Modify(true);
+        SAFTTestHelper.InsertSAFTMappingRangeWithSource(
+            SAFTMappingRange, SAFTMappingRange."Mapping Type"::"Four Digit Standard Account",
+            CalcDate('<-CY>', WorkDate()), CalcDate('<-CY>', WorkDate()));
+        SAFTMappingHelper.Run(SAFTMappingRange);
+        SAFTMapping.SetRange("Mapping Type", SAFTMappingRange."Mapping Type");
+        SAFTMapping.FindSet();
+
+        LibraryVariableStorage.Enqueue(OverwriteMappingQst);
+        SAFTMappingRange.Validate("Mapping Category No.", SAFTGLAccountMapping."Category No.");
+        LibraryVariableStorage.Enqueue(OverwriteMappingQst);
+        SAFTMappingRange.Validate("Mapping No.", SAFTGLAccountMapping."No.");
+
+        SAFTGLAccountMapping.Get(SAFTMappingRange.Code, GLAccount."No.");
+        SAFTGLAccountMapping.TestField("Category No.", SAFTMappingRange."Mapping Category No.");
+        SAFTGLAccountMapping.TestField("No.", SAFTMappingRange."Mapping No.");
+
+        LibraryVariableStorage.Enqueue(OverwriteMappingQst);
+        SAFTMappingRange.Validate("Mapping Category No.", '');
+        SAFTGLAccountMapping.Find();
+        SAFTGLAccountMapping.TestField("Category No.", '');
+        SAFTGLAccountMapping.TestField("No.", '');
+
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure Initialize()

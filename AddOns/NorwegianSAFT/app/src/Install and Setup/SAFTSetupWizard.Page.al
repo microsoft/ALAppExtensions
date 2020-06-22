@@ -392,8 +392,11 @@ page 10674 "SAF-T Setup Wizard"
 
     trigger OnOpenPage();
     var
+        SAFTSetup: Record "SAF-T Setup";
         SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
     begin
+        if not SAFTSetup.Get() then
+            SAFTSetup.Insert();
         SAFTMappingHelper.GetDefaultSAFTMappingRange(Rec);
         SetRecFilter();
         CompanyInformation.Get();

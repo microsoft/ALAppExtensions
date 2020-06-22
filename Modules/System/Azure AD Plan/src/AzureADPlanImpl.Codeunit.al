@@ -35,6 +35,9 @@ codeunit 9018 "Azure AD Plan Impl."
         UserDoesNotExistTxt: Label 'User with user SID %1 does not exist or does not have an authentication object ID', Locked = true;
         UsersWithMixedPlansTxt: Label 'Check for mixed plans. First conflicting user: [%1], second conflicting user [%3].', Locked = true;
         CheckingForMixedPlansTxt: Label 'Checking for mixed plans...', Locked = true;
+        BasicPlanNameTxt: Label 'D365 Business Central Basic Financials', Locked = true;
+        EssentialsPlanNameTxt: Label 'Dynamics 365 Business Central Essential', Locked = true;
+        PremiumPlanNameTxt: Label 'Dynamics 365 Business Central Premium', Locked = true;
 
     procedure IsPlanAssigned(PlanGUID: Guid): Boolean
     var
@@ -318,18 +321,36 @@ codeunit 9018 "Azure AD Plan Impl."
         end;
     end;
 
+    local procedure GetPlanName(PlanId: Guid) PlanName: Text
+    var
+        PlanIds: Codeunit "Plan Ids";
+    begin
+        case PlanId of
+            PlanIds.GetBasicPlanId():
+                PlanName := BasicPlanNameTxt;
+            PlanIds.GetEssentialPlanId():
+                PlanName := EssentialsPlanNameTxt;
+            PlanIds.GetPremiumPlanId():
+                PlanName := PremiumPlanNameTxt;
+        end;
+    end;
+
     local procedure PlansExist(var PlanNamesPerUser: Dictionary of [Text, List of [Text]]; PlanId: Guid; var AuthenticationObjectIDs: List of [Text]; var PlanNames: List of [Text]): Boolean
     var
         Plan: Record Plan;
         CurrentAuthenticationObjectId: Text;
         PlanNameList: List of [Text];
+        PlanName: Text;
     begin
-        Plan.Get(PlanId);
+        if Plan.Get(PlanId) then
+            PlanName := Plan.Name
+        else
+            PlanName := GetPlanName(PlanId);
         foreach CurrentAuthenticationObjectId in PlanNamesPerUser.Keys() do begin
             PlanNameList := PlanNamesPerUser.Get(CurrentAuthenticationObjectId);
-            if PlanNameList.Contains(Plan.Name) then begin
+            if PlanNameList.Contains(PlanName) then begin
                 AuthenticationObjectIDs.Add(CurrentAuthenticationObjectId);
-                PlanNames.Add(Plan.Name);
+                PlanNames.Add(PlanName);
                 exit(true);
             end;
         end;

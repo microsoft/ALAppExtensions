@@ -21,6 +21,8 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
 
         SalesCrMemoHeader."OIOUBL-Electronic Credit Memo Created" := true;
         SalesCrMemoHeader.Modify();
+
+        Codeunit.Run(Codeunit::"Sales Cr. Memo-Printed", SalesCrMemoHeader);
     end;
 
     var
@@ -63,6 +65,8 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         SalesCrMemoHeader2.Get(SalesCrMemoHeader."No.");
         SalesCrMemoHeader2."OIOUBL-Electronic Credit Memo Created" := true;
         SalesCrMemoHeader2.Modify();
+
+        Codeunit.Run(Codeunit::"Sales Cr. Memo-Printed", SalesCrMemoHeader2);
     end;
 
     local procedure InsertDiscrepancyResponse(var CrMemoElement: XmlElement);

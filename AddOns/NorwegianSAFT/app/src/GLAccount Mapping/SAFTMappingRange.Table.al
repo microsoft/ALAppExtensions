@@ -95,6 +95,31 @@ table 10676 "SAF-T Mapping Range"
             DataClassification = CustomerContent;
             Caption = 'Include Incoming Balance';
         }
+        field(8; "Mapping Category No."; Code[20])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Mapping Category No.';
+            TableRelation = "SAF-T Mapping Category"."No." where ("Mapping Type" = field ("Mapping Type"));
+
+            trigger OnValidate()
+            begin
+                "Mapping No." := '';
+                UpdateGLAccountMapping(FieldNo("Mapping Category No."));
+            end;
+        }
+        field(9; "Mapping No."; Code[20])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Mapping No.';
+            TableRelation = "SAF-T Mapping"."No." where ("Mapping Type" = field ("Mapping Type"), "Category No." = field ("Mapping Category No."));
+
+            trigger OnValidate()
+            begin
+                if "Mapping No." <> '' then
+                    TestField("Mapping Category No.");
+                UpdateGLAccountMapping(FieldNo("Mapping No."));
+            end;
+        }
     }
 
     keys
@@ -118,21 +143,23 @@ table 10676 "SAF-T Mapping Range"
         MappingExistQst: Label 'One or more G/L Account already mapped. Do you want to remove the mapping range?';
         SAFTExportsExistsErr: Label 'One or more SAF-T exports exist for the mapping range. Do you want to remove the mapping range?';
         CannotSelectAccPeriodWithoutEndingDateErr: Label 'You cannot select the accounting period that does not have the ending date.';
+        OverwriteMappingQst: Label 'Do you want to change the already defined G/L account mapping to the new mapping?';
 
     trigger OnDelete()
     var
         SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
         SAFTExportHeader: Record "SAF-T Export Header";
+        ConfirmMgt: Codeunit "Confirm Management";
     begin
         SAFTExportHeader.SetRange("Mapping Range Code", Code);
         if not SAFTExportHeader.IsEmpty() then
-            if Confirm(SAFTExportsExistsErr) then
+            if ConfirmMgt.GetResponseOrDefault(SAFTExportsExistsErr, false) then
                 SAFTExportHeader.DeleteAll(true)
             else
                 Error('');
         SAFTGLAccountMapping.SetRange("Mapping Range Code", Code);
         if not SAFTGLAccountMapping.IsEmpty() then
-            if Confirm(MappingExistQst) then
+            if ConfirmMgt.GetResponseOrDefault(MappingExistQst, false) then
                 SAFTGLAccountMapping.DeleteAll(true)
             else
                 Error('');
@@ -168,5 +195,28 @@ table 10676 "SAF-T Mapping Range"
     begin
         if ("Starting Date" <> 0D) and ("Ending Date" <> 0D) and ("Starting Date" > "Ending Date") then
             error(DatesAreNotCorrectErr);
+    end;
+
+    local procedure UpdateGLAccountMapping(UpdateFieldNo: Integer)
+    var
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        ConfirmMgt: Codeunit "Confirm Management";
+    begin
+        if UpdateFieldNo = 0 then
+            exit;
+
+        if not ConfirmMgt.GetResponseOrDefault(OverwriteMappingQst, false) then
+            exit;
+
+        SAFTGLAccountMapping.SetRange("Mapping Range Code", Code);
+        case UpdateFieldNo of
+            FieldNo("Mapping Category No."):
+                begin
+                    SAFTGLAccountMapping.ModifyAll("Category No.", "Mapping Category No.");
+                    SAFTGLAccountMapping.ModifyAll("No.", '');
+                end;
+            FieldNo("Mapping No."):
+                SAFTGLAccountMapping.ModifyAll("No.", "Mapping No.");
+        end;
     end;
 }

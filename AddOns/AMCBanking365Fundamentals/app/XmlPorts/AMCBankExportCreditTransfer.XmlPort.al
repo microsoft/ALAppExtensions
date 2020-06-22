@@ -1140,9 +1140,22 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                             {
                                 MinOccurs = Zero;
                             }
-                            fieldelement(countryiso; "Company Information"."Country/Region Code")
+                            textelement(owncountryiso)
                             {
                                 MinOccurs = Zero;
+                                XmlName = 'countryiso';
+
+                                trigger OnBeforePassVariable();
+                                var
+                                    CountryRegion: Record "Country/Region";
+                                begin
+                                    Clear(CountryRegion);
+                                    clear(owncountryiso);
+                                    if ("Company Information"."Country/Region Code" <> '') then
+                                        if (CountryRegion.Get("Company Information"."Country/Region Code")) then
+                                            owncountryiso := CountryRegion."ISO Code";
+
+                                end;
                             }
                             fieldelement(name; "Company Information".Name)
                             {

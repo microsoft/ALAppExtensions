@@ -3,8 +3,8 @@
     "name":  "Payroll Data Import Definition (NO)",
     "publisher":  "Microsoft",
     "brief":  "Get data exchange definitions for the Norwegian payroll service.",
-    "description":  "Get data exchange definitions for the Huldt \u0026 Lillevik payroll service in Norway.",
-    "version":  "16.0.0.0",
+    "description":  "Get data exchange definitions for the Huldt & Lillevik payroll service in Norway.",
+    "version":  "16.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2005800",
@@ -19,5 +19,5 @@
     "platform":  "13.0.0.0",
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "16.0.0.0"
+    "application":  "16.3.0.0"
 }

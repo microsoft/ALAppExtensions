@@ -8,7 +8,12 @@ codeunit 9094 "UK Postcode Install"
     Subtype = install;
 
     trigger OnInstallAppPerCompany()
+    var
+        AppInfo: ModuleInfo;
     begin
+        if AppInfo.DataVersion().Major() = 0 then
+            SetAllUpgradeTags();
+
         CompanyInitialize();
     end;
 
@@ -30,4 +35,15 @@ codeunit 9094 "UK Postcode Install"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Postcode GetAddress.io Config");
     end;
 
+    local procedure SetAllUpgradeTags()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        PostCodeGetAddressUpgrade: Codeunit "Postcode GetAddress.io Upgrade";
+    begin
+        if not UpgradeTag.HasUpgradeTag(PostCodeGetAddressUpgrade.GetUKPostcodeSecretsToISUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(PostCodeGetAddressUpgrade.GetUKPostcodeSecretsToISUpgradeTag());
+
+        if not UpgradeTag.HasUpgradeTag(PostCodeGetAddressUpgrade.GetUKPostcodeSecretsToISValidationTag()) then
+            UpgradeTag.SetUpgradeTag(PostCodeGetAddressUpgrade.GetUKPostcodeSecretsToISValidationTag());
+    end;
 }

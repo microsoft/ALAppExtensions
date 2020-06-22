@@ -24,7 +24,6 @@ codeunit 10672 "SAF-T Mapping Helper"
         AccountReceivablesSourceCodeDescriptionLbl: Label 'Account Receivables';
         AccountPayablesSourceCodeDescriptionLbl: Label 'Account Payables';
         SAFTSetupGuideTxt: Label 'Set up SAF-T';
-        SAFTDimLbl: Label 'SAF-T Dimension No Series.';
         DefaultLbl: Label 'DEFAULT';
 
     trigger OnRun()
@@ -218,7 +217,6 @@ codeunit 10672 "SAF-T Mapping Helper"
         VATPostingSetup: Record "VAT Posting Setup";
     begin
         SAFTSetup.Get();
-        SAFTSetup.TestField("Dimension No. Series Code");
         Dimension.SetRange("SAF-T Analysis Type", '');
         if Dimension.FindSet() then
             repeat
@@ -376,7 +374,6 @@ codeunit 10672 "SAF-T Mapping Helper"
         SAFTMappingHelper.UpdateGLEntriesExistStateForGLAccMapping(MappingRangeCode);
         SAFTGLAccountMapping.SetRange("Mapping Range Code", MappingRangeCode);
         SAFTGLAccountMapping.SetRange("No.", '');
-        SAFTGLAccountMapping.SetRange("G/L Entries Exists", true);
         if not SAFTGLAccountMapping.IsEmpty() then begin
             SAFTMappingRange.Get(MappingRangeCode);
             LogError(SAFTMappingRange, MappingNotDoneErr);
@@ -498,36 +495,7 @@ codeunit 10672 "SAF-T Mapping Helper"
             SAFTSetup.Init();
             SAFTSetup.Insert();
         end;
-        if SAFTSetup."Dimension No. Series Code" = '' then
-            SAFTSetup."Dimension No. Series Code" := InsertNoSeries('DIM', SAFTDimLbl);
         SAFTSetup.Modify();
-    end;
-
-    local procedure InsertNoSeries(NoSeriesCode: Code[20]; Description: Text[100]): Code[20]
-    var
-        NoSeries: Record "No. Series";
-        NoSeriesLine: Record "No. Series Line";
-    begin
-        NoSeries.Init();
-        NoSeries.Code := NoSeriesCode;
-        NoSeries.Description := Description;
-        NoSeries."Default Nos." := true;
-        NoSeries."Manual Nos." := true;
-        if not NoSeries.Insert() then begin
-            NoSeries.Code += '-1';
-            while (Not NoSeries.Insert()) do
-                NoSeries.Code := IncStr(NoSeries.Code);
-        end;
-
-        NoSeriesLine.Init();
-        NoSeriesLine."Series Code" := NoSeries.Code;
-        NoSeriesLine."Line No." := 10000;
-        NoSeriesLine.Validate("Starting No.", NoSeries.Code + '-10000');
-        NoSeriesLine.Validate("Ending No.", NoSeries.Code + '-99999');
-        NoSeriesLine.Validate("Increment-by No.", 1);
-        NoSeriesLine.Insert(true);
-
-        exit(NoSeries.Code)
     end;
 
     procedure InsertSAFTSourceCodes()

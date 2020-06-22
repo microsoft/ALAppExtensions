@@ -34,8 +34,7 @@ table 10674 "SAF-T G/L Account Mapping"
 
             trigger OnValidate()
             begin
-                if "Category No." = '' then
-                    "No." := '';
+                "No." := '';
             end;
         }
         field(5; "No."; Code[20])

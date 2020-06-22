@@ -16,8 +16,8 @@ codeunit 132558 "AMC Banking Credential UT"
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         LocalhostURLTxt: Label 'https://localhost:8080/', Locked = true;
-        MissingCredentialsQst: Label 'The %1 is missing the user name or password. Do you want to open the %1 page?';
-        MissingCredentialsErr: Label 'The user name and password must be filled in %1 page.';
+        MissingCredentialsQst: Label 'The %1 is missing the user name or password. Do you want to open the %1 page?', Comment = '%1 = page name';
+        MissingCredentialsErr: Label 'The user name and password must be filled in %1 page.', Comment = '%1 = page name';
         NoConnectionErr: Label 'The expected data was not received from the web service.';
         SamplePmtXmlFile_EncodUTF8Txt: Label '<paymentExportBank xmlns="http://nav03.soap.xml.link.amc.dk/"><amcpaymentreq xmlns=''''><banktransjournal><uniqueid>%1</uniqueid></banktransjournal></amcpaymentreq><bank>Danske DK</bank><language>ENU</language></paymentExportBank>', Locked = true;
         CremulPathTxt: Label '/ns:reportExportResponse/return/cremul', Locked = true;
@@ -46,7 +46,7 @@ codeunit 132558 "AMC Banking Credential UT"
         end;
 
         // Exercise test
-        BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetup(true, true, '', LocalhostURLTxt, '', true, false, '', '',
+        BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetupV162(true, true, '', LocalhostURLTxt, '', true, false, '', '',
                                                             true, true, false, true, false, '', '',
                                                             false, false, TempOnlineBankAccLink, false);
 
@@ -85,7 +85,7 @@ codeunit 132558 "AMC Banking Credential UT"
         end;
 
         // Exercise test
-        BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetup(true, true, '', LocalhostURLTxt, '', true, false, '', '',
+        BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetupV162(true, true, '', LocalhostURLTxt, '', true, false, '', '',
                                                             true, true, false, true, false, '', '',
                                                             false, false, TempOnlineBankAccLink, false);
         Assert.AreEqual(TRUE, BasisSetupRunOK, '');
@@ -124,7 +124,7 @@ codeunit 132558 "AMC Banking Credential UT"
         end;
 
         // Exercise test
-        BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetup(true, true, '', LocalhostURLTxt, '', true, false, '', '',
+        BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetupV162(true, true, '', LocalhostURLTxt, '', true, false, '', '',
                                                             true, true, false, true, false, '', '',
                                                             false, false, TempOnlineBankAccLink, false);
         Assert.AreEqual(TRUE, BasisSetupRunOK, '');

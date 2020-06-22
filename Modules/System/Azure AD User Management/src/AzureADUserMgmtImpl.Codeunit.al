@@ -511,10 +511,16 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             CurrentUpdateEntity := Enum::"Azure AD User Update Entity".FromInteger(UserUpdateEntities.Get(Counter));
             ValueFromGraph := GetUpdateEntityFromGraph(CurrentUpdateEntity, GraphUser);
             ValueFromUserTable := GetUpdateEntityFromUser(CurrentUpdateEntity, User);
-            if CurrentUpdateEntity = CurrentUpdateEntity::Plan then
-                ChangesDetected := AzureADPlan.CheckIfPlansDifferent(GraphUser, User."User Security ID")
-            else
-                ChangesDetected := LowerCase(ValueFromGraph) <> LowerCase(ValueFromUserTable);
+
+            case CurrentUpdateEntity of
+                CurrentUpdateEntity::Plan:
+                    ChangesDetected := AzureADPlan.CheckIfPlansDifferent(GraphUser, User."User Security ID");
+                CurrentUpdateEntity::"Language ID":
+                    // Do not override BC language with blank value if it's not defined in Office
+                    ChangesDetected := (ValueFromGraph <> '') and (LowerCase(ValueFromGraph) <> LowerCase(ValueFromUserTable));
+                else
+                    ChangesDetected := LowerCase(ValueFromGraph) <> LowerCase(ValueFromUserTable);
+            end;
 
             if ChangesDetected then begin
                 AzureADUserUpdate.Init();
@@ -550,7 +556,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     local procedure GetUpdateEntityFromUser(UpdateEntity: Enum "Azure AD User Update Entity"; User: Record User): Text
     var
         UserPersonalization: Record "User Personalization";
-        Language: Codeunit Language;
+        LanguageId: Integer;
         PlanNames: List of [Text];
     begin
         case UpdateEntity of
@@ -563,9 +569,12 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             Enum::"Azure AD User Update Entity"::"Language ID":
                 begin
                     if UserPersonalization.Get(User."User Security ID") then
-                        exit(Format(UserPersonalization."Language ID"));
-                    // Fallback in case "User Personalization" was not created while updating the plan for the current user.
-                    exit(Format(Language.GetDefaultApplicationLanguageId()));
+                        LanguageId := UserPersonalization."Language ID";
+
+                    if LanguageId <> 0 then
+                        exit(Format(LanguageId));
+
+                    exit('');
                 end;
             Enum::"Azure AD User Update Entity"::Plan:
                 begin

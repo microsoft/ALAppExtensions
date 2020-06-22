@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -15,6 +15,8 @@ codeunit 10539 "MTD Install"
         VATReturnPeriodEndTxt: Label 'VATPER-9999', Locked = true;
 
     trigger OnInstallAppPerCompany()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
         OnCompanyInitialize();
 
@@ -24,16 +26,19 @@ codeunit 10539 "MTD Install"
         MoveTableMTDLiability();
         MoveTableMTDPayment();
         MoveTableMTDReturnDetails();
+
+        UpgradeTag.SetAllUpgradeTags();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure OnCompanyInitialize()
     var
-        DummyOAuth20Setup: Record "OAuth 2.0 Setup";
+        OAuth20Setup: Record "OAuth 2.0 Setup";
         MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
         VATReportLabelText: Code[10];
     begin
-        MTDOAuth20Mgt.InitOAuthSetup(DummyOAuth20Setup, MTDOAuth20Mgt.GetOAuthPRODSetupCode());
+        if not OAuth20Setup.Get(MTDOAuth20Mgt.GetOAuthPRODSetupCode()) then
+            MTDOAuth20Mgt.InitOAuthSetup(OAuth20Setup, MTDOAuth20Mgt.GetOAuthPRODSetupCode());
 
         VATReportLabelText := CopyStr(VATReportLbl, 1, MaxStrLen(VATReportLabelText));
         InitVATReportsConfiguration(VATReportLabelText);
@@ -68,17 +73,19 @@ codeunit 10539 "MTD Install"
         with VATReportSetup do begin
             if not Get() then
                 Insert();
-            if "VAT Return Period No. Series" = '' then
-                "VAT Return Period No. Series" := InitNoSeries();
-            "Report Version" := VATReportLabelText;
-            "Update Period Job Frequency" := "Update Period Job Frequency"::Never;
-            "Manual Receive Period CU ID" := Codeunit::"MTD Manual Receive Period";
-            "Auto Receive Period CU ID" := Codeunit::"MTD Auto Receive Period";
-            "Receive Submitted Return CU ID" := Codeunit::"MTD Receive Submitted";
-            InitProductionMode(VATReportSetup);
-            InitPeriodReminderCalculation(VATReportSetup);
-            "MTD Disable FraudPrev. Headers" := false;
-            Modify();
+            if ("VAT Return Period No. Series" = '') or ("Report Version" = '') then begin
+                if "VAT Return Period No. Series" = '' then
+                    "VAT Return Period No. Series" := InitNoSeries();
+                "Report Version" := VATReportLabelText;
+                "Update Period Job Frequency" := "Update Period Job Frequency"::Never;
+                "Manual Receive Period CU ID" := Codeunit::"MTD Manual Receive Period";
+                "Auto Receive Period CU ID" := Codeunit::"MTD Auto Receive Period";
+                "Receive Submitted Return CU ID" := Codeunit::"MTD Receive Submitted";
+                InitProductionMode(VATReportSetup);
+                InitPeriodReminderCalculation(VATReportSetup);
+                "MTD Disable FraudPrev. Headers" := false;
+                Modify();
+            end;
         end;
     end;
 
@@ -86,18 +93,17 @@ codeunit 10539 "MTD Install"
     var
         VATReportsConfiguration: Record "VAT Reports Configuration";
     begin
-        with VATReportsConfiguration do begin
+        with VATReportsConfiguration do
             if not Get("VAT Report Type"::"VAT Return", VATReportVersion) then begin
                 "VAT Report Type" := "VAT Report Type"::"VAT Return";
                 "VAT Report Version" := VATReportVersion;
+
+                "Suggest Lines Codeunit ID" := Codeunit::"VAT Report Suggest Lines";
+                "Content Codeunit ID" := Codeunit::"MTD Create Return Content";
+                "Submission Codeunit ID" := Codeunit::"MTD Submit Return";
+                "Validate Codeunit ID" := Codeunit::"MTD Validate Return";
                 Insert();
             end;
-            "Suggest Lines Codeunit ID" := Codeunit::"VAT Report Suggest Lines";
-            "Content Codeunit ID" := Codeunit::"MTD Create Return Content";
-            "Submission Codeunit ID" := Codeunit::"MTD Submit Return";
-            "Validate Codeunit ID" := Codeunit::"MTD Validate Return";
-            Modify();
-        end;
     end;
 
     local procedure ApplyEvaluationClassificationsForPrivacy()
@@ -129,7 +135,7 @@ codeunit 10539 "MTD Install"
         MTDLiabilityNew: Record "MTD Liability";
         MTDLiabilityOld: Record "MTD-Liability";
     begin
-        if MTDLiabilityOld.FindSet() then
+        if MTDLiabilityOld.FindSet() then begin
             repeat
                 MTDLiabilityNew.Init();
                 MTDLiabilityNew.Validate("From Date", MTDLiabilityOld."From Date");
@@ -140,6 +146,9 @@ codeunit 10539 "MTD Install"
                 MTDLiabilityNew.Validate("Due Date", MTDLiabilityOld."Due Date");
                 MTDLiabilityNew.Insert(true);
             until MTDLiabilityOld.Next() = 0;
+
+            MTDLiabilityOld.DeleteAll();
+        end;
     end;
 
     local procedure MoveTableMTDPayment();
@@ -147,7 +156,7 @@ codeunit 10539 "MTD Install"
         MTDPaymentNew: Record "MTD Payment";
         MTDPaymentOld: Record "MTD-Payment";
     begin
-        if MTDPaymentOld.FindSet() then
+        if MTDPaymentOld.FindSet() then begin
             repeat
                 MTDPaymentNew.Init();
                 MTDPaymentNew.Validate("Start Date", MTDPaymentOld."Start Date");
@@ -157,6 +166,9 @@ codeunit 10539 "MTD Install"
                 MTDPaymentNew.Validate(Amount, MTDPaymentOld.Amount);
                 MTDPaymentNew.Insert(true);
             until MTDPaymentOld.Next() = 0;
+
+            MTDPaymentOld.DeleteAll();
+        end;
     end;
 
     local procedure MoveTableMTDReturnDetails();
@@ -164,7 +176,7 @@ codeunit 10539 "MTD Install"
         MTDReturnDetailsNew: Record "MTD Return Details";
         MTDReturnDetailsOld: Record "MTD-Return Details";
     begin
-        if MTDReturnDetailsOld.FindSet() then
+        if MTDReturnDetailsOld.FindSet() then begin
             repeat
                 MTDReturnDetailsNew.Init();
                 MTDReturnDetailsNew.Validate("Start Date", MTDReturnDetailsOld."Start Date");
@@ -182,6 +194,9 @@ codeunit 10539 "MTD Install"
                 MTDReturnDetailsNew.Validate(Finalised, MTDReturnDetailsOld.Finalised);
                 MTDReturnDetailsNew.Insert(true);
             until MTDReturnDetailsOld.Next() = 0;
+
+            MTDReturnDetailsOld.DeleteAll();
+        end;
     end;
 
     local procedure InsertSeries(var SeriesCode: code[20]; Code: Code[20]; Description: Text[30]; StartingNo: Code[20]; EndingNo: Code[20]; LastNumberUsed: Code[20]; WarningNo: Code[20]; IncrementByNo: Integer; ManualNos: Boolean)

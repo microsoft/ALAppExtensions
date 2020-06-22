@@ -1,0 +1,44 @@
+{
+    "id":  "9076c230-cd86-4e51-883b-7fee710cb7f6",
+    "name":  "QR-Bill Management for Switzerland Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for QR-bill management for Switzerland",
+    "description":  "Tests for QR-bill management for Switzerland",
+    "version":  "16.3.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "98860128-1333-4598-a3da-0590804648b7",
+                             "name":  "QR-Bill Management for Switzerland",
+                             "publisher":  "Microsoft",
+                             "version":  "16.3.0.0"
+                         },
+                         {
+                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "name":  "Tests-TestLibraries",
+                             "publisher":  "Microsoft",
+                             "version":  "16.3.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "15.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  139500,
+                         "to":  139899
+                     },
+                     {
+                         "from":  148000,
+                         "to":  148499
+                     }
+                 ],
+    "target":  "OnPrem",
+    "showMyCode":  false,
+    "application":  "16.3.0.0"
+}

@@ -22,10 +22,12 @@ codeunit 13629 "OIOUBL-Check Sales Header"
 
         if "External Document No." = '' then
             ERROR(EmptyExtDocNoErr, "Document Type", "No.");
-        TESTFIELD("Payment Terms Code");
 
-        if "Document Type" in ["Document Type"::Invoice, "Document Type"::Order] then
+        if "Document Type" in ["Document Type"::Invoice, "Document Type"::Order] then begin
+            TESTFIELD("Payment Terms Code");
             TESTFIELD("Order Date");
+        end;
+
         TESTFIELD("Bill-to Name");
         TESTFIELD("Bill-to Address");
         TESTFIELD("Bill-to City");

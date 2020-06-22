@@ -111,6 +111,18 @@ table 10682 "SAF-T Export Header"
             DataClassification = CustomerContent;
             Caption = 'SAF-T File';
         }
+        field(30; "Latest Data Check Date/Time"; DateTime)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Latest Data Check Date/Time';
+            Editable = false;
+        }
+        field(31; "Data check status"; Enum "SAF-T Data Check status")
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Data check status';
+            Editable = false;
+        }
     }
 
     keys
