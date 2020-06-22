@@ -103,7 +103,7 @@ codeunit 139502 "Test Basic BF"
     end;
 
     [Test]
-    procedure TestAcceptConsentIsDisabledBasicAssistedSetupPage();
+    procedure TestAcceptConsentIsDisabledAssistedSetupPage();
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
     begin
@@ -120,7 +120,7 @@ codeunit 139502 "Test Basic BF"
     end;
 
     [Test]
-    procedure TestSupportedLicensesIsDisabledBasicAssistedSetupPage();
+    procedure TestSupportedLicensesIsDisabledAssistedSetupPage();
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
     begin
@@ -137,7 +137,7 @@ codeunit 139502 "Test Basic BF"
     end;
 
     [Test]
-    procedure TestSupportedCompaniesIsDisabledBasicAssistedSetupPage();
+    procedure TestSupportedCompaniesIsDisabledAssistedSetupPage();
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
     begin
@@ -154,7 +154,7 @@ codeunit 139502 "Test Basic BF"
     end;
 
     [Test]
-    procedure TestEnableAcceptConsentBasicAssistedSetupPage();
+    procedure TestEnableAcceptConsentAssistedSetupPage();
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
     begin
@@ -172,10 +172,9 @@ codeunit 139502 "Test Basic BF"
     end;
 
     [Test]
-    procedure TestEnableLicensesBasicAssistedSetupPage();
+    procedure TestEnableLicensesAssistedSetupPage();
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
-        ERRORTEXT: Text;
     begin
         // [SCENARIO]
         // [GIVEN] Basic Assisted Setup Page
@@ -192,7 +191,7 @@ codeunit 139502 "Test Basic BF"
     end;
 
     [Test]
-    procedure TestEnableSupportedCompaniesBasicAssistedSetupPage();
+    procedure TestEnableSupportedCompaniesAssistedSetupPage();
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
     begin
@@ -249,7 +248,7 @@ codeunit 139502 "Test Basic BF"
             repeat
                 ApplicationAreaSetupFieldRef := ApplicationAreaSetupRecordRef.FIELD(Field."No.");
                 case ApplicationAreaSetupFieldRef.Name() of
-                    //>> Application Area must be true
+                    // Application Area must be true
                     ApplicationAreaSetup.FieldName("BF Basic"),
                     ApplicationAreaSetup.FieldName(Basic),
                     ApplicationAreaSetup.FieldName(Suite),
@@ -269,7 +268,7 @@ codeunit 139502 "Test Basic BF"
                     ApplicationAreaSetup.FieldName("Basic EU"):
                         ApplicationAreaSetupFieldRef.TestField(true);
 
-                    //>> Only one Microsoft Basic Country Application Area must be true the others must be false         
+                    // Only one Microsoft Basic Country Application Area must be true the others must be false         
                     ApplicationAreaSetup.FieldName("Basic DK"),
                     ApplicationAreaSetup.FieldName("Basic IS"):
                         if IsBasicCountryTested then
@@ -279,7 +278,7 @@ codeunit 139502 "Test Basic BF"
                             IsBasicCountryTested := true;
                         end;
 
-                    //>> Remainder Application Area must be false, even when new ones are added                
+                    // Remainder Application Area must be false, even when new ones are added                
                     else
                         ApplicationAreaSetupFieldRef.TestField(false);
                 end;
