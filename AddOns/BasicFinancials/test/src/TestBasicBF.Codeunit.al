@@ -16,15 +16,15 @@ codeunit 139502 "Test Basic BF"
 
     trigger OnRun();
     begin
-        // [FEATURE] [Basic] [User Experience]
+        // [FEATURE] [BASIC] [USER EXPERIENCE]
     end;
 
     [Test]
     procedure TestBasicExperienceTierAfterInstall();
     var
     begin
-        // [Scenario] Check the Basic Experience Tier After Install of Basic Extension 
-        // [Given] Application Area
+        // [SCENARIO] Check the Basic Experience Tier After Install of Basic Extension 
+        // [GIVEN] Application Area
         // [WHEN]
 
         // [THEN] Basic Experience Tier is Enabled
@@ -35,8 +35,8 @@ codeunit 139502 "Test Basic BF"
     procedure TestBasicApplicationAreaAfterInstall();
     var
     begin
-        // [Scenario] Check the Basic Application Area After Install of Basic Extension 
-        // [Given] Application Area
+        // [SCENARIO] Check the Basic Application Area After Install of Basic Extension 
+        // [GIVEN] Application Area
         // [WHEN]
 
         // [THEN] Basic Application Area is Enabled
@@ -47,8 +47,8 @@ codeunit 139502 "Test Basic BF"
     procedure TestDisableRoleCenterAfterInstall();
     var
     begin
-        // [Scenario] Check disable Role Center After Install of Basic Extension 
-        // [Given] Role Center
+        // [SCENARIO] Check disable Role Center After Install of Basic Extension 
+        // [GIVEN] Role Center
         // [WHEN]
 
         // [THEN] Role Center is disable
@@ -61,8 +61,8 @@ codeunit 139502 "Test Basic BF"
         DummyExperienceTierSetup: Record "Experience Tier Setup";
         ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
     begin
-        // [Scenario] Check that Basic Application Area are disabled, after Experience Tier is set to Essential 
-        // [Given] Experience Tier
+        // [SCENARIO] Check that Basic Application Area are disabled, after Experience Tier is set to Essential 
+        // [GIVEN] Experience Tier
 
         // [WHEN] Experience Tier is saved as Essential
         ApplicationAreaMgmtFacade.SaveExperienceTierCurrentCompany(DummyExperienceTierSetup.FieldCaption(DummyExperienceTierSetup.Essential));
@@ -77,8 +77,8 @@ codeunit 139502 "Test Basic BF"
         DummyExperienceTierSetup: Record "Experience Tier Setup";
         ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
     begin
-        // [Scenario] Check that Basic Application Area are Enabled, after Experience Tier is set to BF Basic 
-        // [Given] Experience Tier
+        // [SCENARIO] Check that Basic Application Area are Enabled, after Experience Tier is set to BF Basic 
+        // [GIVEN] Experience Tier
 
         // [WHEN] Experience Tier is saved as BF Basic 
         ApplicationAreaMgmtFacade.SaveExperienceTierCurrentCompany(DummyExperienceTierSetup.FieldCaption(DummyExperienceTierSetup."BF Basic"));
@@ -92,13 +92,13 @@ codeunit 139502 "Test Basic BF"
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
     begin
-        // [Scenario] Check that the Basic Assisted Setup Page can be Opened and Closed
-        // [Given] Basic Assisted Setup Page
+        // [SCENARIO] Check that the Basic Assisted Setup Page can be Opened and Closed
+        // [GIVEN] Basic Assisted Setup Page
 
-        // [When] The Basic Assisted Setup is opened 
+        // [WHEN] The Basic Assisted Setup is opened 
         AssistedSetupBFTestPage.OpenView();
 
-        // [Then] The Basic Assisted Setup is closed
+        // [THEN] The Basic Assisted Setup is closed
         AssistedSetupBFTestPage.Close();
     end;
 
@@ -107,13 +107,13 @@ codeunit 139502 "Test Basic BF"
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
     begin
-        // [Scenario] Check Accept Consent on Assisted Setup 
-        // [Given] Basic Assisted Setup Page
+        // [SCENARIO] Check Accept Consent on Assisted Setup 
+        // [GIVEN] Basic Assisted Setup Page
 
-        // [When] The Assisted Setup is opened 
+        // [WHEN] The Assisted Setup is opened 
         AssistedSetupBFTestPage.OpenView();
 
-        // [Then] Accept Consent and Finish should be disabled 
+        // [THEN] Accept Consent and Finish should be disabled 
         Assert.IsFalse(AssistedSetupBFTestPage.AcceptConsent.AsBoolean(), 'Accept Consent should be disabled');
         Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
         AssistedSetupBFTestPage.Close();
@@ -124,13 +124,13 @@ codeunit 139502 "Test Basic BF"
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
     begin
-        // [Scenario] Check Supported Licenses on Assisted Setup 
-        // [Given] Basic Assisted Setup Page
+        // [SCENARIO] Check Supported Licenses on Assisted Setup 
+        // [GIVEN] Basic Assisted Setup Page
 
-        // [When] The Assisted Setup is opened 
+        // [WHEN] The Assisted Setup is opened 
         AssistedSetupBFTestPage.OpenView();
 
-        // [Then] Supported Licenses and Finish should be disabled
+        // [THEN] Supported Licenses and Finish should be disabled
         Assert.IsFalse(AssistedSetupBFTestPage.IsSupportedLicenses.AsBoolean(), 'Is Supported Licenses should be disabled');
         Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
         AssistedSetupBFTestPage.Close();
@@ -141,13 +141,13 @@ codeunit 139502 "Test Basic BF"
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
     begin
-        // [Scenario] Check Supported Companies on Assisted Setup 
-        // [Given] Basic Assisted Setup Page
+        // [SCENARIO] Check Supported Companies on Assisted Setup 
+        // [GIVEN] Basic Assisted Setup Page
 
-        // [When] The Assisted Setup is opened
+        // [WHEN] The Assisted Setup is opened
         AssistedSetupBFTestPage.OpenView();
 
-        // [Then] Supported Companies and Finish should be disabled
+        // [THEN] Supported Companies and Finish should be disabled
         Assert.IsFalse(AssistedSetupBFTestPage.IsSupportedCompanies.AsBoolean(), 'Is Supported Companies should be disabled');
         Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
         AssistedSetupBFTestPage.Close();
@@ -158,14 +158,14 @@ codeunit 139502 "Test Basic BF"
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
     begin
-        // [Scenario]
-        // [Given] Basic Assisted Setup Page
+        // [SCENARIO]
+        // [GIVEN] Basic Assisted Setup Page
 
-        // [When] Set Accept Consent to true
+        // [WHEN] Set Accept Consent to true
         AssistedSetupBFTestPage.OpenView();
         AssistedSetupBFTestPage.AcceptConsent.SetValue(true);
 
-        // [Then]
+        // [THEN]
         Assert.IsTrue(AssistedSetupBFTestPage.AcceptConsent.AsBoolean(), 'Accept Consent should be Enabled');
         Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
         AssistedSetupBFTestPage.Close();
@@ -177,14 +177,14 @@ codeunit 139502 "Test Basic BF"
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
         ERRORTEXT: Text;
     begin
-        // [Scenario]
-        // [Given] Basic Assisted Setup Page
+        // [SCENARIO]
+        // [GIVEN] Basic Assisted Setup Page
 
-        // [When] Set Supported Licenses to true
+        // [WHEN] Set Supported Licenses to true
         AssistedSetupBFTestPage.OpenView();
         asserterror AssistedSetupBFTestPage.IsSupportedLicenses.SetValue(true);
 
-        // [Then] Error message displayed 
+        // [THEN] Error message displayed 
         Assert.AreEqual(GETLASTERRORTEXT, NotSupportedLicensesErr, 'Invalid error message.');
         Assert.IsFalse(AssistedSetupBFTestPage.IsSupportedLicenses.AsBoolean(), 'Is Supported Licenses should be disabled');
         Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
@@ -196,14 +196,14 @@ codeunit 139502 "Test Basic BF"
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
     begin
-        // [Scenario]
-        // [Given] Basic Assisted Setup Page
+        // [SCENARIO]
+        // [GIVEN] Basic Assisted Setup Page
 
-        // [When] Set Supported Companies to true
+        // [WHEN] Set Supported Companies to true
         AssistedSetupBFTestPage.OpenView();
         asserterror AssistedSetupBFTestPage.IsSupportedCompanies.SetValue(true);
 
-        // [Then]
+        // [THEN]
         Assert.AreEqual(GETLASTERRORTEXT, NotSupportedCompaniesErr, 'Invalid error message.');
         Assert.IsFalse(AssistedSetupBFTestPage.IsSupportedCompanies.AsBoolean(), 'Is Supported Companies should be disabled');
         Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
@@ -245,7 +245,7 @@ codeunit 139502 "Test Basic BF"
 
         Field.SETRANGE(TableNo, ApplicationAreaSetupRecordRef.Number);
         Field.SETRANGE(Type, Field.Type::Boolean);
-        if Field.FINDSET(FALSE, FALSE) then
+        if Field.FINDSET(FALSE, FALSE) THEN
             repeat
                 ApplicationAreaSetupFieldRef := ApplicationAreaSetupRecordRef.FIELD(Field."No.");
                 case ApplicationAreaSetupFieldRef.Name() of
@@ -272,14 +272,14 @@ codeunit 139502 "Test Basic BF"
                     //>> Only one Microsoft Basic Country Application Area must be true the others must be false         
                     ApplicationAreaSetup.FieldName("Basic DK"),
                     ApplicationAreaSetup.FieldName("Basic IS"):
-                        if IsBasicCountryTested then
+                        if IsBasicCountryTested THEN
                             ApplicationAreaSetupFieldRef.TestField(false)
                         else begin
                             ApplicationAreaSetupFieldRef.TestField(true);
                             IsBasicCountryTested := true;
                         end;
 
-                    //>> Remainder Application Area must be false, even when new ones are added                
+                    //>> Remainder Application Area must be false, even WHEN new ones are added                
                     else
                         ApplicationAreaSetupFieldRef.TestField(false);
                 end;
@@ -293,7 +293,7 @@ codeunit 139502 "Test Basic BF"
         Clear(AllProfile);
         AllProfile.SetRange(Enabled, true);
         AllProfile.SetFilter("Profile ID", AllProfileFilterTxt);
-        if AllProfile.FindSet(false, false) then
+        if AllProfile.FindSet(false, false) THEN
             repeat
                 AllProfile.TestField(Enabled, false);
             until AllProfile.Next() = 0;
