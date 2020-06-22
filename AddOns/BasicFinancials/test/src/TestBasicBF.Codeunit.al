@@ -214,7 +214,7 @@ codeunit 139502 "Test Basic BF"
         ApplicationAreaSetup: Record "Application Area Setup";
     begin
         ApplicationAreaSetup.Get(CompanyName, '', '');
-        //>> Application Area must be false
+        // Application Area must be false
         ApplicationAreaSetup.TestField("BF Basic", false);
         ApplicationAreaSetup.TestField("BF Orders", false);
     end;
@@ -224,7 +224,7 @@ codeunit 139502 "Test Basic BF"
         ExperienceTierSetup: Record "Experience Tier Setup";
     begin
         ExperienceTierSetup.Get(CompanyName);
-        //>> Experience Tier must be true
+        // Experience Tier must be true
         ExperienceTierSetup.TestField("BF Basic", true);
     end;
 
