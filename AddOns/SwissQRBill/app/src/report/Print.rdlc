@@ -1,0 +1,2604 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource">
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString />
+      </ConnectionProperties>
+      <rd:DataSourceID>fe7b0983-1548-429e-b381-62f4b8ff69bc</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="QRBillTable">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>21cm</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>12cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Rectangle Name="QRBillRectangle">
+                          <ReportItems>
+                            <Rectangle Name="ReceiptSection">
+                              <ReportItems>
+                                <Rectangle Name="ReceiptTitleRect">
+                                  <ReportItems>
+                                    <Textbox Name="ReceiptTitle">
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value>=First(Fields!ReceiptLbl.Value, "DataSet_Result")</Value>
+                                              <Style>
+                                                <FontSize>11pt</FontSize>
+                                                <FontWeight>Bold</FontWeight>
+                                              </Style>
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Height>0.7cm</Height>
+                                      <Width>5.2cm</Width>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                        <PaddingLeft>2pt</PaddingLeft>
+                                        <PaddingRight>2pt</PaddingRight>
+                                        <PaddingTop>2pt</PaddingTop>
+                                        <PaddingBottom>2pt</PaddingBottom>
+                                      </Style>
+                                    </Textbox>
+                                  </ReportItems>
+                                  <KeepTogether>true</KeepTogether>
+                                  <Top>0.4cm</Top>
+                                  <Left>0.5cm</Left>
+                                  <Height>0.7cm</Height>
+                                  <Width>5.2cm</Width>
+                                  <Style>
+                                    <Border>
+                                      <Style>None</Style>
+                                    </Border>
+                                  </Style>
+                                </Rectangle>
+                                <Rectangle Name="ReceiptInfoSection">
+                                  <ReportItems>
+                                    <Tablix Name="ReceiptInfoTab">
+                                      <TablixBody>
+                                        <TablixColumns>
+                                          <TablixColumn>
+                                            <Width>5.2cm</Width>
+                                          </TablixColumn>
+                                        </TablixColumns>
+                                        <TablixRows>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="ReceiptAccountPayableToLbl">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!AccountPayableToLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>6pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="ReceiptAccountPayableToData">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!AccountPayableToText.Value</Value>
+                                                            <Style>
+                                                              <FontSize>8pt</FontSize>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.4cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="ReceiptBlankedLine1">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value xml:space="preserve"> </Value>
+                                                            <Style>
+                                                              <FontSize>9pt</FontSize>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="ReceiptReferenceLbl">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!ReferenceLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>6pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="ReceiptReferenceData">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!ReferenceText.Value</Value>
+                                                            <Style>
+                                                              <FontSize>8pt</FontSize>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.4cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="ReceiptBlankedLine2">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value xml:space="preserve"> </Value>
+                                                            <Style>
+                                                              <FontSize>9pt</FontSize>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="ReceiptPayableByLbl">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!PayableByLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>6pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="ReceiptPayableByData">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!PayableByText.Value</Value>
+                                                            <Style>
+                                                              <FontSize>8pt</FontSize>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="ReceiptPayableByNameAddress">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!PayableByNameAddressLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>6pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                        </TablixRows>
+                                      </TablixBody>
+                                      <TablixColumnHierarchy>
+                                        <TablixMembers>
+                                          <TablixMember />
+                                        </TablixMembers>
+                                      </TablixColumnHierarchy>
+                                      <TablixRowHierarchy>
+                                        <TablixMembers>
+                                          <TablixMember />
+                                          <TablixMember />
+                                          <TablixMember />
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!ReferenceText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!ReferenceText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!ReferenceText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!PayableByText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!PayableByText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!PayableByText.Value &lt;&gt;"",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                        </TablixMembers>
+                                      </TablixRowHierarchy>
+                                      <Height>2.2cm</Height>
+                                      <Width>5.2cm</Width>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Tablix>
+                                    <Rectangle Name="ReceiptPayableByRect">
+                                      <ReportItems>
+                                        <Textbox Name="ReceiptPayableByTopLeft">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <TopBorder>
+                                              <Style>Solid</Style>
+                                            </TopBorder>
+                                            <LeftBorder>
+                                              <Style>Solid</Style>
+                                            </LeftBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="ReceiptPayableByBottomLeft">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Top>1.7cm</Top>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>1</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <BottomBorder>
+                                              <Style>Solid</Style>
+                                            </BottomBorder>
+                                            <LeftBorder>
+                                              <Style>Solid</Style>
+                                            </LeftBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="ReceiptPayableByTopRight">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Left>4.9cm</Left>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>2</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <TopBorder>
+                                              <Style>Solid</Style>
+                                            </TopBorder>
+                                            <RightBorder>
+                                              <Style>Solid</Style>
+                                            </RightBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="ReceiptPayableByBottomRight">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Top>1.7cm</Top>
+                                          <Left>4.9cm</Left>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>3</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <BottomBorder>
+                                              <Style>Solid</Style>
+                                            </BottomBorder>
+                                            <RightBorder>
+                                              <Style>Solid</Style>
+                                            </RightBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                      </ReportItems>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Top>2.3cm</Top>
+                                      <Height>2cm</Height>
+                                      <Width>5.2cm</Width>
+                                      <ZIndex>1</ZIndex>
+                                      <Visibility>
+                                        <Hidden>=iif(Fields!PayableByText.Value &lt;&gt;"",true,false)</Hidden>
+                                      </Visibility>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Rectangle>
+                                    <Textbox Name="ReceiptInfoDummy">
+                                      <CanGrow>true</CanGrow>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value />
+                                              <Style />
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Left>5.2cm</Left>
+                                      <Height>5.6cm</Height>
+                                      <Width>0.3cm</Width>
+                                      <ZIndex>2</ZIndex>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                        <PaddingLeft>2pt</PaddingLeft>
+                                        <PaddingRight>2pt</PaddingRight>
+                                        <PaddingTop>2pt</PaddingTop>
+                                        <PaddingBottom>2pt</PaddingBottom>
+                                      </Style>
+                                    </Textbox>
+                                  </ReportItems>
+                                  <KeepTogether>true</KeepTogether>
+                                  <Top>1.2cm</Top>
+                                  <Left>0.5cm</Left>
+                                  <Height>5.6cm</Height>
+                                  <Width>5.5cm</Width>
+                                  <ZIndex>1</ZIndex>
+                                  <Style>
+                                    <Border>
+                                      <Style>None</Style>
+                                    </Border>
+                                  </Style>
+                                </Rectangle>
+                                <Rectangle Name="ReceiptAmtSection">
+                                  <ReportItems>
+                                    <Tablix Name="ReceiptAmountTab">
+                                      <TablixBody>
+                                        <TablixColumns>
+                                          <TablixColumn>
+                                            <Width>1.1cm</Width>
+                                          </TablixColumn>
+                                          <TablixColumn>
+                                            <Width>1.1cm</Width>
+                                          </TablixColumn>
+                                        </TablixColumns>
+                                        <TablixRows>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="ReceiptCurrencyLbl">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!CurrencyLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>6pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="ReceiptAmountLbl">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!AmountLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>6pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                        </TablixRows>
+                                      </TablixBody>
+                                      <TablixColumnHierarchy>
+                                        <TablixMembers>
+                                          <TablixMember />
+                                          <TablixMember />
+                                        </TablixMembers>
+                                      </TablixColumnHierarchy>
+                                      <TablixRowHierarchy>
+                                        <TablixMembers>
+                                          <TablixMember />
+                                        </TablixMembers>
+                                      </TablixRowHierarchy>
+                                      <Top>0.1cm</Top>
+                                      <Height>0.2cm</Height>
+                                      <Width>2.2cm</Width>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Tablix>
+                                    <Rectangle Name="ReceiptAmountRect">
+                                      <ReportItems>
+                                        <Textbox Name="ReceiptAmountBottomLeft">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Top>0.7cm</Top>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <BottomBorder>
+                                              <Style>Solid</Style>
+                                            </BottomBorder>
+                                            <LeftBorder>
+                                              <Style>Solid</Style>
+                                            </LeftBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="ReceiptAmountBottomRight">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Top>0.7cm</Top>
+                                          <Left>2.7cm</Left>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>1</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <BottomBorder>
+                                              <Style>Solid</Style>
+                                            </BottomBorder>
+                                            <RightBorder>
+                                              <Style>Solid</Style>
+                                            </RightBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="ReceiptAmountTopLeft">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>2</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <TopBorder>
+                                              <Style>Solid</Style>
+                                            </TopBorder>
+                                            <LeftBorder>
+                                              <Style>Solid</Style>
+                                            </LeftBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="ReceiptAmountTopRight">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Left>2.7cm</Left>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>3</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <TopBorder>
+                                              <Style>Solid</Style>
+                                            </TopBorder>
+                                            <RightBorder>
+                                              <Style>Solid</Style>
+                                            </RightBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                      </ReportItems>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Top>0.2cm</Top>
+                                      <Left>2.2cm</Left>
+                                      <Height>1cm</Height>
+                                      <Width>3cm</Width>
+                                      <ZIndex>1</ZIndex>
+                                      <Visibility>
+                                        <Hidden>=iif(Fields!AmountText.Value &lt;&gt; "", True, False)</Hidden>
+                                      </Visibility>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Rectangle>
+                                    <Textbox Name="ReceiptCurrency">
+                                      <CanGrow>true</CanGrow>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value>=Fields!CurrencyText.Value</Value>
+                                              <Style />
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Top>0.4cm</Top>
+                                      <Height>0.2cm</Height>
+                                      <Width>1.1cm</Width>
+                                      <ZIndex>2</ZIndex>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Textbox>
+                                    <Textbox Name="ReceiptAmount">
+                                      <CanGrow>true</CanGrow>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value>=Fields!AmountText.Value</Value>
+                                              <Style />
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Top>0.4cm</Top>
+                                      <Left>1.1cm</Left>
+                                      <Height>0.2cm</Height>
+                                      <Width>4.1cm</Width>
+                                      <ZIndex>3</ZIndex>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Textbox>
+                                    <Textbox Name="ReceiptAmtDummy">
+                                      <CanGrow>true</CanGrow>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value />
+                                              <Style />
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Left>5.2cm</Left>
+                                      <Height>1.4cm</Height>
+                                      <Width>0.3cm</Width>
+                                      <ZIndex>4</ZIndex>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                        <PaddingLeft>2pt</PaddingLeft>
+                                        <PaddingRight>2pt</PaddingRight>
+                                        <PaddingTop>2pt</PaddingTop>
+                                        <PaddingBottom>2pt</PaddingBottom>
+                                      </Style>
+                                    </Textbox>
+                                  </ReportItems>
+                                  <KeepTogether>true</KeepTogether>
+                                  <Top>6.8cm</Top>
+                                  <Left>0.5cm</Left>
+                                  <Height>1.4cm</Height>
+                                  <Width>5.5cm</Width>
+                                  <ZIndex>2</ZIndex>
+                                  <Style>
+                                    <Border>
+                                      <Style>None</Style>
+                                    </Border>
+                                  </Style>
+                                </Rectangle>
+                                <Rectangle Name="ReceiptAcceptSection">
+                                  <ReportItems>
+                                    <Textbox Name="AcceptanceLbl">
+                                      <CanGrow>true</CanGrow>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value>=First(Fields!AcceptancePointLbl.Value, "DataSet_Result")</Value>
+                                              <Style>
+                                                <FontSize>6pt</FontSize>
+                                                <FontWeight>Bold</FontWeight>
+                                              </Style>
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style>
+                                            <TextAlign>Right</TextAlign>
+                                          </Style>
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Height>1.8cm</Height>
+                                      <Width>5.2cm</Width>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                        <PaddingLeft>2pt</PaddingLeft>
+                                        <PaddingRight>2pt</PaddingRight>
+                                        <PaddingTop>2pt</PaddingTop>
+                                        <PaddingBottom>2pt</PaddingBottom>
+                                      </Style>
+                                    </Textbox>
+                                    <Textbox Name="ReceiptAcceptDummy">
+                                      <CanGrow>true</CanGrow>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value />
+                                              <Style />
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Left>5.2cm</Left>
+                                      <Height>1.8cm</Height>
+                                      <Width>0.3cm</Width>
+                                      <ZIndex>1</ZIndex>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                        <PaddingLeft>2pt</PaddingLeft>
+                                        <PaddingRight>2pt</PaddingRight>
+                                        <PaddingTop>2pt</PaddingTop>
+                                        <PaddingBottom>2pt</PaddingBottom>
+                                      </Style>
+                                    </Textbox>
+                                  </ReportItems>
+                                  <KeepTogether>true</KeepTogether>
+                                  <Top>8.2cm</Top>
+                                  <Left>0.5cm</Left>
+                                  <Height>1.8cm</Height>
+                                  <Width>5.5cm</Width>
+                                  <ZIndex>3</ZIndex>
+                                  <Style>
+                                    <Border>
+                                      <Style>None</Style>
+                                    </Border>
+                                  </Style>
+                                </Rectangle>
+                              </ReportItems>
+                              <KeepTogether>true</KeepTogether>
+                              <Top>1.5cm</Top>
+                              <Height>10.5cm</Height>
+                              <Width>6.2cm</Width>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BottomBorder>
+                                  <Style>None</Style>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Style>None</Style>
+                                </LeftBorder>
+                              </Style>
+                            </Rectangle>
+                            <Rectangle Name="PaymentSection">
+                              <ReportItems>
+                                <Rectangle Name="PaymentTitleRect">
+                                  <ReportItems>
+                                    <Textbox Name="PaymentTitle">
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value>=First(Fields!PaymentPartLbl.Value, "DataSet_Result")</Value>
+                                              <Style>
+                                                <FontSize>11pt</FontSize>
+                                                <FontWeight>Bold</FontWeight>
+                                              </Style>
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Height>0.7cm</Height>
+                                      <Width>5.1cm</Width>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                        <PaddingLeft>2pt</PaddingLeft>
+                                        <PaddingRight>2pt</PaddingRight>
+                                        <PaddingTop>2pt</PaddingTop>
+                                        <PaddingBottom>2pt</PaddingBottom>
+                                      </Style>
+                                    </Textbox>
+                                  </ReportItems>
+                                  <KeepTogether>true</KeepTogether>
+                                  <Top>0.4cm</Top>
+                                  <Left>0.5cm</Left>
+                                  <Height>0.7cm</Height>
+                                  <Width>5.1cm</Width>
+                                  <Style>
+                                    <Border>
+                                      <Style>None</Style>
+                                    </Border>
+                                  </Style>
+                                </Rectangle>
+                                <Rectangle Name="QRImageRect">
+                                  <ReportItems>
+                                    <Image Name="Image1">
+                                      <Source>Database</Source>
+                                      <Value>=Fields!QRImage.Value</Value>
+                                      <MIMEType>image/bmp</MIMEType>
+                                      <Sizing>FitProportional</Sizing>
+                                      <Height>4.6cm</Height>
+                                      <Width>4.6cm</Width>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Image>
+                                  </ReportItems>
+                                  <KeepTogether>true</KeepTogether>
+                                  <Top>1.7cm</Top>
+                                  <Left>0.5cm</Left>
+                                  <Height>4.6cm</Height>
+                                  <Width>4.6cm</Width>
+                                  <ZIndex>1</ZIndex>
+                                  <Style>
+                                    <Border>
+                                      <Style>None</Style>
+                                    </Border>
+                                  </Style>
+                                </Rectangle>
+                                <Rectangle Name="PaymentAmtSection">
+                                  <ReportItems>
+                                    <Tablix Name="PaymentAmountTab">
+                                      <TablixBody>
+                                        <TablixColumns>
+                                          <TablixColumn>
+                                            <Width>1.5cm</Width>
+                                          </TablixColumn>
+                                          <TablixColumn>
+                                            <Width>3.6cm</Width>
+                                          </TablixColumn>
+                                        </TablixColumns>
+                                        <TablixRows>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentCurrencyLbl">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!CurrencyLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>8pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentAmountLbl">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!AmountLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>8pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                        </TablixRows>
+                                      </TablixBody>
+                                      <TablixColumnHierarchy>
+                                        <TablixMembers>
+                                          <TablixMember />
+                                          <TablixMember />
+                                        </TablixMembers>
+                                      </TablixColumnHierarchy>
+                                      <TablixRowHierarchy>
+                                        <TablixMembers>
+                                          <TablixMember />
+                                        </TablixMembers>
+                                      </TablixRowHierarchy>
+                                      <Top>0.1cm</Top>
+                                      <Height>0.2cm</Height>
+                                      <Width>5.1cm</Width>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Tablix>
+                                    <Rectangle Name="PaymentAmountRect">
+                                      <ReportItems>
+                                        <Textbox Name="PaymentAmountTopLeft">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <TopBorder>
+                                              <Style>Solid</Style>
+                                            </TopBorder>
+                                            <LeftBorder>
+                                              <Style>Solid</Style>
+                                            </LeftBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="PaymentAmountBottomLeft">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Top>1.2cm</Top>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>1</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <BottomBorder>
+                                              <Style>Solid</Style>
+                                            </BottomBorder>
+                                            <LeftBorder>
+                                              <Style>Solid</Style>
+                                            </LeftBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="PaymentAmountTopRight">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Left>3.7cm</Left>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>2</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <TopBorder>
+                                              <Style>Solid</Style>
+                                            </TopBorder>
+                                            <RightBorder>
+                                              <Style>Solid</Style>
+                                            </RightBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="PaymentAmountBottomRight">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Top>1.2cm</Top>
+                                          <Left>3.7cm</Left>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>3</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <BottomBorder>
+                                              <Style>Solid</Style>
+                                            </BottomBorder>
+                                            <RightBorder>
+                                              <Style>Solid</Style>
+                                            </RightBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                      </ReportItems>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Top>0.4cm</Top>
+                                      <Left>1.1cm</Left>
+                                      <Height>1.5cm</Height>
+                                      <Width>4cm</Width>
+                                      <ZIndex>1</ZIndex>
+                                      <Visibility>
+                                        <Hidden>=iif(Fields!AmountText.Value &lt;&gt; "", True, False)</Hidden>
+                                      </Visibility>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Rectangle>
+                                    <Textbox Name="PaymentCurrency">
+                                      <CanGrow>true</CanGrow>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value>=Fields!CurrencyText.Value</Value>
+                                              <Style />
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Top>0.4cm</Top>
+                                      <Height>0.2cm</Height>
+                                      <Width>1.1cm</Width>
+                                      <ZIndex>2</ZIndex>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Textbox>
+                                    <Textbox Name="PaymentAmount">
+                                      <CanGrow>true</CanGrow>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value>=Fields!AmountText.Value</Value>
+                                              <Style />
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Top>0.4cm</Top>
+                                      <Left>1.3cm</Left>
+                                      <Height>0.2cm</Height>
+                                      <Width>3.8cm</Width>
+                                      <ZIndex>3</ZIndex>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Textbox>
+                                    <Textbox Name="PaymentAmtDummy">
+                                      <CanGrow>true</CanGrow>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value />
+                                              <Style />
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Height>2.2cm</Height>
+                                      <Width>0.1cm</Width>
+                                      <ZIndex>4</ZIndex>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                        <PaddingLeft>2pt</PaddingLeft>
+                                        <PaddingRight>2pt</PaddingRight>
+                                        <PaddingTop>2pt</PaddingTop>
+                                        <PaddingBottom>2pt</PaddingBottom>
+                                      </Style>
+                                    </Textbox>
+                                  </ReportItems>
+                                  <KeepTogether>true</KeepTogether>
+                                  <Top>6.8cm</Top>
+                                  <Left>0.5cm</Left>
+                                  <Height>2.2cm</Height>
+                                  <Width>5.1cm</Width>
+                                  <ZIndex>2</ZIndex>
+                                  <Style>
+                                    <Border>
+                                      <Style>None</Style>
+                                    </Border>
+                                  </Style>
+                                </Rectangle>
+                                <Rectangle Name="PaymentInfoSection">
+                                  <ReportItems>
+                                    <Tablix Name="PaymentInfoTab">
+                                      <TablixBody>
+                                        <TablixColumns>
+                                          <TablixColumn>
+                                            <Width>8.2cm</Width>
+                                          </TablixColumn>
+                                        </TablixColumns>
+                                        <TablixRows>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentAccountPayableToLbl">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!AccountPayableToLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>8pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentAccountPayableToData">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!AccountPayableToText.Value</Value>
+                                                            <Style />
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.4cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentBlankedLine1">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value xml:space="preserve"> </Value>
+                                                            <Style>
+                                                              <FontSize>11pt</FontSize>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentReferenceLbl">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!ReferenceLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>8pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentReferenceData">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!ReferenceText.Value</Value>
+                                                            <Style />
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.4cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentBlankedLine2">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value xml:space="preserve"> </Value>
+                                                            <Style>
+                                                              <FontSize>11pt</FontSize>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentAddInfoLbl">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!AdditionalInformationLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>8pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentAddInfoData">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!AdditionalInformationText.Value</Value>
+                                                            <Style />
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.4cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentBlankedLine3">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value xml:space="preserve"> </Value>
+                                                            <Style>
+                                                              <FontSize>11pt</FontSize>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentPayableByLbl">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!PayableByLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>8pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentPayableByData">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!PayableByText.Value</Value>
+                                                            <Style />
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="PaymentPayableByNameAddress">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=First(Fields!PayableByNameAddressLbl.Value, "DataSet_Result")</Value>
+                                                            <Style>
+                                                              <FontSize>8pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                        </TablixRows>
+                                      </TablixBody>
+                                      <TablixColumnHierarchy>
+                                        <TablixMembers>
+                                          <TablixMember />
+                                        </TablixMembers>
+                                      </TablixColumnHierarchy>
+                                      <TablixRowHierarchy>
+                                        <TablixMembers>
+                                          <TablixMember />
+                                          <TablixMember />
+                                          <TablixMember />
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!ReferenceText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!ReferenceText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!ReferenceText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!AdditionalInformationText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!AdditionalInformationText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!AdditionalInformationText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!PayableByText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!PayableByText.Value="",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif(Fields!PayableByText.Value &lt;&gt;"",true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                        </TablixMembers>
+                                      </TablixRowHierarchy>
+                                      <Height>3cm</Height>
+                                      <Width>8.2cm</Width>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Tablix>
+                                    <Rectangle Name="PaymentPayableByRect">
+                                      <ReportItems>
+                                        <Textbox Name="PaymentPayableByTopLeft">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <TopBorder>
+                                              <Style>Solid</Style>
+                                            </TopBorder>
+                                            <LeftBorder>
+                                              <Style>Solid</Style>
+                                            </LeftBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="PaymentPayableByBottomLeft">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Top>2.2cm</Top>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>1</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <BottomBorder>
+                                              <Style>Solid</Style>
+                                            </BottomBorder>
+                                            <LeftBorder>
+                                              <Style>Solid</Style>
+                                            </LeftBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="PaymentPayableByTopRight">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Left>6.2cm</Left>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>2</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <TopBorder>
+                                              <Style>Solid</Style>
+                                            </TopBorder>
+                                            <RightBorder>
+                                              <Style>Solid</Style>
+                                            </RightBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <Textbox Name="PaymentPayableByBottomRight">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value />
+                                                  <Style />
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <Top>2.2cm</Top>
+                                          <Left>6.2cm</Left>
+                                          <Height>0.3cm</Height>
+                                          <Width>0.3cm</Width>
+                                          <ZIndex>3</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <BottomBorder>
+                                              <Style>Solid</Style>
+                                            </BottomBorder>
+                                            <RightBorder>
+                                              <Style>Solid</Style>
+                                            </RightBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                      </ReportItems>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Top>3.1cm</Top>
+                                      <Height>2.5cm</Height>
+                                      <Width>6.5cm</Width>
+                                      <ZIndex>1</ZIndex>
+                                      <Visibility>
+                                        <Hidden>=iif(Fields!PayableByText.Value &lt;&gt; "", True, False)</Hidden>
+                                      </Visibility>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Rectangle>
+                                    <Textbox Name="PaymentInfoDummy">
+                                      <CanGrow>true</CanGrow>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value />
+                                              <Style />
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Left>8.7cm</Left>
+                                      <Height>8.5cm</Height>
+                                      <Width>0.3cm</Width>
+                                      <ZIndex>2</ZIndex>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                        <PaddingLeft>2pt</PaddingLeft>
+                                        <PaddingRight>2pt</PaddingRight>
+                                        <PaddingTop>2pt</PaddingTop>
+                                        <PaddingBottom>2pt</PaddingBottom>
+                                      </Style>
+                                    </Textbox>
+                                  </ReportItems>
+                                  <KeepTogether>true</KeepTogether>
+                                  <Top>0.5cm</Top>
+                                  <Left>5.6cm</Left>
+                                  <Height>8.5cm</Height>
+                                  <Width>9cm</Width>
+                                  <ZIndex>3</ZIndex>
+                                  <Style>
+                                    <Border>
+                                      <Style>None</Style>
+                                    </Border>
+                                  </Style>
+                                </Rectangle>
+                                <Rectangle Name="FurtherInfoSection">
+                                  <ReportItems>
+                                    <Tablix Name="FurtherInfoTab">
+                                      <TablixBody>
+                                        <TablixColumns>
+                                          <TablixColumn>
+                                            <Width>1.4cm</Width>
+                                          </TablixColumn>
+                                          <TablixColumn>
+                                            <Width>0.3cm</Width>
+                                          </TablixColumn>
+                                          <TablixColumn>
+                                            <Width>11.6cm</Width>
+                                          </TablixColumn>
+                                        </TablixColumns>
+                                        <TablixRows>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="AltProcName1Lbl">
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!AltProcName1Lbl.Value</Value>
+                                                            <Style>
+                                                              <FontSize>7pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style>
+                                                          <TextAlign>Right</TextAlign>
+                                                        </Style>
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="Textbox1">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value> : </Value>
+                                                            <Style>
+                                                              <FontSize>7pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style>
+                                                          <TextAlign>Center</TextAlign>
+                                                        </Style>
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <rd:DefaultName>Textbox1</rd:DefaultName>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="FurtherInfo1Data">
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!AltProcValue1Text.Value</Value>
+                                                            <Style>
+                                                              <FontSize>7pt</FontSize>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                          <TablixRow>
+                                            <Height>0.2cm</Height>
+                                            <TablixCells>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="AltProcName2Lbl">
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!AltProcName2Lbl.Value</Value>
+                                                            <Style>
+                                                              <FontSize>7pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style>
+                                                          <TextAlign>Right</TextAlign>
+                                                        </Style>
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="Textbox2">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value> : </Value>
+                                                            <Style>
+                                                              <FontSize>7pt</FontSize>
+                                                              <FontWeight>Bold</FontWeight>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style>
+                                                          <TextAlign>Center</TextAlign>
+                                                        </Style>
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <rd:DefaultName>Textbox2</rd:DefaultName>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixCell>
+                                              <TablixCell>
+                                                <CellContents>
+                                                  <Textbox Name="FurtherInfo2Data">
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!AltProcValue2Text.Value</Value>
+                                                            <Style>
+                                                              <FontSize>7pt</FontSize>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>LightGrey</Color>
+                                                        <Style>None</Style>
+                                                      </Border>
+                                                    </Style>
+                                                  </Textbox>
+                                                  <rd:Selected>true</rd:Selected>
+                                                </CellContents>
+                                              </TablixCell>
+                                            </TablixCells>
+                                          </TablixRow>
+                                        </TablixRows>
+                                      </TablixBody>
+                                      <TablixColumnHierarchy>
+                                        <TablixMembers>
+                                          <TablixMember />
+                                          <TablixMember />
+                                          <TablixMember />
+                                        </TablixMembers>
+                                      </TablixColumnHierarchy>
+                                      <TablixRowHierarchy>
+                                        <TablixMembers>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif((Fields!AltProcValue1Text.Value="") or (Fields!AltProcName1Lbl.Value=""),true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                          <TablixMember>
+                                            <Visibility>
+                                              <Hidden>=iif((Fields!AltProcValue2Text.Value="") or (Fields!AltProcName2Lbl.Value=""),true,false)</Hidden>
+                                            </Visibility>
+                                          </TablixMember>
+                                        </TablixMembers>
+                                      </TablixRowHierarchy>
+                                      <Height>0.4cm</Height>
+                                      <Width>13.3cm</Width>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                      </Style>
+                                    </Tablix>
+                                    <Textbox Name="FurtherInfoDummy">
+                                      <CanGrow>true</CanGrow>
+                                      <KeepTogether>true</KeepTogether>
+                                      <Paragraphs>
+                                        <Paragraph>
+                                          <TextRuns>
+                                            <TextRun>
+                                              <Value />
+                                              <Style />
+                                            </TextRun>
+                                          </TextRuns>
+                                          <Style />
+                                        </Paragraph>
+                                      </Paragraphs>
+                                      <Left>13.8cm</Left>
+                                      <Height>1cm</Height>
+                                      <Width>0.3cm</Width>
+                                      <ZIndex>1</ZIndex>
+                                      <Style>
+                                        <Border>
+                                          <Style>None</Style>
+                                        </Border>
+                                        <PaddingLeft>2pt</PaddingLeft>
+                                        <PaddingRight>2pt</PaddingRight>
+                                        <PaddingTop>2pt</PaddingTop>
+                                        <PaddingBottom>2pt</PaddingBottom>
+                                      </Style>
+                                    </Textbox>
+                                  </ReportItems>
+                                  <KeepTogether>true</KeepTogether>
+                                  <Top>9cm</Top>
+                                  <Left>0.5cm</Left>
+                                  <Height>1cm</Height>
+                                  <Width>14.1cm</Width>
+                                  <ZIndex>4</ZIndex>
+                                  <Style>
+                                    <Border>
+                                      <Style>None</Style>
+                                    </Border>
+                                  </Style>
+                                </Rectangle>
+                              </ReportItems>
+                              <KeepTogether>true</KeepTogether>
+                              <Top>1.5cm</Top>
+                              <Left>6.2cm</Left>
+                              <Height>10.5cm</Height>
+                              <Width>14.8cm</Width>
+                              <ZIndex>1</ZIndex>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BottomBorder>
+                                  <Style>None</Style>
+                                </BottomBorder>
+                                <RightBorder>
+                                  <Style>None</Style>
+                                </RightBorder>
+                              </Style>
+                            </Rectangle>
+                            <Textbox Name="Separate">
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Fields!SeparateLbl.Value</Value>
+                                      <Style />
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Center</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Separate</rd:DefaultName>
+                              <Height>1.5cm</Height>
+                              <Width>21cm</Width>
+                              <ZIndex>2</ZIndex>
+                              <Style>
+                                <Border>
+                                  <Style>None</Style>
+                                </Border>
+                                <VerticalAlign>Bottom</VerticalAlign>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </ReportItems>
+                          <KeepTogether>true</KeepTogether>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Rectangle>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="Details" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <Height>12cm</Height>
+            <Width>21cm</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+        </ReportItems>
+        <Height>12cm</Height>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Body>
+      <Width>21cm</Width>
+      <Page>
+        <PageHeight>29.7cm</PageHeight>
+        <PageWidth>21cm</PageWidth>
+        <LeftMargin>0cm</LeftMargin>
+        <RightMargin>0cm</RightMargin>
+        <TopMargin>17.69cm</TopMargin>
+        <BottomMargin>0cm</BottomMargin>
+        <ColumnSpacing>1.27cm</ColumnSpacing>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <Language>=User!Language</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Cm</rd:ReportUnitType>
+  <rd:ReportID>0eeb6585-38ae-40f1-885b-8d50088d51b4</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="PaymentPartLbl">
+          <DataField>PaymentPartLbl</DataField>
+        </Field>
+        <Field Name="AccountPayableToLbl">
+          <DataField>AccountPayableToLbl</DataField>
+        </Field>
+        <Field Name="ReferenceLbl">
+          <DataField>ReferenceLbl</DataField>
+        </Field>
+        <Field Name="AdditionalInformationLbl">
+          <DataField>AdditionalInformationLbl</DataField>
+        </Field>
+        <Field Name="CurrencyLbl">
+          <DataField>CurrencyLbl</DataField>
+        </Field>
+        <Field Name="AmountLbl">
+          <DataField>AmountLbl</DataField>
+        </Field>
+        <Field Name="ReceiptLbl">
+          <DataField>ReceiptLbl</DataField>
+        </Field>
+        <Field Name="AcceptancePointLbl">
+          <DataField>AcceptancePointLbl</DataField>
+        </Field>
+        <Field Name="PayableByLbl">
+          <DataField>PayableByLbl</DataField>
+        </Field>
+        <Field Name="PayableByNameAddressLbl">
+          <DataField>PayableByNameAddressLbl</DataField>
+        </Field>
+        <Field Name="AltProcName1Lbl">
+          <DataField>AltProcName1Lbl</DataField>
+        </Field>
+        <Field Name="AltProcName2Lbl">
+          <DataField>AltProcName2Lbl</DataField>
+        </Field>
+        <Field Name="SeparateLbl">
+          <DataField>SeparateLbl</DataField>
+        </Field>
+        <Field Name="QRImage">
+          <DataField>QRImage</DataField>
+        </Field>
+        <Field Name="AccountPayableToText">
+          <DataField>AccountPayableToText</DataField>
+        </Field>
+        <Field Name="ReferenceText">
+          <DataField>ReferenceText</DataField>
+        </Field>
+        <Field Name="PayableByText">
+          <DataField>PayableByText</DataField>
+        </Field>
+        <Field Name="AdditionalInformationText">
+          <DataField>AdditionalInformationText</DataField>
+        </Field>
+        <Field Name="CurrencyText">
+          <DataField>CurrencyText</DataField>
+        </Field>
+        <Field Name="AmountText">
+          <DataField>AmountText</DataField>
+        </Field>
+        <Field Name="AltProcValue1Text">
+          <DataField>AltProcValue1Text</DataField>
+        </Field>
+        <Field Name="AltProcValue2Text">
+          <DataField>AltProcValue2Text</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
+</Report>

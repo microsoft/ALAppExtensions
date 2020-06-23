@@ -111,6 +111,24 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
     end;
 
     [Test]
+    procedure SalesCrMemoPaymentTermsCodeNotNeeded();
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+    begin
+        // Setup: Create Sales Document and modify Sales Header.
+        Initialize();
+        CreateSalesDocument(SalesLine, SalesHeader."Document Type"::"Credit Memo", LibraryUtility.GenerateGUID(), WORKDATE());
+        ModifySalesHeader(SalesHeader."Document Type"::"Credit Memo", SalesLine."Document No.", '', '');
+        SalesHeader.Get(SalesHeader."Document Type"::"Credit Memo", SalesLine."Document No.");
+
+        // Exercise.
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // Verify: Not error.
+    end;
+
+    [Test]
     procedure SalesOrderBlankUOMError();
     var
         SalesHeader: Record "Sales Header";
@@ -357,18 +375,6 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
           FindPaymentTerms(), YourReferenceErr);
     end;
 
-    [Test]
-    procedure ServiceCrMemoPaymentTermsCodeError();
-    var
-        ServiceHeader: Record "Service Header";
-    begin
-        // Verify error using blank Payment Terms Code on Service Credit Memo.
-        CreateAndPostModifiedServiceDocument(
-          ServiceHeader."Document Type"::"Credit Memo", LibraryUtility.GenerateGUID(),
-          '', PaymentTermsCodeErr);
-    end;
-
-
     local procedure CreateAndPostModifiedServiceDocument(DocumentType: Option; YourReference: Text[35]; PaymentTermsCode: Code[10]; ExpectedError: Text[1024]);
     var
         ServiceHeader: Record "Service Header";
@@ -384,6 +390,25 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         // Verify: Verify error on Service Document.
         Assert.ExpectedError(ExpectedError);
     end;
+
+    [Test]
+    procedure ServiceCrMemoPaymentTermsCodeNotNeeded();
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // Setup: Create Service Document and modify Service Header.
+        Initialize();
+        CreateServiceDocument(ServiceLine, ServiceHeader."Document Type"::"Credit Memo");
+        ServiceHeader.Get(ServiceHeader."Document Type"::"Credit Memo", ServiceLine."Document No.");
+        ModifyServiceHeader(ServiceHeader, LibraryUtility.GenerateGUID(), '');
+
+        // Exercise.
+        LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
+
+        // Verify: Not error.
+    end;
+
 
     [Test]
     [HandlerFunctions('ConfirmHandler')]

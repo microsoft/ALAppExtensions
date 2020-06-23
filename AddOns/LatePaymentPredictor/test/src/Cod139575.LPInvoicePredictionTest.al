@@ -11,6 +11,7 @@ codeunit 139575 "LP Prediction Test"
         LibraryInventory: Codeunit "Library - Inventory";
         LPPredictionTest: Codeunit "LP Prediction Test";
         LibraryUtility: Codeunit "Library - Utility";
+        LibraryERMCountryData: Codeunit "Library - ERM Country Data";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         EnableNotificationMsg: Label 'Want to know if a sales document will be paid on time? The Late Payment Prediction extension can predict that.';
         PredictionResultWillBeLateTxt: Label 'The payment is predicted to be late, with Low confidence in the prediction.';
@@ -27,10 +28,11 @@ codeunit 139575 "LP Prediction Test"
             Comment = '%1 = Quality of new model, %2 = Quality of existing model.';
         ModelReplacedMsg: Label 'A new model has been created with a quality of %1%.', Comment = '%1 = Quality of the new model';
         ModelTestedMsg: Label 'We have tested the model on your data and determined that its quality is %1. The quality indicates how well the model has been trained, and how accurate its predictions will be. For example, 80% means you can expect correct predictions for 80 out of 100 documents.', Comment = '%1 = Quality of the existing model';
-        CurrentModelLowerQualityThanDesiredErr: Label 'Cannot use the model to make predictions. The quality of the model is below the specified quality threshold, which means that its predictions are unlikely to meet your requirements for accuracy. To use the model anyway, enter a lower value in the Model Quality Threshold field.';
+        CurrentModelLowerQualityThanDesiredErr: Label 'You cannot use the model because its quality of %1 is below the value in the Model Quality Threshold field. That means its predictions are unlikely to meet your accuracy requirements. You can evaluate the model again to confirm its quality. To use the model anyway, enter a value that is less than or equal to %1 in the Model Quality Threshold field.', Comment = '%1 = current model quality (decimal)';
         CurrentTestMethod: Text;
         State: Integer;
         NoLPPForLatePaymentTxt: Label 'No prediction needed. The payment for this sales document is already overdue.';
+        OldWorkDate: Date;
 
     trigger OnRun();
     begin
@@ -49,6 +51,7 @@ codeunit 139575 "LP Prediction Test"
         SalesInvoice: TestPage "Sales Invoice";
     begin
         // [SCENARIO] The advertisement for enabling the feature appears when invoice created
+        Initialize();
         if BindSubscription(LPPredictionTest) then;
         EnsureThatMockDataIsFetchedFromKeyVault();
 
@@ -89,6 +92,7 @@ codeunit 139575 "LP Prediction Test"
     [SendNotificationHandler]
     procedure EnableNotificationHandler(var Notification: Notification): Boolean
     var
+        LPMachineLearningSetup: Record "LP Machine Learning Setup";
         LPPredictionMgt: Codeunit "LP Prediction Mgt.";
     begin
         case TestCheckInvoiceFromPageWhenNotEnabledState of
@@ -96,6 +100,8 @@ codeunit 139575 "LP Prediction Test"
                 begin
                     Assert.AreEqual(EnableNotificationMsg, Notification.Message(), 'Firstly the notification to enable the notification appears.');
                     TestCheckInvoiceFromPageWhenNotEnabledState += 1;
+                    LPMachineLearningSetup.GetSingleInstance();
+                    LPMachineLearningSetup."Standard Model Quality" := 0.6; // arbitrary standard model quality, to ensure that it is <> 0.
                     LPPredictionMgt.Enable(Notification);
                 end;
             1:
@@ -121,6 +127,7 @@ codeunit 139575 "LP Prediction Test"
         LPPredictionMgt: Codeunit "LP Prediction Mgt.";
     begin
         // [SCENARIO] Prediction results appear when the Predict button is clicked
+        Initialize();
         if BindSubscription(LPPredictionTest) then;
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         EnsureThatMockDataIsFetchedFromKeyVault();
@@ -151,6 +158,7 @@ codeunit 139575 "LP Prediction Test"
         CustomerNo: Code[20];
     begin
         // [SCENARIO] Prediction results appear when the Predict button is clicked on a new order
+        Initialize();
         if BindSubscription(LPPredictionTest) then;
         LPMLInputData.DeleteAll();
         EnsureThatMockDataIsFetchedFromKeyVault();
@@ -187,6 +195,7 @@ codeunit 139575 "LP Prediction Test"
         CustomerNo: Code[20];
     begin
         // [SCENARIO] User is trying to use LPP on sales order with late due date and gets message on that
+        Initialize();
 
         // [GIVEN] Create a sales order the customer with late due date
         CustomerNo := LibrarySales.CreateCustomerNo();
@@ -211,6 +220,7 @@ codeunit 139575 "LP Prediction Test"
         CustomerNo: Code[20];
     begin
         // [SCENARIO] User is trying to use LPP on sales quote with late due date and gets message on that
+        Initialize();
 
         // [GIVEN] Create a sales quote the customer with late due date
 
@@ -236,6 +246,7 @@ codeunit 139575 "LP Prediction Test"
         CustomerNo: Code[20];
     begin
         // [SCENARIO] User is trying to use LPP on sales invoice with late due date and gets message on that
+        Initialize();
 
         // [GIVEN] Create a sales invoice the customer with late due date
         CustomerNo := LibrarySales.CreateCustomerNo();
@@ -259,6 +270,8 @@ codeunit 139575 "LP Prediction Test"
         LPModelManagement: Codeunit "LP Model Management";
     begin
         // [SCENARIO] Training a model manually creates a model with a quality that is saved in the setup. Enabling the setup with a threshold higher than given model raises error.
+        Initialize();
+
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         EnsureThatMockDataIsFetchedFromKeyVault();
 
@@ -285,13 +298,14 @@ codeunit 139575 "LP Prediction Test"
 
         // [WHEN] Threshold is made higher than model quality
         LPMachineLearningSetup."Model Quality Threshold" := SomeModelQuality + 0.02;
+        LPMachineLearningSetup."Standard Model Quality" := 0.6; // arbitrary standard model quality
         LPMachineLearningSetup.Modify();
 
         // [WHEN] Enabling the prediction
         asserterror LPMachineLearningSetup.Validate("Make Predictions", true);
 
         // [THEN] Raises error
-        Assert.ExpectedError(CurrentModelLowerQualityThanDesiredErr);
+        Assert.ExpectedError(StrSubstNo(CurrentModelLowerQualityThanDesiredErr, SomeModelQuality));
 
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
@@ -303,6 +317,8 @@ codeunit 139575 "LP Prediction Test"
         LPModelManagement: Codeunit "LP Model Management";
     begin
         // [SCENARIO] Attempt to train a model when a training is ongoing should be stopped.
+        Initialize();
+
         // [GIVEN] A job queue entry which represents a training in progress
         JobQueueEntry.Init();
         JobQueueEntry."Object Type to Run" := JobQueueEntry."Object Type to Run"::Codeunit;
@@ -324,6 +340,8 @@ codeunit 139575 "LP Prediction Test"
         LPModelManagement: Codeunit "LP Model Management";
     begin
         // [SCENARIO] Training should error out when enough data is not available
+        Initialize();
+
         // [GIVEN] No sales invoices exist
         SalesInvoiceHeader.DeleteAll();
         LPMachineLearningSetup.DeleteAll();
@@ -356,6 +374,8 @@ codeunit 139575 "LP Prediction Test"
         LPModelManagement: Codeunit "LP Model Management";
     begin
         // [SCENARIO] A custom model already exists. Training a new model leads to a model of poorer quality. User confirms that he stil wishes to use the new model.
+        Initialize();
+
         if BindSubscription(LPPredictionTest) then;
         SomeModelQuality := 0.66;
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
@@ -391,6 +411,8 @@ codeunit 139575 "LP Prediction Test"
         JobQueueEntry: Record "Job Queue Entry";
     begin
         // [SCENARIO] Test the background task calls the evaluate and train in the good sequence and when expected
+        Initialize();
+
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         EnsureThatMockDataIsFetchedFromKeyVault();
         DeleteStandardModel();
@@ -516,6 +538,8 @@ codeunit 139575 "LP Prediction Test"
         LPModelManagement: Codeunit "LP Model Management";
     begin
         // [SCENARIO] Testing a model saves the model quality to the Setup
+        Initialize();
+
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
         if BindSubscription(LPPredictionTest) then;
@@ -557,6 +581,8 @@ codeunit 139575 "LP Prediction Test"
         Result: Boolean;
     begin
         // [SCENARIO] Testing that there is enough data available as a pre-req for creating/ evaluating models
+        Initialize();
+
         // [GIVEN] Create 50 sales invoices, 3 of them are delayed
         SalesInvoiceHeader.DeleteAll();
         LPMachineLearningSetup.DeleteAll();
@@ -587,6 +613,11 @@ codeunit 139575 "LP Prediction Test"
         Assert.AreEqual(50 + 15, TotalInvoiceCount, 'Total invoice count does not match number of invoices created');
     end;
 
+    local procedure Initialize()
+    begin
+        LibraryERMCountryData.UpdateLocalData();
+    end;
+
     [SendNotificationHandler]
     procedure SetupInvoiceNotificationHandler(var Notification: Notification): Boolean
     begin
@@ -599,6 +630,7 @@ codeunit 139575 "LP Prediction Test"
     begin
         LPMachineLearningSetup.DeleteAll();
         LPMachineLearningSetup.Init();
+        LPMachineLearningSetup."Standard Model Quality" := 0.6; // arbitrary standard model quality
         LPMachineLearningSetup."Make Predictions" := true;
         LPMachineLearningSetup.Insert();
     end;
@@ -744,15 +776,18 @@ codeunit 139575 "LP Prediction Test"
         GenJournalLine: Record "Gen. Journal Line";
         LPPredictionMirrorTest: Codeunit "LP ML Input Data Test";
         CustomerNo: Code[20];
-        CustDate: Date;
     begin
         CustomerNo := LibrarySales.CreateCustomerNo();
-        CustDate := CalcDate('<CY - 6M>'); // middle of the current year
-
+        // We must not use Today() function in tests unless it is required by functionality. That is pretty rare case. 
+        // We must use WorkDate().
         if Delayed then
-            LPPredictionMirrorTest.PostPaidInvoice(CustomerNo, CalcDate('<-1W>', CustDate), CalcDate('<-5D>', CustDate), CalcDate('<-1D>', CustDate), SalesInvoiceHeader, GenJournalLine)
+            LPPredictionMirrorTest.PostPaidInvoice(
+                CustomerNo, CalcDate('<-1W>', WorkDate()), CalcDate('<-5D>', WorkDate()), CalcDate('<-1D>', WorkDate()),
+                SalesInvoiceHeader, GenJournalLine)
         else
-            LPPredictionMirrorTest.PostPaidInvoice(CustomerNo, CalcDate('<-1W>', CustDate), CalcDate('<-5D>', CustDate), CalcDate('<-6D>', CustDate), SalesInvoiceHeader, GenJournalLine);
+            LPPredictionMirrorTest.PostPaidInvoice(
+                CustomerNo, CalcDate('<-1W>', WorkDate()), CalcDate('<-5D>', WorkDate()), CalcDate('<-6D>', WorkDate()),
+                SalesInvoiceHeader, GenJournalLine);
         exit(CustomerNo);
     end;
 

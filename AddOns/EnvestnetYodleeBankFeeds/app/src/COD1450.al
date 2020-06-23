@@ -1477,12 +1477,14 @@ codeunit 1450 "MS - Yodlee Service Mgt."
 
     local procedure TryGetResponseValue(XPath: Text; var Response: Text; var TempBlob: Codeunit "Temp Blob"; var ErrorText: Text): Boolean;
     var
-        GetJsonStructure: Codeunit 1237;
+        GetJsonStructure: Codeunit "Get Json Structure";
         XmlInStream: InStream;
         OutStream: OutStream;
         XMLRootNode: XmlNode;
         XmlDoc: XmlDocument;
         XmlElem: XmlElement;
+        GLBResponseText: Text;
+        InStreamText: Text;
     begin
         // response 204 has no content, so empty response is fine
         if GLBResponseInStream.EOS() then
@@ -1495,7 +1497,13 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         END;
 
         TempBlob.CreateInStream(XmlInStream);
-        XmlDocument.ReadFrom(XmlInStream, XmlDoc);
+        while not XmlInStream.EOS() do begin
+            XmlInStream.ReadText(InStreamText);
+            GLBResponseText += InStreamText;
+        end;
+
+        RemoveInvalidXMLCharacters(GLBResponseText);
+        XmlDocument.ReadFrom(GLBResponseText, XmlDoc);
         XmlDoc.GetRoot(XmlElem);
         XMLRootNode := XmlElem.AsXmlNode();
 
@@ -1507,6 +1515,55 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         else
             Response := FindNodeXML(XMLRootNode, XPath);
         EXIT(TRUE);
+    end;
+
+    local procedure RemoveInvalidXMLCharacters(var InputText: Text)
+    begin
+        // so far, in icms we have only seen Char x014 coming from Yodlee
+        // therefore remove this one first and continue only if there are more
+        RemoveString(InputText, '&#x14');
+        if StrPos(InputText, '&#x') = 0 then
+            exit;
+
+        RemoveString(InputText, '&#x00');
+        RemoveString(InputText, '&#x01');
+        RemoveString(InputText, '&#x02');
+        RemoveString(InputText, '&#x03');
+        RemoveString(InputText, '&#x04');
+        RemoveString(InputText, '&#x05');
+        RemoveString(InputText, '&#x06');
+        RemoveString(InputText, '&#x07');
+        RemoveString(InputText, '&#x08');
+        RemoveString(InputText, '&#x0B');
+        RemoveString(InputText, '&#x0C');
+        RemoveString(InputText, '&#x0E');
+        RemoveString(InputText, '&#x0F');
+        RemoveString(InputText, '&#x10');
+        RemoveString(InputText, '&#x11');
+        RemoveString(InputText, '&#x12');
+        RemoveString(InputText, '&#x13');
+        RemoveString(InputText, '&#x15');
+        RemoveString(InputText, '&#x16');
+        RemoveString(InputText, '&#x17');
+        RemoveString(InputText, '&#x18');
+        RemoveString(InputText, '&#x19');
+        RemoveString(InputText, '&#x1A');
+        RemoveString(InputText, '&#x1B');
+        RemoveString(InputText, '&#x1C');
+        RemoveString(InputText, '&#x1D');
+        RemoveString(InputText, '&#x1E');
+        RemoveString(InputText, '&#x1F');
+    end;
+
+    local procedure RemoveString(var InputText: Text; StringToRemove: Text)
+    var
+        startPos: Integer;
+    begin
+        repeat
+            startPos := StrPos(InputText, StringToRemove);
+            if startPos > 0 then
+                InputText := DelStr(InputText, startPos, StrLen(StringToRemove));
+        until startPos = 0;
     end;
 
     local procedure CopyLinkedBankAccountsToTemp(var TempBankAccount: Record 270 temporary);

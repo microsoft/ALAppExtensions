@@ -25,6 +25,7 @@ table 1436 "Ess. Business Headline Per Usr"
             DataClassification = SystemMetadata;
             ObsoleteState = Pending;
             ObsoleteReason = 'Replaced with the Last Computed field on the RC Headlines User Data table';
+            ObsoleteTag = '15.4';
         }
         field(5; "Headline Computation WorkDate"; Date)
         {

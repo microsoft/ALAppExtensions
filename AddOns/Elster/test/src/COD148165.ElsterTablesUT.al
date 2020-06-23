@@ -15,9 +15,11 @@ codeunit 148165 "Elster Tables UT"
 
     var
         LibraryUTUtility: Codeunit "Library UT Utility";
+        LibraryUtility: Codeunit "Library - Utility";
         Assert: Codeunit "Assert";
         LibraryRandom: Codeunit "Library - Random";
         SameValueMsg: Label 'Value must be same.';
+        WrongPlaceErr: Label 'Places of %1 in area %2 must be %3.';
 
     [Test]
     procedure OnInsertVATStatNameError()
@@ -386,7 +388,7 @@ codeunit 148165 "Elster Tables UT"
     begin
         // [SCENARIO 283574] Purpose of the test is to validate CheckVATNo function for Table 11011 - Sales VAT Advance Notification.
         // Setup.
-        UpdateCompanyInformation(CompanyInformation, CompanyInformation."Tax Office Area"::Hamburg);  // Tax Office Area option 2 picked,can be any of these 8,4,2,6,3,7,1,16.
+        UpdateCompanyInformation(CompanyInformation, CompanyInformation."Tax Office Area"::Hamburg, 10);  // Tax Office Area option 2 picked,can be any of these 8,4,2,6,3,7,1,16.
         ExpectedVATNo := DelChr(CompanyInformation."Registration No.");  // Delete space character.
         ExpectedVATNo := DelChr(ExpectedVATNo, '=', '/');
 
@@ -585,7 +587,7 @@ codeunit 148165 "Elster Tables UT"
         NumberDistinction: Integer;
     begin
         // Update Tax Office Area on Company Information.
-        UpdateCompanyInformation(CompanyInformation, TaxOfficeArea);
+        UpdateCompanyInformation(CompanyInformation, TaxOfficeArea, 10);
 
         // Exercise.
         asserterror SalesVATAdvanceNotif.CheckVATNo(PosTaxOffice, NumberTaxOffice, PosArea, NumberArea, PosDistinction, NumberDistinction);
@@ -620,6 +622,51 @@ codeunit 148165 "Elster Tables UT"
 
         // Verify: Verify Amount in VAT Entry for Tax Amount,Tax Base,Tax Unrealized Amount,Tax Unrealized Base.
         VerifyVATEntryTax(VATEntry, AmountType, TaxAmount[RowNo], TaxBase[RowNo], TaxUnrealizedAmount[RowNo], TaxUnrealizedBase[RowNo]);
+    end;
+
+    [Test]
+    procedure CheckVATNoSalesVATAdvNotifForHessen()
+    var
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+        CompanyInformation: Record "Company Information";
+        PosTaxOffice: Integer;
+        NumberTaxOffice: Integer;
+        PosArea: Integer;
+        NumberArea: Integer;
+        PosDistinction: Integer;
+        NumberDistinction: Integer;
+        VATNo: Text[30];
+        ExpectedVATNo: Text[30];
+    begin
+        // [SCENARIO 359432] Validate CheckVATNo function for Table 11011 - Sales VAT Advance Notification when "Tax Office Area" is "Hessen" and "Registration No." has length of 11 chars 
+
+        UpdateCompanyInformation(CompanyInformation, CompanyInformation."Tax Office Area"::Hessen, 11);
+        ExpectedVATNo := DelChr(CompanyInformation."Registration No.");
+        ExpectedVATNo := DelChr(ExpectedVATNo, '=', '/');
+        VATNo := SalesVATAdvanceNotif.CheckVATNo(PosTaxOffice, NumberTaxOffice, PosArea, NumberArea, PosDistinction, NumberDistinction);
+        Assert.AreEqual(ExpectedVATNo, VATNo, SameValueMsg);
+        Assert.AreEqual(8, PosTaxOffice, SameValueMsg);
+    end;
+
+    [Test]
+    procedure CheckVATNoWithTaxOfficeAreaSalesVATAdvNotifErrorForHessen();
+    var
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+        CompanyInformation: Record "Company Information";
+        PosTaxOffice: Integer;
+        NumberTaxOffice: Integer;
+        PosArea: Integer;
+        NumberArea: Integer;
+        PosDistinction: Integer;
+        NumberDistinction: Integer;
+    begin
+        // [SCENARIO 359432] Validate CheckVATNo function for Table 11011 - Sales VAT Advance Notification when "Tax Office Area" is "Hessen" and "Registration No." has length of 9 chars
+
+        UpdateCompanyInformation(CompanyInformation, CompanyInformation."Tax Office Area"::Hessen, 9);
+        asserterror SalesVATAdvanceNotif.CheckVATNo(PosTaxOffice, NumberTaxOffice, PosArea, NumberArea, PosDistinction, NumberDistinction);
+        Assert.ExpectedError(
+            StrSubstNo(WrongPlaceErr, CompanyInformation.FieldCaption("Registration No."), CompanyInformation."Tax Office Area", 11));
+        Assert.ExpectedErrorCode('Dialog');
     end;
 
     local procedure CreateVATStatementName(var VATStatementName: Record "VAT Statement Name"; StatementTemplateName: Code[10])
@@ -668,10 +715,12 @@ codeunit 148165 "Elster Tables UT"
         Assert.ExpectedErrorCode('Dialog');
     end;
 
-    local procedure UpdateCompanyInformation(var CompanyInformation: Record "Company Information"; TaxOfficeArea: Option)
+    local procedure UpdateCompanyInformation(var CompanyInformation: Record "Company Information"; TaxOfficeArea: Option; RegistrationNoLength: Integer)
     begin
         CompanyInformation.Get();
         CompanyInformation."Tax Office Area" := TaxOfficeArea;
+        CompanyInformation."Registration No." :=
+            copystr(LibraryUtility.GenerateRandomXMLText(RegistrationNoLength), 1, MaxStrLen(CompanyInformation."Registration No."));
         CompanyInformation.Modify();
     end;
 

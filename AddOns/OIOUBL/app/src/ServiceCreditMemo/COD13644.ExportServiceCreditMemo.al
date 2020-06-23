@@ -33,6 +33,8 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
 
         ServiceCrMemoHeader."OIOUBL-Electronic Credit Memo Created" := true;
         ServiceCrMemoHeader.Modify();
+
+        Codeunit.Run(Codeunit::"Service Cr. Memo-Printed", ServiceCrMemoHeader);
     end;
 
     procedure ExportXML(ServiceCrMemoHeader: Record "Service Cr.Memo Header")
@@ -63,6 +65,8 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         ServiceCrMemoHeader2.Get(ServiceCrMemoHeader."No.");
         ServiceCrMemoHeader2."OIOUBL-Electronic Credit Memo Created" := true;
         ServiceCrMemoHeader2.Modify();
+
+        Codeunit.Run(Codeunit::"Service Cr. Memo-Printed", ServiceCrMemoHeader2);
     end;
 
     local procedure InsertDiscrepancyResponse(var CrMemoElement: XmlElement);

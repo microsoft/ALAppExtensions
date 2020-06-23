@@ -253,7 +253,7 @@ codeunit 1951 "LP Model Management"
     begin
     end;
 
-    local procedure EvaluateModel(Model: Option; BasedOnIncrement: Boolean)
+    internal procedure EvaluateModel(Model: Option; BasedOnIncrement: Boolean)
     var
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
         MLPredictionManagement: Codeunit "ML Prediction Management";

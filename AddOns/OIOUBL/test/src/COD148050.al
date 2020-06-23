@@ -25,6 +25,8 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
         NegativeDiscountAmountErr: Label 'The total Line Discount Amount cannot be negative.';
         NegativeAmountErr: Label 'The total Line Amount cannot be negative.';
         GLEntryVerifyErr: Label 'The GLEntry does not exist.';
+        NotFoundOnPageErr: Label 'is not found on the page';
+        TestFieldNotFoundErr: Label 'TestFieldNotFound';
         GLNNoTok: Label '5790000510146';
 
     [Test]
@@ -286,21 +288,34 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
     end;
 
     [Test]
-    procedure SalesReceivablesSetupOIOUBLPathIsHiddenOnSaaS();
+    procedure SalesSetupOIOUBLPathsAreHidden()
     var
-        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
-        SalesReceivablesSetup: TestPage "Sales & Receivables Setup";
+        SalesSetup: TestPage "Sales & Receivables Setup";
     begin
-        // [FEATURE] [Sales Invoice] [UI] [SaaS]
-        // [SCENARIO 212351] Group field OutputPaths Should be invisible on SaaS
+        // [FEATURE] [UI]
+        // [SCENARIO 345034] Default paths for saving OIOUBL documents are not shown on Sales & Receivables Setup page.
 
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(TRUE);
-        SalesReceivablesSetup.OpenView();
-        Assert.IsFalse(SalesReceivablesSetup."OIOUBL-Invoice Path".Visible(), 'Field OIOUBL-Invoice Path should be invisible');
-        Assert.IsFalse(SalesReceivablesSetup."OIOUBL-Cr. Memo Path".Visible(), 'Field OIOUBL-Cr. Memo Path should be invisible');
-        Assert.IsFalse(SalesReceivablesSetup."OIOUBL-Reminder Path".Visible(), 'Field OIOUBL-Reminder Path should be invisible');
-        Assert.IsFalse(SalesReceivablesSetup."OIOUBL-Fin. Chrg. Memo Path".Visible(), 'Field OIOUBL-Fin. Chrg. Memo Path should be invisible');
-        SalesReceivablesSetup.CLOSE();
+        // [WHEN] Open Sales & Receivables Setup page.
+        SalesSetup.OpenView();
+
+        // [THEN] Fields Invoice Path, Cr. Memo Path, Reminder Path, Fin. Chrg. Memo Path are not shown on OIOUBL fasttab of Sales Setup page.
+        asserterror Assert.IsFalse(SalesSetup."OIOUBL-Invoice Path".Visible(), '');
+        Assert.ExpectedError(NotFoundOnPageErr);
+        Assert.ExpectedErrorCode(TestFieldNotFoundErr);
+
+        asserterror Assert.IsFalse(SalesSetup."OIOUBL-Cr. Memo Path".Visible(), '');
+        Assert.ExpectedError(NotFoundOnPageErr);
+        Assert.ExpectedErrorCode(TestFieldNotFoundErr);
+
+        asserterror Assert.IsFalse(SalesSetup."OIOUBL-Reminder Path".Visible(), '');
+        Assert.ExpectedError(NotFoundOnPageErr);
+        Assert.ExpectedErrorCode(TestFieldNotFoundErr);
+
+        asserterror Assert.IsFalse(SalesSetup."OIOUBL-Fin. Chrg. Memo Path".Visible(), '');
+        Assert.ExpectedError(NotFoundOnPageErr);
+        Assert.ExpectedErrorCode(TestFieldNotFoundErr);
+
+        SalesSetup.Close();
     end;
 
     local procedure CreateAndUpdateServiceLine(var ServiceLine: Record "Service Line"; ServiceHeader: Record "Service Header"; Type: Option; ItemNo: Code[20]; ServiceItemLineNo: Integer; Qty: Integer; UnitPrice: Decimal; LineDiscount: Decimal);

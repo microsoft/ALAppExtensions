@@ -10,15 +10,20 @@ codeunit 9092 "Postcode Service GetAddress.io"
         PostcodeServiceManager: Codeunit 9090;
         ServiceIdentifierMsg: Label 'GetAddress.io', Locked = true;
         ServiceNameMsg: Label 'GetAddress.io', Locked = true;
+        UKPostCodeTok: Label 'UKPostCodeTelemetryCategoryTok';
+        AddressListCreatedMsg: Label 'The list of addresses has been created.';
         TechnicalErr: Label 'A technical error occurred while trying to reach the service.';
-        ServiceUnavaiableErr: Label 'The getAddress.io service is currently unavailable.';
+        WrongServiceErr: Label 'You must choose the getAddress.io service.';
+        ServiceUnavailableErr: Label 'The getAddress.io service is not available right now. Try again later.';
         ExpiredTok: Label 'expired', Locked = true;
-        ExpiredErr: Label 'Your account with getAddress.io has expired.';		
-        NotFoundErr: Label 'No addresses could be found for this postcode.';		
-        BadRequestErr: Label 'The postcode is not valid.';	
-        InvalidAPIKeyErr: Label 'Your access to the getAddress.io service has expired. Please renew your API key.';	
-        TooManyRequestsErr: Label 'You have made more requests than your allowed limit.';		
-		
+        ExpiredErr: Label 'Your account with getAddress.io has expired.';
+        NotFoundErr: Label 'No addresses could be found for this postcode.';
+        BadRequestErr: Label 'The postcode is not valid.';
+        InvalidAPIKeyErr: Label 'Your access to the getAddress.io service has expired. Please renew your API key.';
+        TooManyRequestsErr: Label 'You have made more requests than your allowed limit.';
+        GeneralHttpErr: Label 'Something went wrong when connecting to the getAddress.io service. Try again later.';
+        JsonParseErr: Label 'The json response from getAddress.io contains errors.';
+
     [EventSubscriber(ObjectType::Codeunit, 9090, 'OnDiscoverPostcodeServices', '', false, false)]
     procedure RegisterServiceOnDiscover(var TempServiceListNameValueBuffer: Record 823 temporary)
     begin
@@ -49,8 +54,12 @@ codeunit 9092 "Postcode Service GetAddress.io"
         Address: Text[250];
     begin
         // Check if we're the selected service
-        IF ServiceKey <> ServiceIdentifierMsg THEN
-            EXIT;
+        if ServiceKey <> ServiceIdentifierMsg then begin
+            ErrorMsg := WrongServiceErr;
+            IsSuccessful := false;
+            SendTraceTag('0000BUX', UKPostCodeTok, VERBOSITY::Error, ErrorMsg, DATACLASSIFICATION::SystemMetadata);
+            exit;
+        end;
 
         GetConfigAndIfNecessaryCreate();
 
@@ -58,14 +67,17 @@ codeunit 9092 "Postcode Service GetAddress.io"
         PrepareWebRequest(HttpClientInstance);
 
         if not HttpClientInstance.Get(Url, HttpResponse) then begin
+            // This check avoids accessing to an empty HttpResponse if the request fails. Otherwise there will be an error
             ErrorMsg := TechnicalErr;
             IsSuccessful := false;
+            SendTraceTag('0000BU2', UKPostCodeTok, VERBOSITY::Error, ErrorMsg, DATACLASSIFICATION::SystemMetadata);
             exit;
         end;
 
         ErrorMsg := HandleHttpErrors(HttpResponse);
         if ErrorMsg <> '' then begin
             IsSuccessful := false;
+            SendTraceTag('0000BU3', UKPostCodeTok, VERBOSITY::Error, ErrorMsg, DATACLASSIFICATION::SystemMetadata);
             exit;
         end;
 
@@ -76,7 +88,7 @@ codeunit 9092 "Postcode Service GetAddress.io"
             AddressJsonArray := JsonArrayToken.AsArray();
 
             foreach AddressJsonToken in AddressJsonArray do begin
-                Address := copyStr(AddressJsonToken.AsValue().AsText(),1,MaxStrLen(Address));
+                Address := copyStr(AddressJsonToken.AsValue().AsText(), 1, MaxStrLen(Address));
                 ParseAddress(TempAutocompleteAddress, Address, TempEnteredAutocompleteAddress.Postcode);
 
                 IF (STRPOS(TempAutocompleteAddress.Address, TempEnteredAutocompleteAddress.Address) > 0) OR
@@ -84,10 +96,17 @@ codeunit 9092 "Postcode Service GetAddress.io"
                 THEN
                     PostcodeServiceManager.AddSelectionAddress(TempAddressListNameValueBuffer, Address, Address);
             end;
-            IsSuccessful := TRUE;
-        end;
 
-        ErrorMsg := TechnicalErr;
+            IsSuccessful := TRUE;
+            SendTraceTag('0000BU7', UKPostCodeTok, VERBOSITY::Normal, AddressListCreatedMsg, DATACLASSIFICATION::SystemMetadata);
+            exit;
+        end else begin
+            // show a general error message to user but send a technical error message in telemetry
+            ErrorMsg := GeneralHttpErr;
+            IsSuccessful := false;
+            SendTraceTag('0000BU4', UKPostCodeTok, VERBOSITY::Error, JsonParseErr, DATACLASSIFICATION::SystemMetadata);
+            exit
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, 9090, 'OnRetrieveAddress', '', false, false)]
@@ -160,6 +179,8 @@ codeunit 9092 "Postcode Service GetAddress.io"
             exit(ExpiredErr);
         ResponseStatus := HTTPResponse.HttpStatusCode();
         case ResponseStatus of
+            200:
+                exit(''); // no error
             400:
                 exit(BadRequestErr);
             401:
@@ -167,12 +188,12 @@ codeunit 9092 "Postcode Service GetAddress.io"
             404:
                 exit(NotFoundErr);
             429:
-                exit(TooManyRequestsErr);			
+                exit(TooManyRequestsErr);
             503:
-                exit(ServiceUnavaiableErr);
+                exit(ServiceUnavailableErr);
         end;
 
-        exit('');
+        exit(GeneralHttpErr);
     end;
 
     local procedure TrimStart(String: Text): Text

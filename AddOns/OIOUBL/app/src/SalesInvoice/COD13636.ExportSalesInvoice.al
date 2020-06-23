@@ -20,6 +20,8 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
 
         SalesInvoiceHeader."OIOUBL-Electronic Invoice Created" := true;
         SalesInvoiceHeader.Modify();
+
+        Codeunit.Run(Codeunit::"Sales Inv.-Printed", SalesInvoiceHeader);
     end;
 
     var
@@ -63,6 +65,8 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         SalesInvHeader2.Get(SalesInvoiceHeader."No.");
         SalesInvHeader2."OIOUBL-Electronic Invoice Created" := true;
         SalesInvHeader2.Modify();
+
+        Codeunit.Run(Codeunit::"Sales Inv.-Printed", SalesInvHeader2);
     end;
 
     local procedure InsertInvoiceTaxTotal(var InvoiceElement: XmlElement; var SalesInvoiceLine: Record "Sales Invoice Line"; TotalTaxAmount: Decimal; CurrencyCode: Code[10]);

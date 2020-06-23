@@ -20,7 +20,7 @@ codeunit 135087 "AMC CT E2E Web Service Test"
         SyslogErrorsErr: Label 'The AMC Banking has returned the following error message:';
         StmtNotRecognized1Err: Label 'File not recognized as valid bankfile';
         StmtNotRecognized2Err: Label 'Check your importfile';
-        UnexpectedValueErr: Label 'Unexpected value was found. Expected value was: %1.';
+        UnexpectedValueErr: Label 'Unexpected value was found. Expected value was: %1.', Comment = '%1 = Test error value';
 
     [Test]
     [Scope('OnPrem')]

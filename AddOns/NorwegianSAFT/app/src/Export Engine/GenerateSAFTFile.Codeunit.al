@@ -56,6 +56,7 @@ codeunit 10673 "Generate SAF-T File"
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         CompanyInformation: Record "Company Information";
+        CountryRegion: Record "Country/Region";
     begin
         SAFTXMLHelper.Initialize();
         if GuiAllowed() then
@@ -63,7 +64,13 @@ codeunit 10673 "Generate SAF-T File"
         CompanyInformation.get();
         SAFTXMLHelper.AddNewXMLNode('Header', '');
         SAFTXMLHelper.AppendXMLNode('AuditFileVersion', '1.0');
-        SAFTXMLHelper.AppendXMLNode('AuditFileCountry', CompanyInformation."Country/Region Code");
+        if CompanyInformation."Country/Region Code" <> '' then begin
+            CountryRegion.Get(CompanyInformation."Country/Region Code");
+            if CountryRegion."ISO Code" = '' then
+                SAFTXMLHelper.AppendXMLNode('AuditFileCountry', CompanyInformation."Country/Region Code")
+            else
+                SAFTXMLHelper.AppendXMLNode('AuditFileCountry', CountryRegion."ISO Code");
+        end;
         SAFTXMLHelper.AppendXMLNode('AuditFileDateCreated', FormatDate(today()));
         SAFTXMLHelper.AppendXMLNode('SoftwareCompanyName', 'Microsoft');
         SAFTXMLHelper.AppendXMLNode('SoftwareID', 'Microsoft Dynamics 365 Business Central');
@@ -81,7 +88,7 @@ codeunit 10673 "Generate SAF-T File"
 
         SAFTXMLHelper.AppendXMLNode('HeaderComment', SAFTExportHeader."Header Comment");
         SAFTXMLHelper.AppendXMLNode('TaxAccountingBasis', 'A');
-        SAFTXMLHelper.AppendXMLNode('UserID', UserId());
+        SAFTXMLHelper.AppendXMLNode('UserID', GetSAFTMiddle1Text(UserId()));
         SAFTXMLHelper.FinalizeXMLNode();
     end;
 
@@ -99,12 +106,14 @@ codeunit 10673 "Generate SAF-T File"
             CompanyInformation."Country/Region Code", 'StreetAddress');
         Employee.Get(CompanyInformation."SAF-T Contact No.");
         ExportContact(
-            Employee."First Name", Employee."Last Name", Employee."Phone No.", Employee."Fax No.", Employee."E-Mail",
-            '', Employee."Mobile Phone No.");
+            Employee."First Name", Employee."Last Name", GetSAFTShortText(Employee."Phone No."),
+            GetSAFTShortText(Employee."Fax No."), GetSAFTMiddle2Text(Employee."E-Mail"),
+            '', GetSAFTShortText(Employee."Mobile Phone No."));
         ExportTaxRegistration(CompanyInformation."VAT Registration No.");
         ExportBankAccount(
             CompanyInformation."Country/Region Code", CompanyInformation."Bank Name", CompanyInformation."Bank Account No.", CompanyInformation.IBAN,
             CompanyInformation."Bank Branch No.", '');
+        ExportBankAccounts();
         SAFTXMLHelper.FinalizeXMLNode();
     end;
 
@@ -169,8 +178,6 @@ codeunit 10673 "Generate SAF-T File"
         SAFTMappingRange.Get(SAFTExportHeader."Mapping Range Code");
         SAFTGLAccountMapping.SetRange("Mapping Range Code", SAFTExportHeader."Mapping Range Code");
         SAFTGLAccountMapping.SetFilter("No.", '<>%1', '');
-        // It's up to date by VerifyMappingIsDone function called from SAFTExportCheck.Codeunit.al right before the actual export
-        SAFTGLAccountMapping.SetRange("G/L Entries Exists", true);
         if not SAFTGLAccountMapping.FindSet() then
             exit;
 
@@ -183,13 +190,14 @@ codeunit 10673 "Generate SAF-T File"
                 Window.Update(2, ROUND(100 * (CountOfAccounts / TotalNumberOfAccounts * 100), 1));
             end;
             ExportGLAccount(
-                SAFTGLAccountMapping."G/L Account No.", SAFTGLAccountMapping."No.", '', '',
+                SAFTMappingRange."Mapping Type", SAFTGLAccountMapping."G/L Account No.", SAFTGLAccountMapping."No.",
+                SAFTGLAccountMapping."Category No.", SAFTGLAccountMapping."No.",
                 SAFTExportHeader."Starting Date", SAFTExportHeader."Ending Date");
         until SAFTGLAccountMapping.Next() = 0;
         SAFTXMLHelper.FinalizeXMLNode();
     end;
 
-    local procedure ExportGLAccount(GLAccNo: Code[20]; StandardAccNo: Text; GroupingCategory: Code[20]; GroupingNo: Code[20]; StartingDate: Date; EndingDate: Date)
+    local procedure ExportGLAccount(MappingType: Enum "SAF-T Mapping Type"; GLAccNo: Code[20]; StandardAccNo: Text; GroupingCategory: Code[20]; GroupingNo: Code[20]; StartingDate: Date; EndingDate: Date)
     var
         GLAccount: Record "G/L Account";
         OpeningDebitBalance: Decimal;
@@ -217,15 +225,16 @@ codeunit 10673 "Generate SAF-T File"
             ClosingDebitBalance := GLAccount."Net Change"
         else
             ClosingCreditBalance := -GLAccount."Net Change";
-        if (ClosingDebitBalance = 0) and (ClosingCreditBalance = 0) then
-            exit;
 
         SAFTXMLHelper.AddNewXMLNode('Account', '');
         SAFTXMLHelper.AppendXMLNode('AccountID', GLAccount."No.");
         SAFTXMLHelper.AppendXMLNode('AccountDescription', GLAccount.Name);
-        SAFTXMLHelper.AppendXMLNode('StandardAccountID', StandardAccNo);
-        SAFTXMLHelper.AppendXMLNode('GroupingCategory', GroupingCategory);
-        SAFTXMLHelper.AppendXMLNode('GroupingCode', GroupingNo);
+        if MappingType in [MappingType::"Two Digit Standard Account", MappingType::"Four Digit Standard Account"] then
+            SAFTXMLHelper.AppendXMLNode('StandardAccountID', StandardAccNo)
+        else begin
+            SAFTXMLHelper.AppendXMLNode('GroupingCategory', GroupingCategory);
+            SAFTXMLHelper.AppendXMLNode('GroupingCode', GroupingNo);
+        end;
         SAFTXMLHelper.AppendXMLNode('AccountType', 'GL');
         if GLAccount."Income/Balance" = GLAccount."Income/Balance"::"Income Statement" then begin
             // For income statement the opening balance is always zero but it's more preferred to have same type of balance (Debit or Credit) to match opening and closing XML nodes.
@@ -304,16 +313,14 @@ codeunit 10673 "Generate SAF-T File"
         if not Handled then
             GetFirstAndLastNameFromContactName(FirstName, LastName, Customer.Contact);
         ExportContact(FirstName, LastName, Customer."Phone No.", Customer."Fax No.", Customer."E-Mail", Customer."Home Page", '');
-        if Customer."Preferred Bank Account Code" = '' then begin
-            CustomerBankAccount.SetRange("Customer No.", Customer."No.");
-            if not CustomerBankAccount.FindFirst() then
-                clear(CustomerBankAccount);
-        end else
-            CustomerBankAccount.Get(Customer."No.", Customer."Preferred Bank Account Code");
-        ExportBankAccount(
-            Customer."Country/Region Code", CombineWithSpace(CustomerBankAccount.Name, CustomerBankAccount."Name 2"),
-            CustomerBankAccount."Bank Account No.", CustomerBankAccount.IBAN,
-            CustomerBankAccount."Bank Branch No.", CustomerBankAccount."Currency Code");
+        CustomerBankAccount.SetRange("Customer No.", Customer."No.");
+        if CustomerBankAccount.FindSet() then
+            repeat
+                ExportBankAccount(
+                    Customer."Country/Region Code", CombineWithSpace(CustomerBankAccount.Name, CustomerBankAccount."Name 2"),
+                    CustomerBankAccount."Bank Account No.", CustomerBankAccount.IBAN,
+                    CustomerBankAccount."Bank Branch No.", CustomerBankAccount."Currency Code");
+            until CustomerBankAccount.Next() = 0;
         SAFTXMLHelper.AppendXMLNode('CustomerID', Customer."No.");
         CustomerPostingGroup.get(customer."Customer Posting Group");
         SAFTXMLHelper.AppendXMLNode('AccountID', CustomerPostingGroup."Receivables Account");
@@ -388,18 +395,18 @@ codeunit 10673 "Generate SAF-T File"
         if not Handled then
             GetFirstAndLastNameFromContactName(FirstName, LastName, Vendor.Contact);
         ExportContact(FirstName, LastName, Vendor."Phone No.", Vendor."Fax No.", Vendor."E-Mail", Vendor."Home Page", '');
-        if Vendor."Preferred Bank Account Code" = '' then begin
-            VendorBankAccount.SetRange("Vendor No.", Vendor."No.");
-            if not VendorBankAccount.FindFirst() then
-                clear(VendorBankAccount);
-        end else
-            VendorBankAccount.Get(Vendor."No.", Vendor."Preferred Bank Account Code");
-        ExportBankAccount(
-            Vendor."Country/Region Code", CombineWithSpace(VendorBankAccount.Name, VendorBankAccount."Name 2"),
-            VendorBankAccount."Bank Account No.", VendorBankAccount.IBAN,
-            VendorBankAccount."Bank Branch No.", VendorBankAccount."Currency Code");
+        VendorBankAccount.SetRange("Vendor No.", Vendor."No.");
+        If VendorBankAccount.FindSet() then
+            repeat
+                ExportBankAccount(
+                    Vendor."Country/Region Code", CombineWithSpace(VendorBankAccount.Name, VendorBankAccount."Name 2"),
+                    VendorBankAccount."Bank Account No.", VendorBankAccount.IBAN,
+                    VendorBankAccount."Bank Branch No.", VendorBankAccount."Currency Code");
+            until VendorBankAccount.Next() = 0;
+        If Vendor."Recipient Bank Account No." <> '' then
+            ExportBankAccount(Vendor."Country/Region Code", '', Vendor."Recipient Bank Account No.", '', '', '');
         SAFTXMLHelper.AppendXMLNode('SupplierID', Vendor."No.");
-        VendorPostingGroup.get(Vendor."Vendor Posting Group");
+        VendorPostingGroup.Get(Vendor."Vendor Posting Group");
         SAFTXMLHelper.AppendXMLNode('AccountID', VendorPostingGroup."Payables Account");
         if OpeningDebitBalance = 0 then
             SAFTXMLHelper.AppendXMLNode('OpeningCreditBalance', FormatAmount(OpeningCreditBalance))
@@ -609,8 +616,9 @@ codeunit 10673 "Generate SAF-T File"
 
     local procedure ExportGLEntriesByTransaction(var GLEntry: Record "G/L Entry"; var NumberOfEntries: Integer)
     var
-        TempDimCodeAmountBuffer: Record "Dimension Code Amount Buffer" temporary;
+        TempDimIDBuffer: Record "Dimension ID Buffer" temporary;
         VATEntry: Record "VAT Entry";
+        GLEntryVATEntryLink: Record "G/L Entry - VAT Entry Link";
         SAFTExportMgt: Codeunit "SAF-T Export Mgt.";
         AmountXMLNode: Text;
         Amount: Decimal;
@@ -627,8 +635,8 @@ codeunit 10673 "Generate SAF-T File"
             SAFTXMLHelper.AddNewXMLNode('Line', '');
             SAFTXMLHelper.AppendXMLNode('RecordID', format(GLEntry."Entry No."));
             SAFTXMLHelper.AppendXMLNode('AccountID', GLEntry."G/L Account No.");
-            CopyDimeSetIDToDimCodeAmountBuffer(TempDimCodeAmountBuffer, GLEntry."Dimension Set ID");
-            ExportAnalysisInfo(TempDimCodeAmountBuffer);
+            CopyDimeSetIDToDimIDBuffer(TempDimIDBuffer, GLEntry."Dimension Set ID");
+            ExportAnalysisInfo(TempDimIDBuffer);
             SAFTXMLHelper.AppendXMLNode('SourceDocumentID', GLEntry."Document No.");
             if GLEntry."Gen. Posting Type" <> 0 then
                 case GLEntry."Source Type" of
@@ -637,16 +645,17 @@ codeunit 10673 "Generate SAF-T File"
                     GLEntry."Source Type"::Vendor:
                         SAFTXMLHelper.AppendXMLNode('SupplierID', GLEntry."Source No.");
                 end;
+            if GLEntry.Description = '' then
+                GLEntry.Description := GLEntry."G/L Account No.";
             SAFTXMLHelper.AppendXMLNode('Description', GLEntry.Description);
             SAFTExportMgt.GetAmountInfoFromGLEntry(AmountXMLNode, Amount, GLEntry);
             ExportAmountInfo(AmountXMLNode, Amount);
             if (GLEntry."VAT Bus. Posting Group" <> '') or (GLEntry."VAT Prod. Posting Group" <> '') then begin
-                VATEntry.SetCurrentKey("Document No.", "Posting Date");
-                VATEntry.SetRange("Document No.", GLEntry."Document No.");
-                VATEntry.SetRange("Posting Date", GLEntry."Posting Date");
-                VATEntry.SetRange("Transaction No.", GLEntry."Transaction No.");
-                if VATEntry.FindFirst() then
+                GLEntryVATEntryLink.SetRange("G/L Entry No.", GLEntry."Entry No.");
+                if GLEntryVATEntryLink.FindFirst() then begin
+                    VATEntry.Get(GLEntryVATEntryLink."VAT Entry No.");
                     ExportTaxInformation(VATEntry);
+                end;
             end;
             SAFTXMLHelper.AppendXMLNode('ReferenceNumber', GLEntry."External Document No.");
             SAFTXMLHelper.FinalizeXMLNode();
@@ -655,15 +664,21 @@ codeunit 10673 "Generate SAF-T File"
     end;
 
     local procedure ExportGLEntryTransactionInfo(GLEntry: Record "G/L Entry")
+    var
+        SystemEntryDate: Date;
     begin
         SAFTXMLHelper.AddNewXMLNode('Transaction', '');
-        SAFTXMLHelper.AppendXMLNode('TransactionID', format(GLEntry."Transaction No."));
+        SAFTXMLHelper.AppendXMLNode('TransactionID', format(GLEntry."Document No."));
         SAFTXMLHelper.AppendXMLNode('Period', format(Date2DMY(GLEntry."Posting Date", 2)));
         SAFTXMLHelper.AppendXMLNode('PeriodYear', format(Date2DMY(GLEntry."Posting Date", 3)));
         SAFTXMLHelper.AppendXMLNode('TransactionDate', FormatDate(GLEntry."Document Date"));
-        SAFTXMLHelper.AppendXMLNode('SourceID', GLEntry."User ID");
+        SAFTXMLHelper.AppendXMLNode('SourceID', GetSAFTMiddle1Text(GLEntry."User ID"));
         SAFTXMLHelper.AppendXMLNode('Description', GLEntry.Description);
-        SAFTXMLHelper.AppendXMLNode('SystemEntryDate', FormatDate(GLEntry."Document Date"));
+        if GLEntry."Last Modified DateTime" = 0DT then
+            SystemEntryDate := GLEntry."Posting Date"
+        else
+            SystemEntryDate := DT2Date(GLEntry."Last Modified DateTime");
+        SAFTXMLHelper.AppendXMLNode('SystemEntryDate', FormatDate(SystemEntryDate));
         SAFTXMLHelper.AppendXMLNode('GLPostingDate', FormatDate(GLEntry."Posting Date"));
     end;
 
@@ -671,7 +686,7 @@ codeunit 10673 "Generate SAF-T File"
     var
         VATPostingSetup: Record "VAT Posting Setup";
     begin
-        if not (VATEntry.Type in [VATEntry.Type::Sale, VATEntry.Type::Sale]) then
+        if not (VATEntry.Type in [VATEntry.Type::Sale, VATEntry.Type::Purchase]) then
             exit;
 
         VATPostingSetup.get(VATEntry."VAT Bus. Posting Group", VATEntry."VAT Prod. Posting Group");
@@ -692,6 +707,21 @@ codeunit 10673 "Generate SAF-T File"
         SAFTXMLHelper.AddNewXMLNode(ParentNodeName, '');
         SAFTXMLHelper.AppendXMLNode('Amount', FormatAmount(Amount));
         SAFTXMLHelper.FinalizeXMLNode();
+    end;
+
+    local procedure ExportBankAccounts()
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        if not BankAccount.FindSet() then
+            exit;
+
+        repeat
+            ExportBankAccount(
+                BankAccount."Country/Region Code", CombineWithSpace(BankAccount.Name, BankAccount."Name 2"),
+                BankAccount."Bank Account No.", BankAccount.IBAN,
+                BankAccount."Bank Branch No.", BankAccount."Currency Code");
+        until BankAccount.Next() = 0;
     end;
 
     local procedure ExportBankAccount(CountryCode: Code[10]; BankName: Text; BankNumber: Text; IBAN: Text; BranchNo: Text; CurrencyCode: Code[10])
@@ -766,7 +796,7 @@ codeunit 10673 "Generate SAF-T File"
     local procedure ExportPartyInfo(SourceID: Integer; SourceNo: Code[20]; CurrencyCode: Code[10]; PaymentTermsCode: Code[10])
     var
         DefaultDimension: Record "Default Dimension";
-        TempDimCodeAmountBuffer: Record "Dimension Code Amount Buffer" temporary;
+        TempDimIDBuffer: Record "Dimension ID Buffer" temporary;
         SAFTExportMgt: Codeunit "SAF-T Export Mgt.";
     begin
         SAFTXMLHelper.AddNewXMLNode('PartyInfo', '');
@@ -774,45 +804,46 @@ codeunit 10673 "Generate SAF-T File"
         SAFTXMLHelper.AppendXMLNode('CurrencyCode', SAFTExportMgt.GetISOCurrencyCode(CurrencyCode));
         DefaultDimension.SetRange("Table ID", SourceID);
         DefaultDimension.SetRange("No.", SourceNo);
-        CopyDefaultDimToDimCodeAmountBuffer(TempDimCodeAmountBuffer, DefaultDimension);
-        ExportAnalysisInfo(TempDimCodeAmountBuffer);
+        CopyDefaultDimToDimBuffer(TempDimIDBuffer, DefaultDimension);
+        ExportAnalysisInfo(TempDimIDBuffer);
         SAFTXMLHelper.FinalizeXMLNode();
     end;
 
-    local procedure ExportAnalysisInfo(var TempDimCodeAmountBuffer: Record "Dimension Code Amount Buffer" temporary)
+    local procedure ExportAnalysisInfo(var TempDimIDBuffer: Record "Dimension ID Buffer" temporary)
     begin
-        if TempDimCodeAmountBuffer.FindSet() then
+        if TempDimIDBuffer.FindSet() then
             repeat
                 SAFTXMLHelper.AddNewXMLNode('Analysis', '');
-                SAFTXMLHelper.AppendXMLNode('AnalysisType', TempDimCodeAmountBuffer."Line Code");
-                SAFTXMLHelper.AppendXMLNode('AnalysisID', TempDimCodeAmountBuffer."Column Code");
+                SAFTXMLHelper.AppendXMLNode('AnalysisType', TempDimIDBuffer."Dimension Code");
+                SAFTXMLHelper.AppendXMLNode('AnalysisID', TempDimIDBuffer."Dimension Value");
                 SAFTXMLHelper.FinalizeXMLNode();
-            until TempDimCodeAmountBuffer.Next() = 0;
+            until TempDimIDBuffer.Next() = 0;
     end;
 
-    local procedure CopyDefaultDimToDimCodeAmountBuffer(var TempDimCodeAmountBuffer: Record "Dimension Code Amount Buffer" temporary; var DefaultDimension: Record "Default Dimension")
+    local procedure CopyDefaultDimToDimBuffer(var TempDimIDBuffer: Record "Dimension ID Buffer" temporary; var DefaultDimension: Record "Default Dimension")
     var
         Dimension: Record Dimension;
     begin
-        TempDimCodeAmountBuffer.reset();
-        TempDimCodeAmountBuffer.DeleteAll();
+        TempDimIDBuffer.Reset();
+        TempDimIDBuffer.DeleteAll();
         if DefaultDimension.FindSet() then
             repeat
                 Dimension.get(DefaultDimension."Dimension Code");
-                TempDimCodeAmountBuffer."Line Code" := Dimension."SAF-T Analysis Type";
-                TempDimCodeAmountBuffer."Column Code" := DefaultDimension."Dimension Value Code";
-                TempDimCodeAmountBuffer.Insert();
+                TempDimIDBuffer."Parent ID" += 1;
+                TempDimIDBuffer."Dimension Code" := Dimension."SAF-T Analysis Type";
+                TempDimIDBuffer."Dimension Value" := DefaultDimension."Dimension Value Code";
+                TempDimIDBuffer.Insert();
             until DefaultDimension.next() = 0;
     end;
 
-    local procedure CopyDimeSetIDToDimCodeAmountBuffer(var TempDimCodeAmountBuffer: Record "Dimension Code Amount Buffer" temporary; DimSetID: Integer)
+    local procedure CopyDimeSetIDToDimIDBuffer(var TempDimIDBuffer: Record "Dimension ID Buffer" temporary; DimSetID: Integer)
     var
         TempDimSetEntry: Record "Dimension Set Entry" temporary;
         Dimension: Record Dimension;
         DimensionManagement: Codeunit DimensionManagement;
     begin
-        TempDimCodeAmountBuffer.Reset();
-        TempDimCodeAmountBuffer.DeleteAll();
+        TempDimIDBuffer.Reset();
+        TempDimIDBuffer.DeleteAll();
         if DimSetID = 0 then
             exit;
 
@@ -822,9 +853,10 @@ codeunit 10673 "Generate SAF-T File"
 
         repeat
             Dimension.Get(TempDimSetEntry."Dimension Code");
-            TempDimCodeAmountBuffer."Line Code" := Dimension."SAF-T Analysis Type";
-            TempDimCodeAmountBuffer."Column Code" := TempDimSetEntry."Dimension Value Code";
-            TempDimCodeAmountBuffer.Insert();
+            TempDimIDBuffer."Parent ID" += 1;
+            TempDimIDBuffer."Dimension Code" := Dimension."SAF-T Analysis Type";
+            TempDimIDBuffer."Dimension Value" := TempDimSetEntry."Dimension Value Code";
+            TempDimIDBuffer.Insert();
         until TempDimSetEntry.Next() = 0;
 
     end;
@@ -872,7 +904,7 @@ codeunit 10673 "Generate SAF-T File"
         Result := FirstString;
         If (Result <> '') and (SecondString <> '') then
             Result += ' ';
-        exit(Result + SecondString);
+        exit(GetSAFTMiddle2Text(Result + SecondString));
     end;
 
     local procedure FormatDate(DateToFormat: Date): Text
@@ -883,6 +915,24 @@ codeunit 10673 "Generate SAF-T File"
     local procedure FormatAmount(AmountToFormat: Decimal): Text
     begin
         exit(format(AmountToFormat, 0, 9))
+    end;
+
+    local procedure GetSAFTShortText(InputText: Text): Text
+    begin
+        // SAF-T definition. Simple type. Type SAFshorttextType
+        exit(CopyStr(InputText, 1, 18));
+    end;
+
+    local procedure GetSAFTMiddle1Text(InputText: Text): Text
+    begin
+        // SAF-T definition. Simple type. Type SAFmiddle1textType
+        exit(CopyStr(InputText, 1, 35));
+    end;
+
+    local procedure GetSAFTMiddle2Text(InputText: Text): Text
+    begin
+        // SAF-T definition. Simple type. Type SAFmiddle2textType
+        exit(CopyStr(InputText, 1, 70));
     end;
 
     [IntegrationEvent(false, false)]

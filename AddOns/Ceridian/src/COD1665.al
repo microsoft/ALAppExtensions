@@ -23,6 +23,9 @@ codeunit 1665 "MS Ceridian Payroll upgrade"
         MsCeridianPayrollSetup: Record "MS Ceridian Payroll Setup";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetCeridianSecretsToISUpgradeTag(), '') then
+            exit;
+
         if UpgradeTag.HasUpgradeTag(GetCeridianSecretsToISUpgradeTag()) then
             exit;
 
@@ -44,6 +47,9 @@ codeunit 1665 "MS Ceridian Payroll upgrade"
         IsolatedStorageValue: Text;
         ServicePasswordValue: Text;
     begin
+        if UpgradeTag.HasUpgradeTag(GetCeridianSecretsToISValidationTag(), '') then
+            exit;
+
         if UpgradeTag.HasUpgradeTag(GetCeridianSecretsToISValidationTag()) then
             exit;
 
@@ -59,21 +65,21 @@ codeunit 1665 "MS Ceridian Payroll upgrade"
         UpgradeTag.SetUpgradeTag(GetCeridianSecretsToISValidationTag());
     end;
 
-    local procedure GetCeridianSecretsToISUpgradeTag(): Code[250]
+    internal procedure GetCeridianSecretsToISUpgradeTag(): Code[250]
     begin
         exit('MS-328257-CeridianSecretsToIS-20190925');
     end;
 
-    local procedure GetCeridianSecretsToISValidationTag(): Code[250]
+    internal procedure GetCeridianSecretsToISValidationTag(): Code[250]
     begin
         exit('MS-328257-CeridianSecretsToIS-Validate-20190925');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerDatabaseUpgradeTags', '', false, false)]
-    local procedure RegisterPerDatabaseTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
-        PerDatabaseUpgradeTags.Add(GetCeridianSecretsToISUpgradeTag());
-        PerDatabaseUpgradeTags.Add(GetCeridianSecretsToISValidationTag());
+        PerCompanyUpgradeTags.Add(GetCeridianSecretsToISUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetCeridianSecretsToISValidationTag());
     end;
 }
 

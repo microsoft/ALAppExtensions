@@ -7,6 +7,7 @@ table 1438 "Essential Business Headline"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'Should be per user';
+    ObsoleteTag = '15.4';
 
     fields
     {

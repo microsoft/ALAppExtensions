@@ -103,6 +103,7 @@ table 1853 "MS - Sales Forecast Setup"
             ObsoleteState = Pending;
             ObsoleteReason = 'Not Used After Refactoring';
             DataClassification = CustomerContent;
+            ObsoleteTag = '15.4';
         }
         field(16; "API Cache Expiry"; DateTime)
         {
@@ -110,6 +111,7 @@ table 1853 "MS - Sales Forecast Setup"
             ObsoleteState = Pending;
             ObsoleteReason = 'Not Used After Refactoring';
             DataClassification = CustomerContent;
+            ObsoleteTag = '15.4';
         }
         field(17; "Service Pass API Uri ID"; Guid)
         {
@@ -118,6 +120,7 @@ table 1853 "MS - Sales Forecast Setup"
             ObsoleteState = Pending;
             ObsoleteReason = 'Not Used After Refactoring';
             DataClassification = CustomerContent;
+            ObsoleteTag = '15.4';
         }
         field(18; "Service Pass API Key ID"; Guid)
         {
@@ -126,6 +129,7 @@ table 1853 "MS - Sales Forecast Setup"
             ObsoleteState = Pending;
             ObsoleteReason = 'Not Used After Refactoring';
             DataClassification = CustomerContent;
+            ObsoleteTag = '15.4';
         }
         field(19; "Timeseries Model"; Option)
         {

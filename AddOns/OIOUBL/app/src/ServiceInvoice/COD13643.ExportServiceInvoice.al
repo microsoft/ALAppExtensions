@@ -33,6 +33,8 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
 
         ServiceInvoiceHeader."OIOUBL-Electronic Invoice Created" := true;
         ServiceInvoiceHeader.Modify();
+
+        Codeunit.Run(Codeunit::"Service Inv.-Printed", ServiceInvoiceHeader);
     end;
 
     procedure ExportXML(ServiceInvoiceHeader: Record "Service Invoice Header")
@@ -63,6 +65,8 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         ServInvHeader2.Get(ServiceInvoiceHeader."No.");
         ServInvHeader2."OIOUBL-Electronic Invoice Created" := true;
         ServInvHeader2.Modify();
+
+        Codeunit.Run(Codeunit::"Service Inv.-Printed", ServInvHeader2);
     end;
 
     local procedure InsertOrderReference(var RootElement: XmlElement; ID: Code[35]; CustomerReference: Code[20]);

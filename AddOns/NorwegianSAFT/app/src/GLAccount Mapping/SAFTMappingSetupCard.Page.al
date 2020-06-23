@@ -43,6 +43,16 @@ page 10670 "SAF-T Mapping Setup Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the ending date of the SAF-T reporting period.';
                 }
+                field(MappingCategoryNo; "Mapping Category No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the category of the SAF-T standard account or grouping code that is used for mapping.';
+                }
+                field(MappingNo; "Mapping No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the code of the SAF-T standard account or grouping code that is used for mapping.';
+                }
                 field(IncludeIncomingBalance; "Include Incoming Balance")
                 {
                     ApplicationArea = Basic, Suite;

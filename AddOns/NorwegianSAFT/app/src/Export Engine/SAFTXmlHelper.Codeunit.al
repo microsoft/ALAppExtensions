@@ -15,7 +15,7 @@ codeunit 10674 "SAF-T XML Helper"
         clear(CurrXMLElement);
         Depth := 0;
         SetNamespace(SAFTNameSpaceTxt);
-        CreateRootWithNamespace('AuditFile', 'nl');
+        CreateRootWithNamespace('AuditFile', 'n1');
     end;
 
     procedure SetNamespace(NewNamespace: Text)

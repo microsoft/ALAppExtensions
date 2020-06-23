@@ -114,7 +114,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         OldVATPct: Decimal;
     begin
         // Update Service Management Setup, Create and Post Service Credit Memo with single Item Line.
-        UpdateOIOUBLPathOnServiceManagementSetup();
+        UpdateServiceSetup();
         OldVATPct := FindAndUpdateVATPostingSetupPct(VATPostingSetup, NewVATPct);
         CreateServiceDocument(
             ServiceLine, ServiceLine."Document Type"::"Credit Memo", CreateCustomer(AccountCode, VATPostingSetup."VAT Bus. Posting Group"),
@@ -185,7 +185,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         OldVATPct: Decimal;
     begin
         // Update Service Management Setup, Create and Post Service Credit Memo with Multiple Item Line.
-        UpdateOIOUBLPathOnServiceManagementSetup();
+        UpdateServiceSetup();
         OldVATPct := FindAndUpdateVATPostingSetupPct(VATPostingSetup, NewVATPct);
         CreateServiceHeader(
         ServiceHeader, ServiceHeader."Document Type"::"Credit Memo", CreateCustomer(AccountCode, VATPostingSetup."VAT Bus. Posting Group"));
@@ -255,7 +255,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         OldVATPct: Decimal;
     begin
         // Update Service Management Setup, Create and Post Service Invoice with single Item Line.
-        UpdateOIOUBLPathOnServiceManagementSetup();
+        UpdateServiceSetup();
         OldVATPct := FindAndUpdateVATPostingSetupPct(VATPostingSetup, VATPct);
         CreateServiceDocument(
             ServiceLine, ServiceLine."Document Type"::Invoice, CreateCustomer(AccountCode, VATPostingSetup."VAT Bus. Posting Group"),
@@ -326,7 +326,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         OldVATPct: Decimal;
     begin
         // Update Service Management Setup, Create and Post Service Invoice with multiple Item Line.
-        UpdateOIOUBLPathOnServiceManagementSetup();
+        UpdateServiceSetup();
         OldVATPct := FindAndUpdateVATPostingSetupPct(VATPostingSetup, VATPct);
         CreateServiceHeader(
         ServiceHeader, ServiceHeader."Document Type"::Invoice, CreateCustomer(AccountCode, VATPostingSetup."VAT Bus. Posting Group"));
@@ -389,7 +389,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         PostedDocumentNo: Code[20];
     begin
         // Update Service Management Setup, Create, Update and Post Service Invoice.
-        UpdateOIOUBLPathOnServiceManagementSetup();
+        UpdateServiceSetup();
         CreateServiceDocumentWithItem(ServiceLine, ServiceLine."Document Type"::Invoice);
         ServiceHeader.GET(ServiceLine."Document Type", ServiceLine."Document No.");
         CreateAndUpdateServiceLineTypeAndNumber(ServiceHeader, Type, ItemNo);
@@ -495,7 +495,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
         // Setup: Update Service Management Setup, Create and Post Service Credit Memo.
         Initialize();
-        UpdateOIOUBLPathOnServiceManagementSetup();
+        UpdateServiceSetup();
         CreateServiceDocument(
             ServiceLine, ServiceLine."Document Type"::"Credit Memo", CreateCustomer(LibraryUtility.GenerateGUID(), ''),
             ServiceLine.Type::Item, CreateItemWithDecimalUnitPrice());
@@ -520,7 +520,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
         // Setup: Update Service Management Setup, Create and Post Service Invoice.
         Initialize();
-        UpdateOIOUBLPathOnServiceManagementSetup();
+        UpdateServiceSetup();
         CreateServiceDocument(
             ServiceLine, ServiceLine."Document Type"::Invoice, CreateCustomer(LibraryUtility.GenerateGUID(), ''),
             ServiceLine.Type::Item, CreateItemWithDecimalUnitPrice());
@@ -579,7 +579,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         PostedDocumentNo: Code[20];
     begin
         // Update Service Management Setup, Create, Update and Post Service Credit Memo.
-        UpdateOIOUBLPathOnServiceManagementSetup();
+        UpdateServiceSetup();
         CreateServiceDocumentWithItem(ServiceLine, ServiceLine."Document Type"::"Credit Memo");
         ServiceHeader.GET(ServiceLine."Document Type", ServiceLine."Document No.");
         CreateAndUpdateServiceLineTypeAndNumber(ServiceHeader, Type, ItemNo);
@@ -725,8 +725,10 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         Codeunit.Run(Codeunit::"Service-Post and Send", ServiceHeader);
 
         // [THEN] Electronic Document is created and saved to location, specified in Service Setup.
+        // [THEN] "No. Printed" value of Posted Service Invoice increases by 1. Bug ID 349569.
         LibraryService.FindServiceInvoiceHeader(ServiceInvoiceHeader, ServiceHeader."No.");
         ServiceInvoiceHeader.TestField("OIOUBL-Electronic Invoice Created", true);
+        ServiceInvoiceHeader.TestField("No. Printed", 1);
         VerifyElectronicServiceDocument(ServiceInvoiceHeader."No.", ServiceInvoiceHeader."OIOUBL-Account Code");
 
         LibraryVariableStorage.AssertEmpty();
@@ -756,8 +758,10 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceInvoiceHeader.SendRecords();
 
         // [THEN] Electronic Document is created and saved to location, specified in Service Setup.
+        // [THEN] "No. Printed" value of Posted Service Invoice increases by 1. Bug ID 349569.
         ServiceInvoiceHeader.Get(PostedDocNo);
         ServiceInvoiceHeader.TestField("OIOUBL-Electronic Invoice Created", true);
+        ServiceInvoiceHeader.TestField("No. Printed", 1);
         VerifyElectronicServiceDocument(ServiceInvoiceHeader."No.", ServiceInvoiceHeader."OIOUBL-Account Code");
 
         LibraryVariableStorage.AssertEmpty();
@@ -914,8 +918,10 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         Codeunit.Run(Codeunit::"Service-Post and Send", ServiceHeader);
 
         // [THEN] Electronic Document is created and saved to location, specified in Service Setup.
+        // [THEN] "No. Printed" value of Posted Service Credit Memo increases by 1. Bug ID 349569.
         LibraryService.FindServiceCrMemoHeader(ServiceCrMemoHeader, ServiceHeader."No.");
         ServiceCrMemoHeader.TestField("OIOUBL-Electronic Credit Memo Created", true);
+        ServiceCrMemoHeader.TestField("No. Printed", 1);
         VerifyElectronicServiceDocument(ServiceCrMemoHeader."No.", ServiceLine."OIOUBL-Account Code");
 
         LibraryVariableStorage.AssertEmpty();
@@ -945,8 +951,10 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceCrMemoHeader.SendRecords();
 
         // [THEN] Electronic Document is created and saved to location, specified in Service Setup.
+        // [THEN] "No. Printed" value of Posted Service Credit Memo increases by 1. Bug ID 349569.
         ServiceCrMemoHeader.Get(PostedDocNo);
         ServiceCrMemoHeader.TestField("OIOUBL-Electronic Credit Memo Created", true);
+        ServiceCrMemoHeader.TestField("No. Printed", 1);
         VerifyElectronicServiceDocument(ServiceCrMemoHeader."No.", ServiceCrMemoHeader."OIOUBL-Account Code");
 
         LibraryVariableStorage.AssertEmpty();
@@ -1123,7 +1131,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         DocumentSendingProfile: Record "Document Sending Profile";
         ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
-        // [SCENARIO 336642] Post And Send Service Document in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
+        // [SCENARIO 336642] Post And Send Service Invoice in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
         Initialize();
         DocumentSendingProfile.DeleteAll();
         SMTPMailSetupInitialize();
@@ -1147,7 +1155,10 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         // [THEN] Service Invoice is posted.
         // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Dialog is opened.
         // [THEN] OIOUBL Electronic Document for Posted Service Invoice is created.
+        // [THEN] "No. Printed" value of Posted Sales Invoice increases by 2 (cancel Print doesn't count; E-mail, Disk). Bug ID 351595.
         LibraryService.FindServiceInvoiceHeader(ServiceInvoiceHeader, ServiceHeader."No.");
+        ServiceInvoiceHeader.TestField("OIOUBL-Electronic Invoice Created", true);
+        ServiceInvoiceHeader.TestField("No. Printed", 2);
         VerifyElectronicServiceDocument(ServiceInvoiceHeader."No.", ServiceInvoiceHeader."OIOUBL-Account Code");
     end;
 
@@ -1274,6 +1285,47 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         Clear(FileNameLst);
         FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(2), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(2), 'SM.Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
+    end;
+
+    [Test]
+    [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceCreditMemoRequestPageHandler,EmailDialogModalPageHandler')]
+    procedure PostAndSendServiceCrMemoOIOUBLWithPrintAndEmail();
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+    begin
+        // [SCENARIO 336642] Post And Send Service Credit Memo in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
+        Initialize();
+        DocumentSendingProfile.DeleteAll();
+        SMTPMailSetupInitialize();
+        CreateElectronicDocumentFormat(
+            OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Credit Memo", Codeunit::"OIOUBL-Export Service Cr.Memo");
+
+        // [GIVEN] DocumentSendingProfile with Printer = Yes; Disk = "Electronic Document", Format = OIOUBL;
+        // [GIVEN] E-Mail = Yes, E-Mail Attachment = "Electronic Document", Format = OIOUBL. Service Credit Memo.
+        CreateDocumentSendingProfile(
+            DocumentSendingProfile, DocumentSendingProfile.Printer::"Yes (Prompt for Settings)",
+            DocumentSendingProfile."E-Mail"::"Yes (Prompt for Settings)",
+            DocumentSendingProfile."E-Mail Attachment"::"Electronic Document", OIOUBLFormatNameTxt,
+            DocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+        CreateServiceDocumentWithItem(ServiceLine, ServiceHeader."Document Type"::"Credit Memo");
+        SetDocumentSendingProfileToCustomer(ServiceLine."Customer No.", DocumentSendingProfile.Code);
+        FindServiceHeader(ServiceHeader, ServiceLine);
+
+        // [WHEN] Run "Post and Send" codeunit for Service Credit Memo.
+        Codeunit.Run(Codeunit::"Service-Post and Send", ServiceHeader);
+
+        // [THEN] Service Credit Memo is posted.
+        // [THEN] Report "Service - Credit Memo" for printing Posted Service Credit Memo is invoked. Then Email Dialog is opened.
+        // [THEN] OIOUBL Electronic Document for Posted Service Credit Memo is created.
+        // [THEN] "No. Printed" value of Posted Sales Credit Memo increases by 2 (cancel Print doesn't count; E-mail, Disk). Bug ID 351595.
+        LibraryService.FindServiceCrMemoHeader(ServiceCrMemoHeader, ServiceHeader."No.");
+        ServiceCrMemoHeader.TestField("OIOUBL-Electronic Credit Memo Created", true);
+        ServiceCrMemoHeader.TestField("No. Printed", 2);
+        VerifyElectronicServiceDocument(ServiceCrMemoHeader."No.", ServiceCrMemoHeader."OIOUBL-Account Code");
     end;
 
     [Test]
@@ -1440,7 +1492,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         GLAccount: Record "G/L Account";
         ServiceLine: Record "Service Line";
     begin
-        UpdateOIOUBLPathOnServiceManagementSetup();
+        UpdateServiceSetup();
         LibraryERM.CreateGLAccount(GLAccount);
         CreateServiceDocument(
         ServiceLine, DocumentType, CreateCustomer(LibraryUtility.GenerateGUID(), ''), ServiceLine.Type::"G/L Account", CreateGLAccount());
@@ -1589,7 +1641,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         Item: Record Item;
         ServiceHeader: Record "Service Header";
     begin
-        UpdateOIOUBLPathOnServiceManagementSetup();
+        UpdateServiceSetup();
         CreateServiceDocument(
         ServiceLine, DocumentType, CreateCustomer(LibraryUtility.GenerateGUID(), ''),
         ServiceLine.Type::Item, LibraryInventory.CreateItem(Item));
@@ -1938,16 +1990,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         Commit();
     end;
 
-    local procedure UpdateOIOUBLPathOnServiceManagementSetup();
-    var
-        ServiceMgtSetup: Record "Service Mgt. Setup";
-    begin
-        ServiceMgtSetup.GET();
-        ServiceMgtSetup.VALIDATE("OIOUBL-Service Cr. Memo Path", TEMPORARYPATH());
-        ServiceMgtSetup.VALIDATE("OIOUBL-Service Invoice Path", TEMPORARYPATH());
-        ServiceMgtSetup.MODIFY(true);
-    end;
-
     local procedure UpdateServiceLineUnitOfMeasure(ServiceLine: Record "Service Line");
     var
         UnitOfMeasure: Record "Unit of Measure";
@@ -2173,6 +2215,12 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     procedure ServiceInvoiceRequestPageHandler(var ServiceInvoice: TestRequestPage "Service - Invoice")
     begin
         ServiceInvoice.Cancel().Invoke();
+    end;
+
+    [RequestPageHandler]
+    procedure ServiceCreditMemoRequestPageHandler(var ServiceCreditMemo: TestRequestPage "Service - Credit Memo")
+    begin
+        ServiceCreditMemo.Cancel().Invoke();
     end;
 }
 

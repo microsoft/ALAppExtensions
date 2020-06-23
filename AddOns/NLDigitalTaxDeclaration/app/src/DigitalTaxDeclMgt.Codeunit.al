@@ -4,6 +4,13 @@ codeunit 11423 "Digital Tax. Decl. Mgt."
     var
         ReceiveDeclarationTxt: Label 'Receiving Electronic Tax Declaration Responses...';
         HeaderNotFoundErr: Label 'VAT Report header %1,%2 could not be found.', Comment = '%1,%2 - key values';
+        // fault model labels
+        DigipoortTok: Label 'DigipoortTelemetryCategoryTok', Locked = true;
+        ProcessingResponseMsg: Label 'Processing response message', Locked = true;
+        ResponseProcessedSuccessMsg: Label 'Response message succesfully processed', Locked = true;
+        HeaderNotFoundErrMsg: Label 'Error while processing response: Cannot find VAT report header.', Locked = true;
+        ErrorStatusCodeMsg: Label 'Error while processing response, status code %1', Locked = true;
+        AcceptedStatusCodeMsg: Label 'Successful response, status code: %1', Locked = true;
 
     trigger OnRun()
     begin
@@ -195,8 +202,12 @@ codeunit 11423 "Digital Tax. Decl. Mgt."
         NextErrorNo: Integer;
     begin
         with ElecTaxDeclResponseMessages do begin
-            if not VATReportHeader.Get("VAT Report Config. Code", "VAT Report No.") then
+            SendTraceTag('0000CJ3', DigipoortTok, VERBOSITY::Normal, ProcessingResponseMsg, DATACLASSIFICATION::SystemMetadata);
+
+            if not VATReportHeader.Get("VAT Report Config. Code", "VAT Report No.") then begin
+                SendTraceTag('0000CJ4', DigipoortTok, VERBOSITY::Error, HeaderNotFoundErrMsg, DATACLASSIFICATION::SystemMetadata);
                 Error(HeaderNotFoundErr, "VAT Report Config. Code", "VAT Report No.");
+            end;
 
             ErrorLog.Reset();
             ErrorLog.SetRange("VAT Report Config. Code", "VAT Report Config. Code");
@@ -231,19 +242,23 @@ codeunit 11423 "Digital Tax. Decl. Mgt."
 
             case "Status Code" of
                 '210', '220', '311', '410', '510', '710':
-                    VATReportHeader.Status := VATReportHeader.Status::Rejected;
-                '230', '321', '420', '720':
-                    if VATReportHeader.Status <> VATReportHeader.Status::Rejected then
+                    begin
+                        VATReportHeader.Status := VATReportHeader.Status::Rejected;
+                        SendTraceTag('0000CJ5', DigipoortTok, VERBOSITY::Error, StrSubstNo(ErrorStatusCodeMsg, "Status Code"), DATACLASSIFICATION::SystemMetadata);
+                    end;
+                '100', '230', '321', '420', '720':
+                    if VATReportHeader.Status <> VATReportHeader.Status::Rejected then begin
                         VATReportHeader.Status := VATReportHeader.Status::Accepted;
-                '100':
-                    if (VATReportHeader.Status <> VATReportHeader.Status::Rejected) then
-                        VATReportHeader.Status := VATReportHeader.Status::Accepted;
+                        SendTraceTag('0000CJ6', DigipoortTok, VERBOSITY::Normal, StrSubstNo(AcceptedStatusCodeMsg, "Status Code"), DATACLASSIFICATION::SystemMetadata);
+                    end;
             end;
 
             Status := Status::Processed;
             Modify(true);
 
             VATReportHeader.Modify(true);
+
+            SendTraceTag('0000CJ8', DigipoortTok, VERBOSITY::Normal, ResponseProcessedSuccessMsg, DATACLASSIFICATION::SystemMetadata);
         end;
     end;
 

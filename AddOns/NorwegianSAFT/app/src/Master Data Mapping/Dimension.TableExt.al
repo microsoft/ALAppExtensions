@@ -18,14 +18,12 @@ tableextension 10678 "SAF-T Analysis" extends Dimension
     procedure UpdateSAFTAnalysisTypeFromNoSeries()
     var
         SAFTSetup: Record "SAF-T Setup";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
     begin
         if not SAFTSetup.Get() then
             exit;
-        if SAFTSetup."Dimension No. Series Code" = '' then
-            exit;
-        "SAF-T Analysis Type" :=
-            copystr(NoSeriesManagement.GetNextNo(SAFTSetup."Dimension No. Series Code", WorkDate(), TRUE), 1, MaxStrLen("SAF-T Analysis Type"));
+        SAFTSetup.Validate("Dimension No.", SAFTSetup."Dimension No." + 1);
+        Validate("SAF-T Analysis Type", Format(SAFTSetup."Dimension No."));
+        SAFTSetup.Modify(true);
     end;
 
 }

@@ -117,7 +117,7 @@ codeunit 13625 "OIOUBL-Document Encode"
             ERROR(NonDanishCustomerErr);
     end;
 
-    [Obsolete('Kept for testing and potentially dealing with dependency issues')]
+    [Obsolete('Kept for testing and potentially dealing with dependency issues','16.0')]
     procedure GetCompanyVATRegNoOld(VATRegNo: Text[20]): Text[20];
     begin
         ReadCompanyInfo();
@@ -126,7 +126,7 @@ codeunit 13625 "OIOUBL-Document Encode"
         exit(VATRegNo);
     end;
 
-    [Obsolete('Kept for testing and potentially dealing with dependency issues')]
+    [Obsolete('Kept for testing and potentially dealing with dependency issues','16.0')]
     procedure GetCustomerVATRegNoOld(VATRegNo: Text[20]): Text[20];
     begin
         ReadCompanyInfo();
@@ -143,7 +143,7 @@ codeunit 13625 "OIOUBL-Document Encode"
         exit(VATRegNo);
     end;
 
-    [Obsolete('GetCustomerVATRegNoIncCustomerCountryCode is the new correct version of the function')]
+    [Obsolete('GetCustomerVATRegNoIncCustomerCountryCode is the new correct version of the function','16.0')]
     procedure GetCustomerVATRegNo(VATRegNo: Text[20]): Text[30];
     begin
         ReadCompanyInfo();

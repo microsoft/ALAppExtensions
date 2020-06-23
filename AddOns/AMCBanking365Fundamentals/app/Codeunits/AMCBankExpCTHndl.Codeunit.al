@@ -6,15 +6,21 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
 
     trigger OnRun()
     var
+        BankAccount: Record "Bank Account";
         TempBlob: Codeunit "Temp Blob";
         FileMgt: Codeunit "File Management";
         RecordRef: RecordRef;
-        Extension: Text;
+        BankFileName: Text;
     begin
+        PayBankAcountNo := GetBankAccountNo(Rec."Entry No.");
         ConvertPaymentDataToFormat(TempBlob, Rec);
 
-        Extension := GetFileExtension();
-        if FileMgt.BLOBExport(TempBlob, "Data Exch. Def Code" + Extension, true) = '' then
+        if (BankAccount.Get(PayBankAcountNo)) then
+            BankFileName := BankAccount."AMC Bank Name" + FileExtTxt
+        else
+            BankFileName := "Data Exch. Def Code" + GetFileExtension();
+
+        if FileMgt.BLOBExport(TempBlob, BankFileName, true) = '' then
             Error(DownloadFromStreamErr);
 
         Get("Entry No.");
@@ -25,18 +31,19 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
     end;
 
     var
+        AMCBankServiceRequestMgt: Codeunit "AMC Bank Service Request Mgt.";
         AMCBankServMgt: Codeunit "AMC Banking Mgt.";
-        BodyContentErr: Label 'The %1 XML tag was not found, or was found more than once in the body content of the SOAP request.', Comment = '%1=XmlTag';
         DownloadFromStreamErr: Label 'The file has not been saved.';
         NoRequestBodyErr: Label 'The request body is not set.';
         NothingToExportErr: Label 'There is nothing to export.';
-        PaymentDataNotCollectedErr: Label 'The AMC Banking has not returned any payment data.\\For more information, go to %1.';
-        ResponseNodeTxt: Label 'paymentExportBankResponse', Locked = true;
+        PaymentDataNotCollectedErr: Label 'The AMC Banking has not returned any payment data.\\For more information, go to %1.', Comment = '%1=Support URL';
         HasErrorsErr: Label 'The AMC Banking has found one or more errors.\\For each line to be exported, resolve the errors that are displayed in the FactBox.\\Choose an error to see more information.';
-        IncorrectElementErr: Label 'There is an incorrect file conversion error element in the response. Reference: %1, error text: %2.';
+        IncorrectElementErr: Label 'There is an incorrect file conversion error element in the response. Reference: %1, error text: %2.', Comment = '%1=Reference to payment, %2=Error text';
         BankDataConvServSysErr: Label 'The AMC Banking has returned the following error message:';
-        AddnlInfoTxt: Label 'For more information, go to %1.';
-        ContentTypeTxt: Label 'text/xml; charset=utf-8', Locked = true;
+        AddnlInfoTxt: Label 'For more information, go to %1.', Comment = '%1=Support URL';
+        PaymentExportWebCallTxt: Label 'paymentExportBank', locked = true;
+        PayBankAcountNo: Code[20];
+        FileExtTxt: Label '.txt';
 
     [Scope('OnPrem')]
     procedure ConvertPaymentDataToFormat(var TempBlobPaymentFile: Codeunit "Temp Blob"; DataExch: Record "Data Exch.")
@@ -48,111 +55,92 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
 
         TempBlobRequestBody.FromRecord(DataExch, DataExch.FieldNo("File Content"));
 
-        SendDataToWebService(TempBlobPaymentFile, TempBlobRequestBody, DataExch."Entry No.");
+        SendPaymentRequestToWebService(TempBlobPaymentFile, TempBlobRequestBody, DataExch."Entry No.", AMCBankServMgt.GetAppCaller());
 
         if not TempBlobPaymentFile.HasValue() then
             Error(NothingToExportErr);
     end;
 
-    local procedure SendDataToWebService(var TempBlobPaymentFile: Codeunit "Temp Blob"; var TempBlobBody: Codeunit "Temp Blob"; DataExchEntryNo: Integer)
+    local procedure SendPaymentRequestToWebService(var TempBlobPaymentFile: Codeunit "Temp Blob"; var TempBlobBody: Codeunit "Temp Blob"; DataExchEntryNo: Integer; AppCaller: Text[30])
     var
         AMCBankServiceSetup: Record "AMC Banking Setup";
-        SOAPWebServiceRequestMgt: Codeunit "SOAP Web Service Request Mgt.";
-        BodyInStream: InStream;
-        ResponseInStream: InStream;
+        PaymentRequestMessage: HttpRequestMessage;
+        PaymentResponseMessage: HttpResponseMessage;
+        Handled: Boolean;
+        Result: Text;
     begin
         AMCBankServMgt.CheckCredentials();
-
-        PrepareSOAPRequestBody(TempBlobBody);
-
-        TempBlobBody.CreateInStream(BodyInStream);
-
         AMCBankServiceSetup.Get();
 
-        SOAPWebServiceRequestMgt.SetGlobals(BodyInStream,
-          AMCBankServiceSetup."Service URL", AMCBankServiceSetup.GetUserName(), AMCBankServiceSetup.GetPassword());
-        SOAPWebServiceRequestMgt.SetContentType(ContentTypeTxt);
+        AMCBankServiceRequestMgt.InitializeHttp(PaymentRequestMessage, AMCBankServiceSetup."Service URL", 'POST');
 
-        if not SOAPWebServiceRequestMgt.SendRequestToWebService() then
-            SOAPWebServiceRequestMgt.ProcessFaultResponse(StrSubstNo(AddnlInfoTxt, AMCBankServiceSetup."Support URL"));
+        PrepareSOAPRequestBody(PaymentRequestMessage, TempBlobBody);
 
-        SOAPWebServiceRequestMgt.GetResponseContent(ResponseInStream);
+        //Set Content-Type header
+        AMCBankServiceRequestMgt.SetHttpContentsDefaults(PaymentRequestMessage);
 
-        CheckIfErrorsOccurred(ResponseInStream, DataExchEntryNo);
-
-        ReadContentFromResponse(TempBlobPaymentFile, ResponseInStream);
+        //Send Request to webservice
+        Handled := false;
+        AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, PaymentRequestMessage, PaymentResponseMessage, PaymentExportWebCallTxt, AppCaller, true);
+        AMCBankServiceRequestMgt.GetWebServiceResponse(PaymentResponseMessage, TempBlobPaymentFile, PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), true);
+        if (AMCBankServiceRequestMgt.HasResponseErrors(TempBlobPaymentFile, AMCBankServiceRequestMgt.GetHeaderXPath(), PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), Result, AppCaller)) then
+            DisplayErrorFromResponse(TempBlobPaymentFile, DataExchEntryNo)
+        else
+            ReadContentFromResponse(TempBlobPaymentFile);
     end;
 
-    local procedure PrepareSOAPRequestBody(var TempBlob: Codeunit "Temp Blob")
+    local procedure PrepareSOAPRequestBody(var PaymentRequestMessage: HttpRequestMessage; var TempBlob: Codeunit "Temp Blob")
     var
-        XMLDOMManagement: Codeunit "XML DOM Management";
+        AMCBankingSetup: Record "AMC Banking Setup";
         BodyContentInputStream: InStream;
-        BodyContentOutputStream: OutStream;
-        BodyContentXmlDoc: DotNet XmlDocument;
+        EnvelopeXmlDoc: XmlDocument;
+        BodyContentXmlDoc: XmlDocument;
+        PaymentExportXmlElement: XmlElement;
+        EnvelopeXmlElement: XmlElement;
+        BodyXMLElement: XmlElement;
+        Found: Boolean;
+        TempXmlDocText: text;
+        contentHttpContent: HttpContent;
     begin
-        TempBlob.CreateInStream(BodyContentInputStream);
-        XMLDOMManagement.LoadXMLDocumentFromInStream(BodyContentInputStream, BodyContentXmlDoc);
+        AMCBankingSetup.Get();
 
-        AddNamespaceAttribute(BodyContentXmlDoc, 'amcpaymentreq');
-        AddNamespaceAttribute(BodyContentXmlDoc, 'bank');
-        AddNamespaceAttribute(BodyContentXmlDoc, 'language');
+        TempBlob.CREATEINSTREAM(BodyContentInputStream);
+        XmlDocument.ReadFrom(BodyContentInputStream, BodyContentXmlDoc);
 
-        Clear(TempBlob);
-        TempBlob.CreateOutStream(BodyContentOutputStream);
-        BodyContentXmlDoc.Save(BodyContentOutputStream);
+        Found := BodyContentXmlDoc.GetRoot(PaymentExportXmlElement);
+        if (Found) then begin
+            AMCBankServiceRequestMgt.CreateEnvelope(EnvelopeXmlDoc, EnvelopeXmlElement, AMCBankingSetup.GetUserName(), AMCBankingSetup.GetPassword(), '');
+            AMCBankServiceRequestMgt.AddElement(EnvelopeXMLElement, EnvelopeXMLElement.NamespaceUri(), 'Body', '', BodyXMLElement, '', '', '');
+            BodyXMLElement.Add(PaymentExportXmlElement);
+        end;
+
+        EnvelopeXmlDoc.WriteTo(TempXmlDocText);
+        AMCBankServiceRequestMgt.RemoveUTF16(TempXmlDocText);
+        contentHttpContent.WriteFrom(TempXmlDocText);
+        PaymentRequestMessage.Content(contentHttpContent);
     end;
 
-    local procedure AddNamespaceAttribute(var XmlDoc: DotNet XmlDocument; ElementTag: Text)
-    var
-        XMLDOMMgt: Codeunit "XML DOM Management";
-        XmlNode: DotNet XmlNode;
-        XMLNodeList: DotNet XmlNodeList;
-    begin
-        XMLNodeList := XmlDoc.GetElementsByTagName(ElementTag);
-        if XMLNodeList.Count() <> 1 then
-            Error(BodyContentErr, ElementTag);
-
-        XmlNode := XMLNodeList.Item(0);
-        if IsNull(XmlNode) then
-            Error(BodyContentErr, ElementTag);
-        XMLDOMMgt.AddAttribute(XmlNode, 'xmlns', '');
-    end;
-
-    local procedure CheckIfErrorsOccurred(var ResponseInStream: InStream; DataExchEntryNo: Integer)
-    var
-        XMLDOMManagement: Codeunit "XML DOM Management";
-        ResponseXmlDoc: DotNet XmlDocument;
-    begin
-        XMLDOMManagement.LoadXMLDocumentFromInStream(ResponseInStream, ResponseXmlDoc);
-
-        if ResponseHasErrors(ResponseXmlDoc) then
-            DisplayErrorFromResponse(ResponseXmlDoc, DataExchEntryNo);
-    end;
-
-    local procedure ResponseHasErrors(ResponseXmlDoc: DotNet XmlDocument): Boolean
-    var
-        XMLDOMMgt: Codeunit "XML DOM Management";
-        XmlNode: DotNet XmlNode;
-    begin
-        exit(XMLDOMMgt.FindNodeWithNamespace(ResponseXmlDoc.DocumentElement(),
-            AMCBankServMgt.GetHeaderErrXPath(ResponseNodeTxt), 'amc', AMCBankServMgt.GetNamespace(), XmlNode));
-    end;
-
-    local procedure DisplayErrorFromResponse(ResponseXmlDoc: DotNet XmlDocument; DataExchEntryNo: Integer)
+    local procedure DisplayErrorFromResponse(TempBlobPaymentFile: Codeunit "Temp Blob"; DataExchEntryNo: Integer)
     var
         GenJnlLine: Record "Gen. Journal Line";
-        XMLDOMMgt: Codeunit "XML DOM Management";
-        XMLNodeList: DotNet XmlNodeList;
+        ResponseXmlDoc: XmlDocument;
+        InStreamData: InStream;
+        SysLogXMLNodeList: XmlNodeList;
+        SyslogXmlNode: XmlNode;
         Found: Boolean;
         ErrorText: Text;
-        i: Integer;
+        i, j : Integer;
     begin
-        Found := XMLDOMMgt.FindNodesWithNamespace(ResponseXmlDoc.DocumentElement(),
-            AMCBankServMgt.GetConvErrXPath(ResponseNodeTxt), 'amc', AMCBankServMgt.GetNamespace(), XMLNodeList);
-        if Found then begin
-            for i := 1 to XMLNodeList.Count() do
-                InsertPaymentFileError(XMLNodeList.Item(i - 1), DataExchEntryNo);
+        TempBlobPaymentFile.CreateInStream(InStreamData);
+        XmlDocument.ReadFrom(InStreamData, ResponseXmlDoc);
 
+        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetConvErrXPath(PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
+                                            PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), SysLogXMLNodeList);
+        if Found then begin
+            for i := 1 to SysLogXMLNodeList.Count() do begin
+                SysLogXMLNodeList.Get(i, SyslogXmlNode);
+                InsertPaymentFileError(SyslogXmlNode, DataExchEntryNo);
+            end;
             GenJnlLine.SetRange("Data Exch. Entry No.", DataExchEntryNo);
             GenJnlLine.FindFirst();
             if GenJnlLine.HasPaymentFileErrorsInBatch() then begin
@@ -161,34 +149,35 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
             end;
         end;
 
-        Found := XMLDOMMgt.FindNodesWithNamespace(ResponseXmlDoc.DocumentElement(),
-            AMCBankServMgt.GetErrorXPath(ResponseNodeTxt), 'amc', AMCBankServMgt.GetNamespace(), XMLNodeList);
-
+        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetSysErrXPath(PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
+                                            PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), SysLogXMLNodeList);
         if Found then begin
             ErrorText := BankDataConvServSysErr;
-            for i := 1 to XMLNodeList.Count() do
-                ErrorText += '\\' + XMLDOMMgt.FindNodeText(XMLNodeList.Item(i - 1), 'text') + '\' +
-                  XMLDOMMgt.FindNodeText(XMLNodeList.Item(i - 1), 'hinttext') + '\\' +
-                  StrSubstNo(AddnlInfoTxt, AMCBankServMgt.GetSupportURL(XMLNodeList.Item(i - 1)));
-
+            for j := 1 to SysLogXMLNodeList.Count() do begin
+                SysLogXMLNodeList.Get(j, SyslogXmlNode);
+                ErrorText += '\\' + CopyStr(AMCBankServiceRequestMgt.getNodeValue(SyslogXmlNode, 'text'), 1, 250) + '\' +
+                  CopyStr(AMCBankServiceRequestMgt.getNodeValue(SyslogXmlNode, 'hinttext'), 1, 250) + '\\' +
+                  StrSubstNo(AddnlInfoTxt, AMCBankServMgt.GetSupportURL(ResponseXmlDoc));
+            end;
             Error(ErrorText);
         end;
     end;
 
-    local procedure InsertPaymentFileError(XmlNode: DotNet XmlNode; DataExchEntryNo: Integer)
+    local procedure InsertPaymentFileError(ErrorXmlNode: XmlNode; DataExchEntryNo: Integer)
     var
         PaymentExportData: Record "Payment Export Data";
         GenJnlLine: Record "Gen. Journal Line";
-        XMLDOMMgt: Codeunit "XML DOM Management";
+        XmlDoc: XmlDocument;
         PaymentLineId: Text;
         ErrorText: Text;
         HintText: Text;
         SupportURL: Text;
     begin
-        PaymentLineId := XMLDOMMgt.FindNodeText(XmlNode, 'referenceid');
-        ErrorText := XMLDOMMgt.FindNodeText(XmlNode, 'text');
-        HintText := XMLDOMMgt.FindNodeText(XmlNode, 'hinttext');
-        SupportURL := AMCBankServMgt.GetSupportURL(XmlNode);
+        ErrorXmlNode.GetDocument(XmlDoc);
+        PaymentLineId := CopyStr(AMCBankServiceRequestMgt.getNodeValue(ErrorXmlNode, 'referenceid'), 1, 50);
+        ErrorText := CopyStr(AMCBankServiceRequestMgt.getNodeValue(ErrorXmlNode, 'text'), 1, 250);
+        HintText := CopyStr(AMCBankServiceRequestMgt.getNodeValue(ErrorXmlNode, 'hinttext'), 1, 250);
+        SupportURL := AMCBankServMgt.GetSupportURL(XmlDoc);
 
         if (ErrorText = '') or (PaymentLineId = '') then
             Error(IncorrectElementErr, PaymentLineId, ErrorText);
@@ -210,21 +199,21 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         end;
     end;
 
-    local procedure ReadContentFromResponse(var TempBlob: Codeunit "Temp Blob"; ResponseInStream: InStream)
+    local procedure ReadContentFromResponse(var TempBlob: Codeunit "Temp Blob")
     var
-        XMLDOMMgt: Codeunit "XML DOM Management";
-        DataXmlNode: DotNet XmlNode;
-        ResponseXmlDoc: DotNet XmlDocument;
+        ResponseInStream: InStream;
+        DataXmlNode: XmlNode;
+        ResponseXmlDoc: XmlDocument;
         Found: Boolean;
     begin
-        XMLDOMMgt.LoadXMLDocumentFromInStream(ResponseInStream, ResponseXmlDoc);
+        TempBlob.CreateInStream(ResponseInStream);
+        XmlDocument.ReadFrom(ResponseInStream, ResponseXmlDoc);
 
-        Found := XMLDOMMgt.FindNodeWithNamespace(ResponseXmlDoc.DocumentElement(),
-            AMCBankServMgt.GetDataXPath(ResponseNodeTxt), 'amc', AMCBankServMgt.GetNamespace(), DataXmlNode);
+        Found := ResponseXmlDoc.SelectSingleNode(STRSUBSTNO(AMCBankServiceRequestMgt.GetDataXPath(PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag())), DataXmlNode);
         if not Found then
-            Error(PaymentDataNotCollectedErr, AMCBankServMgt.GetSupportURL(DataXmlNode));
+            Error(PaymentDataNotCollectedErr, AMCBankServMgt.GetSupportURL(ResponseXmlDoc));
 
-        DecodePaymentData(TempBlob, DataXmlNode.Value());
+        DecodePaymentData(TempBlob, DataXmlNode.AsXmlElement().InnerText);
     end;
 
     local procedure DecodePaymentData(var TempBlob: Codeunit "Temp Blob"; Base64String: Text)
@@ -239,5 +228,17 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         File.WriteAllBytes(FileName, Convert.FromBase64String(Base64String));
         FileMgt.BLOBImportFromServerFile(TempBlob, FileName);
     end;
+
+    local procedure GetBankAccountNo(DataExchEntryNo: Integer): Code[20];
+    var
+        PaymentExportData: Record "Payment Export Data";
+    begin
+        PaymentExportData.SETFILTER("Data Exch Entry No.", '%1', DataExchEntryNo);
+        if (PaymentExportData.FINDFIRST()) then
+            exit(PaymentExportData."Sender Bank Account Code");
+
+        exit('');
+    end;
+
 }
 

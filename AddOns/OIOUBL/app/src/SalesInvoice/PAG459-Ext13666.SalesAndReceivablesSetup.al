@@ -24,7 +24,7 @@ pageextension 13666 "OIOUBL-Sales Receivables Setup" extends "Sales & Receivable
                 group(OutputPaths)
                 {
                     Caption = 'Output Paths';
-                    Visible = NOT IsSaaS;
+                    Visible = false;
 
                     field("OIOUBL-Invoice Path"; "OIOUBL-Invoice Path")
                     {
@@ -61,12 +61,4 @@ pageextension 13666 "OIOUBL-Sales Receivables Setup" extends "Sales & Receivable
             }
         }
     }
-    var
-        EnvironmentInfo: Codeunit "Environment Information";
-        IsSaaS: Boolean;
-
-    trigger OnOpenPage();
-    begin
-        IsSaaS := EnvironmentInfo.IsSaaS();
-    end;
 }

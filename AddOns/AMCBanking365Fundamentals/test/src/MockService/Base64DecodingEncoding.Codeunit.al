@@ -9,13 +9,10 @@ codeunit 135081 "Base64 Decoding / Encoding"
     end;
 
     var
-        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
-        Assert: Codeunit Assert;
         LibraryERM: Codeunit "Library - ERM";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryAMCWebService: Codeunit "Library - Amc Web Service";
         LibraryRandom: Codeunit "Library - Random";
-        SubstringNotFoundErr: Label '%1 was not found in %2.', Comment = '%1=Substring;%2=String';
         NordeaCorporate_EncodWinTxt: Label '"NDEADKKKXXX","1888","9999940560","DKK","Encoding","","20030221","20030221","15757.25","+","15757.25","","68","","Order 12345","4","500","MEDDELNR 2001æ¹å","0","99999999999903","501","","502","KON konto 0979999035","0","","0","","0","","","","","","","266787.12","+","266787.12","","","Driftskonto","DK3420009999940560","N","Test Testsen","Testvej 10","9999 Testrup","","","","Ordrenr. 65656","99999999999903","1170200109040120000018","7","Betaling af f¹lgende fakturaer:","Fakturanr. Bel¹b:","12345 2500,35","22345 1265,66","32345 5825,00","42345 3635,88","52345 2530,36","","","","","","","","","","","","","","","","","","","","","","","",""', Locked = true;
         IsInitialized: Boolean;
         BankAccMismatchQst: Label 'as specified in the bank statement file.\\Do you want to continue?';

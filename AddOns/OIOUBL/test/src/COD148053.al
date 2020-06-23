@@ -366,10 +366,12 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesInvoice.Filter.SetFilter("No.", SalesHeader."No.");
         SalesInvoice.PostAndSend.INVOKE();
 
-        // [THEN] Sales Invoice is posted
+        // [THEN] Sales Invoice is posted.
         // [THEN] OIOUBL Electronic Document is created at the location, specified in Sales Setup.
+        // [THEN] "No. Printed" value of Posted Sales Invoice increases by 1. Bug ID 349569.
         FindSalesInvoiceHeader(SalesInvoiceHeader, SalesHeader."No.");
         SalesInvoiceHeader.TESTFIELD("OIOUBL-Electronic Invoice Created", true);
+        SalesInvoiceHeader.TestField("No. Printed", 1);
         VerifyElectronicSalesDocument(SalesInvoiceHeader."No.", SalesInvoiceHeader."OIOUBL-Account Code");
         VerifyInteractionLogEntry(InteractionLogEntry."Document Type"::"Sales Inv.", SalesInvoiceHeader."No.");
     end;
@@ -399,8 +401,10 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesInvoiceHeader.SendRecords();
 
         // [THEN] OIOUBL Electronic Document is created at the location, specified in Sales Setup.
+        // [THEN] "No. Printed" value of Posted Sales Invoice increases by 1. Bug ID 349569.
         SalesInvoiceHeader.Get(PostedDocNo);
         SalesInvoiceHeader.TESTFIELD("OIOUBL-Electronic Invoice Created", true);
+        SalesInvoiceHeader.TestField("No. Printed", 1);
         VerifyElectronicSalesDocument(SalesInvoiceHeader."No.", SalesInvoiceHeader."OIOUBL-Account Code");
         VerifyInteractionLogEntry(InteractionLogEntry."Document Type"::"Sales Inv.", SalesInvoiceHeader."No.");
     end;
@@ -572,8 +576,10 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
         // [THEN] Sales Credit Memo is posted.
         // [THEN] OIOUBL Electronic Document is created at the location, specified in Sales Setup.
+        // [THEN] "No. Printed" value of Posted Sales Credit Memo increases by 1. Bug ID 349569.
         FindSalesCrMemoHeader(SalesCrMemoHeader, SalesHeader."No.");
         SalesCrMemoHeader.TESTFIELD("OIOUBL-Electronic Credit Memo Created", true);
+        SalesCrMemoHeader.TestField("No. Printed", 1);
         VerifyElectronicSalesDocument(SalesCrMemoHeader."No.", SalesCrMemoHeader."OIOUBL-Account Code");
         VerifyInteractionLogEntry(InteractionLogEntry."Document Type"::"Sales Cr. Memo", SalesCrMemoHeader."No.");
     end;
@@ -603,8 +609,10 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesCrMemoHeader.SendRecords();
 
         // [THEN] OIOUBL Electronic Document is created at the location, specified in Sales Setup.
+        // [THEN] "No. Printed" value of Posted Sales Credit Memo increases by 1. Bug ID 349569.
         SalesCrMemoHeader.Get(PostedDocNo);
         SalesCrMemoHeader.TESTFIELD("OIOUBL-Electronic Credit Memo Created", true);
+        SalesCrMemoHeader.TestField("No. Printed", 1);
         VerifyElectronicSalesDocument(SalesCrMemoHeader."No.", SalesCrMemoHeader."OIOUBL-Account Code");
         VerifyInteractionLogEntry(InteractionLogEntry."Document Type"::"Sales Cr. Memo", SalesCrMemoHeader."No.");
     end;
@@ -818,7 +826,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         ElectronicDocumentFormat: Record "Electronic Document Format";
         SalesInvoice: TestPage "Sales Invoice";
     begin
-        // [SCENARIO 336642] Post And Send Sales Document in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
+        // [SCENARIO 336642] Post And Send Sales Invoice in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
         Initialize();
         SMTPMailSetupInitialize();
         CreateElectronicDocumentFormat(
@@ -843,7 +851,10 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         // [THEN] Sales Invoice is posted.
         // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Dialog is opened.
         // [THEN] OIOUBL Electronic Document for Posted Sales Invoice is created.
+        // [THEN] "No. Printed" value of Posted Sales Invoice increases by 3 (Print, E-mail, Disk). Bug ID 351595.
         FindSalesInvoiceHeader(SalesInvoiceHeader, SalesHeader."No.");
+        SalesInvoiceHeader.TestField("OIOUBL-Electronic Invoice Created", true);
+        SalesInvoiceHeader.TestField("No. Printed", 3);
         VerifyElectronicSalesDocument(SalesInvoiceHeader."No.", SalesInvoiceHeader."OIOUBL-Account Code");
     end;
 
@@ -973,6 +984,49 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         Clear(FileNameLst);
         FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(2), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(2), 'S.Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
+    end;
+
+    [Test]
+    [HandlerFunctions('PostandSendModalPageHandler,StandardSalesCreditMemoRequestPageHandler,EmailDialogModalPageHandler')]
+    procedure PostAndSendSalesCrMemoOIOUBLWithPrintAndEmail();
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+        SalesCreditMemo: TestPage "Sales Credit Memo";
+    begin
+        // [SCENARIO 336642] Post And Send Sales Credit Memo in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
+        Initialize();
+        SMTPMailSetupInitialize();
+        CreateElectronicDocumentFormat(
+            OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Credit Memo", Codeunit::"OIOUBL-Export Sales Cr. Memo");
+
+        // [GIVEN] DocumentSendingProfile with Printer = Yes; Disk = "Electronic Document", Format = OIOUBL;
+        // [GIVEN] E-Mail = Yes, E-Mail Attachment = "Electronic Document", Format = OIOUBL. Sales Credit Memo.
+        CreateDocumentSendingProfile(
+            DocumentSendingProfile, DocumentSendingProfile.Printer::"Yes (Prompt for Settings)",
+            DocumentSendingProfile."E-Mail"::"Yes (Prompt for Settings)",
+            DocumentSendingProfile."E-Mail Attachment"::"Electronic Document", OIOUBLFormatNameTxt,
+            DocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+        CreateSalesDocumentWithItem(SalesLine, SalesHeader."Document Type"::"Credit Memo");
+        SetDocumentSendingProfileToCustomer(SalesLine."Sell-to Customer No.", DocumentSendingProfile.Code);
+        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+
+        // [WHEN] Run "Post And Send" for Sales Credit Memo.
+        SalesCreditMemo.OpenEdit();
+        SalesCreditMemo.Filter.SetFilter("No.", SalesHeader."No.");
+        SalesCreditMemo.PostAndSend.Invoke();
+
+        // [THEN] Sales Credit Memo is posted.
+        // [THEN] Report "Standard Sales - Credit Memo" for printing Posted Sales Credit Memo is invoked. Then Email Dialog is opened.
+        // [THEN] OIOUBL Electronic Document for Posted Sales Credit Memo is created.
+        // [THEN] "No. Printed" value of Posted Sales Credit Memo increases by 3 (Print, E-mail, Disk). Bug ID 351595.
+        FindSalesCrMemoHeader(SalesCrMemoHeader, SalesHeader."No.");
+        SalesCrMemoHeader.TestField("OIOUBL-Electronic Credit Memo Created", true);
+        SalesCrMemoHeader.TestField("No. Printed", 3);
+        VerifyElectronicSalesDocument(SalesCrMemoHeader."No.", SalesCrMemoHeader."OIOUBL-Account Code");
     end;
 
     [Test]
@@ -1844,6 +1898,12 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     procedure StandardSalesInvoiceRequestPageHandler(var StandardSalesInvoice: TestRequestPage "Standard Sales - Invoice")
     begin
         StandardSalesInvoice.Cancel().Invoke();
+    end;
+
+    [RequestPageHandler]
+    procedure StandardSalesCreditMemoRequestPageHandler(var StandardSalesCreditMemo: TestRequestPage "Standard Sales - Credit Memo")
+    begin
+        StandardSalesCreditMemo.Cancel().Invoke();
     end;
 }
 

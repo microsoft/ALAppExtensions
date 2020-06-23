@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -509,5 +509,22 @@ codeunit 10530 "MTD Mgt."
                     FieldRef.Value(CopyStr(JToken.AsValue().AsCode(), 1, FieldRef.Length()));
             end;
         end;
+    end;
+
+    procedure GetVATReportSetupUpgradeTag(): Code[250];
+    begin
+        exit('MS-345859-GB-MTD-VATReportSetup-20200304');
+    end;
+
+    procedure GetDailyLimitUpgradeTag(): Code[250];
+    begin
+        exit('MS-332065-GB-MTD-DailyLimit-20200304');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, 9999, 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
+    begin
+        PerCompanyUpgradeTags.Add(GetVATReportSetupUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetDailyLimitUpgradeTag());
     end;
 }

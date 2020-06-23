@@ -9,6 +9,7 @@ table 1439 "Headline Details"
 
     ObsoleteState = Pending;
     ObsoleteReason = 'Should be per user';
+    ObsoleteTag = '15.4';
 
     fields
     {

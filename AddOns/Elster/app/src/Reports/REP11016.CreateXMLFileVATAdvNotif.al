@@ -37,6 +37,8 @@ report 11016 "Create XML-File VAT Adv.Notif."
                 TaxUnrealizedAmount: array[100] of Decimal;
                 TaxUnrealizedBase: array[100] of Decimal;
             begin
+                SendTraceTag('0000C9S', ElsterTok, VERBOSITY::Normal, CreateXMLFileMsg, DATACLASSIFICATION::SystemMetadata);
+
                 if "XML-File Creation Date" <> 0D then
                     Error(XMLFileExistsErr, TableCaption());
                 TestField("Contact for Tax Office");
@@ -61,6 +63,8 @@ report 11016 "Create XML-File VAT Adv.Notif."
                 CheckTaxPairs();
 
                 CreateXmlSubDoc();
+
+                SendTraceTag('0000C9T', ElsterTok, VERBOSITY::Normal, CreateXMLFileSuccessMsg, DATACLASSIFICATION::SystemMetadata);
             end;
 
             trigger OnPostDataItem()
@@ -120,6 +124,9 @@ report 11016 "Create XML-File VAT Adv.Notif."
         XMLFileExistsErr: Label 'The XML-File for the %1 already exists.';
         TruncateRequestMsg: Label 'The length of the field %1 of table %2 exceeds the maximum length of %3 allowed. The text will be truncated from\\%4 to\%5.\\Do you want to continue?';
         ErrorCategoryErr: Label 'Please make sure that as well category %1 and %2 are defined in %3 %4.';
+        ElsterTok: Label 'ElsterTelemetryCategoryTok', Locked = true;
+        CreateXMLFileMsg: Label 'Creating XML file', Locked = true;
+        CreateXMLFileSuccessMsg: Label 'XML file created successfully', Locked = true;
         Window: Dialog;
         SubsequentAction: Option "Only create","Create and export";
         TaxAmount: array[100] of Decimal;

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the Standard Audit File - Tax Localization for Norway extension.",
     "description":  "Tests for the Standard Audit File - Tax Localization for Norwaym extension.",
-    "version":  "16.0.0.0",
+    "version":  "16.3.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
@@ -15,13 +15,13 @@
                              "id":  "3d5fd255-4fb4-464b-9362-44cd85a883e7",
                              "name":  "Standard Audit File - Tax Localization for Norway",
                              "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
+                             "version":  "16.3.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "16.0.0.0"
+                             "version":  "16.3.0.0"
                          }
                      ],
     "screenshots":  [
@@ -40,5 +40,5 @@
                  ],
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "16.0.0.0"
+    "application":  "16.3.0.0"
 }
