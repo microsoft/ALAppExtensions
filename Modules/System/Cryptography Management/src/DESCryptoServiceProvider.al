@@ -4,65 +4,60 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Provides helper functions for the Advanced Encryption Standard.
+// Provides helper functions for the Data Encryption Standard (DES)
 /// </summary>
 
-codeunit 50102 "DESCryptoServiceProvider"
+codeunit 1379 "DESCryptoServiceProvider"
 {
     Access = Public;
 
-    /// <summary>
-    /// Encrypts text with DESCryptoServiceProvider
-    /// </summary>
-    /// <param name="Password">Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes</param>
-    /// <param name="Salt">Represents the salt to be used to initialize a new instance of Rfc2898DeriveBytes</param>
-    /// <param name="VarInput">Represents the input text to be encrypted</param>
-    procedure EncryptTextWithDESCryptoServiceProvider(VarInput: Text; Password: Text; Salt: Text) VarOutput: Text
     var
-        CryptographyManagementImpl: Codeunit "Cryptography Management Impl.";
+        DESCryptoServiceProviderImpl: Codeunit "DESCryptoServiceProvider Impl.";
+
+    /// <summary>
+    /// Encrypts text with DotNet Cryptography.DESCryptoServiceProvider
+    /// </summary>
+    /// <param name="Password">Represents the password to be used to initialize a new instance of DotNet System.Security.Cryptography.Rfc2898DeriveBytes</param>
+    /// <param name="Salt">Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes</param>
+    /// <param name="VarInput">Represents the input text to encrypt</param>
+    procedure EncryptTextWithDESCryptoServiceProvider(EncryptText: Text; Password: Text; Salt: Text) DecryptText: Text
     begin
-        VarOutput := CryptographyManagementImpl.EncryptTextWithDESCryptoServiceProvider(VarInput, Password, Salt);
+        DecryptText := DESCryptoServiceProviderImpl.EncryptTextWithDESCryptoServiceProvider(EncryptText, Password, Salt);
     end;
 
     /// <summary>
-    /// Decrypts text with DESCryptoServiceProvider
+    /// Decrypts text with DotNet Cryptography.DESCryptoServiceProvider
     /// </summary>
-    /// <param name="Password">Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes</param>
-    /// <param name="Salt">Represents the salt to be used to initialize a new instance of Rfc2898DeriveBytes</param>
-    /// <param name="VarInput">Represents the input text to be encrypted</param>
-    procedure DecryptTextWithDESCryptoServiceProvider(VarInput: Text; Password: Text; Salt: Text) VarOutput: Text
-    var
-        CryptographyManagementImpl: Codeunit "Cryptography Management Impl.";
+    /// <param name="Password">Represents the password to be used to initialize a new instance of DotNet System.Security.Cryptography.Rfc2898DeriveBytes</param>
+    /// <param name="Salt">Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes</param>
+    /// <param name="VarInput">Represents the input text to encrypt</param>
+    procedure DecryptTextWithDESCryptoServiceProvider(EncryptedText: Text; Password: Text; Salt: Text) DecryptedText: Text
     begin
-        VarOutput := CryptographyManagementImpl.DecryptTextWithDESCryptoServiceProvider(VarInput, Password, Salt);
+        DecryptedText := DESCryptoServiceProviderImpl.DecryptTextWithDESCryptoServiceProvider(EncryptedText, Password, Salt);
     end;
 
 
     /// <summary>
-    /// Encrypts data in stream with DESCryptoServiceProvider
+    /// Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
     /// </summary>
     /// <param name="Password">Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes</param>
     /// <param name="Salt">Represents the salt to be used to initialize a new instance of Rfc2898DeriveBytes</param>
-    /// <param name="InputInstream">Represents the input instream data to be encrypted</param>
-    /// <param name="OutputOutstream">Represents the output instream encrypted data </param>
-    procedure EncryptStreamWithDESCryptoServiceProvider(Password: Text; InputInstream: InStream; VAR OutputOutstream: Outstream)
-    var
-        CryptographyManagementImpl: Codeunit "Cryptography Management Impl.";
+    /// <param name="InputInstream">Represents the input instream data to encrypt</param>
+    /// <param name="OutputOutstream">Represents the output instream encrypted data</param>
+    procedure EncryptStreamWithDESCryptoServiceProvider(Password: Text; EncryptStream: InStream; VAR DecryptStream: Outstream)
     begin
-        CryptographyManagementImpl.EncryptStreamWithDESCryptoServiceProvider(Password, InputInstream, OutputOutstream);
+        DESCryptoServiceProviderImpl.EncryptStreamWithDESCryptoServiceProvider(Password, EncryptStream, DecryptStream);
     end;
 
     /// <summary>
-    /// Encrypts data in stream with DESCryptoServiceProvider
+    /// Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
     /// </summary>
     /// <param name="Password">Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes</param>
     /// <param name="Salt">Represents the salt to be used to initialize a new instance of Rfc2898DeriveBytes</param>
-    /// <param name="InputInstream">Represents the input instream data to be decrypted</param>
-    /// <param name="OutputOutstream">Represents the output instream decrypted data </param>
+    /// <param name="InputInstream">Represents the input instream data to decrypt</param>
+    /// <param name="OutputOutstream">Represents the output instream decrypted data</param>
     procedure DecryptStreamWithDESCryptoServiceProvider(Password: Text; InputInstream: InStream; VAR OutputOutstream: Outstream)
-    var
-        CryptographyManagementImpl: Codeunit "Cryptography Management Impl.";
     begin
-        CryptographyManagementImpl.DecryptStreamWithDESCryptoServiceProvider(Password, InputInstream, OutputOutstream);
+        DESCryptoServiceProviderImpl.DecryptStreamWithDESCryptoServiceProvider(Password, InputInstream, OutputOutstream);
     end;
 }
