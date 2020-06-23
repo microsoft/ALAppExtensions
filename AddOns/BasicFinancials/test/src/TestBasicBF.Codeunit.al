@@ -24,8 +24,8 @@ codeunit 139502 "Test Basic BF"
     var
     begin
         // [SCENARIO] Check the Basic Experience Tier After Install of Basic Extension 
-        // [GIVEN] Application Area
-        // [WHEN]
+        // [GIVEN] Basic Extension is installed
+        // [WHEN] User navigates through the product
 
         // [THEN] Basic Experience Tier is Enabled
         TestEnabledBasicExperienceTier();
@@ -36,23 +36,23 @@ codeunit 139502 "Test Basic BF"
     var
     begin
         // [SCENARIO] Check the Basic Application Area After Install of Basic Extension 
-        // [GIVEN] Application Area
-        // [WHEN]
+        // [GIVEN] Basic Extension is installed
+        // [WHEN] User navigates through the product
 
         // [THEN] Basic Application Area is Enabled
         TestEnabledBasicApplicationArea();
     end;
 
     [Test]
-    procedure TestDisableRoleCenterAfterInstall();
+    procedure TestDisabledRoleCenterAfterInstall();
     var
     begin
         // [SCENARIO] Check disable Role Center After Install of Basic Extension 
-        // [GIVEN] Role Center
-        // [WHEN]
+        // [GIVEN] Basic Extension is installed
+        // [WHEN] Navigating to Role Centers
 
-        // [THEN] Role Center is disable
-        TestDisableRoleCenter();
+        // [THEN] Set of defined Role Centers is disabled
+        TestDisabledRoleCenter();
     end;
 
     [Test]
@@ -61,7 +61,7 @@ codeunit 139502 "Test Basic BF"
         DummyExperienceTierSetup: Record "Experience Tier Setup";
         ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
     begin
-        // [SCENARIO] Check that Basic Application Area are disabled, after Experience Tier is set to Essential 
+        // [SCENARIO] Check that Basic Application Area is disabled
         // [GIVEN] Experience Tier
 
         // [WHEN] Experience Tier is saved as Essential
@@ -184,7 +184,7 @@ codeunit 139502 "Test Basic BF"
         asserterror AssistedSetupBFTestPage.IsSupportedLicenses.SetValue(true);
 
         // [THEN] Error message displayed 
-        Assert.AreEqual(GETLASTERRORTEXT, NotSupportedLicensesErr, 'Invalid error message.');
+        Assert.AreEqual(GETLASTERRORTEXT(), NotSupportedLicensesErr, 'Invalid error message.');
         Assert.IsFalse(AssistedSetupBFTestPage.IsSupportedLicenses.AsBoolean(), 'Is Supported Licenses should be disabled');
         Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
         AssistedSetupBFTestPage.Close();
@@ -203,7 +203,7 @@ codeunit 139502 "Test Basic BF"
         asserterror AssistedSetupBFTestPage.IsSupportedCompanies.SetValue(true);
 
         // [THEN]
-        Assert.AreEqual(GETLASTERRORTEXT, NotSupportedCompaniesErr, 'Invalid error message.');
+        Assert.AreEqual(GETLASTERRORTEXT(), NotSupportedCompaniesErr, 'Invalid error message.');
         Assert.IsFalse(AssistedSetupBFTestPage.IsSupportedCompanies.AsBoolean(), 'Is Supported Companies should be disabled');
         Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
         AssistedSetupBFTestPage.Close();
@@ -248,7 +248,6 @@ codeunit 139502 "Test Basic BF"
             repeat
                 ApplicationAreaSetupFieldRef := ApplicationAreaSetupRecordRef.FIELD(Field."No.");
                 case ApplicationAreaSetupFieldRef.Name() of
-                    // Application Area must be true
                     ApplicationAreaSetup.FieldName("BF Basic"),
                     ApplicationAreaSetup.FieldName(Basic),
                     ApplicationAreaSetup.FieldName(Suite),
@@ -278,7 +277,7 @@ codeunit 139502 "Test Basic BF"
                             IsBasicCountryTested := true;
                         end;
 
-                    // Remainder Application Area must be false, even when new ones are added                
+                    // Remaining Application Area must be false, even when new ones are added                
                     else
                         ApplicationAreaSetupFieldRef.TestField(false);
                 end;
