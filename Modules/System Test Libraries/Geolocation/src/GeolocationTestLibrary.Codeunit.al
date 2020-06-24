@@ -9,6 +9,7 @@ codeunit 50102 "Geolocation Test Library"
 
     var
         IsLocationAvailable: Boolean;
+        MockStatus: Enum "Geolocation Status";
 
     /// <summary>
     /// Indicates whether the geographical location is available when a test is in progress.
@@ -36,14 +37,22 @@ codeunit 50102 "Geolocation Test Library"
         IsLocationAvailable := IsAvailable;
     end;
 
+    procedure SetGeolocationStatus(Status: Enum "Geolocation Status")
+    begin
+        MockStatus := Status;
+    end;
+
     procedure GetMockGeolocation(var Location: DotNet Location)
     var
         Coordinate: DotNet Coordinate;
+        LocationStatus: DotNet LocationStatus;
     begin
         Location := Location.Location();
         Location.Coordinate := Coordinate.Coordinate();
         Location.Coordinate.Latitude := 1.5;
         Location.Coordinate.Longitude := 2.5;
+        LocationStatus := MockStatus.AsInteger();
+        Location.Status := LocationStatus;
     end;
 
     procedure GetMockGeolocation(var Latitude: Decimal; var Longitude: Decimal)

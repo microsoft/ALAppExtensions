@@ -15,6 +15,10 @@ dotnet
         {
         }
 
+        type("Microsoft.Dynamics.Nav.Client.Capabilities.LocationStatus"; LocationStatus)
+        {
+        }
+
         type("Microsoft.Dynamics.Nav.Client.Capabilities.Coordinate"; Coordinate)
         {
         }

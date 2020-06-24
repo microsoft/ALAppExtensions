@@ -200,6 +200,54 @@ codeunit 50103 "Geolocation Test"
         Assert.ExpectedError('The geographical location data was not retrieved.');
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('LocationPageHandler')]
+    procedure TestGeolocationStatusIsTimedOut()
+    var
+        Geolocation: Codeunit Geolocation;
+        GeolocationTestLibrary: Codeunit "Geolocation Test Library";
+    begin
+        // [Given] Geolocation test library subscribers are bound.
+        BindSubscription(GeolocationTestLibrary);
+
+        // [When] Location availability is set to true in the Geolocation test library.
+        GeolocationTestLibrary.SetLocationAvailability(true);
+
+        // [When] Location status is set to "Timed Out" in the Geolocation test library.
+        GeolocationTestLibrary.SetGeolocationStatus("Geolocation Status"::"Timed Out");
+
+        // [When] RequestGeolocation is invoked on the Geolocation object.
+        Geolocation.RequestGeolocation();
+
+        // [Then] The status of the geographical location data is "Timed Out"
+        Assert.AreEqual("Geolocation Status"::"Timed Out", Geolocation.GetGeolocationStatus(), 'The status of the geographical location data is not "Timed Out".');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('LocationPageHandler')]
+    procedure TestGeolocationStatusIsNoData()
+    var
+        Geolocation: Codeunit Geolocation;
+        GeolocationTestLibrary: Codeunit "Geolocation Test Library";
+    begin
+        // [Given] Geolocation test library subscribers are bound.
+        BindSubscription(GeolocationTestLibrary);
+
+        // [When] Location availability is set to true in the Geolocation test library.
+        GeolocationTestLibrary.SetLocationAvailability(true);
+
+        // [When] Location status is set to "No Data" in the Geolocation test library.
+        GeolocationTestLibrary.SetGeolocationStatus("Geolocation Status"::"No Data");
+
+        // [When] RequestGeolocation is invoked on the Geolocation object.
+        Geolocation.RequestGeolocation();
+
+        // [Then] The status of the geographical location data is "No Data"
+        Assert.AreEqual("Geolocation Status"::"No Data", Geolocation.GetGeolocationStatus(), 'The status of the geographical location data is not "No Data".');
+    end;
+
     [ModalPageHandler]
     procedure LocationPageHandler(var GeolocationPage: TestPage Geolocation)
     begin
