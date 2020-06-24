@@ -44,7 +44,7 @@ codeunit 50102 "Digipoort"
     /// <param name="TLS">The VarSecurityProtocolType the request has to be send with. Leave empty to take the default value.</param>
     /// <param name="ResponseNo">ResponseNo of the first response message</param>
     /// <param name="ElecTaxDeclResponseMsg">Record where the response messages will get stored in</param>
-    procedure ReceiveReponseMessages(ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageID: Text; ResponseUrl: Text; TLS: Text; ResponseNo: Integer; VAR ElecTaxDeclResponseMsg: Record "Elec. Tax Decl. Response Msg."): Text
+    procedure ReceiveResponseMessages(ClientCertificateCode: Code[20]; ServiceCertificateCode: Code[20]; MessageID: Text; ResponseUrl: Text; TLS: Text; ResponseNo: Integer; VAR ElecTaxDeclResponseMsg: Record "Elec. Tax Decl. Response Msg."): Text
     begin
         exit(DigipoortManagementImpl.ReceiveResponseMessages(ClientCertificateCode, ServiceCertificateCode, MessageID, ResponseUrl, TLS, ResponseNo, ElecTaxDeclResponseMsg));
     end;
