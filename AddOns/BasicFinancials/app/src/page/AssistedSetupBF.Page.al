@@ -71,6 +71,7 @@ page 20600 "Assisted Setup BF"
                 Caption = 'I understand and accept the terms';
                 ToolTip = 'Acknowledge that you have read and accept the terms.';
             }
+            /* Temporarily removed due to issue regarding License check
             field(IsSupportedLicenses; IsSupportedLicenses)
             {
                 ApplicationArea = Basic, Suite;
@@ -87,6 +88,7 @@ page 20600 "Assisted Setup BF"
                         Error(NotSupportedLicensesErr);
                 end;
             }
+            */
             field(IsSupportedCompanies; IsSupportedCompanies)
             {
                 ApplicationArea = Basic, Suite;
@@ -113,7 +115,10 @@ page 20600 "Assisted Setup BF"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Finish';
-                Enabled = ConsentAccepted and IsSupportedLicenses and IsSupportedCompanies;
+                //>> Temporarily modified due to issue regarding License check
+                //Enabled = ConsentAccepted and IsSupportedLicenses and IsSupportedCompanies;
+                Enabled = ConsentAccepted and IsSupportedCompanies;
+                //<< Temporarily modified due to issue regarding License check
                 Image = Close;
                 InFooterBar = true;
                 ToolTip = 'Choose Finish to complete the Basic assisted setup guide.';
@@ -135,7 +140,7 @@ page 20600 "Assisted Setup BF"
         BasicMgmt: Codeunit "Basic Mgmt BF";
     begin
         IsSupportedCompanies := BasicMgmt.IsSupportedCompanies();
-        IsSupportedLicenses := BasicMgmt.IsSupportedLicense();
+        //IsSupportedLicenses := BasicMgmt.IsSupportedLicense(); // Temporarily removed due to issue regarding License check
         AssistedSetup.Reset(PAGE::"Assisted Setup BF");
         IsComplete := AssistedSetup.IsComplete(PAGE::"Assisted Setup BF");
         ConsentAccepted := IsComplete;
@@ -144,6 +149,6 @@ page 20600 "Assisted Setup BF"
     var
         IsComplete: Boolean;
         IsSupportedCompanies: Boolean;
-        IsSupportedLicenses: Boolean;
+        //IsSupportedLicenses: Boolean; // Temporarily modified due to issue regarding License check
         ConsentAccepted: Boolean;
 }
