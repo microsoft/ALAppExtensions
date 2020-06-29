@@ -5,7 +5,7 @@ codeunit 20605 "Assisted Setup BF"
     var
         AssistedSetupTxt: Label 'Set up the Business Central Basic extension';
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=', Locked = true;
-        AssistedSetupDescriptionTxt: Label 'Business Central Basic';
+        AssistedSetupDescriptionTxt: Label 'Start using the Basic Experience extension to manage your business.';
         AlreadySetUpQst: Label 'This assisted setup guide has already been completed. Do you want to run it again?';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnRegister', '', false, false)]

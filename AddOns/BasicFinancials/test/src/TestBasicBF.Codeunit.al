@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 139502 "Test Basic BF"
+codeunit 139502 "Test Basic BF" //139502
 {
     Subtype = Test;
     TestPermissions = Disabled;
@@ -11,8 +11,7 @@ codeunit 139502 "Test Basic BF"
     var
         Assert: Codeunit Assert;
         AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER', Locked = true, Comment = 'As default the profile "SALES AND RELATIONSHIP MANAGER" cannot disable because it is set up as a default profile for one or more users or user groups.';
-        NotSupportedLicensesErr: Label 'Validation error for Field: IsSupportedLicenses,  Message = ''At least one user must have the Basic license.''', Locked = true;
-        NotSupportedCompaniesErr: Label 'Validation error for Field: IsSupportedCompanies,  Message = ''Exactly one company must exists in the environment.''', Locked = true;
+    //NotSupportedLicensesErr: Label 'Validation error for Field: IsSupportedLicenses,  Message = ''At least one user must have the Basic license.''', Locked = true;
 
     trigger OnRun();
     begin
@@ -52,7 +51,7 @@ codeunit 139502 "Test Basic BF"
         // [WHEN] Navigating to Role Centers
 
         // [THEN] Set of defined Role Centers is disabled
-        TestDisabledRoleCenter();
+        TestDisableRoleCenter();
     end;
 
     [Test]
@@ -139,23 +138,6 @@ codeunit 139502 "Test Basic BF"
     */
 
     [Test]
-    procedure TestSupportedCompaniesIsDisabledAssistedSetupPage();
-    var
-        AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
-    begin
-        // [SCENARIO] Check Supported Companies on Assisted Setup 
-        // [GIVEN] Basic Assisted Setup Page
-
-        // [WHEN] The Assisted Setup is opened
-        AssistedSetupBFTestPage.OpenView();
-
-        // [THEN] Supported Companies and Finish should be disabled
-        Assert.IsFalse(AssistedSetupBFTestPage.IsSupportedCompanies.AsBoolean(), 'Is Supported Companies should be disabled');
-        Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
-        AssistedSetupBFTestPage.Close();
-    end;
-
-    [Test]
     procedure TestEnableAcceptConsentAssistedSetupPage();
     var
         AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
@@ -169,45 +151,7 @@ codeunit 139502 "Test Basic BF"
 
         // [THEN]
         Assert.IsTrue(AssistedSetupBFTestPage.AcceptConsent.AsBoolean(), 'Accept Consent should be Enabled');
-        Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
-        AssistedSetupBFTestPage.Close();
-    end;
-
-    [Test]
-    procedure TestEnableLicensesAssistedSetupPage();
-    var
-        AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
-    begin
-        // [SCENARIO]
-        // [GIVEN] Basic Assisted Setup Page
-
-        // [WHEN] Set Supported Licenses to true
-        AssistedSetupBFTestPage.OpenView();
-        asserterror AssistedSetupBFTestPage.IsSupportedLicenses.SetValue(true);
-
-        // [THEN] Error message displayed 
-        Assert.AreEqual(GETLASTERRORTEXT(), NotSupportedLicensesErr, 'Invalid error message.');
-        Assert.IsFalse(AssistedSetupBFTestPage.IsSupportedLicenses.AsBoolean(), 'Is Supported Licenses should be disabled');
-        Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
-        AssistedSetupBFTestPage.Close();
-    end;
-
-    [Test]
-    procedure TestEnableSupportedCompaniesAssistedSetupPage();
-    var
-        AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
-    begin
-        // [SCENARIO]
-        // [GIVEN] Basic Assisted Setup Page
-
-        // [WHEN] Set Supported Companies to true
-        AssistedSetupBFTestPage.OpenView();
-        asserterror AssistedSetupBFTestPage.IsSupportedCompanies.SetValue(true);
-
-        // [THEN]
-        Assert.AreEqual(GETLASTERRORTEXT(), NotSupportedCompaniesErr, 'Invalid error message.');
-        Assert.IsFalse(AssistedSetupBFTestPage.IsSupportedCompanies.AsBoolean(), 'Is Supported Companies should be disabled');
-        Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
+        Assert.IsTrue(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be Enabled');
         AssistedSetupBFTestPage.Close();
     end;
 
@@ -229,7 +173,6 @@ codeunit 139502 "Test Basic BF"
         // Experience Tier must be true
         ExperienceTierSetup.TestField("BF Basic", true);
     end;
-
 
     internal procedure TestEnabledBasicApplicationArea();
     var

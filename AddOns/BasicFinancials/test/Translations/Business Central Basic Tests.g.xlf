@@ -8,16 +8,6 @@
           <note from="Developer" annotates="general" priority="2">As default the profile "SALES AND RELATIONSHIP MANAGER" cannot disable because it is set up as a default profile for one or more users or user groups.</note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Test Basic BF - NamedType AllProfileFilterTxt</note>
         </trans-unit>
-        <trans-unit id="Codeunit 3076726172 - NamedType 1960031106" size-unit="char" translate="no" xml:space="preserve">
-          <source>Validation error for Field: IsSupportedLicenses,  Message = 'At least one user must have the Basic license.'</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Test Basic BF - NamedType NotSupportedLicensesErr</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 3076726172 - NamedType 2395227545" size-unit="char" translate="no" xml:space="preserve">
-          <source>Validation error for Field: IsSupportedCompanies,  Message = 'Exactly one company must exists in the environment.'</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Test Basic BF - NamedType NotSupportedCompaniesErr</note>
-        </trans-unit>
       </group>
     </body>
   </file>

@@ -14,7 +14,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AssistedSetupHelpTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 875245055 - NamedType 1689235809" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Business Central Basic</source>
+          <source>Start using the Basic Experience extension to manage your business.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AssistedSetupDescriptionTxt</note>
         </trans-unit>
@@ -24,24 +24,34 @@
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AlreadySetUpQst</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Basic Assisted Setup</source>
+          <source>Basic Assisted Setup guide</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Page 875245055 - Control 329424276 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Page 875245055 - Control 2332231641 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source></source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control MediaStandard - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 875245055 - Control 1966572419 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source></source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control FirstPage - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 875245055 - Control 3800514526 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Welcome</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Title - Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Welcome - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Page 875245055 - Control 206735127 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source> </source>
+        <trans-unit id="Page 875245055 - Control 203669508 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source></source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Instructional - Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Introduction - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Page 875245055 - Control 206735127 - Property 1968111052" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Page 875245055 - Control 203669508 - Property 1968111052" size-unit="char" translate="yes" xml:space="preserve">
           <source>The Basic extension enables the subset Dynamics 365 Business Central capabilities provided by the Basic license.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Instructional - Property InstructionalText</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Introduction - Property InstructionalText</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Control 3982979311 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
@@ -63,15 +73,20 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control HelpLink - Property ToolTip</note>
         </trans-unit>
-        <trans-unit id="Page 875245055 - Control 3706489003 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source> </source>
+        <trans-unit id="Page 875245055 - Control 773332919 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Terms of Use</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control ConsentPart - Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Terms - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Page 875245055 - Control 3706489003 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Page 875245055 - Control 4227742000 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source></source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Terms1 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 875245055 - Control 4227742000 - Property 1968111052" size-unit="char" translate="yes" xml:space="preserve">
           <source>By enabling this extension you accept the terms of use. To enable the service you must read and accept the terms of use.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control ConsentPart - Property ToolTip</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Terms1 - Property InstructionalText</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Control 2114002185 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
@@ -83,6 +98,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control TermsOfUseLink - Property ToolTip</note>
         </trans-unit>
+        <trans-unit id="Page 875245055 - Control 1208167938 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source></source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Terms3 - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 875245055 - Control 1443400578 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>I understand and accept the terms</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -92,36 +112,6 @@
           <source>Acknowledge that you have read and accept the terms.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control AcceptConsent - Property ToolTip</note>
-        </trans-unit>
-        <trans-unit id="Page 875245055 - Control 2010530552 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Basic license has been assigned</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedLicenses - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Page 875245055 - Control 2010530552 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>To complete the Basic setup the Basic license must be assigned to at least one user.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedLicenses - Property ToolTip</note>
-        </trans-unit>
-        <trans-unit id="Page 875245055 - Control 2010530552 - Method 2126772001 - NamedType 1960031106" size-unit="char" translate="yes" xml:space="preserve">
-          <source>At least one user must have the Basic license.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedLicenses - Method OnValidate - NamedType NotSupportedLicensesErr</note>
-        </trans-unit>
-        <trans-unit id="Page 875245055 - Control 2047310015 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>One company exists in the environment</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedCompanies - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Page 875245055 - Control 2047310015 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>To complete the Basic setup there must exists exactly one company in the environment.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedCompanies - Property ToolTip</note>
-        </trans-unit>
-        <trans-unit id="Page 875245055 - Control 2047310015 - Method 2126772001 - NamedType 2395227545" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Exactly one company must exists in the environment.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control IsSupportedCompanies - Method OnValidate - NamedType NotSupportedCompaniesErr</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Action 2667510389 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Finish</source>
