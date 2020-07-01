@@ -36,7 +36,7 @@ page 20600 "Assisted Setup BF"
                     group(Introduction)
                     {
                         Caption = '';
-                        InstructionalText = 'The Basic extension enables the subset Dynamics 365 Business Central capabilities provided by the Basic license.';
+                        InstructionalText = 'The Basic Experience extension enables the subset of Business Central capabilities provided by the Basic license.';
 
                         field(DocumentationPart; 'For more information, see the documentation.')
                         {
@@ -44,7 +44,7 @@ page 20600 "Assisted Setup BF"
                             Caption = ' ';
                             ShowCaption = false;
                             Editable = false;
-                            ToolTip = 'For more information, see the documentation.';
+                            ToolTip = 'Learn more';
                         }
                         field(HelpLink; 'Basic documentation')
                         {

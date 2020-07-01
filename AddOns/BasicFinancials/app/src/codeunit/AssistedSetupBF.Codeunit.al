@@ -3,7 +3,7 @@ codeunit 20605 "Assisted Setup BF"
     Access = Internal;
 
     var
-        AssistedSetupTxt: Label 'Set up the Business Central Basic extension';
+        AssistedSetupTxt: Label 'Set up the Business Central Basic experience';
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=', Locked = true;
         AssistedSetupDescriptionTxt: Label 'Start using the Basic Experience extension to manage your business.';
         AlreadySetUpQst: Label 'This assisted setup guide has already been completed. Do you want to run it again?';
