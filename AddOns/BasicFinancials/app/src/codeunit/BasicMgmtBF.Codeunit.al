@@ -4,15 +4,15 @@ codeunit 20601 "Basic Mgmt BF"
 
     var
         AzureADLicensing: codeunit "Azure AD Licensing";
-        NotSupportedLicenseErr: Label 'To deploy the Business Central Basic Experience extension  the Business Central Basic license must be assigned to at least one user.';
+        NotSupportedLicenseErr: Label 'To deploy the Business Central Basic Experience extension the Business Central Basic license must be assigned to at least one user.';
         NotSupportedLocalesErr: Label 'The Business Central Basic Experience extension can only available in Denmark and Iceland.';
-        NotSupportedUserErr: Label 'The user who deploys the Business Central Basic Experience extension  must have the Super User permission set.';
+        NotSupportedUserErr: Label 'The user who deploys the Business Central Basic Experience extension must have the Super User permission set.';
         NotSupportedCompanyErr: Label 'The Business Central Basic Experience extension can only be deployed when exactly one company exists in the environment.';
         AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER|SALES AND RELATIONSHIP MANAGER', Locked = true;
         BFSKUIdTxt: Label '{2ec8b6ca-ab13-4753-a479-8c2ffe4c323b}', Locked = true, Comment = 'Dynamics 365 Business Central BASIC ISVEMB';
         UserSecurityIdTxt: Label '{00000000-0000-0000-0000-000000000001}', Locked = true, Comment = 'System user';
-        NotSupportedSystemUserErr: Label 'The current user is the Microsoft System User. The Business Central Basic Experience extension  can only be deployed with a user that exist in the user table.';
-        UnknowUserErr: Label 'The current user is unknown. The user who deploys the Business Central Basic Experience extension  must exist in the user table.';
+        NotSupportedSystemUserErr: Label 'The current user is the Microsoft System User. The Business Central Basic Experience extension can only be deployed with a user that exist in the user table.';
+        UnknowUserErr: Label 'The current user is unknown. The user who deploys the Business Central Basic Experience extension must exist in the user table.';
 
     internal procedure IsSupportedLicense(): Boolean // Microsoft requirements: The Basic Assisted Setup checks for the Basic license on the AAD tenant, at least one user has been assigned to this license.
     var
