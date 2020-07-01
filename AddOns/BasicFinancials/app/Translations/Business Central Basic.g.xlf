@@ -4,7 +4,7 @@
     <body>
       <group id="body">
         <trans-unit id="Codeunit 875245055 - NamedType 1420859235" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Set up the Business Central Basic extension</source>
+          <source>Set up the Business Central Basic experience</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AssistedSetupTxt</note>
         </trans-unit>
@@ -14,7 +14,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AssistedSetupHelpTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 875245055 - NamedType 1689235809" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Start using the Basic Experience extension to manage your business.</source>
+          <source>Start using the Basic Experience to manage your business.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Assisted Setup BF - NamedType AssistedSetupDescriptionTxt</note>
         </trans-unit>
@@ -49,7 +49,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Introduction - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Control 203669508 - Property 1968111052" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The Basic extension enables the subset Dynamics 365 Business Central capabilities provided by the Basic license.</source>
+          <source>The Basic Experience extension enables the subset of Business Central capabilities provided by the Basic license.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control Introduction - Property InstructionalText</note>
         </trans-unit>
@@ -59,7 +59,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control DocumentationPart - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 875245055 - Control 3982979311 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>For more information, see the documentation.</source>
+          <source>Learn more</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Control DocumentationPart - Property ToolTip</note>
         </trans-unit>
@@ -123,23 +123,28 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - Action Finish - Property ToolTip</note>
         </trans-unit>
+        <trans-unit id="Page 875245055 - NamedType 2680261999" size-unit="char" translate="yes" xml:space="preserve">
+          <source>This extension is intended only for one company.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Assisted Setup BF - NamedType NotSupportedCompanyMsg</note>
+        </trans-unit>
         <trans-unit id="Codeunit 2048619679 - NamedType 2434750519" size-unit="char" translate="yes" xml:space="preserve">
-          <source>To deploy the Business Central Basic extension the Business Central Basic license must be assigned to at least one user.</source>
+          <source>To deploy the Business Central Basic Experience extension the Business Central Basic license must be assigned to at least one user.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedLicenseErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 2048619679 - NamedType 438530999" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The Business Central Basic Extension can only available in Denmark and Iceland.</source>
+          <source>The Business Central Basic Experience extension can only available in Denmark and Iceland.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedLocalesErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 2048619679 - NamedType 296042569" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The user who deploys the Business Central Basic extension must have the Super User permission set.</source>
+          <source>The user who deploys the Business Central Basic Experience extension must have the Super User permission set.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedUserErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 2048619679 - NamedType 4099634803" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The Business Central Basic extension can only be deployed when exactly one company exists in the environment.</source>
+          <source>The Business Central Basic Experience extension can only be deployed when exactly one company exists in the environment.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedCompanyErr</note>
         </trans-unit>
@@ -159,12 +164,12 @@
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType UserSecurityIdTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 2048619679 - NamedType 2020464022" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The current user is the Microsoft System User. The Business Central Basic Extension can only be deployed with a user that exist in the user table.</source>
+          <source>The current user is the Microsoft System User. The Business Central Basic Experience extension can only be deployed with a user that exist in the user table.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType NotSupportedSystemUserErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 2048619679 - NamedType 3286254446" size-unit="char" translate="yes" xml:space="preserve">
-          <source>The current user is unknown. The user who deploys the Business Central Basic extension must exist in the user table.</source>
+          <source>The current user is unknown. The user who deploys the Business Central Basic Experience extension must exist in the user table.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Basic Mgmt BF - NamedType UnknowUserErr</note>
         </trans-unit>

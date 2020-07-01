@@ -152,11 +152,16 @@ page 20600 "Assisted Setup BF"
         AssistedSetup: Codeunit "Assisted Setup";
         BasicMgmt: Codeunit "Basic Mgmt BF";
     begin
-        IsSupportedCompanies := BasicMgmt.IsSupportedCompanies();
         //HasBCBasicLicense  := BasicMgmt.IsSupportedLicense(); // Temporarily removed due to issue regarding License check
         AssistedSetup.Reset(PAGE::"Assisted Setup BF");
         IsComplete := AssistedSetup.IsComplete(PAGE::"Assisted Setup BF");
         ConsentAccepted := IsComplete;
+
+        if not BasicMgmt.IsSupportedCompanies() then begin
+            Notification.Message(NotSupportedCompanyMsg);
+            Notification.Scope(NotificationScope::LocalScope);
+            Notification.send();
+        end;
     end;
 
     local procedure LoadTopBanners();
@@ -169,11 +174,13 @@ page 20600 "Assisted Setup BF"
     end;
 
     var
+        Notification: Notification;
         MediaRepositoryStandard: Record 9400;
         MediaResourcesStandard: Record 2000000182;
         TopBannerVisible: Boolean;
         IsComplete: Boolean;
-        IsSupportedCompanies: Boolean;
+
         //HasBCBasicLicense: Boolean; // Temporarily removed due to issue regarding License check
         ConsentAccepted: Boolean;
+        NotSupportedCompanyMsg: Label 'This extension is intended only for one company.';
 }
