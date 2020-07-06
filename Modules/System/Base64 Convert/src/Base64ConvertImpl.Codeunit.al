@@ -14,8 +14,6 @@ codeunit 4111 "Base64 Convert Impl."
     end;
 
     procedure ToBase64(String: Text; InsertLineBreaks: Boolean): Text
-    var
-        Base64String: Text;
     begin
         exit(ToBase64(String, false, TextEncoding::UTF8, 0));
     end;
