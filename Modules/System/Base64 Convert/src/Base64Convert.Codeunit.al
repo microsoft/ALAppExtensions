@@ -63,9 +63,9 @@ codeunit 4110 "Base64 Convert"
     /// </summary>
     /// <param name="String">The string to convert.</param>
     /// <param name="InsertLineBreaks">Whether insert line breaks in the output or not.
+    /// If true, inserts line breaks after every 76 characters.</param>
     /// <param name="TextEncoding">The TextEncoding for the output string.</param>
     /// <param name='Codepage">The Codepage if TextEncoding is MsDos or Windows.</param>
-    /// If true, inserts line breaks after every 76 characters.</param>
     /// <returns>The string representation, in base-64, of the input string.</returns>
     procedure ToBase64(String: Text; InsertLineBreaks: Boolean; TextEncoding: TextEncoding; Codepage: Integer): Text
     begin
