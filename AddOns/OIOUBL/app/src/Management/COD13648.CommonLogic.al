@@ -188,7 +188,7 @@ codeunit 13648 "OIOUBL-Common Logic"
         InvoiceElement.Add(AccountingSupplierPartyElement);
     end;
 
-    Local procedure InsertCustomerParty(var AccountingCustomerParty: XmlElement; GLN: Code[13]; VATRegNo: Text[20]; PartyName: Text[50]; PostalAddress: Record "Standard Address"; PartyContact: Record Contact);
+    Local procedure InsertCustomerParty(var AccountingCustomerParty: XmlElement; GLN: Code[13]; VATRegNo: Text[20]; PartyName: Text[100]; PostalAddress: Record "Standard Address"; PartyContact: Record Contact);
     var
         PartyElement: XmlElement;
     begin
@@ -211,7 +211,7 @@ codeunit 13648 "OIOUBL-Common Logic"
         AccountingCustomerParty.Add(PartyElement);
     end;
 
-    procedure InsertAccountingCustomerParty(var InvoiceElement: XmlElement; GLN: Code[13]; VATRegNo: Text[20]; PartyName: Text[50]; PostalAddress: Record "Standard Address"; PartyContact: Record Contact);
+    procedure InsertAccountingCustomerParty(var InvoiceElement: XmlElement; GLN: Code[13]; VATRegNo: Text[20]; PartyName: Text[100]; PostalAddress: Record "Standard Address"; PartyContact: Record Contact);
     var
         AccountingCustomerParty: XmlElement;
     begin
