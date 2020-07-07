@@ -13,14 +13,17 @@ codeunit 132576 "Test DESCryptoServiceProvider"
         DESCryptoServiceProvider: Codeunit DESCryptoServiceProvider;
         LibraryAssert: Codeunit "Library Assert";
         EncryptedText: Text;
-        ExpectedEncryptedText: Text;
+        ExpectedEncryptedTextEnding: Text;
+        ExpectedEncryptedTextLength: Integer;
     begin
         // [GIVEN] With Encryption Key
-        ExpectedEncryptedText := GetCodDESCryptoServiceProviderEncryptedText();
+        ExpectedEncryptedTextEnding := 'Yy';
+        ExpectedEncryptedTextLength := 8;
         // [WHEN] Encrypt Text 
         EncryptedText := DESCryptoServiceProvider.EncryptTextWithDESCryptoServiceProvider('Test', 'Test1234', 'ABitofSalt');
         // [THEN] Verify Result 
-        LibraryAssert.AreEqual(ExpectedEncryptedText, EncryptedText, 'Unexpected value when encrypting text using DESCryptoServiceProvider');
+        LibraryAssert.IsTrue(EncryptedText.EndsWith(ExpectedEncryptedTextEnding), 'Unexpected value when encrypting text using DESCryptoServiceProvider');
+        LibraryAssert.IsTrue((StrLen(EncryptedText) = ExpectedEncryptedTextLength), 'Unexpected value when encrypting text using DESCryptoServiceProvider');
     end;
 
     procedure TestDecryptText()
@@ -36,12 +39,6 @@ codeunit 132576 "Test DESCryptoServiceProvider"
         DecryptedText := DESCryptoServiceProvider.DecryptTextWithDESCryptoServiceProvider('Test', 'Test1234', 'ABitofSalt');
         // [THEN] Verify Result 
         LibraryAssert.AreEqual(ExpectedEncryptedText, DecryptedText, 'Unexpected value when encrypting text using DESCryptoServiceProvider');
-    end;
-
-
-    local procedure GetCodDESCryptoServiceProviderEncryptedText(): Text
-    begin
-        exit('·lá:Yy');
     end;
 
 }

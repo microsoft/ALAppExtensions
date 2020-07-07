@@ -19,10 +19,11 @@ codeunit 1379 "DESCryptoServiceProvider"
     /// </summary>
     /// <param name="Password">Represents the password to be used to initialize a new instance of DotNet System.Security.Cryptography.Rfc2898DeriveBytes</param>
     /// <param name="Salt">Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes</param>
-    /// <param name="VarInput">Represents the input text to encrypt</param>
-    procedure EncryptTextWithDESCryptoServiceProvider(EncryptText: Text; Password: Text; Salt: Text) DecryptText: Text
+    /// <param name="EncryptedText">Represents the text to encrypt</param>
+    /// <param name="DecryptedText">Returns the encrypted text</param>
+    procedure EncryptTextWithDESCryptoServiceProvider(DecryptedText: Text; Password: Text; Salt: Text) EncryptedText: Text
     begin
-        DecryptText := DESCryptoServiceProviderImpl.EncryptTextWithDESCryptoServiceProvider(EncryptText, Password, Salt);
+        EncryptedText := DESCryptoServiceProviderImpl.EncryptTextWithDESCryptoServiceProvider(DecryptedText, Password, Salt);
     end;
 
     /// <summary>
@@ -30,7 +31,8 @@ codeunit 1379 "DESCryptoServiceProvider"
     /// </summary>
     /// <param name="Password">Represents the password to be used to initialize a new instance of DotNet System.Security.Cryptography.Rfc2898DeriveBytes</param>
     /// <param name="Salt">Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes</param>
-    /// <param name="VarInput">Represents the input text to encrypt</param>
+    /// <param name="EncryptedText">Represents the text to decrypt</param>
+    /// <param name="DecryptedText">Returns the decrypted text</param>
     procedure DecryptTextWithDESCryptoServiceProvider(EncryptedText: Text; Password: Text; Salt: Text) DecryptedText: Text
     begin
         DecryptedText := DESCryptoServiceProviderImpl.DecryptTextWithDESCryptoServiceProvider(EncryptedText, Password, Salt);
