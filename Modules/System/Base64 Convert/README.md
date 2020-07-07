@@ -39,7 +39,7 @@ The string to convert.
 
 *TextEncoding ([TextEncoding](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/textencoding/textencoding-option))*
 
-The Encoding of the Text. If Windows is selected, ansi (1252) is defaulted unless a codepage is specified.
+The encoding of the text. If Windows is selected, ANSI (1252) will be used by default unless a codepage is specified.
 
 #### Return Value
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
