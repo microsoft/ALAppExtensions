@@ -16,6 +16,7 @@ codeunit 132558 "AMC Banking Credential UT"
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         LocalhostURLTxt: Label 'https://localhost:8080/', Locked = true;
+        //AMC - LocalhostURLTxt: Label 'https://host.docker.internal:8088/', Locked = true; //TODO - Put back to above when finished testing
         MissingCredentialsQst: Label 'The %1 is missing the user name or password. Do you want to open the %1 page?', Comment = '%1 = page name';
         MissingCredentialsErr: Label 'The user name and password must be filled in %1 page.', Comment = '%1 = page name';
         NoConnectionErr: Label 'The expected data was not received from the web service.';

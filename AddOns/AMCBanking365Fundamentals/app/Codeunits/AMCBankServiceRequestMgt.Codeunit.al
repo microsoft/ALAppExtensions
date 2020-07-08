@@ -20,7 +20,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         ConvErrPathTxt: Label '//return/pack/convertlog[syslogtype[text()="error"]]', Locked = true;
         DataPathTxt: Label '//return/pack/data', Locked = true;
         BankPathTxt: Label '//return/pack/bank', Locked = true;
-
+        PackPathTxt: Label '//return/pack', Locked = true; //V16.4
 
     procedure CreateEnvelope(VAR requestDocXML: XmlDocument; VAR EnvXmlElement: XmlElement; Username: Text; Password: Text; UsernameTokenValue: Text);
     var
@@ -531,6 +531,31 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         EXIT('');
     end;
 
+    internal procedure SetUsedXTLJournal(var TempBlob: Codeunit "Temp Blob"; DataExchEntryNo: Integer; PaymentExportWebCallTxt: Text) //V16.4
+    var
+        CreditTransferRegister: Record "Credit Transfer Register";
+        ResponseInStream: InStream;
+        DataXmlNode: XmlNode;
+        ResponseXmlDoc: XmlDocument;
+        Found: Boolean;
+        XTLJournalNo: Text[250];
+    begin
+        TempBlob.CreateInStream(ResponseInStream);
+        XmlDocument.ReadFrom(ResponseInStream, ResponseXmlDoc);
+
+        //-> V16.4
+        Found := ResponseXmlDoc.SelectSingleNode(STRSUBSTNO(GetJournalNoPath(PaymentExportWebCallTxt + GetResponseTag())), DataXmlNode);
+        if (Found) then begin
+            XTLJournalNo := CopyStr(getNodeValue(DataXmlNode, './journalnumber'), 1, 250);
+            CreditTransferRegister.SetRange("Data Exch. Entry No.", DataExchEntryNo);
+            if (CreditTransferRegister.FindLast()) then begin
+                CreditTransferRegister."AMC Bank XTL Journal" := XTLJournalNo;
+                CreditTransferRegister.Modify();
+            end;
+        end;
+        //<- V16.4
+    end;
+
     procedure GetFinstaXPath(ResponseNode: Text): Text
     begin
         exit(StrSubstNo(FinstaPathTxt, ResponseNode));
@@ -555,6 +580,13 @@ codeunit 20118 "AMC Bank Service Request Mgt."
     begin
         exit(StrSubstNo(BankPathTxt, ResponseNode));
     end;
+
+    //-> V16.4
+    procedure GetJournalNoPath(ResponseNode: Text): Text
+    begin
+        exit(StrSubstNo(PackPathTxt, ResponseNode));
+    end;
+    //<- V16.4
 
     procedure GetHeaderXPath(): Text;
     begin

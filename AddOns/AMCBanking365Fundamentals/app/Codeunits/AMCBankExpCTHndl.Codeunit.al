@@ -83,6 +83,8 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         Handled := false;
         AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, PaymentRequestMessage, PaymentResponseMessage, PaymentExportWebCallTxt, AppCaller, true);
         AMCBankServiceRequestMgt.GetWebServiceResponse(PaymentResponseMessage, TempBlobPaymentFile, PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), true);
+
+        AMCBankServiceRequestMgt.SetUsedXTLJournal(TempBlobPaymentFile, DataExchEntryNo, PaymentExportWebCallTxt);//V16.4
         if (AMCBankServiceRequestMgt.HasResponseErrors(TempBlobPaymentFile, AMCBankServiceRequestMgt.GetHeaderXPath(), PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), Result, AppCaller)) then
             DisplayErrorFromResponse(TempBlobPaymentFile, DataExchEntryNo)
         else
@@ -123,6 +125,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
     local procedure DisplayErrorFromResponse(TempBlobPaymentFile: Codeunit "Temp Blob"; DataExchEntryNo: Integer)
     var
         GenJnlLine: Record "Gen. Journal Line";
+
         ResponseXmlDoc: XmlDocument;
         InStreamData: InStream;
         SysLogXMLNodeList: XmlNodeList;
@@ -239,6 +242,5 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
 
         exit('');
     end;
-
 }
 

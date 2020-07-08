@@ -526,34 +526,6 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         ValidateDefaultURLs(AMCBankingSetup);
     end;
 
-    // functionality was changed by amc. seturlstodefault is no longer a page action.
-    // TODO
-    // [Test]
-    // [Scope('OnPrem')]
-    // procedure BankDataConvSetupURLAreReset()
-    // var
-    //     AMCBankingSetupRec: Record "AMC Banking Setup";
-    //     AMCBankingSetup: TestPage "AMC Banking Setup";
-    // begin
-    //     // [FEATURE] [URL]
-    //     // [SCENARIO 15] As an admin, when I delete the URLs and use the action to set the defaults, I can see the original URLs.
-    //     Initialize();
-
-    //     // [GIVEN] There is no conversion setup record.
-    //     AMCBankingSetupRec.DeleteAll();
-
-    //     // [WHEN] The user opens the conversion setup page, deletes the URLs and then invokes the Set Default URLs action.
-    //     AMCBankingSetup.OpenEdit();
-    //     AMCBankingSetup."Sign-up URL".SetValue('');
-    //     AMCBankingSetup."Service URL".SetValue('');
-    //     AMCBankingSetup."Support URL".SetValue('');
-    //     AMCBankingSetup.SetURLsToDefault.Invoke();
-
-    //     // [THEN] The defaul URLs are in place.
-    //     AMCBankingSetupRec.Get();
-    //     ValidateDefaultURLs(AMCBankingSetupRec);
-    // end;
-
     [Test]
     [Scope('OnPrem')]
     procedure PageInEditAllFieldsEditable()
@@ -571,9 +543,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         // [THEN] All fields editable.
         Assert.IsTrue(AMCBankingSetup."User Name".Editable(), 'User Name field should be editable');
         Assert.IsTrue(AMCBankingSetup.Password.Editable(), 'Password field should be editable');
-        //TODO REMOVE Assert.IsTrue(AMCBankingSetup."Sign-up URL".Editable(), 'Signup URL field should be editable');
         Assert.IsTrue(AMCBankingSetup."Service URL".Editable(), 'Service URL field should be editable');
-        //TODO REMOVE Assert.IsTrue(AMCBankingSetup."Support URL".Editable(), 'Suport URL field should be editable');
     end;
 
     [Test]
@@ -593,9 +563,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         // [THEN] All fields read only.
         Assert.IsFalse(AMCBankingSetup."User Name".Editable(), 'User Name field should not be editable');
         Assert.IsFalse(AMCBankingSetup.Password.Editable(), 'Password field should not be editable');
-        //TODO REMOVE Assert.IsFalse(AMCBankingSetup."Sign-up URL".Editable(), 'Signup URL field should not be editable');
         Assert.IsFalse(AMCBankingSetup."Service URL".Editable(), 'Service URL field should not be editable');
-        //TODO REMOVE Assert.IsFalse(AMCBankingSetup."Support URL".Editable(), 'Suport URL field should not be editable');
     end;
 
     local procedure Initialize()
@@ -611,7 +579,6 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
           LibraryUtility.GenerateRandomCode(AMCBankingSetup.FieldNo("User Name"), DATABASE::"AMC Banking Setup"));
         AMCBankingSetup.SavePassword(GenerateRandomPassword());
         AMCBankingSetup.Insert(true);
-        //TODO WHY THIS ??? AMCBankingSetup.SavePassword(GenerateRandomPassword());
     end;
 
     local procedure SetDemoCompany(DemoCompany: Boolean)

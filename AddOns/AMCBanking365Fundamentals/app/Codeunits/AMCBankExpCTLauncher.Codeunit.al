@@ -7,15 +7,26 @@ codeunit 20106 "AMC Bank Exp. CT Launcher"
     var
         BankAccount: Record "Bank Account";
         CreditTransferRegister: Record "Credit Transfer Register";
+        PrevCreditTransferRegister: Record "Credit Transfer Register"; //V16.4
         GenJnlLine: Record "Gen. Journal Line";
         GenJnlLine2: Record "Gen. Journal Line";
         DataExch: Record "Data Exch.";
         DataExchDef: Record "Data Exch. Def";
         DataExchMapping: Record "Data Exch. Mapping";
         PaymentExportMgt: Codeunit "Payment Export Mgt";
+        ReuseJournalNo: Text[250]; //V16.4
     begin
         GenJnlLine.CopyFilters(Rec);
         GenJnlLine.FindFirst();
+
+        //-> V16.4
+        if (GenJnlLine."Data Exch. Entry No." <> 0) then begin
+            PrevCreditTransferRegister.SetRange("Data Exch. Entry No.", GenJnlLine."Data Exch. Entry No.");
+            if (PrevCreditTransferRegister.FindFirst()) then
+                if (PrevCreditTransferRegister.Status = PrevCreditTransferRegister.Status::Canceled) then
+                    ReuseJournalNo := PrevCreditTransferRegister."AMC Bank XTL Journal";
+        end;
+        //<- V16.4
 
         BankAccount.Get(GenJnlLine."Bal. Account No.");
         BankAccount.GetDataExchDefPaymentExport(DataExchDef);
@@ -32,6 +43,12 @@ codeunit 20106 "AMC Bank Exp. CT Launcher"
         PaymentExportMgt.CreateDataExch(DataExch, GenJnlLine."Bal. Account No.");
         GenJnlLine2.CopyFilters(GenJnlLine);
         GenJnlLine2.ModifyAll("Data Exch. Entry No.", DataExch."Entry No.", true);
+
+        //-> V16.4
+        CreditTransferRegister."Data Exch. Entry No." := DataExch."Entry No.";
+        CreditTransferRegister."AMC Bank XTL Journal" := ReuseJournalNo;
+        CreditTransferRegister.Modify();
+        //<- V16.4
 
         DataExchMapping.SetRange("Data Exch. Def Code", DataExchDef.Code);
         DataExchMapping.SetRange("Table ID", DATABASE::"Payment Export Data");

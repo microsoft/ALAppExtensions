@@ -823,6 +823,8 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         BankAccount.Get(PmtGenJnlBatch."Bal. Account No.");
         BankAccount.GetDataExchDefPaymentExport(DataExchDef);
         CreditTransferRegister.CreateNew(DataExchDef.Code, PmtGenJnlBatch."Bal. Account No.");
+        CreditTransferRegister."Data Exch. Entry No." := DataExch."Entry No.";
+        CreditTransferRegister.Modify();
         Commit();
         CODEUNIT.Run(CODEUNIT::"AMC Bank Exp. CT Pre-Map", DataExch);
     end;
