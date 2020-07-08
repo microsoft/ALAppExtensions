@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 1279 "DESCryptoServiceProvider Impl."
+codeunit 1382 "DESCryptoServiceProvider Impl."
 {
     Access = Internal;
     procedure EncryptTextWithDESCryptoServiceProvider(VarInput: Text; Password: Text; Salt: Text) VarOutput: Text
@@ -17,7 +17,7 @@ codeunit 1279 "DESCryptoServiceProvider Impl."
 
         ConstructDESCryptoServiceProvider(SymmetricAlgorithm, Password, Salt);
         ByteArray := Encoding.Default.GetBytes(VarInput);
-        TransformToArray(SymmetricAlgorithm.CreateEncryptor, ByteArray);
+        TransformToArray(SymmetricAlgorithm.CreateEncryptor(), ByteArray);
         VarOutput := Encoding.Default.GetString(ByteArray, 0, ByteArray.Length);
     end;
 
@@ -32,7 +32,7 @@ codeunit 1279 "DESCryptoServiceProvider Impl."
 
         ConstructDESCryptoServiceProvider(SymmetricAlgorithm, Password, Salt);
         ByteArray := Encoding.Default.GetBytes(VarInput);
-        TransformToArray(SymmetricAlgorithm.CreateDecryptor, ByteArray);
+        TransformToArray(SymmetricAlgorithm.CreateDecryptor(), ByteArray);
         VarOutput := Encoding.Default.GetString(ByteArray, 0, ByteArray.Length);
     end;
 
@@ -45,7 +45,7 @@ codeunit 1279 "DESCryptoServiceProvider Impl."
         InStreamToArray(InputInstream, ByteArray);
 
         ConstructDESCryptoServiceProvider(SymmetricAlgorithm, Password, Password);
-        TransformToArray(SymmetricAlgorithm.CreateEncryptor, ByteArray);
+        TransformToArray(SymmetricAlgorithm.CreateEncryptor(), ByteArray);
 
         MemoryStream := MemoryStream.MemoryStream(ByteArray);
         CopyStream(OutputOutstream, MemoryStream);
@@ -59,7 +59,7 @@ codeunit 1279 "DESCryptoServiceProvider Impl."
     begin
         InStreamToArray(InputInstream, ByteArray);
         ConstructDESCryptoServiceProvider(SymmetricAlgorithm, Password, Password);
-        TransformToArray(SymmetricAlgorithm.CreateDecryptor, ByteArray);
+        TransformToArray(SymmetricAlgorithm.CreateDecryptor(), ByteArray);
 
         MemoryStream := MemoryStream.MemoryStream(ByteArray);
         CopyStream(OutputOutstream, MemoryStream);
