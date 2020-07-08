@@ -556,6 +556,16 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         //<- V16.4
     end;
 
+    internal procedure GetGlobalFromActivityId(): Integer
+    begin
+        exit(GLBFromId);
+    end;
+
+    internal procedure GetGlobalToActivityId(): Integer
+    begin
+        exit(GLBToId);
+    end;
+
     procedure GetFinstaXPath(ResponseNode: Text): Text
     begin
         exit(StrSubstNo(FinstaPathTxt, ResponseNode));
