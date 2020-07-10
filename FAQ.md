@@ -56,7 +56,6 @@ We still encourage you to use the resources above to minimize your reliance on D
 We've blocked a certain set of functions from being directly called from app code. Our approach was based on a conservative static analysis, and the result was that some functions are unnecessarily blocked. If you need to use one or more of these functions please log an issue and provide a full list. We will analyze your request and unblock the functions we deem to be safe.
 
 ## When are my reported issues going be released?
-
 We’ve decided to focus our development efforts on delivering a single, latest version of the product. Having said that, we will backport selected requests related to extensibility, such as events, to the current release on a case-by-case basis. The decision depends on the costs and benefits of backporting the new things, and whether the issue is truly blocking. For more information about what we backport, see the label definitions in the next section.
 
 ## What do all the labels assigned to issues mean?
