@@ -55,17 +55,15 @@ We still encourage you to use the resources above to minimize your reliance on D
 ## Why can't I use the type or method 'XYZ' for 'Extension' development?
 We've blocked a certain set of functions from being directly called from app code. Our approach was based on a conservative static analysis, and the result was that some functions are unnecessarily blocked. If you need to use one or more of these functions please log an issue and provide a full list. We will analyze your request and unblock the functions we deem to be safe.
 
-## What will be backported from the latest release to earlier releases?
-Short answer: New events, selected extensibility enhancements, and bug fixes.
-
-We’ve decided to focus our development efforts on delivering a single, latest version of the product. Having said that, we will backport bug fixes and selected requests related to extensibility, such as events, to the current release on a case-by-case basis. The decision depends on the costs and benefits of backporting the new things, and whether the issue in a bug is truly blocking. For more information about what we backport, see the label definitions in the next section.
+## When are my reported issues going be released?
+We’ve decided to focus our development efforts on delivering a single, latest version of the product. Having said that, we will backport selected requests related to extensibility, such as events, to the current release on a case-by-case basis. The decision depends on the costs and benefits of backporting the new things, and whether the issue in a bug is truly blocking. For more information about what we backport, see the label definitions in the next section.
 
 ## What do all the labels assigned to issues mean?
 We use labels for categorizing issues into types and tracking the issue lifecycle. Issues fall into the following types:
 
 * **Enum-request:** Request an enum. We implement these only in major releases.
-* **Request-for-external:** Request to mark a function as external. We implement these only in major releases.
-* **Event-request:** Request a new event. We implement these in major and next minor releases.
+* **Request-for-external:** Request to mark a function as external. We normally only implement these in major releases.
+* **Event-request:** Request a new event. We implement these in major and usually next minor releases.
 * **Extensibility-enhancement:** Larger suggestions for improving extensibility. We consider these for future releases.
 * **Extensibility-bug:** Smaller suggestions for improving extensibility. We consider these for the current release.
 
