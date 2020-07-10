@@ -55,25 +55,25 @@ We still encourage you to use the resources above to minimize your reliance on D
 ## Why can't I use the type or method 'XYZ' for 'Extension' development?
 We've blocked a certain set of functions from being directly called from app code. Our approach was based on a conservative static analysis, and the result was that some functions are unnecessarily blocked. If you need to use one or more of these functions please log an issue and provide a full list. We will analyze your request and unblock the functions we deem to be safe.
 
-## Will features from the latest release be back-ported to earlier releases?
-Short answer: Only selected features.  
+## What will be backported from the latest release to earlier releases?
+Short answer: New events, selected extensibility enhancements, and bug fixes.
 
-We have decided to focus our development efforts on a single, latest version of the product. Having said that, we will back-port selected features to the current release on a case-by-case basis. The decision depends on the costs/benefits of doing so and finding a balance between fixing issues that are truly blocking vs. developing new features for the latest version.
+We’ve decided to focus our development efforts on delivering a single, latest version of the product. Having said that, we will backport bug fixes and selected requests related to extensibility, such as events, to the current release on a case-by-case basis. The decision depends on the costs and benefits of backporting the new things, and whether the issue in a bug is truly blocking. For more information about what we backport, see the label definitions in the next section.
 
 ## What do all the labels assigned to issues mean?
-We use labels for categorizing issues into types and tracking the issue lifecycle. Issues fall into the following types:  
+We use labels for categorizing issues into types and tracking the issue lifecycle. Issues fall into the following types:
 
-* Enum-request - request an enum (to be implemented in major version only) 
-* Request-for-external - request to mark a function as external (to be implemented in major version only)
-* Event-request - request for a new event (to be implemented in major and next minor version)
-* Extensibility-enhancement - larger suggestion improving extensibility, something we might want to consider in the future
-* Extensibility-bug - smaller suggestion improving extensibility, someting we consider to fix in current release
+* **Enum-request:** Request an enum. We implement these only in major releases.
+* **Request-for-external:** Request to mark a function as external. We implement these only in major releases.
+* **Event-request:** Request a new event. We implement these in major and next minor releases.
+* **Extensibility-enhancement:** Larger suggestions for improving extensibility. We consider these for future releases.
+* **Extensibility-bug:** Smaller suggestions for improving extensibility. We consider these for the current release.
 
-The lifecycle for issues is (mix of label + milestone + open/closed state):  
+The lifecycle for issues is a mix of label + milestone + open/closed state:
 
-* Ships-in-future-update  - the issue was fixed in our source code repository and ships in the next major release (or next minor update for events)
-* Call-for-contributors - we are looking for contributors willing to address reported bug/suggestion
-* Wontfix - the issue will not be fixed probably because it is our of scope of the current repository
+* **Ships-in-future-update:** The issue was fixed in our source code repository and ships in the next major release or, for events, the next minor update.
+* **Call-for-contributors:** We're looking for contributors who are willing to address a reported bug or request.
+* **Wontfix:** The issue will not be fixed, probably because it is out of the scope of the current repository.
 
 ## How do I report an issue?
 This GitHub repository is dedicated to handling issues with published apps and extensibility requests for the latest release of Business Central. If you run into an issue, open a support case. You can open Support Request to CSS through PartnerSource portal or contact your Service Account Manager (SAM) in the local subsidiary to understand what is included in your contract as of support incident and PAH (Partner Advisory Hours). Your SAM might also step by step direct you how to open a support request or how to get credentials if this is the first time for you or your company.
