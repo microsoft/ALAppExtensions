@@ -11,7 +11,7 @@ codeunit 6241 "Xml Validation Impl."
         InvalidXmlErr: Label 'The XML definition is invalid.';
         InvalidSchemaErr: Label 'The schema definition is not valid XML.';
         [WithEvents]
-        XmlValidatingReader: dotnet XmlValidatingReader;
+        XmlSchemaSet: dotnet XmlSchemaSet;
 
     procedure ValidateAgainstSchema(Xml: Text; XmlSchema: Text; Namespace: Text)
     var
@@ -48,20 +48,42 @@ codeunit 6241 "Xml Validation Impl."
     var
         XmlDoc: DotNet XmlDocument;
         XmlReader: DotNet XmlReader;
-        SchemaReader: DotNet XmlReader;
-        ValidationType: dotnet ValidationType;
     begin
-        XmlReader := XmlReader.Create(XmlDocStream);
-        SchemaReader := SchemaReader.Create(XmlSchemaStream);
+        XmlDoc := XmlDoc.XmlDocument();
+        XmlDoc.Load(XmlDocStream);
 
-        XmlValidatingReader := XmlValidatingReader.XmlValidatingReader(XmlReader);
-        XmlValidatingReader.Schemas.Add(Namespace, SchemaReader);
-        XmlValidatingReader.ValidationType := ValidationType.Schema;
-        while XmlValidatingReader.Read() do;
-        XmlValidatingReader.Close();
+        XmlReader := XmlReader.Create(XmlSchemaStream);
+
+        XmlSchemaSet := XmlSchemaSet.XmlSchemaSet();
+        XmlSchemaSet.Add(Namespace, XmlReader);
+        xmldoc.Schemas := XmlSchemaSet;
+
+        if not TryValidate(XmlDoc) then
+            HandleException(GetLastErrorObject());
     end;
 
-    trigger XmlValidatingReader::ValidationEventHandler(sender: Variant; e: DotNet ValidationEventArgs)
+    [TryFunction]
+    procedure TryValidate(XmlDoc: DotNet XmlDocument)
+    var
+        Validation: dotnet ValidationEventHandler;
+    begin
+        XmlDoc.Validate(Validation);
+    end;
+
+    procedure HandleException(XmlSchemaValidationException: dotnet XmlSchemaValidationException)
+    var
+        ErrorMessage: Text;
+        Index: integer;
+    begin
+        Index := XmlSchemaValidationException.Message.IndexOf(':');
+        ErrorMessage := XmlSchemaValidationException.Message;
+        if Index > 0 then
+            ErrorMessage := XmlSchemaValidationException.Message.Substring(Index + 1);
+
+        Error(ErrorMessage);
+    end;
+
+    trigger XmlSchemaSet::ValidationEventHandler(sender: Variant; e: DotNet ValidationEventArgs)
     begin
         Error(e.Message);
     end;
