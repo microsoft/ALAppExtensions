@@ -15,47 +15,49 @@ codeunit 1384 "XmlWriter Impl."
 
     procedure XmlWriterCreateDocument();
     begin
-        StringBuilder := StringBuilder.StringBuilder;
+        StringBuilder := StringBuilder.StringBuilder();
         StringWriter := StringWriter.StringWriter(StringBuilder);
         XmlTextWriter := XmlTextWriter.XmlTextWriter(StringWriter);
-        XmlTextWriter.WriteStartDocument;
+        XmlTextWriter.WriteStartDocument();
     end;
 
-    procedure XmlWriterStartElement(Prefix: Text; LocalName: Text; NameSpace: Text);
+    procedure WriteStartElement(Prefix: Text; LocalName: Text; NameSpace: Text);
     begin
         XmlTextWriter.WriteStartElement(Prefix, LocalName, NameSpace);
     end;
 
-    procedure XmlWriterElementString(LocalName: Text; ElementValue: Text)
+    procedure WriteElementString(LocalName: Text; ElementValue: Text)
     begin
         XmlTextWriter.WriteElementString(LocalName, ElementValue);
     end;
 
-    procedure XmlWriterEndElement()
+    procedure WriteEndElement()
     begin
-        XmlTextWriter.WriteEndElement;
+        XmlTextWriter.WriteEndElement();
     end;
 
-    procedure XmlWriterAddAttribute(ElementName: Text; ElementValue: Text; Prefix: Text)
+    procedure WriteAttributeString(LocalName: Text; ElementValue: Text)
     begin
-        if Prefix <> '' then
-            XmlTextWriter.WriteAttributeString(Prefix, ElementName, '', ElementValue)
-        else
-            XmlTextWriter.WriteAttributeString(ElementName, ElementValue);
+        XmlTextWriter.WriteAttributeString(LocalName, ElementValue);
     end;
 
-    procedure XmlWriterEndDocument()
+    procedure WriteAttributeString(Prefix: Text; LocalName: Text; Ns: Text; ElementValue: Text)
     begin
-        XmlTextWriter.WriteEndDocument;
+        XmlTextWriter.WriteAttributeString(Prefix, LocalName, Ns, ElementValue);
     end;
 
-    procedure XmlWriterComment(ParComment: Text)
+    procedure WriteEndDocument()
+    begin
+        XmlTextWriter.WriteEndDocument();
+    end;
+
+    procedure WriteComment(ParComment: Text)
     begin
         XmlTextWriter.WriteComment(ParComment);
     end;
 
     procedure XmlWriterToBigText(VAR XmlBigText: BigText)
     begin
-        XmlBigText.AddText(StringBuilder.ToString);
+        XmlBigText.AddText(StringBuilder.ToString());
     end;
 }
