@@ -109,11 +109,16 @@ table 20101 "AMC Banking Setup"
     end;
 
     internal procedure GetUserName(): Text[50]
+    var
+        ServiceUserName: Text[50];
     begin
         if ("User Name" = '') then
             exit(GetDemoUserName());
 
-        exit("User Name");
+        ServiceUserName := "User Name";
+        OnGetUserName(ServiceUserName);
+
+        exit(ServiceUserName);
     end;
 
     internal procedure GetPassword(): Text
@@ -163,6 +168,11 @@ table 20101 "AMC Banking Setup"
     var
     begin
         exit(DemoPasswordTxt);
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnGetUserName(var UserName: Text[50])
+    begin
     end;
 }
 

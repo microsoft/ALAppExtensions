@@ -126,7 +126,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         ContentOutStream: OutStream;
         ContentInStream: InStream;
     begin
-        AMCGUID := UserSecurityId();
+        AMCGUID := DelChr(LowerCase(Format(UserSecurityId())), '=', '{}');
         User.SetRange("User Security ID", UserSecurityId());
         if (User.FindFirst()) then begin
             if (User."Full Name" <> '') then
