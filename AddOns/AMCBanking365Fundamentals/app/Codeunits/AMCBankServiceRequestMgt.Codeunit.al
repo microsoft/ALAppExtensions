@@ -435,14 +435,14 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         ResponseTempBlob.CreateInStream(ResponseInStream);
         XmlDocument.ReadFrom(ResponseInStream, ResponseXMLDoc);
 
-        ResponseXMLDoc.SelectNodes(STRSUBSTNO(HeadXPath, SoapCallResponse), ResultXMLNodeList);
+        ResponseXMLDoc.SelectNodes(HeadXPath, ResultXMLNodeList);
         FOR ResultXMLNodeCount := 1 TO ResultXMLNodeList.Count() DO BEGIN
             ResultXMLNodeList.Get(ResultXMLNodeCount, ResultXmlNode);
             ResponseResult := COPYSTR(GetNodeValue(ResultXmlNode, GetResultXPath()), 1, 50);
         END;
 
         IF (ResponseResult <> 'ok') THEN BEGIN
-            ResponseXMLDoc.SelectNodes(STRSUBSTNO(GetSyslogXPath(), SoapCallResponse), SysLogXMLNodeList);
+            ResponseXMLDoc.SelectNodes(GetSyslogXPath(), SysLogXMLNodeList);
             FOR SysLogXMLNodeCount := 1 TO SysLogXMLNodeList.Count() DO BEGIN
                 FoundSyslog := true;
                 SysLogXMLNodeList.Get(SysLogXMLNodeCount, SyslogXmlNode);
@@ -461,7 +461,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
                     GLBToId := LogId;
             END;
             if (not FoundSyslog) then begin //Look for convertlog if Syslog does not exists
-                ResponseXMLDoc.SelectNodes(STRSUBSTNO(GetConvertlogXPath(), SoapCallResponse), ConvertLogXMLNodeList);
+                ResponseXMLDoc.SelectNodes(GetConvertlogXPath(), ConvertLogXMLNodeList);
                 FOR ConvertLogXMLNodeCount := 1 TO ConvertLogXMLNodeList.Count() DO BEGIN
                     ConvertLogXMLNodeList.Get(ConvertLogXMLNodeCount, ConvertlogXmlNode);
 
@@ -544,7 +544,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         XmlDocument.ReadFrom(ResponseInStream, ResponseXmlDoc);
 
         //-> V16.4
-        Found := ResponseXmlDoc.SelectSingleNode(STRSUBSTNO(GetJournalNoPath(PaymentExportWebCallTxt + GetResponseTag())), DataXmlNode);
+        Found := ResponseXmlDoc.SelectSingleNode(GetJournalNoPath(), DataXmlNode);
         if (Found) then begin
             XTLJournalNo := CopyStr(getNodeValue(DataXmlNode, './journalnumber'), 1, 250);
             CreditTransferRegister.SetRange("Data Exch. Entry No.", DataExchEntryNo);
@@ -566,35 +566,35 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         exit(GLBToId);
     end;
 
-    procedure GetFinstaXPath(ResponseNode: Text): Text
+    procedure GetFinstaXPath(): Text
     begin
-        exit(StrSubstNo(FinstaPathTxt, ResponseNode));
+        exit(FinstaPathTxt);
     end;
 
-    procedure GetSysErrXPath(ResponseNode: Text): Text
+    procedure GetSysErrXPath(): Text
     begin
-        exit(StrSubstNo(SysErrPathTxt, ResponseNode));
+        exit(SysErrPathTxt);
     end;
 
-    procedure GetConvErrXPath(ResponseNode: Text): Text
+    procedure GetConvErrXPath(): Text
     begin
-        exit(StrSubstNo(ConvErrPathTxt, ResponseNode));
+        exit(ConvErrPathTxt);
     end;
 
-    procedure GetDataXPath(ResponseNode: Text): Text
+    procedure GetDataXPath(): Text
     begin
-        exit(StrSubstNo(DataPathTxt, ResponseNode));
+        exit(DataPathTxt);
     end;
 
-    procedure GetBankXPath(ResponseNode: Text): Text
+    procedure GetBankXPath(): Text
     begin
-        exit(StrSubstNo(BankPathTxt, ResponseNode));
+        exit(BankPathTxt);
     end;
 
     //-> V16.4
-    procedure GetJournalNoPath(ResponseNode: Text): Text
+    procedure GetJournalNoPath(): Text
     begin
-        exit(StrSubstNo(PackPathTxt, ResponseNode));
+        exit(PackPathTxt);
     end;
     //<- V16.4
 

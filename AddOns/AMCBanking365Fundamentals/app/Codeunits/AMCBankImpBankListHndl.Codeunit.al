@@ -110,8 +110,7 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         TempBlob.CreateInStream(InStreamData);
         XmlDocument.ReadFrom(InStreamData, ResponseXmlDoc);
 
-        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetBankXPath(BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
-                                            BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), BankListXmlNodeList);
+        Found := ResponseXmlDoc.SelectNodes(AMCBankServiceRequestMgt.GetBankXPath(), BankListXmlNodeList);
 
         if BankListXmlNodeList.Count() > 0 then begin
             if CountryFilter <> '' then
@@ -145,8 +144,7 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         TempBlobBankList.CreateInStream(InStreamData);
         XmlDocument.ReadFrom(InStreamData, ResponseXmlDoc);
 
-        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetSysErrXPath(BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
-                                            BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), SysLogXMLNodeList);
+        Found := ResponseXmlDoc.SelectNodes(AMCBankServiceRequestMgt.GetSysErrXPath(), SysLogXMLNodeList);
         if Found then begin
             ErrorText := AMCBankServSysErr;
             for j := 1 to SysLogXMLNodeList.Count() do begin

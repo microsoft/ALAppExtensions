@@ -25,11 +25,10 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AssistedSetupTxt: Label 'Set up AMC Banking 365 Fundamentals extension';
 
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2115384', Locked = true;
-        AssistedSetupDescriptionTxt: Label 'Connect to an online bank service that can convert bank data from Business Central into the formats of your bank, to make it easier, and more accurate, to send data to your banks.';
+        AssistedSetupDescriptionTxt: Label 'Connect to an online bank service that canï¿½convert bank data from Business Central into the formats of your bank, to make it easier, and more accurate, to send data to your banks.';
         ReturnPathTxt: Label '//return/pack', Locked = true;
         ModuleWebCallTxt: Label 'amcwebservice', locked = true;
         DataExchangeWebCallTxt: Label 'dataExchange', Locked = true;
-        ResponseNodeTxt: Label 'Response', Locked = true;
 
     procedure GetApplVersion() ApplVersion: Text;
     var
@@ -552,7 +551,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         TempBlob.CreateInStream(ResponseInStr);
         XmlDocument.ReadFrom(ResponseInStr, XMLDocOut);
 
-        if (XMLDocOut.selectNodes(STRSUBSTNO(ReturnPathTxt, DataExchangeWebCallTxt + ResponseNodeTxt), DataExchXMLNodeList)) then
+        if (XMLDocOut.selectNodes(ReturnPathTxt, DataExchXMLNodeList)) then
             IF DataExchXMLNodeList.Count() > 0 THEN
                 FOR DataExchXMLNodeCount := 1 TO DataExchXMLNodeList.Count() DO begin
                     DataExchXMLNodeList.Get(DataExchXMLNodeCount, ChildNode);

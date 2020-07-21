@@ -135,8 +135,7 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
         TempBlobStatementFile.CreateInStream(InStreamData);
         XmlDocument.ReadFrom(InStreamData, ResponseXmlDoc);
 
-        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetSysErrXPath(ReportExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
-                                                       ReportExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), SysLogXMLNodeList);
+        Found := ResponseXmlDoc.SelectNodes(AMCBankServiceRequestMgt.GetSysErrXPath(), SysLogXMLNodeList);
         if Found then begin
             ErrorText := BankDataConvServSysErr;
             for i := 1 to SysLogXMLNodeList.Count() do begin
@@ -154,13 +153,12 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
         ResponseInStream: InStream;
         FinstaXmlNode: XmlNode;
         ResponseXmlDoc: XmlDocument;
-        ResponseOutStream: OutStream;
         Found: Boolean;
     begin
         TempBlob.CreateInStream(ResponseInStream);
         XmlDocument.ReadFrom(ResponseInStream, ResponseXmlDoc);
 
-        Found := ResponseXmlDoc.SelectSingleNode(STRSUBSTNO(AMCBankServiceRequestMgt.GetFinstaXPath(ReportExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag())), FinstaXmlNode);
+        Found := ResponseXmlDoc.SelectSingleNode(AMCBankServiceRequestMgt.GetFinstaXPath(), FinstaXmlNode);
         if not Found then
             Error(FinstaNotCollectedErr, AMCBankServMgt.GetSupportURL(ResponseXmlDoc));
 

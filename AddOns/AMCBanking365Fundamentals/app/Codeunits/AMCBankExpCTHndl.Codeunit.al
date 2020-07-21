@@ -137,8 +137,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         TempBlobPaymentFile.CreateInStream(InStreamData);
         XmlDocument.ReadFrom(InStreamData, ResponseXmlDoc);
 
-        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetConvErrXPath(PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
-                                            PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), SysLogXMLNodeList);
+        Found := ResponseXmlDoc.SelectNodes(AMCBankServiceRequestMgt.GetConvErrXPath(), SysLogXMLNodeList);
         if Found then begin
             for i := 1 to SysLogXMLNodeList.Count() do begin
                 SysLogXMLNodeList.Get(i, SyslogXmlNode);
@@ -152,8 +151,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
             end;
         end;
 
-        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetSysErrXPath(PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
-                                            PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), SysLogXMLNodeList);
+        Found := ResponseXmlDoc.SelectNodes(AMCBankServiceRequestMgt.GetSysErrXPath(), SysLogXMLNodeList);
         if Found then begin
             ErrorText := BankDataConvServSysErr;
             for j := 1 to SysLogXMLNodeList.Count() do begin
@@ -212,7 +210,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         TempBlob.CreateInStream(ResponseInStream);
         XmlDocument.ReadFrom(ResponseInStream, ResponseXmlDoc);
 
-        Found := ResponseXmlDoc.SelectSingleNode(STRSUBSTNO(AMCBankServiceRequestMgt.GetDataXPath(PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag())), DataXmlNode);
+        Found := ResponseXmlDoc.SelectSingleNode(AMCBankServiceRequestMgt.GetDataXPath(), DataXmlNode);
         if not Found then
             Error(PaymentDataNotCollectedErr, AMCBankServMgt.GetSupportURL(ResponseXmlDoc));
 
