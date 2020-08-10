@@ -92,6 +92,7 @@ codeunit 13623 "OIOUBL-MigrateToExtV2"
         with Customer do
             if FindSet() then
                 repeat
+                    "GLN" := "EAN No.";
                     "OIOUBL-Account Code" := "Account Code";
                     "OIOUBL-Profile Code" := "OIOUBL Profile Code";
                     "OIOUBL-Profile Code Required" := "OIOUBL Profile Code Required";
