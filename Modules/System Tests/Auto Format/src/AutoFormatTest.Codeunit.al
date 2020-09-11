@@ -133,7 +133,7 @@ codeunit 132584 "Auto Format Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Auto Format", 'OnResolveAutoFormat', '', true, true)]
     [Normal]
-    procedure HandleOnResolveAutoFormat(AutoFormatType: Enum "Auto Format"; AutoFormatExpr: Text[80]; VAR Result: Text[80]; VAR Resolved: Boolean)
+    local procedure HandleOnResolveAutoFormat(AutoFormatType: Enum "Auto Format"; AutoFormatExpr: Text[80]; VAR Result: Text[80]; VAR Resolved: Boolean)
     begin
         if AutoFormatType = 1000 then begin
             Result := '<Precision,1:1><Standard Format,0>';
@@ -143,7 +143,7 @@ codeunit 132584 "Auto Format Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Auto Format", 'OnReadRounding', '', true, true)]
     [Normal]
-    procedure HandleOnReadRounding(VAR AmountRoundingPrecision: Decimal)
+    local procedure HandleOnReadRounding(VAR AmountRoundingPrecision: Decimal)
     begin
         AmountRoundingPrecision := 0.0001;
     end;

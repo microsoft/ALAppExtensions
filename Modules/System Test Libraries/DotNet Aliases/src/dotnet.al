@@ -14,7 +14,6 @@ dotnet
 
     assembly("Microsoft.Dynamics.Nav.AzureADGraphClient")
     {
-        Version = '16.0.0.0';
         Culture = 'neutral';
         PublicKeyToken = '31bf3856ad364e35';
 

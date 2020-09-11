@@ -196,7 +196,7 @@ Codeunit 135033 "Password Dialog Test"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Password Dialog Management", 'OnSetMinPasswordLength', '', true, true)]
-    procedure OnSetMinimumPAsswordLength(var MinPasswordLength: Integer);
+    local procedure OnSetMinimumPAsswordLength(var MinPasswordLength: Integer);
     begin
         MinPasswordLength := MinimumPasswordLength;
     end;

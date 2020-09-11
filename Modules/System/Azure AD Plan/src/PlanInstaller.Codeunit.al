@@ -9,6 +9,7 @@
 codeunit 9056 "Plan Installer"
 {
     Subtype = Install;
+    Permissions = tabledata "Plan" = ri;
 
     trigger OnInstallAppPerDatabase()
     var

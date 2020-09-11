@@ -41,7 +41,7 @@ codeunit 9057 "Plan Upgrade"
 
         CreatePlan(PlanId, PlanName, RoleCenterId);
 
-        SendTraceTag('00001PS', 'AL SaaS Upgrade', VERBOSITY::Normal, StrSubstNo(SubscriptionPlanMsg, PlanId));
+        Session.LogMessage('00001PS', StrSubstNo(SubscriptionPlanMsg, PlanId), Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', 'AL SaaS Upgrade');
 
         UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetAddDeviceISVEmbUpgradeTag());
     end;
@@ -77,7 +77,7 @@ codeunit 9057 "Plan Upgrade"
         DeletePlan('46764787-E039-4AB0-8F00-820FC2D89BF9');
         DeletePlan('312BDEEE-8FBD-496E-B529-EB985F305FCF');
 
-        SendTraceTag('0000AHN', 'AL SaaS Upgrade', VERBOSITY::Normal, 'Subscription Plans were renamed and old plans werer deleted.');
+        Session.LogMessage('0000AHN', 'Subscription Plans were renamed and old plans werer deleted.', Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', 'AL SaaS Upgrade');
 
         UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetRenamePlansUpgradeTag());
     end;

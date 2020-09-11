@@ -105,7 +105,7 @@ codeunit 3702 "Environment Information Impl."
             AppId := ApplicationIdentifier();
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     procedure OnBeforeGetApplicationIdentifier(var AppId: Text)
     begin
         // An event which asks for the AppId to be filled in by the subscriber.

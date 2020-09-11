@@ -42,6 +42,24 @@ page 2510 "Marketplace Extn Deployment"
                     LanguageName := Language.GetWindowsLanguageName(LanguageID);
                 end;
             }
+            group(links)
+            {
+                ShowCaption = false;
+                field(BestPractices; 'Read more about the best practices for installing and publishing extensions')
+                {
+                    ApplicationArea = All;
+                    ShowCaption = false;
+                    Editable = false;
+                    ToolTip = 'Read more about the best practices for installing and publishing extensions.';
+
+                    trigger OnDrillDown()
+                    var
+                        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+                    begin
+                        Hyperlink(ExtensionInstallationImpl.GetInstallationBestPracticesURL());
+                    end;
+                }
+            }
         }
     }
 

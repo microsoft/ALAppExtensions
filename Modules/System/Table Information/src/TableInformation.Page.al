@@ -9,6 +9,7 @@
 page 8700 "Table Information"
 {
     Caption = 'Table Information';
+    AdditionalSearchTerms = 'Database,Size,Storage';
     PageType = List;
     ApplicationArea = All;
     Extensible = false;
@@ -66,6 +67,19 @@ page 8700 "Table Information"
                     ApplicationArea = All;
                     ToolTip = 'How much space the table occupies in the database (in kilobytes)';
                 }
+
+                field("Data Size (KB)"; "Data Size (KB)")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'How much space the table data occupies in the database (in kilobytes)';
+                }
+
+                field("Index Size (KB)"; "Index Size (KB)")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'How much space the table indexes occupy in the database (in kilobytes)';
+                }
+
                 field("Compression"; "Compression")
                 {
                     ApplicationArea = All;

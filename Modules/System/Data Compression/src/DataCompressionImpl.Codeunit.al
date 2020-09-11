@@ -106,18 +106,14 @@ codeunit 421 "Data Compression Impl."
         end;
     end;
 
-    procedure IsGZip(InStream: InStream): Boolean
+    procedure IsGZip(InputStream: InStream): Boolean
     var
-        TempBlob: Codeunit "Temp Blob";
-        TempInStream: InStream;
-        TempOutStream: OutStream;
+        OriginalStream: DotNet Stream;
         ID: array[2] of Byte;
     begin
-        TempBlob.CreateOutStream(TempOutStream);
-        CopyStream(TempOutStream, InStream);
-        TempBlob.CreateInStream(TempInStream);
-        TempInStream.Read(ID[1]);
-        TempInStream.Read(ID[2]);
+        OriginalStream := InputStream;
+        InputStream.Read(ID[1]);
+        InputStream.Read(ID[2]);
 
         // from GZIP file format specification version 4.3
         // Member header and trailer
@@ -125,6 +121,8 @@ codeunit 421 "Data Compression Impl."
         // ID2 (IDentification 2)
         // These have the fixed values ID1 = 31 (0x1f, \037), ID2 = 139 (0x8b, \213), to identify the file as being in gzip format.
 
+        OriginalStream.Position := 0;
+        InputStream := OriginalStream;
         exit((ID[1] = 31) and (ID[2] = 139));
     end;
 

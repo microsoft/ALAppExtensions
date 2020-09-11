@@ -5,6 +5,14 @@ Contains the page that enables a user to pick which new features to use.
  Page that enables a user to pick which new features to use
  
 
+### OnRunFeatureUpgrade (Event) <a name="OnRunFeatureUpgrade"></a> 
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+local procedure OnRunFeatureUpgrade(FeatureKey: Record "Feature Key")
+```
+#### Parameters
+*FeatureKey ([Record "Feature Key"]())* 
 
 
 

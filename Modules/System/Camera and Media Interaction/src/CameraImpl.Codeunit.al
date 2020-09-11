@@ -35,7 +35,9 @@ codeunit 1922 "Camera Impl."
 
     procedure AddPicture(RecordVariant: Variant; FieldNo: Integer): Boolean
     var
+    #pragma warning disable AA0073
         TempMedia: Record "Temp Media" temporary;
+    #pragma warning restore AA0073
         RecordWithMediaRef: RecordRef;
         MediaFieldRef: FieldRef;
         PictureInStream: InStream;

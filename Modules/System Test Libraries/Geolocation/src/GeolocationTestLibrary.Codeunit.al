@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50102 "Geolocation Test Library"
+codeunit 135028 "Geolocation Test Library"
 {
     EventSubscriberInstance = Manual;
 

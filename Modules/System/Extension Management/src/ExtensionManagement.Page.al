@@ -217,14 +217,7 @@ page 2500 "Extension Management"
                     PromotedIsBig = true;
                     ToolTip = 'Browse the extension marketplace for new extensions to install.';
                     Visible = NOT IsOnPremDisplay;
-
-                    trigger OnAction()
-                    begin
-                        if AppSource.IsAvailable() then begin
-                            AppSource := AppSource.Create();
-                            AppSource.ShowAppSource();
-                        end;
-                    end;
+                    RunObject = page "Extension Marketplace";
                 }
                 action("Upload Extension")
                 {
@@ -307,8 +300,6 @@ page 2500 "Extension Management"
     var
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
-        [RunOnClient]
-        AppSource: DotNet AppSource;
         VersionDisplay: Text;
         InstalledStatus: Text;
         ActionsEnabled: Boolean;

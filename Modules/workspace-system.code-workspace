@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"name": "Any",
+			"path": "DevTools\\TestFramework\\TestLibraries\\Any"
+		},
+		{
+			"name": "Assert",
+			"path": "DevTools\\TestFramework\\TestLibraries\\Assert"
+		},
+		{
+			"name": "Variable Storage",
+			"path": "DevTools\\TestFramework\\TestLibraries\\Variable Storage"
+		},
+		{
+			"name": "TestRunner",
+			"path": "DevTools\\TestFramework\\TestRunner"
+		},
+		{
+			"name": "System",
+			"path": "System"
+		},
+		{
+			"name": "System Test Libraries",
+			"path": "System Test Libraries"
+		},
+		{
+			"name": "System Tests",
+			"path": "System Tests"
+		}
+	]
+}

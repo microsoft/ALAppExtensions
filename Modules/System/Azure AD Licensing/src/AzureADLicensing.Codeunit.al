@@ -18,9 +18,10 @@ codeunit 458 "Azure AD Licensing"
     /// <summary>
     /// Sets the enumerator for the subscribed SKUs to its initial position, which is before the first subscribed SKU in the collection.
     /// </summary>
-    procedure ResetSubscribedSKU()
+    /// <returns> True if the enumerator was successfully reset and otherwise false.</returns>
+    procedure ResetSubscribedSKU(): Boolean
     begin
-        AzureADLicensingImpl.ResetSubscribedSKU();
+        exit(AzureADLicensingImpl.ResetSubscribedSKU());
     end;
 
     /// <summary>

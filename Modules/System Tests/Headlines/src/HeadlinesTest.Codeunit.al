@@ -16,8 +16,8 @@ codeunit 139481 "Headlines Test"
     var
         Headlines: Codeunit "Headlines";
         Assert: Codeunit "Library Assert";
-        Text50Txt: Label '12345678901234567890123456789012345678901234567890', Comment = 'Locked';
-        Text75Txt: Label '123456789012345678901234567890123456789012345678901234567890123456789012345', Comment = 'Locked';
+        Text50Txt: Label '12345678901234567890123456789012345678901234567890', Locked = true;
+        Text75Txt: Label '123456789012345678901234567890123456789012345678901234567890123456789012345', Locked = true;
         NoonGreetingTxt: Label 'Hi, %1!', Comment = 'Displayed between 12:00 and 13:59. %1 is the user name.';
         SimpleNoonGreetingTxt: Label 'Hi!', Comment = 'Displayed between 12:00 and 13:59.';
 

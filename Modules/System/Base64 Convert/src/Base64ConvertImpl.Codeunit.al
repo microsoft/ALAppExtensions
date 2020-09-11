@@ -14,6 +14,26 @@ codeunit 4111 "Base64 Convert Impl."
     end;
 
     procedure ToBase64(String: Text; InsertLineBreaks: Boolean): Text
+    begin
+        exit(ToBase64(String, InsertLineBreaks, TextEncoding::UTF8, 0));
+    end;
+
+    procedure ToBase64(String: Text; TextEncoding: TextEncoding): Text
+    begin
+        exit(ToBase64(String, false, TextEncoding, 0));
+    end;
+
+    procedure ToBase64(String: Text; TextEncoding: TextEncoding; Codepage: Integer): Text
+    begin
+        exit(ToBase64(String, false, TextEncoding, Codepage));
+    end;
+
+    procedure ToBase64(String: Text; InsertLineBreaks: Boolean; TextEncoding: TextEncoding): Text
+    begin
+        exit(ToBase64(String, InsertLineBreaks, TextEncoding, 0));
+    end;
+
+    procedure ToBase64(String: Text; InsertLineBreaks: Boolean; TextEncoding: TextEncoding; Codepage: Integer): Text
     var
         Convert: DotNet Convert;
         Encoding: DotNet Encoding;
@@ -24,9 +44,18 @@ codeunit 4111 "Base64 Convert Impl."
             exit('');
 
         if InsertLineBreaks then
-            Base64String := Convert.ToBase64String(Encoding.UTF8().GetBytes(String), Base64FormattingOptions.InsertLineBreaks)
+            Base64FormattingOptions := Base64FormattingOptions.InsertLineBreaks
         else
-            Base64String := Convert.ToBase64String(Encoding.UTF8().GetBytes(String));
+            Base64FormattingOptions := Base64FormattingOptions.None;
+        case TextEncoding of
+            TextEncoding::UTF16:
+                Base64String := Convert.ToBase64String(Encoding.Unicode().GetBytes(String), Base64FormattingOptions);
+            TextEncoding::MSDos,
+            TextEncoding::Windows:
+                Base64String := Convert.ToBase64String(Encoding.GetEncoding(CodePage).GetBytes(String), Base64FormattingOptions);
+            else
+                Base64String := Convert.ToBase64String(Encoding.UTF8().GetBytes(String), Base64FormattingOptions);
+        end;
 
         exit(Base64String);
     end;
@@ -57,7 +86,12 @@ codeunit 4111 "Base64 Convert Impl."
         exit(Base64String);
     end;
 
-    procedure FromBase64(Base64String: Text): Text
+    procedure FromBase64(Base64String: Text; TextEncoding: TextEncoding): Text
+    begin
+        exit(FromBase64(Base64String, TextEncoding, 1252));
+    end;
+
+    procedure FromBase64(Base64String: Text; TextEncoding: TextEncoding; CodePage: Integer): Text
     var
         Convert: DotNet Convert;
         Encoding: DotNet Encoding;
@@ -66,8 +100,21 @@ codeunit 4111 "Base64 Convert Impl."
         if Base64String = '' then
             exit('');
 
-        OutputString := Encoding.UTF8().GetString(Convert.FromBase64String(Base64String));
+        case TextEncoding of
+            TextEncoding::UTF16:
+                OutputString := Encoding.Unicode().GetString(Convert.FromBase64String(Base64String));
+            TextEncoding::MSDos,
+            TextEncoding::Windows:
+                OutputString := Encoding.GetEncoding(CodePage).GetString(Convert.FromBase64String(Base64String));
+            else
+                OutputString := Encoding.UTF8().GetString(Convert.FromBase64String(Base64String));
+        end;
         exit(OutputString);
+    end;
+
+    procedure FromBase64(Base64String: Text): Text
+    begin
+        exit(FromBase64(Base64String, TextEncoding::UTF8, 0));
     end;
 
     procedure FromBase64(Base64String: Text; OutStream: OutStream)
@@ -84,4 +131,3 @@ codeunit 4111 "Base64 Convert Impl."
         end;
     end;
 }
-

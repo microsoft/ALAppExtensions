@@ -14,27 +14,69 @@ codeunit 502 OAuth2Impl
         RedirectUrlTxt: Label 'The defined redirectURL is: %1', Comment = '%1 = The redirect URL', Locked = true;
         DefaultRedirectUrlTxt: Label 'The default redirectURL is: %1', Comment = '%1 = The redirect URL', Locked = true;
         AuthRequestUrlTxt: Label 'The authentication request URL %1 has been succesfully retrieved.', Comment = '%1=Authentication request URL';
-        MissingClientIdRedirectUrlStateErr: Label 'The authorization request URL for the OAuth2 Grant flow cannot be constructed because of missing ClientId, RedirectUrl or state', Locked = true;
+        MissingClientIdRedirectUrlErr: Label 'The authorization request URL for the OAuth2 Grant flow cannot be constructed because of missing ClientId or RedirectUrl', Locked = true;
         AuthorizationCodeErr: Label 'The OAuth2 authentication code retrieved is empty.', Locked = true;
-        CannotreadFromJsonErr: Label 'The Authorization code cannot be read from the JSON file.', Locked = true;
-        CannotGetCodePropertyFromJsonErr: Label 'The code property cannot be extracted from the JSON body of the authorization code.', Locked = true;
-        CodePropertyDoesNotHaveValueErr: Label 'The code property value from the JSON body cannot be retreieved.', Locked = true;
-        CannotWriteJsonToAuthCodeErr: Label 'The authorization code cannot be written to a text value.', Locked = true;
         EmptyAccessTokenClientCredsErr: Label 'The access token failed to be retrieved by the client credentials grant flow.', Locked = true;
-        StartAuthCodeFlowMsg: Label 'Starting the authorization code grant flow.', Locked = true;
-        AuthorizationCodeExtractedSuccessfullyFromJsonMsg: Label 'The authorization code has been successfully extracted from the JSON body.', Locked = true;
 
     [NonDebuggable]
-    procedure GetAuthRequestUrl(ClientId: Text; ClientSecret: Text; Url: Text; RedirectUrl: Text; State: Text; ResourceUrl: Text; PromptConsent: Enum "Prompt Interaction"): Text
+    procedure GetAuthRequestUrl(ClientId: Text; Url: Text; RedirectUrl: Text; var State: Text; ResourceUrl: Text; PromptConsent: Enum "Prompt Interaction"): Text
     var
         AuthRequestUrl: Text;
     begin
-        if (ClientId = '') or (RedirectUrl = '') or (state = '') then begin
-            SendTraceTag('0000CCI', Oauth2CategoryLbl, Verbosity::Error, MissingClientIdRedirectUrlStateErr, DataClassification::SystemMetadata);
+        if (ClientId = '') or (RedirectUrl = '') then begin
+            Session.LogMessage('0000CCI', MissingClientIdRedirectUrlErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
             exit('');
         end;
-        AuthRequestUrl := Url + '?' + 'client_id=' + ClientId + '&redirect_uri=' + RedirectUrl + '&state=' + State + '&response_type=code';
 
+        State := Format(CreateGuid(), 0, 4);
+
+        AuthRequestUrl := Url + '?client_id=' + ClientId + '&redirect_uri=' + RedirectUrl + '&state=' + State + '&response_type=code&response_mode=query';
+
+        if ResourceUrl <> '' then
+            AuthRequestUrl := AuthRequestUrl + '&resource=' + ResourceUrl;
+
+        AppendPromptParameter(PromptConsent, AuthRequestUrl);
+
+        Session.LogMessage('0000BRH', StrSubstNo(AuthRequestUrlTxt, AuthRequestUrl), Verbosity::Normal, DataClassification::AccountData, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
+        exit(AuthRequestUrl);
+    end;
+
+    [NonDebuggable]
+    procedure GetAuthRequestUrl(ClientId: Text; ClientSecret: Text; Url: Text; RedirectUrl: Text; var State: Text; Scopes: List of [Text]; PromptConsent: Enum "Prompt Interaction"): Text
+    var
+        OAuthAuthorization: DotNet OAuthAuthorization;
+        Consumer: DotNet Consumer;
+        Token: DotNet Token;
+        Scope: Text;
+        ScopeText: Text;
+        AuthRequestUrl: Text;
+    begin
+        if (ClientId = '') or (RedirectUrl = '') then begin
+            Session.LogMessage('0000D1J', MissingClientIdRedirectUrlErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
+            exit('');
+        end;
+        Token := Token.Token('', '');
+        Consumer := Consumer.Consumer(ClientId, ClientSecret);
+        OAuthAuthorization := OAuthAuthorization.OAuthAuthorization(Consumer, Token);
+
+        foreach Scope in Scopes do
+            if ScopeText = '' then
+                ScopeText := ScopeText + Scope
+            else
+                ScopeText := ScopeText + ' ' + Scope;
+
+        State := Format(CreateGuid(), 0, 4);
+
+        AuthRequestUrl := OAuthAuthorization.CalculateAuthRequestUrl(Url, RedirectUrl, ScopeText, State);
+
+        AppendPromptParameter(PromptConsent, AuthRequestUrl);
+
+        Session.LogMessage('0000D1K', StrSubstNo(AuthRequestUrlTxt, AuthRequestUrl), Verbosity::Normal, DataClassification::AccountData, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
+        exit(AuthRequestUrl);
+    end;
+
+    procedure AppendPromptParameter(PromptConsent: Enum "Prompt Interaction"; var AuthRequestUrl: Text)
+    begin
         case PromptConsent of
             PromptConsent::Login:
                 AuthRequestUrl := AuthRequestUrl + '&prompt=login';
@@ -45,55 +87,25 @@ codeunit 502 OAuth2Impl
             PromptConsent::"Admin Consent":
                 AuthRequestUrl := AuthRequestUrl + '&prompt=admin_consent';
         end;
-
-        if ResourceUrl <> '' then
-            AuthRequestUrl := AuthRequestUrl + '&resource=' + ResourceUrl;
-
-        SendTraceTag('0000BRH', Oauth2CategoryLbl, Verbosity::Normal, StrSubstNo(AuthRequestUrlTxt, AuthRequestUrl), DataClassification::AccountData);
-        exit(AuthRequestUrl);
     end;
 
-
     [NonDebuggable]
-    procedure GetOAuthProperties(AuthorizationCode: Text; var CodeOut: Text; var StateOut: Text)
+    procedure GetOAuthProperties(AuthorizationCode: Text; var CodeOut: Text; var StateOut: Text; var AdminConsent: Text)
     begin
         if AuthorizationCode = '' then begin
-            SendTraceTag('0000C1V', Oauth2CategoryLbl, Verbosity::Error, AuthorizationCodeErr, DataClassification::SystemMetadata);
+            Session.LogMessage('0000C1V', AuthorizationCodeErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
             exit;
         end;
 
-        ReadAuthCodeFromJson(AuthorizationCode);
+        if AuthorizationCode.EndsWith('#') then
+            AuthorizationCode := CopyStr(AuthorizationCode, 1, StrLen(AuthorizationCode) - 1);
+
         CodeOut := GetPropertyFromCode(AuthorizationCode, 'code');
         StateOut := GetPropertyFromCode(AuthorizationCode, 'state');
+        AdminConsent := GetPropertyFromCode(AuthorizationCode, 'admin_consent');
     end;
 
-    [NonDebuggable]
-    local procedure ReadAuthCodeFromJson(var AuthorizationCode: Text)
-    var
-        JObject: JsonObject;
-        JToken: JsonToken;
-    begin
-        if not JObject.ReadFrom(AuthorizationCode) then begin
-            SendTraceTag('0000C1W', Oauth2CategoryLbl, Verbosity::Warning, CannotreadFromJsonErr, DataClassification::SystemMetadata);
-            exit;
-        end;
-        if not JObject.Get('code', JToken) then begin
-            SendTraceTag('0000C1X', Oauth2CategoryLbl, Verbosity::Warning, CannotGetCodePropertyFromJsonErr, DataClassification::SystemMetadata);
-            exit;
-        end;
-        if not JToken.IsValue() then begin
-            SendTraceTag('0000C1Y', Oauth2CategoryLbl, Verbosity::Warning, CodePropertyDoesNotHaveValueErr, DataClassification::SystemMetadata);
-            exit;
-        end;
-        if not JToken.WriteTo(AuthorizationCode) then begin
-            SendTraceTag('0000C1Z', Oauth2CategoryLbl, Verbosity::Warning, CannotWriteJsonToAuthCodeErr, DataClassification::SystemMetadata);
-            exit;
-        end;
-        AuthorizationCode := AuthorizationCode.TrimStart('"').TrimEnd('"');
-        SendTraceTag('0000C20', Oauth2CategoryLbl, Verbosity::Normal, AuthorizationCodeExtractedSuccessfullyFromJsonMsg, DataClassification::SystemMetadata);
-    end;
-
-    procedure GetDefaultRedirectUrl(): Text
+    local procedure GetDefaultRedirectUrl(): Text
     var
         UriBuilder: DotNet UriBuilder;
         PathString: DotNet String;
@@ -118,47 +130,105 @@ codeunit 502 OAuth2Impl
         // Pull out the full URL by the URI and convert it to a string.
         RedirectUrl := UriBuilder.Uri.ToString();
 
-        SendTraceTag('0000C21', Oauth2CategoryLbl, Verbosity::Normal, StrSubstNo(DefaultRedirectUrlTxt, RedirectUrl), DataClassification::AccountData);
+        Session.LogMessage('0000C21', StrSubstNo(DefaultRedirectUrlTxt, RedirectUrl), Verbosity::Normal, DataClassification::AccountData, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
         exit(RedirectUrl);
+    end;
+
+    [TryFunction]
+    procedure RequestClientCredentialsAdminPermissions(ClientId: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; var HasGrantConsentSucceeded: Boolean; var PermissionGrantError: Text)
+    var
+        OAuth2ControlAddIn: Page OAuth2ControlAddIn;
+        Url: Text;
+        State: Text;
+    begin
+        if RedirectURL = '' then
+            RedirectURL := GetDefaultRedirectUrl();
+        State := Format(CreateGuid(), 0, 4);
+        Url := OAuthAuthorityUrl + '?client_id=' + ClientId + '&redirect_uri=' + RedirectURL + '&state=' + State;
+
+        OAuth2ControlAddIn.SetOAuth2Properties(Url, State);
+        OAuth2ControlAddIn.RunModal();
+
+        HasGrantConsentSucceeded := OAuth2ControlAddIn.GetGrantConsentSuccess();
+        PermissionGrantError := OAuth2ControlAddIn.GetAuthError();
     end;
 
     [NonDebuggable]
     [TryFunction]
     procedure AcquireTokenByAuthorizationCode(ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; ResourceUrl: Text; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var AuthCodeErr: Text)
     var
-        OAuth2ControlAddIn: Page OAuth2ControlAddIn;
         AuthRequestUrl: Text;
         AuthCode: Text;
         State: Text;
     begin
-        SendTraceTag('0000C22', Oauth2CategoryLbl, Verbosity::Normal, StartAuthCodeFlowMsg, DataClassification::SystemMetadata);
         Initialize(OAuthAuthorityUrl, RedirectURL);
-        State := Format(CreateGuid(), 0, 4);
 
-        AuthRequestUrl := GetAuthRequestUrl(ClientId, ClientSecret, OAuthAuthorityUrl, RedirectURL, State, ResourceUrl, PromptInteraction);
-        if AuthRequestUrl = '' then begin
-            AuthCodeErr := MissingClientIdRedirectUrlStateErr;
-            AccessToken := '';
+        AuthRequestUrl := GetAuthRequestUrl(ClientId, OAuthAuthorityUrl, RedirectURL, State, ResourceUrl, PromptInteraction);
+
+        SetPropertiesBasedOnAuthRequestUrlAndRunOAuth2ControlAddIn(AuthRequestUrl, State, AuthCode, AuthCodeErr);
+
+        if AuthCode = '' then
             exit;
-        end;
 
-        OAuth2ControlAddIn.SetOAuth2CodeFlowGrantProperties(AuthRequestUrl, State);
-        OAuth2ControlAddIn.RunModal();
+        AcquireTokenByAuthorizationCodeWithCredentials(AuthCode, ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrl, ResourceUrl, AccessToken);
+    end;
 
-        AuthCode := OAuth2ControlAddIn.GetAuthCode();
-        if AuthCode <> '' then begin
-            AcquireTokenByAuthorizationCodeWithCredentials(AuthCode, ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrl, ResourceUrl, AccessToken);
+
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokenByAuthorizationCode(ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var AuthCodeErr: Text)
+    var
+        AuthRequestUrl: Text;
+        AuthCode: Text;
+        State: Text;
+    begin
+        Initialize(OAuthAuthorityUrl, RedirectURL);
+
+        AuthRequestUrl := GetAuthRequestUrl(ClientId, ClientSecret, OAuthAuthorityUrl, RedirectURL, State, Scopes, PromptInteraction);
+
+        SetPropertiesBasedOnAuthRequestUrlAndRunOAuth2ControlAddIn(AuthRequestUrl, State, AuthCode, AuthCodeErr);
+
+        if AuthCode = '' then
             exit;
-        end;
-        AuthCodeErr := OAuth2ControlAddIn.getAuthCodeError();
+
+        AcquireTokenByAuthorizationCodeWithCredentials(AuthCode, ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrl, Scopes, AccessToken);
     end;
 
     [NonDebuggable]
     [TryFunction]
-    procedure AcquireOnBehalfOfToken(RedirectURL: Text; ResourceURL: Text; var AccessToken: Text)
+    procedure SetPropertiesBasedOnAuthRequestUrlAndRunOAuth2ControlAddIn(AuthRequestUrl: Text; State: Text; var AuthCode: Text; var AuthCodeErr: Text)
+    var
+        OAuth2ControlAddIn: Page OAuth2ControlAddIn;
+    begin
+        if AuthRequestUrl = '' then begin
+            AuthCode := '';
+            exit;
+        end;
+
+        OAuth2ControlAddIn.SetOAuth2Properties(AuthRequestUrl, State);
+        OAuth2ControlAddIn.RunModal();
+
+        AuthCode := OAuth2ControlAddIn.GetAuthCode();
+        AuthCodeErr := OAuth2ControlAddIn.GetAuthError();
+    end;
+
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireOnBehalfOfToken(RedirectURL: Text; ResourceUrl: Text; var AccessToken: Text)
     begin
         Initialize(RedirectURL);
-        AccessToken := AuthFlow.ALAcquireOnBehalfOfToken(ResourceURL);
+        AccessToken := AuthFlow.ALAcquireOnBehalfOfToken(ResourceUrl);
+    end;
+
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireOnBehalfOfToken(RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text)
+    var
+        ScopesArray: DotNet StringArray;
+    begin
+        FillScopesArray(Scopes, ScopesArray);
+        Initialize(RedirectURL);
+        AccessToken := AuthFlow.ALAcquireOnBehalfOfToken(ScopesArray);
     end;
 
     [NonDebuggable]
@@ -169,14 +239,34 @@ codeunit 502 OAuth2Impl
     end;
 
     [NonDebuggable]
+    procedure AcquireOnBehalfAccessTokenAndRefreshToken(OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text; var RefreshToken: Text)
+    var
+        ScopesArray: DotNet StringArray;
+    begin
+        FillScopesArray(Scopes, ScopesArray);
+        Initialize(OAuthAuthorityUrl, RedirectURL);
+        AccessToken := AuthFlow.ALAcquireOnBehalfOfToken(ScopesArray, RefreshToken);
+    end;
+
+    [NonDebuggable]
     procedure AcquireOnBehalfOfTokenByRefreshToken(ClientId: Text; RedirectURL: Text; ResourceURL: Text; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
     begin
         Initialize(RedirectURL);
         AccessToken := AuthFlow.ALAcquireTokenFromTokenCacheState(ResourceURL, ClientId, RefreshToken, NewRefreshToken);
     end;
 
+    [NonDebuggable]
+    procedure AcquireOnBehalfOfTokenByRefreshToken(ClientId: Text; RedirectURL: Text; Scopes: List of [Text]; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
+    var
+        ScopesArray: DotNet StringArray;
+    begin
+        FillScopesArray(Scopes, ScopesArray);
+        Initialize(RedirectURL);
+        AccessToken := AuthFlow.ALAcquireTokenFromTokenCacheState(ScopesArray, ClientId, RefreshToken, NewRefreshToken);
+    end;
 
     [NonDebuggable]
+    [Obsolete('Added OAuthority parameter', '17.0')]
     [TryFunction]
     procedure AcquireTokenFromCache(RedirectURL: Text; ClientId: Text; ClientSecret: Text; ResourceURL: Text; var AccessToken: Text)
     begin
@@ -186,20 +276,61 @@ codeunit 502 OAuth2Impl
 
     [NonDebuggable]
     [TryFunction]
+    procedure AcquireTokenFromCache(RedirectURL: Text; ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; ResourceURL: Text; var AccessToken: Text)
+    begin
+        Initialize(OAuthAuthorityUrl, RedirectURL);
+        AccessToken := AuthFlow.ALAcquireTokenFromCacheWithCredentials(ClientID, ClientSecret, ResourceURL);
+    end;
+
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokenFromCache(RedirectURL: Text; ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; Scopes: List of [Text]; var AccessToken: Text)
+    var
+        ScopesArray: DotNet StringArray;
+    begin
+        FillScopesArray(Scopes, ScopesArray);
+        Initialize(OAuthAuthorityUrl, RedirectURL);
+        AccessToken := AuthFlow.ALAcquireTokenFromCacheWithCredentials(ClientID, ClientSecret, ScopesArray);
+    end;
+
+    [NonDebuggable]
+    [TryFunction]
     procedure AcquireTokenWithClientCredentials(ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; ResourceURL: Text; var AccessToken: Text)
     begin
         Initialize(OAuthAuthorityUrl, RedirectURL);
         AccessToken := AuthFlow.ALAcquireApplicationToken(ClientID, ClientSecret, OAuthAuthorityUrl, ResourceURL);
         if AccessToken = '' then
-            SendTraceTag('0000C23', Oauth2CategoryLbl, Verbosity::Error, EmptyAccessTokenClientCredsErr, DataClassification::SystemMetadata);
+            Session.LogMessage('0000C23', EmptyAccessTokenClientCredsErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
+    end;
+
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokenWithClientCredentials(ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text)
+    var
+        ScopesArray: DotNet StringArray;
+    begin
+        FillScopesArray(Scopes, ScopesArray);
+        Initialize(OAuthAuthorityUrl, RedirectURL);
+        AccessToken := AuthFlow.ALAcquireApplicationToken(ClientID, ClientSecret, OAuthAuthorityUrl, ScopesArray);
+        if AccessToken = '' then
+            Session.LogMessage('0000D1L', EmptyAccessTokenClientCredsErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
     end;
 
     [NonDebuggable]
     [TryFunction]
     procedure AcquireTokenByAuthorizationCodeWithCredentials(AuthorizationCode: Text; ClientId: Text; ClientSecret: Text; RedirectUrl: Text; OAuthAuthorityUrl: Text; ResourceURL: Text; var AccessToken: Text)
     begin
-        Initialize(OAuthAuthorityUrl, RedirectUrl);
         AccessToken := AuthFlow.ALAcquireTokenByAuthorizationCodeWithCredentials(AuthorizationCode, ClientId, ClientSecret, ResourceURL);
+    end;
+
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokenByAuthorizationCodeWithCredentials(AuthorizationCode: Text; ClientId: Text; ClientSecret: Text; RedirectUrl: Text; OAuthAuthorityUrl: Text; Scopes: List of [Text]; var AccessToken: Text)
+    var
+        ScopesArray: DotNet StringArray;
+    begin
+        FillScopesArray(Scopes, ScopesArray);
+        AccessToken := AuthFlow.ALAcquireTokenByAuthorizationCodeWithCredentials(AuthorizationCode, ClientId, ClientSecret, ScopesArray);
     end;
 
     local procedure Initialize(RedirectURL: Text)
@@ -209,7 +340,7 @@ codeunit 502 OAuth2Impl
         if RedirectURL = '' then
             RedirectURL := GetDefaultRedirectUrl()
         else
-            SendTraceTag('0000C24', Oauth2CategoryLbl, Verbosity::Normal, StrSubstNo(RedirectUrlTxt, RedirectUrl), DataClassification::AccountData);
+            Session.LogMessage('0000C24', StrSubstNo(RedirectUrlTxt, RedirectUrl), Verbosity::Normal, DataClassification::AccountData, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
 
         AuthFlow := AuthFlow.ALAzureAdCodeGrantFlow(Uri.Uri(RedirectURL));
     end;
@@ -221,7 +352,7 @@ codeunit 502 OAuth2Impl
         if RedirectURL = '' then
             RedirectURL := GetDefaultRedirectUrl()
         else
-            SendTraceTag('0000C24', Oauth2CategoryLbl, Verbosity::Normal, StrSubstNo(RedirectUrlTxt, RedirectUrl), DataClassification::AccountData);
+            Session.LogMessage('0000CXW', StrSubstNo(RedirectUrlTxt, RedirectUrl), Verbosity::Normal, DataClassification::AccountData, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
 
         AuthFlow := AuthFlow.ALAzureAdCodeGrantFlow(Uri.Uri(RedirectURL), Uri.Uri(OAuthAuthorityUrl));
     end;
@@ -265,4 +396,19 @@ codeunit 502 OAuth2Impl
         exit(CopyStr(CodeTxt, PosValue, PosEnd - PosValue - 1));
     end;
 
+    [NonDebuggable]
+    local procedure FillScopesArray(Scopes: List of [Text]; var Result: DotNet StringArray)
+    var
+        TempString: DotNet String;
+        Scope: Text;
+        Index: Integer;
+    begin
+        TempString := '';
+        Result := Result.CreateInstance(TempString.GetType(), Scopes.Count);
+        Index := 0;
+        foreach Scope in Scopes do begin
+            Result.SetValue(Scope, Index);
+            Index += 1;
+        end;
+    end;
 }

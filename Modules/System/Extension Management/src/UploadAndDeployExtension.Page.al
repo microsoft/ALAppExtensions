@@ -49,7 +49,6 @@ page 2507 "Upload And Deploy Extension"
                 ApplicationArea = All;
                 Caption = 'Deploy to';
                 ToolTip = 'Specifies which version to deploy to.';
-                OptionCaption = 'Current version,Next minor version,Next major version';
             }
             field(Language; LanguageName)
             {
@@ -85,6 +84,20 @@ page 2507 "Upload And Deploy Extension"
                 ApplicationArea = All;
                 Caption = 'Accept';
                 ToolTip = 'Specifies that you accept Disclaimer.';
+            }
+            field(BestPractices; 'Read more about the best practices for installing and publishing extensions')
+            {
+                ApplicationArea = All;
+                ShowCaption = false;
+                Editable = false;
+                ToolTip = 'Read more about the best practices for installing and publishing extensions.';
+
+                trigger OnDrillDown()
+                var
+                    ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+                begin
+                    Hyperlink(ExtensionInstallationImpl.GetInstallationBestPracticesURL());
+                end;
             }
         }
     }
@@ -143,7 +156,7 @@ page 2507 "Upload And Deploy Extension"
 
     var
         FileStream: InStream;
-        DeployToValue: Option "Current version","Next minor version","Next major version";
+        DeployToValue: Enum "Extension Deploy To";
         FilePath: Text;
         LanguageName: Text;
         LanguageID: Integer;

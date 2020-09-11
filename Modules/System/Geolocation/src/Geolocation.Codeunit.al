@@ -13,7 +13,7 @@
 /// </code>
 /// </example>
 /// </summary>
-codeunit 50100 Geolocation
+codeunit 7568 Geolocation
 {
     Access = Public;
 
