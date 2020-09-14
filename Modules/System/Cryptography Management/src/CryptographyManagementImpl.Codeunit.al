@@ -579,7 +579,9 @@ codeunit 1279 "Cryptography Management Impl."
         DecMemoryStream := DecMemoryStream.MemoryStream(Convert.FromBase64String(EncryptedText));
         DecCryptoStream := DecCryptoStream.CryptoStream(DecMemoryStream, Decryptor, CryptoStreamMode.Read);
         DecStreamReader := DecStreamReader.StreamReader(DecCryptoStream);
+        #pragma warning disable AA0205
         PlainText := DelChr(DecStreamReader.ReadToEnd(), '>', NullChar);
+        #pragma warning restore
         DecStreamReader.Close();
         DecCryptoStream.Close();
         DecMemoryStream.Close();

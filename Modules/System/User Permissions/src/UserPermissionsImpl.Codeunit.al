@@ -204,7 +204,7 @@ codeunit 153 "User Permissions Impl."
     /// This feature is for testing and is subject to a different SLA than production features.
     /// Do not use this event in a production environment. This should be subscribed to only in tests.
     /// </remarks>
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     local procedure OnCanManageUsersOnTenant(UserSID: Guid; var Result: Boolean)
     begin
     end;

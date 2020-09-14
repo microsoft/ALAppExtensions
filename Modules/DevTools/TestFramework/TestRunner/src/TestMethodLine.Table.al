@@ -117,6 +117,10 @@ table 130450 "Test Method Line"
         {
             DataClassification = ToBeClassified;
         }
+        field(55; "Skip Logging Results"; Boolean)
+        {
+            DataClassification = ToBeClassified;
+        }
     }
 
     keys

@@ -7,6 +7,9 @@ codeunit 130454 "Test Runner - Mgt"
 {
     Permissions = TableData "AL Test Suite" = rimd, TableData "Test Method Line" = rimd;
 
+    var
+        SkipLoggingResults: Boolean;
+
     trigger OnRun()
     begin
     end;
@@ -37,6 +40,14 @@ codeunit 130454 "Test Runner - Mgt"
         OnAfterRunTestSuite(TestMethodLine);
     end;
 
+    /// This method is called when the caller needs to run a test codeunit but do not want to log results or the caller has 
+    /// an alternateway to log the results. Currently, this is used by the Business Central Performance Toolkit(BCPT)
+    procedure RunTestsWithoutLoggingResults(var TestMethodLine: Record "Test Method Line")
+    begin
+        SkipLoggingResults := true;
+        CODEUNIT.Run(TestMethodLine."Test Codeunit");
+    end;
+
     procedure GetDefaultTestRunner(): Integer
     begin
         exit(GetCodeIsolationTestRunner());
@@ -57,6 +68,9 @@ codeunit 130454 "Test Runner - Mgt"
         TestMethodLineFunction: Record "Test Method Line";
         CodeunitTestMethodLine: Record "Test Method Line";
     begin
+        if SkipLoggingResults then
+            exit(true);
+
         // Invoked by the platform before any codeunit is run
         if (FunctionName = '') or (FunctionName = 'OnRun') then begin
             if GetTestCodeunit(CodeunitTestMethodLine, TestSuite, CodeunitID) then
@@ -81,6 +95,11 @@ codeunit 130454 "Test Runner - Mgt"
         TestMethodLine: Record "Test Method Line";
         CodeunitTestMethodLine: Record "Test Method Line";
     begin
+        if SkipLoggingResults then begin
+            OnAfterTestMethodRun(TestMethodLine, CodeunitID, CodeunitName, FunctionName, FunctionTestPermissions, IsSuccess);
+            exit;
+        end;
+
         // Invoked by platform after every test method is run
         if (FunctionName = '') or (FunctionName = 'OnRun') then
             exit;

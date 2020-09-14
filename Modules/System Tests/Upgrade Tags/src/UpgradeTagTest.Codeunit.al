@@ -128,28 +128,6 @@ codeunit 135092 "Upgrade Tag Test"
         UpgradeTagTags.VerifyCompanyInitialized('');
     end;
 
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestUpgradeTagsFailValidation()
-    var
-        UpgradeTags: Record "Upgrade Tags";
-        UpgradeTag: Codeunit "Upgrade Tag";
-        UpgradeTagTags: Codeunit "Upgrade Tag - Tags";
-        Assert: Codeunit "Library Assert";
-    begin
-        // [Scenario] Test upgrade tag validation verifies the setup is correct
-        // [Given] All upgrade tags are registered
-        UpgradeTag.SetAllUpgradeTags();
-
-        // [Given] Upgrade tag is missing for a company
-        UpgradeTags.SetRange(Company, CompanyName());
-        UpgradeTags.DeleteAll();
-
-        // [Then] An exception is thrown if we call validate. 
-        asserterror UpgradeTagTags.VerifyAllCompaniesInitialized();
-        Assert.ExpectedError('System is not initialized properly');
-    end;
-
     local procedure SetupSetAllUpgradeTagsMock(var SetAllUpgradeTagsMock: Codeunit "SetAllUpgradeTags Mock"; var MockedPerCompanyUpgradeTags: List of [Code[250]]; var MockedPerDatabaseUpgradeTags: List of [Code[250]])
     var
         Any: Codeunit Any;

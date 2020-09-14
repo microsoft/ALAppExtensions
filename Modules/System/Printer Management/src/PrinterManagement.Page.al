@@ -8,6 +8,7 @@
 /// </summary>
 page 2616 "Printer Management"
 {
+    Caption = 'Printer Management';
     PageType = List;
     SourceTable = Printer;
     UsageCategory = Administration;

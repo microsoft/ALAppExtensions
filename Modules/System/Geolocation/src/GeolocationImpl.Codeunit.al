@@ -3,13 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 50101 "Geolocation Impl."
+codeunit 7569 "Geolocation Impl."
 {
     Access = Internal;
 
     var
         GeolocationPage: Page Geolocation;
-        LocationNotRetrievedError: Label 'The geographical location data was not retrieved.';
+        LocationNotRetrievedErrorMsg: Label 'The geographical location data was not retrieved.';
         CachedLocation: Dotnet Location;
         LocationProvider: DotNet LocationProvider;
         LocationOptions: DotNet LocationOptions;
@@ -54,11 +54,11 @@ codeunit 50101 "Geolocation Impl."
 
     procedure IsAvailable(): Boolean
     var
-        IsAvailable: Boolean;
+        Available: Boolean;
     begin
-        IsAvailable := LocationProvider.IsAvailable();
-        OnIsLocationAvailable(IsAvailable);
-        exit(IsAvailable);
+        Available := LocationProvider.IsAvailable();
+        OnIsLocationAvailable(Available);
+        exit(Available);
     end;
 
     procedure HasGeolocation(): Boolean
@@ -66,17 +66,13 @@ codeunit 50101 "Geolocation Impl."
         if IsNull(CachedLocation) then
             exit(false);
 
-        if GetGeolocationStatus() <> "Geolocation Status"::Available then
-            exit(false);
-
-        exit(true);
+        exit(GetGeolocationStatus() = "Geolocation Status"::Available);
     end;
 
     procedure GetGeolocation(var Latitude: Decimal; var Longitude: Decimal)
     begin
-        if (not HasGeolocation()) then begin
-            Error(LocationNotRetrievedError);
-        end;
+        if (not HasGeolocation()) then
+            Error(LocationNotRetrievedErrorMsg);
 
         Latitude := CachedLocation.Coordinate.Latitude;
         Longitude := CachedLocation.Coordinate.Longitude;
@@ -138,13 +134,13 @@ codeunit 50101 "Geolocation Impl."
         LocationOptionsEnabled := true;
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     procedure OnBeforeLocationInitialize(var Location: DotNet Location; var IsHandled: Boolean)
     begin
         // Used for testing
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     procedure OnIsLocationAvailable(var IsAvailable: Boolean)
     begin
         // Used for testing

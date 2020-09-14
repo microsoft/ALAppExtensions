@@ -235,7 +235,7 @@ codeunit 9018 "Azure AD Plan Impl."
         if not DoUserPlansExist() then
             exit;
 
-        SendTraceTag('0000BPB', UserSetupCategoryTxt, Verbosity::Normal, CheckingForMixedPlansTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('0000BPB', CheckingForMixedPlansTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
         if not MixedPlansExist(PlanNamesPerUserFromGraph, UserAuthenticationEmailFirst, UserAuthenticationEmailSecond, FirstConflictingPlanName, SecondConflictingPlanName) then
             exit;
 
@@ -286,7 +286,7 @@ codeunit 9018 "Azure AD Plan Impl."
                         PlanNamesPerUser.Set(UserAuthenticationObjectId, CurrentUserPlanList);
                     end;
                 end else
-                    SendTraceTag('0000CMW', 'UserSetupCategoryTxt', Verbosity::Verbose, StrSubstNo(UserDoesNotExistTxt, UsersInPlans.User_Security_ID), DataClassification::EndUserPseudonymousIdentifiers);
+                    Session.LogMessage('0000CMW', StrSubstNo(UserDoesNotExistTxt, UsersInPlans.User_Security_ID), Verbosity::Verbose, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', 'UserSetupCategoryTxt');
 
         // update the dictionary with the values from input
         foreach UserAuthenticationObjectId in PlanNamesPerUserFromGraph.Keys do
@@ -296,14 +296,14 @@ codeunit 9018 "Azure AD Plan Impl."
         EssentialsPlanExists := PlansExist(PlanNamesPerUser, PlanIds.GetEssentialPlanId(), AuthenticationObjectIDs, PlanNames);
         PremiumPlanExists := PlansExist(PlanNamesPerUser, PlanIds.GetPremiumPlanId(), AuthenticationObjectIDs, PlanNames);
 
-        SendTraceTag('0000BPC', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(MixedPlansExistTxt, BasicPlanExists, EssentialsPlanExists, PremiumPlanExists), DataClassification::SystemMetadata);
+        Session.LogMessage('0000BPC', StrSubstNo(MixedPlansExistTxt, BasicPlanExists, EssentialsPlanExists, PremiumPlanExists), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
         if PlanNames.Count() > 1 then begin
             UserAuthenticationEmailFirstConflicting := GetAuthenticationEmailFromAuthenticationObjectID(AuthenticationObjectIDs.Get(1));
             UserAuthenticationEmailSecondConflicting := GetAuthenticationEmailFromAuthenticationObjectID(AuthenticationObjectIDs.Get(2));
             FirstConflictingPlanName := PlanNames.Get(1);
             SecondConflictingPlanName := PlanNames.Get(2);
-            SendTraceTag('0000BPD', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(UsersWithMixedPlansTxt, UserAuthenticationEmailFirstConflicting, UserAuthenticationEmailSecondConflicting), DataClassification::EndUserIdentifiableInformation);
+            Session.LogMessage('0000BPD', StrSubstNo(UsersWithMixedPlansTxt, UserAuthenticationEmailFirstConflicting, UserAuthenticationEmailSecondConflicting), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             exit(true);
         end;
     end;
@@ -420,22 +420,19 @@ codeunit 9018 "Azure AD Plan Impl."
                     if IsBCServicePlan(ServicePlanIdValue) or IsTest then begin
                         HaveAssignedPlans := true;
                         AddToTempPlan(ServicePlanIdValue, Format(AssignedPlan.ServicePlanName()), TempPlan);
-                        SendTraceTag('00009KY', UserSetupCategoryTxt, Verbosity::Normal,
-                          StrSubstNo(UserPlanAssignedMsg, Format(GraphUser.DisplayName()), Format(ServicePlanIdValue)), DataClassification::EndUserIdentifiableInformation);
+                        Session.LogMessage('00009KY', StrSubstNo(UserPlanAssignedMsg, Format(GraphUser.DisplayName()), Format(ServicePlanIdValue)), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                     end;
                 end;
 
         if not HaveAssignedPlans then
-            SendTraceTag('00009KZ', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(UserHasNoPlansMsg, Format(GraphUser.DisplayName())),
-                DataClassification::EndUserIdentifiableInformation);
+            Session.LogMessage('00009KZ', StrSubstNo(UserHasNoPlansMsg, Format(GraphUser.DisplayName())), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
         // Loop through Azure AD Roles
         if not IsNull(GraphUser.Roles()) then
             foreach DirectoryRole in GraphUser.Roles() do
                 if IsBCServicePlan(DirectoryRole.RoleTemplateId()) then begin
                     AddToTempPlan(Format(DirectoryRole.RoleTemplateId()), Format(DirectoryRole.DisplayName()), TempPlan);
-                    SendTraceTag('00009L0', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(UserPlanAssignedMsg, Format(GraphUser.DisplayName()), Format(DirectoryRole.RoleTemplateId())),
-                        DataClassification::EndUserIdentifiableInformation);
+                    Session.LogMessage('00009L0', StrSubstNo(UserPlanAssignedMsg, Format(GraphUser.DisplayName()), Format(DirectoryRole.RoleTemplateId())), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                     SystemRoleAdded := true;
                 end;
 
@@ -445,10 +442,10 @@ codeunit 9018 "Azure AD Plan Impl."
 
         if IsDeviceRole(GraphUser) then begin
             GetDevicesPlanInfo(DevicesPlanId, DevicesPlanName);
-            SendTraceTag('00009L6', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(DevicePlanFoundMsg, DevicesPlanName, Format(GraphUser.DisplayName())), DataClassification::EndUserIdentifiableInformation);
+            Session.LogMessage('00009L6', StrSubstNo(DevicePlanFoundMsg, DevicesPlanName, Format(GraphUser.DisplayName())), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             AddToTempPlan(DevicesPlanId, DevicesPlanName, TempPlan);
         end else
-            SendTraceTag('00009L7', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(NotBCUserMsg, Format(GraphUser.DisplayName())), DataClassification::EndUserIdentifiableInformation);
+            Session.LogMessage('00009L7', StrSubstNo(NotBCUserMsg, Format(GraphUser.DisplayName())), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
     end;
 
     local procedure IsDeviceRole(var GraphUser: DotNet UserInfo): Boolean
@@ -629,10 +626,10 @@ codeunit 9018 "Azure AD Plan Impl."
                 // use the Business Central plan name instead of the Office Plan name, if possible.
                 if Plan.Get(TempPlan."Plan ID") then begin
                     PlanNames.Add(Plan.Name);
-                    SendTraceTag('0000BK0', UserSetupCategoryTxt, Verbosity::Verbose, StrSubstNo(UserGotPlanTxt, AzureADGraphUser.GetAuthenticationEmail(GraphUser), Plan."Plan ID", Plan.Name), DataClassification::EndUserIdentifiableInformation);
+                    Session.LogMessage('0000BK0', StrSubstNo(UserGotPlanTxt, AzureADGraphUser.GetAuthenticationEmail(GraphUser), Plan."Plan ID", Plan.Name), Verbosity::Verbose, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                 end else begin
                     PlanNames.Add(TempPlan.Name);
-                    SendTraceTag('0000BK1', UserSetupCategoryTxt, Verbosity::Verbose, StrSubstNo(UserGotPlanTxt, AzureADGraphUser.GetAuthenticationEmail(GraphUser), TempPlan."Plan ID", TempPlan.Name), DataClassification::EndUserIdentifiableInformation);
+                    Session.LogMessage('0000BK1', StrSubstNo(UserGotPlanTxt, AzureADGraphUser.GetAuthenticationEmail(GraphUser), TempPlan."Plan ID", TempPlan.Name), Verbosity::Verbose, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                 end;
 
             until TempPlan.Next() = 0;
@@ -659,7 +656,7 @@ codeunit 9018 "Azure AD Plan Impl."
         UserPlanCount: Integer;
         TempPlanCount: Integer;
     begin
-        SendTraceTag('0000BK2', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(PlansDifferentCheckTxt, AzureADGraphUser.GetAuthenticationEmail(GraphUser), UserSecID), DataClassification::EndUserIdentifiableInformation);
+        Session.LogMessage('0000BK2', StrSubstNo(PlansDifferentCheckTxt, AzureADGraphUser.GetAuthenticationEmail(GraphUser), UserSecID), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
         GetGraphUserPlans(TempPlan, GraphUser);
 
@@ -667,7 +664,7 @@ codeunit 9018 "Azure AD Plan Impl."
         UserPlanCount := UserPlan.Count();
         TempPlanCount := TempPlan.Count();
         if UserPlanCount <> TempPlanCount then begin
-            SendTraceTag('0000BK3', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(PlanCountDifferentTxt, UserPlanCount, TempPlanCount), DataClassification::SystemMetadata);
+            Session.LogMessage('0000BK3', StrSubstNo(PlanCountDifferentTxt, UserPlanCount, TempPlanCount), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             exit(true);
         end;
 
@@ -675,7 +672,7 @@ codeunit 9018 "Azure AD Plan Impl."
             repeat
                 if not UserPlan.Get(TempPlan."Plan ID", UserSecID) then begin
                     if Plan.Get(TempPlan."Plan ID") then
-                        SendTraceTag('0000BK4', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(GraphUserHasExtraPlanTxt, TempPlan."Plan ID", Plan.Name), DataClassification::SystemMetadata);
+                        Session.LogMessage('0000BK4', StrSubstNo(GraphUserHasExtraPlanTxt, TempPlan."Plan ID", Plan.Name), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                     exit(true);
                 end;
             until TempPlan.Next() = 0;

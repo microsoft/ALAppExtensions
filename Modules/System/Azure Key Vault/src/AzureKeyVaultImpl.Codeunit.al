@@ -124,13 +124,13 @@ codeunit 2202 "Azure Key Vault Impl."
             exit(true);
 
         if not TryGetSecretFromClient(AllowedApplicationSecretsSecretNameTxt, AllowedSecretNames) then begin
-            SendTraceTag('0000970', AzureKeyVaultTxt, Verbosity::Error, AllowedApplicationSecretsSecretNotFetchedMsg, DataClassification::SystemMetadata);
+            Session.LogMessage('0000970', AllowedApplicationSecretsSecretNotFetchedMsg, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', AzureKeyVaultTxt);
             exit(false);
         end;
 
         AllowedSecretNames := UpperCase(AllowedSecretNames);
         if StrLen(AllowedSecretNames) = 0 then begin
-            SendTraceTag('00008E8', AzureKeyVaultTxt, Verbosity::Error, NoSecretsErr, DataClassification::SystemMetadata);
+            Session.LogMessage('00008E8', NoSecretsErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', AzureKeyVaultTxt);
             exit(false);
         end;
 

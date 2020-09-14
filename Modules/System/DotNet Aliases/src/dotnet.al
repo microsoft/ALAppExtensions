@@ -369,15 +369,6 @@ dotnet
         }
     }
 
-    assembly("Microsoft.Dynamics.Nav.Client.DynamicsOnlineConnect")
-    {
-
-        type("Microsoft.Dynamics.Nav.Client.DynamicsOnlineConnect.IDynamicsOnlineConnectControlDefinition"; "Microsoft.Dynamics.Nav.Client.DynamicsOnlineConnect")
-        {
-            IsControlAddin = true;
-        }
-    }
-
     assembly("Microsoft.Dynamics.Nav.Client.PageReady")
     {
 
@@ -428,7 +419,19 @@ dotnet
         {
         }
 
+        type("Microsoft.Dynamics.Nav.Client.Capabilities.LocationStatus"; LocationStatus)
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.Client.Capabilities.Coordinate"; Coordinate)
+        {
+        }
+
         type("Microsoft.Dynamics.Nav.Client.Capabilities.LocationProvider"; "LocationProvider")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.Client.Capabilities.LocationOptions"; LocationOptions)
         {
         }
 
@@ -1177,6 +1180,10 @@ dotnet
         {
         }
 
+        type("System.String[]"; "StringArray")
+        {
+        }
+
         type("System.Collections.IDictionaryEnumerator"; "IDictionaryEnumerator")
         {
         }
@@ -1685,22 +1692,6 @@ dotnet
         }
 
         type("System.Text.RegularExpressions.RegexOptions"; "RegexOptions")
-        {
-        }
-
-        type("System.Uri"; "Uri")
-        {
-        }
-
-        type("System.UriBuilder"; "UriBuilder")
-        {
-        }
-
-        type("System.UriKind"; "UriKind")
-        {
-        }
-
-        type("System.UriPartial"; "UriPartial")
         {
         }
     }
@@ -2245,6 +2236,14 @@ dotnet
         }
 
         type("MimeKit.ContentType"; "MimeContentType")
+        {
+        }
+
+        type("MimeKit.MimePart"; "MimePart")
+        {
+        }
+
+        type("MimeKit.ContentObject"; "MimeContentObject")
         {
         }
     }

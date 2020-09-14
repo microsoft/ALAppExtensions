@@ -15,7 +15,7 @@ enum 1289 "Http Request Type"
     /// </summary>
     value(0; GET)
     {
-        Caption = 'GET';
+        Caption = 'GET', Locked = true;
     }
 
     /// <summary>
@@ -23,7 +23,7 @@ enum 1289 "Http Request Type"
     /// </summary>
     value(1; POST)
     {
-        Caption = 'POST';
+        Caption = 'POST', Locked = true;
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ enum 1289 "Http Request Type"
     /// </summary>
     value(2; PATCH)
     {
-        Caption = 'PATCH';
+        Caption = 'PATCH', Locked = true;
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ enum 1289 "Http Request Type"
     /// </summary>
     value(3; PUT)
     {
-        Caption = 'PUT';
+        Caption = 'PUT', Locked = true;
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ enum 1289 "Http Request Type"
     /// </summary>
     value(4; DELETE)
     {
-        Caption = 'DELETE';
+        Caption = 'DELETE', Locked = true;
     }
 
 }

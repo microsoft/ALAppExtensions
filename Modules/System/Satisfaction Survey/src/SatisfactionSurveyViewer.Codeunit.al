@@ -32,7 +32,7 @@ codeunit 1443 "Satisfaction Survey Viewer"
     begin
         ResourceFilePath := ApplicationPath() + ResourceTxt;
         if not Exists(ResourceFilePath) then begin
-            SendTraceTag('0000A68', CategoryTxt, Verbosity::Error, ResourceFileNotFoundTxt);
+            Session.LogMessage('0000A68', ResourceFileNotFoundTxt, Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', CategoryTxt);
             exit;
         end;
 
@@ -44,10 +44,10 @@ codeunit 1443 "Satisfaction Survey Viewer"
         AddIn.Resource.Import(ResourceFilePath);
 
         if not AddIn.Insert() then begin
-            SendTraceTag('0000A69', CategoryTxt, Verbosity::Error, ControlNotRegisteredTxt);
+            Session.LogMessage('0000A69', ControlNotRegisteredTxt, Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', CategoryTxt);
             exit;
         end;
 
-        SendTraceTag('0000A6A', CategoryTxt, Verbosity::Normal, ControlRegisteredTxt);
+        Session.LogMessage('0000A6A', ControlRegisteredTxt, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', CategoryTxt);
     end;
 }

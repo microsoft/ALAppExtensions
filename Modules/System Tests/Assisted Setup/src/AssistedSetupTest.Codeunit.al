@@ -52,6 +52,8 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Help.AssertEquals('');
         AssistedSetup.Video.AssertEquals('');
 
+        AssistedSetup.Expand(true);
+
         AssistedSetup.Next();
         AssistedSetup.Name.AssertEquals('Other Assisted Setup Test Page');
         AssistedSetup.Completed.AssertEquals(false);
@@ -193,7 +195,7 @@ codeunit 132586 "Assisted Setup Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnRegister', '', true, true)]
     [Normal]
-    procedure OnRegister()
+    local procedure OnRegister()
     var
         AssistedSetup: Codeunit "Assisted Setup";
         AssistedSetupGroup: Enum "Assisted Setup Group";
@@ -208,14 +210,14 @@ codeunit 132586 "Assisted Setup Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnAfterRun', '', true, true)]
     [Normal]
-    procedure OnAfterRun(ExtensionID: Guid; PageID: Integer)
+    local procedure OnAfterRun(ExtensionID: Guid; PageID: Integer)
     begin
         LastPageIDRun := PageID;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnReRunOfCompletedSetup', '', true, true)]
     [Normal]
-    procedure OnReRunOfCompletedSetup(ExtensionID: Guid; PageID: Integer; var Handled: Boolean)
+    local procedure OnReRunOfCompletedSetup(ExtensionID: Guid; PageID: Integer; var Handled: Boolean)
     begin
         if PageID = Page::"Other Assisted Setup Test Page" then
             Handled := true;
@@ -223,7 +225,7 @@ codeunit 132586 "Assisted Setup Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnBeforeOpenRoleBasedSetupExperience', '', true, true)]
     [Normal]
-    procedure OnBeforeOpenRoleBasedSetupExperience(var PageID: Integer; var Handled: Boolean)
+    local procedure OnBeforeOpenRoleBasedSetupExperience(var PageID: Integer; var Handled: Boolean)
     begin
         Handled := true;
     end;
@@ -254,6 +256,8 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Completed.AssertEquals(false);
         AssistedSetup.Help.AssertEquals('');
         AssistedSetup.Video.AssertEquals('');
+
+        AssistedSetup.Expand(true);
 
         AssistedSetup.Next();
         AssistedSetup.Name.AssertEquals('Other Assisted Setup Test Page');

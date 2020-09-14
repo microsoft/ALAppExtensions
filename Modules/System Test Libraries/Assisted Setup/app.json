@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Test library for the Assisted Setup module",
-    "version":  "16.3.0.0",
+    "version":  "17.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,13 +15,13 @@
                              "id":  "086892d7-4d8b-4e4a-a522-5efdf47923e3",
                              "name":  "Assisted Setup",
                              "publisher":  "Microsoft",
-                             "version":  "16.3.0.0"
+                             "version":  "17.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "16.0.0.0",
+    "platform":  "17.0.0.0",
     "idRanges":  [
                      {
                          "from":  132585,

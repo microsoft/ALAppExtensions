@@ -1,10 +1,10 @@
 {
   "id": "ca744f73-dfb4-4702-b72f-e095cac5526e",
-  "name": "GeoLocation Test Library",
+  "name": "Geolocation Test Library",
   "publisher": "Microsoft",
-  "version": "1.0.0.0",
-  "brief": "Library functions to initialize test data for the GeoLocation module.",
-  "description": "Library functions to initialize test data for the GeoLocation module.",
+  "version": "17.0.0.0",
+  "brief": "Library functions to initialize test data for the Geolocation module.",
+  "description": "Library functions to initialize test data for the Geolocation module.",
   "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help":  "",
@@ -13,16 +13,22 @@
   "dependencies": [
     {
       "id": "7f03f010-1703-47eb-a3cd-c6d28b8a806c", 
-      "name": "GeoLocation", 
+      "name": "Geolocation", 
       "publisher": "Microsoft", 
-      "version": "1.0.0.0" 
+      "version": "17.0.0.0" 
+    },
+    {
+      "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+      "name":  "DotNet Aliases",
+      "publisher":  "Microsoft",
+      "version":  "17.0.0.0"
     }
   ],
-  "platform": "16.0.0.0",
+  "platform": "17.0.0.0",
   "idRanges": [
     {
-      "from": 50102,
-      "to": 50102
+      "from": 135028,
+      "to": 135028
     }
   ],
   "target": "OnPrem"

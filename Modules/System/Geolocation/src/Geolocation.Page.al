@@ -6,13 +6,13 @@
 /// <summary>
 /// This page shows instructional text for the user and is opened when the geographical location of the client device is requested.
 /// </summary>
-page 50100 Geolocation
+page 7568 Geolocation
 {
     Caption = 'Geolocation request';
     PageType = Card;
     Editable = false;
     LinksAllowed = false;
-    Extensible = true;
+    Extensible = false;
 
     layout
     {

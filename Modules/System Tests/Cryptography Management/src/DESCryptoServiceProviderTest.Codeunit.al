@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 132576 "Test DESCryptoServiceProvider"
+codeunit 132588 "DESCryptoServiceProvider Test"
 {
     Subtype = Test;
 
@@ -19,26 +19,31 @@ codeunit 132576 "Test DESCryptoServiceProvider"
         // [GIVEN] With Encryption Key
         ExpectedEncryptedTextEnding := 'Yy';
         ExpectedEncryptedTextLength := 8;
+
         // [WHEN] Encrypt Text 
-        EncryptedText := DESCryptoServiceProvider.EncryptTextWithDESCryptoServiceProvider('Test', 'Test1234', 'ABitofSalt');
+        EncryptedText := DESCryptoServiceProvider.EncryptText('Test', 'Test1234', 'ABitofSalt');
+
         // [THEN] Verify Result 
         LibraryAssert.IsTrue(EncryptedText.EndsWith(ExpectedEncryptedTextEnding), 'Unexpected value when encrypting text using DESCryptoServiceProvider');
         LibraryAssert.IsTrue((StrLen(EncryptedText) = ExpectedEncryptedTextLength), 'Unexpected value when encrypting text using DESCryptoServiceProvider');
+        TestDecryptText(EncryptedText);
     end;
 
-    procedure TestDecryptText()
+    procedure TestDecryptText(EncryptedText: Text)
     var
         DESCryptoServiceProvider: Codeunit DESCryptoServiceProvider;
         LibraryAssert: Codeunit "Library Assert";
         DecryptedText: Text;
-        ExpectedEncryptedText: Text;
+        ExpectedDecryptedText: Text;
     begin
         // [GIVEN] With Encryption Key
-        ExpectedEncryptedText := 'Test';
+        ExpectedDecryptedText := 'Test';
+
         // [WHEN] Encrypt Text 
-        DecryptedText := DESCryptoServiceProvider.DecryptTextWithDESCryptoServiceProvider('Test', 'Test1234', 'ABitofSalt');
+        DecryptedText := DESCryptoServiceProvider.DecryptText(EncryptedText, 'Test1234', 'ABitofSalt');
+
         // [THEN] Verify Result 
-        LibraryAssert.AreEqual(ExpectedEncryptedText, DecryptedText, 'Unexpected value when encrypting text using DESCryptoServiceProvider');
+        LibraryAssert.AreEqual(ExpectedDecryptedText, DecryptedText, 'Unexpected value when decrypting text using DESCryptoServiceProvider');
     end;
 
 }

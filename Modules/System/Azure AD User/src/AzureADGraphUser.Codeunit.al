@@ -72,7 +72,7 @@ codeunit 9024 "Azure AD Graph User"
     /// </summary>
     /// <param name="UserSecurityId">The user's security ID.</param>
     /// <param name="AuthenticationObjectId">Var parameter that hold the user's authention object ID.</param>
-    /// <return>True if the call was successful; otherwise - false.</error>
+    /// <returns>True if the call was successful; otherwise - false.</returns>
     [Scope('OnPrem')]
     procedure TryGetUserAuthenticationObjectId(UserSecurityId: Guid; var AuthenticationObjectId: Text): Boolean
     begin

@@ -31,7 +31,19 @@ codeunit 138458 "Azure AD Licensing Test"
         GraphQuery := GraphQuery.GraphQuery(MockGraphQuery);
     end;
 
-    local procedure Initialize()
+    local procedure InitializeTest()
+    begin
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService := true;
+
+        Clear(AzureADLicensing);
+        AzureADLicensing.SetTestInProgress(true);
+
+        Clear(AzureADLicensingTest);
+
+        MockGraphQuery := MockGraphQuery.MockGraphQuery();
+    end;
+
+    local procedure InitializeTestAndData()
     var
         SubscribedSkuOne: DotNet SkuInfo;
         SubscribedSkuTwo: DotNet SkuInfo;
@@ -46,12 +58,7 @@ codeunit 138458 "Azure AD Licensing Test"
         SubscribedSkuOneId: Guid;
         SubscribedSkuTwoId: Guid;
     begin
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService := true;
-
-        Clear(AzureADLicensing);
-        AzureADLicensing.SetTestInProgress(true);
-
-        MockGraphQuery := MockGraphQuery.MockGraphQuery();
+        InitializeTest();
 
         ServicePlanOneId := CREATEGUID();
         ServicePlanTwoId := CREATEGUID();
@@ -123,11 +130,105 @@ codeunit 138458 "Azure AD Licensing Test"
     [Test]
     [TestPermissions(TestPermissions::NonRestrictive)]
     [Scope('OnPrem')]
+    procedure TestResetSubscribedSkusForNoSkus()
+    var
+        DirectorySubscribedSkus: DotNet GenericList1;
+        ResetResult: Boolean;
+    begin
+        // [SCENARIO] Resetting the subscribed SKUs when there are no subscribed SKUs       
+
+        // [Given] A mock graph without SKU data
+        InitializeTest();
+        BINDSUBSCRIPTION(AzureADLicensingTest);
+
+        // [When] Retrieving the directory subscribed Skus
+        DirectorySubscribedSkus := MockGraphQuery.GetDirectorySubscribedSkus();
+
+        // [Then] The list is empty
+        Assert.AreEqual(0, DirectorySubscribedSkus.Count(),
+            'There should not be any directory subscribed SKUs');
+
+        // [When] Resetting the Skus and retrieving the list of SKUs again
+        ResetResult := AzureADLicensing.ResetSubscribedSKU();
+        DirectorySubscribedSkus := MockGraphQuery.GetDirectorySubscribedSkus();
+
+        // [THEN] ResetResult is true
+        Assert.IsTrue(ResetResult, 'The result of reseting the list of subscribed SKUs should be successful');
+
+        // [Then] The list remains empty and no errors are thrown        
+        Assert.AreEqual(0, DirectorySubscribedSkus.Count(),
+            'There should not be any directory subscribed SKUs');
+
+        UNBINDSUBSCRIPTION(AzureADLicensingTest);
+    end;
+
+
+    [Test]
+    [TestPermissions(TestPermissions::NonRestrictive)]
+    [Scope('OnPrem')]
+    procedure TestResetSubscribedSkusForListOfSkus()
+    var
+        DirectorySubscribedSkus1: DotNet GenericList1;
+        DirectorySubscribedSkus2: DotNet GenericList1;
+        SubscribedSkuThree: DotNet SkuInfo;
+        LicenseUnitsDetailThree: DotNet LicenseUnitsInfo;
+        ServicePlanThreeId: Guid;
+        SubscribedSkuThreeId: Guid;
+        NextSubscribedSKU: Boolean;
+        ResetResult: Boolean;
+    begin
+        // [SCENARIO] Resetting the subscribed SKUs when there are subscribed SKUs       
+
+        // [Given] A mock graph with SKU data
+        InitializeTestAndData();
+        BINDSUBSCRIPTION(AzureADLicensingTest);
+
+        // [Given] The initial list of SKUs
+        DirectorySubscribedSkus1 := MockGraphQuery.GetDirectorySubscribedSkus();
+
+        // [Given] A new SKU is added
+        ServicePlanThreeId := CREATEGUID();
+        SubscribedSkuThreeId := CREATEGUID();
+        CreateLicenseUnitsDetail(LicenseUnitsDetailThree, 1, 1, 1);
+        ServicePlanThreeIdTxt := COPYSTR(FORMAT(ServicePlanThreeId), 2, STRLEN(FORMAT(ServicePlanThreeId)) - 2);
+        CreateSubscribedSKU(SubscribedSkuThree, LicenseUnitsDetailThree, SubscribedSkuThreeId,
+        'SKU Object Id Three', 'SKU Capability Status Three', 'SKU Part number Three', 3);
+        MockGraphQuery.AddDirectorySubscribedSku(SubscribedSkuThree);
+
+        // [When] Resetting the subscribed SKUs and retrieving the list of SKUs again
+        ResetResult := AzureADLicensing.ResetSubscribedSKU();
+        DirectorySubscribedSkus2 := MockGraphQuery.GetDirectorySubscribedSkus();
+
+        // [THEN] ResetResult is true
+        Assert.IsTrue(ResetResult, 'The result of reseting the list of subscribed SKUs should be successful');
+
+        // [Then] The rest list and the initial list of SKUs should have the same number of elements
+        Assert.AreEqual(DirectorySubscribedSkus1.Count, DirectorySubscribedSkus2.Count,
+            'The reset list and the initial list do not have the same length');
+
+        // [Then] The first element of the reset SKUs does not have Id SubscribedSkuThreeId
+        AzureADLicensing.NextSubscribedSKU();
+        Assert.AreNotEqual(SubscribedSkuThreeId, AzureADLicensing.SubscribedSKUId(), 'The list of subscribed SKUs should not contain SKU 3');
+
+        // [Then] The second element of the reset SKUs does not have Id SubscribedSkuThreeId
+        AzureADLicensing.NextSubscribedSKU();
+        Assert.AreNotEqual(SubscribedSkuThreeId, AzureADLicensing.SubscribedSKUId(), 'The list of subscribed SKUs should not contain SKU 3');
+
+        // [Then] The reset list does not contain a third SKU
+        NextSubscribedSKU := AzureADLicensing.NextSubscribedSKU();
+        Assert.IsFalse(NextSubscribedSKU, 'The reset list should not contain a third SKU');
+
+        UNBINDSUBSCRIPTION(AzureADLicensingTest);
+    end;
+
+    [Test]
+    [TestPermissions(TestPermissions::NonRestrictive)]
+    [Scope('OnPrem')]
     procedure TestSubscribedSKUCapabilityStatus()
     begin
         // [SCENARIO] Capability Status of a subscribed SKU is correctly retrieved
 
-        Initialize();
+        InitializeTestAndData();
 
         // [Given] A mock SKU data
         BINDSUBSCRIPTION(AzureADLicensingTest);

@@ -48,27 +48,29 @@ codeunit 1432 "Satisfaction Survey Impl."
         ParameterNotFoundTxt: Label 'Parameter %1 is not found.', Locked = true;
         CouldNotInsertSetupRecordTxt: Label 'Inserting of the setup record has failed.', Locked = true;
         CouldNotModifySetupRecordTxt: Label 'Modification of the setup record has failed.', Locked = true;
+        CannotGetEarliestActivateTimeTxt: Label 'Cannot get earliest activate time. Last request time: %1, min delay time: %2.', Locked = true;
+        CannotGetNextExpireTimeTxt: Label 'Cannot get next cache expiration time. Previous cache expiration time: %1, cache life time: %2.', Locked = true;
         TooEarlyTxt: Label 'Too short time since last activation try.', Locked = true;
 
     procedure TryShowSurvey(): Boolean
     begin
         if not IsActivated() then begin
-            SendTraceTag('0000838', NpsCategoryTxt, VERBOSITY::Normal, NoPromptTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000838', NoPromptTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         DeactivateSurvey();
 
         if not IsEnabled() then begin
-            SendTraceTag('0000924', NpsCategoryTxt, VERBOSITY::Normal, NoPromptTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000924', NoPromptTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         Commit();
 
-        SendTraceTag('00008MW', NpsCategoryTxt, VERBOSITY::Normal, NPSPageTelemetryTxt, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('00008MW', NPSPageTelemetryTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
         PAGE.RunModal(PAGE::"Satisfaction Survey");
-        SendTraceTag('00006ZF', NpsCategoryTxt, VERBOSITY::Normal, NPSPageTelemetryTxt, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('00006ZF', NPSPageTelemetryTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
         exit(true);
     end;
 
@@ -77,15 +79,15 @@ codeunit 1432 "Satisfaction Survey Impl."
         DeactivateSurvey();
 
         if not IsEnabled(Status, Response) then begin
-            SendTraceTag('000098N', NpsCategoryTxt, VERBOSITY::Normal, NoPromptTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('000098N', NoPromptTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         Commit();
 
-        SendTraceTag('000098O', NpsCategoryTxt, VERBOSITY::Normal, NPSPageTelemetryTxt, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('000098O', NPSPageTelemetryTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
         PAGE.RunModal(PAGE::"Satisfaction Survey");
-        SendTraceTag('000098P', NpsCategoryTxt, VERBOSITY::Normal, NPSPageTelemetryTxt, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('000098P', NPSPageTelemetryTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
         exit(true);
     end;
 
@@ -119,22 +121,22 @@ codeunit 1432 "Satisfaction Survey Impl."
     begin
         if not IsSupported() then begin
             if GuiAllowed() then
-                SendTraceTag('000098Q', NpsCategoryTxt, VERBOSITY::Normal, NotSupportedTxt, DATACLASSIFICATION::SystemMetadata);
+                Session.LogMessage('000098Q', NotSupportedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         Puid := GetPuid();
         if Puid = '' then begin
-            SendTraceTag('000098R', NpsCategoryTxt, VERBOSITY::Normal, EmptyPuidTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('000098R', EmptyPuidTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if not NetPromoterScore.WritePermission() then begin
-            SendTraceTag('000098S', NpsCategoryTxt, VERBOSITY::Warning, NoPermissionTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('000098S', NoPermissionTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
-        SendTraceTag('000098U', NpsCategoryTxt, VERBOSITY::Normal, StrSubstNo(ActivatingForPuidTxt, Puid), DATACLASSIFICATION::CustomerContent);
+        Session.LogMessage('000098U', StrSubstNo(ActivatingForPuidTxt, Puid), Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
 
         if not NetPromoterScore.Get(UserSecurityId()) then begin
             NetPromoterScore.Init();
@@ -142,33 +144,37 @@ codeunit 1432 "Satisfaction Survey Impl."
             NetPromoterScore."Last Request Time" := CurrentDateTime();
             NetPromoterScore."Send Request" := true;
             if NetPromoterScore.Insert() then begin
-                SendTraceTag('00009FV', NpsCategoryTxt, VERBOSITY::Normal, ActivatedTxt, DATACLASSIFICATION::SystemMetadata);
+                Session.LogMessage('00009FV', ActivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
                 exit(true);
             end else begin
-                SendTraceTag('00009N4', NpsCategoryTxt, VERBOSITY::Warning, CouldNotInsertSetupRecordTxt, DATACLASSIFICATION::SystemMetadata);
+                Session.LogMessage('00009N4', CouldNotInsertSetupRecordTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
                 exit(false);
             end;
         end;
 
-        EarliestActivateTime := NetPromoterScore."Last Request Time" + MinDelayTime() * MillisecondsInMinute();
+        if not TryGetNextDateTime(NetPromoterScore."Last Request Time", MinDelayTime(), EarliestActivateTime) then begin
+            Session.LogMessage('0000D4M', StrSubstNo(CannotGetEarliestActivateTimeTxt, NetPromoterScore."Last Request Time", MinDelayTime()), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
+            exit(false);
+        end;
+
         if CurrentDateTime() < EarliestActivateTime then begin
-            SendTraceTag('0000AW8', NpsCategoryTxt, VERBOSITY::Normal, TooEarlyTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000AW8', TooEarlyTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if not NetPromoterScore."Send Request" then begin
-            SendTraceTag('000098T', NpsCategoryTxt, VERBOSITY::Normal, ActivatedTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('000098T', ActivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             NetPromoterScore."Last Request Time" := CurrentDateTime();
             NetPromoterScore."Send Request" := true;
             if NetPromoterScore.Modify() then
                 exit(true)
             else begin
-                SendTraceTag('00009N5', NpsCategoryTxt, VERBOSITY::Warning, CouldNotModifySetupRecordTxt, DATACLASSIFICATION::SystemMetadata);
+                Session.LogMessage('00009N5', CouldNotModifySetupRecordTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
                 exit(false);
             end;
         end;
 
-        SendTraceTag('00009FW', NpsCategoryTxt, VERBOSITY::Normal, AlreadyActivatedTxt, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('00009FW', AlreadyActivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
         exit(false);
     end;
 
@@ -178,28 +184,28 @@ codeunit 1432 "Satisfaction Survey Impl."
     begin
         if not IsSupported() then begin
             if GuiAllowed() then
-                SendTraceTag('00009FX', NpsCategoryTxt, VERBOSITY::Normal, NotSupportedTxt, DATACLASSIFICATION::SystemMetadata);
+                Session.LogMessage('00009FX', NotSupportedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if not NetPromoterScore.WritePermission() then begin
-            SendTraceTag('00009FY', NpsCategoryTxt, VERBOSITY::Warning, NoPermissionTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('00009FY', NoPermissionTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if not NetPromoterScore.Get(UserSecurityId()) then begin
-            SendTraceTag('00009FZ', NpsCategoryTxt, VERBOSITY::Normal, AlreadyDeactivatedTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('00009FZ', AlreadyDeactivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if NetPromoterScore."Send Request" then begin
             NetPromoterScore."Send Request" := false;
             NetPromoterScore.Modify();
-            SendTraceTag('00009G0', NpsCategoryTxt, VERBOSITY::Normal, DeactivatedTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('00009G0', DeactivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(true);
         end;
 
-        SendTraceTag('00009G1', NpsCategoryTxt, VERBOSITY::Normal, AlreadyDeactivatedTxt, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('00009G1', AlreadyDeactivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
         exit(false);
     end;
 
@@ -207,11 +213,17 @@ codeunit 1432 "Satisfaction Survey Impl."
     begin
         CheckUrl := GetDisplayUrl();
         if CheckUrl.StartsWith(HttpsTxt) then begin
-            SendTraceTag('00009G2', NpsCategoryTxt, VERBOSITY::Normal, ValidCheckUrlTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('00009G2', ValidCheckUrlTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(true);
         end;
-        SendTraceTag('00009G3', NpsCategoryTxt, VERBOSITY::Normal, InvalidCheckUrlTxt, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('00009G3', InvalidCheckUrlTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
         exit(false);
+    end;
+
+    [TryFunction]
+    local procedure TryGetNextDateTime(PrevDateTime: DateTime; MinutesToAdd: Integer; var NextDateTime: DateTime)
+    begin
+        NextDateTime := PrevDateTime + MinutesToAdd * MillisecondsInMinute();
     end;
 
     local procedure IsEnabled(): Boolean
@@ -249,20 +261,20 @@ codeunit 1432 "Satisfaction Survey Impl."
             exit(false);
 
         if StatusCode = 0 then begin
-            SendTraceTag('000098V', NpsCategoryTxt, VERBOSITY::Warning, RequestFailedTxt, DATACLASSIFICATION::SystemMetadata);
-            SendTraceTag('000098W', NpsCategoryTxt, VERBOSITY::Warning, ResponseText, DATACLASSIFICATION::CustomerContent);
+            Session.LogMessage('000098V', RequestFailedTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
+            Session.LogMessage('000098W', ResponseText, Verbosity::Warning, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if StatusCode <> 200 then begin
             if (StatusCode >= 400) and (StatusCode <= 499) then
-                SendTraceTag('000098X', NpsCategoryTxt, VERBOSITY::Error, StrSubstNo(RequestFailedWithStatusCodeTxt, StatusCode), DATACLASSIFICATION::SystemMetadata)
+                Session.LogMessage('000098X', StrSubstNo(RequestFailedWithStatusCodeTxt, StatusCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt)
             else
-                SendTraceTag('000098Y', NpsCategoryTxt, VERBOSITY::Warning, StrSubstNo(RequestFailedWithStatusCodeTxt, StatusCode), DATACLASSIFICATION::SystemMetadata);
+                Session.LogMessage('000098Y', StrSubstNo(RequestFailedWithStatusCodeTxt, StatusCode), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
-        SendTraceTag('000098Z', NpsCategoryTxt, VERBOSITY::Normal, RequestSuccessfulTxt, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('000098Z', RequestSuccessfulTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
 
         Display := GetDisplayProperty(ResponseText);
         exit(Display);
@@ -303,17 +315,17 @@ codeunit 1432 "Satisfaction Survey Impl."
     local procedure IsConfigured(Puid: Text; BaseUrl: Text): Boolean
     begin
         if not HasWritePermission() then begin
-            SendTraceTag('00008MX', NpsCategoryTxt, VERBOSITY::Normal, NoPermissionTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('00008MX', NoPermissionTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if Puid = '' then begin
-            SendTraceTag('00007K9', NpsCategoryTxt, VERBOSITY::Normal, EmptyPuidTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('00007K9', EmptyPuidTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if BaseUrl = '' then begin
-            SendTraceTag('00006ZE', NpsCategoryTxt, VERBOSITY::Warning, NPSApiUrlEmptyTelemetryTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('00006ZE', NPSApiUrlEmptyTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
@@ -376,13 +388,13 @@ codeunit 1432 "Satisfaction Survey Impl."
 
         if not Client.UseDefaultNetworkWindowsAuthentication() then begin
             ErrorMessage := CannotUseDefaultCredentialsTxt;
-            SendTraceTag('00008TZ', NpsCategoryTxt, VERBOSITY::Error, ErrorMessage, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('00008TZ', ErrorMessage, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if not RequestMessage.GetHeaders(RequestHeaders) then begin
             ErrorMessage := CannotGetRequestHeadersTxt;
-            SendTraceTag('00008U0', NpsCategoryTxt, VERBOSITY::Error, ErrorMessage, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('00008U0', ErrorMessage, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
@@ -398,13 +410,13 @@ codeunit 1432 "Satisfaction Survey Impl."
         RequestMessage.Method('GET');
         if not RequestMessage.SetRequestUri(RequestUrl) then begin
             ErrorMessage := CannotSetRequestUriTxt;
-            SendTraceTag('00008U1', NpsCategoryTxt, VERBOSITY::Error, ErrorMessage, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('00008U1', ErrorMessage, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if not Client.Send(RequestMessage, ResponseMessage) then begin
             ErrorMessage := RequestFailedTxt;
-            SendTraceTag('0000836', NpsCategoryTxt, VERBOSITY::Warning, ErrorMessage, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000836', ErrorMessage, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
@@ -412,19 +424,19 @@ codeunit 1432 "Satisfaction Survey Impl."
             StatusCode := ResponseMessage.HttpStatusCode();
             ErrorMessage := StrSubstNo(RequestFailedWithStatusCodeTxt, StatusCode);
             if (StatusCode >= 400) and (StatusCode <= 499) then
-                SendTraceTag('0000837', NpsCategoryTxt, VERBOSITY::Error, ErrorMessage, DATACLASSIFICATION::SystemMetadata)
+                Session.LogMessage('0000837', ErrorMessage, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt)
             else
-                SendTraceTag('000022Q', NpsCategoryTxt, VERBOSITY::Warning, ErrorMessage, DATACLASSIFICATION::SystemMetadata);
+                Session.LogMessage('000022Q', ErrorMessage, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if not ResponseMessage.Content().ReadAs(ResponseText) then begin
             ErrorMessage := CannotReadResponseContentTxt;
-            SendTraceTag('00008U2', NpsCategoryTxt, VERBOSITY::Warning, ErrorMessage, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('00008U2', ErrorMessage, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
-        SendTraceTag('000093P', NpsCategoryTxt, VERBOSITY::Normal, RequestSuccessfulTxt, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('000093P', RequestSuccessfulTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
         exit(true);
     end;
 
@@ -435,7 +447,7 @@ codeunit 1432 "Satisfaction Survey Impl."
         if RequestHeaders.Add(Name, Value) then
             exit(true);
         LogMessage := StrSubstNo(CannotAddRequestHeaderTxt, Name, Value);
-        SendTraceTag('00008U3', NpsCategoryTxt, VERBOSITY::Error, ErrorMessage, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('00008U3', ErrorMessage, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
         ErrorMessage := LogMessage;
         exit(false);
     end;
@@ -515,6 +527,7 @@ codeunit 1432 "Satisfaction Survey Impl."
     var
         OutStream: OutStream;
         ApiUrl: Text;
+        ExpireTime: DateTime;
         CacheLifeTime: Integer;
         RequestTimeout: Integer;
         Exists: Boolean;
@@ -534,7 +547,10 @@ codeunit 1432 "Satisfaction Survey Impl."
             OutStream.Write(ApiUrl);
         end;
         NetPromoterScoreSetup."Request Timeout" := RequestTimeout;
-        NetPromoterScoreSetup."Expire Time" := CurrentDateTime() + CacheLifeTime * MillisecondsInMinute();
+        if not TryGetNextDateTime(CurrentDateTime(), CacheLifeTime, ExpireTime) then
+            Session.LogMessage('0000D64', StrSubstNo(CannotGetNextExpireTimeTxt, NetPromoterScoreSetup."Expire Time", CacheLifeTime), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt)
+        else
+            NetPromoterScoreSetup."Expire Time" := ExpireTime;
         if Exists then begin
             if NetPromoterScoreSetup.Modify() then;
         end else
@@ -612,12 +628,12 @@ codeunit 1432 "Satisfaction Survey Impl."
             if GetJsonPropertyValue(JObject, DisplayTxt, PropertyValue) then
                 if Evaluate(DisplayProperty, PropertyValue, 2) then begin
                     if DisplayProperty then
-                        SendTraceTag('000093Q', NpsCategoryTxt, VERBOSITY::Normal, PositiveResponseTxt, DATACLASSIFICATION::SystemMetadata)
+                        Session.LogMessage('000093Q', PositiveResponseTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt)
                     else
-                        SendTraceTag('000093R', NpsCategoryTxt, VERBOSITY::Normal, NegativeResponseTxt, DATACLASSIFICATION::SystemMetadata);
+                        Session.LogMessage('000093R', NegativeResponseTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
                     exit(DisplayProperty);
                 end;
-        SendTraceTag('000094U', NpsCategoryTxt, VERBOSITY::Warning, StrSubstNo(CannotGetPropertyTxt, DisplayTxt), DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('000094U', StrSubstNo(CannotGetPropertyTxt, DisplayTxt), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
     end;
 
     local procedure GetMessageType(JsonString: Text; var MessageType: Text): Boolean
@@ -627,7 +643,7 @@ codeunit 1432 "Satisfaction Survey Impl."
         if JObject.ReadFrom(JsonString) then
             if GetJsonPropertyValue(JObject, MessageTypeTxt, MessageType) then
                 exit(true);
-        SendTraceTag('000093T', NpsCategoryTxt, VERBOSITY::Warning, StrSubstNo(CannotGetPropertyTxt, MessageTypeTxt), DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('000093T', StrSubstNo(CannotGetPropertyTxt, MessageTypeTxt), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
         exit(false);
     end;
 
@@ -651,19 +667,17 @@ codeunit 1432 "Satisfaction Survey Impl."
         CacheLifeTimeValueTxt: Text;
     begin
         if not AzureKeyVault.GetAzureKeyVaultSecret(NpsParametersTxt, SecretValue) then begin
-            SendTraceTag('0000832', NpsCategoryTxt, VERBOSITY::Warning,
-              StrSubstNo(SecretNotFoundTxt, NpsParametersTxt), DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000832', StrSubstNo(SecretNotFoundTxt, NpsParametersTxt), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if not JObject.ReadFrom(SecretValue) then begin
-            SendTraceTag('000094V', NpsCategoryTxt, VERBOSITY::Warning, CannotParseParametersTxt, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('000094V', CannotParseParametersTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
         if not GetJsonPropertyValue(JObject, NpsApiUrlTxt, ApiUrl) then begin
-            SendTraceTag('0000833', NpsCategoryTxt, VERBOSITY::Warning,
-              StrSubstNo(ParameterNotFoundTxt, NpsApiUrlTxt), DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000833', StrSubstNo(ParameterNotFoundTxt, NpsApiUrlTxt), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             exit(false);
         end;
 
@@ -672,8 +686,7 @@ codeunit 1432 "Satisfaction Survey Impl."
                 if (RequestTimeoutMilliseconds > 0) and (RequestTimeoutMilliseconds < MinRequestTimeout()) then
                     RequestTimeoutMilliseconds := MinRequestTimeout();
         if RequestTimeoutMilliseconds = 0 then begin
-            SendTraceTag('0000834', NpsCategoryTxt, VERBOSITY::Warning,
-              StrSubstNo(ParameterNotFoundTxt, NpsRequestTimeoutTxt), DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000834', StrSubstNo(ParameterNotFoundTxt, NpsRequestTimeoutTxt), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             RequestTimeoutMilliseconds := DefaultRequestTimeout();
         end;
 
@@ -682,8 +695,7 @@ codeunit 1432 "Satisfaction Survey Impl."
                 if CacheLifeTimeMinutes < MinCacheLifeTime() then
                     CacheLifeTimeMinutes := MinCacheLifeTime();
         if CacheLifeTimeMinutes = 0 then begin
-            SendTraceTag('0000835', NpsCategoryTxt, VERBOSITY::Warning,
-              StrSubstNo(ParameterNotFoundTxt, NpsCacheLifeTimeTxt), DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000835', StrSubstNo(ParameterNotFoundTxt, NpsCacheLifeTimeTxt), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
             CacheLifeTimeMinutes := DefaultCacheLifeTime();
         end;
 

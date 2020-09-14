@@ -72,6 +72,19 @@ codeunit 130002 "Library Assert"
     end;
 
     /// <summary>
+    /// Tests whether the specified DateTime values are equal and throws an exception if the two DateTime values are not equal.
+    /// This function uses the high precision format type 1
+    /// </summary>
+    /// <param name="Expected">The first DateTime value to compare. This is the DateTime value the tests expects.</param>
+    /// <param name="Actual">The second DateTime value to compare. This is the DateTime value produced by the code under test.</param>
+    /// <param name="Msg">The message to include in the exception when actual is not equal to expected. The message is shown in test results.</param>
+    procedure AreEqualDateTime(Expected: DateTime; Actual: DateTime; Msg: Text)
+    begin
+        if (Format(Expected, 0, 1) <> Format(Actual, 0, 1)) then // need format 1 to include decimal time precision on datetime
+            Error(AreEqualFailedErr, Format(Expected, 0, 1), TypeNameOf(Expected), Format(Actual, 0, 1), TypeNameOf(Actual), Msg)
+    end;
+
+    /// <summary>
     /// Tests whether the specified values are unequal and throws an exception if they are equal.
     /// </summary>
     /// <param name="Expected">The first value to compare. This is the value the test expects not to match actual.</param>
