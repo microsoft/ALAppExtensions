@@ -44,8 +44,17 @@ codeunit 130500 "Any"
     /// <param name="DecimalPlaces">Number of decimal places</param>
     /// <returns>Pseudo-random decimal value</returns>
     procedure DecimalInRange(MaxValue: Integer; DecimalPlaces: Integer): Decimal
+    var
+        x: Integer;
+        Pow: Integer;
     begin
-        exit(IntegerInRange(MaxValue * Power(10, DecimalPlaces)) / Power(10, DecimalPlaces));
+        Pow := Power(10, DecimalPlaces);
+
+        x := IntegerInRange(MaxValue * Pow);
+        if x mod 10 = 0 then
+            x += IntegerInRange(1, 9);
+
+        exit(x / Pow);
     end;
 
     /// <summary>

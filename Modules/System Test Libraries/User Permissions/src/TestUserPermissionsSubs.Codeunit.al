@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 130019 "Test User Permissions Subscbr."
+codeunit 130019 "Test User Permissions Subs."
 {
     EventSubscriberInstance = Manual;
 

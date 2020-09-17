@@ -8,7 +8,9 @@ codeunit 4109 "Temp Blob List Impl."
     Access = Internal;
 
     var
+    #pragma warning disable AA0073
         TempBlobRec: Record "Temp Blob" temporary;
+    #pragma warning restore AA0073
         ObjectDoesNotExistErr: Label 'Object with index %1 does not exist.', Comment = '%1=Index of the object';
         InvalidNoObjectsRequestedErr: Label 'There are not enough objects available to fulfill the request.';
 

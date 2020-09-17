@@ -76,6 +76,9 @@ page 358 Objects
         if IsNullGuid("App Package ID") then
             exit;
 
+        if not PublishedApplication.ReadPermission() then
+            exit;
+
         PublishedApplication.SetRange("Package ID", "App Package ID");
         PublishedApplication.SetRange("Tenant Visible", true);
 

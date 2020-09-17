@@ -3,7 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+#pragma warning disable AA0235
 codeunit 1809 "Assisted Setup Installation"
+#pragma warning restore AA0235
 {
     Subtype = Install;
 

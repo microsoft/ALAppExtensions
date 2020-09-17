@@ -107,8 +107,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                         Window.Update(2, Format(GraphUser.DisplayName()));
                     end;
 
-                    SendTraceTag('00009L4', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(ProcessingUserTxt, Format(GraphUser.DisplayName())),
-                        DataClassification::CustomerContent);
+                    Session.LogMessage('00009L4', StrSubstNo(ProcessingUserTxt, Format(GraphUser.DisplayName())), Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
                     if CreateNewUserFromGraphUser(GraphUser) then
                         i += 1
@@ -128,8 +127,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         if AzureADPlan.IsGraphUserEntitledFromServicePlan(GraphUser) then begin
             NewUserSecurityId := CreateNewUserInternal(GraphUser.UserPrincipalName(), GraphUser.ObjectId());
 
-            SendTraceTag('00009L3', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(UserCreatedMsg, Format(NewUserSecurityId)),
-                DataClassification::CustomerContent);
+            Session.LogMessage('00009L3', StrSubstNo(UserCreatedMsg, Format(NewUserSecurityId)), Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             if not IsNullGuid(NewUserSecurityId) then begin
                 InitializeAsNewUser(NewUserSecurityId, GraphUser);
                 exit(true);
@@ -158,23 +156,23 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         GraphRoleInfo: DotNet RoleInfo;
     begin
         if not AzureADGraphUser.GetGraphUser(UserSecurityId(), GraphUser) then begin
-            SendTraceTag('0000728', UserCategoryTxt, VERBOSITY::Error, CouldNotGetUserErr, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000728', CouldNotGetUserErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserCategoryTxt);
             exit(false);
         end;
 
         if IsNull(GraphUser) then begin
-            SendTraceTag('000071V', UserCategoryTxt, VERBOSITY::Error, CouldNotGetUserErr, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('000071V', CouldNotGetUserErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserCategoryTxt);
             exit(false);
         end;
 
         if not IsNull(GraphUser.Roles()) then
             foreach GraphRoleInfo in GraphUser.Roles() do
                 if GraphRoleInfo.RoleTemplateId() = CompanyAdminRoleTemplateIdTok then begin
-                    SendTraceTag('000071T', UserCategoryTxt, VERBOSITY::Normal, UserTenantAdminMsg, DATACLASSIFICATION::SystemMetadata);
+                    Session.LogMessage('000071T', UserTenantAdminMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserCategoryTxt);
                     exit(true);
                 end;
 
-        SendTraceTag('000071Y', UserCategoryTxt, VERBOSITY::Normal, UserNotTenantAdminMsg, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('000071Y', UserNotTenantAdminMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserCategoryTxt);
 
         exit(false);
     end;
@@ -287,14 +285,12 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                     IsUserInternalAdminOnly := (CurrUserPlanIDs.Count() = 1) and CurrUserPlanIDs.Contains(PlanIDs.GetInternalAdminPlanId());
 
                     if AzureADGraphUser.GetUser(GraphUser.ObjectId(), User) then begin
-                        SendTraceTag('0000BJS', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(AddingInformationForAnExistingUserTxt, Format(GraphUser.DisplayName())),
-                            DataClassification::EndUserIdentifiableInformation);
+                        Session.LogMessage('0000BJS', StrSubstNo(AddingInformationForAnExistingUserTxt, Format(GraphUser.DisplayName())), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                         AddChangesForExistingUser(AzureADUserUpdate, GraphUser, User);
                         OfficeUsersInBC.Add(User."User Security ID");
                     end else
                         if not IsUserInternalAdminOnly then begin
-                            SendTraceTag('0000BJR', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(AddingInformationForANewUserTxt, Format(GraphUser.DisplayName())),
-                                DataClassification::EndUserIdentifiableInformation);
+                            Session.LogMessage('0000BJR', StrSubstNo(AddingInformationForANewUserTxt, Format(GraphUser.DisplayName())), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                             AddChangesForNewUser(AzureADUserUpdate, GraphUser);
                         end;
 
@@ -318,8 +314,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                     // if user has delegated plans, skip
                     if not IsUserDelegated(User."User Security ID") then
                         if not OfficeUsersInBC.Contains(User."User Security ID") then begin
-                            SendTraceTag('0000BNE', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(AddingInformationForARemovedUserTxt, User."User Name"),
-                                DataClassification::EndUserIdentifiableInformation);
+                            Session.LogMessage('0000BNE', StrSubstNo(AddingInformationForARemovedUserTxt, User."User Name"), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                             AddChangesForRemovedUser(AzureADUserUpdate, User);
                         end;
             until User.Next() = 0;
@@ -367,7 +362,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             repeat
                 ConvertTextToList(AzureADUserUpdate."New Value", PlanNameList);
                 PlanNamesPerUserFromGraph.Set(AzureADUserUpdate."Authentication Object ID", PlanNameList);
-                SendTraceTag('0000BPM', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(PlanNamesPerUserFromGraphTxt, AzureADUserUpdate."Authentication Object ID", AzureADUserUpdate."New Value"), DataClassification::EndUserIdentifiableInformation);
+                Session.LogMessage('0000BPM', StrSubstNo(PlanNamesPerUserFromGraphTxt, AzureADUserUpdate."Authentication Object ID", AzureADUserUpdate."New Value"), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             until AzureADUserUpdate.Next() = 0;
         AzureADUserUpdate.SetRange("Update Entity");
     end;
@@ -379,13 +374,13 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         SetAuthenticationObjectID: Boolean;
         NavUserAuthenticationHelper: DotNet NavUserAccountHelper;
     begin
-        SendTraceTag('0000BHN', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(ApplyingUserUpdateTxt, AzureADUserUpdate."User Security ID", AzureADUserUpdate."Authentication Object ID"), DataClassification::EndUserIdentifiableInformation);
+        Session.LogMessage('0000BHN', StrSubstNo(ApplyingUserUpdateTxt, AzureADUserUpdate."User Security ID", AzureADUserUpdate."Authentication Object ID"), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
         repeat
             if ApplyUpdateFromAzureGraph(AzureADUserUpdate, User, ModifyUser, SetAuthenticationObjectID) then
                 NumberOfSuccessfulUpdates += 1
             else
-                SendTraceTag('0000BPA', UserSetupCategoryTxt, Verbosity::Normal, GetLastErrorCallStack, DataClassification::SystemMetadata); // to be taken out;
+                Session.LogMessage('0000BPA', GetLastErrorCallStack, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt); // to be taken out;
         until AzureADUserUpdate.Next() = 0;
 
         if ModifyUser then
@@ -419,7 +414,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                     User.Get(AzureADUserUpdate."User Security ID");
             end;
 
-        SendTraceTag('0000BHO', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(ApplyingEntityUpdateTxt, AzureADUserUpdate."Update Entity", AzureADUserUpdate."Current Value", AzureADUserUpdate."New Value", User."User Security ID"), DataClassification::EndUserIdentifiableInformation);
+        Session.LogMessage('0000BHO', StrSubstNo(ApplyingEntityUpdateTxt, AzureADUserUpdate."Update Entity", AzureADUserUpdate."Current Value", AzureADUserUpdate."New Value", User."User Security ID"), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
         case AzureADUserUpdate."Update Entity" of
             Enum::"Azure AD User Update Entity"::"Authentication Email":
                 begin
@@ -455,12 +450,12 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     var
         CurrentUserSecurityId: Guid;
     begin
-        SendTraceTag('0000BJT', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(UserNotFoundWhenApplyingTxt, AuthenticationObjectID, AuthenticationEmail), DataClassification::EndUserIdentifiableInformation);
+        Session.LogMessage('0000BJT', StrSubstNo(UserNotFoundWhenApplyingTxt, AuthenticationObjectID, AuthenticationEmail), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
         CurrentUserSecurityId := CreateNewUserInternal(AuthenticationEmail, AuthenticationObjectID);
 
         // update all AzureADUSerUpdate records to the new user security id created, as it is blank
-        SendTraceTag('0000BJU', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(UserCreatedTxt, CurrentUserSecurityId), DataClassification::EndUserIdentifiableInformation);
+        Session.LogMessage('0000BJU', StrSubstNo(UserCreatedTxt, CurrentUserSecurityId), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
         User.Get(CurrentUserSecurityId);
 
@@ -490,7 +485,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                 AzureADUserUpdate."New Value" := CopyStr(ValueFromGraph, 1, MaxStrLen(AzureADUserUpdate."New Value"));
                 AzureADUserUpdate."Display Name" := AzureADGraphUser.GetDisplayName(GraphUser);
 
-                SendTraceTag('0000BHP', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(NewUserChangesTxt, AzureADUserUpdate."Authentication Object ID", CurrentUpdateEntity, AzureADUserUpdate."New Value", ValueFromGraph), DataClassification::EndUserIdentifiableInformation);
+                Session.LogMessage('0000BHP', StrSubstNo(NewUserChangesTxt, AzureADUserUpdate."Authentication Object ID", CurrentUpdateEntity, AzureADUserUpdate."New Value", ValueFromGraph), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                 AzureADUserUpdate.Insert();
             end;
         end;
@@ -532,7 +527,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                 AzureADUserUpdate."New Value" := CopyStr(ValueFromGraph, 1, MaxStrLen(AzureADUserUpdate."New Value"));
                 AzureADUserUpdate."Display Name" := AzureADGraphUser.GetDisplayName(GraphUser);
 
-                SendTraceTag('0000BHQ', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(ExistingUserChangesTxt, User."User Security ID", CurrentUpdateEntity, AzureADUserUpdate."Current Value", AzureADUserUpdate."New Value", ValueFromGraph), DataClassification::EndUserIdentifiableInformation);
+                Session.LogMessage('0000BHQ', StrSubstNo(ExistingUserChangesTxt, User."User Security ID", CurrentUpdateEntity, AzureADUserUpdate."Current Value", AzureADUserUpdate."New Value", ValueFromGraph), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                 AzureADUserUpdate.Insert();
             end;
         end;
@@ -549,7 +544,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         AzureADUserUpdate."Current Value" := CopyStr(GetUpdateEntityFromUser(Enum::"Azure AD User Update Entity"::Plan, User), 1, MaxStrLen(AzureADUserUpdate."Current Value"));
         AzureADUserUpdate."Display Name" := User."User Name";
 
-        SendTraceTag('0000BNF', UserSetupCategoryTxt, Verbosity::Normal, StrSubstNo(ExistingUserRemovedTxt, User."User Security ID", AzureADUserUpdate."Authentication Object ID", AzureADUserUpdate."Current Value"), DataClassification::EndUserIdentifiableInformation);
+        Session.LogMessage('0000BNF', StrSubstNo(ExistingUserRemovedTxt, User."User Security ID", AzureADUserUpdate."Authentication Object ID", AzureADUserUpdate."Current Value"), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
         AzureADUserUpdate.Insert();
     end;
 

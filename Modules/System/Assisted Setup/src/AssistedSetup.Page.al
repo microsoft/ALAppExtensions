@@ -168,6 +168,8 @@ page 1801 "Assisted Setup"
         AssistedSetupImpl.RefreshBuffer(Rec);
         if FilterSet then
             SetRange("Group Name", AssistedSetupGroup);
+
+        if Rec.FindFirst() then; // Set selected record to first record
     end;
 
     trigger OnAfterGetRecord()

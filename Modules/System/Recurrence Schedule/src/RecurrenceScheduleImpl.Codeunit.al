@@ -199,7 +199,9 @@ codeunit 4691 "Recurrence Schedule Impl."
     begin
         DatesInMonth.SETRANGE("Period Type", DatesInMonth."Period Type"::Date);
         DatesInMonth.SETRANGE("Period Start", CALCDATE('<-CM>', CurrDate), CALCDATE('<+CM>', CurrDate));
+    #pragma warning disable AA0210
         DatesInMonth.SETRANGE("Period No.", StartWeekDay, EndWeekDay);
+    #pragma warning restore AA0210
 
         IF WhatToFind = RecurrenceOrdinalNo::Last THEN BEGIN
             DatesInMonth.FINDLAST();

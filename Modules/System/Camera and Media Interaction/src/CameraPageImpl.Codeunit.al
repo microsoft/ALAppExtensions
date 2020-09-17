@@ -100,13 +100,13 @@ codeunit 1908 "Camera Page Impl."
         FileHelper.SetPath(FilePath);
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     procedure OnBeforeCameraInitialize(var Handled: Boolean; var PictureFilePath: Text)
     begin
         // Used for testing
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     procedure OnIsCameraAvailable(var IsAvailable: Boolean)
     begin
         // Used for testing

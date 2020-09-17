@@ -15,7 +15,7 @@ codeunit 4111 "Base64 Convert Impl."
 
     procedure ToBase64(String: Text; InsertLineBreaks: Boolean): Text
     begin
-        exit(ToBase64(String, false, TextEncoding::UTF8, 0));
+        exit(ToBase64(String, InsertLineBreaks, TextEncoding::UTF8, 0));
     end;
 
     procedure ToBase64(String: Text; TextEncoding: TextEncoding): Text
@@ -95,7 +95,6 @@ codeunit 4111 "Base64 Convert Impl."
     var
         Convert: DotNet Convert;
         Encoding: DotNet Encoding;
-        Windows: DotNet Encoding;
         OutputString: Text;
     begin
         if Base64String = '' then

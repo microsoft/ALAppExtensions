@@ -72,6 +72,7 @@ codeunit 1877 "Manual Setup Impl."
         TemporaryManualSetup: Record "Manual Setup" temporary;
         ManualSetupApi: Codeunit "Manual Setup";
     begin
+        Clear(PageIDs);
         ManualSetupApi.OnRegisterManualSetup();
         ManualSetupApi.GetTemporaryRecord(TemporaryManualSetup);
         if TemporaryManualSetup.FindSet() then

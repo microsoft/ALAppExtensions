@@ -16,16 +16,21 @@ codeunit 460 "Azure AD Licensing Impl."
         DoIncludeUnknownPlans: Boolean;
         IsInitialized: Boolean;
 
-    procedure ResetSubscribedSKU()
+    procedure ResetSubscribedSKU(): Boolean
     var
         SubscribedSkus: DotNet GenericIEnumerable1;
     begin
-
         if IsNull(SubscribedSkuEnumerator) then begin
             AzureADGraph.GetDirectorySubscribedSkus(SubscribedSkus);
+
+            if IsNull(SubscribedSkus) then
+                exit(false);
+
             SubscribedSkuEnumerator := SubscribedSkus.GetEnumerator()
         end else
             SubscribedSkuEnumerator.Reset();
+
+        exit(true);
     end;
 
     procedure NextSubscribedSKU(): Boolean
@@ -36,7 +41,9 @@ codeunit 460 "Azure AD Licensing Impl."
         FoundKnownPlan: Boolean;
     begin
         if not IsInitialized then begin
-            ResetSubscribedSKU();
+            if not ResetSubscribedSKU() then
+                exit(false);
+
             IsInitialized := true;
         end;
 

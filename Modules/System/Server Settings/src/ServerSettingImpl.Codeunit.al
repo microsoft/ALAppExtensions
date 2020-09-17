@@ -68,5 +68,12 @@ codeunit 3703 "Server Setting Impl."
         DelayTime := ALConfigSettings.ApiSubscriptionDelayTime();
         exit(DelayTime);
     end;
+
+    procedure GetTestAutomationEnabled() Enabled: Boolean
+    begin
+        InitializeConfigSettings();
+        Enabled := ALConfigSettings.TestAutomationEnabled();
+        exit(Enabled);
+    end;
 }
 

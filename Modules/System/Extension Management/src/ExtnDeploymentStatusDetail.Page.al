@@ -97,10 +97,12 @@ page 2509 "Extn Deployment Status Detail"
                             trigger OnDrillDown()
                             var
                                 ExtensionOperationImpl: Codeunit "Extension Operation Impl";
+                                DeployOperationJobId: Text;
                             begin
                                 DetailedMessageText := ExtensionOperationImpl.GetDeploymentDetailedStatusMessage("Operation ID");
-                                DetailedMessageText := DetailedMessageText + ' - Job Id : ' +
-                                  ExtensionOperationImpl.GetDeployOperationJobId("Operation ID");
+                                DeployOperationJobId := ExtensionOperationImpl.GetDeployOperationJobId("Operation ID");
+
+                                DetailedMessageText := DetailedMessageText + ' - Job Id : ' + DeployOperationJobId;
                                 ShowDetailedMessage := true;
                             end;
                         }
@@ -119,7 +121,6 @@ page 2509 "Extn Deployment Status Detail"
                     MultiLine = true;
                     ShowCaption = false;
                     ToolTip = 'Specifies detailed message box.';
-                    Visible = ShowDetailedMessage;
                 }
             }
         }

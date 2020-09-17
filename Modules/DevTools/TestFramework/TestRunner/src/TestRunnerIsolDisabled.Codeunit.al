@@ -12,9 +12,13 @@ codeunit 130451 "Test Runner - Isol. Disabled"
 
     trigger OnRun()
     begin
-        ALTestSuite.Get(Rec."Test Suite");
-        CurrentTestMethodLine.Copy(Rec);
-        TestRunnerMgt.RunTests(Rec);
+        if Rec."Skip Logging Results" then
+            TestRunnerMgt.RunTestsWithoutLoggingResults(Rec)
+        else begin
+            ALTestSuite.Get(Rec."Test Suite");
+            CurrentTestMethodLine.Copy(Rec);
+            TestRunnerMgt.RunTests(Rec);
+        end;
     end;
 
     var

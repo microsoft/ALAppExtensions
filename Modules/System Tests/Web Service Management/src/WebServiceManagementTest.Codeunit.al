@@ -25,7 +25,7 @@ codeunit 139043 "Web Service Management Test"
         PageBTxt: Label 'PageB';
         PageCTxt: Label 'PageC';
         PageDTxt: Label 'PageD';
-
+        ODataUnboundActionHelpUrlLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2138827';
 
     [Test]
     [Scope('OnPrem')]
@@ -55,7 +55,7 @@ codeunit 139043 "Web Service Management Test"
 
         if WebServiceAggregate.Get(WebService."Object Type"::Codeunit, CodeunitServiceTxt) then begin
             VerifyUrlMissingServiceName(WebServiceManagement.GetWebServiceUrl(WebServiceAggregate, ClientType::ODataV3), CodeunitServiceTxt);
-            VerifyUrlMissingServiceName(WebServiceManagement.GetWebServiceUrl(WebServiceAggregate, ClientType::ODataV4), CodeunitServiceTxt);
+            VerifyODataV4CodeunitHelpUrl(WebServiceManagement.GetWebServiceUrl(WebServiceAggregate, ClientType::ODataV4), CodeunitServiceTxt);
             VerifyUrlHasServiceName(WebServiceManagement.GetWebServiceUrl(WebServiceAggregate, ClientType::SOAP), CodeunitServiceTxt);
         end;
 
@@ -574,6 +574,11 @@ codeunit 139043 "Web Service Management Test"
     local procedure VerifyUrlMissingServiceName(Url: Text; ServiceName: Text[240])
     begin
         Assert.AreEqual('Not applicable', Url, StrSubstNo('Url was ''%1'' but should be "Not applicable" for ''%2''.', Url, ServiceName));
+    end;
+
+    local procedure VerifyODataV4CodeunitHelpUrl(Url: Text; ServiceName: Text[240])
+    begin
+        Assert.AreEqual(ODataUnboundActionHelpUrlLbl, Url, StrSubstNo('Url was ''%1'' but should be "Not applicable" for ''%2''.', Url, ServiceName));
     end;
 
     local procedure Initialize()

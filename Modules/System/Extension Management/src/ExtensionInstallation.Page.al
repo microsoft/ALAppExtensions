@@ -41,8 +41,11 @@ page 2503 "Extension Installation"
         GetDetailsFromFilters();
 
         MarketplaceExtnDeployment.RunModal();
-        if MarketplaceExtnDeployment.GetInstalledSelected() then
-            ExtensionMarketplace.InstallMarketplaceExtension(ID, ResponseURL, MarketplaceExtnDeployment.GetLanguageId());
+        if MarketplaceExtnDeployment.GetInstalledSelected() then begin
+            if NOT IsNullGuid(ID) then
+                ExtensionMarketplace.InstallMarketplaceExtension(ID, ResponseURL, MarketplaceExtnDeployment.GetLanguageId());
+            CurrPage.Close();
+        end;
     end;
 
     local procedure GetDetailsFromFilters()

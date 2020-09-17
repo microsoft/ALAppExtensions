@@ -21,39 +21,40 @@ page 502 OAuth2ControlAddIn
             usercontrol(OAuthIntegration; OAuthControlAddIn)
             {
                 ApplicationArea = All;
-                // [NonDebuggable]
                 trigger AuthorizationCodeRetrieved(code: Text)
                 var
                     StateOut: Text;
+                    AdminConsentTxt: Text;
                 begin
-                    OAuth2Impl.GetOAuthProperties(code, AuthCode, StateOut);
+                    OAuth2Impl.GetOAuthProperties(code, AuthCode, StateOut, AdminConsentTxt);
 
-                    if AuthCode = '' then begin
-                        SendTraceTag('0000C1T', Oauth2CategoryLbl, Verbosity::Error, MissingCodeErr, DataClassification::SystemMetadata);
-                        AuthCodeError := NoAuthCodeErr;
-                    end;
+                    if UpperCase(AdminConsentTxt) = 'TRUE' then
+                        HasAdminConsentSucceded := true
+                    else
+                        HasAdminConsentSucceded := false;
+
                     if State = '' then begin
-                        SendTraceTag('0000BFH', Oauth2CategoryLbl, Verbosity::Error, MissingStateErr, DataClassification::SystemMetadata);
-                        AuthCodeError := AuthCodeError + NoStateErr;
+                        Session.LogMessage('0000BFH', MissingStateErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
+                        AuthError := AuthError + NoStateErr;
                     end else
                         if StateOut <> State then begin
-                            SendTraceTag('0000BFI', Oauth2CategoryLbl, Verbosity::Error, MismatchingStateErr, DataClassification::SystemMetadata);
-                            AuthCodeError := AuthCodeError + NotMatchingStateErr;
+                            Session.LogMessage('0000BFI', MismatchingStateErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
+                            AuthError := AuthError + NotMatchingStateErr;
                         end;
 
                     CurrPage.Close();
                 end;
-                //[NonDebuggable]
+
                 trigger AuthorizationErrorOccurred(error: Text; desc: Text);
                 begin
-                    SendTraceTag('0000BFD', Oauth2CategoryLbl, Verbosity::Error, StrSubstNo(OauthFailErrMsg, error, desc), DataClassification::SystemMetadata);
-                    AuthCodeError := StrSubstNo(AuthCodeErrorLbl, error, desc);
+                    Session.LogMessage('0000BFD', StrSubstNo(OauthFailErrMsg, error, desc), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
+                    AuthError := StrSubstNo(AuthCodeErrorLbl, error, desc);
                     CurrPage.Close();
                 end;
 
                 trigger ControlAddInReady();
                 begin
-                    SendTraceTag('0000C1U', Oauth2CategoryLbl, Verbosity::Normal, OAuthCodeStartMsg, DataClassification::SystemMetadata);
+                    Session.LogMessage('0000C1U', OAuthCodeStartMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', Oauth2CategoryLbl);
                     CurrPage.OAuthIntegration.StartAuthorization(OAuthRequestUrl);
                 end;
             }
@@ -61,8 +62,8 @@ page 502 OAuth2ControlAddIn
     }
 
     [Scope('OnPrem')]
-    [NonDebuggable]
-    procedure SetOAuth2CodeFlowGrantProperties(AuthRequestUrl: Text; AuthInitialState: Text)
+    // [NonDebuggable]
+    procedure SetOAuth2Properties(AuthRequestUrl: Text; AuthInitialState: Text)
     begin
         OAuthRequestUrl := AuthRequestUrl;
         State := AuthInitialState;
@@ -77,9 +78,16 @@ page 502 OAuth2ControlAddIn
 
     [Scope('OnPrem')]
     [NonDebuggable]
-    procedure GetAuthCodeError(): Text
+    procedure GetAuthError(): Text
     begin
-        exit(AuthCodeError);
+        exit(AuthError);
+    end;
+
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure GetGrantConsentSuccess(): Boolean
+    begin
+        exit(HasAdminConsentSucceded);
     end;
 
     var
@@ -87,14 +95,13 @@ page 502 OAuth2ControlAddIn
         OAuthRequestUrl: Text;
         State: Text;
         AuthCode: Text;
-        AuthCodeError: Text;
+        AuthError: Text;
+        HasAdminConsentSucceded: Boolean;
         Oauth2CategoryLbl: Label 'OAuth2', Locked = true;
-        MissingCodeErr: Label 'The returned authorization code is missing the returned code.', Locked = true;
         MissingStateErr: Label 'The returned authorization code is missing information about the returned state.', Locked = true;
         MismatchingStateErr: Label 'The authroization code returned state is missmatching the expected state value.', Locked = true;
         OauthFailErrMsg: Label 'Error: %1 ; Description: %2.', Comment = '%1 = OAuth error message ; %2 = description of OAuth failure error message', Locked = true;
         OAuthCodeStartMsg: Label 'The authorization code flow grant process has started.', Locked = true;
-        NoAuthCodeErr: Label 'No authorization code has been returned';
         NoStateErr: Label 'No state has been returned';
         NotMatchingStateErr: Label 'The state parameter value does not match.';
         AuthCodeErrorLbl: Label 'Error: %1, description: %2', Comment = '%1 = The authorization error message, %2 = The authorization error description';

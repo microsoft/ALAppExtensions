@@ -281,8 +281,10 @@ codeunit 130456 "Test Suite Mgt."
         TestMethodLine.SetRange("Test Suite", BackupTestMethodLine."Test Suite");
         TestMethodLine.SetRange("Test Codeunit", BackupTestMethodLine."Test Codeunit");
         TestMethodLine.SetRange(Name, BackupTestMethodLine.Name);
-        if TestMethodLine.FindFirst() then
+        if TestMethodLine.FindFirst() then begin
+            TestMethodLine.SetView(BackupTestMethodLine.GetView());
             exit;
+        end;
 
         TestMethodLine.SetRange(Name);
         if TestMethodLine.FindFirst() then;

@@ -75,5 +75,14 @@ codeunit 6723 "Server Setting"
     begin
         exit(ServerSettingImpl.GetApiSubscriptionDelayTime());
     end;
+
+    /// <summary>Checks whether the Test Automation is enabled.</summary>
+    /// <returns>True if enabled; otherwise, false.</returns>
+    /// <remarks>Gets the value of the server setting TestAutomationEnabled.</remarks>
+    [Scope('OnPrem')]
+    procedure GetTestAutomationEnabled(): Boolean
+    begin
+        exit(ServerSettingImpl.GetTestAutomationEnabled());
+    end;
 }
 
