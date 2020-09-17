@@ -45,16 +45,20 @@ codeunit 130500 "Any"
     /// <returns>Pseudo-random decimal value</returns>
     procedure DecimalInRange(MaxValue: Integer; DecimalPlaces: Integer): Decimal
     var
-        x: Integer;
+        PseudoRandomInteger: Integer;
         Pow: Integer;
     begin
         Pow := Power(10, DecimalPlaces);
 
-        x := IntegerInRange(MaxValue * Pow);
-        if x mod 10 = 0 then
-            x += IntegerInRange(1, 9);
+        PseudoRandomInteger := IntegerInRange(MaxValue * Pow);
 
-        exit(x / Pow);
+        if PseudoRandomInteger = 0 then
+            PseudoRandomInteger := 1
+        else
+            if PseudoRandomInteger mod 10 = 0 then
+                PseudoRandomInteger -= IntegerInRange(1, 9);
+
+        exit(PseudoRandomInteger / Pow);
     end;
 
     /// <summary>
