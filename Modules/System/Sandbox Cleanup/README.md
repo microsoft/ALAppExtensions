@@ -1,0 +1,1 @@
+Provides an event that can be used to clean up sensitive data, such as sent emails, when copying a company to a sandbox environment.
