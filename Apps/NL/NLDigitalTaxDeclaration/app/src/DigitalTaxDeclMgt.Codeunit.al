@@ -202,10 +202,10 @@ codeunit 11423 "Digital Tax. Decl. Mgt."
         NextErrorNo: Integer;
     begin
         with ElecTaxDeclResponseMessages do begin
-            SendTraceTag('0000CJ3', DigipoortTok, VERBOSITY::Normal, ProcessingResponseMsg, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000CJ3', ProcessingResponseMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DigipoortTok);
 
             if not VATReportHeader.Get("VAT Report Config. Code", "VAT Report No.") then begin
-                SendTraceTag('0000CJ4', DigipoortTok, VERBOSITY::Error, HeaderNotFoundErrMsg, DATACLASSIFICATION::SystemMetadata);
+                Session.LogMessage('0000CJ4', HeaderNotFoundErrMsg, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DigipoortTok);
                 Error(HeaderNotFoundErr, "VAT Report Config. Code", "VAT Report No.");
             end;
 
@@ -244,12 +244,12 @@ codeunit 11423 "Digital Tax. Decl. Mgt."
                 '210', '220', '311', '410', '510', '710':
                     begin
                         VATReportHeader.Status := VATReportHeader.Status::Rejected;
-                        SendTraceTag('0000CJ5', DigipoortTok, VERBOSITY::Error, StrSubstNo(ErrorStatusCodeMsg, "Status Code"), DATACLASSIFICATION::SystemMetadata);
+                        Session.LogMessage('0000CJ5', StrSubstNo(ErrorStatusCodeMsg, "Status Code"), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DigipoortTok);
                     end;
                 '100', '230', '321', '420', '720':
                     if VATReportHeader.Status <> VATReportHeader.Status::Rejected then begin
                         VATReportHeader.Status := VATReportHeader.Status::Accepted;
-                        SendTraceTag('0000CJ6', DigipoortTok, VERBOSITY::Normal, StrSubstNo(AcceptedStatusCodeMsg, "Status Code"), DATACLASSIFICATION::SystemMetadata);
+                        Session.LogMessage('0000CJ6', StrSubstNo(AcceptedStatusCodeMsg, "Status Code"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DigipoortTok);
                     end;
             end;
 
@@ -258,7 +258,7 @@ codeunit 11423 "Digital Tax. Decl. Mgt."
 
             VATReportHeader.Modify(true);
 
-            SendTraceTag('0000CJ8', DigipoortTok, VERBOSITY::Normal, ResponseProcessedSuccessMsg, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000CJ8', ResponseProcessedSuccessMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DigipoortTok);
         end;
     end;
 

@@ -40,7 +40,7 @@ codeunit 148103 "SAF-T XML Tests"
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
         SAFTExportLine.SetRange(Status, SAFTExportLine.Status::Completed);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
         Assert.RecordCount(SAFTExportLine, 2);
         SAFTExportLine.TestField("Master Data", true);
         SAFTExportHeader.Find();
@@ -48,7 +48,7 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTExportHeader.TestField("Execution Start Date/Time");
         SAFTExportHeader.TestField("Execution End Date/Time");
 
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
         VerifyHeaderStructure(TempXMLBuffer, SAFTExportLine);
         // TFS 348392: All G/L accounts are exports
         // TFS 349472: Both Company Information's bank account and all records from Bank Acount table exports
@@ -88,8 +88,8 @@ codeunit 148103 "SAF-T XML Tests"
             ClosingAmount, ClosingAmount, ClosingAmount);
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
         VerifyMasterDataBalance(TempXMLBuffer, 'OpeningDebitBalance', BalanceAmount);
     end;
 
@@ -122,8 +122,8 @@ codeunit 148103 "SAF-T XML Tests"
             ClosingAmount, ClosingAmount, ClosingAmount);
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
         VerifyMasterDataBalance(TempXMLBuffer, 'OpeningCreditBalance', BalanceAmount);
     end;
 
@@ -151,8 +151,8 @@ codeunit 148103 "SAF-T XML Tests"
             BalanceAmount, BalanceAmount, -BalanceAmount);
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
         VerifyMasterDataBalance(TempXMLBuffer, 'ClosingDebitBalance', BalanceAmount);
     end;
 
@@ -180,8 +180,8 @@ codeunit 148103 "SAF-T XML Tests"
             -BalanceAmount, -BalanceAmount, BalanceAmount);
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
         VerifyMasterDataBalance(TempXMLBuffer, 'ClosingCreditBalance', BalanceAmount);
     end;
 
@@ -241,11 +241,11 @@ codeunit 148103 "SAF-T XML Tests"
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
         SAFTExportLine.SetRange(Status, SAFTExportLine.Status::Completed);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
         Assert.RecordCount(SAFTExportLine, 2);
         SAFTExportLine.Next();
         SAFTExportLine.TestField("Master Data", false);
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
         VerifyXMLFileHasHeader(TempXMLBuffer);
         VerifyGLEntriesGroupedBySAFTSourceCode(
             TempXMLBuffer, TempSAFTSourceCode, EntriesInTransactionNumber * 2, SAFTExportLine."Starting Date", SAFTExportLine."Ending Date",
@@ -293,8 +293,8 @@ codeunit 148103 "SAF-T XML Tests"
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
         SAFTExportLine.SetRange("Master Data", false);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
 
         // [THEN] CustomerID xml node exists just once in the XML file
         Assert.IsTrue(
@@ -345,8 +345,8 @@ codeunit 148103 "SAF-T XML Tests"
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
         SAFTExportLine.SetRange("Master Data", false);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
 
         // [THEN] SupplierID xml node exists just once in the XML file
         Assert.IsTrue(
@@ -376,9 +376,9 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code);
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
 
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
         VerifyGeneralLedgerAccountsWithIncomeStatementMapping(TempXMLBuffer, SAFTExportHeader."Mapping Range Code");
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -431,8 +431,8 @@ codeunit 148103 "SAF-T XML Tests"
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
         SAFTExportLine.SetRange("Master Data", false);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
 
         // [THEN] The following nodes have exported:
         // [THEN] n1:Line/n1:TaxInformation/n1:TaxBase. Value: 100
@@ -495,8 +495,8 @@ codeunit 148103 "SAF-T XML Tests"
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
         SAFTExportLine.SetRange("Master Data", false);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
 
         // [THEN] SystemEntryDate xml node has value "X"
         Assert.IsTrue(
@@ -549,8 +549,8 @@ codeunit 148103 "SAF-T XML Tests"
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
         SAFTExportLine.SetRange("Master Data", false);
-        FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
-        LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
 
         // [THEN] SystemEntryDate xml node has value "Y"
         Assert.IsTrue(
@@ -599,12 +599,6 @@ codeunit 148103 "SAF-T XML Tests"
         until GLEntry.Next() = 0;
     end;
 
-    local procedure FindSAFTExportLine(var SAFTExportLine: Record "SAF-T Export Line"; ExportID: Integer)
-    begin
-        SAFTExportLine.SetRange(ID, ExportID);
-        SAFTExportLine.FindSet();
-    end;
-
     local procedure FindGLEntryWithGenPostingType(var GLEntry: Record "G/L Entry"; DocType: Integer; PostingDate: Date; DocNo: Code[20])
     begin
         GLEntry.SetRange("Document Type", DocType);
@@ -612,17 +606,6 @@ codeunit 148103 "SAF-T XML Tests"
         GLEntry.SetRange("Document No.", DocNo);
         GLEntry.SetFilter("Gen. Posting Type", '<>%1', 0);
         GLEntry.FindFirst();
-    end;
-
-    local procedure LoadXMLBufferFromSAFTExportLine(var TempXMLBuffer: Record "XML Buffer" temporary; SAFTExportLine: Record "SAF-T Export Line")
-    var
-        Stream: InStream;
-    begin
-        SAFTExportLine.CalcFields("SAF-T File");
-        SAFTExportLine."SAF-T File".CreateInStream(Stream);
-        TempXMLBuffer.Reset();
-        TempXMLBuffer.DeleteAll();
-        TempXMLBuffer.LoadFromStream(Stream);
     end;
 
     local procedure VerifyHeaderStructure(var TempXMLBuffer: Record "XML Buffer" temporary; SAFTExportLine: Record "SAF-T Export Line")
@@ -887,7 +870,7 @@ codeunit 148103 "SAF-T XML Tests"
         Employee: Record Employee;
         BankAccount: Record "Bank Account";
     begin
-        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:RegistrationNumber', CompanyInformation."VAT Registration No.");
+        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:RegistrationNumber', CompanyInformation."Registration No.");
         SAFTTestHelper.AssertElementValue(
             TempXMLBuffer, 'n1:Name', SAFTTestHelper.CombineWithSpace(CompanyInformation.Name, CompanyInformation."Name 2"));
         VerifyAddress(
@@ -1032,7 +1015,9 @@ codeunit 148103 "SAF-T XML Tests"
             SAFTTestHelper.AssertElementValue(
                 TempXMLBuffer, 'n1:TransactionDate', SAFTTestHelper.FormatDate(GLEntry."Document Date"));
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:SourceID', GLEntry."User ID");
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:TransactionType', Format(GLEntry."Document Type"));
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:Description', GLEntry.Description);
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:BatchID', Format(GLEntry."Transaction No."));
             SAFTTestHelper.AssertElementValue(
                 TempXMLBuffer, 'n1:SystemEntryDate', SAFTTestHelper.FormatDate(DT2Date(GLEntry."Last Modified DateTime")));
             SAFTTestHelper.AssertElementValue(

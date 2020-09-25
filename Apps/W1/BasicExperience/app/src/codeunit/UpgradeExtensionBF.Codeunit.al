@@ -9,7 +9,6 @@ codeunit 20604 "Upgrade Extension BF"
         ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
         BasicMgmt: Codeunit "Basic Mgmt BF";
     begin
-        BasicMgmt.TestSupportedLocales();
         ApplicationAreaMgmtFacade.SaveExperienceTierCurrentCompany(DummyExperienceTierSetup.FieldCaption(DummyExperienceTierSetup."BF Basic"));
     end;
 }

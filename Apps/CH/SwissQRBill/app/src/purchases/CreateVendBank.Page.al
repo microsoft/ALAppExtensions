@@ -64,8 +64,7 @@ page 11502 "Swiss QR-Bill Create Vend Bank"
     internal procedure SetDetails(VendorBankAccount: Record "Vendor Bank Account")
     begin
         if Delete() then;
-        "Vendor No." := VendorBankAccount."Vendor No.";
-        IBAN := VendorBankAccount.IBAN;
+        TransferFields(VendorBankAccount);
         Insert();
     end;
 

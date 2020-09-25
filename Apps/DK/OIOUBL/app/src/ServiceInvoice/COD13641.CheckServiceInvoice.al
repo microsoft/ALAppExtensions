@@ -9,7 +9,13 @@ codeunit 13641 "OIOUBL-Check Service Invoice"
     trigger OnRun();
     var
         OIOUBLManagement: Codeunit "OIOUBL-Management";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeOnRun(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
         if NOT OIOUBLManagement.IsOIOUBLCheckRequired("OIOUBL-GLN", "Customer No.") then
             exit;
 
@@ -63,5 +69,10 @@ codeunit 13641 "OIOUBL-Check Service Invoice"
             CompanyInfo.GET();
             CompanyInfoRead := TRUE;
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOnRun(ServiceInvoiceHeader: Record "Service Invoice Header"; var IsHandled: Boolean)
+    begin
     end;
 }

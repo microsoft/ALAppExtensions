@@ -11,6 +11,7 @@ codeunit 148025 "FIK Event Subscribers"
     var
         LibrarySales: Codeunit "Library - Sales";
         LibraryReportDataset: Codeunit "Library - Report Dataset";
+        Assert: codeunit Assert;
 
     trigger OnRun();
     begin
@@ -33,6 +34,20 @@ codeunit 148025 "FIK Event Subscribers"
         LibraryReportDataset.GetNextRow();
         LibraryReportDataset.AssertElementWithValueExists('DocumentReference', FIKManagement.GetFIK71String(SalesInvoiceHeader."No."));
     end;
+
+    [Test]    
+    procedure VerifyFIKImportFormat()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        // [WHEN] Running company initialize
+        // [THEN] FIK Import Format should be set correctly
+        GeneralLedgerSetup.Get();
+        Assert.AreEqual('FIK71', GeneralLedgerSetup."FIK Import Format",
+            'The FIK Import Format should be set correctly during company initialize.');
+    end;
+
+
 
     [RequestPageHandler]
     procedure SalesInvoiceRequestPageHandler(VAR SalesInvoice: TestRequestPage "Sales - Invoice");

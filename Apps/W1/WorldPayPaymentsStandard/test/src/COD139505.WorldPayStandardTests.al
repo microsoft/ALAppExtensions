@@ -12,7 +12,7 @@ codeunit 139505 "MS - WorldPay Standard Tests"
     var
         Assert: Codeunit 130000;
         LibraryUtility: Codeunit 131000;
-        LibraryVariableStorage: Codeunit 131004;
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibrarySales: Codeunit 130509;
         LibraryInventory: Codeunit 132201;
         LibraryERM: Codeunit 131300;
@@ -602,7 +602,25 @@ codeunit 139505 "MS - WorldPay Standard Tests"
 
     [Test]
     [HandlerFunctions('EMailDialogHandler,MessageHandler')]
-    procedure TestCoverLetterPaymentLink()
+    procedure TestCoverLetterPaymentLinkSMTPSetup(); // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        TestCoverLetterPaymentLinkInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('EmailEditorHandler,MessageHandler,CloseEmailEditorHandler')]
+    procedure TestCoverLetterPaymentLink();
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        TestCoverLetterPaymentLinkInternal();
+    end;
+
+    procedure TestCoverLetterPaymentLinkInternal()
     var
         TempPaymentServiceSetup: Record 1060 temporary;
         MSWorldPayStandardAccount: Record 1360;
@@ -610,6 +628,8 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         SalesInvoiceHeader: Record 112;
         TempPaymentReportingArgument: Record 1062 temporary;
         LibraryInvoicingApp: Codeunit "Library - Invoicing App";
+        LibraryWorkflow: Codeunit "Library - Workflow";
+        EmailFeature: Codeunit "Email Feature";
         PostedSalesInvoice: TestPage 132;
     begin
         Initialize();
@@ -627,7 +647,10 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         PostedSalesInvoice.OPENEDIT();
         PostedSalesInvoice.GOTORECORD(SalesInvoiceHeader);
 
-        LibraryInvoicingApp.SetupEmailTable();
+        if EmailFeature.IsEnabled() then
+            LibraryWorkflow.SetUpEmailAccount()
+        else
+            LibraryInvoicingApp.SetupEmailTable();
 
         // Exercise
         PostedSalesInvoice.Email.INVOKE();
@@ -1191,9 +1214,22 @@ codeunit 139505 "MS - WorldPay Standard Tests"
     end;
 
     [ModalPageHandler]
-    procedure EMailDialogHandler(var EMailDialog: TestPage 9700)
+    procedure EMailDialogHandler(var EMailDialog: TestPage "Email Dialog")
     begin
         LibraryVariableStorage.Enqueue(EMailDialog.BodyText.VALUE());
+    end;
+
+    [ModalPageHandler]
+    procedure EmailEditorHandler(var EmailEditor: TestPage "Email Editor");
+    begin
+        LibraryVariableStorage.Enqueue(EmailEditor.BodyField.Value());
+    end;
+
+    [StrMenuHandler]
+    [Scope('OnPrem')]
+    procedure CloseEmailEditorHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        Choice := 1;
     end;
 
     [ModalPageHandler]

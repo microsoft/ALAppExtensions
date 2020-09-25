@@ -280,7 +280,7 @@ codeunit 1854 "Sales Forecast Notifier"
           PeriodFormManagement.MoveDateByPeriod(WorkDate(), MSSalesForecastSetup."Period Type",
             MSSalesForecastSetup."Stockout Warning Horizon");
 
-        SalesForecastQuery.SetFilter(VendorNo, PurchaseHeader."Buy-from Vendor No.");
+        SalesForecastQuery.SetRange(VendorNo, PurchaseHeader."Buy-from Vendor No.");
         SalesForecastQuery.SetFilter(Date, '<=%1', StockoutWarningDate);
         SalesForecastQuery.SetRange(Variance, 0, MSSalesForecastSetup."Variance %");
 

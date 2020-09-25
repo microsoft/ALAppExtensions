@@ -9,7 +9,7 @@ codeunit 139583 "MS - Wallet Mock Events"
     end;
 
     var
-        LibraryVariableStorage: Codeunit 131004;
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryUtility: Codeunit 131000;
         PaymentTok: Label 'payment', Locked = true;
 

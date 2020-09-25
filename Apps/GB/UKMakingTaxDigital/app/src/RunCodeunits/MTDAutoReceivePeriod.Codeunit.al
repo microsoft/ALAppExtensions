@@ -27,8 +27,6 @@ codeunit 10535 "MTD Auto Receive Period"
         StartDate := CalcDate('<-CY>', WorkDate());
         EndDate := CalcDate('<CY>', WorkDate());
         MTDMgt.RetrieveVATReturnPeriods(StartDate, EndDate, TotalCount, NewCount, ModifiedCount, true, false);
-        SendTraceTag(
-          '00008WO', TraceCategoryLbl, VERBOSITY::Normal,
-          STRSUBSTNO(TraceExecuteMessageLbl, TotalCount, NewCount, ModifiedCount), DataClassification::SystemMetadata);
+        Session.LogMessage('00008WO', STRSUBSTNO(TraceExecuteMessageLbl, TotalCount, NewCount, ModifiedCount), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TraceCategoryLbl);
     end;
 }

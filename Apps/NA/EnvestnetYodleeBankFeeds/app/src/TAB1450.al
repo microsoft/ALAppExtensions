@@ -337,18 +337,18 @@ table 1450 "MS - Yodlee Bank Service Setup"
         MSYodleeDataExchangeDef: Record 1452;
     begin
         MSYodleeDataExchangeDef.ResetDataExchToDefault();
-        VALIDATE("Bank Feed Import Format", 'YODLEEBANKFEED');
+        VALIDATE("Bank Feed Import Format", 'YODLEE11BANKFEED');
     end;
 
     procedure SetDefaultBankStatementImportCode();
     var
         BankExportImportSetup: Record 1200;
     begin
-        BankExportImportSetup.SetRange(Code, 'YODLEEBANKFEED');
+        BankExportImportSetup.SetRange(Code, 'YODLEE11BANKFEED');
         IF BankExportImportSetup.IsEmpty() THEN
             EXIT;
 
-        VALIDATE("Bank Feed Import Format", 'YODLEEBANKFEED');
+        VALIDATE("Bank Feed Import Format", 'YODLEE11BANKFEED');
     end;
 
     [Scope('OnPrem')]
@@ -433,15 +433,6 @@ table 1450 "MS - Yodlee Bank Service Setup"
             EXIT(DELCHR(SecretValue, '>', ' '));
 
         EXIT(DELCHR("Service URL", '>', ' '));
-    end;
-
-    [Scope('OnPrem')]
-    procedure IsSetUpForYSL11(): Boolean
-    begin
-        if not Get() then
-            exit(false);
-
-        exit(GetServiceURL().Contains('ysl'));
     end;
 }
 

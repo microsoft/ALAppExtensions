@@ -5,13 +5,13 @@ codeunit 139503 "MS - PayPal Std Mock Events"
     EventSubscriberInstance = Manual;
 
     var
-        LibraryVariableStorage: Codeunit 131004;
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryUtility: Codeunit 131000;
         PaymentTok: Label 'payment', Locked = true;
         OverpaymentTok: Label 'overpayment', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, 1073, 'OnAfterPostPayPalPayment', '', false, false)]
-    procedure HandleOnAfterPostPayPalPayment(var TempPaymentRegistrationBuffer: Record 981 temporary; AmountReceived: Decimal);
+    local procedure HandleOnAfterPostPayPalPayment(var TempPaymentRegistrationBuffer: Record 981 temporary; AmountReceived: Decimal);
     begin
         LibraryVariableStorage.Enqueue(PaymentTok);
         LibraryVariableStorage.Enqueue(TempPaymentRegistrationBuffer."Document No.");
@@ -19,7 +19,7 @@ codeunit 139503 "MS - PayPal Std Mock Events"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, 1073, 'OnAfterReceivePayPalOverpayment', '', false, false)]
-    procedure HandleOnAfterReceivePayPalOverpayment(var TempPaymentRegistrationBuffer: Record 981 temporary; AmountReceived: Decimal);
+    local procedure HandleOnAfterReceivePayPalOverpayment(var TempPaymentRegistrationBuffer: Record 981 temporary; AmountReceived: Decimal);
     begin
         LibraryVariableStorage.Enqueue(OverpaymentTok);
         LibraryVariableStorage.Enqueue(TempPaymentRegistrationBuffer."Document No.");
@@ -39,7 +39,7 @@ codeunit 139503 "MS - PayPal Std Mock Events"
     end;
 
     [EventSubscriber(ObjectType::Table, 1060, 'OnRegisterPaymentServiceProviders', '', false, false)]
-    procedure RegisteDummyPaymentServiceProvider(var PaymentServiceSetup: Record 1060);
+    local procedure RegisteDummyPaymentServiceProvider(var PaymentServiceSetup: Record 1060);
     begin
         CLEAR(PaymentServiceSetup);
 

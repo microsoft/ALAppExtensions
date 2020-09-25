@@ -79,6 +79,7 @@ page 1071 "MS - PayPal Standard Template"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                PromotedOnly = true;
                 ToolTip = 'Resets values to default.';
 
                 trigger OnAction();

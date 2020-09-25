@@ -61,14 +61,14 @@ page 1950 "LP Machine Learning Setup"
                     ToolTip = 'The number of seconds of compute time that you have not yet used.';
                     ApplicationArea = Basic, Suite;
                 }
-                field(Original; AzureAIUsage."Original Resource Limit")
+                field(Original; AzureAIUsage.GetResourceLimit(AzureAIService))
                 {
                     Enabled = false;
                     Caption = 'Original Compute Time';
                     ToolTip = 'The number of seconds of compute time that was originally available for the standard model, or the model for your custom experiment.';
                     ApplicationArea = Basic, Suite;
                 }
-                field(LastDateTimeUpdated; AzureAIUsage."Last DateTime Updated")
+                field(LastDateTimeUpdated; AzureAIUsage.GetLastTimeUpdated(AzureAIService))
                 {
                     Enabled = false;
                     Caption = 'Date of Last Compute';
@@ -264,8 +264,9 @@ page 1950 "LP Machine Learning Setup"
 
     trigger OnAfterGetRecord()
     begin
-        AzureAIUsage.GetSingleInstance(AzureAIUsage.Service::"Machine Learning");
-        RemainingTime := AzureAIUsage."Original Resource Limit" - AzureAIUsage."Total Resource Usage";
+        AzureAIService := AzureAIService::"Machine Learning";
+
+        RemainingTime := AzureAIUsage.GetResourceLimit(AzureAIService) - AzureAIUsage.GetTotalProcessingTime(AzureAIService);
         CustomModelExists := MyModelExists();
         ModelQualityVal := GetModelQuality();
     end;
@@ -281,8 +282,9 @@ page 1950 "LP Machine Learning Setup"
     end;
 
     var
-        AzureAIUsage: Record "Azure AI Usage";
+        AzureAIUsage: Codeunit "Azure AI Usage";
         CryptographyManagement: Codeunit "Cryptography Management";
+        AzureAIService: Enum "Azure AI Service";
         CustomModelExists: Boolean;
         ModelQualityVal: Decimal;
         ApiURIText: Text[250];

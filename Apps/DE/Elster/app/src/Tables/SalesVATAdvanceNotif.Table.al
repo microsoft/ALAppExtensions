@@ -89,29 +89,25 @@ table 11021 "Sales VAT Advance Notif."
         {
             DataClassification = CustomerContent;
             Editable = false;
-            TableRelation = "VAT Statement Name".Name where ("Statement Template Name" = field ("Statement Template Name"));
+            TableRelation = "VAT Statement Name".Name where("Statement Template Name" = field("Statement Template Name"));
 
             trigger OnValidate()
             begin
                 CheckEditable();
             end;
         }
-        field(13; "Incl. VAT Entries (Closing)"; Option)
+        field(13; "Incl. VAT Entries (Closing)"; Enum "VAT Statement Report Selection")
         {
             DataClassification = CustomerContent;
-            OptionMembers = Open,Closed,"Open and Closed";
-            OptionCaption = 'Open,Closed,Open and Closed';
 
             trigger OnValidate()
             begin
                 CheckEditable();
             end;
         }
-        field(14; "Incl. VAT Entries (Period)"; Option)
+        field(14; "Incl. VAT Entries (Period)"; Enum "VAT Statement Report Period Selection")
         {
             DataClassification = CustomerContent;
-            OptionMembers = "Before and Within Period","Within Period";
-            OptionCaption = 'Before and Within Period,Within Period';
 
             trigger OnValidate()
             begin
@@ -276,8 +272,8 @@ table 11021 "Sales VAT Advance Notif."
         Amount: Decimal;
         StartDate: Date;
         EndDate: Date;
-        Selection: Option Open,Closed,"Open and Closed";
-        PeriodSelection: Option "Before and Within Period","Within Period";
+        Selection: Enum "VAT Statement Report Selection";
+        PeriodSelection: Enum "VAT Statement Report Period Selection";
 
     procedure AssistEdit(OldSalesVATAdvNotif: Record "Sales VAT Advance Notif."): Boolean
     var
@@ -407,7 +403,7 @@ table 11021 "Sales VAT Advance Notif."
         if not Confirm(DeleteXMLFileQst, false, TableCaption()) then
             exit;
 
-        SendTraceTag('0000C9U', ElsterTok, VERBOSITY::Normal, DeleteXMLFileMsg, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('0000C9U', DeleteXMLFileMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ElsterTok);
 
         Clear("XML Submission Document");
         "XML-File Creation Date" := 0D;
@@ -415,7 +411,7 @@ table 11021 "Sales VAT Advance Notif."
         "Statement Name" := '';
         Modify();
 
-        SendTraceTag('0000C9V', ElsterTok, VERBOSITY::Normal, DeleteXMLFileSuccessMsg, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('0000C9V', DeleteXMLFileSuccessMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ElsterTok);
     end;
 
     procedure CheckVATNo(var PosTaxoffice: Integer; var NumberTaxOffice: Integer; var PosArea: Integer; var NumberArea: Integer; var PosDistinction: Integer; var NumberDistinction: Integer) VATNo: Text[30]
@@ -602,6 +598,7 @@ table 11021 "Sales VAT Advance Notif."
                         else
                             VATStmtLine2.TestField("Amount Type");
                     end;
+                    OnCalcLineTotalOnBeforeCalcTotalAmountVATEntryTotaling(VATStmtLine2, VATEntry, Amount);
                     CalcTotalAmount(VATStmtLine2);
                 end;
             VATStmtLine2.Type::"Row Totaling":
@@ -659,13 +656,18 @@ table 11021 "Sales VAT Advance Notif."
         exit(Amount2 + AmountToAdd);
     end;
 
-    procedure SetCalcParameters(StartDate2: Date; EndDate2: Date; Selection2: Option Open,Closed,"Open and Closed"; PeriodSelection2: Option "Before and Within Period","Within Period"; UseAmtsInAddCurr2: Boolean)
+    procedure SetCalcParameters(StartDate2: Date; EndDate2: Date; Selection2: Enum "VAT Statement Report Selection"; PeriodSelection2: Enum "VAT Statement Report Period Selection"; UseAmtsInAddCurr2: Boolean)
     begin
         StartDate := StartDate2;
         EndDate := EndDate2;
         Selection := Selection2;
         PeriodSelection := PeriodSelection2;
         "Amounts in Add. Rep. Currency" := UseAmtsInAddCurr2;
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnCalcLineTotalOnBeforeCalcTotalAmountVATEntryTotaling(VATStmtLine: Record "VAT Statement Line"; var VATEntry: Record "VAT Entry"; var Amount: Decimal)
+    begin
     end;
 }
 

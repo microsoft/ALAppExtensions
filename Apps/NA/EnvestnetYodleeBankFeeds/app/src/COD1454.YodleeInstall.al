@@ -24,7 +24,6 @@ codeunit 1454 "Yodlee Install"
         if AppInfo.DataVersion().Major() = 0 then begin
             MSYodleeServiceUpgrade.UpdateDataExchangeDefinition();
             MSYodleeServiceUpgrade.UpdateYodleeBankSession();
-            UpgradeTag.SetAllUpgradeTags();
         end;
     end;
 
@@ -69,6 +68,12 @@ codeunit 1454 "Yodlee Install"
 
         if not UpgradeTag.HasUpgradeTag(YodleeServiceUpgrade.GetYodleeSecretsToISValidationTag()) then
             UpgradeTag.SetUpgradeTag(YodleeServiceUpgrade.GetYodleeSecretsToISValidationTag());
+
+        if not UpgradeTag.HasUpgradeTag(YodleeServiceUpgrade.GetYodleeUpdateBankSessionTableTag()) then
+            UpgradeTag.SetUpgradeTag(YodleeServiceUpgrade.GetYodleeUpdateBankSessionTableTag());
+
+        if not UpgradeTag.HasUpgradeTag(YodleeServiceUpgrade.GetYodleeUpdateDataExchangeDefinitionTag()) then
+            UpgradeTag.SetUpgradeTag(YodleeServiceUpgrade.GetYodleeUpdateDataExchangeDefinitionTag());
     end;
 
 }

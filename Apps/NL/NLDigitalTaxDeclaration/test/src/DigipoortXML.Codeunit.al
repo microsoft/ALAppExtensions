@@ -32,6 +32,7 @@ codeunit 148000 "Digipoort XML"
     begin
         // [FEATURE] [XML] [UI]
         // [SCENARIO] Verify XBLR document content for VAT Return with setup for Digipoort format
+        // [SCENARIO 364897] Generated XML must contains correct startDate and endDate
 
         Initialize();
 
@@ -44,6 +45,7 @@ codeunit 148000 "Digipoort XML"
         SavedVATReportsConfiguration := VATReportsConfiguration;
         VATReportsConfiguration.Validate("Submission Codeunit ID", 0);
         VATReportsConfiguration.Modify();
+        // [GIVEN] VAT Report Header with StartDate = 01-01-2020 and EndDate = 31-01-2020
         CreateVATReturn(VATReportHeader, VATReportsConfiguration."VAT Report Version");
         LibraryVariableStorage.Enqueue(ReportGeneratedMsg);
 
@@ -51,6 +53,8 @@ codeunit 148000 "Digipoort XML"
         GenerateContent(VATReportHeader);
 
         // [THEN] XBLR content generats correctly for Tax Declaration
+        // [THEN] "period/startDate" = 01-01-2020
+        // [THEN] "period/endDate" = 31-01-2020
         VerifyVATXBLRDocContent(VATReportHeader);
 
         LibraryVariableStorage.AssertEmpty();
@@ -222,7 +226,7 @@ codeunit 148000 "Digipoort XML"
     begin
         LibraryVATReport.CreateVATReturn(VATReportHeader);
         VATReportHeader.Validate("Start Date", WorkDate());
-        VATReportHeader.Validate("End date", WorkDate());
+        VATReportHeader.Validate("End date", WorkDate() + 1);
         VATStatementName.FindFirst();
         VATReportHeader.Validate("Statement Template Name", VATStatementName."Statement Template Name");
         VATReportHeader.Validate("Statement Name", VATStatementName.Name);
@@ -233,8 +237,8 @@ codeunit 148000 "Digipoort XML"
     [Scope('OnPrem')]
     procedure VATStatementRequestPageHandler(var VATReportRequestPage: TestRequestPage "VAT Report Request Page")
     var
-        Selection: Option Open,Closed,"Open and Closed";
-        PeriodSelection: Option "Before and Within Period","Within Period";
+        Selection: Enum "VAT Statement Report Selection";
+        PeriodSelection: Enum "VAT Statement Report Period Selection";
     begin
         VATReportRequestPage."Start Date".SetValue(LibraryVariableStorage.DequeueDate());
         VATReportRequestPage."End Date".SetValue(LibraryVariableStorage.DequeueDate());

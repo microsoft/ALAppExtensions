@@ -11,7 +11,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
     var
         Assert: Codeunit 130000;
-        LibraryVariableStorage: Codeunit 131004;
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryERM: Codeunit 131300;
         LibraryUtility: Codeunit 131000;
         LibraryRandom: Codeunit 130440;
@@ -1354,6 +1354,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         LibraryVariableStorage.AssertEmpty();
     end;
 
+    [Test]
+    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler')]
     procedure TestGetTransactionsCurrencyMissmatch();
     var
         BankAccount: Record 270;
@@ -1376,6 +1378,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         Assert.ExpectedError(CurrencyErr);
     end;
 
+    [Test]
+    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler')]
     procedure TestGetTransactionsWrongBankAccountID();
     var
         BankAccount: Record 270;
@@ -1965,6 +1969,16 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         Assert.ExpectedError('The MS - Yodlee Bank Service Setup does not exist');
     end;
 
+    [Test]
+    procedure TestYodleeUserPassword();
+    var
+        PasswordHelper: Codeunit "Password Helper";
+        Password: Text[50];
+    begin
+        Password := PasswordHelper.GeneratePassword(MaxStrLen(Password));
+        Assert.IsFalse(PasswordHelper.WeakYodleePassword(Password), 'The generated password does not conform with Yodlee standard for a strong password.')
+    end;
+
     local procedure SetupForOnlineImportingOfTransactions(var MSYodleeBankServiceSetup: Record 1450; var BankAccount: Record 270);
     var
         MSYodleeBankAccLink: Record 1451;
@@ -2015,7 +2029,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         Assert.AreEqual(DMY2DATE(10, 1, 2013), PmtReconJnl."Transaction Date".ASDATE(), '');
 
         // verify feed ending balance from the mock file was imported
-        // Assert.AreEqual(9044.78, PmtReconJnl.StatementEndingBalance.ASDECIMAL(), '');
+        Assert.AreEqual(9044.78, PmtReconJnl.StatementEndingBalance.ASDECIMAL(), '');
     end;
 
     local procedure CreateLinkedBankAccount(var BankAccount: Record 270);

@@ -3,6 +3,10 @@ table 10684 "SAF-T Missing Field"
     DataClassification = CustomerContent;
     Caption = 'SAF-T Missing Field';
 
+    #pragma warning disable AS0034
+    TableType = Temporary;
+    #pragma warning restore AS0034
+
     fields
     {
         field(1; "Table No."; Integer)

@@ -46,7 +46,7 @@ codeunit 11421 "Create Elec. Tax Declaration"
         EntityElement.Add(Identifier);
         PeriodElement := XmlElement.Create('period', 'http://www.xbrl.org/2003/instance');
         PeriodElement.Add(XmlElement.Create('startDate', 'http://www.xbrl.org/2003/instance', Format("Start Date", 0, '<Year4>-<Month,2>-<Day,2>')).AsXmlNode());
-        PeriodElement.Add(XmlElement.Create('endDate', 'http://www.xbrl.org/2003/instance', Format("Start Date", 0, '<Year4>-<Month,2>-<Day,2>')).AsXmlNode());
+        PeriodElement.Add(XmlElement.Create('endDate', 'http://www.xbrl.org/2003/instance', Format("End Date", 0, '<Year4>-<Month,2>-<Day,2>')).AsXmlNode());
         ContextElement.Add(EntityElement);
         ContextElement.Add(PeriodElement);
         RootElement.Add(ContextElement);

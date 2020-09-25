@@ -264,22 +264,22 @@ codeunit 139537 "GP Data Migration Tests"
 
     local procedure GetGetAllEmptyResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\DynamicsGPDataMigrationV2\test\resources\GPResponse\GetAllEmptyResponse.txt');
+        exit('\App\Apps\W1\DynamicsGPDataMigrationV2\test\resources\GPResponse\GetAllEmptyResponse.txt');
     end;
 
     local procedure GetGetAllBadResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\DynamicsGPDataMigrationV2\test\resources\GPResponse\GetAllBadResponse.txt');
+        exit('\App\Apps\W1\DynamicsGPDataMigrationV2\test\resources\GPResponse\GetAllBadResponse.txt');
     end;
 
     local procedure GetGetAllCustomersResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\DynamicsGPDataMigrationV2\test\resources\GPResponse\GetAllCustomersResponse.txt');
+        exit('\App\Apps\W1\DynamicsGPDataMigrationV2\test\resources\GPResponse\GetAllCustomersResponse.txt');
     end;
 
     local procedure GetGetAllVendorsResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\DynamicsGPDataMigrationV2\test\resources\GPResponse\GetAllVendorsResponse.txt');
+        exit('\App\Apps\W1\DynamicsGPDataMigrationV2\test\resources\GPResponse\GetAllVendorsResponse.txt');
     end;
 
     [Normal]
@@ -334,7 +334,7 @@ codeunit 139537 "GP Data Migration Tests"
         if Customers.FindSet() then
             repeat
                 CustomerMigrator.OnMigrateCustomer(CustomerFacade, Customers.RecordId());
-                //CustomerMigrator.OnMigrateCustomerPostingGroups(CustomerFacade, Customers.RecordId(), true);
+            //CustomerMigrator.OnMigrateCustomerPostingGroups(CustomerFacade, Customers.RecordId(), true);
             until Customers.Next() = 0;
     end;
 
@@ -344,7 +344,7 @@ codeunit 139537 "GP Data Migration Tests"
         if Vendors.FindSet() then
             repeat
                 VendorMigrator.OnMigrateVendor(VendorFacade, Vendors.RecordId());
-                //VendorMigrator.OnMigrateVendorPostingGroups(VendorFacade, Vendors.RecordId(), true);
+            //VendorMigrator.OnMigrateVendorPostingGroups(VendorFacade, Vendors.RecordId(), true);
             until Vendors.Next() = 0;
     end;
 

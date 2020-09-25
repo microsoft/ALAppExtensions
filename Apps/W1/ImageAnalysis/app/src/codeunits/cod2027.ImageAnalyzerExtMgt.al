@@ -364,30 +364,30 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Image Analyzer Ext. Mgt.", 'OnEnableImageAnalysis', '', false, false)]
     local procedure OnEnableImageAnalysisSubscriber()
     begin
-        SendTraceTag('00001K6', ImageAnalysisCategoryLbl, Verbosity::Normal, ImageAnalysisEnabledLbl, DataClassification::SystemMetadata);
+        Session.LogMessage('00001K6', ImageAnalysisEnabledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageAnalysisCategoryLbl);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Image Analyzer Ext. Mgt.", 'OnSendEnableNotification', '', false, false)]
     local procedure OnSendEnableNotificationSubscriber()
     begin
-        SendTraceTag('00001K7', ImageAnalysisCategoryLbl, Verbosity::Normal, EnableNotificationSentLbl, DataClassification::SystemMetadata);
+        Session.LogMessage('00001K7', EnableNotificationSentLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageAnalysisCategoryLbl);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Image Analyzer Ext. Mgt.", 'OnSuccessfullyAnalyseImage', '', false, false)]
     local procedure OnSuccessfullyAnalyseImageSubscriber()
     begin
-        SendTraceTag('00001K8', ImageAnalysisCategoryLbl, Verbosity::Normal, ImageAnalysisSuccesfulLbl, DataClassification::SystemMetadata);
+        Session.LogMessage('00001K8', ImageAnalysisSuccesfulLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageAnalysisCategoryLbl);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Image Analysis Tags", 'OnAssignCategory', '', false, false)]
     local procedure OnAssignCategorySubscriber()
     begin
-        SendTraceTag('00001K9', ImageAnalysisCategoryLbl, Verbosity::Normal, CategoryAssignedLbl, DataClassification::SystemMetadata);
+        Session.LogMessage('00001K9', CategoryAssignedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageAnalysisCategoryLbl);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Image Analysis Tags", 'OnAssignAttribute', '', false, false)]
     local procedure OnAssignAttributeSubscriber()
     begin
-        SendTraceTag('00001KA', ImageAnalysisCategoryLbl, Verbosity::Normal, AttributeAssignedLbl, DataClassification::SystemMetadata);
+        Session.LogMessage('00001KA', AttributeAssignedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageAnalysisCategoryLbl);
     end;
 }

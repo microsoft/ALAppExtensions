@@ -14,6 +14,7 @@ codeunit 13646 "OIOUBL-Management"
         ZipArchiveFilterTxt: Label 'Zip File (*.zip)|*.zip', Locked = true;
         ZipArchiveSaveDialogTxt: Label 'Export OIOUBL archive';
         NonExistingDocumentFormatErr: Label 'The electronic document format %1 does not exist for the document type %2.';
+        WrongFileNameErr: Label 'Wrong file name.';
 
     procedure ClearRecordExportBuffer()
     var
@@ -31,6 +32,9 @@ codeunit 13646 "OIOUBL-Management"
         IsHandled: Boolean;
     begin
         FileName := STRSUBSTNO('%1.xml', DocNo);
+        OnExportXMLFileOnAfterSetFileName(FileName, DocNo);
+        if (FileName = '') or (StrPos(FileName, '\') > 0) then
+            Error(WrongFileNameErr);
         FolderPath := DelChr(FolderPath, '>', '\');
 
         OIOUBLFileEvents.FileCreated(SourceFile);
@@ -252,6 +256,11 @@ codeunit 13646 "OIOUBL-Management"
 
     [IntegrationEvent(true, false)]
     local procedure OnExportXMLFileOnBeforeDownload(DocNo: Code[20]; SourceFile: Text; FolderPath: Text; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExportXMLFileOnAfterSetFileName(var FileName: Text; DocNo: Code[20])
     begin
     end;
 }

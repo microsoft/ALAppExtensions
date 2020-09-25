@@ -13,7 +13,7 @@ codeunit 1872 "C5 Telemetry"
     var
         C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
     begin
-        SendTraceTag('00001DF', C5MigrationDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Error, EmptyZipFileBlobErr, DataClassification::SystemMetadata);
+        Session.LogMessage('00001DF', EmptyZipFileBlobErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"C5 Data Migration Mgt.", 'OnCopyToDataBaseFailed', '', false, false)]
@@ -21,7 +21,7 @@ codeunit 1872 "C5 Telemetry"
     var
         C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
     begin
-        SendTraceTag('00001IK', C5MigrationDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Error, CopyToDatabaseFailedErr, DataClassification::SystemMetadata);
+        Session.LogMessage('00001IK', CopyToDatabaseFailedErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"C5 Unzip", 'OnUnzipFileError', '', false, false)]
@@ -29,7 +29,7 @@ codeunit 1872 "C5 Telemetry"
     var
         C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
     begin
-        SendTraceTag('00001IL', C5MigrationDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Error, GetLastErrorText(), DataClassification::CustomerContent);
+        Session.LogMessage('00001IL', GetLastErrorText(), Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"C5 Schema Reader", 'OnDefinitionFileMissing', '', false, false)]
@@ -38,7 +38,7 @@ codeunit 1872 "C5 Telemetry"
         C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
         C5SchemaReader: Codeunit "C5 Schema Reader";
     begin
-        SendTraceTag('00001DG', C5MigrationDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Error, C5SchemaReader.GetDefinitionFileMissingErrorTxt(), DataClassification::SystemMetadata);
+        Session.LogMessage('00001DG', C5SchemaReader.GetDefinitionFileMissingErrorTxt(), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"C5 Data Loader", 'OnFillStagingTablesStarted', '', false, false)]
@@ -46,7 +46,7 @@ codeunit 1872 "C5 Telemetry"
     var
         C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
     begin
-        SendTraceTag('00001HZ', C5MigrationDashboardMgt.GetC5MigrationTypeTxt(), VERBOSITY::Normal, StagingTablesImportStartTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00001HZ', StagingTablesImportStartTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
 
     end;
 
@@ -55,11 +55,7 @@ codeunit 1872 "C5 Telemetry"
     var
         C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
     begin
-        SendTraceTag('00001I0',
-                 C5MigrationDashboardMgt.GetC5MigrationTypeTxt(),
-                 Verbosity::Normal,
-                 StrSubstNo(StagingTablesImportFinishTxt, DurationAsInt),
-                 DataClassification::SystemMetadata);
+        Session.LogMessage('00001I0', StrSubstNo(StagingTablesImportFinishTxt, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"C5 Wizard Integration", 'OnC5MigrationSelected', '', false, false)]
@@ -67,7 +63,7 @@ codeunit 1872 "C5 Telemetry"
     var
         C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
     begin
-        SendTraceTag('00001K5', C5MigrationDashboardMgt.GetC5MigrationTypeTxt(), Verbosity::Normal, 'C5 Migration was selected.', DataClassification::SystemMetadata);
+        Session.LogMessage('00001K5', 'C5 Migration was selected.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"C5 Wizard Integration", 'OnEntitiesToMigrateSelected', '', false, false)]
@@ -98,6 +94,6 @@ codeunit 1872 "C5 Telemetry"
         if DataMigrationEntity.FindFirst() then
             EntitiesToMigrateMessage += StrSubstNo('C5_ledger_entries: %1; ', DataMigrationEntity."No. of Records");
 
-        SendTraceTag('00001I1', C5MigrationDashboardMgt.GetC5MigrationTypeTxt(), Verbosity::Normal, EntitiesToMigrateMessage, DataClassification::SystemMetadata);
+        Session.LogMessage('00001I1', EntitiesToMigrateMessage, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
     end;
 }

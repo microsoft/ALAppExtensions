@@ -99,7 +99,7 @@ codeunit 1952 "LP Subscribers"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"LP Prediction Mgt.", 'OnAfterShowNotification', '', false, false)]
     local procedure SendTraceTagOnAfterShowNotification()
     begin
-        SendTraceTag('00001KR', TelemetryCategoryTxt, Verbosity::Normal, EnableNotificationDisplayedTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00001KR', EnableNotificationDisplayedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"LP Machine Learning Setup", 'OnAfterModifyEvent', '', false, false)]
@@ -113,9 +113,9 @@ codeunit 1952 "LP Subscribers"
             exit;
 
         if Rec."Make Predictions" then
-            SendTraceTag('00001KS', TelemetryCategoryTxt, Verbosity::Normal, LatePaymentPredictionEnabledTxt, DataClassification::SystemMetadata)
+            Session.LogMessage('00001KS', LatePaymentPredictionEnabledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt)
         else
-            SendTraceTag('00001KT', TelemetryCategoryTxt, Verbosity::Normal, LatePaymentPredictionDisabledTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00001KT', LatePaymentPredictionDisabledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, codeunit::"ML Prediction Management", 'OnBeforeTrain', '', false, false)]
@@ -124,13 +124,13 @@ codeunit 1952 "LP Subscribers"
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
     begin
         LPMachineLearningSetup.GetSingleInstance();
-        SendTraceTag('000025K', TelemetryCategoryTxt, Verbosity::Normal, StrSubstNo(ModelTrainingStartingTxt, LPMachineLearningSetup."Selected Model"), DataClassification::SystemMetadata);
+        Session.LogMessage('000025K', StrSubstNo(ModelTrainingStartingTxt, LPMachineLearningSetup."Selected Model"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"LP Model Management", 'OnModelTrainingComplete', '', false, false)]
     local procedure SendTraceTagOnModelTrainingComplete(ThresholdModelQuality: Decimal; ModelQuality: Decimal; TotalInvoices: Integer)
     begin
-        SendTraceTag('00001KU', TelemetryCategoryTxt, Verbosity::Normal, StrSubstNo(ModelTrainingCompletedTxt, ModelQuality, TotalInvoices, ThresholdModelQuality), DataClassification::SystemMetadata);
+        Session.LogMessage('00001KU', StrSubstNo(ModelTrainingCompletedTxt, ModelQuality, TotalInvoices, ThresholdModelQuality), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, codeunit::"ML Prediction Management", 'OnBeforeEvaluate', '', false, false)]
@@ -139,7 +139,7 @@ codeunit 1952 "LP Subscribers"
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
     begin
         LPMachineLearningSetup.GetSingleInstance();
-        SendTraceTag('000025L', TelemetryCategoryTxt, Verbosity::Normal, StrSubstNo(ModelEvaluationStartingTxt, LPMachineLearningSetup."Selected Model"), DataClassification::SystemMetadata);
+        Session.LogMessage('000025L', StrSubstNo(ModelEvaluationStartingTxt, LPMachineLearningSetup."Selected Model"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"LP Model Management", 'OnModelEvaluationComplete', '', false, false)]
@@ -149,8 +149,8 @@ codeunit 1952 "LP Subscribers"
     begin
         LPMachineLearningSetup.GetSingleInstance();
         LPMachineLearningSetup."Selected Model" := SelectedModel; // so the option is written as readable text and not integer
-        SendTraceTag('00001KV', TelemetryCategoryTxt, Verbosity::Normal, StrSubstNo(ModelEvaluationCompletedTxt, LPMachineLearningSetup."Selected Model",
-            ModelQuality, TotalInvoices, EvaluatedOnNewDataOnly, ThresholdModelQuality), DataClassification::SystemMetadata);
+        Session.LogMessage('00001KV', StrSubstNo(ModelEvaluationCompletedTxt, LPMachineLearningSetup."Selected Model",
+            ModelQuality, TotalInvoices, EvaluatedOnNewDataOnly, ThresholdModelQuality), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, codeunit::"ML Prediction Management", 'OnBeforePredict', '', false, false)]
@@ -159,7 +159,7 @@ codeunit 1952 "LP Subscribers"
         LPMachineLearningSetup: Record "LP Machine Learning Setup";
     begin
         LPMachineLearningSetup.GetSingleInstance();
-        SendTraceTag('000025M', TelemetryCategoryTxt, Verbosity::Normal, StrSubstNo(PredictionStartingTxt, LPMachineLearningSetup."Selected Model"), DataClassification::SystemMetadata);
+        Session.LogMessage('000025M', StrSubstNo(PredictionStartingTxt, LPMachineLearningSetup."Selected Model"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"LP Prediction Mgt.", 'OnAfterPredictIsLate', '', false, false)]
@@ -169,8 +169,8 @@ codeunit 1952 "LP Subscribers"
     begin
         TempLPMachineLearningSetup.GetSingleInstance();
         TempLPMachineLearningSetup."Selected Model" := SelectedModel;
-        SendTraceTag('00001KW', TelemetryCategoryTxt, Verbosity::Normal, StrSubstNo(PredictionMadeTxt, TempLPMachineLearningSetup."Selected Model",
-            SalesHeader."Document Type", Result), DataClassification::SystemMetadata);
+        Session.LogMessage('00001KW', StrSubstNo(PredictionMadeTxt, TempLPMachineLearningSetup."Selected Model",
+            SalesHeader."Document Type", Result), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
     end;
 
     var

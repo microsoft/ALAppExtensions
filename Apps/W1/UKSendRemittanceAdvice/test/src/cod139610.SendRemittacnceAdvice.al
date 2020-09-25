@@ -24,15 +24,38 @@ codeunit 139610 SendRemittanceAdvice
 
     [Test]
     [HandlerFunctions('SelectSendingOptionHandler,EmailVerifyModalPageHandler')]
+    procedure SendRemittanceAdviceFromPaymentJournalSMTPSetup() // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        SendRemittanceAdviceFromPaymentJournalInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('SelectSendingOptionHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure SendRemittanceAdviceFromPaymentJournal()
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        SendRemittanceAdviceFromPaymentJournalInternal();
+    end;
+
+    procedure SendRemittanceAdviceFromPaymentJournalInternal()
     var
         CustomReportSelection: Record "Custom Report Selection";
         GenJournalLine: Record "Gen. Journal Line";
         Vendor: Record Vendor;
+        EmailFeature: Codeunit "Email Feature";
+        LibraryWorkflow: Codeunit "Library - Workflow";
     begin
         // [SCENARIO 339846] Send remittance advice report to vendor by email from Payment Journal using customized Document Sending Profile
         Initialize();
-        CreateSMTPMailSetup();
+        if EmailFeature.IsEnabled() then
+            LibraryWorkflow.SetUpEmailAccount()
+        else
+            CreateSMTPMailSetup();
 
         // [GIVEN] Vendor with email
         // [GIVEN] Payment journal line
@@ -51,14 +74,37 @@ codeunit 139610 SendRemittanceAdvice
 
     [Test]
     [HandlerFunctions('SelectSendingOptionHandler,EmailVerifyModalPageHandler')]
+    procedure SendRemittanceAdviceFromVendorLedgerEntrySMTPSetup() // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        SendRemittanceAdviceFromVendorLedgerEntryInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('SelectSendingOptionHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure SendRemittanceAdviceFromVendorLedgerEntry()
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        SendRemittanceAdviceFromVendorLedgerEntryInternal();
+    end;
+
+    procedure SendRemittanceAdviceFromVendorLedgerEntryInternal()
     var
         CustomReportSelection: Record "Custom Report Selection";
         Vendor: Record Vendor;
+        EmailFeature: Codeunit "Email Feature";
+        LibraryWorkflow: Codeunit "Library - Workflow";
     begin
         // [SCENARIO 339846] Send remittance advice report to vendor by email from Payment Journal using customized Document Sending Profile
         Initialize();
-        CreateSMTPMailSetup();
+        if EmailFeature.IsEnabled() then
+            LibraryWorkflow.SetUpEmailAccount()
+        else
+            CreateSMTPMailSetup();
 
         // [GIVEN] Vendor with email
         // [GIVEN] Vendor Ledger Entry
@@ -233,5 +279,18 @@ codeunit 139610 SendRemittanceAdvice
     procedure EmailVerifyModalPageHandler(var EmailDialog: TestPage "Email Dialog")
     begin
         EmailDialog.SendTo.AssertEquals(LibraryVariableStorage.DequeueText());
+    end;
+
+    [ModalPageHandler]
+    procedure EmailEditorHandler(var EmailEditor: TestPage "Email Editor")
+    begin
+        EmailEditor.ToField.AssertEquals(LibraryVariableStorage.DequeueText());
+    end;
+
+    [StrMenuHandler]
+    [Scope('OnPrem')]
+    procedure CloseEmailEditorHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        Choice := 1;
     end;
 }

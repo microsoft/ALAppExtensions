@@ -27,6 +27,10 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
         NonSupportedTransactionsDetectedMsg: Label 'One or more transactions in the imported file were not imported because they are not of supported type. Supported transaction types are: General Journal, Check, and Transfer.';
         QBPayrollImportTelemetryTok: Label 'AL Quickbooks Payroll File Import', Locked = true;
         TransactionsImportedTxt: Label '%1 Quickbooks G/L transactions imported.', Locked = true;
+        TrnsDateClassTxt: Label '!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Locked = true;
+        SplitDateClassTxt: Label '!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Locked = true;
+        TrnsGeneralJournalTxt: Label 'TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1Savings', Locked = true;
+        SplitGeneralJournalTxt: Label 'SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Labor%1%1 -650%1%1Construction:Labor', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, 1660, 'OnRegisterPayrollService', '', false, false)]
     local procedure OnRegisterPayrollService(var TempServiceConnection: Record 1400 temporary);
@@ -72,15 +76,15 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
 
         Tab := 9;
 
-        OutStream.WRITETEXT(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        OutStream.WRITETEXT(STRSUBSTNO(TrnsDateClassTxt, Tab));
         OutStream.WRITETEXT();
-        OutStream.WRITETEXT(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        OutStream.WRITETEXT(STRSUBSTNO(SplitDateClassTxt, Tab));
         OutStream.WRITETEXT();
         OutStream.WRITETEXT('!ENDTRNS');
         OutStream.WRITETEXT();
-        OutStream.WRITETEXT(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1Savings', Tab));
+        OutStream.WRITETEXT(STRSUBSTNO(TrnsGeneralJournalTxt, Tab));
         OutStream.WRITETEXT();
-        OutStream.WRITETEXT(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Labor%1%1 -650%1%1Construction:Labor', Tab));
+        OutStream.WRITETEXT(STRSUBSTNO(SplitGeneralJournalTxt, Tab));
         OutStream.WRITETEXT();
         OutStream.WRITETEXT('ENDTRNS');
 
@@ -124,7 +128,7 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
 
         Window.CLOSE();
 
-        SENDTRACETAG('00001SZ', QBPayrollImportTelemetryTok, Verbosity::Normal, STRSUBSTNO(TransactionsImportedTxt, TempImportGLTransaction.COUNT()), DataClassification::SystemMetadata);
+        Session.LogMessage('00001SZ', STRSUBSTNO(TransactionsImportedTxt, TempImportGLTransaction.COUNT()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', QBPayrollImportTelemetryTok);
         IF NOT TempImportGLTransaction.ISEMPTY() AND NonGJTransactionsDetected THEN
             MESSAGE(NonSupportedTransactionsDetectedMsg);
     end;
@@ -178,7 +182,7 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
 
         TempCSVBuffer.RESET();
         TempCSVBuffer.SETRANGE("Field No.", 1);
-        TempCSVBuffer.SETFILTER(Value, STRSUBSTNO('%1|%2', TransactionLineTok, SplitLineTok));
+        TempCSVBuffer.SETFILTER(Value, '%1|%2', TransactionLineTok, SplitLineTok);
         IF TempCSVBuffer.FINDSET() THEN
             REPEAT
                 IF IsSupportedTransactionType(TempCSVBuffer.GetValueOfLineAt(TransactionTypeFieldNo)) THEN BEGIN

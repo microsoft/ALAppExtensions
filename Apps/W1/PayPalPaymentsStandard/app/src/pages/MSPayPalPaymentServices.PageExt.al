@@ -25,6 +25,7 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
                         Caption = 'PayPal email address';
                         Editable = UserHasPermissions;
                         ExtendedDatatype = EMail;
+                        ToolTip = 'Specifies the PayPal email address.';
 
                         trigger OnValidate();
                         begin
@@ -35,8 +36,10 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
                     field("Terms of Service"; TermsOfServiceLbl)
                     {
                         ApplicationArea = Invoicing, Basic, Suite;
+                        Caption = 'PayPal Terms of Service';
                         Editable = false;
                         ShowCaption = false;
+                        ToolTip = 'Specifies PayPal terms of service.';
 
                         trigger OnDrillDown();
                         begin
@@ -68,7 +71,7 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
         UserHasPermissions := CheckUserPermissions();
 
         if not UserHasPermissions then begin
-            SendTraceTag('00006ZK', PayPalTelemetryCategoryTok, Verbosity::Normal, UserWithoutPermissionsTelemetryMsg, DataClassification::SystemMetadata);
+            Session.LogMessage('00006ZK', UserWithoutPermissionsTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             exit;
         end;
 

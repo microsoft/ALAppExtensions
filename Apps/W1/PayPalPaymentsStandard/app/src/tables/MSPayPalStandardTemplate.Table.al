@@ -172,18 +172,18 @@ table 1071 "MS - PayPal Standard Template"
         LogoOutStream: OutStream;
     begin
         if not LogoHttpClient.Get(LogoURL, ResponseMessage) then begin
-            SendTraceTag('00008II', PayPalTelemetryCategoryTok, VERBOSITY::Warning, StrSubstNo(LogoFailedResponseTxt, ResponseMessage.HttpStatusCode()), DataClassification::SystemMetadata);
+            Session.LogMessage('00008II', StrSubstNo(LogoFailedResponseTxt, ResponseMessage.HttpStatusCode()), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             exit(false);
         end;
         if not ResponseMessage.IsSuccessStatusCode() then begin
-            SendTraceTag('00008IJ', PayPalTelemetryCategoryTok, VERBOSITY::Warning, StrSubstNo(LogoFailedResponseTxt, ResponseMessage.HttpStatusCode()), DataClassification::SystemMetadata);
+            Session.LogMessage('00008IJ', StrSubstNo(LogoFailedResponseTxt, ResponseMessage.HttpStatusCode()), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             exit(false);
         end;
 
         TempBlob.CreateInStream(ResponseInStream);
 
         if not ResponseMessage.Content().ReadAs(ResponseInStream) then begin
-            SendTraceTag('00008IK', PayPalTelemetryCategoryTok, VERBOSITY::Warning, LogoCannotReadResponseTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008IK', LogoCannotReadResponseTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             exit(false);
         end;
         Logo.CREATEOUTSTREAM(LogoOutStream);

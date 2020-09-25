@@ -19,10 +19,10 @@ codeunit 1944 "InstallGPSmartLists"
         if not ExtensionManagement.IsInstalledByAppId(AppId) then begin
             PackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(AppId);
             if IsNullGuid(PackageId) then
-                SendTraceTag('00007YJ', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, StrSubstNo(GPSmartListFailedMsg, PackageId), DataClassification::SystemMetadata)
+                Session.LogMessage('00007YJ', StrSubstNo(GPSmartListFailedMsg, PackageId), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt())
             else
                 If Not TryToInstallSL(PackageId) then
-                    SendTraceTag('00007ZY', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, StrSubstNo(InstallExtenFailedMsg, PackageId), DataClassification::SystemMetadata)
+                    Session.LogMessage('00007ZY', StrSubstNo(InstallExtenFailedMsg, PackageId), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt())
         end;
     end;
 

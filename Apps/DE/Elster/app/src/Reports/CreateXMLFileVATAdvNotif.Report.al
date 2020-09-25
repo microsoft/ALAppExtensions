@@ -23,7 +23,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
 
             trigger OnAfterGetRecord()
             var
-                PeriodSelection: Option "Before and Within Period","Within Period";
+                PeriodSelection: Enum "VAT Statement Report Period Selection";
                 Continued: Decimal;
                 TotalLine1: Decimal;
                 TotalLine2: Decimal;
@@ -37,7 +37,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
                 TaxUnrealizedAmount: array[100] of Decimal;
                 TaxUnrealizedBase: array[100] of Decimal;
             begin
-                SendTraceTag('0000C9S', ElsterTok, VERBOSITY::Normal, CreateXMLFileMsg, DATACLASSIFICATION::SystemMetadata);
+                Session.LogMessage('0000C9S', CreateXMLFileMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ElsterTok);
 
                 if "XML-File Creation Date" <> 0D then
                     Error(XMLFileExistsErr, TableCaption());
@@ -64,7 +64,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
 
                 CreateXmlSubDoc();
 
-                SendTraceTag('0000C9T', ElsterTok, VERBOSITY::Normal, CreateXMLFileSuccessMsg, DATACLASSIFICATION::SystemMetadata);
+                Session.LogMessage('0000C9T', CreateXMLFileSuccessMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ElsterTok);
             end;
 
             trigger OnPostDataItem()
@@ -151,7 +151,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
         PrepareXmlDoc();
 
         if not XmlDocument.ReadFrom('<?xml version="1.0" encoding="UTF-8"?>' + '<Elster xmlns="' + XmlNameSpace + '"></Elster>', XmlSubDoc) then
-            Error(XMLDocHasNotBeenCreatedErr);
+            LogInternalError(XMLDocHasNotBeenCreatedErr, DataClassification::SystemMetadata, Verbosity::Error);
         XmlSubDoc.GetRoot(XmlRootElem);
         AddTransferHeader(XmlRootElem);
         AddUseDataHeader(XmlRootElem);

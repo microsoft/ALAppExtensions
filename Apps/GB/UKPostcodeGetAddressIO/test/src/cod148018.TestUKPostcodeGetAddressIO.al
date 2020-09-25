@@ -11,7 +11,7 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
 
     var
         Assert: Codeunit 130000;
-        LibraryVariableStorage: Codeunit 131004;
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         PostcodeServiceManager: Codeunit 9090;
         LibraryLowerPermissions: Codeunit 132217;
 

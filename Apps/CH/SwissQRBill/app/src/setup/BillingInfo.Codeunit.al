@@ -88,7 +88,7 @@ codeunit 11519 "Swiss QR-Bill Billing Info"
         if PmtTermsCode <> '' then
             with PaymentTerms do
                 if Get(PmtTermsCode) then
-                    if ("Discount %" <> 0) and ("Discount Date Calculation" <> DummyDateFormula) then
+                    if "Discount Date Calculation" <> DummyDateFormula then
                         exit(StrSubstNo('%1:%2', "Discount %", CalcDate("Discount Date Calculation", WorkDate()) - WorkDate()));
     end;
 

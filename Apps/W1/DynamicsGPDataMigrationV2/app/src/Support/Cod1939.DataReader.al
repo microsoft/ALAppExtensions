@@ -139,25 +139,25 @@ codeunit 1939 "MigrationGP Data Reader"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"MigrationGP Data Reader", 'OnZipFileMissing', '', false, false)]
     local procedure OnZipFileMissingSubscriber()
     begin
-        SendTraceTag('00001OE', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Warning, ZipFileMissingErrorTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00001OE', ZipFileMissingErrorTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"MigrationGP Data Reader", 'OnExtractFolderMissing', '', false, false)]
     local procedure OnExtractFolderMissingSubscriber()
     begin
-        SendTraceTag('00001OF', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Warning, ZipExtractionErrorTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00001OF', ZipExtractionErrorTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"MigrationGP Data Reader", 'OnEmptyZipFile', '', false, false)]
     local procedure OnEmptyZipFileSubscriber()
     begin
-        SendTraceTag('00001OG', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Warning, EmptyZipFileErr, DataClassification::SystemMetadata);
+        Session.LogMessage('00001OG', EmptyZipFileErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"MigrationGP Data Reader", 'OnFileMissing', '', false, false)]
     local procedure OnFileMissinggSubscriber()
     begin
-        SendTraceTag('00001OH', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Warning, FileMissingErr, DataClassification::SystemMetadata);
+        Session.LogMessage('00001OH', FileMissingErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 }
 

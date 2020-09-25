@@ -9,7 +9,13 @@ codeunit 13629 "OIOUBL-Check Sales Header"
     trigger OnRun();
     var
         OIOUBLManagement: Codeunit "OIOUBL-Management";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeOnRun(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
         if NOT OIOUBLManagement.IsOIOUBLCheckRequired("OIOUBL-GLN", "Sell-to Customer No.") then
             exit;
         CheckOIOUBLProfile(Rec);
@@ -126,5 +132,10 @@ codeunit 13629 "OIOUBL-Check Sales Header"
             OIOUBLProfile.GET(SalesHeader."OIOUBL-Profile Code");
             OIOUBLProfile.TESTFIELD("OIOUBL-Profile ID");
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOnRun(SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
+    begin
     end;
 }

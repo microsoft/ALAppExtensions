@@ -22,6 +22,7 @@ page 1074 "MS - PayPal Standard Settings"
                     ApplicationArea = Invoicing, Basic, Suite;
                     Caption = 'PayPal Email';
                     ExtendedDatatype = EMail;
+                    ToolTip = 'Specifies the PayPal email.';
 
                     trigger OnValidate();
                     var
@@ -34,8 +35,10 @@ page 1074 "MS - PayPal Standard Settings"
                 field("Terms of Service"; TermsOfServiceLbl)
                 {
                     ApplicationArea = Invoicing, Basic, Suite;
+                    Caption = 'PayPal Terms of Service';
                     Editable = false;
                     ShowCaption = false;
+                    ToolTip = 'Specifies PayPal terms of service.';
 
                     trigger OnDrillDown();
                     begin
@@ -51,6 +54,7 @@ page 1074 "MS - PayPal Standard Settings"
                         ApplicationArea = Invoicing, Basic, Suite;
                         Editable = false;
                         Caption = 'Sandbox active';
+                        ToolTip = 'Specifies whether the Sandbox is active.';
                     }
                 }
             }

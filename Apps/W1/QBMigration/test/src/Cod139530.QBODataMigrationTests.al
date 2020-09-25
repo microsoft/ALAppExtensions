@@ -591,92 +591,92 @@ codeunit 139530 "MigrationQBO Tests"
 
     local procedure GetGetEmtpyAcctNumResponse(): Text[250]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllAccountsEmptyAcctNumResponse.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllAccountsEmptyAcctNumResponse.txt');
     end;
 
     local procedure GetGetFirstPageOfAccountsResponse(): Text[200]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetFirstPageOfAccountsResponse.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetFirstPageOfAccountsResponse.txt');
     end;
 
     local procedure GetGetRemainingPageOfAccountsResponse(): Text[200]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetRemainingPageOfAccountsResponse.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetRemainingPageOfAccountsResponse.txt');
     end;
 
     local procedure GetGetAllAccountsResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllAccountsResponse.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllAccountsResponse.txt');
     end;
 
     local procedure GetGetAllEmptyResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllEmptyResponse.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllEmptyResponse.txt');
     end;
 
     local procedure GetGetAllBadResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllBadResponse.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllBadResponse.txt');
     end;
 
     local procedure GetGetAllCreditMemoResponse(): Text[120]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetCreditMemoResponse_US1.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetCreditMemoResponse_US1.txt');
     end;
 
     local procedure GetGetAllCustomersResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllCustomersResponse.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllCustomersResponse.txt');
     end;
 
     local procedure GetGetAllCustomersResponseCA(): Text[100]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllCustomersResponseCA.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllCustomersResponseCA.txt');
     end;
 
     local procedure GetGetAllItemsResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllItemsResponse.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllItemsResponse.txt');
     end;
 
     local procedure GetGetAllVendorsResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllVendorsResponse.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllVendorsResponse.txt');
     end;
 
     local procedure GetGetInvoiceResponse(): Text[110]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetInvoiceResponse_NoZeroBalance.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetInvoiceResponse_NoZeroBalance.txt');
     end;
 
     local procedure GetGetInvoiceResponseCA(): Text[110]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetInvoiceResponseCA_NoZeroBalance.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetInvoiceResponseCA_NoZeroBalance.txt');
     end;
 
     local procedure GetAllSalesPaymentsResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllPaymentsResponse.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllPaymentsResponse.txt');
     end;
 
     local procedure GetGetCreditMemoResponse(): Text[120]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllCreditMemoResponse_NoZeroBalances.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllCreditMemoResponse_NoZeroBalances.txt');
     end;
 
     local procedure GetGetCreditMemoResponseCA(): Text[130]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllCreditMemoResponseCA_NoZeroBalances.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllCreditMemoResponseCA_NoZeroBalances.txt');
     end;
 
     local procedure GetAllVendorPaymentResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetAllVendorPaymentResponse.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllVendorPaymentResponse.txt');
     end;
 
     local procedure GetGetBillResponse(): Text[110]
     begin
-        exit('\App\ExtensionV2\QBMigration\test\resources\QBOResponse\GetBillResponse_NoZeroBalance.txt');
+        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetBillResponse_NoZeroBalance.txt');
     end;
 
     [Normal]

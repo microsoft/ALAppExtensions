@@ -21,10 +21,10 @@ codeunit 1860 "C5 Data Migration Mgt."
             exit(false);
 
         if not StoreStreamFileOnBlob(ZipInStream) then
-            Error(SomethingWentWrongErr);
+            LogInternalError(SomethingWentWrongErr, DataClassification::SystemMetadata, Verbosity::Error);
 
         if not Codeunit.Run(Codeunit::"C5 Schema Reader") then
-            Error(GetLastErrorText());
+            LogInternalError(GetLastErrorText(), DataClassification::CustomerContent, Verbosity::Error);
         exit(true);
     end;
 

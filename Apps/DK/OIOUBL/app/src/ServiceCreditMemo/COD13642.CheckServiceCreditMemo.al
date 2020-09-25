@@ -9,7 +9,13 @@ codeunit 13642 "OIOUBL-Check Service Cr. Memo"
     trigger OnRun();
     var
         OIOUBLManagement: Codeunit "OIOUBL-Management";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeOnRun(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
         if NOT OIOUBLManagement.IsOIOUBLCheckRequired("OIOUBL-GLN", "Customer No.") then
             exit;
 
@@ -57,5 +63,10 @@ codeunit 13642 "OIOUBL-Check Service Cr. Memo"
             CompanyInfo.GET();
             CompanyInfoRead := TRUE;
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOnRun(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var IsHandled: Boolean)
+    begin
     end;
 }

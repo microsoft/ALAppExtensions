@@ -39,6 +39,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         CannotParseFeeAmountTxt: Label 'Cannot parse fee amount.', Locked = true;
         CannotParsePaymentDateTxt: Label 'Cannot parse payment date. UTC now is used instead.', Locked = true;
         PayPalTelemetryCategoryTok: Label 'AL Paypal', Locked = true;
+        PayerAddressFormatTxt: Label '%1, %2 %3, %4, %5', Locked = true;
 
     procedure ValidateNotification(var WebhookNotification: Record 2000000194; var InvoiceNo: Text; var GrossAmount: Decimal): Boolean;
     var
@@ -55,11 +56,11 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         Custom: Text;
         FeeAmount: Decimal;
     begin
-        SendTraceTag('00008GR', PayPalTelemetryCategoryTok, VERBOSITY::Normal, VerifyNotificationContentTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008GR', VerifyNotificationContentTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
 
         JsonString := GetNotificationJsonString(WebhookNotification);
         IF JsonString = '' THEN BEGIN
-            SendTraceTag('00008GS', PayPalTelemetryCategoryTok, VERBOSITY::Error, TelemetryEmptyNotificationErr, DataClassification::SystemMetadata);
+            Session.LogMessage('00008GS', TelemetryEmptyNotificationErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(EmptyNotificationErr);
         END;
 
@@ -70,11 +71,11 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         IF NOT ValidateTransactionDetails(
              AccountID, TransactionID, TransactionStatus, InvoiceNo, CurrencyCode, GrossAmount)
         THEN BEGIN
-            SendTraceTag('00008GT', PayPalTelemetryCategoryTok, VERBOSITY::Normal, IgnoreNotificationTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008GT', IgnoreNotificationTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             EXIT(FALSE);
         END;
 
-        SendTraceTag('00008GU', PayPalTelemetryCategoryTok, VERBOSITY::Normal, NotificationContentVerifiedTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008GU', NotificationContentVerifiedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
 
         SaveTransactionDetails(
           AccountID, TransactionID, PayPalTransactionType, TransactionDate, TransactionStatus, InvoiceNo, CurrencyCode,
@@ -90,21 +91,21 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         SalesInvoiceHeader: Record 112;
         InvoiceCurrencyCode: Code[10];
     begin
-        SendTraceTag('00008GV', PayPalTelemetryCategoryTok, VERBOSITY::Normal, VerifyTransactionDetailsTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008GV', VerifyTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
 
         IF UPPERCASE(TransactionStatus) <> CompletedTok THEN BEGIN
-            SendTraceTag('00008GW', PayPalTelemetryCategoryTok, VERBOSITY::Normal, TransactionNotCompletedTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008GW', TransactionNotCompletedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             EXIT(FALSE);
         END;
 
         MSPayPalStandardAccount.SETRANGE("Account ID", AccountID);
         IF MSPayPalStandardAccount.IsEmpty() THEN BEGIN
-            SENDTRACETAG('0000166', PayPalTelemetryCategoryTok, VERBOSITY::Normal, TelemetryUnexpectedAccountErr, DataClassification::SystemMetadata);
+            Session.LogMessage('0000166', TelemetryUnexpectedAccountErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(UnexpectedAccountErr, AccountID, TransactionID);
         END;
 
         IF NOT SalesInvoiceHeader.GET(InvoiceNo) THEN BEGIN
-            SENDTRACETAG('0000167', PayPalTelemetryCategoryTok, VERBOSITY::Normal, TelemetryUnexpectedInvoiceNumberErr, DataClassification::SystemMetadata);
+            Session.LogMessage('0000167', TelemetryUnexpectedInvoiceNumberErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(UnexpectedInvoiceNumberErr, InvoiceNo, TransactionID);
         END;
 
@@ -112,12 +113,12 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         IF InvoiceCurrencyCode = '' THEN
             InvoiceCurrencyCode := GetDefaultCurrencyCode();
         IF InvoiceCurrencyCode <> UPPERCASE(CurrencyCode) THEN BEGIN
-            SENDTRACETAG('0000168', PayPalTelemetryCategoryTok, VERBOSITY::Normal, STRSUBSTNO(TelemetryUnexpectedCurrencyCodeErr, CurrencyCode), DataClassification::SystemMetadata);
+            Session.LogMessage('0000168', STRSUBSTNO(TelemetryUnexpectedCurrencyCodeErr, CurrencyCode), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(UnexpectedCurrencyCodeErr, CurrencyCode, TransactionID);
         END;
 
         IF GrossAmount <= 0 THEN BEGIN
-            SendTraceTag('00008GX', PayPalTelemetryCategoryTok, VERBOSITY::Normal, GrossAmountLessOrEqualToZeroTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008GX', GrossAmountLessOrEqualToZeroTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(UnexpectedAmountErr, GrossAmount, TransactionID);
         END;
 
@@ -125,11 +126,11 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         MSPayPalTransaction.SETFILTER("Transaction ID", TransactionID);
         MSPayPalTransaction.SETFILTER("Transaction Status", TransactionStatus);
         IF NOT MSPayPalTransaction.IsEmpty() THEN BEGIN
-            SENDTRACETAG('0000169', PayPalTelemetryCategoryTok, VERBOSITY::Warning, STRSUBSTNO(TelemetryAlreadyProcessedErr, TransactionStatus), DataClassification::SystemMetadata);
+            Session.LogMessage('0000169', STRSUBSTNO(TelemetryAlreadyProcessedErr, TransactionStatus), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(AlreadyProcessedErr, TransactionID, TransactionStatus);
         END;
 
-        SendTraceTag('00008GY', PayPalTelemetryCategoryTok, VERBOSITY::Normal, TransactionDetailsVerifiedTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008GY', TransactionDetailsVerifiedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         EXIT(TRUE);
     end;
 
@@ -140,13 +141,13 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         MSPayPalTransaction.SETRANGE("Account ID", AccountID);
         MSPayPalTransaction.SETRANGE("Transaction ID", TransactionID);
         IF NOT MSPayPalTransaction.FINDFIRST() THEN BEGIN
-            SendTraceTag('00008GZ', PayPalTelemetryCategoryTok, VERBOSITY::Normal, InsertTransactionDetailsTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008GZ', InsertTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             MSPayPalTransaction.INIT();
             MSPayPalTransaction."Account ID" := COPYSTR(AccountID, 1, MAXSTRLEN(MSPayPalTransaction."Account ID"));
             MSPayPalTransaction."Transaction ID" := COPYSTR(TransactionID, 1, MAXSTRLEN(MSPayPalTransaction."Transaction ID"));
             MSPayPalTransaction.INSERT();
         END ELSE
-            SendTraceTag('00008H0', PayPalTelemetryCategoryTok, VERBOSITY::Normal, UpdateTransactionDetailsTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008H0', UpdateTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         MSPayPalTransaction."Transaction Type" := COPYSTR(PayPalTransactionType, 1, MAXSTRLEN(MSPayPalTransaction."Transaction Type"));
         MSPayPalTransaction."Transaction Status" := COPYSTR(TransactionStatus, 1, MAXSTRLEN(MSPayPalTransaction."Transaction Status"));
         MSPayPalTransaction."Transaction Date" := TransactionDate;
@@ -177,7 +178,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         GrossAmountStr: Text;
         FeeAmountStr: Text;
     begin
-        SendTraceTag('00008H1', PayPalTelemetryCategoryTok, VERBOSITY::Normal, GetTransactionDetailsTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008H1', GetTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         JObject.ReadFrom(JsonString);
         GetPropertyValueFromJObject(JObject, 'receiver_email', AccountID);
         AccountID := LOWERCASE(AccountID);
@@ -199,10 +200,10 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         GetPropertyValueFromJObject(JObject, 'address_country', PayerCountry);
         TransactionDate := GetPaymentDate(TransactionDateStr);
         IF NOT EVALUATE(GrossAmount, GrossAmountStr, 9) THEN
-            SendTraceTag('00008H2', PayPalTelemetryCategoryTok, VERBOSITY::Warning, CannotParseGrossAmountTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008H2', CannotParseGrossAmountTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         IF NOT EVALUATE(FeeAmount, FeeAmountStr, 9) THEN
-            SendTraceTag('00008H3', PayPalTelemetryCategoryTok, VERBOSITY::Warning, CannotParseFeeAmountTxt, DataClassification::SystemMetadata);
-        PayerAddress := STRSUBSTNO('%1, %2 %3, %4, %5', PayerStreet, PayerCity, PayerZip, PayerState, PayerCountry);
+            Session.LogMessage('00008H3', CannotParseFeeAmountTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
+        PayerAddress := STRSUBSTNO(PayerAddressFormatTxt, PayerStreet, PayerCity, PayerZip, PayerState, PayerCountry);
     end;
 
     local procedure GetPropertyValueFromJObject(JObject: JsonObject; PropertyKey: Text; var PropertyValue: Text);
@@ -236,7 +237,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         if TypeHelper.Evaluate(DateTimeVariant, AdjustedDateTimeText, '', '') then
             exit(DateTimeVariant);
 
-        SendTraceTag('00008H4', PayPalTelemetryCategoryTok, VERBOSITY::Warning, CannotParsePaymentDateTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008H4', CannotParsePaymentDateTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         exit(GetUtcNow());
     end;
 

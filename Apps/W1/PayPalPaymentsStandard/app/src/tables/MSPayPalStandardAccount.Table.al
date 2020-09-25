@@ -46,7 +46,7 @@ table 1070 "MS - PayPal Standard Account"
                 IF NOT GUIALLOWED() THEN
                     EXIT;
 
-                SalesHeader.SETFILTER("Document Type", STRSUBSTNO('%1|%2|%3',
+                SalesHeader.SETFILTER("Document Type", StrSubstNo(SalesHeaderFilterLbl,
                     SalesHeader."Document Type"::Invoice,
                     SalesHeader."Document Type"::Order,
                     SalesHeader."Document Type"::Quote));
@@ -113,6 +113,7 @@ table 1070 "MS - PayPal Standard Account"
         WebhookSubscriptionDoesNotExistTxt: Label 'The webhook subscription does not exist.', Locked = true;
         InvalidTargetURLErr: Label 'The target URL is not valid.';
         HideDialogs: Boolean;
+        SalesHeaderFilterLbl: Label '%1|%2|%3', Comment = '%1,%2 and %3 are Document Types.', Locked = true;
 
     procedure GetTargetURL(): Text;
     var
@@ -183,13 +184,13 @@ table 1070 "MS - PayPal Standard Account"
         SubscriptionId: Text[150];
     begin
         IF NOT WebhookManagement.IsCurrentClientTypeAllowed() THEN BEGIN
-            SendTraceTag('00008H5', PayPalTelemetryCategoryTok, Verbosity::Normal, WebhooksNotAllowedForCurrentClientTypeTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008H5', WebhooksNotAllowedForCurrentClientTypeTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             EXIT;
         END;
 
         if StrLen("Account ID") > MaxStrLen(SubscriptionId) then begin
-            SendTraceTag('00006TI', PayPalTelemetryCategoryTok, Verbosity::Warning, STRSUBSTNO(AccountIDTooLongForWebhooksErr, MaxStrLen(SubscriptionId)), DataClassification::SystemMetadata);
-            ERROR(STRSUBSTNO(AccountIDTooLongForWebhooksErr, MaxStrLen(SubscriptionId)));
+            Session.LogMessage('00006TI', STRSUBSTNO(AccountIDTooLongForWebhooksErr, MaxStrLen(SubscriptionId)), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
+            ERROR(AccountIDTooLongForWebhooksErr, MaxStrLen(SubscriptionId));
         end;
 
         SubscriptionId := CopyStr(LowerCase("Account ID"), 1, MaxStrLen(SubscriptionId));
@@ -198,7 +199,7 @@ table 1070 "MS - PayPal Standard Account"
         WebhooksAdapterUri := LOWERCASE(WebhookManagement.GetNotificationUrl());
 
         if WebhookManagement.FindWebhookSubscriptionMatchingEndPointUri(WebhookSubscription, WebhooksAdapterUri, 0, 0) then begin
-            SendTraceTag('00006TJ', PayPalTelemetryCategoryTok, Verbosity::Warning, RefreshWebhooksSubscriptionMsg, DataClassification::SystemMetadata);
+            Session.LogMessage('00006TJ', RefreshWebhooksSubscriptionMsg, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             WebhookSubscription.Delete(true); // Delete and re-insert: do not assume that if the account ID is the same, the webhook is equivalent
             Clear(WebhookSubscription);
         end;
@@ -209,9 +210,9 @@ table 1070 "MS - PayPal Standard Account"
         WebhookSubscription."Company Name" := CopyStr(COMPANYNAME(), 1, MaxStrLen(WebhookSubscription."Company Name"));
         WebhookSubscription."Run Notification As" := MarketingSetup.TrySetWebhookSubscriptionUserAsCurrentUser();
         IF NOT WebhookSubscription.INSERT() THEN
-            SendTraceTag('00008H6', PayPalTelemetryCategoryTok, Verbosity::Warning, WebhookSubscriptionNotCreatedTxt, DataClassification::SystemMetadata)
+            Session.LogMessage('00008H6', WebhookSubscriptionNotCreatedTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok)
         ELSE
-            SendTraceTag('00008H7', PayPalTelemetryCategoryTok, Verbosity::Normal, WebhookSubscriptionCreatedTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008H7', WebhookSubscriptionCreatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
     end;
 
     local procedure DeleteWebhookSubscription(AccountId: Text[250]);
@@ -224,10 +225,10 @@ table 1070 "MS - PayPal Standard Account"
         WebhookSubscription.SetFilter("Created By", MSPayPalWebhooksMgt.GetCreatedByFilterForWebhooks());
         IF NOT WebhookSubscription.IsEmpty() THEN BEGIN
             WebhookSubscription.DeleteAll(true);
-            SendTraceTag('00008H8', PayPalTelemetryCategoryTok, Verbosity::Normal, WebhookSubscriptionDeletedTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008H8', WebhookSubscriptionDeletedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         END;
 
-        SendTraceTag('00008H9', PayPalTelemetryCategoryTok, Verbosity::Normal, WebhookSubscriptionDoesNotExistTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008H9', WebhookSubscriptionDoesNotExistTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
     end;
 
     local procedure GetBaseURL(): Text[50];
@@ -254,16 +255,16 @@ table 1070 "MS - PayPal Standard Account"
         PaymentRegistrationSetup: Record 980;
     BEGIN
         IF PaymentRegistrationSetup.GET(USERID()) THEN BEGIN
-            SendTraceTag('00008HA', PayPalTelemetryCategoryTok, Verbosity::Normal, PaymentRegistrationSetupAlreadyExistsTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008HA', PaymentRegistrationSetupAlreadyExistsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             EXIT;
         END;
         IF PaymentRegistrationSetup.GET() THEN BEGIN
             PaymentRegistrationSetup."User ID" := CopyStr(USERID(), 1, MaxStrLen(PaymentRegistrationSetup."User ID"));
             IF PaymentRegistrationSetup.INSERT(TRUE) THEN BEGIN
-                SendTraceTag('00008HB', PayPalTelemetryCategoryTok, Verbosity::Normal, PaymentRegistrationSetupCreatedTxt, DataClassification::SystemMetadata);
+                Session.LogMessage('00008HB', PaymentRegistrationSetupCreatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
                 EXIT;
             END;
         END;
-        SendTraceTag('00008HC', PayPalTelemetryCategoryTok, Verbosity::Warning, PaymentRegistrationSetupNotCreatedTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008HC', PaymentRegistrationSetupNotCreatedTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
     END;
 }

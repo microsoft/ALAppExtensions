@@ -345,6 +345,7 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
 
         OutputFile.Create(FromFile);
         OutputFile.CreateOutStream(FileOutstream);
+        OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(XMLdocOut, ServiceCrMemoHeader, DocNameSpace, DocNameSpace2);
         XMLdocOut.WriteTo(FileOutstream);
         OutputFile.Close();
     end;
@@ -385,4 +386,8 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         end;
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(var XMLdocOut: XmlDocument; ServiceCrMemoHeader: Record "Service Cr.Memo Header"; DocNameSpace: Text[250]; DocNameSpace2: Text[250])
+    begin
+    end;
 }

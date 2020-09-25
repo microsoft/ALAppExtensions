@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -69,6 +69,7 @@ codeunit 10539 "MTD Install"
     local procedure InitVATReportSetup(VATReportLabelText: Code[10])
     var
         VATReportSetup: Record "VAT Report Setup";
+        IsModify: Boolean;
     begin
         with VATReportSetup do begin
             if not Get() then

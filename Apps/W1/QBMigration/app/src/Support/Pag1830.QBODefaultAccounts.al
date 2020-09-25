@@ -13,8 +13,9 @@ page 1830 "MS - QBO Data Migration"
         {
             group("1")
             {
-                Visible = InitialVisable;
+                Visible = InitialVisible;
                 ShowCaption = false;
+
                 group(Authenticate)
                 {
                     Caption = 'Authenticate';
@@ -54,9 +55,13 @@ page 1830 "MS - QBO Data Migration"
             }
             group("2")
             {
-                Visible = not AuthorizationVisible;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Not used anymore';
+                ObsoleteTag = '17.0';
+
+                Visible = false;
                 ShowCaption = false;
-                field(Instructions1; Instructions)
+                field(Instructions1; '')
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
@@ -66,6 +71,7 @@ page 1830 "MS - QBO Data Migration"
             }
             group("3")
             {
+                InstructionalText = 'Enter the accounts to use when you post sales and purchase transactions to the general ledger.';
                 Visible = FirstGroupVisible;
                 ShowCaption = false;
                 field("Sales Account"; SalesAccount)
@@ -132,6 +138,7 @@ page 1830 "MS - QBO Data Migration"
             group("4")
             {
                 Visible = SecondGroupVisible;
+                InstructionalText = 'Enter the accounts to use when you post transactions for items, and for the sale or purchase of services.';
                 ShowCaption = false;
                 field("COGS Account"; COGSAccount)
                 {
@@ -191,6 +198,7 @@ page 1830 "MS - QBO Data Migration"
             group("5")
             {
                 Visible = ThirdGroupVisible;
+                InstructionalText = 'Choose the unit of measure to assign to all inventory and service items that you import.';
                 ShowCaption = false;
                 field("Unit Of Measure"; UnitOfMeasure)
                 {
@@ -229,7 +237,7 @@ page 1830 "MS - QBO Data Migration"
                 begin
                     if OAuthAddinReady then begin
                         if Confirm(ResetAuthQst, false) then begin
-                            SendTraceTag('00007FV', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, 'Resetting Authorization', DataClassification::SystemMetadata);
+                            Session.LogMessage('00007FV', 'Resetting Authorization', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
                             ClearConfigTable();
                             StartAuthorizationProcess();
                             exit;
@@ -305,7 +313,7 @@ page 1830 "MS - QBO Data Migration"
         PurchServiceChargeAccount: Code[20];
         UnitOfMeasure: Code[20];
         AuthorizationVisible: Boolean;
-        InitialVisable: Boolean;
+        InitialVisible: Boolean;
         FirstGroupVisible: Boolean;
         SecondGroupVisible: Boolean;
         ThirdGroupVisible: Boolean;
@@ -315,10 +323,6 @@ page 1830 "MS - QBO Data Migration"
         Authorized: Boolean;
         HasErrors: Boolean;
         Step: Option Authorization,PageOne,PageTwo,PageThree,Done;
-        Instruction1Txt: Label 'Enter the accounts to use when you post sales and purchase transactions to the general ledger.';
-        Instruction2Txt: Label 'Enter the accounts to use when you post transactions for items, and for the sale or purchase of services.';
-        Instruction3Txt: Label 'Choose the unit of measure to assign to all inventory and service items that you import.';
-        Instructions: Text;
         StatusTxt: Text;
         CRLF: Text[2];
         SyncSetupFailed1Txt: Label 'We are unable to connect to your QuickBooks company.';
@@ -350,12 +354,11 @@ page 1830 "MS - QBO Data Migration"
         Step := Step::Authorization;
         BackEnabled := false;
         NextEnabled := Authorized;
-        InitialVisable := true;
+        InitialVisible := true;
         FirstGroupVisible := false;
         SecondGroupVisible := false;
         ThirdGroupVisible := false;
         AuthorizationVisible := true;
-        Instructions := '';
     end;
 
     local procedure ShowPageOne()
@@ -363,22 +366,22 @@ page 1830 "MS - QBO Data Migration"
         Step := Step::PageOne;
         BackEnabled := true;
         NextEnabled := true;
+        InitialVisible := false;
         FirstGroupVisible := true;
         SecondGroupVisible := false;
         ThirdGroupVisible := false;
         AuthorizationVisible := false;
-        Instructions := Instruction1Txt;
     end;
 
     local procedure ShowPageTwo()
     begin
         BackEnabled := true;
         NextEnabled := true;
+        InitialVisible := false;
         FirstGroupVisible := false;
         SecondGroupVisible := true;
         ThirdGroupVisible := false;
         AuthorizationVisible := false;
-        Instructions := Instruction2Txt;
     end;
 
     local procedure ShowPageThree()
@@ -392,11 +395,11 @@ page 1830 "MS - QBO Data Migration"
             NextEnabled := false;
 
         BackEnabled := true;
+        InitialVisible := false;
         FirstGroupVisible := false;
         SecondGroupVisible := false;
         ThirdGroupVisible := true;
         AuthorizationVisible := false;
-        Instructions := Instruction3Txt;
     end;
 
     local procedure NextStep(Backwards: Boolean)
@@ -418,6 +421,7 @@ page 1830 "MS - QBO Data Migration"
             Step::Done:
                 CurrPage.Close();
         end;
+
         CurrPage.Update(true);
     end;
 
@@ -461,7 +465,7 @@ page 1830 "MS - QBO Data Migration"
         ResetQBOAuthenticationDialog();
         if not OAuthAddinReady then begin
             StatusTxt := GetStatusText(false);
-            SendTraceTag('00007EP', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Warning, ControlUnavailableErr, DataClassification::SystemMetadata);
+            Session.LogMessage('00007EP', ControlUnavailableErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
             exit(false);
         end;
 
@@ -473,7 +477,7 @@ page 1830 "MS - QBO Data Migration"
 
         if (ConsumerKey = '') OR (ConsumerSecret = '') then begin
             StatusTxt := GetStatusText(false);
-            SendTraceTag('00007EQ', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Warning, KeyInfoUnavailableErr, DataClassification::SystemMetadata);
+            Session.LogMessage('00007EQ', KeyInfoUnavailableErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
             exit(false);
         end;
 
@@ -481,7 +485,7 @@ page 1830 "MS - QBO Data Migration"
 
         if not HelperFunctions.GetAuthRequestUrl(ConsumerKey, ConsumerSecret, ScopeTxt, RequestTokenUrlTxt, StrSubstNo('%1/%2', GetCallBackUrl(), 'OAuthLanding.htm'), ExpectedState, AuthRequestUrl) then begin
             StatusTxt := GetStatusText(false);
-            SendTraceTag('0000AL5', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Warning, AuthRequestUrlErr, DataClassification::SystemMetadata);
+            Session.LogMessage('0000AL5', AuthRequestUrlErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
             exit(false);
         end;
 
@@ -499,13 +503,13 @@ page 1830 "MS - QBO Data Migration"
     begin
         if not GetOAuthProperties(AuthorizationCode, AuthCode, State, RealmId) then begin
             StatusTxt := GetStatusText(false);
-            SendTraceTag('00007ER', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Warning, OAuthPropertiesErr, DataClassification::SystemMetadata);
+            Session.LogMessage('00007ER', OAuthPropertiesErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
             exit;
         end;
 
         if (ExpectedState <> State) then begin
             StatusTxt := GetStatusText(false);
-            SendTraceTag('0000AI7', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Warning, StrSubstNo(StateErr, ExpectedState, State), DataClassification::SystemMetadata);
+            Session.LogMessage('0000AI7', StrSubstNo(StateErr, ExpectedState, State), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
             exit;
         end;
 
@@ -513,7 +517,7 @@ page 1830 "MS - QBO Data Migration"
 
         if not HelperFunctions.GetAccessToken(AccessTokenUrlTxt, StrSubstNo('%1/%2', GetCallBackUrl(), 'OAuthLanding.htm'), AuthCode, ConsumerKey, ConsumerSecret, AccessTokenKey) then begin
             StatusTxt := GetStatusText(false);
-            SendTraceTag('00007ES', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Warning, TokenErr, DataClassification::SystemMetadata);
+            Session.LogMessage('00007ES', TokenErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
             exit;
         end;
 

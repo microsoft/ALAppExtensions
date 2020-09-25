@@ -110,7 +110,8 @@ codeunit 1850 "Sales Forecast Handler"
     [Scope('OnPrem')]
     procedure InitializeTimeseries(var TimeSeriesManagement: Codeunit "Time Series Management"; MSSalesForecastSetup: Record "MS - Sales Forecast Setup"): Boolean
     var
-        AzureAIUsage: Record "Azure AI Usage";
+        AzureAIUsage: Codeunit "Azure AI Usage";
+        AzureAIService: Enum "Azure AI Service";
         APIURI: Text[250];
         APIKey: Text[200];
         LimitType: Option;
@@ -125,7 +126,7 @@ codeunit 1850 "Sales Forecast Handler"
                 exit(false);
             end;
 
-            if AzureAIUsage.IsAzureMLLimitReached(AzureAIUsage.Service::"Machine Learning", Limit) then begin
+            if AzureAIUsage.IsLimitReached(AzureAIService::"Machine Learning", Limit) then begin
                 Status := Status::"Out of limit";
                 exit(false);
             end;
@@ -159,7 +160,7 @@ codeunit 1850 "Sales Forecast Handler"
             Status::"Out of limit":
                 Error(OutOfLimitErr);
             Status::"Failed Time Series initialization":
-                Error(FailedTimeSeriesInitializationErr);
+                LogInternalError(FailedTimeSeriesInitializationErr, DataClassification::SystemMetadata, Verbosity::Error);
         end;
     end;
 

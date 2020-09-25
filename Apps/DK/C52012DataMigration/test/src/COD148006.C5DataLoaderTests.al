@@ -504,6 +504,6 @@ codeunit 148006 "C5 Data Loader Tests"
     begin
         NavRootPosition := STRPOS(ApplicationPath(), '\Run\NST\');
         NavRootPath := DELSTR(ApplicationPath(), NavRootPosition);
-        exit(NavRootPath + '\App\ExtensionV2\C52012DataMigration\test\resources\');
+        exit(NavRootPath + '\App\Apps\DK\C52012DataMigration\test\resources\');
     end;
 }

@@ -15,13 +15,7 @@ codeunit 1667 "Ceridian Install"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure CompanyInitialize()
-    var
-        UpgradeTag: Codeunit "Upgrade Tag";
-        AppInfo: ModuleInfo;
     begin
-        NavApp.GetCurrentModuleInfo(AppInfo);
-        if AppInfo.DataVersion().Major() = 0 then
-            UpgradeTag.SetAllUpgradeTags();
         ApplyEvaluationClassificationsForPrivacy();
     end;
 

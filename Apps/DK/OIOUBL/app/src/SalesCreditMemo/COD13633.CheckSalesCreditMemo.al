@@ -9,7 +9,13 @@ codeunit 13633 "OIOUBL-Check Sales Cr. Memo"
     trigger OnRun();
     var
         OIOUBLManagement: Codeunit "OIOUBL-Management";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeOnRun(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
         if NOT OIOUBLManagement.IsOIOUBLCheckRequired("OIOUBL-GLN", "Sell-to Customer No.") then
             exit;
 
@@ -57,5 +63,10 @@ codeunit 13633 "OIOUBL-Check Sales Cr. Memo"
             GLSetup.GET();
             GLSetupRead := TRUE;
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOnRun(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var IsHandled: Boolean)
+    begin
     end;
 }

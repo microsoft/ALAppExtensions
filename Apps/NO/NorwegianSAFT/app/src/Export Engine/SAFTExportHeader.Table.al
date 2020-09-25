@@ -61,6 +61,12 @@ table 10682 "SAF-T Export Header"
             DataClassification = CustomerContent;
             Caption = 'Split By Month';
             InitValue = true;
+
+            trigger OnValidate()
+            begin
+                If "Split By Month" then
+                    "Split By Date" := false;
+            end;
         }
         field(8; "Earliest Start Date/Time"; DateTime)
         {
@@ -110,6 +116,9 @@ table 10682 "SAF-T Export Header"
         {
             DataClassification = CustomerContent;
             Caption = 'SAF-T File';
+            ObsoleteState = Pending;
+            ObsoleteReason = 'Replaced with the SAF-T Export File table';
+            ObsoleteTag = '17.0';
         }
         field(30; "Latest Data Check Date/Time"; DateTime)
         {
@@ -122,6 +131,40 @@ table 10682 "SAF-T Export Header"
             DataClassification = CustomerContent;
             Caption = 'Data check status';
             Editable = false;
+        }
+        field(32; "Split By Date"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Split By Date';
+
+            trigger OnValidate()
+            begin
+                If "Split By Date" then
+                    "Split By Month" := false;
+            end;
+        }
+        field(33; "Disable Zip File Generation"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Disable Zip File Generation';
+
+            trigger OnValidate()
+            begin
+                If "Disable Zip File Generation" then
+                    TestField("Folder Path");
+                "Create Multiple Zip Files" := false;
+            end;
+        }
+        field(34; "Create Multiple Zip Files"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Create Multiple Zip Files';
+
+            trigger OnValidate()
+            begin
+                if "Create Multiple Zip Files" then
+                    "Disable Zip File Generation" := false;
+            end;
         }
     }
 

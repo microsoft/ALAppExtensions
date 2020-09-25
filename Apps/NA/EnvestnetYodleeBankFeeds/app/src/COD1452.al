@@ -205,12 +205,12 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
         exit('MS-328257-YodleeSecretsToIS-Validate-20190925');
     end;
 
-    local procedure GetYodleeUpdateBankSessionTableTag(): Code[250]
+    internal procedure GetYodleeUpdateBankSessionTableTag(): Code[250]
     begin
         exit('YodleeUpdateBankSession-20200221');
     end;
 
-    local procedure GetYodleeUpdateDataExchangeDefinitionTag(): Code[250]
+    internal procedure GetYodleeUpdateDataExchangeDefinitionTag(): Code[250]
     begin
         exit('YodleeUpdateDataExchangeDefinition-20200221');
     end;

@@ -9,7 +9,13 @@ codeunit 13632 "OIOUBL-Check Sales Invoice"
     trigger OnRun();
     var
         OIOUBLManagement: Codeunit "OIOUBL-Management";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeOnRun(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
         if NOT OIOUBLManagement.IsOIOUBLCheckRequired("OIOUBL-GLN", "Sell-to Customer No.") then
             exit;
 
@@ -56,5 +62,10 @@ codeunit 13632 "OIOUBL-Check Sales Invoice"
             GLSetup.GET();
             GLSetupRead := TRUE;
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOnRun(SalesInvoiceHeader: Record "Sales Invoice Header"; var IsHandled: Boolean)
+    begin
     end;
 }

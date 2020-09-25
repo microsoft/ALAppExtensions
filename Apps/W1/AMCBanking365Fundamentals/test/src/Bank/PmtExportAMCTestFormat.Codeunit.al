@@ -1069,8 +1069,6 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
             PaymentMethod.Get(GenJournalLine."Payment Method Code");
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/journalname', '/', '/ns:'),
               GenJournalLine."Journal Template Name", 0);
-            LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/journalnumber', '/', '/ns:'),
-              GenJournalLine."Journal Batch Name" + '_' + Format(DataExch."Entry No."), 0);
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(PrefixXPath('/paymentExportBank/bank', '/', '/ns:'),
               BankAccount."AMC Bank Name", 0);
             LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(

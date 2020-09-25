@@ -14,10 +14,12 @@ page 1665 "MS - Ceridian Payroll Setup"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'SFTP Server';
+                    ToolTip = 'Specifies the URL address of the Ceridian Payroll.';
                 }
                 field("User Name"; "User Name")
                 {
                     ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the name of the user.';
                 }
                 field(Password; Password)
                 {

@@ -49,6 +49,11 @@ page 10687 "SAF-T Export Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if multiple SAF-T files will be generated per month.';
                 }
+                field(SplitByDate; "Split By Date")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether multiple SAF-T files will be generated for each day.';
+                }
                 field("Header Comment"; "Header Comment")
                 {
                     ApplicationArea = Basic, Suite;
@@ -65,6 +70,17 @@ page 10687 "SAF-T Export Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the complete path of the public folder that the SAF-T file is exported to.';
                     Visible = not IsSaaS;
+                }
+                field(DisableZipFileGeneration; "Disable Zip File Generation")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies that the ZIP file would not be generated automatically. This option is available only if the folder path is specified.';
+                    Visible = not IsSaaS;
+                }
+                field(CreateMultipleZipFiles; "Create Multiple Zip Files")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies that multiple ZIP files will be generated.';
                 }
                 field(Status; Status)
                 {
@@ -131,6 +147,24 @@ page 10687 "SAF-T Export Card"
                     CurrPage.Update();
                 end;
             }
+            action(GenerateZipFile)
+            {
+                ApplicationArea = Basic, Suite;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = True;
+                Image = Archive;
+                Visible = Not IsSaaS;
+                Caption = 'Regenerate Zip File';
+                ToolTip = 'Generate the ZIP file again.';
+
+                trigger OnAction()
+                var
+                    SAFTExportMgt: Codeunit "SAF-T Export Mgt.";
+                begin
+                    SAFTExportMgt.GenerateZipFileWithCheck(Rec);
+                end;
+            }
             action(DownloadFile)
             {
                 ApplicationArea = Basic, Suite;
@@ -138,15 +172,10 @@ page 10687 "SAF-T Export Card"
                 PromotedCategory = Process;
                 PromotedIsBig = True;
                 Image = ExportFile;
-                Caption = 'Download File';
-                ToolTip = 'Download the generated SAF-T file.';
-
-                trigger OnAction()
-                var
-                    SAFTExportMgt: Codeunit "SAF-T Export Mgt.";
-                begin
-                    SAFTExportMgt.DownloadZipFileFromExportHeader(Rec);
-                end;
+                Caption = 'Download Files';
+                ToolTip = 'Download the generated SAF-T files.';
+                RunObject = Page "SAF-T Export Files";
+                RunPageLink = "Export ID" = field ("ID");
             }
         }
     }

@@ -6,7 +6,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
     trigger OnRun();
     begin
         if not GenerateHyperlink(Rec) then begin
-            SENDTRACETAG('0000801', PayPalTelemetryCategoryTok, VERBOSITY::Warning, PayPalNoLinkTelemetryTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('0000801', PayPalNoLinkTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             if not GuiAllowed() then
                 Error(PayPalNoLinkErr);
             if Confirm(PayPalNoLinkQst) then
@@ -14,7 +14,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
             Error('');
         end;
         SetCaptionBasedOnLanguage(Rec);
-        SENDTRACETAG('00001SY', PayPalTelemetryCategoryTok, VERBOSITY::Normal, PayPalHyperlinkIncludedTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00001SY', PayPalHyperlinkIncludedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
     end;
 
     var
@@ -48,6 +48,9 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         PayPalTargetURLIsEmptyTxt: Label 'PayPal target URL is empty.', Locked = true;
         PayPalTargetURLIsInvalidTxt: Label 'PayPal target URL is invalid.', Locked = true;
         CannotSetTargetURLTxt: Label 'Cannot set PayPal target URL: %1', Locked = true;
+        InvoiceNoFormatTxt: Label '%1 (%2 %3)', Locked = true;
+        PaymentReportingArgumentFormatTxt: Label '%1 (%2)', Locked = true;
+        UrlJoinPlaceholderLbl: Label '%1&%2', Comment = '%1 - First part of the URL, %2 additional query', Locked = true;
 
     local procedure GenerateHyperlink(var PaymentReportingArgument: Record 1062): Boolean;
     var
@@ -76,7 +79,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
                     InvoiceNo := SalesInvoiceHeader."No.";
                     IF SalesInvoiceHeader."Your Reference" <> '' THEN
-                        InvoiceNo := STRSUBSTNO('%1 (%2 %3)', InvoiceNo, YourReferenceTxt, SalesInvoiceHeader."Your Reference");
+                        InvoiceNo := STRSUBSTNO(InvoiceNoFormatTxt, InvoiceNo, YourReferenceTxt, SalesInvoiceHeader."Your Reference");
                     QueryString := STRSUBSTNO(PayPalMandatoryParametersTok,
                         UriEscapeDataString(MsPayPalStandardAccount."Account ID"),
                         UriEscapeDataString(FORMAT(SalesInvoiceHeader."Amount Including VAT", 0, 9)),
@@ -86,13 +89,13 @@ codeunit 1070 "MS - PayPal Standard Mgt."
                         UriEscapeDataString(GetNotifyURL()));
                     BaseURL := MsPayPalStandardAccount.GetTargetURL();
                     if BaseURL = '' then begin
-                        SendTraceTag('00007ZW', PayPalTelemetryCategoryTok, VERBOSITY::Warning, PayPalTargetURLIsEmptyTxt, DataClassification::SystemMetadata);
+                        Session.LogMessage('00007ZW', PayPalTargetURLIsEmptyTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
                         exit(false);
                     end;
-                    TargetURL := STRSUBSTNO('%1&%2', BaseURL, QueryString);
+                    TargetURL := StrSubstNo(UrlJoinPlaceholderLbl, BaseURL, QueryString);
                     if not PaymentReportingArgument.TrySetTargetURL(TargetURL) then begin
-                        SendTraceTag('00007ZX', PayPalTelemetryCategoryTok, VERBOSITY::Warning, PayPalTargetURLIsInvalidTxt, DataClassification::SystemMetadata);
-                        SendTraceTag('00008GJ', PayPalTelemetryCategoryTok, VERBOSITY::Warning, StrSubstNo(CannotSetTargetURLTxt, TargetURL), DataClassification::CustomerContent);
+                        Session.LogMessage('00007ZX', PayPalTargetURLIsInvalidTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
+                        Session.LogMessage('00008GJ', StrSubstNo(CannotSetTargetURLTxt, TargetURL), Verbosity::Warning, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
                         exit(false);
                     end;
                     PaymentReportingArgument.Logo := MSPayPalStandardTemplate.Logo;
@@ -100,7 +103,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
                     PaymentReportingArgument.MODIFY(TRUE);
 
                     IF SalesInvoiceHeader."No. Printed" = 1 then
-                        SENDTRACETAG('00001ZR', PayPalTelemetryCategoryTok, VERBOSITY::Normal, PayPalHyperlinkGeneratedTxt, DataClassification::SystemMetadata);
+                        Session.LogMessage('00001ZR', PayPalHyperlinkGeneratedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
 
                     exit(true);
                 END;
@@ -117,7 +120,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
                     exit(true);
                 END;
             ELSE
-                ERROR(STRSUBSTNO(NotSupportedTypeErr, DocumentRecordRef.CAPTION()));
+                ERROR(NotSupportedTypeErr, DocumentRecordRef.CAPTION());
         END;
     end;
 
@@ -139,7 +142,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
         PaymentReportingArgument.VALIDATE("URL Caption", PayPalCaptionURLTxt);
         IF STRPOS(PaymentReportingArgument.GetTargetURL(), GetSandboxURL()) > 0 THEN
-            PaymentReportingArgument.VALIDATE("URL Caption", STRSUBSTNO('%1 (%2)', PayPalCaptionURLTxt, DemoLinkCaptionTxt));
+            PaymentReportingArgument.VALIDATE("URL Caption", STRSUBSTNO(PaymentReportingArgumentFormatTxt, PayPalCaptionURLTxt, DemoLinkCaptionTxt));
         PaymentReportingArgument.MODIFY(TRUE);
 
         IF GLOBALLANGUAGE() <> CurrentLanguage THEN

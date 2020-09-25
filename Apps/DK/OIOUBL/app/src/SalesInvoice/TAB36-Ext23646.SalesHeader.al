@@ -78,7 +78,7 @@ tableextension 13646 "OIOUBL-Sales Header" extends "Sales Header"
                 "OIOUBL-Sell-to Contact E-Mail" := Customer."E-Mail";
                 "OIOUBL-Sell-to Contact Role" := "OIOUBL-Sell-to Contact Role"::" ";
 
-                if not Contact.Get("Sell-to Customer No.") then
+                if not Contact.Get("Sell-to Contact No.") then
                     exit;
 
                 if Contact.Type <> Contact.Type::Person then

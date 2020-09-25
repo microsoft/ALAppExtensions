@@ -189,12 +189,13 @@ page 1853 "Sales Forecast Setup Card"
 
     local procedure GetMLTotalProcessingTime(): Decimal
     var
-        AzureAIUsage: Record "Azure AI Usage";
+        AzureAIUsage: Codeunit "Azure AI Usage";
+        AzureAIService: Enum "Azure AI Service";
+        ProcessingTime: Decimal;
     begin
-        if not AzureAIUsage.Get(AzureAIUsage.Service::"Machine Learning") then
-            exit(0);
+        ProcessingTime := AzureAIUsage.GetTotalProcessingTime(AzureAIService::"Machine Learning");
 
-        exit(Round(AzureAIUsage."Total Resource Usage", 1));
+        exit(Round(ProcessingTime, 1));
     end;
 }
 

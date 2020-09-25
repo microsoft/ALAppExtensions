@@ -47,7 +47,7 @@ codeunit 1666 "MS Ceridian Payroll import"
         TempImportGLTransaction.DELETEALL();
         ImportCeridianPayroll.RUN();
         ImportCeridianPayroll.GetTemporaryRecords(TempImportGLTransaction);
-        SENDTRACETAG('00001SW', CeridianTelemetryCategoryTok, Verbosity::Normal, STRSUBSTNO(TransactionsImportedTxt, TempImportGLTransaction.COUNT()), DataClassification::SystemMetadata);
+        Session.LogMessage('00001SW', STRSUBSTNO(TransactionsImportedTxt, TempImportGLTransaction.COUNT()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CeridianTelemetryCategoryTok);
     end;
 
     [EventSubscriber(ObjectType::Page, 1661, 'OnCreateSampleFile', '', false, false)]

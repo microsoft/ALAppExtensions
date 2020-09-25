@@ -9,7 +9,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     var
         Assert: Codeunit 130000;
         LibraryUtility: Codeunit 131000;
-        LibraryVariableStorage: Codeunit 131004;
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibrarySales: Codeunit 130509;
         LibraryInventory: Codeunit 132201;
         LibraryERM: Codeunit 131300;
@@ -41,6 +41,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
         SetToDefaultMsg: Label 'Settings have been set to default.';
         PayPalAccountPrefixTxt: Label 'PayPal';
         PayPalCreatedByTok: Label 'PAYPAL.COM', Locked = true;
+        WebhookCreateSubscriptionErrorTxt: Label 'Error Expecting Webhook to be created for Account %1', Locked = true;
+        WebhookUpdateSubscriptionErrorTxt: Label 'Error Expecting Webhook to be updated to have one for Account %1', Locked = true;
+        WebhookDeleteSubscriptionErrorTxt: Label 'Error Expecting Webhook to be deleted for Account %1', Locked = true;
 
     local procedure Initialize();
     var
@@ -509,6 +512,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
         MSPayPalStandardAccount2.FIND();
         Assert.IsTrue(MSPayPalStandardAccount2."Always Include on Documents", 'Final Verify');
         Assert.IsFalse(MSPayPalStandardAccount1."Always Include on Documents", 'Final Verify');
+        MSPayPalStandardAccount1.NEXT();
+        MSPayPalStandardAccount2.NEXT();
     end;
 
     [Test]
@@ -616,7 +621,25 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     [Test]
     [HandlerFunctions('EMailDialogHandler,MessageHandler')]
+    procedure TestCoverLetterPaymentLinkSMTPSetup(); // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        TestCoverLetterPaymentLinkInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('EmailEditorHandler,MessageHandler,CloseEmailEditorHandler')]
     procedure TestCoverLetterPaymentLink();
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        TestCoverLetterPaymentLinkInternal();
+    end;
+
+    procedure TestCoverLetterPaymentLinkInternal();
     var
         TempPaymentServiceSetup: Record 1060 temporary;
         MSPayPalStandardAccount: Record 1070;
@@ -624,6 +647,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
         SalesInvoiceHeader: Record 112;
         TempPaymentReportingArgument: Record 1062 temporary;
         LibraryInvoicingApp: Codeunit "Library - Invoicing App";
+        LibraryWorkflow: Codeunit "Library - Workflow";
+        EmailFeature: Codeunit "Email Feature";
         PostedSalesInvoice: TestPage 132;
     begin
         Initialize();
@@ -636,7 +661,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
         TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
         PostedSalesInvoice.OPENEDIT();
         PostedSalesInvoice.GOTORECORD(SalesInvoiceHeader);
-        LibraryInvoicingApp.SetupEmailTable();
+        if EmailFeature.IsEnabled() then
+            LibraryWorkflow.SetUpEmailAccount()
+        else
+            LibraryInvoicingApp.SetupEmailTable();
 
         // Exercise
         PostedSalesInvoice.Email.INVOKE();
@@ -784,11 +812,11 @@ codeunit 139500 "MS - PayPal Standard Tests"
         PayPalStandardSetup.CLOSE();
 
         WebhookSubscription.SETRANGE("Subscription ID", MSPayPalStandardAccount."Account ID");
-        WebhookSubscription.SETFILTER("Created By", STRSUBSTNO('*%1*', PayPalCreatedByTok));
+        WebhookSubscription.SETFILTER("Created By", StrSubstNo('*%1*', PayPalCreatedByTok));
 
         Assert.IsTrue(
           NOT WebhookSubscription.IsEmpty(),
-          STRSUBSTNO('Error Expecting Webhook to be created for Account %1', MSPayPalStandardAccount."Account ID"));
+          STRSUBSTNO(WebhookUpdateSubscriptionErrorTxt, MSPayPalStandardAccount."Account ID"));
     end;
 
     [Test]
@@ -810,11 +838,11 @@ codeunit 139500 "MS - PayPal Standard Tests"
         PayPalStandardSetup.CLOSE();
 
         WebhookSubscription.SETRANGE("Subscription ID", newAcountId);
-        WebhookSubscription.SETFILTER("Created By", STRSUBSTNO('*%1*', PayPalCreatedByTok));
+        WebhookSubscription.SETFILTER("Created By", StrSubstNo('*%1*', PayPalCreatedByTok));
 
         Assert.IsTrue(
           NOT WebhookSubscription.IsEmpty(),
-          STRSUBSTNO('Error Expecting Webhook to be updated to have one for Account %1', newAcountId));
+          STRSUBSTNO(WebhookCreateSubscriptionErrorTxt, newAcountId));
     end;
 
     [Test]
@@ -836,11 +864,11 @@ codeunit 139500 "MS - PayPal Standard Tests"
         PayPalStandardSetup.CLOSE();
 
         WebhookSubscription.SETRANGE("Subscription ID", MSPayPalStandardAccount."Account ID");
-        WebhookSubscription.SETFILTER("Created By", STRSUBSTNO('*%1*', PayPalCreatedByTok));
+        WebhookSubscription.SETFILTER("Created By", '*%1*', PayPalCreatedByTok);
 
         Assert.IsFalse(
           NOT WebhookSubscription.IsEmpty(),
-          STRSUBSTNO('Error Expecting Webhook to be deleted for Account %1', MSPayPalStandardAccount."Account ID"));
+          STRSUBSTNO(WebhookDeleteSubscriptionErrorTxt, MSPayPalStandardAccount."Account ID"));
     end;
 
     [Test]
@@ -1401,6 +1429,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         XMLBuffer.SETRANGE(Name, 'PaymentServiceURLText');
         XMLBuffer.FIND('-');
         Assert.AreEqual(PaymentReportingArgument."URL Caption", XMLBuffer.Value, '');
+        XMLBuffer.NEXT();
     end;
 
     local procedure VerifyPayPalURL(var PaymentReportingArgument: Record 1062; MSPayPalStandardAccount: Record 1070; SalesInvoiceHeader: Record 112);
@@ -1537,9 +1566,22 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [ModalPageHandler]
-    procedure EMailDialogHandler(var EMailDialog: TestPage 9700);
+    procedure EMailDialogHandler(var EMailDialog: TestPage "Email Dialog");
     begin
         LibraryVariableStorage.Enqueue(EMailDialog.BodyText.VALUE());
+    end;
+
+    [ModalPageHandler]
+    procedure EmailEditorHandler(var EmailEditor: TestPage "Email Editor");
+    begin
+        LibraryVariableStorage.Enqueue(EmailEditor.BodyField.Value());
+    end;
+
+    [StrMenuHandler]
+    [Scope('OnPrem')]
+    procedure CloseEmailEditorHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        Choice := 1;
     end;
 
     local procedure BindActiveDirectoryMockEvents();

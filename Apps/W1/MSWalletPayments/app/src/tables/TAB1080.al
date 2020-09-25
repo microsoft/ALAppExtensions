@@ -206,7 +206,7 @@ table 1080 "MS - Wallet Merchant Account"
         SubscriptionID: Text[150];
     begin
         IF NOT WebhookManagement.IsCurrentClientTypeAllowed() THEN BEGIN
-            SendTraceTag('00008I4', MSWalletTelemetryCategoryTok, Verbosity::Normal, WebhooksNotAllowedForCurrentClientTypeTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008I4', WebhooksNotAllowedForCurrentClientTypeTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             EXIT;
         END;
 
@@ -216,7 +216,7 @@ table 1080 "MS - Wallet Merchant Account"
         WebHooksAdapterUri := MSWalletWebhookManagement.GetNotificationUrl();
 
         IF WebhookManagement.FindWebhookSubscriptionMatchingEndPointUri(WebhookSubscription, WebHooksAdapterUri, 0, 0) THEN BEGIN
-            SendTraceTag('00008I5', MSWalletTelemetryCategoryTok, Verbosity::Normal, WebhookSubscriptionAlreadyExistsTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008I5', WebhookSubscriptionAlreadyExistsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             EXIT; // subscription already exists
         END;
 
@@ -226,9 +226,9 @@ table 1080 "MS - Wallet Merchant Account"
         WebhookSubscription."Company Name" := CopyStr(COMPANYNAME(), 1, MaxStrLen(WebhookSubscription."Company Name"));
         WebhookSubscription."Run Notification As" := MarketingSetup.TrySetWebhookSubscriptionUserAsCurrentUser();
         IF NOT WebhookSubscription.INSERT() THEN
-            SendTraceTag('00008I6', MSWalletTelemetryCategoryTok, Verbosity::Warning, WebhookSubscriptionNotCreatedTxt, DataClassification::SystemMetadata)
+            Session.LogMessage('00008I6', WebhookSubscriptionNotCreatedTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok)
         ELSE
-            SendTraceTag('00008I7', MSWalletTelemetryCategoryTok, Verbosity::Normal, WebhookSubscriptionCreatedTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008I7', WebhookSubscriptionCreatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
     end;
 
     local procedure DeleteWebhookSubscription(AccountID: Text[250]);
@@ -240,10 +240,10 @@ table 1080 "MS - Wallet Merchant Account"
         WebhookSubscription.SetFilter("Created By", MSWalletWebhookManagement.GetCreatedByFilterForWebhooks());
         IF NOT WebhookSubscription.IsEmpty() THEN BEGIN
             WebhookSubscription.DeleteAll(true);
-            SendTraceTag('00008I8', MSWalletTelemetryCategoryTok, Verbosity::Normal, WebhookSubscriptionDeletedTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008I8', WebhookSubscriptionDeletedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
         END;
 
-        SendTraceTag('00008I9', MSWalletTelemetryCategoryTok, Verbosity::Normal, WebhookSubscriptionDoesNotExistTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008I9', WebhookSubscriptionDoesNotExistTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
     end;
 
     procedure GetBaseURL(): Text;
@@ -258,16 +258,16 @@ table 1080 "MS - Wallet Merchant Account"
         PaymentRegistrationSetup: Record 980;
     begin
         IF PaymentRegistrationSetup.GET(USERID()) THEN BEGIN
-            SendTraceTag('00008IA', MSWalletTelemetryCategoryTok, Verbosity::Normal, PaymentRegistrationSetupAlreadyExistsTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008IA', PaymentRegistrationSetupAlreadyExistsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             exit;
         END;
         IF PaymentRegistrationSetup.GET() THEN BEGIN
             PaymentRegistrationSetup."User ID" := CopyStr(USERID(), 1, MaxStrLen(PaymentRegistrationSetup."User ID"));
             IF PaymentRegistrationSetup.INSERT(TRUE) THEN BEGIN
-                SendTraceTag('00008IB', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, PaymentRegistrationSetupCreatedTxt, DataClassification::SystemMetadata);
+                Session.LogMessage('00008IB', PaymentRegistrationSetupCreatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
                 exit;
             END;
-            SendTraceTag('00008IC', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, PaymentRegistrationSetupNotCreatedTxt, DataClassification::SystemMetadata)
+            Session.LogMessage('00008IC', PaymentRegistrationSetupNotCreatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok)
         END;
     end;
 }

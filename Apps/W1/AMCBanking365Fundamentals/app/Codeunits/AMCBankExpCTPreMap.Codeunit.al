@@ -14,6 +14,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
 
     local procedure FillExportBuffer(DataExchEntryNo: Integer)
     var
+        CreditTransferRegister: Record "Credit Transfer Register";
         GenJnlLinePerBnkAcc: Record "Gen. Journal Line";
         GenJnlLine: Record "Gen. Journal Line";
         CustLedgEntry: Record "Cust. Ledger Entry";
@@ -36,6 +37,9 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
     begin
         GeneralLedgerSetup.Get();
         CompanyInformation.Get();
+
+        CreditTransferRegister.SetRange("Data Exch. Entry No.", DataExchEntryNo);
+        CreditTransferRegister.FindLast();
 
         GenJnlLinePerBnkAcc.SetCurrentKey("Data Exch. Entry No.", "Bal. Account No.");
         GenJnlLinePerBnkAcc.SetRange("Data Exch. Entry No.", DataExchEntryNo);
@@ -67,6 +71,12 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
                             "General Journal Template" := GenJnlLine."Journal Template Name";
                             "General Journal Batch Name" := GenJnlLine."Journal Batch Name";
                             "General Journal Line No." := GenJnlLine."Line No.";
+
+                            if (CreditTransferRegister."AMC Bank XTL Journal" <> '') then
+                                "Importing Description" := CreditTransferRegister."AMC Bank XTL Journal"
+                            else
+                                "Importing Description" := '';
+
                             "Recipient ID" := GenJnlLine."Account No.";
                             "Message ID" := MessageID;
                             "Document No." := GenJnlLine."Document No.";
@@ -153,8 +163,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
         CreditTransferEntry: Record "Credit Transfer Entry";
         CVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary;
     begin
-        // Make banktransspec in Table 1206 for use in XMLPORT 20100
-        CreditTransferRegister.SETRANGE("From Bank Account No.", GenJournalLine."Bal. Account No.");
+        CreditTransferRegister.SETRANGE("Data Exch. Entry No.", GenJournalLine."Data Exch. Entry No.");
         CreditTransferRegister.FindLast();
         if (GenJournalLine.IsApplied()) then begin
             GetCVLedgerEntry(GenJournalLine, CVLedgerEntryBuffer);

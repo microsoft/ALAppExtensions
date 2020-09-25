@@ -43,9 +43,9 @@ Codeunit 1937 "MigrationGP Helper Functions"
             GetFileContent(FileName, JObject);
             JObject.Get(EntityName, JToken);
             if not JToken.IsArray() then
-                Error(AnArrayExpectedErr);
+                LogInternalError(AnArrayExpectedErr, DataClassification::SystemMetadata, Verbosity::Error);
             JArray := JToken.AsArray();
-            SendTraceTag('00007GL', GetMigrationTypeTxt(), Verbosity::Normal, StrSubstNo(ImportedEntityTxt, EntityName), DataClassification::SystemMetadata);
+            Session.LogMessage('00007GL', StrSubstNo(ImportedEntityTxt, EntityName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
             exit(true);
         end;
         exit(false);
@@ -60,7 +60,7 @@ Codeunit 1937 "MigrationGP Helper Functions"
         if FileName <> '' then begin
             GetFileContent(FileName, JObject);
             JObject.Get(EntityName, JToken);
-            SendTraceTag('00007GM', GetMigrationTypeTxt(), Verbosity::Normal, StrSubstNo(ImportedEntityTxt, EntityName), DataClassification::SystemMetadata);
+            Session.LogMessage('00007GM', StrSubstNo(ImportedEntityTxt, EntityName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
             exit(true);
         end;
         exit(false);
@@ -1069,7 +1069,7 @@ Codeunit 1937 "MigrationGP Helper Functions"
         MigrationGPSegments.DeleteAll();
         MigrationGPFiscalPeriods.DeleteAll();
         MigrationGPPaymentTerms.DeleteAll();
-        SendTraceTag('00007GH', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, 'Cleaned up staging tables.', DataClassification::SystemMetadata);
+        Session.LogMessage('00007GH', 'Cleaned up staging tables.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 
     procedure CleanupBeforeSynchronization();
@@ -1102,7 +1102,7 @@ Codeunit 1937 "MigrationGP Helper Functions"
         AvgCodeAdjmtEntryPoint.DeleteAll(true);
         ValueEntry.DeleteAll(true);
         ItemUnitOfMeasure.DeleteAll(true);
-        SendTraceTag('00007GI', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, 'Cleaned up before Synchronization.', DataClassification::SystemMetadata);
+        Session.LogMessage('00007GI', 'Cleaned up before Synchronization.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 
     procedure SetTransactionProcessedFlag();
@@ -1141,7 +1141,7 @@ Codeunit 1937 "MigrationGP Helper Functions"
         StartTime: DateTime;
     begin
         StartTime := CurrentDateTime();
-        SendTraceTag('00007GJ', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, 'Posting GL transactions started.', DataClassification::SystemMetadata);
+        Session.LogMessage('00007GJ', 'Posting GL transactions started.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
         if HelperFunctions.IsUsingNewAccountFormat() then begin
             GenJnlBatch.Reset();
             GenJnlBatch.SetRange("Journal Template Name", 'GENERAL');
@@ -1185,7 +1185,7 @@ Codeunit 1937 "MigrationGP Helper Functions"
         // Remove posted batches
         RemoveBatches();
         DurationAsInt := CurrentDateTime() - StartTime;
-        SendTraceTag('00007GK', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, 'Posting GL transactions finished; duration %1 (DurationAsInt)', DataClassification::SystemMetadata);
+        Session.LogMessage('00007GK', 'Posting GL transactions finished; duration %1 (DurationAsInt)', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 
     procedure PostGLBatch(JournalBatchName: Code[10])

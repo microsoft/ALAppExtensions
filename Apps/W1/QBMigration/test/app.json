@@ -4,30 +4,30 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the QuickBooks Data Migration extension.",
     "description":  "Tests for the QuickBooks Data Migration extension.",
-    "version":  "16.3.0.0",
+    "version":  "17.0.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
-    "url":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "",
     "dependencies":  [
                          {
                              "id":  "1b80b577-772f-4e0f-bc13-50214fb3da6e",
                              "name":  "QuickBooks Data Migration",
                              "publisher":  "Microsoft",
-                             "version":  "16.3.0.0"
+                             "version":  "17.0.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "16.3.0.0"
+                             "version":  "17.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "11.0.0.0",
+    "platform":  "17.0.0.0",
     "idRanges":  [
                      {
                          "from":  139500,
@@ -40,5 +40,5 @@
                  ],
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "16.3.0.0"
+    "application":  "17.0.0.0"
 }

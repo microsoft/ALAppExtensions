@@ -51,7 +51,7 @@ codeunit 10537 "MTD Connection"
     internal procedure InvokeRequest_SubmitVATReturn(var ResponseJson: Text; var RequestJson: Text; var HttpError: Text): Boolean
     begin
         CheckOAuthConfigured(false);
-        SendTraceTag('0000CC0', UKMakingTaxDigitalTok, VERBOSITY::Normal, StrSubstNo(InvokeReqMsg, 'submit VAT return'), DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('0000CC0', StrSubstNo(InvokeReqMsg, 'submit VAT return'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
         exit(InvokeRequest('POST', SubmitVATReturnPath(), ResponseJson, RequestJson, HttpError, SubmitVATReturnTxt));
     end;
 
@@ -60,7 +60,7 @@ codeunit 10537 "MTD Connection"
         RequestJson: Text;
     begin
         CheckOAuthConfigured(ShowMessage);
-        SendTraceTag('0000CC0', UKMakingTaxDigitalTok, VERBOSITY::Normal, StrSubstNo(InvokeReqMsg, 'retrieve VAT return'), DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('0000CC0', StrSubstNo(InvokeReqMsg, 'retrieve VAT return'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
         exit(InvokeRequest('GET', RetrieveVATReturnPath(PeriodKey), ResponseJson, RequestJson, HttpError, RetrieveVATReturnTxt));
     end;
 
@@ -69,7 +69,7 @@ codeunit 10537 "MTD Connection"
         RequestJson: Text;
     begin
         CheckOAuthConfigured(OpenOAuthSetup);
-        SendTraceTag('0000CC0', UKMakingTaxDigitalTok, VERBOSITY::Normal, StrSubstNo(InvokeReqMsg, 'retrieve VAT return periods'), DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('0000CC0', StrSubstNo(InvokeReqMsg, 'retrieve VAT return periods'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
         exit(InvokeRequest('GET', RetrieveObligationsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATReturnPeriodsTxt));
     end;
 
@@ -78,7 +78,7 @@ codeunit 10537 "MTD Connection"
         RequestJson: Text;
     begin
         CheckOAuthConfigured(true);
-        SendTraceTag('0000CC0', UKMakingTaxDigitalTok, VERBOSITY::Normal, StrSubstNo(InvokeReqMsg, 'retrieve liabilities'), DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('0000CC0', StrSubstNo(InvokeReqMsg, 'retrieve liabilities'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
         exit(InvokeRequest('GET', RetrieveLiabilitiesPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATLiabilitiesTxt));
     end;
 
@@ -87,7 +87,7 @@ codeunit 10537 "MTD Connection"
         RequestJson: Text;
     begin
         CheckOAuthConfigured(true);
-        SendTraceTag('0000CC0', UKMakingTaxDigitalTok, VERBOSITY::Normal, StrSubstNo(InvokeReqMsg, 'retrieve payments'), DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('0000CC0', StrSubstNo(InvokeReqMsg, 'retrieve payments'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
         exit(InvokeRequest('GET', RetrievePaymentsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATPaymentsTxt));
     end;
 
@@ -97,7 +97,7 @@ codeunit 10537 "MTD Connection"
     begin
         CheckOAuthConfigured(false);
         OAuth20Setup.GET(GetOAuthSetupCode());
-        SendTraceTag('0000CCE', UKMakingTaxDigitalTok, VERBOSITY::Normal, RefreshAccessTokenMsg, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('0000CCE', RefreshAccessTokenMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
         exit(OAuth20Setup.RefreshAccessToken(HttpError));
     end;
 
@@ -182,7 +182,7 @@ codeunit 10537 "MTD Connection"
         Commit();
 
         if Result then
-            SendTraceTag('0000CC5', UKMakingTaxDigitalTok, VERBOSITY::Normal, InvokeReqSuccessMsg, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000CC5', InvokeReqSuccessMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
     end;
 
     local procedure LogActivity(OAuth20Setup: Record "OAuth 2.0 Setup"; ActivityLogContext: Text; HttpError: Text)
@@ -261,23 +261,23 @@ codeunit 10537 "MTD Connection"
         HttpLogError := HttpError;
 
         if not OAuth20Mgt.GetHttpStatusFromJsonResponse(ResponseJson, StatusCode, StatusReason, StatusDetails) then begin
-            SendTraceTag('0000CC6', UKMakingTaxDigitalTok, VERBOSITY::Error, NoHttpStatusErr, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000CC6', NoHttpStatusErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
             exit(false);
         end;
 
         if not JObject.ReadFrom(ResponseJson) then begin
-            SendTraceTag('0000CC7', UKMakingTaxDigitalTok, VERBOSITY::Error, NoJsonResponseErr, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000CC7', NoJsonResponseErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
             exit(false);
         end;
 
         if not JObject.SelectToken('Content.message', JToken) then begin
-            SendTraceTag('0000CC8', UKMakingTaxDigitalTok, VERBOSITY::Error, NoContentMessageErr, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000CC8', NoContentMessageErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
             exit(false);
         end;
 
         JsonErrorMessage := JToken.AsValue().AsText();
         if JsonErrorMessage = '' then begin
-            SendTraceTag('0000CC9', UKMakingTaxDigitalTok, VERBOSITY::Error, EmptyJsonErrMsgErr, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000CC9', EmptyJsonErrMsgErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
             exit(false);
         end;
 
@@ -299,16 +299,16 @@ codeunit 10537 "MTD Connection"
                 if (StatusCode = 429) then
                     HttpError := Error_TOO_MANY_REQ_Txt;
 
-                SendTraceTag('0000CCA', UKMakingTaxDigitalTok, VERBOSITY::Error, HttpError, DATACLASSIFICATION::SystemMetadata);
+                Session.LogMessage('0000CCA', HttpError, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
                 exit(true);
             end;
 
         if not JObject.SelectToken('Content.statusCode', JToken) then begin
-            SendTraceTag('0000CCB', UKMakingTaxDigitalTok, VERBOSITY::Error, NoContentStatusCodeErr, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000CCB', NoContentStatusCodeErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
             exit(false);
         end;
         if JToken.AsValue().AsText() = '' then begin
-            SendTraceTag('0000CCC', UKMakingTaxDigitalTok, VERBOSITY::Error, EmptyStatusCodeErr, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000CCC', EmptyStatusCodeErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
             exit(false);
         end;
 
@@ -357,11 +357,11 @@ codeunit 10537 "MTD Connection"
         if HMRCErrorMessage <> '' then begin
             HttpError := HMRCErrorMessage;
             HttpLogError := StrSubstNo('HTTP error %1 (%2). %3', StatusCode, StatusReason, HttpError);
-            SendTraceTag('0000CCD', UKMakingTaxDigitalTok, VERBOSITY::Error, HttpLogError, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000CCD', HttpLogError, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
             exit(true);
         end;
 
-        SendTraceTag('0000CCF', UKMakingTaxDigitalTok, VERBOSITY::Error, CannotParseResponseErr, DATACLASSIFICATION::SystemMetadata);
+        Session.LogMessage('0000CCF', CannotParseResponseErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
         exit(false);
     end;
 
