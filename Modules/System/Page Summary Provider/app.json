@@ -1,0 +1,42 @@
+{
+    "id":  "dd4b9f8a-b018-4f69-a614-efdb744c5330",
+    "name":  "Page Summary Provider",
+    "publisher":  "Microsoft",
+    "brief":  "Provides a summary of an AL page",
+    "description":  "Contains functionality for providing a summary for a given page.",
+    "version":  "17.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo":  "",
+    "dependencies":  [
+        {
+            "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+            "name":  "DotNet Aliases",
+            "publisher":  "Microsoft",
+            "version":  "17.0.0.0"
+        },
+        {
+            "id":  "0846d207-5dec-4c1b-afd8-6a25e1e14b9d",
+            "name":  "Base64 Convert",
+            "publisher":  "Microsoft",
+            "version":  "17.0.0.0"
+        }
+                     ],
+    "internalsVisibleTo":  [
+
+                           ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "17.0.0.0",
+    "target":  "OnPrem",
+    "idRanges":  [
+                     {
+                         "from":  2715,
+                         "to":  2725
+                     }
+                 ],
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
+}

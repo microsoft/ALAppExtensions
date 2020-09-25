@@ -1,0 +1,59 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary></summary>
+codeunit 8887 "Email Test Mail"
+{
+    TableNo = "Email Account";
+
+    var
+        TestEmailChoiceTxt: Label 'Choose the email address that should receive a test email message:';
+        TestEmailSubjectTxt: Label 'Test Email Message';
+        TestEmailBodyTxt: Label '<body><p style="font-family:Verdana,Arial;font-size:10pt"><b>The user %1 sent this message to test their email settings. You do not need to reply to this message.</b></p><p style="font-family:Verdana,Arial;font-size:9pt"><b>Sent through connector:</b> %2<BR></p></body>', Comment = '%1 is an email address, such as user@domain.com; %2 is the name of a connector, such as SMTP;';
+        TestEmailSuccessMsg: Label 'Test email has been sent to %1.\Check your email for messages to make sure that the email was delivered successfully.', Comment = '%1 is an email address.';
+        TestEmailFailedMsg: Label 'An error has occured while sending the email, please look at the Outbox to find the error.';
+        TestEmailOtherTxt: Label 'Other...';
+
+    trigger OnRun()
+    var
+        Email: Codeunit Email;
+        Message: Codeunit "Email Message";
+        EmailUserSpecifiedAddress: Page "Email User-Specified Address";
+        IEmailConnector: Interface "Email Connector";
+        EmailRecipient: Text;
+        EmailChoices: Text;
+        SelectedEmailChoice: Integer;
+        Recipients: List of [Text];
+        EmailBody: Text;
+        EmailChoicesSubLbl: Label '%1,%2', Locked = true;
+    begin
+        EmailChoices := StrSubstNo(EmailChoicesSubLbl, Rec."Email Address", TestEmailOtherTxt);
+        SelectedEmailChoice := StrMenu(EmailChoices, 2, TestEmailChoiceTxt);
+
+        if SelectedEmailChoice = 0 then
+            exit;
+        if SelectedEmailChoice = 1 then
+            EmailRecipient := Rec."Email Address"
+        else
+            if EmailUserSpecifiedAddress.RunModal() = Action::OK then
+                EmailRecipient := EmailUserSpecifiedAddress.GetEmailAddress()
+            else
+                exit;
+
+        Recipients.Add(EmailRecipient);
+
+        IEmailConnector := Rec.Connector;
+        Email.OnGetTestEmailBody(Rec.Connector, EmailBody);
+
+        if EmailBody = '' then
+            EmailBody := StrSubstNo(TestEmailBodyTxt, UserId(), Rec.Connector);
+
+        Message.CreateMessage(Recipients, TestEmailSubjectTxt, EmailBody, true);
+        if Email.Send(Message.GetId(), Rec."Account Id", Rec.Connector) then
+            Message(StrSubstNo(TestEmailSuccessMsg, EmailRecipient))
+        else
+            Error(TestEmailFailedMsg);
+    end;
+}

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "ApplicationBenchmarkTool"
+		},
+		{
+			"path": "TestFramework/TestRunner"
+		},
+		{
+			"path": "ApplicationBenchmarkTool Tests"
+		}
+	],
+	"settings": {}
+}
