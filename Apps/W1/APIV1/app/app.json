@@ -1,0 +1,24 @@
+{
+    "id":  "8afe7b40-8c87-4beb-ada0-451d1761bf95",
+    "name":  "_Exclude_APIV1_",
+    "publisher":  "Microsoft",
+    "version":  "17.0.0.0",
+    "brief":  "APIV1",
+    "description":  "APIV1",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "help": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "contextSensitiveHelpUrl": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "17.0.0.0",
+    "target":  "OnPrem",
+    "showMyCode":  true,
+    "application":  "17.0.0.0"
+}

@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PermissionSets>
+  <PermissionSet RoleID="APIV1" RoleName="APIV1">
+    <Permission>
+      <ObjectType>5</ObjectType>
+      <ObjectID>150000</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>5</ObjectType>
+      <ObjectID>150001</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>5</ObjectType>
+      <ObjectID>150002</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>5</ObjectType>
+      <ObjectID>150003</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20000</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20013</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20031</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20001</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20002</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20003</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20004</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20005</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20006</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20007</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20008</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20009</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20010</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20011</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20012</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20014</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20015</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20016</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20018</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20019</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20020</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20021</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20022</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20023</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20024</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20025</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20026</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20027</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20028</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20029</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20030</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20032</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20033</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20034</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20035</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20036</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20037</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20038</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20039</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20040</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20041</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>20042</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>9</ObjectType>
+      <ObjectID>20000</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>9</ObjectType>
+      <ObjectID>20001</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>20038</ObjectID>
+      <ReadPermission>Yes</ReadPermission>
+      <InsertPermission>Yes</InsertPermission>
+      <ModifyPermission>Yes</ModifyPermission>
+      <DeletePermission>Yes</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+  </PermissionSet>
+</PermissionSets>
