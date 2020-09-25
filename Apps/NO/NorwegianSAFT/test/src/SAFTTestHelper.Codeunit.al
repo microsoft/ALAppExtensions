@@ -206,6 +206,7 @@ codeunit 148099 "SAF-T Test Helper"
         GLEntry."Entry No." := LibraryUtility.GetNewRecNo(GLEntry, GLEntry.FieldNo("Entry No."));
         GLEntry."Posting Date" := PostingDate;
         GLEntry."Document Date" := PostingDate;
+        GLEntry."Document Type" := GLEntry."Document Type"::Invoice;
         GLEntry."Document No." := DocNo;
         GLEntry."G/L Account No." := GLAccNo;
         GLEntry."Transaction No." := TransactionNo;
@@ -337,6 +338,7 @@ codeunit 148099 "SAF-T Test Helper"
         CompanyInformation.Validate("Address 2", LibraryUtility.GenerateGUID());
         CompanyInformation.Validate("SAF-T Contact No.", Employee."No.");
         CompanyInformation."VAT Registration No." := LibraryUtility.GenerateGUID();
+        CompanyInformation."Registration No." := LibraryUtility.GenerateGUID();
         CompanyInformation.Modify(true);
 
         LibraryERM.CreatePostCode(PostCode);
@@ -530,9 +532,26 @@ codeunit 148099 "SAF-T Test Helper"
         exit(PaymentTerms.Code)
     end;
 
+    procedure LoadXMLBufferFromSAFTExportLine(var TempXMLBuffer: Record "XML Buffer" temporary; SAFTExportLine: Record "SAF-T Export Line")
+    var
+        Stream: InStream;
+    begin
+        SAFTExportLine.CalcFields("SAF-T File");
+        SAFTExportLine."SAF-T File".CreateInStream(Stream);
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.DeleteAll();
+        TempXMLBuffer.LoadFromStream(Stream);
+    end;
+
     procedure FindSAFTHeaderElement(var TempXMLBuffer: Record "XML Buffer" temporary)
     begin
         TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, '/n1:AuditFile/n1:Header');
+    end;
+
+    procedure FindSAFTExportLine(var SAFTExportLine: Record "SAF-T Export Line"; ExportID: Integer)
+    begin
+        SAFTExportLine.SetRange(ID, ExportID);
+        SAFTExportLine.FindSet();
     end;
 
     procedure AssertElementValue(var TempXMLBuffer: Record "XML Buffer" temporary; ElementName: Text; ElementValue: Text)

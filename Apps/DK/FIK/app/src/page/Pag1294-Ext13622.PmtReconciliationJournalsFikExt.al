@@ -18,7 +18,7 @@ pageextension 13622 PmtReconciliationJournals extends "Pmt. Reconciliation Journ
                 Promoted = true;
                 PromotedIsBig = true;
                 Image = Import;
-                PromotedCategory = New;
+                PromotedCategory = Process;
                 trigger OnAction();
                 begin
                     ImportAndProcessToNewFIK();

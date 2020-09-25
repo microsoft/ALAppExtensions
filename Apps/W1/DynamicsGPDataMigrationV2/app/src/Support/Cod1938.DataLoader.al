@@ -21,7 +21,7 @@ codeunit 1938 "MigrationGP Data Loader"
         StartTime: DateTime;
     begin
         StartTime := CurrentDateTime();
-        SendTraceTag('00001OC', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, StagingTablesImportStartMsg, DataClassification::SystemMetadata);
+        Session.LogMessage('00001OC', StagingTablesImportStartMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
 
         ItemMigrator.GetAll();
         CustomerMigrator.GetAll();
@@ -29,8 +29,7 @@ codeunit 1938 "MigrationGP Data Loader"
         CleanupFiles();
 
         DurationAsInt := CurrentDateTime() - StartTime;
-        SendTraceTag('00001OD', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal,
-            StrSubstNo(StagingTablesImportFinishMsg, DurationAsInt), DataClassification::SystemMetadata);
+        Session.LogMessage('00001OD', StrSubstNo(StagingTablesImportFinishMsg, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 
     procedure CleanupFiles()

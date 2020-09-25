@@ -27,7 +27,7 @@ codeunit 10675 "SAF-T Export Mgt."
         SAFTFileNotGeneratedTxt: Label 'SAF-T file not generated.';
         ParallelSAFTFileGenerationTxt: Label 'Parallel SAF-T file generation';
         ZipArchiveFilterTxt: Label 'Zip File (*.zip)|*.zip', Locked = true;
-        SAFTZipFileTxt: Label 'SAF-T Financial.zip', Locked = true;
+        SAFTZipFileTxt: Label 'SAF-T Financial_%1.zip', Locked = true;
         ZipArchiveSaveDialogTxt: Label 'Export SAF-T archive';
         MasterDataMsg: Label 'MasterData';
         GLEntriesMsg: Label 'General Ledger Entries from %1 to %2';
@@ -37,6 +37,7 @@ codeunit 10675 "SAF-T Export Mgt."
         SessionLostTxt: Label 'The task for line %1 was lost.', Comment = '%1 = number';
         NotPossibleToScheduleTxt: Label 'It is not possible to schedule the task for line %1 because the Max. No. of Jobs field contains %2.', Comment = '%1,%2 = numbers';
         ScheduleTaskForLineTxt: Label 'Schedule a task for line %1.', Comment = '%1 = number';
+        ExportFileAlreadyExistQst: Label 'The export ZIP files already exist and are ready for download. Do you want to generate the ZIP files again?';
 
     local procedure StartExport(var SAFTExportHeader: Record "SAF-T Export Header")
     var
@@ -51,7 +52,6 @@ codeunit 10675 "SAF-T Export Mgt."
         SAFTExportHeader.validate(Status, SAFTExportHeader.Status::"In Progress");
         SAFTExportHeader.Validate("Execution Start Date/Time", TypeHelper.GetCurrentDateTimeInUserTimeZone());
         SAFTExportHeader.Validate("Execution End Date/Time", 0DT);
-        Clear(SAFTExportHeader."SAF-T File");
         SAFTExportHeader.Modify(true);
         Commit();
 
@@ -110,7 +110,7 @@ codeunit 10675 "SAF-T Export Mgt."
 
     procedure SendTraceTagOfExport(Category: Text; TraceTagMessage: Text)
     begin
-        SendTraceTag('0000A4J', Category, Verbosity::Normal, TraceTagMessage, DataClassification::SystemMetadata);
+        Session.LogMessage('0000A4J', TraceTagMessage, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', Category);
     end;
 
     procedure UpdateExportStatus(var SAFTExportHeader: Record "SAF-T Export Header")
@@ -202,11 +202,11 @@ codeunit 10675 "SAF-T Export Mgt."
                 exit;
             CalcFields("Detailed Info");
             if not "Detailed Info".HasValue() then
-                error(NoErrorMessageErr);
+                LogInternalError(NoErrorMessageErr, DataClassification::SystemMetadata, Verbosity::Error);
             "Detailed Info".CreateInStream(Stream);
             Stream.ReadText(ErrorMessage);
             if ErrorMessage = '' then
-                error(NoErrorMessageErr);
+                LogInternalError(NoErrorMessageErr, DataClassification::SystemMetadata, Verbosity::Error);
             Message(ErrorMessage);
         end;
     end;
@@ -331,6 +331,7 @@ codeunit 10675 "SAF-T Export Mgt."
     var
         SAFTExportLine: Record "SAF-T Export Line";
         GLEntry: Record "G/L Entry";
+        ShiftDateFormula: DateFormula;
         StartingDate: Date;
         EndingDate: Date;
         StopExportEntriesByPeriod: Boolean;
@@ -341,7 +342,7 @@ codeunit 10675 "SAF-T Export Mgt."
 
         // Master data
         InsertSAFTExportLine(SAFTExportLine, LineNo, SAFTExportHeader, true, MasterDataMsg, SAFTExportHeader."Starting Date", SAFTExportHeader."Ending Date");
-        if not SAFTExportHeader."Split By Month" then begin
+        if (not SAFTExportHeader."Split By Month") and (not SAFTExportHeader."Split By Date") then begin
             // General ledger entries
             InsertSAFTExportLine(
                 SAFTExportLine, LineNo, SAFTExportHeader, false,
@@ -351,10 +352,14 @@ codeunit 10675 "SAF-T Export Mgt."
         end;
 
         StartingDate := SAFTExportHeader."Starting Date";
-        EndingDate := CalcDate('<CM>', SAFTExportHeader."Starting Date");
+        If SAFTExportHeader."Split By Month" then
+            evaluate(ShiftDateFormula, '<CM>')
+        else
+            evaluate(ShiftDateFormula, '<0D>');
+        EndingDate := CalcDate(ShiftDateFormula, SAFTExportHeader."Starting Date");
         repeat
             StopExportEntriesByPeriod := EndingDate >= SAFTExportHeader."Ending Date";
-            if CalcDate('<CM>', EndingDate) >= SAFTExportHeader."Ending Date" then
+            if CalcDate(ShiftDateFormula, EndingDate) >= SAFTExportHeader."Ending Date" then
                 EndingDate := ClosingDate(EndingDate);
 
             GLEntry.SetRange("Posting Date", StartingDate, EndingDate);
@@ -363,7 +368,7 @@ codeunit 10675 "SAF-T Export Mgt."
                     SAFTExportLine, LineNo, SAFTExportHeader, false,
                     StrSubstNo(GLEntriesMsg, StartingDate, EndingDate), StartingDate, EndingDate);
             StartingDate := normaldate(EndingDate) + 1;
-            EndingDate := CalcDate('<CM>', StartingDate);
+            EndingDate := CalcDate(ShiftDateFormula, StartingDate);
         until StopExportEntriesByPeriod;
     end;
 
@@ -424,6 +429,32 @@ codeunit 10675 "SAF-T Export Mgt."
         SendTraceTagOfExport(SAFTExportTxt, GetCancelTraceTagMessage(SAFTExportLine));
     end;
 
+    procedure GenerateZipFileWithCheck(SAFTExportHeader: Record "SAF-T Export Header")
+    var
+        ConfirmationMgt: Codeunit "Confirm Management";
+    begin
+        if ExportFilesExist(SAFTExportHeader) then
+            if not ConfirmationMgt.GetResponseOrDefault(ExportFileAlreadyExistQst, false) then
+                exit;
+        GenerateZipFile(SAFTExportHeader);
+    end;
+
+    procedure GenerateZipFile(SAFTExportHeader: Record "SAF-T Export Header")
+    begin
+        with SAFTExportHeader do begin
+            if Status <> Status::Completed then
+                exit;
+
+            ClearExportFiles(SAFTExportHeader);
+
+            if AllowedToExportIntoFolder() then begin
+                if not "Disable Zip File Generation" then
+                    GenerateZipFileFromSavedFiles(SAFTExportHeader);
+            end else
+                BuildZipFilesWithAllRelatedXmlFiles(SAFTExportHeader);
+        end;
+    end;
+
     procedure BuildZipFilesWithAllRelatedXmlFiles(SAFTExportHeader: Record "SAF-T Export Header")
     var
         CompanyInformation: Record "Company Information";
@@ -458,14 +489,31 @@ codeunit 10675 "SAF-T Export Mgt."
 
     procedure DownloadZipFileFromExportHeader(SAFTExportHeader: Record "SAF-T Export Header")
     var
+        SAFTExportFile: Record "SAF-T Export File";
         ZipFileInStream: InStream;
         FileName: Text;
     begin
-        SAFTExportHeader.CalcFields("SAF-T File");
-        if not SAFTExportHeader."SAF-T File".HasValue() then
+        SAFTExportFile.SetRange("Export ID", SAFTExportHeader.ID);
+        if not SAFTExportFile.FindSet() then
+            LogInternalError(NoZipFileGeneratedErr, DataClassification::SystemMetadata, Verbosity::Error);
+        repeat
+            SAFTExportFile.CalcFields("SAF-T File");
+            SAFTExportFile."SAF-T File".CreateInStream(ZipFileInStream);
+            FileName := StrSubstNo(SAFTZipFileTxt, SAFTExportFile."File No.");
+            DownloadFromStream(ZipFileInStream, ZipArchiveSaveDialogTxt, '', ZipArchiveFilterTxt, FileName);
+        until SAFTExportFile.Next() = 0;
+    end;
+
+    procedure DownloadExportFile(SAFTExportFile: Record "SAF-T Export File")
+    var
+        ZipFileInStream: InStream;
+        FileName: Text;
+    begin
+        SAFTExportFile.CalcFields("SAF-T File");
+        if not SAFTExportFile."SAF-T File".HasValue() then
             error(NoZipFileGeneratedErr);
-        SAFTExportHeader."SAF-T File".CreateInStream(ZipFileInStream);
-        FileName := SAFTZipFileTxt;
+        SAFTExportFile."SAF-T File".CreateInStream(ZipFileInStream);
+        FileName := StrSubstNo(SAFTZipFileTxt, SAFTExportFile."File No.");
         DownloadFromStream(ZipFileInStream, ZipArchiveSaveDialogTxt, '', ZipArchiveFilterTxt, FileName);
     end;
 
@@ -479,23 +527,24 @@ codeunit 10675 "SAF-T Export Mgt."
         EntryFileInStream: InStream;
         ZipOutStream: OutStream;
         ZipInStream: InStream;
+        FilesPerZip: Integer;
+        FilesHandled: Integer;
     begin
         FileMgt.GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, ServerDestinationFolder);
-        DataCompression.CreateZipArchive();
+        FilesPerZip := GetFilesPerZip(TempNameValueBuffer, SAFTExportHeader);
         TempNameValueBuffer.FindSet();
         repeat
+            If FilesHandled > FilesPerZip then
+                SaveZipFile(DataCompression, FilesHandled, SAFTExportHeader);
+            If FilesHandled = 0 then
+                DataCompression.CreateZipArchive();
             FileMgt.BLOBImportFromServerFile(EntryTempBlob, TempNameValueBuffer.Name);
             EntryTempBlob.CreateInStream(EntryFileInStream);
             DataCompression.AddEntry(EntryFileInStream, FileMgt.GetFileName(TempNameValueBuffer.Name));
+            FilesHandled += 1;
         until TempNameValueBuffer.Next() = 0;
-        ZipTempBlob.CreateOutStream(ZipOutStream);
-        DataCompression.SaveZipArchive(ZipOutStream);
-        DataCompression.CloseZipArchive();
-
-        ZipTempBlob.CreateInStream(ZipInStream);
-        SAFTExportHeader."SAF-T File".CreateOutStream(ZipOutStream);
-        CopyStream(ZipOutStream, ZipInStream);
-        SAFTExportHeader.Modify(true);
+        If FilesHandled <> 0 then
+            SaveZipFile(DataCompression, FilesHandled, SAFTExportHeader);
 
         FileMgt.GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, ServerDestinationFolder);
         repeat
@@ -509,29 +558,72 @@ codeunit 10675 "SAF-T Export Mgt."
         FileMgt: Codeunit "File Management";
         DataCompression: Codeunit "Data Compression";
         EntryTempBlob: Codeunit "Temp Blob";
-        ZipTempBlob: Codeunit "Temp Blob";
         EntryFileInStream: InStream;
-        ZipClientFile: File;
-        ZipOutStream: OutStream;
-        ZipInStream: InStream;
+        FilesPerZip: Integer;
+        FilesHandled: Integer;
+        ZipNo: Integer;
     begin
         FileMgt.GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, SAFTExportHeader."Folder Path");
+        FilesPerZip := GetFilesPerZip(TempNameValueBuffer, SAFTExportHeader);
         DataCompression.CreateZipArchive();
         TempNameValueBuffer.FindSet();
         repeat
+            If FilesHandled > FilesPerZip then
+                ExportZipFile(DataCompression, FilesHandled, ZipNo, SAFTExportHeader);
+            If FilesHandled = 0 then
+                DataCompression.CreateZipArchive();
             FileMgt.BLOBImportFromServerFile(EntryTempBlob, TempNameValueBuffer.Name);
             EntryTempBlob.CreateInStream(EntryFileInStream);
             DataCompression.AddEntry(EntryFileInStream, FileMgt.GetFileName(TempNameValueBuffer.Name));
+            FilesHandled += 1;
         until TempNameValueBuffer.Next() = 0;
+        if FilesHandled <> 0 then
+            ExportZipFile(DataCompression, FilesHandled, ZipNo, SAFTExportHeader);
+    end;
+
+    local procedure SaveZipFile(var DataCompression: Codeunit "Data Compression"; var FilesHandled: Integer; SAFTExportHeader: Record "SAF-T Export Header")
+    var
+        SAFTExportFile: Record "SAF-T Export File";
+        ZipTempBlob: Codeunit "Temp Blob";
+        ZipOutStream: OutStream;
+    begin
+        InitExportFile(SAFTExportFile, SAFTExportHeader);
+        SAFTExportFile."SAF-T File".CreateOutStream(ZipOutStream);
+        DataCompression.SaveZipArchive(ZipOutStream);
+        DataCompression.CloseZipArchive();
+        SAFTExportFile.Insert(true);
+        FilesHandled := 0;
+    end;
+
+    local procedure ExportZipFile(var DataCompression: Codeunit "Data Compression"; var FilesHandled: Integer; var ZipNo: Integer; SAFTExportHeader: Record "SAF-T Export Header")
+    var
+        ZipTempBlob: Codeunit "Temp Blob";
+        ZipClientFile: File;
+        ZipArchiveFile: File;
+        ZipOutStream: OutStream;
+        ZipInStream: InStream;
+    begin
         ZipTempBlob.CreateOutStream(ZipOutStream);
         DataCompression.SaveZipArchive(ZipOutStream);
         DataCompression.CloseZipArchive();
-
         ZipTempBlob.CreateInStream(ZipInStream);
-        ZipClientFile.Create(SAFTExportHeader."Folder Path" + '\' + SAFTZipFileTxt);
+        ZipNo += 1;
+        ZipClientFile.Create(SAFTExportHeader."Folder Path" + '\' + StrSubstNo(SAFTZipFileTxt, ZipNo));
         ZipClientFile.CreateOutStream(ZipOutStream);
         CopyStream(ZipOutStream, ZipInStream);
         ZipClientFile.Close();
+        FilesHandled := 0;
+    end;
+
+    local procedure GetFilesPerZip(var TempNameValueBuffer: Record "Name/Value Buffer" temporary; SAFTExportHeader: Record "SAF-T Export Header") FilesPerZip: Integer
+    begin
+        If SAFTExportHeader."Create Multiple Zip Files" then begin
+            FilesPerZip := TempNameValueBuffer.Count() DIV 10;
+            If FilesPerZip = 0 then
+                FilesPerZip := 1;
+        end else
+            FilesPerZip := TempNameValueBuffer.Count();
+        exit(FilesPerZip);
     end;
 
     procedure CheckNoFilesInFolder(SAFTExportHeader: Record "SAF-T Export Header")
@@ -569,6 +661,36 @@ codeunit 10675 "SAF-T Export Mgt."
         File.CreateOutStream(Stream);
         XmlDoc.WriteTo(Stream);
         File.Close();
+    end;
+
+    procedure ClearExportFiles(SAFTExportHeader: Record "SAF-T Export Header")
+    var
+        SAFTExportFile: Record "SAF-T Export File";
+    begin
+        SAFTExportFile.SetRange("Export ID", SAFTExportHeader.ID);
+        SAFTExportFile.DeleteAll(true);
+    end;
+
+    local procedure InitExportFile(var SAFTExportFile: Record "SAF-T Export File"; SAFTExportHeader: Record "SAF-T Export Header")
+    var
+        FileNo: Integer;
+    begin
+        SAFTExportFile.Reset();
+        SAFTExportFile.SetRange("Export ID", SAFTExportHeader.ID);
+        If SAFTExportFile.FindLast() then
+            FileNo := SAFTExportFile."File No.";
+        FileNo += 1;
+        SAFTExportFile.Init();
+        SAFTExportFile."Export ID" := SAFTExportHeader.ID;
+        SAFTExportFile."File No." := FileNo;
+    end;
+
+    procedure ExportFilesExist(SAFTExportHeader: Record "SAF-T Export Header"): Boolean
+    var
+        SAFTExportFile: Record "SAF-T Export File";
+    begin
+        SAFTExportFile.SetRange("Export ID", SAFTExportHeader.ID);
+        exit(not SAFTExportFile.IsEmpty());
     end;
 
     procedure GetAmountInfoFromGLEntry(var AmountXMLNode: Text; var Amount: Decimal; GLEntry: Record "G/L Entry")

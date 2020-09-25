@@ -22,7 +22,7 @@ codeunit 1918 "MigrationQB Data Loader"
         IsOnline: Boolean;
     begin
         StartTime := CurrentDateTime();
-        SendTraceTag('00001OC', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, StagingTablesImportStartMsg, DataClassification::SystemMetadata);
+        Session.LogMessage('00001OC', StagingTablesImportStartMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
 
         IsOnline := HelperFunctions.IsOnlineData();
         ItemMigrator.GetAll(IsOnline);
@@ -31,8 +31,7 @@ codeunit 1918 "MigrationQB Data Loader"
         CleanupFiles();
 
         DurationAsInt := CurrentDateTime() - StartTime;
-        SendTraceTag('00001OD', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal,
-            StrSubstNo(StagingTablesImportFinishMsg, DurationAsInt), DataClassification::SystemMetadata);
+        Session.LogMessage('00001OD', StrSubstNo(StagingTablesImportFinishMsg, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 
     procedure CleanupFiles()

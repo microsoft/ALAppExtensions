@@ -83,7 +83,7 @@ pageextension 1088 "MS - Wallet Payment Services" extends "BC O365 Payment Servi
     begin
         UserHasPermissions := CheckUserHasPermissions();
         if not UserHasPermissions then
-            SendTraceTag('00006ZJ', TelemetryCategoryTok, Verbosity::Normal, UserWithoutPermissionsMsg, DataClassification::SystemMetadata);
+            Session.LogMessage('00006ZJ', UserWithoutPermissionsMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
     end;
 
     trigger OnAfterGetCurrRecord()

@@ -9,7 +9,7 @@ codeunit 139581 "MS - Wallet Inv Mock Events"
     end;
 
     var
-        LibraryVariableStorage: Codeunit 131004;
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         MockUpPayPal: Boolean;
         MockedPaypalIncludeOnDocuments: Boolean;
         MockedPaypalEnabled: Boolean;

@@ -252,6 +252,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
 
         OutputFile.create(FromFile);
         OutputFile.CreateOutStream(FileOutstream);
+        OnRunOnBeforeXmlDocumentWriteToFileStream(XMLdocOut, Rec, DocNameSpace, DocNameSpace2);
         XMLdocOut.WriteTo(FileOutstream);
         OutputFile.Close();
 
@@ -269,5 +270,10 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
     begin
         TaxableAmountParam := TaxableAmountParam + Amount;
         TaxAmountParam := TaxAmountParam + VATAmount
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnRunOnBeforeXmlDocumentWriteToFileStream(var XMLdocOut: XmlDocument; IssuedReminderHeader: Record "Issued Reminder Header"; DocNameSpace: Text[250]; DocNameSpace2: Text[250])
+    begin
     end;
 }

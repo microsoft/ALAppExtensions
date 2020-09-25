@@ -14,7 +14,7 @@ codeunit 134423 "Payment Export XMLPort"
         LibraryUtility: Codeunit "Library - Utility";
         LibraryRandom: Codeunit "Library - Random";
         LibraryAmcWebService: Codeunit "Library - Amc Web Service";
-    //TODO remoove BodyContentErr: Label 'The %1 XML tag was not found, or was found more than once in the body content of the SOAP request.', Comment = '%1=XmlTag';
+
     [Test]
     [Scope('OnPrem')]
     procedure ExportAMCXMLSunshine()
@@ -220,7 +220,6 @@ codeunit 134423 "Payment Export XMLPort"
                 if (ExportData[i] [j] <> '') and DataExchColumnDef.Get(DataExchDefCode, DataExchDefCode, j) then
                     LibraryXPathXMLReader.VerifyNodeCountWithValueByXPath(PrefixXPath(DataExchColumnDef.Path, '/', '/ns:'), ExportData[i] [j], 1);
 
-        //TODO ??
         CompanyInformation.Get();
         LibraryXPathXMLReader.VerifyNodeCountWithValueByXPath(
           PrefixXPath('/paymentExportBank/amcpaymentreq/banktransjournal/legalregistrationnumber', '/', '/ns:'),

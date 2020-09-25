@@ -98,7 +98,7 @@ codeunit 10674 "SAF-T XML Helper"
     begin
         SAFTExportLine.CalcFields("SAF-T File");
         if not SAFTExportLine."SAF-T File".HasValue() then
-            error(NoFileGeneratedErr);
+            LogInternalError(NoFileGeneratedErr, DataClassification::SystemMetadata, Verbosity::Error);
         EntryTempBlob.FromRecord(SAFTExportLine, SAFTExportLine.FieldNo("SAF-T File"));
         FileManagement.BLOBExportToServerFile(EntryTempBlob, FilePath);
     end;

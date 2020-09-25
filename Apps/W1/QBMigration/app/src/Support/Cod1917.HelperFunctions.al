@@ -22,9 +22,9 @@ Codeunit 1917 "MigrationQB Helper Functions"
             GetFileContent(FileName, JObject);
             JObject.Get(EntityName, JToken);
             if not JToken.IsArray() then
-                Error(AnArrayExpectedErr);
+                LogInternalError(AnArrayExpectedErr, DataClassification::SystemMetadata, Verbosity::Error);
             JArray := JToken.AsArray();
-            SendTraceTag('00007FJ', GetMigrationTypeTxt(), Verbosity::Normal, StrSubstNo(ImportedEntityTxt, EntityName), DataClassification::SystemMetadata);
+            Session.LogMessage('00007FJ', StrSubstNo(ImportedEntityTxt, EntityName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
             exit(true);
         end;
         exit(false);
@@ -55,14 +55,14 @@ Codeunit 1917 "MigrationQB Helper Functions"
                 exit(false);
 
             if not JToken.IsArray() then
-                Error(AnArrayExpectedErr);
+                LogInternalError(AnArrayExpectedErr, DataClassification::SystemMetadata, Verbosity::Error);
             NbChildren := JToken.AsArray().Count();
             if NbChildren > 0 then
                 AddToArray(JToken, JArray);
             if NbChildren = PageSize then
                 StartPosition := StartPosition + PageSize;
         until NbChildren < PageSize;
-        SendTraceTag('00007FK', GetMigrationTypeTxt(), Verbosity::Normal, StrSubstNo(PulledEntityTxt, EntityName), DataClassification::SystemMetadata);
+        Session.LogMessage('00007FK', StrSubstNo(PulledEntityTxt, EntityName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
         exit(true);
     end;
 
@@ -400,7 +400,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
     begin
         if JObject.Get(PropertyName, JToken) then begin
             if not JToken.IsArray() then
-                Error(AnArrayExpectedErr);
+                LogInternalError(AnArrayExpectedErr, DataClassification::SystemMetadata, Verbosity::Error);
             JArray := JToken.AsArray();
             exit(true);
         end;
@@ -546,7 +546,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
         CurrentJToken: JsonToken;
     begin
         if not JToken.IsArray() then
-            Error(AnArrayExpectedErr);
+            LogInternalError(AnArrayExpectedErr, DataClassification::SystemMetadata, Verbosity::Error);
         foreach CurrentJToken in JToken.AsArray() do
             JArray.Add(CurrentJToken);
     end;
@@ -562,7 +562,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
             exit(false);
 
         if not GetAuthorizationHeader(AccessToken, AuthorizationHeader) then begin
-            SendTraceTag('0000AL4', GetMigrationTypeTxt(), Verbosity::Warning, AuthHeaderErr, DataClassification::SystemMetadata);
+            Session.LogMessage('0000AL4', AuthHeaderErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
             exit(false);
         end;
 
@@ -583,17 +583,17 @@ Codeunit 1917 "MigrationQB Helper Functions"
         Client.Get(Url + Request, ResponseMessage);
 
         if not ResponseMessage.IsSuccessStatusCode() then begin
-            SendTraceTag('00007EM', GetMigrationTypeTxt(), Verbosity::Warning, StrSubstNo(QBORequestErr, ResponseMessage.ReasonPhrase()), DataClassification::CustomerContent);
+            Session.LogMessage('00007EM', StrSubstNo(QBORequestErr, ResponseMessage.ReasonPhrase()), Verbosity::Warning, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
             exit(false);
         end;
 
         if not ResponseMessage.Content().ReadAs(MessageResponse) then begin
-            SendTraceTag('00007EN', GetMigrationTypeTxt(), Verbosity::Warning, StrSubstNo(ReadingMessageErr, ResponseMessage.ReasonPhrase()), DataClassification::CustomerContent);
+            Session.LogMessage('00007EN', StrSubstNo(ReadingMessageErr, ResponseMessage.ReasonPhrase()), Verbosity::Warning, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
             exit(false);
         end;
 
         if not JObject.ReadFrom(MessageResponse.TrimStart('''').TrimEnd('''')) then begin
-            SendTraceTag('00007EO', GetMigrationTypeTxt(), Verbosity::Warning, StrSubstNo(ReadingMessageErr, ResponseMessage.ReasonPhrase()), DataClassification::CustomerContent);
+            Session.LogMessage('00007EO', StrSubstNo(ReadingMessageErr, ResponseMessage.ReasonPhrase()), Verbosity::Warning, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
             exit(false);
         end;
 

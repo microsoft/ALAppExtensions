@@ -40,7 +40,7 @@ codeunit 1934 "MigrationGP Wizard Integration"
         if HelperFunctions.RunPreMigrationChecks() then begin
             Instructions := GPDInstruction1Txt + CRLF + GPDInstruction2Txt + CRLF + StrSubstNo(GPDInstruction3Txt, ProductName.Short());
             Instructions := Instructions + CRLF + CRLF + CRLF + CRLF + SupportedGPVersionsTxt;
-            SendTraceTag('00001O9', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, GPSelectedTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00001O9', GPSelectedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
             Handled := true;
         end;
     end;
@@ -114,7 +114,7 @@ codeunit 1934 "MigrationGP Wizard Integration"
         end;
 
         If HelperFunctions.IsUsingNewAccountFormat() then begin
-            SendTraceTag('00007GG', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, UsingNewFormatTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00007GG', UsingNewFormatTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
             Page.RunModal(1940);
             MigrationGPConfig.GetSingleInstance();
             Handled := not MigrationGPConfig.GetAccountValidationError();
@@ -190,7 +190,7 @@ codeunit 1934 "MigrationGP Wizard Integration"
         if DataMigrationEntity.FindFirst() then
             EntitiesToMigrateMessage += StrSubstNo('item: %1; ', DataMigrationEntity."No. of Records");
 
-        SendTraceTag('00001OA', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, EntitiesToMigrateMessage, DataClassification::SystemMetadata);
+        Session.LogMessage('00001OA', EntitiesToMigrateMessage, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 
     local procedure GetCurrentCodeUnitNumber(): Integer

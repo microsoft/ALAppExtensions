@@ -36,6 +36,7 @@ codeunit 13655 "FIK Demodata"
         XBANKTxt: Label 'BANK';
         XCASHTxt: Label 'CASH';
         XCHECKTxt: Label 'CHECK';
+        FIKImportFormatTxt: Label 'FIK71';
 
     trigger OnInstallAppPerCompany()
     begin
@@ -45,16 +46,26 @@ codeunit 13655 "FIK Demodata"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure CompanyInitialize()
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
         DataMigration: Codeunit "FIK Data Migration";
     begin
         DataMigration.Run();
         ImportFIKDataExchDef();
         InsertPaymentMethods();
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup."FIK Import Format" := 'FIK71';
-        GeneralLedgerSetup.Modify();
+        SetFIKImportFormat();
         CreateBankExportImportSetup();
+    end;
+
+    local procedure SetFIKImportFormat()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        if GeneralLedgerSetup.Get() then begin
+            GeneralLedgerSetup."FIK Import Format" := FIKImportFormatTxt;
+            GeneralLedgerSetup.Modify();
+        end else begin
+            GeneralLedgerSetup."FIK Import Format" := FIKImportFormatTxt;
+            GeneralLedgerSetup.Insert();
+        end;
     end;
 
     local procedure ImportFIKDataExchDef();

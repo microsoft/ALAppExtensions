@@ -12,7 +12,7 @@ codeunit 1941 "MigrationGP Data Sync"
             if SetupStatus = SetupStatus::Completed then
                 InitiateGPMigration()
             else
-                SendTraceTag('000029K', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, CompanyFailedToMigrateMsg, DataClassification::SystemMetadata);
+                Session.LogMessage('000029K', CompanyFailedToMigrateMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
         end;
     end;
 

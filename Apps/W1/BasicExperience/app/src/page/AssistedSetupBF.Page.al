@@ -1,6 +1,6 @@
 page 20600 "Assisted Setup BF"
 {
-    Caption = 'Basic Assisted Setup guide';
+    Caption = 'Basic Experience Setup';
     DeleteAllowed = false;
     InsertAllowed = false;
     LinksAllowed = false;
@@ -13,11 +13,11 @@ page 20600 "Assisted Setup BF"
         {
             group(MediaStandard)
             {
-                Caption = '';
+                ShowCaption = false;
                 Editable = false;
                 Visible = TopBannerVisible;
 
-                field(MediaResourcesStandard; MediaResourcesStandard."Media Reference")
+                field(MediaResources; MediaResources."Media Reference")
                 {
                     ApplicationArea = All;
                     Editable = false;
@@ -28,10 +28,10 @@ page 20600 "Assisted Setup BF"
             group(FirstPage)
             {
                 Caption = '';
-
+                Visible = TopBannerVisible;
                 group("Welcome")
                 {
-                    Caption = 'Welcome';
+                    Caption = 'Welcome to Basic Experience Setup';
 
                     group(Introduction)
                     {
@@ -56,7 +56,7 @@ page 20600 "Assisted Setup BF"
 
                             trigger OnDrillDown()
                             begin
-                                Hyperlink('https://go.microsoft.com/fwlink/?linkid=');
+                                Hyperlink(DocLbl);
                             end;
                         }
                     }
@@ -80,7 +80,7 @@ page 20600 "Assisted Setup BF"
 
                             trigger OnDrillDown()
                             begin
-                                Hyperlink('https://go.microsoft.com/fwlink/?linkid=');
+                                Hyperlink(TermsOfUseLbl);
                             end;
                         }
                     }
@@ -95,24 +95,6 @@ page 20600 "Assisted Setup BF"
                             Caption = 'I understand and accept the terms';
                             ToolTip = 'Acknowledge that you have read and accept the terms.';
                         }
-                        /* Temporarily removed due to issue regarding License check
-                        field(HasBCBasicLicense; HasBCBasicLicense)
-                        {
-                            ApplicationArea = Basic, Suite;
-                            Editable = true;
-                            Caption = 'Basic license has been assigned';
-                            ToolTip = 'To complete the Basic setup the Basic license must be assigned to at least one user.';
-                            trigger OnValidate()
-                            var
-                                BasicMgmt: Codeunit "Basic Mgmt BF";
-                                NotSupportedLicensesErr: Label 'At least one user must have the Basic license.';
-                            begin
-                                HasBCBasicLicense := BasicMgmt.IsSupportedLicense();
-                                if not HasBCBasicLicense then
-                                    Error(NotSupportedLicensesErr);
-                            end;
-                        }
-                        */
                     }
                 }
             }
@@ -126,10 +108,10 @@ page 20600 "Assisted Setup BF"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Finish';
-                Enabled = ConsentAccepted;
+                Enabled = ConsentAccepted and HasBCBasicLicense;
                 Image = Close;
                 InFooterBar = true;
-                ToolTip = 'Choose Finish to complete the Basic assisted setup guide.';
+                ToolTip = 'Choose Finish to complete the Basic Experience setup.';
 
                 trigger OnAction();
                 var
@@ -152,7 +134,7 @@ page 20600 "Assisted Setup BF"
         AssistedSetup: Codeunit "Assisted Setup";
         BasicMgmt: Codeunit "Basic Mgmt BF";
     begin
-        //HasBCBasicLicense  := BasicMgmt.IsSupportedLicense(); // Temporarily removed due to issue regarding License check
+        HasBCBasicLicense := BasicMgmt.IsSupportedLicense();
         AssistedSetup.Reset(PAGE::"Assisted Setup BF");
         IsComplete := AssistedSetup.IsComplete(PAGE::"Assisted Setup BF");
         ConsentAccepted := IsComplete;
@@ -162,25 +144,34 @@ page 20600 "Assisted Setup BF"
             Notification.Scope(NotificationScope::LocalScope);
             Notification.send();
         end;
+
+        if not HasBCBasicLicense then begin
+            Notification.Message(LicenseNotAssignedMsg);
+            Notification.Scope(NotificationScope::LocalScope);
+            Notification.send();
+        end;
     end;
 
     local procedure LoadTopBanners();
     begin
-        if MediaRepositoryStandard.GET('AssistedSetup-NoText-400px.png', FORMAT(CURRENTCLIENTTYPE))
+        if MediaRepository.GET('AssistedSetup-NoText-400px.png', FORMAT(CURRENTCLIENTTYPE))
       then
-            if MediaResourcesStandard.GET(MediaRepositoryStandard."Media Resources Ref")
+            if MediaResources.GET(MediaRepository."Media Resources Ref")
         then
-                TopBannerVisible := MediaResourcesStandard."Media Reference".HASVALUE;
+                TopBannerVisible := MediaResources."Media Reference".HASVALUE;
     end;
 
     var
+        MediaRepository: Record "Media Repository";
+        MediaResources: Record "Media Resources";
         Notification: Notification;
-        MediaRepositoryStandard: Record 9400;
-        MediaResourcesStandard: Record 2000000182;
         TopBannerVisible: Boolean;
         IsComplete: Boolean;
 
-        //HasBCBasicLicense: Boolean; // Temporarily removed due to issue regarding License check
+        HasBCBasicLicense: Boolean;
         ConsentAccepted: Boolean;
         NotSupportedCompanyMsg: Label 'This extension is intended only for one company.';
+        LicenseNotAssignedMsg: Label 'At least one user must have the Basic license assigned.';
+        DocLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2130800', Locked = true;
+        TermsOfUseLbl: Label ' https://go.microsoft.com/fwlink/?linkid=2130900', Locked = true;
 }

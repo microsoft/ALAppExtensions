@@ -20,7 +20,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         ConvErrPathTxt: Label '//return/pack/convertlog[syslogtype[text()="error"]]', Locked = true;
         DataPathTxt: Label '//return/pack/data', Locked = true;
         BankPathTxt: Label '//return/pack/bank', Locked = true;
-
+        PackPathTxt: Label '//return/pack', Locked = true;
 
     procedure CreateEnvelope(VAR requestDocXML: XmlDocument; VAR EnvXmlElement: XmlElement; Username: Text; Password: Text; UsernameTokenValue: Text);
     var
@@ -126,7 +126,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         ContentOutStream: OutStream;
         ContentInStream: InStream;
     begin
-        AMCGUID := UserSecurityId();
+        AMCGUID := DelChr(LowerCase(Format(UserSecurityId())), '=', '{}');
         User.SetRange("User Security ID", UserSecurityId());
         if (User.FindFirst()) then begin
             if (User."Full Name" <> '') then
@@ -531,6 +531,41 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         EXIT('');
     end;
 
+    internal procedure SetUsedXTLJournal(var TempBlob: Codeunit "Temp Blob"; DataExchEntryNo: Integer; PaymentExportWebCallTxt: Text)
+    var
+        CreditTransferRegister: Record "Credit Transfer Register";
+        ResponseInStream: InStream;
+        DataXmlNode: XmlNode;
+        ResponseXmlDoc: XmlDocument;
+        Found: Boolean;
+        XTLJournalNo: Text[250];
+    begin
+        TempBlob.CreateInStream(ResponseInStream);
+        XmlDocument.ReadFrom(ResponseInStream, ResponseXmlDoc);
+
+
+        Found := ResponseXmlDoc.SelectSingleNode(STRSUBSTNO(GetJournalNoPath(PaymentExportWebCallTxt + GetResponseTag())), DataXmlNode);
+        if (Found) then begin
+            XTLJournalNo := CopyStr(getNodeValue(DataXmlNode, './journalnumber'), 1, 250);
+            CreditTransferRegister.SetRange("Data Exch. Entry No.", DataExchEntryNo);
+            if (CreditTransferRegister.FindLast()) then begin
+                CreditTransferRegister."AMC Bank XTL Journal" := XTLJournalNo;
+                CreditTransferRegister.Modify();
+            end;
+        end;
+
+    end;
+
+    internal procedure GetGlobalFromActivityId(): Integer
+    begin
+        exit(GLBFromId);
+    end;
+
+    internal procedure GetGlobalToActivityId(): Integer
+    begin
+        exit(GLBToId);
+    end;
+
     procedure GetFinstaXPath(ResponseNode: Text): Text
     begin
         exit(StrSubstNo(FinstaPathTxt, ResponseNode));
@@ -555,6 +590,13 @@ codeunit 20118 "AMC Bank Service Request Mgt."
     begin
         exit(StrSubstNo(BankPathTxt, ResponseNode));
     end;
+
+
+    procedure GetJournalNoPath(ResponseNode: Text): Text
+    begin
+        exit(StrSubstNo(PackPathTxt, ResponseNode));
+    end;
+
 
     procedure GetHeaderXPath(): Text;
     begin

@@ -21,6 +21,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         LibraryService: Codeunit "Library - Service";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryMarketing: Codeunit "Library - Marketing";
         BlankOrderDateErr: Label 'Order Date must have a value in Sales Header: Document Type=Invoice, No.=%1. It cannot be zero or empty.';
         CrMemoPathTxt: Label 'OIOUBL Service Cr. Memo Path';
         DescriptionErr: Label 'The %1 %2 contains lines in which the Type and the No. are specified, but the Description is empty.', Comment = '%1 = Field Caption, %2 = Field Value';
@@ -647,6 +648,32 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
           STRSUBSTNO(SalesInvoiceFieldsErr, SalesHeader.FIELDCAPTION("Payment Terms Code"), SalesLine."Document No."));
     end;
 
+    [Test]
+    procedure SalesHeaderValidateSellToCustomerNoOIOUBLContactInfo()
+    var
+        SalesHeader: Record "Sales Header";
+        Customer: Record Customer;
+        Contact: Record Contact;
+    begin
+        // [FEATURE] [Sales]
+        // [SCENARIO 366715] OIOUBL Contact Info fields are updated from Customer's Primary Contact when Stan creates Sales Document for Customer.
+        Initialize();
+
+        // [GIVEN] Customer "C1" with Primary Contact "CN1" of Person type.
+        // [GIVEN] Contact "CN1" has nonempty Phone No., Fax No., E-Mail.
+        CreateCustomerWithContactPerson(Customer, Contact);
+
+        // [WHEN] Create Sales Invoice for Customer "C1".
+        LibrarySales.CreateSalesInvoiceForCustomerNo(SalesHeader, Customer."No.");
+
+        // [THEN] Fields OIOUBL-Sell-to Contact Phone No./Fax No./E-Mail of Sales Invoice are set from the corresponding fields of Contact "CN1".
+        SalesHeader.TestField("Sell-to Contact No.", Contact."No.");
+        SalesHeader.TestField("Sell-to Contact", Contact.Name);
+        SalesHeader.TestField("OIOUBL-Sell-to Contact Phone No.", Contact."Phone No.");
+        SalesHeader.TestField("OIOUBL-Sell-to Contact Fax No.", Contact."Fax No.");
+        SalesHeader.TestField("OIOUBL-Sell-to Contact E-Mail", Contact."E-Mail");
+    end;
+
     local procedure Initialize();
     var
         SalesHeader: Record "Sales Header";
@@ -720,6 +747,26 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
     begin
         CreateServiceHeader(ServiceHeader, DocumentType);
         CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, CreateItem());
+    end;
+
+    local procedure CreateCustomerWithContactPerson(var Customer: Record Customer; var Contact: Record Contact)
+    var
+        ContBusRel: Record "Contact Business Relation";
+    begin
+        LibrarySales.CreateCustomer(Customer);
+        ContBusRel.SetRange("Link to Table", ContBusRel."Link to Table"::Customer);
+        ContBusRel.SetRange("No.", Customer."No.");
+        ContBusRel.FindFirst();
+
+        LibraryMarketing.CreatePersonContact(Contact);
+        Contact.Validate("Company No.", ContBusRel."Contact No.");
+        Contact.Validate("Phone No.", LibraryUtility.GenerateRandomNumericText(MaxStrLen(Contact."Phone No.")));
+        Contact.Validate("Fax No.", LibraryUtility.GenerateRandomNumericText(MaxStrLen(Contact."Phone No.")));
+        Contact.Validate("E-Mail", LibraryUtility.GenerateRandomEmail());
+        Contact.Modify(true);
+
+        Customer.Validate("Primary Contact No.", Contact."No.");
+        Customer.Modify(true);
     end;
 
     local procedure FindCustomer(): Code[20];

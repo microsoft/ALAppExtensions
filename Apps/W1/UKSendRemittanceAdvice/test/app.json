@@ -4,30 +4,36 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the Send remittance advice by email extension.",
     "description":  "Tests for the Send remittance advice by email extension.",
-    "version":  "16.3.0.0",
+    "version":  "17.0.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
-    "url":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "",
     "dependencies":  [
                          {
                              "id":  "e97bbbc7-16b6-470b-9428-376baa778970",
                              "name":  "Send remittance advice by email",
                              "publisher":  "Microsoft",
-                             "version":  "16.3.0.0"
+                             "version":  "17.0.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "16.3.0.0"
-                         }
+                             "version":  "17.0.0.0"
+                         },
+                         {
+                             "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+                             "publisher": "Microsoft",
+                             "name": "Library Variable Storage",
+                             "version": "17.0.0.0"
+                         } 
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "11.0.0.0",
+    "platform":  "17.0.0.0",
     "idRanges":  [
                      {
                          "from":  139500,
@@ -40,5 +46,5 @@
                  ],
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "16.3.0.0"
+    "application":  "17.0.0.0"
 }

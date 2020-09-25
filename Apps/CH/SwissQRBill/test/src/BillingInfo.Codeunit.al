@@ -200,6 +200,23 @@ codeunit 148091 "Swiss QR-Bill Test BillingInfo"
 
     [Test]
     [Scope('OnPrem')]
+    procedure GetBillingInformation_PaymentTermsWithZeroPct()
+    var
+        SwissQRBillBillingInfo: Record "Swiss QR-Bill Billing Info";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+    begin
+        // [FEATURE] [Payment Terms]
+        // [SCENARIO 364778] Record "Swiss QR-Bill Billing Info".GetBillingInformation() in case of only payment terms option (with zero discount percent)
+        SwissQRBillBillingInfo.Init();
+        SwissQRBillBillingInfo."Payment Terms" := true;
+        SwissQRBillTestLibrary.CreatePostSalesInvoice(SalesInvoiceHeader, '', 100, SwissQRBillTestLibrary.CreatePaymentTerms(0, 2), '');
+        Assert.AreEqual(
+            '//S1/40/0:2',
+            SwissQRBillBillingInfo.GetBillingInformation(SalesInvoiceHeader."Cust. Ledger Entry No."), 'payment terms option');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure GetBillingInformation_All()
     var
         CompanyInfo: Record "Company Information";

@@ -116,7 +116,6 @@ table 1853 "MS - Sales Forecast Setup"
         field(17; "Service Pass API Uri ID"; Guid)
         {
             Description = 'The Key for retrieving the API URI from the Service Password table.';
-            TableRelation = "Service Password".Key;
             ObsoleteState = Pending;
             ObsoleteReason = 'Not Used After Refactoring';
             DataClassification = CustomerContent;
@@ -125,7 +124,6 @@ table 1853 "MS - Sales Forecast Setup"
         field(18; "Service Pass API Key ID"; Guid)
         {
             Description = 'The Key for retrieving the API Key from the Service Password table.';
-            TableRelation = "Service Password".Key;
             ObsoleteState = Pending;
             ObsoleteReason = 'Not Used After Refactoring';
             DataClassification = CustomerContent;

@@ -7,7 +7,7 @@ codeunit 1080 "MS - Wallet Mgt."
         TestMode: Boolean;
     begin
         if not GenerateHyperlink(Rec, TestMode) then begin
-            SENDTRACETAG('00001YA', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, MSWalletPayLinkErrTelemetryTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00001YA', MSWalletPayLinkErrTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             if not GuiAllowed() then
                 Error(MSWalletRequestErr);
             if Confirm(MSWalletNoLinkQst) then
@@ -16,7 +16,7 @@ codeunit 1080 "MS - Wallet Mgt."
         end;
 
         SetCaptionBasedOnLanguage(Rec, TestMode);
-        SENDTRACETAG('00001SV', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, MSWalletHyperlinkIncludedTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00001SV', MSWalletHyperlinkIncludedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
     end;
 
     var
@@ -83,13 +83,13 @@ codeunit 1080 "MS - Wallet Mgt."
 
                     TargetURL := GetTargetURL(SalesInvoiceHeader);
                     if TargetURL = '' then begin
-                        SendTraceTag('00007ZZ', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, MSWalletPaymentRequestURLIsEmptyTxt, DataClassification::SystemMetadata);
+                        Session.LogMessage('00007ZZ', MSWalletPaymentRequestURLIsEmptyTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
                         exit(false);
                     end;
 
                     if not PaymentReportingArgument.TrySetTargetURL(TargetURL) then begin
-                        SendTraceTag('0000800', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, MSWalletPaymentRequestURLIsInvalidTxt, DataClassification::SystemMetadata);
-                        SendTraceTag('00008HH', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, StrSubstNo(CannotSetPaymentRequestURLTxt, TargetURL), DataClassification::CustomerContent);
+                        Session.LogMessage('0000800', MSWalletPaymentRequestURLIsInvalidTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
+                        Session.LogMessage('00008HH', StrSubstNo(CannotSetPaymentRequestURLTxt, TargetURL), Verbosity::Warning, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
                         exit(false);
                     end;
 
@@ -98,7 +98,7 @@ codeunit 1080 "MS - Wallet Mgt."
                     PaymentReportingArgument.MODIFY(TRUE);
 
                     IF SalesInvoiceHeader."No. Printed" = 1 then
-                        SENDTRACETAG('00001ZS', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, MSWalletHyperlinkGeneratedTxt, DataClassification::SystemMetadata);
+                        Session.LogMessage('00001ZS', MSWalletHyperlinkGeneratedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
 
                     MSWalletWebhookManagement.ShowWarningIfCannotMakePayment(MSWalletMerchantAccount);
                     exit(true);
@@ -197,11 +197,11 @@ codeunit 1080 "MS - Wallet Mgt."
         IF MSWalletMerchantTemplate.GET() THEN BEGIN
             if ResetCachedPaymentRequestUrl then begin
                 RenewCachedPaymentRequestUrl := true;
-                SENDTRACETAG('00007KE', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, ResetCachedPaymentRequestUrlTxt, DataClassification::SystemMetadata);
+                Session.LogMessage('00007KE', ResetCachedPaymentRequestUrlTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             end;
             if MSWalletMerchantTemplate."Payment Request URL Modified" < CurrentDateTime() - ServiceUrlValidityTime() then begin
                 RenewCachedPaymentRequestUrl := true;
-                SENDTRACETAG('00007KF', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, CachedPaymentRequestUrlHasExpiredTxt, DataClassification::SystemMetadata);
+                Session.LogMessage('00007KF', CachedPaymentRequestUrlHasExpiredTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             end;
             if RenewCachedPaymentRequestUrl then
                 if not SetTemplatePaymentRequestFromAzureKeyVault(MSWalletMerchantTemplate) then
@@ -435,7 +435,7 @@ codeunit 1080 "MS - Wallet Mgt."
                 exit(true);
             end;
 
-        SENDTRACETAG('00001YB', MSWalletTelemetryCategoryTok, VERBOSITY::Error, PaymentRequestAzureKeyVaultErr, DataClassification::SystemMetadata);
+        Session.LogMessage('00001YB', PaymentRequestAzureKeyVaultErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
         exit(false);
     end;
 

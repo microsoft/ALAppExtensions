@@ -183,8 +183,11 @@ page 1850 "Sales Forecast"
         IsChartDataReady := true;
         if not IsChartAddInReady then
             exit;
-        if ("No." = '') or (xRec."No." <> "No.") or NeedsUpdate or IsForecastUpdated() then
+
+        if (Rec."No." = '') or PrevCurrRecordWasBlank or (xRec."No." <> Rec."No.") or NeedsUpdate or IsForecastUpdated() then
             UpdatePage();
+
+        PrevCurrRecordWasBlank := Rec."No." = '';
     end;
 
     trigger OnOpenPage()
@@ -227,6 +230,7 @@ page 1850 "Sales Forecast"
         SalesForecastTxt: Label 'Sales Forecast';
         StatusLbl: Label 'Status';
         IsStatusTextEnabled: Boolean;
+        PrevCurrRecordWasBlank: Boolean;
 
     local procedure UpdatePage()
     begin

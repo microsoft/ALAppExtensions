@@ -11,12 +11,14 @@ codeunit 148041 "MX DIOT UT"
     var
         Assert: Codeunit Assert;
         LibraryERM: Codeunit "Library - ERM";
+        LibraryJournals: Codeunit "Library - Journals";
         LibraryMXDIOT: Codeunit "Library - MX DIOT";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryRandom: Codeunit "Library - Random";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibrarySetupStorage: Codeunit "Library - Setup Storage";
         DIOTDataManagement: Codeunit "DIOT Data Management";
         BaseAmountConceptNo: Integer;
         VATAmountConceptNo: Integer;
@@ -473,10 +475,55 @@ codeunit 148041 "MX DIOT UT"
         DIOTCountryRegionData.TestField(Nationality, NewNationality);
     end;
 
+    [Test]
+    procedure ReportDatasetUT_BaseAmountAndVATAmountUnrealizedVATSetup()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        Vendor: Record Vendor;
+        PurchaseHeader: Record "Purchase Header";
+        PurchInvLine: Record "Purch. Inv. Line";
+        TempDIOTReportBuffer: Record "DIOT Report Buffer" temporary;
+        GenJournalLine: Record "Gen. Journal Line";
+        TempDIOTReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary;
+        TempErrorMessage: Record "Error Message" temporary;
+        PurchaseInvoiceNo: Code[20];
+        ExpectedBaseAmount: Decimal;
+    begin
+        // [FEATURE] [Unrealized VAT]
+        // [SCENARIO 367481] DIOT report supports Unrealized VAT = Cash Basis calculations
+        Initialize();
+
+        // [GIVEN] VAT Posting Setup created and linked to Base Amount concept
+        PrepareVATPostingSetupAndLink(VATPostingSetup, BaseAmountConceptNo);
+
+        // [GIVEN] VAT Setup has Unrealized VAT Type = Cash Basis
+        EnableUnrealizedSetup(VATPostingSetup, VATPostingSetup."Unrealized VAT Type"::"Cash Basis");
+
+        // [GIVEN] Vendor was created
+        LibraryMXDIOT.CreateDIOTVendor(Vendor, VATPostingSetup."VAT Bus. Posting Group", false);
+
+        // [GIVEN] Invoice was posted with this VAT Setup for Base Amount = 100 with VAT Amount = 15
+        PurchaseInvoiceNo := CreateAndPostPurchaseInvoiceWithVATSetup(PurchaseHeader, VATPostingSetup, Vendor."No.");
+        FindPurchaseInvoiceLine(PurchInvLine, PurchaseInvoiceNo);
+
+        // [GIVEN] Payment was posted and applied with amount 115
+        CreateAndPostGeneralJournaLineAppliedToInvoice(
+          GenJournalLine, GenJournalLine."Document Type"::Payment, PurchaseHeader."Buy-from Vendor No.",
+          PurchInvLine."Amount Including VAT", PurchaseInvoiceNo);
+
+        // [WHEN] Run DIOT Report
+        DIOTDataManagement.CollectDIOTDataSet(TempDIOTReportBuffer, TempDIOTReportVendorBuffer, TempErrorMessage, WorkDate(), WorkDate());
+
+        // [THEN] DIOT Report has Amount 100 for base amount concept for this Vendor
+        ExpectedBaseAmount := PurchInvLine.Amount;
+        VerifyDIOTBufferAmount(TempDIOTReportBuffer, Vendor."No.", Vendor."DIOT Type of Operation"::Others, BaseAmountConceptNo, ExpectedBaseAmount);
+    end;
+
     local procedure Initialize()
     begin
         Clear(DIOTDataManagement);
         LibraryTestInitialize.OnTestInitialize(Codeunit::"MX DIOT UT");
+        LibrarySetupStorage.Restore();
         if IsInitialized then
             exit;
 
@@ -486,6 +533,7 @@ codeunit 148041 "MX DIOT UT"
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"MX DIOT UT");
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"MX DIOT UT");
+        LibrarySetupStorage.Save(Database::"General Ledger Setup");
     end;
 
     local procedure CreateAndPostGenJournalLineForDIOTVendor(VATPostingSetup: Record "VAT Posting Setup"; VendorNo: Code[20]; DIOTTypeOfOperation: Option)
@@ -505,6 +553,30 @@ codeunit 148041 "MX DIOT UT"
         LibraryERM.PostGeneralJnlLine(GenJournalLine);
     end;
 
+    local procedure CreateAndPostPurchaseInvoiceWithVATSetup(var PurchaseHeader: Record "Purchase Header"; VATPostingSetup: Record "VAT Posting Setup"; VendorNo: Code[20]): Code[20]
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendorNo);
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::"G/L Account",
+            LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, "General Posting Type"::" "),
+            LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 100));
+        PurchaseLine.Modify(true);
+        exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+    end;
+
+    local procedure CreateAndPostGeneralJournaLineAppliedToInvoice(var GenJournalLine: Record "Gen. Journal Line"; DocumentType: Enum "Gen. Journal Document Type"; AccountNo: Code[20]; Amount: Decimal; AppliesToPurchaseInvoiceNo: Code[20])
+    begin
+        LibraryJournals.CreateGenJournalLineWithBatch(
+          GenJournalLine, DocumentType, GenJournalLine."Account Type"::Vendor, AccountNo, Amount);
+        GenJournalLine.Validate("Applies-to Doc. Type", GenJournalLine."Applies-to Doc. Type"::Invoice);
+        GenJournalLine.Validate("Applies-to Doc. No.", AppliesToPurchaseInvoiceNo);
+        GenJournalLine.Modify(true);
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+    end;
+
     local procedure CreateMXVendorWithoutRFCNo(var Vendor: Record Vendor; VATBusinessPosingGroup: Code[20])
     begin
         LibraryPurchase.CreateVendor(Vendor);
@@ -512,6 +584,20 @@ codeunit 148041 "MX DIOT UT"
         Vendor.Validate("Country/Region Code", DIOTDataManagement.GetMXCountryCode());
         Vendor.Validate("DIOT Type of Operation", Vendor."DIOT Type of Operation"::Others);
         Vendor.Modify(true);
+    end;
+
+    local procedure EnableUnrealizedSetup(var VATPostingSetup: Record "VAT Posting Setup"; UnrealizedVATType: Option)
+    begin
+        LibraryERM.SetUnrealizedVAT(true);
+        VATPostingSetup.Validate("Unrealized VAT Type", UnrealizedVATType);
+        VATPostingSetup.Validate("Purch. VAT Unreal. Account", LibraryERM.CreateGLAccountNo());
+        VATPostingSetup.Modify(true);
+    end;
+
+    local procedure FindPurchaseInvoiceLine(var PurchInvLine: Record "Purch. Inv. Line"; PurchaseInvoiceNo: Code[20])
+    begin
+        PurchInvLine.SetRange("Document No.", PurchaseInvoiceNo);
+        PurchInvLine.FindFirst();
     end;
 
     local procedure FindLineInDIOTBlob(var TempBLOB: Codeunit "Temp Blob"; Vendor: Record Vendor; TypeOfOperation: Text[2]): Text

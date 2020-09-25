@@ -238,7 +238,6 @@ codeunit 27021 "DIOT Data Management"
             SetRange(Type, Type::Purchase);
             SetFilter("Bill-to/Pay-to No.", '<>%1', '');
             SetRange("Posting Date", StartingDate, EndingDate);
-            SetRange("Document Type", "Document Type"::Invoice);
         end;
         if DIOTConceptLink.FindSet() then
             repeat
@@ -247,6 +246,10 @@ codeunit 27021 "DIOT Data Management"
                 with VATEntry do begin
                     SetRange("VAT Bus. Posting Group", DIOTConceptLink."VAT Bus. Posting Group");
                     SetRange("VAT Prod. Posting Group", DIOTConceptLink."VAT Prod. Posting Group");
+                    if CurrentVATPostingSetup."Unrealized VAT Type" = CurrentVATPostingSetup."Unrealized VAT Type"::" " then
+                        SetRange("Document Type", "Document Type"::Invoice)
+                    else
+                        SetRange("Document Type", "Document Type"::Payment);
                     if FindSet() then
                         repeat
                             VendorNo := "Bill-to/Pay-to No.";

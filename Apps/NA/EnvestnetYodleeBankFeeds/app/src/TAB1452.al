@@ -56,18 +56,18 @@ table 1452 "MS - Yodlee Data Exchange Def"
         DataExchLineDef."Data Exch. Def Code" := DataExchDef.Code;
         DataExchLineDef.Code := 'TRANSACTIONFEED';
         DataExchLineDef.Name := 'Definition';
-        DataExchLineDef."Data Line Tag" := '/root/root/searchResult/transactions';
+        DataExchLineDef."Data Line Tag" := '/root/root/transaction';
         DataExchLineDef.INSERT();
-        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 2, 'transactionId', '/root/root/searchResult/transactions/viewKey/transactionId', '');
-        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 3, 'description', '/root/root/searchResult/transactions/description/description', '');
-        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 5, 'postDate', '/root/root/searchResult/transactions/postDate', '');
-        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 7, 'amount', '/root/root/searchResult/transactions/amount/amount', '');
-        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 8, 'currencyCode', '/root/root/searchResult/transactions/amount/currencyCode', '');
-        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 10, 'itemAccountId', '/root/root/searchResult/transactions/account/itemAccountId', '');
-        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 21, 'balanceAmount', '/root/root/searchResult/transactions/account/accountBalance/amount', '');
-        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 22, 'balanceCurrencyCode', '/root/root/searchResult/transactions/account/accountBalance/currencyCode', '');
-        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 23, 'transactionType', '/root/root/searchResult/transactions/transactionType', 'debit');
-        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 24, 'checkNumber', '/root/root/searchResult/transactions/checkNumber/checkNumber', '');
+        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 2, 'transactionId', '/root/root/transaction/id', '');
+        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 3, 'description', '/root/root/transaction/description/original', '');
+        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 5, 'postDate', '/root/root/transaction/date', '');
+        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 7, 'amount', '/root/root/transaction/amount/amount', '');
+        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 8, 'currencyCode', '/root/root/transaction/amount/currency', '');
+        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 10, 'itemAccountId', '/root/root/transaction/accountId', '');
+        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 21, 'balanceAmount', '/root/root/transaction/runningBalance/amount', '');
+        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 22, 'balanceCurrencyCode', '/root/root/transaction/runningBalance/currency', '');
+        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 23, 'transactionType', '/root/root/transaction/baseType', 'DEBIT');
+        InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 24, 'checkNumber', '/root/root/transaction/checkNumber', '');
         DataExchMapping."Data Exch. Def Code" := DataExchDef.Code;
         DataExchMapping."Data Exch. Line Def Code" := DataExchLineDef.Code;
         DataExchMapping."Table ID" := 274;
@@ -176,14 +176,10 @@ table 1452 "MS - Yodlee Data Exchange Def"
 
     procedure ResetBankImportToDefault();
     var
-        MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         BankExportImportSetup: Record 1200;
         DataExchDef: Record 1222;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            DataExchDef.Get(GetYodleeAPI11DataExchDefinitionCode())
-        else
-            DataExchDef.Get(GetYodleeLegacyAPIDataExchDefinitionCode());
+        DataExchDef.Get(GetYodleeAPI11DataExchDefinitionCode());
         IF BankExportImportSetup.GET(GetYodleeAPI11DataExchDefinitionCode()) THEN
             BankExportImportSetup.DELETE(TRUE);
         IF BankExportImportSetup.GET(GetYodleeLegacyAPIDataExchDefinitionCode()) THEN
@@ -203,10 +199,7 @@ table 1452 "MS - Yodlee Data Exchange Def"
         MSYodleeBankServiceSetup: Record 1450;
     begin
         if MSYodleeBankServiceSetup.Get() then begin
-            if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-                MSYodleeBankServiceSetup.Validate("Bank Feed Import Format", GetYodleeAPI11DataExchDefinitionCode())
-            else
-                MSYodleeBankServiceSetup.Validate("Bank Feed Import Format", GetYodleeLegacyAPIDataExchDefinitionCode());
+            MSYodleeBankServiceSetup.Validate("Bank Feed Import Format", GetYodleeAPI11DataExchDefinitionCode());
             MSYodleeBankServiceSetup.Modify(true);
         end;
     end;

@@ -227,6 +227,7 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
 
         OutputFile.create(FromFile);
         OutputFile.CreateOutStream(FileOutstream);
+        OnRunOnBeforeXmlDocumentWriteToFileStream(XMLdocOut, Rec, DocNameSpace, DocNameSpace2);
         XMLdocOut.WriteTo(FileOutstream);
         OutputFile.Close();
 
@@ -260,5 +261,10 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
                 until (NEXT() = 0) OR ReturnValue;
         end;
         exit(ReturnValue)
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnRunOnBeforeXmlDocumentWriteToFileStream(var XMLdocOut: XmlDocument; IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header"; DocNameSpace: Text[250]; DocNameSpace2: Text[250])
+    begin
     end;
 }

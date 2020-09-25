@@ -109,7 +109,7 @@ codeunit 1916 "MigrationQB Mgt"
     var
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
     begin
-        SendTraceTag('00001OB', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Error, ZipFileMissingErrorTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00001OB', ZipFileMissingErrorTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 }
 

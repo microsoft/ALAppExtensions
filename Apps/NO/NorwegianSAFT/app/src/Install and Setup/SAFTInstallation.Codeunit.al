@@ -53,6 +53,7 @@ codeunit 10670 "SAF-T Installation"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"SAF-T Export Header");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"SAF-T Export Line");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"SAF-T Missing Field");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"SAF-T Export File");
     end;
 
     local procedure ImportMappingCodesIfSaaS()

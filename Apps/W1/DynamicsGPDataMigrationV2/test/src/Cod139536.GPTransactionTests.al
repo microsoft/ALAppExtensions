@@ -240,12 +240,12 @@ codeunit 139536 "MigrationGP Transaction Tests"
 
     local procedure GetGetAllCustomersTrxResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\DynamicsGPDataMigrationV2\test\resources\GPResponse\RMTrx.txt');
+        exit('\App\Apps\W1\DynamicsGPDataMigrationV2\test\resources\GPResponse\RMTrx.txt');
     end;
 
     local procedure GetGetAllVendorsTrxResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\DynamicsGPDataMigrationV2\test\resources\GPResponse\PMTrx.txt');
+        exit('\App\Apps\W1\DynamicsGPDataMigrationV2\test\resources\GPResponse\PMTrx.txt');
     end;
 
 

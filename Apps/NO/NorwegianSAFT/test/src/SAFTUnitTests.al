@@ -21,6 +21,7 @@ codeunit 148102 "SAF-T Unit Tests"
         CreateChartOfAccountsQst: Label 'Do you want to create a chart of accounts based on SAF-T standard account codes?';
         StandardAccountsMatchedMsg: Label '%1 of %2 standard accounts have been automatically matched to the chart of accounts.', Comment = '%1,%2 = both integer values';
         OverwriteMappingQst: Label 'Do you want to change the already defined G/L account mapping to the new mapping?';
+        GenerateSAFTFileImmediatelyQst: Label 'Since you did not schedule the SAF-T file generation, it will be generated immediately which can take a while. Do you want to continue?';
 
     [Test]
     procedure VATPostingSetupHasTaxCodesOnInsert()
@@ -37,6 +38,8 @@ codeunit 148102 "SAF-T Unit Tests"
         LibraryERM.CreateVATPostingSetup(VATPostingSetup, VATBusinessPostingGroup.Code, VATProductPostingGroup.Code);
         VATPostingSetup.TestField("Sales SAF-T Tax Code");
         VATPostingSetup.TestField("Purchase SAF-T Tax Code");
+        // Tear down
+        VATPostingSetup.Delete();
     end;
 
     [Test]
@@ -416,6 +419,42 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTGLAccountMapping.TestField("No.", '');
 
         LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure SAFTExportLineCountWhenSplitByDate()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportLine: Record "SAF-T Export Line";
+    begin
+        // [SCENARIO 361285] Multiple SAF-T Export Line creates for each date when "Split By Date" option is enabled
+
+        Initialize();
+
+        SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingRange."Mapping Type"::"Four Digit Standard Account", 1);
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+        // [GIVEN] Two G/L entries posted on January 1 and January 2        
+        SAFTTestHelper.MockGLEntryNoVAT(
+            SAFTMappingRange."Starting Date", LibraryERM.CreateGLAccountNo(), 0, 0, 0, '', '', LibraryRandom.RandDec(100, 2), 0);
+        SAFTTestHelper.MockGLEntryNoVAT(
+            SAFTMappingRange."Starting Date" + 1, LibraryERM.CreateGLAccountNo(), 0, 0, 0, '', '', LibraryRandom.RandDec(100, 2), 0);
+
+        // [GIVEN] SAF-T Export with "Split By Date" option enabled
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code);
+        SAFTExportHeader.Validate("Split By Date", true);
+        SAFTExportHeader.Modify(true);
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+
+        // [WHEN] Run SAF-T Export
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+
+        // [THEN] Two SAF-T Export lines created for each G/L Entry
+        SAFTExportLine.SetRange("Master Data", false);
+        SAFTExportLine.SetRange(Status, SAFTExportLine.Status::Completed);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        Assert.RecordCount(SAFTExportLine, 2);
     end;
 
     local procedure Initialize()

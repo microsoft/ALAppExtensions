@@ -45,6 +45,11 @@ page 10686 "SAF-T Exports"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if multiple SAF-T files will be generated per each month.';
                 }
+                field(SplitByDate; "Split By Date")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether multiple SAF-T files will be generated for each day.';
+                }
                 field(EarliestStartDateTime; "Earliest Start Date/Time")
                 {
                     ApplicationArea = Basic, Suite;

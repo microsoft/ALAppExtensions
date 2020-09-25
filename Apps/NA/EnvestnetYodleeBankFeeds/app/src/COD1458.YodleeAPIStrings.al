@@ -7,10 +7,7 @@ codeunit 1458 "Yodlee API Strings"
     [Scope('OnPrem')]
     procedure GetCobrandTokenURL(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit(GetFullURL('/cobrand/login'));
-
-        exit(GetFullURL('/authenticate/coblogin'));
+        exit(GetFullURL('/cobrand/login'));
     end;
 
     [Scope('OnPrem')]
@@ -20,24 +17,16 @@ codeunit 1458 "Yodlee API Strings"
         GetCobrandTokenRequestBodyText: Text;
         CobrandCredentialsJsonObject: JsonObject;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then begin
-            CobrandCredentialsJsonObject.Add('cobrandLogin', CobrandLogin);
-            CobrandCredentialsJsonObject.Add('cobrandPassword', CobrandPassword);
-            GetCobrandTokenRequestBodyJsonObject.Add('cobrand', CobrandCredentialsJsonObject);
-            GetCobrandTokenRequestBodyJsonObject.WriteTo(GetCobrandTokenRequestBodyText);
-            exit(GetCobrandTokenRequestBodyText);
-        end;
-
-        exit(StrSubstNo('cobrandLogin=%1&cobrandPassword=%2', TypeHelper.UrlEncode(CobrandLogin), TypeHelper.UrlEncode(CobrandPassword)));
+        CobrandCredentialsJsonObject.Add('cobrandLogin', CobrandLogin);
+        CobrandCredentialsJsonObject.Add('cobrandPassword', CobrandPassword);
+        GetCobrandTokenRequestBodyJsonObject.Add('cobrand', CobrandCredentialsJsonObject);
+        GetCobrandTokenRequestBodyJsonObject.WriteTo(GetCobrandTokenRequestBodyText);
+        exit(GetCobrandTokenRequestBodyText);
     end;
 
     [Scope('OnPrem')]
     procedure GetAuthorizationHeaderValue(CobrandSessionToken: Text; UserSessionToken: Text): Text;
     begin
-        // in the legacy API there is no authorization header. instead, the tokens are specified in the request body.
-        if not MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('');
-
         if CobrandSessionToken = '' then
             exit('');
 
@@ -54,33 +43,23 @@ codeunit 1458 "Yodlee API Strings"
         GetConsumerTokenRequestBodyText: Text;
         UserCredentialsJsonObject: JsonObject;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then begin
-            UserCredentialsJsonObject.Add('loginName', UserLogin);
-            UserCredentialsJsonObject.Add('password', UserPassword);
-            GetConsumerTokenRequestBodyJsonObject.Add('user', UserCredentialsJsonObject);
-            GetConsumerTokenRequestBodyJsonObject.WriteTo(GetConsumerTokenRequestBodyText);
-            exit(GetConsumerTokenRequestBodyText);
-        end;
-
-        exit(StrSubstNo('cobSessionToken=%1&login=%2&password=%3', TypeHelper.UrlEncode(CobrandSessionToken), TypeHelper.UrlEncode(UserLogin), TypeHelper.UrlEncode(UserPassword)));
+        UserCredentialsJsonObject.Add('loginName', UserLogin);
+        UserCredentialsJsonObject.Add('password', UserPassword);
+        GetConsumerTokenRequestBodyJsonObject.Add('user', UserCredentialsJsonObject);
+        GetConsumerTokenRequestBodyJsonObject.WriteTo(GetConsumerTokenRequestBodyText);
+        exit(GetConsumerTokenRequestBodyText);
     end;
 
     [Scope('OnPrem')]
     procedure GetConsumerTokenURL(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit(GetFullURL('/user/login'));
-
-        exit(GetFullURL('/authenticate/login'));
+        exit(GetFullURL('/user/login'));
     end;
 
     [Scope('OnPrem')]
     procedure GetRegisterConsumerURL(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit(GetFullURL('/user/register'));
-
-        exit(GetFullURL('/jsonsdk/UserRegistration/register3'));
+        exit(GetFullURL('/user/register'));
     end;
 
     [Scope('OnPrem')]
@@ -91,108 +70,62 @@ codeunit 1458 "Yodlee API Strings"
         UserJsonObject: JsonObject;
         UserPreferencesJsonObject: JsonObject;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then begin
-            UserJsonObject.Add('loginName', UserName);
-            UserJsonObject.Add('password', UserPassword);
-            UserJsonObject.Add('email', UserEmail);
-            UserPreferencesJsonObject.Add('currency', UserCurrency);
-            UserJsonObject.Add('preferences', UserPreferencesJsonObject);
-            GetRegisterConsumerRequestBodyJsonObject.Add('user', UserJsonObject);
-            GetRegisterConsumerRequestBodyJsonObject.WriteTo(GetRegisterConsumerRequestBodyText);
-            exit(GetRegisterConsumerRequestBodyText);
-        end;
-
-        exit(STRSUBSTNO('cobSessionToken=%1&' +
-            'userCredentials.loginName=%2&' +
-            'userCredentials.password=%3&' +
-            'userCredentials.objectInstanceType=%4&' +
-            'userProfile.emailAddress=%5&' +
-            'userPreferences[0]=PREFERRED_CURRENCY~%6&' +
-            'userProfile.objectInstanceType=%7&',
-            TypeHelper.UrlEncode(CobrandToken),
-            TypeHelper.UrlEncode(Username),
-            TypeHelper.UrlEncode(UserPassword),
-            'com.yodlee.ext.login.PasswordCredentials',
-            TypeHelper.UrlEncode(UserEmail),
-            TypeHelper.UrlEncode(UserCurrency),
-            'com.yodlee.core.usermanagement.UserProfile'));
+        UserJsonObject.Add('loginName', UserName);
+        UserJsonObject.Add('password', UserPassword);
+        UserJsonObject.Add('email', UserEmail);
+        UserPreferencesJsonObject.Add('currency', UserCurrency);
+        UserJsonObject.Add('preferences', UserPreferencesJsonObject);
+        GetRegisterConsumerRequestBodyJsonObject.Add('user', UserJsonObject);
+        GetRegisterConsumerRequestBodyJsonObject.WriteTo(GetRegisterConsumerRequestBodyText);
+        exit(GetRegisterConsumerRequestBodyText);
     end;
 
     [Scope('OnPrem')]
     procedure GetRemoveConsumerURL(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit(GetFullURL('/user/unregister'));
-
-        exit(GetFullURL('/jsonsdk/UserRegistration/unregister'));
+        exit(GetFullURL('/user/unregister'));
     end;
 
     [Scope('OnPrem')]
     procedure GetRemoveConsumerRequestMethod(): Text[6];
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('DELETE');
-
-        exit('POST');
+        exit('DELETE');
     end;
 
     [Scope('OnPrem')]
     procedure GetRemoveConsumerRequestBody(CobrandToken: Text; ConsumerToken: Text): Text;
     begin
-        // in YSL 1.1 this is a DELETE request - no body
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('');
-
-        exit(StrSubstNo('cobSessionToken=%1&userSessionToken=%2',
-            TypeHelper.UrlEncode(CobrandToken),
-            TypeHelper.UrlEncode(ConsumerToken)));
+        exit('');
     end;
 
     [Scope('OnPrem')]
     procedure GetApiVersion(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('1.1');
-
-        exit('');
+        exit('1.1');
     end;
 
     [Scope('OnPrem')]
     procedure GetWebRequestContentType(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('application/json');
-
-        exit('application/x-www-form-urlencoded');
+        exit('application/json');
     end;
 
     [Scope('OnPrem')]
     procedure GetFastLinkTokenURL(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit(GetFullURL('/user/accessTokens?appIds=10003600'));
-
-        exit(GetFullURL('/authenticator/token'));
+        exit(GetFullURL('/user/accessTokens?appIds=10003600'));
     end;
 
     [Scope('OnPrem')]
     procedure GetFastLinkTokenRequestMethod(): Text[6];
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('GET');
-
-        exit('POST');
+        exit('GET');
     end;
 
     [Scope('OnPrem')]
     procedure GetFastLinkTokenBody(CobrandToken: Text; ConsumerToken: Text): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('');
-
-        exit(STRSUBSTNO(
-            'finAppId=%1&rsession=%2&cobSessionToken=%3', '10003600', TypeHelper.UrlEncode(ConsumerToken),
-            TypeHelper.UrlEncode(CobrandToken)));
+        exit('');
     end;
 
     [Scope('OnPrem')]
@@ -210,10 +143,7 @@ codeunit 1458 "Yodlee API Strings"
     [Scope('OnPrem')]
     procedure GetTransactionSearchURL(OnlineBankAccountId: Text; FromDate: Date; ToDate: Date): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit(GetFullURL(StrSubstNo('/transactions?accountId=%1&fromDate=%2&toDate=%3&skip=0&top=500', OnlineBankAccountId, FORMAT(FromDate, 0, 9), FORMAT(ToDate, 0, 9))));
-
-        EXIT(GetFullURL('/jsonsdk/TransactionSearchService/executeUserSearchRequest'));
+        exit(GetFullURL(StrSubstNo('/transactions?accountId=%1&fromDate=%2&toDate=%3&skip=0&top=500', OnlineBankAccountId, FORMAT(FromDate, 0, 9), FORMAT(ToDate, 0, 9))));
     end;
 
     local procedure FormatDateToYodlee11Date(BCDate: Date): Text;
@@ -224,85 +154,37 @@ codeunit 1458 "Yodlee API Strings"
     [Scope('OnPrem')]
     procedure GetTransactionSearchBody(CobrandToken: Text; ConsumerToken: Text; OnlineBankAccountId: Text; FromDate: Date; ToDate: Date): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('');
-
-        EXIT(StrSubstNo(
-                'cobSessionToken=%1&' +
-                'userSessionToken=%2&' +
-                'transactionSearchRequest.containerType=%3&' +
-                'transactionSearchRequest.higherFetchLimit=%4&' +
-                'transactionSearchRequest.lowerFetchLimit=%5&' +
-                'transactionSearchRequest.resultRange.endNumber=%6&' +
-                'transactionSearchRequest.resultRange.startNumber=%7&' +
-                'transactionSearchRequest.searchClients.clientId=%8&' +
-                'transactionSearchRequest.searchClients.clientName=%9&' +
-                'transactionSearchRequest.ignoreUserInput=%10&' +
-                'transactionSearchRequest.searchFilter.postDateRange.fromDate=%11&' +
-                'transactionSearchRequest.searchFilter.postDateRange.toDate=%12&' +
-                'transactionSearchRequest.searchFilter.transactionSplitType=%13&' +
-                'transactionSearchRequest.searchFilter.itemAccountId.identifier=%14&' +
-                'transactionSearchRequest.searchFilter.transactionStatus.statusId=%15',
-                TypeHelper.UrlEncode(CobrandToken),
-                TypeHelper.UrlEncode(ConsumerToken),
-                'all',
-                5000,
-                1,
-                5000,
-                1,
-                1,
-                'DataSearchService',
-                'true',
-                FORMAT(FromDate, 0, '<Month>-<Day>-<Year4>'),
-                FORMAT(ToDate, 0, '<Month>-<Day>-<Year4>'),
-                'ALL_TRANSACTION',
-                TypeHelper.UrlEncode(OnlineBankAccountId),
-                1));
+        exit('');
     end;
 
     [Scope('OnPrem')]
     procedure GetTransactionSearchRequestMethod(): Text[6];
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('GET');
-
-        exit('POST');
+        exit('GET');
     end;
 
     [Scope('OnPrem')]
     procedure GetLinkedSiteListURL(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit(GetFullURL('/providerAccounts'));
-
-        exit(GetFullURL('/jsonsdk/SiteAccountManagement/getAllSiteAccounts'));
+        exit(GetFullURL('/providerAccounts'));
     end;
 
     [Scope('OnPrem')]
     procedure GetLinkedSiteListRequestMethod(): Text[6];
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('GET');
-
-        exit('POST');
+        exit('GET');
     end;
 
     [Scope('OnPrem')]
     procedure GetLinkedSiteListBody(CobrandToken: Text; ConsumerToken: Text): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('');
-
-        exit(StrSubstNo('cobSessionToken=%1&userSessionToken=%2', TypeHelper.UrlEncode(CobrandToken), TypeHelper.UrlEncode(ConsumerToken)));
+        exit('');
     end;
 
     [Scope('OnPrem')]
     procedure GetLinkedBankAccountsURL(ProviderAccountId: Text): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit(GetFullURL(StrSubstNo('/accounts?status=ACTIVE&providerAccountId=%1&include=holder,autoRefresh', ProviderAccountId)));
-
-        exit(GetFullURL('/jsonsdk/DataService/getItemSummariesForSite'));
+        exit(GetFullURL(StrSubstNo('/accounts?status=ACTIVE&providerAccountId=%1&include=holder,autoRefresh', ProviderAccountId)));
     end;
 
     [Scope('OnPrem')]
@@ -314,83 +196,53 @@ codeunit 1458 "Yodlee API Strings"
     [Scope('OnPrem')]
     procedure GetLinkedBankAccountsRequestMethod(): Text[6];
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('GET');
-
-        exit('POST');
+        exit('GET');
     end;
 
     [Scope('OnPrem')]
     procedure GetLinkedBankAccountsBody(CobrandToken: Text; ConsumerToken: Text; SiteAccountId: Text): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('');
-
-        exit(StrSubstNo('cobSessionToken=%1&userSessionToken=%2&memSiteAccId=%3', TypeHelper.UrlEncode(CobrandToken), TypeHelper.UrlEncode(ConsumerToken), TypeHelper.UrlEncode(SiteAccountId)));
+        exit('');
     end;
 
     [Scope('OnPrem')]
     procedure GetUnlinkBankAccountURL(AccountId: Text): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit(GetFullUrl(StrSubstNo('/accounts/%1', AccountId)));
-
-        EXIT(GetFullURL('/jsonsdk/ItemAccountManagement/removeItemAccount'));
+        exit(GetFullUrl(StrSubstNo('/accounts/%1', AccountId)));
     end;
 
     [Scope('OnPrem')]
     procedure GetUnlinkBankAccountRequestMethod(): Text[6];
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('DELETE');
-
-        EXIT('POST');
+        exit('DELETE');
     end;
 
     [Scope('OnPrem')]
     procedure GetUnlinkBankAccountBody(CobrandToken: Text; ConsumerToken: Text; AccountId: Text): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('');
-
-        EXIT(StrSubstNo('cobSessionToken=%1&userSessionToken=%2&itemAccountId=%3',
-            TypeHelper.UrlEncode(CobrandToken),
-            TypeHelper.UrlEncode(ConsumerToken),
-            TypeHelper.UrlEncode(AccountId)));
+        exit('');
     end;
 
     [Scope('OnPrem')]
     procedure GetCobrandTokenXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('//session/cobSession');
-
-        exit('//sessionToken');
+        exit('//session/cobSession');
     end;
 
     [Scope('OnPrem')]
     procedure GetConsumerTokenXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('//session/userSession');
-
-        exit('//conversationCredentials/sessionToken');
+        exit('//session/userSession');
     end;
 
     procedure GetFastLinkTokenXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('//accessTokens/value');
-
-        exit('//finappAuthenticationInfos/token');
+        exit('//accessTokens/value');
     end;
 
     procedure GetBankAccountsListXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('//account');
-
-        EXIT('//itemData/accounts');
+        exit('//account');
     end;
 
     procedure GetRootXPath(): Text;
@@ -401,54 +253,36 @@ codeunit 1458 "Yodlee API Strings"
     [Scope('OnPrem')]
     procedure GetProviderAccountIdXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('./id');
-
-        exit('./siteAccountId');
+        exit('./id');
     end;
 
     [Scope('OnPrem')]
     procedure GetProviderAccountXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('/root/root/providerAccount');
-
-        exit('');
+        exit('/root/root/providerAccount');
     end;
 
     [Scope('OnPrem')]
     procedure GetBankAccountIdXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('./id');
-
-        exit('./itemAccountId');
+        exit('./id');
     end;
 
     [Scope('OnPrem')]
     procedure GetBankAccountNameXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('./accountName');
-
-        exit('./accountDisplayName/defaultNormalAccountName');
+        exit('./accountName');
     end;
 
     [Scope('OnPrem')]
     procedure GetProviderNameXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('./providerName');
-
-        exit('./siteName');
+        exit('./providerName');
     end;
 
     procedure GetProviderIdXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('./providerId');
-
-        exit('./siteId');
+        exit('./providerId');
     end;
 
     [Scope('OnPrem')]
@@ -460,28 +294,19 @@ codeunit 1458 "Yodlee API Strings"
     [Scope('OnPrem')]
     procedure GetBankAccountCurrentBalanceXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('./currentBalance/currency');
-
-        exit('./currentBalance/currencyCode');
+        exit('./currentBalance/currency');
     end;
 
     [Scope('OnPrem')]
     procedure GetBankAccountRunningBalanceXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('./runningBalance/currency');
-
-        exit('./runningBalance/currencyCode');
+        exit('./runningBalance/currency');
     end;
 
     [Scope('OnPrem')]
     procedure GetBankAccountAvailableBalanceXPath(): Text;
     begin
-        if MSYodleeBankServiceSetup.IsSetUpForYSL11() then
-            exit('./availableBalance/currency');
-
-        exit('./availableBalance/currencyCode');
+        exit('./availableBalance/currency');
     end;
 
     procedure GetErrorDetailXPath(): Text;

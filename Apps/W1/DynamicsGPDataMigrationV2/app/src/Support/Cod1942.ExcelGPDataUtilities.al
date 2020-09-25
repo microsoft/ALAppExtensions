@@ -277,7 +277,7 @@ codeunit 1942 "Excel GP Data Utilities"
                         ConfigPackageField.Modify();
                         ColumnCount += 1;
                     end else // Error is thrown when the template is corrupted (i.e., there are columns in Excel file that cannot be mapped to NAV)
-                        Error(ExcelValidationErr, PRODUCTNAME.MARKETING());
+                        LogInternalError(ExcelValidationErr, PRODUCTNAME.MARKETING(), DataClassification::SystemMetadata, Verbosity::Error);
                 end else begin // Read data row by row
                                // A record is created with every new row
                     ConfigPackageManagement.InitPackageRecord(ConfigPackageRecord, CopyStr(PackageCodeTxt, 1, 20),

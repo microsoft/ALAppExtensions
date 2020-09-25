@@ -5,7 +5,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
     trigger OnRun()
     begin
         if not GenerateHyperlink(Rec) then begin
-            SENDTRACETAG('0000802', WorldPayTelemetryCategoryTok, VERBOSITY::Warning, WorldPayNoLinkTelemetryTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('0000802', WorldPayNoLinkTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WorldPayTelemetryCategoryTok);
             if not GuiAllowed() then
                 Error(WorldPayNoLinkErr);
             if Confirm(WorldPayNoLinkQst) then
@@ -13,7 +13,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
             Error('');
         end;
         SetCaptionBasedOnLanguage(Rec);
-        SENDTRACETAG('00001TJ', WorldPayTelemetryCategoryTok, VERBOSITY::Normal, WorldPayHyperlinkIncludedTxt);
+        Session.LogMessage('00001TJ', WorldPayHyperlinkIncludedTxt, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', WorldPayTelemetryCategoryTok);
     end;
 
     var
@@ -81,13 +81,13 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
                         UriEscapeDataString(STRSUBSTNO(InvoiceTxt, InvoiceNo)));
                     BaseURL := MsWorldPayStandardAccount.GetTargetURL();
                     if BaseURL = '' then begin
-                        SendTraceTag('0000803', WorldPayTelemetryCategoryTok, VERBOSITY::Warning, WorldPayTargetURLIsEmptyTxt, DataClassification::SystemMetadata);
+                        Session.LogMessage('0000803', WorldPayTargetURLIsEmptyTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WorldPayTelemetryCategoryTok);
                         exit(false);
                     end;
 
                     TargetURL := STRSUBSTNO('%1&%2', BaseURL, QueryString);
                     if not PaymentReportingArgument.TrySetTargetURL(TargetURL) then begin
-                        SendTraceTag('0000804', WorldPayTelemetryCategoryTok, VERBOSITY::Warning, WorldPayTargetURLIsInvalidTxt, DataClassification::SystemMetadata);
+                        Session.LogMessage('0000804', WorldPayTargetURLIsInvalidTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WorldPayTelemetryCategoryTok);
                         exit(false);
                     end;
 
@@ -96,7 +96,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
                     PaymentReportingArgument.MODIFY(TRUE);
 
                     IF SalesInvoiceHeader."No. Printed" = 1 then
-                        SENDTRACETAG('00001ZT', WorldPayTelemetryCategoryTok, VERBOSITY::Normal, WorldPayHyperlinkGeneratedTxt, DataClassification::SystemMetadata);
+                        Session.LogMessage('00001ZT', WorldPayHyperlinkGeneratedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WorldPayTelemetryCategoryTok);
 
                     exit(true);
                 END;

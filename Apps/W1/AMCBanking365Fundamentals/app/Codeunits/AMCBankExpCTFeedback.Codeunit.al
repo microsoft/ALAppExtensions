@@ -11,8 +11,7 @@ codeunit 20111 "AMC Bank Exp. CT Feedback"
     begin
         GenJnlLine.SetRange("Data Exch. Entry No.", "Entry No.");
         GenJnlLine.FindFirst();
-
-        CreditTransferRegister.SetRange("From Bank Account No.", GenJnlLine."Bal. Account No.");
+        CreditTransferRegister.SetRange("Data Exch. Entry No.", "Entry No.");
         CreditTransferRegister.FindLast();
         SetFileOnCreditTransferRegister(Rec, CreditTransferRegister);
         SetExportFlagOnGenJnlLine(GenJnlLine);

@@ -414,20 +414,20 @@ codeunit 139534 "MigrationGP Account Tests"
 
     local procedure GetGetAllAccountsResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\DynamicsGPDataMigrationV2\test\resources\GPResponse\Account2.txt');
+        exit('\App\Apps\W1\DynamicsGPDataMigrationV2\test\resources\GPResponse\Account2.txt');
     end;
 
     local procedure GetGetAllGLTrxResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\DynamicsGPDataMigrationV2\test\resources\GPResponse\GLTrx.txt');
+        exit('\App\Apps\W1\DynamicsGPDataMigrationV2\test\resources\GPResponse\GLTrx.txt');
     end;
 
     local procedure GetFiscalPeriodsResponse(): Text[100]
     begin
-        exit('\App\ExtensionV2\DynamicsGPDataMigrationV2\test\resources\FiscalPeriods.txt');
+        exit('\App\Apps\W1\DynamicsGPDataMigrationV2\test\resources\FiscalPeriods.txt');
     end;
 
-procedure GetFiscalPeriodInfoFromJson(JArray: JsonArray)
+    procedure GetFiscalPeriodInfoFromJson(JArray: JsonArray)
     var
         MigrationGPFiscalPeriods: Record "MigrationGP Fiscal Periods";
         HelperFunctions: Codeunit "MigrationGP Helper Functions";
@@ -466,5 +466,5 @@ procedure GetFiscalPeriodInfoFromJson(JArray: JsonArray)
             MigrationGPFiscalPeriods.Modify();
             i := i + 1;
         end;
-    end;   
+    end;
 }

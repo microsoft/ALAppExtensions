@@ -25,7 +25,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AssistedSetupTxt: Label 'Set up AMC Banking 365 Fundamentals extension';
 
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2115384', Locked = true;
-        AssistedSetupDescriptionTxt: Label 'Connect to an online bank service that can convert bank data from Business Central into the formats of your bank, to make it easier, and more accurate, to send data to your banks.';
+        AssistedSetupDescriptionTxt: Label 'Connect to an online bank service that can convert bank data from Business Central into the formats of your bank, to make it easier, and more accurate, to send data to your banks.';
         ReturnPathTxt: Label '//return/pack', Locked = true;
         ModuleWebCallTxt: Label 'amcwebservice', locked = true;
         DataExchangeWebCallTxt: Label 'dataExchange', Locked = true;

@@ -817,7 +817,25 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
     [Test]
     [HandlerFunctions('PostandSendModalPageHandler,StandardSalesInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
+    procedure PostAndSendSalesInvoiceOIOUBLWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        PostAndSendSalesInvoiceOIOUBLWithPrintAndEmailInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('PostandSendModalPageHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendSalesInvoiceOIOUBLWithPrintAndEmail();
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        PostAndSendSalesInvoiceOIOUBLWithPrintAndEmailInternal();
+    end;
+
+    procedure PostAndSendSalesInvoiceOIOUBLWithPrintAndEmailInternal();
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
@@ -828,7 +846,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     begin
         // [SCENARIO 336642] Post And Send Sales Invoice in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
         Initialize();
-        SMTPMailSetupInitialize();
+        MailSetupInitialize();
         CreateElectronicDocumentFormat(
             OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", Codeunit::"OIOUBL-Export Sales Invoice");
 
@@ -849,7 +867,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesInvoice.PostAndSend.Invoke();
 
         // [THEN] Sales Invoice is posted.
-        // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Dialog is opened.
+        // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Editor is opened.
         // [THEN] OIOUBL Electronic Document for Posted Sales Invoice is created.
         // [THEN] "No. Printed" value of Posted Sales Invoice increases by 3 (Print, E-mail, Disk). Bug ID 351595.
         FindSalesInvoiceHeader(SalesInvoiceHeader, SalesHeader."No.");
@@ -860,7 +878,25 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
     [Test]
     [HandlerFunctions('PostandSendModalPageHandler,StandardSalesInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
+    procedure PostAndSendSalesInvoiceOIOUBLAndPDFWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        PostAndSendSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('PostandSendModalPageHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendSalesInvoiceOIOUBLAndPDFWithPrintAndEmail();
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        PostAndSendSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
+    end;
+
+    procedure PostAndSendSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
@@ -873,7 +909,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         // [FEATURE] [Zip]
         // [SCENARIO 336642] Post And Send Sales Document in case Print, E-Mail - PDF & OIOUBL, Disk - PDF & OIOUBL are set in Document Sending Profile.
         Initialize();
-        SMTPMailSetupInitialize();
+        MailSetupInitialize();
         CreateElectronicDocumentFormat(
             OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", Codeunit::"OIOUBL-Export Sales Invoice");
 
@@ -892,7 +928,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesInvoice.PostAndSend.Invoke();
 
         // [THEN] Sales Invoice is posted.
-        // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Dialog is opened.
+        // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Editor is opened.
         // [THEN] ZIP file is created, it contains OIOUBL Electronic Document and PDF with printed copy of Posted Sales Invoice.
         FindSalesInvoiceHeader(SalesInvoiceHeader, SalesHeader."No.");
         FileNameLst.AddRange(GetFileName(SalesInvoiceHeader."No.", 'Invoice', 'XML'), GetFileName(SalesInvoiceHeader."No.", 'S.Invoice', 'PDF'));
@@ -901,7 +937,25 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
     [Test]
     [HandlerFunctions('ProfileSelectionMethodStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure SendPostedSalesInvoiceOIOUBLWithPrintAndEmail()
+    procedure SendPostedSalesInvoiceOIOUBLWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        SendPostedSalesInvoiceOIOUBLWithPrintAndEmailInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('ProfileSelectionMethodStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler')]
+    procedure SendPostedSalesInvoiceOIOUBLWithPrintAndEmail();
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        SendPostedSalesInvoiceOIOUBLWithPrintAndEmailInternal();
+    end;
+
+    procedure SendPostedSalesInvoiceOIOUBLWithPrintAndEmailInternal()
     var
         SalesLine: Record "Sales Line";
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -915,7 +969,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         // [FEATURE] [Zip]
         // [SCENARIO 336642] Send Posted Sales Document in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
         Initialize();
-        SMTPMailSetupInitialize();
+        MailSetupInitialize();
         CreateElectronicDocumentFormat(
             OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", Codeunit::"OIOUBL-Export Sales Invoice");
 
@@ -936,7 +990,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesInvoiceHeader.SetFilter("No.", PostedDocNoFilter);
         SalesInvoiceHeader.SendRecords();
 
-        // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Dialog is opened.
+        // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Editor is opened.
         // [THEN] One ZIP file is created, it contains OIOUBL Electronic Document for each Posted Sales Invoice.
         foreach PostedDocNo in PostedDocNoLst do begin
             FileNameLst.Add(GetFileName(PostedDocNo, 'Invoice', 'XML'));
@@ -947,7 +1001,25 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
     [Test]
     [HandlerFunctions('ProfileSelectionMethodStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmail()
+    procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('ProfileSelectionMethodAndCloseEmailStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler')]
+    procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmail();
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
+    end;
+
+    procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal()
     var
         SalesLine: Record "Sales Line";
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -960,7 +1032,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         // [FEATURE] [Zip]
         // [SCENARIO 336642] Send Posted Sales Document in case Print, E-Mail - PDF & OIOUBL, Disk - PDF & OIOUBL are set in Document Sending Profile.
         Initialize();
-        SMTPMailSetupInitialize();
+        MailSetupInitialize();
         CreateElectronicDocumentFormat(
             OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", Codeunit::"OIOUBL-Export Sales Invoice");
 
@@ -976,7 +1048,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesInvoiceHeader.SetFilter("No.", PostedDocNoFilter);
         SalesInvoiceHeader.SendRecords();
 
-        // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Dialog is opened.
+        // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Editor is opened.
         // [THEN] Two ZIP files are created, each of them contains OIOUBL Electronic Document and PDF with printed copy of Posted Sales Invoice.
         FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(1), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(1), 'S.Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
@@ -988,7 +1060,25 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
     [Test]
     [HandlerFunctions('PostandSendModalPageHandler,StandardSalesCreditMemoRequestPageHandler,EmailDialogModalPageHandler')]
+    procedure PostAndSendSalesCrMemoOIOUBLWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        PostAndSendSalesCrMemoOIOUBLWithPrintAndEmailInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('PostandSendModalPageHandler,StandardSalesCreditMemoRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendSalesCrMemoOIOUBLWithPrintAndEmail();
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        PostAndSendSalesCrMemoOIOUBLWithPrintAndEmailInternal();
+    end;
+
+    procedure PostAndSendSalesCrMemoOIOUBLWithPrintAndEmailInternal();
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
@@ -999,7 +1089,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     begin
         // [SCENARIO 336642] Post And Send Sales Credit Memo in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
         Initialize();
-        SMTPMailSetupInitialize();
+        MailSetupInitialize();
         CreateElectronicDocumentFormat(
             OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Credit Memo", Codeunit::"OIOUBL-Export Sales Cr. Memo");
 
@@ -1020,7 +1110,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesCreditMemo.PostAndSend.Invoke();
 
         // [THEN] Sales Credit Memo is posted.
-        // [THEN] Report "Standard Sales - Credit Memo" for printing Posted Sales Credit Memo is invoked. Then Email Dialog is opened.
+        // [THEN] Report "Standard Sales - Credit Memo" for printing Posted Sales Credit Memo is invoked. Then Email Editor is opened.
         // [THEN] OIOUBL Electronic Document for Posted Sales Credit Memo is created.
         // [THEN] "No. Printed" value of Posted Sales Credit Memo increases by 3 (Print, E-mail, Disk). Bug ID 351595.
         FindSalesCrMemoHeader(SalesCrMemoHeader, SalesHeader."No.");
@@ -1622,8 +1712,15 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesHeader.Modify(true);
     end;
 
-    local procedure SMTPMailSetupInitialize()
+    local procedure MailSetupInitialize()
+    var
+        EmailFeature: Codeunit "Email Feature";
+        LibraryWorkflow: Codeunit "Library - Workflow";
     begin
+        if EmailFeature.IsEnabled() then begin
+            LibraryWorkflow.SetUpEmailAccount();
+            exit;
+        end;
         SMTPMailSetupClear();
 
         SMTPMailSetup.Init();
@@ -1634,7 +1731,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SMTPMailSetup.Insert();
     end;
 
-    local procedure SMTPMailSetupClear()
+    local procedure SMTPMailSetupClear() // To be removed together with deprecated SMTP objects
     begin
         SMTPMailSetup.DeleteAll();
         Commit();
@@ -1850,6 +1947,13 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         Reply := true;
     end;
 
+    [StrMenuHandler]
+    [Scope('OnPrem')]
+    procedure CloseEmailEditorHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        Choice := 1;
+    end;
+
     [MessageHandler]
     procedure MessageHandler(Meassage: Text[1024]);
     begin
@@ -1859,6 +1963,15 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     procedure ProfileSelectionMethodStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
     begin
         Choice := 3; // Use the default profile for all selected documents without confimation.
+    end;
+
+    [StrMenuHandler]
+    procedure ProfileSelectionMethodAndCloseEmailStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        if Options = 'Yes,No' then
+            Choice := 1 // Close email
+        else
+            Choice := 3; // Use the default profile for all selected documents without confimation.
     end;
 
     [StrMenuHandler]
@@ -1892,6 +2005,11 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     procedure EmailDialogModalPageHandler(var EmailDialog: TestPage "Email Dialog")
     begin
         EmailDialog.Cancel().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure EmailEditorHandler(var EmailDialog: TestPage "Email Editor")
+    begin
     end;
 
     [RequestPageHandler]

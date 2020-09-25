@@ -57,7 +57,7 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
         AccessToken := GetAuthorizationToken(MerchantAPIResource);
 
         IF AccessToken = '' THEN
-            SENDTRACETAG('00001PG', TelemetryCategoryTok, VERBOSITY::Error, STRSUBSTNO(EmptyAccessTokenTxt, MerchantAPIResource), DataClassification::SystemMetadata);
+            Session.LogMessage('00001PG', STRSUBSTNO(EmptyAccessTokenTxt, MerchantAPIResource), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
 
         IF UrlHelper.IsPPE() THEN
             EXIT(STRSUBSTNO('%1?marketplace=%2&mode=test#ticket=%3', SignUpBaseUrl, MMXMarketPlaceTxt, AccessToken));
@@ -170,20 +170,19 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
         end;
 
         IF NOT AzureKeyVault.GetAzureKeyVaultSecret(MSWalletMerchantAPITxt, MerchantAPI) THEN BEGIN
-            SENDTRACETAG('00001NN', TelemetryCategoryTok, VERBOSITY::Error, STRSUBSTNO(AzureKeyVaultTelemetryTxt, MSWalletMerchantAPITxt), DataClassification::SystemMetadata);
+            Session.LogMessage('00001NN', STRSUBSTNO(AzureKeyVaultTelemetryTxt, MSWalletMerchantAPITxt), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             ErrorMsg := AzureKeyVaultRetreiveErr;
             EXIT(FALSE);
         END;
 
         IF NOT AzureKeyVault.GetAzureKeyVaultSecret(MSWalletMerchantAPIResourceTxt, MerchantAPIResource) THEN BEGIN
-            SENDTRACETAG(
-              '00001NO', TelemetryCategoryTok, VERBOSITY::Error, STRSUBSTNO(AzureKeyVaultTelemetryTxt, MSWalletMerchantAPIResourceTxt), DataClassification::SystemMetadata);
+            Session.LogMessage('00001NO', STRSUBSTNO(AzureKeyVaultTelemetryTxt, MSWalletMerchantAPIResourceTxt), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             ErrorMsg := AzureKeyVaultRetreiveErr;
             EXIT(FALSE);
         END;
 
         IF NOT AzureKeyVault.GetAzureKeyVaultSecret(MSWalletMerchantAPITxt, MerchantAPI) THEN BEGIN
-            SENDTRACETAG('00001NP', TelemetryCategoryTok, VERBOSITY::Error, STRSUBSTNO(AzureKeyVaultTelemetryTxt, MSWalletMerchantAPITxt), DataClassification::SystemMetadata);
+            Session.LogMessage('00001NP', STRSUBSTNO(AzureKeyVaultTelemetryTxt, MSWalletMerchantAPITxt), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             ErrorMsg := AzureKeyVaultRetreiveErr;
             EXIT(FALSE);
         END;
@@ -191,7 +190,7 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
         AccessToken := GetAuthorizationToken(MerchantAPIResource);
 
         IF AccessToken = '' THEN
-            SENDTRACETAG('00001PH', TelemetryCategoryTok, VERBOSITY::Error, STRSUBSTNO(EmptyAccessTokenTxt, MerchantAPIResource), DataClassification::SystemMetadata);
+            Session.LogMessage('00001PH', STRSUBSTNO(EmptyAccessTokenTxt, MerchantAPIResource), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
 
         RequestMessage.GetHeaders(RequestHeaders);
         RequestHeaders.Add('Accept', 'application/json');
@@ -204,57 +203,55 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
         RequestMessage.Method('GET');
 
         if not RequestHttpClient.Send(RequestMessage, ResponseMessage) then begin
-            SENDTRACETAG(
-              '00001NQ', TelemetryCategoryTok, VERBOSITY::Error, STRSUBSTNO(MerchantAPITelemetryErr, ResponseMessage.HttpStatusCode(), GETLASTERRORTEXT()), DataClassification::SystemMetadata);
+            Session.LogMessage('00001NQ', STRSUBSTNO(MerchantAPITelemetryErr, ResponseMessage.HttpStatusCode(), GETLASTERRORTEXT()), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             ErrorMsg := MerchantAPIErrUserTxt;
             EXIT(FALSE);
         END;
 
         IF not ResponseMessage.IsSuccessStatusCode() THEN BEGIN
-            SENDTRACETAG(
-              '00001NR', TelemetryCategoryTok, VERBOSITY::Error, STRSUBSTNO(MerchantAPITelemetryErr, ResponseMessage.HttpStatusCode(), ResponseMessage.ReasonPhrase()), DataClassification::SystemMetadata);
+            Session.LogMessage('00001NR', STRSUBSTNO(MerchantAPITelemetryErr, ResponseMessage.HttpStatusCode(), ResponseMessage.ReasonPhrase()), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             ErrorMsg := MerchantAPIErrUserTxt;
             EXIT(FALSE);
         END;
 
         if not ResponseMessage.Content().ReadAs(ResponseText) then begin
-            SendTraceTag('00008IF', TelemetryCategoryTok, VERBOSITY::Warning, MerchantAPICannotReadResponseTelemetryTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008IF', MerchantAPICannotReadResponseTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             ErrorMsg := MerchantAPICannotReadResponseTxt;
             exit(false);
         end;
 
         if ResponseText = '' then begin
-            SendTraceTag('00008I1', TelemetryCategoryTok, VERBOSITY::Warning, MerchantAPIEmptyResponseTelemetryTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008I1', MerchantAPIEmptyResponseTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             ErrorMsg := MerchantAPIEmptyResponseTxt;
             exit(false);
         end;
 
         if not JObject.ReadFrom(ResponseText) then begin
-            SendTraceTag('00008I2', TelemetryCategoryTok, VERBOSITY::Warning, MerchantAPIIncorrectResponseTelemetryTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008I2', MerchantAPIIncorrectResponseTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             ErrorMsg := MerchantAPIIncorrectResponseTxt;
             exit(false);
         end;
 
         IF NOT GetBooleanPropertyFromJObject(JObject, 'hasChargeableAccount', hasChargeableAccount) THEN BEGIN
-            SENDTRACETAG('00001NS', TelemetryCategoryTok, VERBOSITY::Error, STRSUBSTNO(MerchantAPIJsonPropertyTelemetryErr, 'hasChargeableAccount'), DataClassification::SystemMetadata);
+            Session.LogMessage('00001NS', STRSUBSTNO(MerchantAPIJsonPropertyTelemetryErr, 'hasChargeableAccount'), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             ErrorMsg := STRSUBSTNO(MerchantAPIJsonPropertyErr, 'hasChargeableAccount');
             EXIT(FALSE);
         END;
 
         IF NOT GetTextPropertyFromJObject(JObject, 'id', MerchantID) THEN BEGIN
-            SENDTRACETAG('00001NT', TelemetryCategoryTok, VERBOSITY::Error, STRSUBSTNO(MerchantAPIJsonPropertyTelemetryErr, 'id'), DataClassification::SystemMetadata);
+            Session.LogMessage('00001NT', STRSUBSTNO(MerchantAPIJsonPropertyTelemetryErr, 'id'), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             ErrorMsg := STRSUBSTNO(MerchantAPIJsonPropertyErr, 'id');
             EXIT(FALSE);
         END;
 
         IF NOT hasChargeableAccount THEN BEGIN
-            SENDTRACETAG('00001NU', TelemetryCategoryTok, VERBOSITY::Error, MerchantAPIChargableTelemetryErr, DataClassification::SystemMetadata);
+            Session.LogMessage('00001NU', MerchantAPIChargableTelemetryErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             ErrorMsg := STRSUBSTNO(MerchantAPIChargableErr, MerchantID);
             EXIT(FALSE);
         END;
 
         IF MSWalletMerchantAccount."Merchant ID" <> MerchantID THEN BEGIN
-            SendTraceTag('00008I3', TelemetryCategoryTok, VERBOSITY::Normal, UpdateMerchantIdTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008I3', UpdateMerchantIdTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
             MSWalletMerchantAccount.VALIDATE("Merchant ID", COPYSTR(MerchantID, 1, MAXSTRLEN(MSWalletMerchantAccount."Merchant ID")));
             MSWalletMerchantAccount.MODIFY(TRUE);
         END;
@@ -293,7 +290,7 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
             exit;
 
         // Fallback to AuthorizationCode based refresh token
-        SendTraceTag('00007AD', TelemetryCategoryTok, Verbosity::Warning, OnBehalfFailedTelemetryTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00007AD', OnBehalfFailedTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
         ShowAzureAdDialog := true;
         if EnvInfoProxy.IsInvoicing() then
             ShowAzureAdDialog := false;
@@ -301,7 +298,7 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
         AccessToken := AzureADMgt.GetAccessToken(MerchantAPIResource, 'Merchant Management', ShowAzureAdDialog);
 
         if AccessToken = '' then
-            SendTraceTag('00007AE', TelemetryCategoryTok, Verbosity::Error, AuthTokenFallbackFailedTelemetryTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00007AE', AuthTokenFallbackFailedTelemetryTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
     end;
 
     local procedure GetBooleanPropertyFromJObject(JObject: JsonObject; PropertyKey: Text; var PropertyValue: Boolean): Boolean;

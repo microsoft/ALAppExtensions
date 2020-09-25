@@ -374,6 +374,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
 
         OutputFile.Create(FromFile);
         OutputFile.CreateOutStream(FileOutstream);
+        OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(XMLdocOut, ServiceInvoiceHeader, DocNameSpace, DocNameSpace2);
         XMLdocOut.WriteTo(FileOutstream);
         OutputFile.Close();
     end;
@@ -419,4 +420,8 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         end;
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(var XMLdocOut: XmlDocument; ServiceInvoiceHeader: Record "Service Invoice Header"; DocNameSpace: Text[250]; DocNameSpace2: Text[250])
+    begin
+    end;
 }

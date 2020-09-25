@@ -1165,56 +1165,6 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         WriteLine(OutStream, '          	</ownbankaccount>');
         WriteLine(OutStream, '      	</statement>');
         WriteLine(OutStream, '		</finsta>');
-
-        /* TODO REMOVE OLD NAV02
-        WriteLine(OutStream, '        <finsta>');
-        WriteLine(OutStream, '          <transactions>');
-        WriteLine(OutStream, '            <originalreceiversref>' + UstrdTxt + '</originalreceiversref>');
-        WriteLine(OutStream, '            <message>');
-        WriteLine(OutStream, '              <linenum>1</linenum>');
-        WriteLine(OutStream, '              <text>' + UstrdTxt + '</text>');
-        WriteLine(OutStream, '            </message>');
-        WriteLine(OutStream, '            <senderpartyidentification>');
-        WriteLine(OutStream, '              <address1>' + Address + '</address1>');
-        WriteLine(OutStream, '              <countryisocode>' + CountryIso + '</countryisocode>');
-        WriteLine(OutStream, '              <name>' + Name + '</name>');
-        WriteLine(OutStream, '            </senderpartyidentification>');
-        WriteLine(OutStream, '            <posting>');
-        WriteLine(OutStream, '              <amount>' + Amount + '</amount>');
-        WriteLine(OutStream, '              <currency>' + CurrencyCode + '</currency>');
-        WriteLine(OutStream, '              <date>' + Date + '</date>');
-        WriteLine(OutStream, '            </posting>');
-        WriteLine(OutStream, '            <amountdetails>');
-        WriteLine(OutStream, '              <currency>' + CurrencyCode + '</currency>');
-        WriteLine(OutStream, '              <date>' + Date + '</date>');
-        WriteLine(OutStream, '              <type></type>');
-        WriteLine(OutStream, '              <value></value>');
-        WriteLine(OutStream, '            </amountdetails>');
-        WriteLine(OutStream, '          </transactions>');
-        WriteLine(OutStream, '          <ownbankaccountidentification>');
-        WriteLine(OutStream, '            <bankaccount>' + BankAccNo + '</bankaccount>');
-        WriteLine(OutStream, '            <currency>' + CurrencyCode + '</currency>');
-        WriteLine(OutStream, '            <swiftcode></swiftcode>');
-        WriteLine(OutStream, '          </ownbankaccountidentification>');
-        WriteLine(OutStream, '          <statementdetails>');
-        WriteLine(OutStream, '            <fromdate>' + Date + '</fromdate>');
-        WriteLine(OutStream, '            <statementno>1234</statementno>');
-        WriteLine(OutStream, '            <todate>' + StmtDate + '</todate>');
-        WriteLine(OutStream, '            <amountdetails>');
-        WriteLine(OutStream, '              <currency>' + CurrencyCode + '</currency>');
-        WriteLine(OutStream, '              <date>' + Date + '</date>');
-        WriteLine(OutStream, '              <type>StartBalance</type>');
-        WriteLine(OutStream, '              <value>0</value>');
-        WriteLine(OutStream, '            </amountdetails>');
-        WriteLine(OutStream, '            <amountdetails>');
-        WriteLine(OutStream, '              <currency>' + CurrencyCode + '</currency>');
-        WriteLine(OutStream, '              <date>' + StmtDate + '</date>');
-        WriteLine(OutStream, '              <type>' + BalType + '</type>');
-        WriteLine(OutStream, '              <value>' + StmtAmount + '</value>');
-        WriteLine(OutStream, '            </amountdetails>');
-        WriteLine(OutStream, '            </statementdetails>');
-        WriteLine(OutStream, '          </finsta>');
-        */
     end;
 
     local procedure WriteMultiStatementCAMTFile(OutStream: OutStream; Encoding: Text)

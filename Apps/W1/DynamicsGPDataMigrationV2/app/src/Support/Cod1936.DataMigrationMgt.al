@@ -26,13 +26,13 @@ codeunit 1936 "MigrationGP Mgt"
         MigrationGPConfig.Init();
         MigrationGPConfig."Zip File" := CopyStr(ServerFile, 1, 250);
         if not MigrationGPConfig.Insert() then
-            Error('Could not create the record');
+            LogInternalError('Could not create the record', DataClassification::SystemMetadata, Verbosity::Error);
 
         // Trying to process ZIP file and clean up in case of an error.
         if not Codeunit.Run(Codeunit::"MigrationGP Data Reader", MigrationGPConfig) then begin
             ErrorMsg := GetLastErrorText();
             MigrationGPDataLoader.CleanupFiles();
-            Error(ErrorMsg);
+            LogInternalError(ErrorMsg, DataClassification::CustomerContent, Verbosity::Error);
         end;
 
         exit(true);
@@ -65,7 +65,7 @@ codeunit 1936 "MigrationGP Mgt"
         // Try to process data files and delete them in case of error.
         if not Codeunit.Run(Codeunit::"MigrationGP Data Loader", DataMigrationEntity) then begin
             MigrationGPDataLoader.CleanupFiles();
-            Error(GetLastErrorText());
+            LogInternalError(GetLastErrorText(), DataClassification::CustomerContent, Verbosity::Error);
         end;
 
         if DataMigrationEntity.Get(Database::Vendor) then
@@ -119,7 +119,7 @@ codeunit 1936 "MigrationGP Mgt"
     var
         HelperFunctions: Codeunit "MigrationGP Helper Functions";
     begin
-        SendTraceTag('00001OB', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Warning, ZipFileMissingErrorTxt);
+        Session.LogMessage('00001OB', ZipFileMissingErrorTxt, Verbosity::Warning, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 }
 

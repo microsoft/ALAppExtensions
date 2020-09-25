@@ -129,7 +129,6 @@ xmlport 20100 "AMC Bank Export CreditTransfer"
                         trigger OnBeforePassVariable();
                         begin
                             journalnumber := GetValue(DataExchField."Data Exch. No.", DataExchField."Line No.");
-                            journalnumber := journalnumber + '_' + FORMAT(DataExchEntryNo); //Making it a unique Journal
                         end;
                     }
                     fieldelement(legalregistrationnumber; "Company Information"."VAT Registration No.")

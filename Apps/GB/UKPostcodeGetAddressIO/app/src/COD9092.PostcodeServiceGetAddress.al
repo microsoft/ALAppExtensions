@@ -57,7 +57,7 @@ codeunit 9092 "Postcode Service GetAddress.io"
         if ServiceKey <> ServiceIdentifierMsg then begin
             ErrorMsg := WrongServiceErr;
             IsSuccessful := false;
-            SendTraceTag('0000BUX', UKPostCodeTok, VERBOSITY::Error, ErrorMsg, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000BUX', ErrorMsg, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKPostCodeTok);
             exit;
         end;
 
@@ -70,14 +70,14 @@ codeunit 9092 "Postcode Service GetAddress.io"
             // This check avoids accessing to an empty HttpResponse if the request fails. Otherwise there will be an error
             ErrorMsg := TechnicalErr;
             IsSuccessful := false;
-            SendTraceTag('0000BU2', UKPostCodeTok, VERBOSITY::Error, ErrorMsg, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000BU2', ErrorMsg, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKPostCodeTok);
             exit;
         end;
 
         ErrorMsg := HandleHttpErrors(HttpResponse);
         if ErrorMsg <> '' then begin
             IsSuccessful := false;
-            SendTraceTag('0000BU3', UKPostCodeTok, VERBOSITY::Error, ErrorMsg, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000BU3', ErrorMsg, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKPostCodeTok);
             exit;
         end;
 
@@ -98,13 +98,13 @@ codeunit 9092 "Postcode Service GetAddress.io"
             end;
 
             IsSuccessful := TRUE;
-            SendTraceTag('0000BU7', UKPostCodeTok, VERBOSITY::Normal, AddressListCreatedMsg, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000BU7', AddressListCreatedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKPostCodeTok);
             exit;
         end else begin
             // show a general error message to user but send a technical error message in telemetry
             ErrorMsg := GeneralHttpErr;
             IsSuccessful := false;
-            SendTraceTag('0000BU4', UKPostCodeTok, VERBOSITY::Error, JsonParseErr, DATACLASSIFICATION::SystemMetadata);
+            Session.LogMessage('0000BU4', JsonParseErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKPostCodeTok);
             exit
         end;
     end;
@@ -213,4 +213,3 @@ codeunit 9092 "Postcode Service GetAddress.io"
         TempAutocompleteAddress."Country / Region" := 'GB';
     end;
 }
-

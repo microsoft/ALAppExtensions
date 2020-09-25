@@ -39,7 +39,7 @@ codeunit 1830 "MigrateQBO Wizard Integration"
                 Error(MigrationNotSupportedErr);
 
         Instructions := Instruction1Txt + CRLF + Instruction2Txt + CRLF + Instruction3Txt;
-        SendTraceTag('00001O9', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, QBSelectedTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00001O9', QBSelectedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
 
         Handled := true;
     end;
@@ -144,7 +144,7 @@ codeunit 1830 "MigrateQBO Wizard Integration"
         if DataMigrationEntity.FindFirst() then
             EntitiesToMigrateMessage += StrSubstNo('item: %1; ', DataMigrationEntity."No. of Records");
 
-        SendTraceTag('00001OA', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, EntitiesToMigrateMessage, DataClassification::SystemMetadata);
+        Session.LogMessage('00001OA', EntitiesToMigrateMessage, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;
 
     local procedure GetCurrentCodeUnitNumber(): Integer

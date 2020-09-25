@@ -324,6 +324,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
 
         OutputFile.create(FromFile);
         OutputFile.CreateOutStream(FileOutstream);
+        OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(XMLdocOut, SalesCrMemoHeader, DocNameSpace, DocNameSpace2);
         XMLdocOut.WriteTo(FileOutstream);
         OutputFile.Close();
     end;
@@ -364,4 +365,8 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         end;
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(var XMLdocOut: XmlDocument; SalesCrMemoHeader: Record "Sales Cr.Memo Header"; DocNameSpace: Text[250]; DocNameSpace2: Text[250])
+    begin
+    end;
 }

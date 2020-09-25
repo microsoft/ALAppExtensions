@@ -1123,7 +1123,25 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
     [Test]
     [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
+    procedure PostAndSendServiceInvoiceOIOUBLWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        PostAndSendServiceInvoiceOIOUBLWithPrintAndEmailInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendServiceInvoiceOIOUBLWithPrintAndEmail();
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        PostAndSendServiceInvoiceOIOUBLWithPrintAndEmailInternal();
+    end;
+
+    procedure PostAndSendServiceInvoiceOIOUBLWithPrintAndEmailInternal();
     var
         ServiceHeader: Record "Service Header";
         ServiceLine: Record "Service Line";
@@ -1134,7 +1152,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         // [SCENARIO 336642] Post And Send Service Invoice in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
         Initialize();
         DocumentSendingProfile.DeleteAll();
-        SMTPMailSetupInitialize();
+        MailSetupInitialize();
         CreateElectronicDocumentFormat(
             OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", Codeunit::"OIOUBL-Export Service Invoice");
 
@@ -1153,7 +1171,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         Codeunit.Run(Codeunit::"Service-Post and Send", ServiceHeader);
 
         // [THEN] Service Invoice is posted.
-        // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Dialog is opened.
+        // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Editor is opened.
         // [THEN] OIOUBL Electronic Document for Posted Service Invoice is created.
         // [THEN] "No. Printed" value of Posted Sales Invoice increases by 2 (cancel Print doesn't count; E-mail, Disk). Bug ID 351595.
         LibraryService.FindServiceInvoiceHeader(ServiceInvoiceHeader, ServiceHeader."No.");
@@ -1164,7 +1182,25 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
     [Test]
     [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
+    procedure PostAndSendServiceInvoiceOIOUBLAndPDFWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        PostAndSendServiceInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendServiceInvoiceOIOUBLAndPDFWithPrintAndEmail();
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        PostAndSendServiceInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
+    end;
+
+    procedure PostAndSendServiceInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
     var
         ServiceHeader: Record "Service Header";
         ServiceLine: Record "Service Line";
@@ -1177,7 +1213,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         // [SCENARIO 336642] Post And Send Service Document in case Print, E-Mail - PDF & OIOUBL, Disk - PDF & OIOUBL are set in Document Sending Profile.
         Initialize();
         DocumentSendingProfile.DeleteAll();
-        SMTPMailSetupInitialize();
+        MailSetupInitialize();
         CreateElectronicDocumentFormat(
             OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", Codeunit::"OIOUBL-Export Service Invoice");
 
@@ -1194,7 +1230,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         Codeunit.Run(Codeunit::"Service-Post and Send", ServiceHeader);
 
         // [THEN] Service Invoice is posted.
-        // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Dialog is opened.
+        // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Editor is opened.
         // [THEN] ZIP file is created, it contains OIOUBL Electronic Document and PDF with printed copy of Posted Service Invoice.
         LibraryService.FindServiceInvoiceHeader(ServiceInvoiceHeader, ServiceHeader."No.");
         FileNameLst.AddRange(GetFileName(ServiceInvoiceHeader."No.", 'Invoice', 'XML'), GetFileName(ServiceInvoiceHeader."No.", 'SM.Invoice', 'PDF'));
@@ -1203,7 +1239,25 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
     [Test]
     [HandlerFunctions('ProfileSelectionMethodStrMenuHandler,ServiceInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
+    procedure SendPostedServiceInvoiceOIOUBLWithPrintAndEmailSMTPSetup() // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        SendPostedServiceInvoiceOIOUBLWithPrintAndEmailInteranl();
+    end;
+
+    // [Test]
+    [HandlerFunctions('ProfileSelectionMethodAndCloseEmailStrMenuHandler,ServiceInvoiceRequestPageHandler,EmailEditorHandler')]
     procedure SendPostedServiceInvoiceOIOUBLWithPrintAndEmail()
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        SendPostedServiceInvoiceOIOUBLWithPrintAndEmailInteranl();
+    end;
+
+    procedure SendPostedServiceInvoiceOIOUBLWithPrintAndEmailInteranl()
     var
         ServiceInvoiceHeader: Record "Service Invoice Header";
         DocumentSendingProfile: Record "Document Sending Profile";
@@ -1216,7 +1270,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         // [SCENARIO 336642] Send Posted Service Document in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
         Initialize();
         DocumentSendingProfile.DeleteAll();
-        SMTPMailSetupInitialize();
+        MailSetupInitialize();
         CreateElectronicDocumentFormat(
           OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", Codeunit::"OIOUBL-Export Service Invoice");
 
@@ -1238,7 +1292,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceInvoiceHeader.SetFilter("No.", '%1|%2', PostedDocNoLst.Get(1), PostedDocNoLst.Get(2));
         ServiceInvoiceHeader.SendRecords();
 
-        // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Dialog is opened.
+        // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Editor is opened.
         // [THEN] One ZIP file is created, it contains OIOUBL Electronic Document for each Posted Service Invoice.
         foreach PostedDocNo in PostedDocNoLst do begin
             FileNameLst.Add(GetFileName(PostedDocNo, 'Invoice', 'XML'));
@@ -1247,9 +1301,27 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         VerifyFileListInZipArchive(FileNameLst);
     end;
 
-    [Test]
+    // [Test] Temporarily disabled
     [HandlerFunctions('ProfileSelectionMethodStrMenuHandler,ServiceInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
+    procedure SendPostedServiceInvoiceOIOUBLAndPDFWithPrintAndEmailSMTPSetup() // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        SendPostedServiceInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
+    end;
+
+    // [Test] Temporarily disabled
+    [HandlerFunctions('ProfileSelectionMethodAndCloseEmailStrMenuHandler,ServiceInvoiceRequestPageHandler,EmailEditorHandler')]
     procedure SendPostedServiceInvoiceOIOUBLAndPDFWithPrintAndEmail()
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        SendPostedServiceInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
+    end;
+
+    procedure SendPostedServiceInvoiceOIOUBLAndPDFWithPrintAndEmailInternal()
     var
         ServiceInvoiceHeader: Record "Service Invoice Header";
         DocumentSendingProfile: Record "Document Sending Profile";
@@ -1261,7 +1333,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         // [SCENARIO 336642] Send Posted Service Document in case Print, E-Mail - PDF & OIOUBL, Disk - PDF & OIOUBL are set in Document Sending Profile.
         Initialize();
         DocumentSendingProfile.DeleteAll();
-        SMTPMailSetupInitialize();
+        MailSetupInitialize();
         CreateElectronicDocumentFormat(
             OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Invoice", Codeunit::"OIOUBL-Export Service Invoice");
 
@@ -1277,7 +1349,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceInvoiceHeader.SetFilter("No.", '%1|%2', PostedDocNoLst.Get(1), PostedDocNoLst.Get(2));
         ServiceInvoiceHeader.SendRecords();
 
-        // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Dialog is opened.
+        // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Editor is opened.
         // [THEN] Two ZIP files are created, each of them contains OIOUBL Electronic Document and PDF with printed copy of Posted Service Invoice.
         FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(1), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(1), 'SM.Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
@@ -1289,7 +1361,25 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
     [Test]
     [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceCreditMemoRequestPageHandler,EmailDialogModalPageHandler')]
+    procedure PostAndSendServiceCrMemoOIOUBLWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(false);
+        PostAndSendServiceCrMemoOIOUBLWithPrintAndEmailInternal();
+    end;
+
+    // [Test]
+    [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceCreditMemoRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendServiceCrMemoOIOUBLWithPrintAndEmail();
+    var
+        LibraryEmailFeature: Codeunit "Library - Email Feature";
+    begin
+        LibraryEmailFeature.SetEmailFeatureEnabled(true);
+        PostAndSendServiceCrMemoOIOUBLWithPrintAndEmailInternal();
+    end;
+
+    procedure PostAndSendServiceCrMemoOIOUBLWithPrintAndEmailInternal();
     var
         ServiceHeader: Record "Service Header";
         ServiceLine: Record "Service Line";
@@ -1300,7 +1390,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         // [SCENARIO 336642] Post And Send Service Credit Memo in case Print, E-Mail - OIOUBL, Disk - OIOUBL are set in Document Sending Profile.
         Initialize();
         DocumentSendingProfile.DeleteAll();
-        SMTPMailSetupInitialize();
+        MailSetupInitialize();
         CreateElectronicDocumentFormat(
             OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Service Credit Memo", Codeunit::"OIOUBL-Export Service Cr.Memo");
 
@@ -1319,7 +1409,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         Codeunit.Run(Codeunit::"Service-Post and Send", ServiceHeader);
 
         // [THEN] Service Credit Memo is posted.
-        // [THEN] Report "Service - Credit Memo" for printing Posted Service Credit Memo is invoked. Then Email Dialog is opened.
+        // [THEN] Report "Service - Credit Memo" for printing Posted Service Credit Memo is invoked. Then Email Editor is opened.
         // [THEN] OIOUBL Electronic Document for Posted Service Credit Memo is created.
         // [THEN] "No. Printed" value of Posted Sales Credit Memo increases by 2 (cancel Print doesn't count; E-mail, Disk). Bug ID 351595.
         LibraryService.FindServiceCrMemoHeader(ServiceCrMemoHeader, ServiceHeader."No.");
@@ -1972,8 +2062,15 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceHeader.Modify(true);
     end;
 
-    local procedure SMTPMailSetupInitialize()
+    local procedure MailSetupInitialize()
+    var
+        EmailFeature: Codeunit "Email Feature";
+        LibraryWorkflow: Codeunit "Library - Workflow";
     begin
+        if EmailFeature.IsEnabled() then begin
+            LibraryWorkflow.SetUpEmailAccount();
+            exit;
+        end;
         SMTPMailSetupClear();
 
         SMTPMailSetup.Init();
@@ -1984,7 +2081,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         SMTPMailSetup.Insert();
     end;
 
-    local procedure SMTPMailSetupClear()
+    local procedure SMTPMailSetupClear() // To be removed together with deprecated SMTP objects
     begin
         SMTPMailSetup.DeleteAll();
         Commit();
@@ -2165,6 +2262,13 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     begin
     end;
 
+    [StrMenuHandler]
+    [Scope('OnPrem')]
+    procedure CloseEmailEditorHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        Choice := 1;
+    end;
+
     [MessageHandler]
     procedure MessageHandler(Meassage: Text[1024]);
     begin
@@ -2174,6 +2278,15 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     procedure ProfileSelectionMethodStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
     begin
         Choice := 3; // Use the default profile for all selected documents without confimation.
+    end;
+
+    [StrMenuHandler]
+    procedure ProfileSelectionMethodAndCloseEmailStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        if Options = 'Yes,No' then
+            Choice := 1 // Close email
+        else
+            Choice := 3; // Use the default profile for all selected documents without confimation.
     end;
 
     [ModalPageHandler]
@@ -2209,6 +2322,11 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     procedure EmailDialogModalPageHandler(var EmailDialog: TestPage "Email Dialog")
     begin
         EmailDialog.Cancel().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure EmailEditorHandler(var EmailDialog: TestPage "Email Editor")
+    begin
     end;
 
     [RequestPageHandler]

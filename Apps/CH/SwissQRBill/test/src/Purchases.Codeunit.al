@@ -482,6 +482,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
     begin
         // [FEATURE] [UI]
         // [SCENARIO 351182] Scan QR-Bill into Purchase Invoice, confirm create a new vendor bank account
+        // [SCENARIO 362130] A new vendor bank account "Payment Form" = "Bank Payment Domestic"
         Initialize();
         IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
         PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
@@ -1319,6 +1320,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
     begin
         VendorBankAccount.Get(VendorNo, BankAccCode);
         VendorBankAccount.TestField(IBAN, IBAN);
+        VendorBankAccount.TestField("Payment Form", VendorBankAccount."Payment Form"::"Bank Payment Domestic");
     end;
 
     [ModalPageHandler]

@@ -73,18 +73,18 @@ codeunit 1083 "MS - Wallet Webhook Management"
         TotalAmount: Decimal;
         PayerEmail: Text;
     begin
-        SendTraceTag('00008IE', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, ProcessingWebhookNotificationTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008IE', ProcessingWebhookNotificationTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
 
         SubscriptionID := LOWERCASE(Rec."Subscription ID");
         WebhookSubscription.SetRange("Subscription ID", SubscriptionID);
         WebhookSubscription.SetFilter("Created By", GetCreatedByFilterForWebhooks());
         IF WebhookSubscription.IsEmpty() THEN BEGIN
-            SendTraceTag('00008HI', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, WebhookSubscriptionNotFoundTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008HI', WebhookSubscriptionNotFoundTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             EXIT;
         END;
 
         IF NOT GetNotificationJson(Rec, JObject) THEN BEGIN
-            SendTraceTag('00008HK', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, IgnoreNotificationTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008HK', IgnoreNotificationTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             EXIT;
         END;
 
@@ -92,7 +92,7 @@ codeunit 1083 "MS - Wallet Webhook Management"
 
         MSWalletMerchantAccount.SETRANGE("Merchant ID", MerchantID);
         IF NOT MSWalletMerchantAccount.FINDFIRST() THEN BEGIN
-            SENDTRACETAG('00001CP', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, TelemetryUnexpectedAccountErr, DataClassification::SystemMetadata);
+            Session.LogMessage('00001CP', TelemetryUnexpectedAccountErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             LogActivity(StrSubstNo(UnexpectedAccountErr, MerchantID), '');
             ERROR(UnexpectedAccountErr, MerchantID);
         END;
@@ -112,13 +112,13 @@ codeunit 1083 "MS - Wallet Webhook Management"
         IF NOT ChargePaymentNotification(MSWalletMerchantAccount, InvoiceNoTxt, TotalAmount, PaymentToken, CurrencyCode, PayerEmail) THEN begin
             // An error happened while charging the user: reverse the payment posted against the invoice
             if not CancelInvoiceLastPayment(InvoiceNoCode) then begin
-                SENDTRACETAG('00001TZ', MSWalletTelemetryCategoryTok, VERBOSITY::Critical, CancellingPaymentErrorTxt, DataClassification::SystemMetadata); // payment has been posted and could not revert it, but user was not charged
+                Session.LogMessage('00001TZ', CancellingPaymentErrorTxt, Verbosity::Critical, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok); // payment has been posted and could not revert it, but user was not charged
                 LogActivity(StrSubstNo(ActivityCancellingPaymentErrTxt, InvoiceNoCode), '');
             end;
             Error(ChargeCallErr);
         end;
 
-        SENDTRACETAG('00001V7', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, MerchantsCustomerPaidTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00001V7', MerchantsCustomerPaidTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
     end;
 
     procedure GetCreatedByFilterForWebhooks(): Text;
@@ -157,12 +157,12 @@ codeunit 1083 "MS - Wallet Webhook Management"
         MSWalletMgt: Codeunit 1080;
     begin
         IF NOT O365SalesInvoicePayment.CollectRemainingPayments(InvoiceNo, TempPaymentRegistrationBuffer) THEN BEGIN
-            SendTraceTag('00008HL', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, NoRemainingPaymentsTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008HL', NoRemainingPaymentsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             EXIT(FALSE);
         END;
 
         IF TempPaymentRegistrationBuffer."Remaining Amount" >= AmountReceived THEN BEGIN
-            SendTraceTag('00008HM', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, RegisteringPaymentTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008HM', RegisteringPaymentTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             TempPaymentRegistrationBuffer.VALIDATE("Amount Received", AmountReceived);
             TempPaymentRegistrationBuffer.VALIDATE("Date Received", WORKDATE());
             MSWalletMgt.GetWalletPaymentMethod(PaymentMethod);
@@ -170,11 +170,11 @@ codeunit 1083 "MS - Wallet Webhook Management"
             TempPaymentRegistrationBuffer.MODIFY(TRUE);
             PaymentRegistrationMgt.Post(TempPaymentRegistrationBuffer, FALSE);
             OnAfterPostWalletPayment(TempPaymentRegistrationBuffer, AmountReceived);
-            SendTraceTag('00008ID', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, PaymentRegistrationSucceedTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008ID', PaymentRegistrationSucceedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             EXIT(TRUE);
         END;
 
-        SendTraceTag('00008HN', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, OverpaymentTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008HN', OverpaymentTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
         OnAfterReceiveWalletOverpayment(TempPaymentRegistrationBuffer, AmountReceived);
 
         EXIT(FALSE);
@@ -208,7 +208,7 @@ codeunit 1083 "MS - Wallet Webhook Management"
         JPayload.Add('receiptEmail', receiptEmail);
 
         if not JPayload.WriteTo(RequestPayload) then begin
-            SendTraceTag('00001YC', MSWalletTelemetryCategoryTok, VERBOSITY::Error, ChargeJsonTelemetryTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00001YC', ChargeJsonTelemetryTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             LogActivity(ChargeJsonTelemetryTxt, '');
         end;
 
@@ -224,11 +224,8 @@ codeunit 1083 "MS - Wallet Webhook Management"
         RequestMessage.Content(RequestContent);
 
         if not RequestHttpClient.Send(RequestMessage, ResponseMessage) then begin
-            SendTraceTag('00008HO', MSWalletTelemetryCategoryTok, VERBOSITY::Error, StrSubstNo(ChargeRequestFailedResponseTxt, ResponseMessage.HttpStatusCode()),
-              DataClassification::SystemMetadata);
-            SendTraceTag(
-              '00001P6', MSWalletTelemetryCategoryTok, VERBOSITY::Error, STRSUBSTNO(MSWalletChargeTelemetryErr, ResponseMessage.HttpStatusCode(), GETLASTERRORTEXT()),
-              DataClassification::CustomerContent);
+            Session.LogMessage('00008HO', StrSubstNo(ChargeRequestFailedResponseTxt, ResponseMessage.HttpStatusCode()), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
+            Session.LogMessage('00001P6', STRSUBSTNO(MSWalletChargeTelemetryErr, ResponseMessage.HttpStatusCode(), GETLASTERRORTEXT()), Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             LogActivity(STRSUBSTNO(MSWalletChargeErr, MSWalletMerchantAccount."Merchant ID", ResponseMessage.HttpStatusCode(), GETLASTERRORTEXT()), RequestPayload);
             EXIT(FALSE);
         END;
@@ -236,9 +233,7 @@ codeunit 1083 "MS - Wallet Webhook Management"
         if GetChargeResource(ResponseMessage, JObject) then
             exit(SaveChargeResource(JObject));
 
-        SendTraceTag(
-          '00001P7', MSWalletTelemetryCategoryTok, VERBOSITY::Error, STRSUBSTNO(MSWalletChargeTelemetryErr, ResponseMessage.HttpStatusCode(), ResponseMessage.ReasonPhrase()),
-          DataClassification::CustomerContent);
+        Session.LogMessage('00001P7', STRSUBSTNO(MSWalletChargeTelemetryErr, ResponseMessage.HttpStatusCode(), ResponseMessage.ReasonPhrase()), Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
         LogActivity(STRSUBSTNO(MSWalletChargeErr, MSWalletMerchantAccount."Merchant ID", ResponseMessage.HttpStatusCode(), ResponseMessage.ReasonPhrase()), RequestPayload);
         EXIT(FALSE);
     end;
@@ -248,20 +243,19 @@ codeunit 1083 "MS - Wallet Webhook Management"
         ResponseText: Text;
     begin
         if not ResponseMessage.IsSuccessStatusCode() then begin
-            SendTraceTag('00008HP', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, StrSubstNo(ChargeRequestFailedResponseTxt, ResponseMessage.HttpStatusCode()),
-              DataClassification::SystemMetadata);
+            Session.LogMessage('00008HP', StrSubstNo(ChargeRequestFailedResponseTxt, ResponseMessage.HttpStatusCode()), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             exit(false);
         end;
         if not ResponseMessage.Content().ReadAs(ResponseText) then begin
-            SendTraceTag('00008HQ', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, ChargeCannotReadResponseTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008HQ', ChargeCannotReadResponseTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             exit(false);
         end;
         if ResponseText = '' then begin
-            SendTraceTag('00008HR', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, ChargeEmptyResponseTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008HR', ChargeEmptyResponseTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             exit(false);
         end;
         if not JObject.ReadFrom(ResponseText) then begin
-            SendTraceTag('00008HS', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, ChargeIncorrectResponseTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008HS', ChargeIncorrectResponseTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             exit(false);
         end;
         exit(true);
@@ -272,12 +266,12 @@ codeunit 1083 "MS - Wallet Webhook Management"
         NotificationStream: InStream;
         NotificationString: Text;
     begin
-        SendTraceTag('00008HT', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, VerifyNotificationContentTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008HT', VerifyNotificationContentTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
 
         NotificationString := '';
         WebhookNotification.CALCFIELDS(Notification);
         IF NOT WebhookNotification.Notification.HASVALUE() THEN BEGIN
-            SendTraceTag('00008HU', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, EmptyNotificationTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008HU', EmptyNotificationTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             EXIT(FALSE);
         END;
 
@@ -285,11 +279,11 @@ codeunit 1083 "MS - Wallet Webhook Management"
         NotificationStream.READ(NotificationString);
 
         IF NOT JObject.ReadFrom(NotificationString) THEN BEGIN
-            SendTraceTag('00008HV', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, IncorrectNotificationTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008HV', IncorrectNotificationTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             EXIT(FALSE);
         END;
 
-        SendTraceTag('00008HW', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, NotificationContentVerifiedTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008HW', NotificationContentVerifiedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
         EXIT(TRUE);
     end;
 
@@ -305,7 +299,7 @@ codeunit 1083 "MS - Wallet Webhook Management"
         GetJsonPropertyValueByPath(JObject, 'paymentResponse.payerEmail', PayerEmail);
 
         IF NOT EVALUATE(GrossAmount, GrossAmountTxt, 9) THEN
-            SendTraceTag('00008HX', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, CannotParseAmountTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00008HX', CannotParseAmountTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
         CurrencyCode := COPYSTR(CurrencyCodeTxt, 1, MAXSTRLEN(CurrencyCode));
     end;
 
@@ -314,17 +308,17 @@ codeunit 1083 "MS - Wallet Webhook Management"
         SalesInvoiceHeader: Record 112;
         InvoiceCurrencyCode: Code[10];
     begin
-        SendTraceTag('00008HY', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, VerifyTransactionDetailsTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008HY', VerifyTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
 
         IF NOT SalesInvoiceHeader.GET(InvoiceNoCode) THEN BEGIN
-            SendTraceTag('00001P8', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, TelemetryUnexpectedInvoiceNumberErr, DataClassification::SystemMetadata);
+            Session.LogMessage('00001P8', TelemetryUnexpectedInvoiceNumberErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             LogActivity(StrSubstNo(UnexpectedInvoiceNumberErr, InvoiceNoCode), '');
             ERROR(UnexpectedInvoiceNumberErr, InvoiceNoCode);
         END;
 
         SalesInvoiceHeader.CALCFIELDS(Closed);
         IF SalesInvoiceHeader.Closed THEN BEGIN
-            SendTraceTag('00001P9', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, TelemetryUnexpectedInvoiceClosedErr, DataClassification::SystemMetadata);
+            Session.LogMessage('00001P9', TelemetryUnexpectedInvoiceClosedErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             LogActivity(StrSubstNo(UnexpectedInvoiceClosedErr, InvoiceNoCode), '');
             ERROR(UnexpectedInvoiceClosedErr, InvoiceNoCode);
         END;
@@ -333,18 +327,18 @@ codeunit 1083 "MS - Wallet Webhook Management"
         IF InvoiceCurrencyCode = '' THEN
             InvoiceCurrencyCode := GetDefaultCurrencyCode();
         IF InvoiceCurrencyCode <> UPPERCASE(CurrencyCode) THEN BEGIN
-            SendTraceTag('00001PA', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, UnexpectedCurrencyCodeTelemetryTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00001PA', UnexpectedCurrencyCodeTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             LogActivity(StrSubstNo(UnexpectedCurrencyCodeErr, CurrencyCode, InvoiceCurrencyCode), '');
             ERROR(UnexpectedCurrencyCodeErr, CurrencyCode, InvoiceCurrencyCode);
         END;
 
         IF GrossAmount <= 0 THEN BEGIN
-            SendTraceTag('00001PB', MSWalletTelemetryCategoryTok, VERBOSITY::Warning, TelemetryUnexpectedAmountErr, DataClassification::SystemMetadata);
+            Session.LogMessage('00001PB', TelemetryUnexpectedAmountErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             LogActivity(StrSubstNo(UnexpectedAmountErr, GrossAmount), '');
             ERROR(UnexpectedAmountErr, GrossAmount);
         END;
 
-        SendTraceTag('00008HZ', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, TransactionDetailsVerifiedTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008HZ', TransactionDetailsVerifiedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
     end;
 
     local procedure SaveChargeResource(JObject: JsonObject): Boolean;
@@ -362,7 +356,7 @@ codeunit 1083 "MS - Wallet Webhook Management"
         referenceIdTxt: Text;
         paymentMethodDescriptionTxt: Text;
     begin
-        SendTraceTag('00008I0', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, SaveChargeResourceTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00008I0', SaveChargeResourceTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
 
         GetJsonPropertyValue(JObject, 'chargeId', chargeIdTxt);
         MSWalletCharge.VALIDATE("Charge ID", chargeIdTxt);
@@ -373,7 +367,7 @@ codeunit 1083 "MS - Wallet Webhook Management"
         GetJsonPropertyValue(JObject, 'createTime', createTimeTxt);
 
         IF NOT TryParseDateTime(createTimeTxt, CreateTime) THEN BEGIN
-            SendTraceTag('00001PC', MSWalletTelemetryCategoryTok, VERBOSITY::Error, CannotParseCreateTimeTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00001PC', CannotParseCreateTimeTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             LogActivity(STRSUBSTNO(UnexpectedCreateTimeErr, createTimeTxt), '');
             EXIT(FALSE);
         END;
@@ -391,7 +385,7 @@ codeunit 1083 "MS - Wallet Webhook Management"
 
         GetJsonPropertyValue(JObject, 'amount', amountTxt);
         IF NOT EVALUATE(ChargeAmount, amountTxt, 9) THEN BEGIN
-            SendTraceTag('00001PD', MSWalletTelemetryCategoryTok, VERBOSITY::Error, CannotParseAmountTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('00001PD', CannotParseAmountTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
             LogActivity(STRSUBSTNO(UnexpectedAmountErr, amountTxt), '');
             EXIT(FALSE);
         END;
@@ -458,7 +452,7 @@ codeunit 1083 "MS - Wallet Webhook Management"
         DetailedCustLedgEntry: Record 379;
         CustEntryApplyPostedEntries: Codeunit 226;
     begin
-        SENDTRACETAG('00001PE', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, CancellingPaymentTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00001PE', CancellingPaymentTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
         LogActivity(CancellingPaymentTxt, SalesInvoiceDocumentNo);
 
         // Find the customer ledger entry related to the invoice
@@ -488,7 +482,7 @@ codeunit 1083 "MS - Wallet Webhook Management"
         ReversalEntry.ReverseTransaction(PaymentCustLedgerEntry."Transaction No.");
         Commit();
 
-        SENDTRACETAG('00001PF', MSWalletTelemetryCategoryTok, VERBOSITY::Normal, CancellingPaymentDoneTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('00001PF', CancellingPaymentDoneTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
         LogActivity(CancellingPaymentDoneTxt, SalesInvoiceDocumentNo);
         EXIT(TRUE);
     end;

@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 139502 "Test Basic BF" //139502
+codeunit 139502 "Test Basic BF"
 {
     Subtype = Test;
     TestPermissions = Disabled;
@@ -11,7 +11,7 @@ codeunit 139502 "Test Basic BF" //139502
     var
         Assert: Codeunit Assert;
         AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER', Locked = true, Comment = 'As default the profile "SALES AND RELATIONSHIP MANAGER" cannot disable because it is set up as a default profile for one or more users or user groups.';
-    //NotSupportedLicensesErr: Label 'Validation error for Field: IsSupportedLicenses,  Message = ''At least one user must have the Basic license.''', Locked = true;
+        NotSupportedLicensesErr: Label 'Validation error for Field: HasBCBasicLicense,  Message = ''At least one user must have the Basic license.''', Locked = true;
 
     trigger OnRun();
     begin
@@ -118,7 +118,6 @@ codeunit 139502 "Test Basic BF" //139502
         AssistedSetupBFTestPage.Close();
     end;
 
-    /* Temporarily removed due to issue regarding License check
     [Test]
     procedure TestSupportedLicensesIsDisabledAssistedSetupPage();
     var
@@ -131,27 +130,7 @@ codeunit 139502 "Test Basic BF" //139502
         AssistedSetupBFTestPage.OpenView();
 
         // [THEN] Supported Licenses and Finish should be disabled
-        Assert.IsFalse(AssistedSetupBFTestPage.IsSupportedLicenses.AsBoolean(), 'Is Supported Licenses should be disabled');
         Assert.IsFalse(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be disabled');
-        AssistedSetupBFTestPage.Close();
-    end;
-    */
-
-    [Test]
-    procedure TestEnableAcceptConsentAssistedSetupPage();
-    var
-        AssistedSetupBFTestPage: TestPage "Assisted Setup BF";
-    begin
-        // [SCENARIO]
-        // [GIVEN] Basic Assisted Setup Page
-
-        // [WHEN] Set Accept Consent to true
-        AssistedSetupBFTestPage.OpenView();
-        AssistedSetupBFTestPage.AcceptConsent.SetValue(true);
-
-        // [THEN]
-        Assert.IsTrue(AssistedSetupBFTestPage.AcceptConsent.AsBoolean(), 'Accept Consent should be Enabled');
-        Assert.IsTrue(AssistedSetupBFTestPage.Finish.Enabled(), 'Finish should be Enabled');
         AssistedSetupBFTestPage.Close();
     end;
 
@@ -213,7 +192,9 @@ codeunit 139502 "Test Basic BF" //139502
                         ApplicationAreaSetupFieldRef.TestField(true);
 
                     // Only one Microsoft Basic Country Application Area must be true the others must be false         
-                    ApplicationAreaSetup.FieldName("Basic DK"),
+                    ApplicationAreaSetup.FieldName("Basic DK"):
+                        If ApplicationAreaSetupFieldRef.Value then
+                            IsBasicCountryTested := true;
                     ApplicationAreaSetup.FieldName("Basic IS"):
                         if IsBasicCountryTested then
                             ApplicationAreaSetupFieldRef.TestField(false)
