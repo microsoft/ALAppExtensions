@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PermissionSets>
+  <PermissionSet RoleID="ANONYM. DATA SHARER" RoleName="Anonymous Data Sharer">
+    <Permission>
+      <ObjectType>TableData</ObjectType>
+      <ObjectID>2050</ObjectID>
+      <ReadPermission>Yes</ReadPermission>
+      <InsertPermission>Indirect</InsertPermission>
+      <ModifyPermission>Indirect</ModifyPermission>
+      <DeletePermission>Indirect</DeletePermission>
+      <ExecutePermission>No</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+  </PermissionSet>
+</PermissionSets>

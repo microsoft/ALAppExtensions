@@ -1,0 +1,23 @@
+{
+    "id":  "10cb69d9-bc8a-4d27-970a-9e110e9db2a5",
+    "name":  "_Exclude_APIV2_",
+    "publisher":  "Microsoft",
+    "version":  "17.0.0.0",
+    "brief":  "",
+    "description":  "",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "17.0.0.0",
+    "target":  "OnPrem",
+    "showMyCode":  true,
+    "application":  "17.0.0.0"
+}

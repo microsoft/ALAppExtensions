@@ -1,0 +1,44 @@
+{
+    "id":  "10d08689-4f89-4e07-84a3-b24cf64a94bc",
+    "name":  "_Exclude_AnonymizedDataSharing_ Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the _Exclude_AnonymizedDataSharing_ extension.",
+    "description":  "Tests for the _Exclude_AnonymizedDataSharing_ extension.",
+    "version":  "17.0.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "063B3AC9-C464-4899-96E0-70D5425854E4",
+                             "name":  "_Exclude_AnonymizedDataSharing_",
+                             "publisher":  "Microsoft",
+                             "version":  "17.0.0.0"
+                         },
+                         {
+                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                             "name":  "Tests-TestLibraries",
+                             "publisher":  "Microsoft",
+                             "version":  "17.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "17.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  139500,
+                         "to":  139899
+                     },
+                     {
+                         "from":  148000,
+                         "to":  148499
+                     }
+                 ],
+    "target":  "OnPrem",
+    "showMyCode":  false,
+    "application":  "17.0.0.0"
+}

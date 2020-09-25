@@ -1,0 +1,52 @@
+
+Employees Page + Tests should be added
+Time Registration Entries should be tested differently
+
+
+Tests for each extension page:
+
+PAG20000.AutConfigPackages.al		COD150031.AutomationCfgPackage.al
+PAG20001.AutCompanies.al			
+PAG20002.AutExtensions.al			
+PAG20003.AutUserGroups.al			
+PAG20004.AutUsers.al				
+PAG20005.AutPermissionSets.al		
+PAG20006.AutExtensionUpload.al		
+PAG20007.AutExtensionDepl.al		
+PAG20008.Items.al					COD150000.ItemsE2E.al
+PAG20009.Customers.al				COD150002.AccountsE2E.al
+PAG20010.Vendors.al					COD150003.VendorsE2E.al
+PAG20011.CompanyInformation.al		COD150006.CompanyInfoE2E.al
+PAG20012.SalesInvoices.al			COD150009.SalesInvoicesE2E.al
+PAG20013.CustPaymJournals.al		
+PAG20014.Accounts.al				COD150001.AccountsE2E.al
+PAG20015.TaxGroups.al				COD150008.TaxGroupsE2E.al
+PAG20016.Journals.al				COD150027.JournalsE2E.al
+PAG20017.Employees.al				COD135527.TXT
+PAG20018.GLEntries.al				COD150030.GLEntriesE2E.al
+PAG20019.Currencies.al				COD150013.CurrenciesE2E.al
+PAG20020.PaymentMethods.al			COD150014.PaymentMethodsE2E.al
+PAG20021.Dimensions.al				COD150024.DimensionsE2E.al , COD150032.DefaultDimensionsE2E.al
+PAG20022.DimensionLines.al			COD150025.DimensionLinesE2E.al
+PAG20023.PaymentTerms.al			COD150004.PaymentTermsE2E.al
+PAG20024.ShipmentMethods.al			COD150005.ShipmentMethodsE2E.al
+PAG20025.ItemCategories.al			COD150007.ItemCategoriesE2E.al
+PAG20026.CashFlowStatement.al		COD150017.CashflowStatementE2E.al
+PAG20027.CountriesRegions.al		COD150010.CountiesRegionsE2E.al
+PAG20028.SalesOrders.al				COD150011.SalesOrdersE2E.al
+PAG20029.RetainedEarnings.al		COD150021.RetEarningsE2E.al
+PAG20030.UnitsOfMeasure.al			COD150012.UofME2E.al
+PAG20031.AgedAR.al					COD150019.AgedAPE2E.al
+PAG20032.AgedAP.al					COD150019.AgedARE2E.al
+PAG20033.BalanceSheet.al			COD150015.BalanceSheetE2E.al
+PAG20034.TrialBalance.al			COD150018.TrialBalanceE2E.al
+PAG20035.IncomeStatement.al			COD150016.IncomeStatementE2E.al
+PAG20036.TaxAreas.al				COD150026.TaxAreasE2E.al
+PAG20037.SalesQuotes.al				COD150023.SalesQuotesE2E.al
+PAG20038.SalesCreditMemos.al		COD150028.SalesCreditMemosE2E.al
+PAG20039.Attachments.al				COD150033.AttachmentsE2E.al
+PAG20040.GLEntryAttachments.al		In attachments Tests (COD150033.AttachmentsE2E.al)
+PAG20041.TimeRegistrEntries.al		COD135930.TXT		???
+PAG20042.PurchaseInvoices.al		COD150029.PurchaseInvoicesE2E.al
+QUE20000.CustomerSales.al			
+QUE20001.VendorPurchases.al			
