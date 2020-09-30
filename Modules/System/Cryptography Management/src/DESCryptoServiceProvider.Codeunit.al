@@ -47,23 +47,25 @@ codeunit 1379 DESCryptoServiceProvider
     /// Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
     /// </summary>
     /// <param name="Password">Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes</param>
+    /// <param name="Salt">Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes</param>
     /// <param name="InputInstream">Represents the input instream data to encrypt</param>
     /// <param name="OutputOutstream">Represents the output instream encrypted data</param>
     [NonDebuggable]
-    procedure EncryptStream(Password: Text; InputInstream: InStream; var OutputOutstream: Outstream)
+    procedure EncryptStream(Password: Text; Salt: Text; InputInstream: InStream; var OutputOutstream: Outstream)
     begin
-        DESCryptoServiceProviderImpl.EncryptStream(Password, InputInstream, OutputOutstream);
+        DESCryptoServiceProviderImpl.EncryptStream(Password, Salt, InputInstream, OutputOutstream);
     end;
 
     /// <summary>
     /// Decrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
     /// </summary>
     /// <param name="Password">Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes</param>
+    /// <param name="Salt">Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes</param>
     /// <param name="InputInstream">Represents the input instream data to decrypt</param>
     /// <param name="OutputOutstream">Represents the output instream decrypted data</param>
     [NonDebuggable]
-    procedure DecryptStream(Password: Text; InputInstream: InStream; var OutputOutstream: Outstream)
+    procedure DecryptStream(Password: Text; Salt: Text; InputInstream: InStream; var OutputOutstream: Outstream)
     begin
-        DESCryptoServiceProviderImpl.DecryptStream(Password, InputInstream, OutputOutstream);
+        DESCryptoServiceProviderImpl.DecryptStream(Password, Salt, InputInstream, OutputOutstream);
     end;
 }
