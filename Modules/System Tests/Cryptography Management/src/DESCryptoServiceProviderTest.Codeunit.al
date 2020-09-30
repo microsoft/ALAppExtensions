@@ -73,7 +73,7 @@ codeunit 132588 "DESCryptoServiceProvider Test"
         TempBlob.Blob.CreateOutStream(OutputOutstream);
 
         // [WHEN] Encrypt Stream
-        DESCryptoServiceProvider.EncryptStreamWithDESCryptoServiceProvider(Password, InputInstream, OutputOutstream);
+        DESCryptoServiceProvider.EncryptStreamWithDESCryptoServiceProvider(Password, Salt, InputInstream, OutputOutstream);
 
         TempBlob.Blob.CreateInStream(OutputInstream);
         EncryptedStreamText := Base64Convert.ToBase64(OutputInstream);
