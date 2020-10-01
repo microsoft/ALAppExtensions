@@ -46,6 +46,7 @@ codeunit 132588 "DESCryptoServiceProvider Test"
         LibraryAssert.AreEqual(ExpectedDecryptedText, DecryptedText, 'Unexpected value when decrypting text using DESCryptoServiceProvider');
     end;
 
+    [Test]
     procedure TestEncryptStream()
     var
         DESCryptoServiceProvider: Codeunit "DESCryptoServiceProvider Impl.";
@@ -82,6 +83,7 @@ codeunit 132588 "DESCryptoServiceProvider Test"
         LibraryAssert.AreEqual(ExpectedEncryptedText, EncryptedStreamText, 'Unexpected value when decrypting stream using DESCryptoServiceProvider');
     end;
 
+    [Test]
     procedure TestDecryptStream()
     var
         DESCryptoServiceProvider: Codeunit "DESCryptoServiceProvider Impl.";
