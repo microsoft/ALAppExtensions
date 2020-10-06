@@ -40,7 +40,7 @@ codeunit 1382 "DESCryptoServiceProvider Impl."
     end;
 
     [NonDebuggable]
-    procedure EncryptStream(Password: Text; InputInstream: InStream; VAR OutputOutstream: Outstream)
+    procedure EncryptStream(Password: Text; Salt: Text; InputInstream: InStream; VAR OutputOutstream: Outstream)
     var
         MemoryStream: DotNet MemoryStream;
         ByteArray: DotNet Array;
@@ -48,7 +48,7 @@ codeunit 1382 "DESCryptoServiceProvider Impl."
     begin
         InStreamToArray(InputInstream, ByteArray);
 
-        ConstructDESCryptoServiceProvider(SymmetricAlgorithm, Password, Password);
+        ConstructDESCryptoServiceProvider(SymmetricAlgorithm, Password, Salt);
         TransformToArray(SymmetricAlgorithm.CreateEncryptor(), ByteArray);
 
         MemoryStream := MemoryStream.MemoryStream(ByteArray);
@@ -56,14 +56,14 @@ codeunit 1382 "DESCryptoServiceProvider Impl."
     end;
 
     [NonDebuggable]
-    procedure DecryptStream(Password: Text; InputInstream: InStream; var OutputOutstream: Outstream)
+    procedure DecryptStream(Password: Text; Salt: Text; InputInstream: InStream; var OutputOutstream: Outstream)
     var
         MemoryStream: DotNet MemoryStream;
         ByteArray: DotNet Array;
         SymmetricAlgorithm: DotNet "Cryptography.SymmetricAlgorithm";
     begin
         InStreamToArray(InputInstream, ByteArray);
-        ConstructDESCryptoServiceProvider(SymmetricAlgorithm, Password, Password);
+        ConstructDESCryptoServiceProvider(SymmetricAlgorithm, Password, Salt);
         TransformToArray(SymmetricAlgorithm.CreateDecryptor(), ByteArray);
 
         MemoryStream := MemoryStream.MemoryStream(ByteArray);
