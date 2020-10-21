@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Provides information about the status of the emails.
+/// </summary>
 page 8885 "Email Activities"
 {
     PageType = CardPart;

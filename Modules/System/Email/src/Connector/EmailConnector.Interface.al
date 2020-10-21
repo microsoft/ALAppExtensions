@@ -47,6 +47,7 @@ interface "Email Connector"
     /// </summary>
     /// <return>Base64 encoded image.</return>
     /// <remarks>The recomended image size is 128x128.</remarks>
+    /// <returns>The logo of the connector is Base64 format</returns>
     procedure GetLogoAsBase64(): Text;
 
     /// <summary>

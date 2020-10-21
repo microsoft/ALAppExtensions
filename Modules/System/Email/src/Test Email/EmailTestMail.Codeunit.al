@@ -3,7 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-/// <summary></summary>
+/// <summary>
+/// Sends a test email to a specified account.
+/// </summary>
 codeunit 8887 "Email Test Mail"
 {
     TableNo = "Email Account";

@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Codeunit to create and manage email messages.
+/// </summary>
 codeunit 8904 "Email Message"
 {
     Access = Public;
@@ -60,7 +63,7 @@ codeunit 8904 "Email Message"
     /// Gets the email message with the given ID.
     /// </summary>
     /// <param name="MessageId">The ID of the email message to get.</param>
-    /// <return>True if the email was found; otherwise - false.</return>
+    /// <returns>True if the email was found; otherwise - false.</returns>
     procedure Get(MessageId: Guid): Boolean
     begin
         exit(EmailMessageImpl.Get(MessageId));
@@ -69,7 +72,7 @@ codeunit 8904 "Email Message"
     /// <summary>
     /// Gets the body of the email message.
     /// </summary>
-    /// <return>The body of the email.</return>
+    /// <returns>The body of the email.</returns>
     procedure GetBody(): Text
     begin
         exit(EmailMessageImpl.GetBody());
@@ -78,7 +81,7 @@ codeunit 8904 "Email Message"
     /// <summary>
     /// Gets the subject of the email message.
     /// </summary>
-    /// <return>The subject of the email.</return>
+    /// <returns>The subject of the email.</returns>
     procedure GetSubject(): Text[2048]
     begin
         exit(EmailMessageImpl.GetSubject());
@@ -87,7 +90,7 @@ codeunit 8904 "Email Message"
     /// <summary>
     /// Checks if the email body is formatted in HTML.
     /// </summary>
-    /// <return>True if the email body is formatted in HTML; otherwise - false.</return>
+    /// <returns>True if the email body is formatted in HTML; otherwise - false.</returns>
     procedure IsBodyHTMLFormatted(): Boolean
     begin
         exit(EmailMessageImpl.IsBodyHTMLFormatted());
@@ -96,7 +99,7 @@ codeunit 8904 "Email Message"
     /// <summary>
     /// Gets the ID of the email message.
     /// </summary>
-    /// <return>The ID of the email.</return>
+    /// <returns>The ID of the email.</returns>
     procedure GetId(): Guid
     begin
         exit(EmailMessageImpl.GetId());
@@ -118,7 +121,7 @@ codeunit 8904 "Email Message"
     /// <param name="AttachmentName">The name of the file attachment.</param>
     /// <param name="ContentType">The Content Type of the file attachment.</param>
     /// <param name="AttachmentBase64">The Base64 text representation of the attachment.</param>
-    /// <return>True if the attachment was added; otherwise - false.</return>
+    /// <returns>True if the attachment was added; otherwise - false.</returns>
     procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentBase64: Text)
     begin
         EmailMessageImpl.AddAttachment(AttachmentName, ContentType, AttachmentBase64);
@@ -130,7 +133,7 @@ codeunit 8904 "Email Message"
     /// <param name="AttachmentName">The name of the file attachment.</param>
     /// <param name="ContentType">The Content Type of the file attachment.</param>
     /// <param name="AttachmentStream">The instream of the attachment.</param>
-    /// <return>True if the attachment was added; otherwise - false.</return>
+    /// <returns>True if the attachment was added; otherwise - false.</returns>
     procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentStream: InStream)
     begin
         EmailMessageImpl.AddAttachment(AttachmentName, ContentType, AttachmentStream);

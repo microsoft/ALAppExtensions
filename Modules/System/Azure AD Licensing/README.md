@@ -48,8 +48,12 @@ end;
 
 #### Syntax
 ```
-procedure ResetSubscribedSKU()
+procedure ResetSubscribedSKU(): Boolean
 ```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+ True if the enumerator was successfully reset and otherwise false.
 ### NextSubscribedSKU (Method) <a name="NextSubscribedSKU"></a> 
 
  Advances the enumerator to the next subscribed SKU in the collection. If only known service plans should be included, it advances to the next SKU known in Business Central.

@@ -12,7 +12,7 @@ codeunit 8893 "Email Scenario"
     /// Gets the default email account.
     /// </summary>
     /// <param name="EmailAccount">Out parameter holding information about the default email account.</param>
-    /// <return>True if an account for the the default scenario was found; otherwise - false.</return>
+    /// <returns>True if an account for the the default scenario was found; otherwise - false.</returns>
     procedure GetDefaultEmailAccount(var EmailAccount: Record "Email Account"): Boolean
     begin
         exit(EmailScenarioImpl.GetEmailAccount(Enum::"Email Scenario"::Default, EmailAccount));
@@ -24,7 +24,7 @@ codeunit 8893 "Email Scenario"
     /// </summary>
     /// <param name="Scenario">The scenario to look for.</param>
     /// <param name="EmailAccount">Out parameter holding information about the email account.</param>
-    /// <return>True if an account for the specified scenario was found; otherwise - false.</return>
+    /// <returns>True if an account for the specified scenario was found; otherwise - false.</returns>
     procedure GetEmailAccount(Scenario: Enum "Email Scenario"; var EmailAccount: Record "Email Account"): Boolean
     begin
         exit(EmailScenarioImpl.GetEmailAccount(Scenario, EmailAccount));
