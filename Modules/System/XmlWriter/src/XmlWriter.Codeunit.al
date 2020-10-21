@@ -4,10 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-// Provides helper functions for System.Xml.XmlWriter
+/// Provides helper functions for System.Xml.XmlWriter
 /// </summary>
-
-codeunit 1385 "XmlWriter"
+codeunit 1483 "XmlWriter"
 {
     Access = Public;
 
@@ -15,15 +14,24 @@ codeunit 1385 "XmlWriter"
         XmlWriterImpl: Codeunit "XmlWriter Impl.";
 
     /// <summary>
-    /// Creates the XmlWriter Document
+    /// Initializes the XmlWriter and creates the XmlWriter Document
     /// </summary>
-    procedure XmlWriterCreateDocument()
+    procedure WriteStartDocument()
     begin
-        XmlWriterImpl.XmlWriterCreateDocument();
+        XmlWriterImpl.WriteStartDocument();
     end;
 
     /// <summary>
-    /// When overridden in a derived class, writes the specified start tag.
+    /// Writes the specified start tag.
+    /// </summary>
+    /// <param name="LocalName">The local name of the element.</param>
+    procedure WriteStartElement(LocalName: Text)
+    begin
+        XmlWriterImpl.WriteStartElement(LocalName);
+    end;
+
+    /// <summary>
+    /// Writes the specified start tag and associates it with the given namespace and prefix.
     /// </summary>
     /// <param name="Prefix">The namespace prefix of the element.</param>
     /// <param name="LocalName">The local name of the element.</param>
@@ -44,7 +52,7 @@ codeunit 1385 "XmlWriter"
     end;
 
     /// <summary>
-    /// When overridden in a derived class, closes one element and pops the corresponding namespace scope.
+    /// Closes one element and pops the corresponding namespace scope.
     /// </summary>
     procedure WriteEndElement()
     begin
@@ -52,19 +60,19 @@ codeunit 1385 "XmlWriter"
     end;
 
     /// <summary>
-    /// When overridden in a derived class, writes an attribute with the specified value.
+    /// Writes an attribute with the specified local name, namespace URI, and value.
     /// </summary>
-    /// <param name="LocalName">The local name of the attribute.</param>
-    /// <param name="ElementValue">The value of the attribute.</param>
     /// <param name="Prefix">The namespace prefix of the attribute.</param>
-    /// <param name="Ns">The namespace URI of the attribute.</param>
-    procedure WriteAttributeString(Prefix: Text; LocalName: Text; Ns: Text; ElementValue: Text)
+    /// <param name="LocalName">The local name of the attribute.</param>
+    /// <param name="Namespace">The namespace URI of the attribute.</param>
+    /// <param name="ElementValue">The value of the attribute.</param>
+    procedure WriteAttributeString(Prefix: Text; LocalName: Text; Namespace: Text; ElementValue: Text)
     begin
-        XmlWriterImpl.WriteAttributeString(Prefix, LocalName, Ns, ElementValue);
+        XmlWriterImpl.WriteAttributeString(Prefix, LocalName, Namespace, ElementValue);
     end;
 
     /// <summary>
-    /// When overridden in a derived class, writes an attribute with the specified value.
+    /// Writes out the attribute with the specified local name and value.
     /// </summary>
     /// <param name="LocalName">The local name of the attribute.</param>
     /// <param name="ElementValue">The value of the attribute.</param>
@@ -74,7 +82,7 @@ codeunit 1385 "XmlWriter"
     end;
 
     /// <summary>
-    /// When overridden in a derived class, writes out a comment <!--...--> containing the specified text.
+    /// Writes out a comment <!--...--> containing the specified text.
     /// </summary>
     /// <param name="Comment">Text to place inside the comment.</param>
     procedure WriteComment(Comment: Text)
@@ -83,7 +91,7 @@ codeunit 1385 "XmlWriter"
     end;
 
     /// <summary>
-    /// When overridden in a derived class, closes any open elements or attributes and puts the writer back in the Start state.
+    /// Closes any open elements or attributes and puts the writer back in the Start state.
     /// </summary>
     procedure WriteEndDocument()
     begin
@@ -93,9 +101,9 @@ codeunit 1385 "XmlWriter"
     /// <summary>
     /// Writes the text within Xml Writer to the BigText variable. 
     /// </summary>
-    /// <param name="XmlBigText">The BigText the Xml Writer has to be write to. </param>
-    procedure XmlWriterToBigText(VAR XmlBigText: BigText)
+    /// <param name="XmlBigText">The BigText the Xml Writer has to be write to.</param>
+    procedure ToBigText(Var XmlBigText: BigText)
     begin
-        XmlWriterImpl.XmlWriterToBigText(XmlBigText);
+        XmlWriterImpl.ToBigText(XmlBigText);
     end;
 }

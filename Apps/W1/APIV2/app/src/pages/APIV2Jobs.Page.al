@@ -24,7 +24,7 @@ page 30050 "APIV2 - Jobs"
                 }
                 field(number; "No.")
                 {
-                    Caption = 'Number';
+                    Caption = 'No.';
                 }
                 field(displayName; Description)
                 {

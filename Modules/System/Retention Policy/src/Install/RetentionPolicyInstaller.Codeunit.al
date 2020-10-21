@@ -71,12 +71,6 @@ codeunit 3907 "Retention Policy Installer"
         exit('MS-334067-RetenPolLogEntryAdded-20200731');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
-    local procedure RegisterPerDatabaseUpgradeTags(var PerCompanyUpgradeTags: List of [Code[250]])
-    begin
-        PerCompanyUpgradeTags.Add(GetRetenPolLogEntryAddedUpgradeTag());
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterInitialization', '', false, false)]
     local procedure AddAllowedTablesOnAfterSystemInitialization()
     begin

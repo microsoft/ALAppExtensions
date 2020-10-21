@@ -75,6 +75,16 @@ codeunit 3702 "Environment Information Impl."
         exit(IsSaaSConfig);
     end;
 
+    procedure IsSaaSInfrastructure(): Boolean
+    var
+        UserAccountHelper: DotNet NavUserAccountHelper;
+    begin
+        if TestabilitySoftwareAsAService then
+            exit(true);
+
+        exit(IsSaaS() and UserAccountHelper.IsAzure());
+    end;
+
     procedure IsOnPrem(): Boolean
     begin
         exit(GetAppId() = 'NAV');

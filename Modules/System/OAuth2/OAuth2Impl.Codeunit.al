@@ -105,16 +105,19 @@ codeunit 502 OAuth2Impl
         AdminConsent := GetPropertyFromCode(AuthorizationCode, 'admin_consent');
     end;
 
-    local procedure GetDefaultRedirectUrl(): Text
+    procedure GetDefaultRedirectUrl(): Text
     var
+        EnvironmentInformation: Codeunit "Environment Information";
         UriBuilder: DotNet UriBuilder;
         PathString: DotNet String;
         RedirectUrl: Text;
     begin
         // Retrieve the Client URL
         RedirectUrl := GetUrl(ClientType::Web);
-        // Extract the Base Url (domain) from the full CLient URL
-        RedirectUrl := GetBaseUrl(RedirectUrl);
+
+        // For SaaS Extract the Base Url (domain) from the full CLient URL
+        if EnvironmentInformation.IsSaaSInfrastructure() then
+            RedirectUrl := GetBaseUrl(RedirectUrl);
 
         UriBuilder := UriBuilder.UriBuilder(RedirectUrl);
 
@@ -196,6 +199,26 @@ codeunit 502 OAuth2Impl
 
     [NonDebuggable]
     [TryFunction]
+    procedure AcquireTokenAndTokenCacheByAuthorizationCode(ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var TokenCache: Text; var Error: Text)
+    var
+        AuthRequestUrl: Text;
+        AuthCode: Text;
+        State: Text;
+    begin
+        Initialize(OAuthAuthorityUrl, RedirectURL);
+
+        AuthRequestUrl := GetAuthRequestUrl(ClientId, ClientSecret, OAuthAuthorityUrl, RedirectURL, State, Scopes, PromptInteraction);
+
+        SetPropertiesBasedOnAuthRequestUrlAndRunOAuth2ControlAddIn(AuthRequestUrl, State, AuthCode, Error);
+
+        if AuthCode = '' then
+            exit;
+
+        AcquireTokenAndTokenCacheByAuthorizationCodeWithCredentials(AuthCode, ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrl, Scopes, AccessToken, TokenCache);
+    end;
+
+    [NonDebuggable]
+    [TryFunction]
     procedure SetPropertiesBasedOnAuthRequestUrlAndRunOAuth2ControlAddIn(AuthRequestUrl: Text; State: Text; var AuthCode: Text; var AuthCodeErr: Text)
     var
         OAuth2ControlAddIn: Page OAuth2ControlAddIn;
@@ -232,14 +255,14 @@ codeunit 502 OAuth2Impl
     end;
 
     [NonDebuggable]
-    procedure AcquireOnBehalfAccessTokenAndRefreshToken(OAuthAuthorityUrl: Text; RedirectURL: Text; ResourceUrl: Text; var AccessToken: Text; var RefreshToken: Text)
+    procedure AcquireOnBehalfAccessTokenAndTokenCache(OAuthAuthorityUrl: Text; RedirectURL: Text; ResourceUrl: Text; var AccessToken: Text; var RefreshToken: Text)
     begin
         Initialize(OAuthAuthorityUrl, RedirectURL);
         AccessToken := AuthFlow.ALAcquireOnBehalfOfToken(ResourceUrl, RefreshToken);
     end;
 
     [NonDebuggable]
-    procedure AcquireOnBehalfAccessTokenAndRefreshToken(OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text; var RefreshToken: Text)
+    procedure AcquireOnBehalfAccessTokenAndTokenCache(OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text; var RefreshToken: Text)
     var
         ScopesArray: DotNet StringArray;
     begin
@@ -249,20 +272,30 @@ codeunit 502 OAuth2Impl
     end;
 
     [NonDebuggable]
-    procedure AcquireOnBehalfOfTokenByRefreshToken(ClientId: Text; RedirectURL: Text; ResourceURL: Text; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
+    procedure AcquireOnBehalfOfTokenByTokenCache(LoginHint: Text; RedirectURL: Text; ResourceURL: Text; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
     begin
         Initialize(RedirectURL);
-        AccessToken := AuthFlow.ALAcquireTokenFromTokenCacheState(ResourceURL, ClientId, RefreshToken, NewRefreshToken);
+        AccessToken := AuthFlow.ALAcquireTokenFromTokenCacheState(ResourceURL, LoginHint, RefreshToken, NewRefreshToken);
     end;
 
     [NonDebuggable]
-    procedure AcquireOnBehalfOfTokenByRefreshToken(ClientId: Text; RedirectURL: Text; Scopes: List of [Text]; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
+    procedure AcquireOnBehalfOfTokenByTokenCache(LoginHint: Text; RedirectURL: Text; Scopes: List of [Text]; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
     var
         ScopesArray: DotNet StringArray;
     begin
         FillScopesArray(Scopes, ScopesArray);
         Initialize(RedirectURL);
-        AccessToken := AuthFlow.ALAcquireTokenFromTokenCacheState(ScopesArray, ClientId, RefreshToken, NewRefreshToken);
+        AccessToken := AuthFlow.ALAcquireTokenFromTokenCacheState(ScopesArray, LoginHint, RefreshToken, NewRefreshToken);
+    end;
+
+    [NonDebuggable]
+    procedure AcquireOnBehalfOfTokenByTokenCache(ClientId: Text; ClientSecret: Text; LoginHint: Text; RedirectURL: Text; Scopes: List of [Text]; TokenCache: Text; var AccessToken: Text; var NewTokenCache: Text)
+    var
+        ScopesArray: DotNet StringArray;
+    begin
+        FillScopesArray(Scopes, ScopesArray);
+        Initialize(RedirectURL);
+        AccessToken := AuthFlow.ALAcquireTokenFromTokenCacheState(ClientId, ClientSecret, ScopesArray, LoginHint, TokenCache, NewTokenCache);
     end;
 
     [NonDebuggable]
@@ -331,6 +364,16 @@ codeunit 502 OAuth2Impl
     begin
         FillScopesArray(Scopes, ScopesArray);
         AccessToken := AuthFlow.ALAcquireTokenByAuthorizationCodeWithCredentials(AuthorizationCode, ClientId, ClientSecret, ScopesArray);
+    end;
+
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokenAndTokenCacheByAuthorizationCodeWithCredentials(AuthorizationCode: Text; ClientId: Text; ClientSecret: Text; RedirectUrl: Text; OAuthAuthorityUrl: Text; Scopes: List of [Text]; var AccessToken: Text; var TokenCache: Text)
+    var
+        ScopesArray: DotNet StringArray;
+    begin
+        FillScopesArray(Scopes, ScopesArray);
+        AccessToken := AuthFlow.ALAcquireTokenByAuthorizationCodeWithCredentials(AuthorizationCode, ClientId, ClientSecret, ScopesArray, TokenCache);
     end;
 
     local procedure Initialize(RedirectURL: Text)

@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Codeunit that raises an event that can be used to clean up sensitive data, such as sent emails, when copying a company to a sandbox environment.
+/// Codeunit that raises an event that could be used to clean up data when copying a company to sandbox environment.
 /// </summary>
 codeunit 1884 "Sandbox Cleanup"
 {
@@ -14,8 +14,26 @@ codeunit 1884 "Sandbox Cleanup"
     /// Subscribe to this event to clean up data when copying a company to a sandbox environment.
     /// </summary>
     /// <param name="CompanyName">The name of the company.</param>
+    [Obsolete('Separated into two events for clearing of company-specific data and environment-specific data. OnClearCompanyConfiguration and OnClearDatabaseConfiguration', '17.1')]
     [IntegrationEvent(false, false)]
     internal procedure OnClearConfiguration(CompanyName: Text)
+    begin
+    end;
+
+    /// <summary>
+    /// Subscribe to this event to clean up company-specific data when copying to a sandbox environment.
+    /// </summary>
+    /// <param name="CompanyName">The name of the company.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnClearCompanyConfiguration(CompanyName: Text)
+    begin
+    end;
+
+    /// <summary>
+    /// Subscribe to this event to clean up environment-specific data when copying to a sandbox environment.
+    /// </summary>
+    [IntegrationEvent(false, false)]
+    internal procedure OnClearDatabaseConfiguration()
     begin
     end;
 }

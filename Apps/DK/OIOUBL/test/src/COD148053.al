@@ -825,7 +825,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         PostAndSendSalesInvoiceOIOUBLWithPrintAndEmailInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('PostandSendModalPageHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendSalesInvoiceOIOUBLWithPrintAndEmail();
     var
@@ -886,7 +886,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         PostAndSendSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('PostandSendModalPageHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendSalesInvoiceOIOUBLAndPDFWithPrintAndEmail();
     var
@@ -945,7 +945,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SendPostedSalesInvoiceOIOUBLWithPrintAndEmailInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('ProfileSelectionMethodStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler')]
     procedure SendPostedSalesInvoiceOIOUBLWithPrintAndEmail();
     var
@@ -1009,7 +1009,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('ProfileSelectionMethodAndCloseEmailStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler')]
     procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmail();
     var
@@ -1068,7 +1068,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         PostAndSendSalesCrMemoOIOUBLWithPrintAndEmailInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('PostandSendModalPageHandler,StandardSalesCreditMemoRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendSalesCrMemoOIOUBLWithPrintAndEmail();
     var

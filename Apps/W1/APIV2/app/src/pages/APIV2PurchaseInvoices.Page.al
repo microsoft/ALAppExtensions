@@ -186,7 +186,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(buyFromAddressLine1; "Buy-from Address")
                 {
-                    Caption = 'Buy From Address Line 1';
+                    Caption = 'Buy-from Address Line 1';
 
                     trigger OnValidate()
                     begin
@@ -195,7 +195,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(buyFromAddressLine2; "Buy-from Address 2")
                 {
-                    Caption = 'Buy From Address Line 2';
+                    Caption = 'Buy-from Address Line 2';
 
                     trigger OnValidate()
                     begin
@@ -204,7 +204,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(buyFromCity; "Buy-from City")
                 {
-                    Caption = 'Buy From City';
+                    Caption = 'Buy-from City';
 
                     trigger OnValidate()
                     begin
@@ -213,7 +213,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(buyFromCountry; "Buy-from Country/Region Code")
                 {
-                    Caption = 'Buy From Country/Region Code';
+                    Caption = 'Buy-from Country/Region Code';
 
                     trigger OnValidate()
                     begin
@@ -222,7 +222,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(buyFromState; "Buy-from County")
                 {
-                    Caption = 'Buy From State';
+                    Caption = 'Buy-from State';
 
                     trigger OnValidate()
                     begin
@@ -231,7 +231,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(buyFromPostCode; "Buy-from Post Code")
                 {
-                    Caption = 'Buy From Post Code';
+                    Caption = 'Buy-from Post Code';
 
                     trigger OnValidate()
                     begin
@@ -240,7 +240,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(shipToAddressLine1; "Ship-to Address")
                 {
-                    Caption = 'Ship To Address Line 1';
+                    Caption = 'Ship-to Address Line 1';
 
                     trigger OnValidate()
                     begin
@@ -251,7 +251,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(shipToAddressLine2; "Ship-to Address 2")
                 {
-                    Caption = 'Ship To Address Line 2';
+                    Caption = 'Ship-to Address Line 2';
 
                     trigger OnValidate()
                     begin
@@ -262,7 +262,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(shipToCity; "Ship-to City")
                 {
-                    Caption = 'Ship To City';
+                    Caption = 'Ship-to City';
 
                     trigger OnValidate()
                     begin
@@ -273,7 +273,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(shipToCountry; "Ship-to Country/Region Code")
                 {
-                    Caption = 'Ship To Country/Region Code';
+                    Caption = 'Ship-to Country/Region Code';
 
                     trigger OnValidate()
                     begin
@@ -284,7 +284,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(shipToState; "Ship-to County")
                 {
-                    Caption = 'Ship To State';
+                    Caption = 'Ship-to State';
 
                     trigger OnValidate()
                     begin
@@ -295,7 +295,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 field(shipToPostCode; "Ship-to Post Code")
                 {
-                    Caption = 'Ship To Post Code';
+                    Caption = 'Ship-to Post Code';
 
                     trigger OnValidate()
                     begin
@@ -545,13 +545,13 @@ page 30042 "APIV2 - Purchase Invoices"
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         LCYCurrencyCode: Code[10];
         CurrencyCodeTxt: Text;
-        CannotChangeIDErr: Label 'The "id" cannot be changed.';
-        BuyFromVendorNotProvidedErr: Label 'A "vendorNumber" or a "vendorID" must be provided.';
+        CannotChangeIDErr: Label 'The "id" cannot be changed.', Comment = 'id is a field name and should not be translated.';
+        BuyFromVendorNotProvidedErr: Label 'A "vendorNumber" or a "vendorID" must be provided.', Comment = 'vendorNumber and vendorID are field names and should not be translated.';
         CouldNotFindBuyFromVendorErr: Label 'The vendor cannot be found.';
         CouldNotFindPayToVendorErr: Label 'The pay-to vendor cannot be found.';
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.';
-        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.';
-        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.';
+        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.', Comment = 'currencyId is a field name and should not be translated.';
+        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.', Comment = 'currencyCode is a field name and should not be translated.';
         BlankGUID: Guid;
         DraftInvoiceActionErr: Label 'The action can be applied to a draft invoice only.';
         CannotFindInvoiceErr: Label 'The invoice cannot be found.';

@@ -253,6 +253,11 @@ codeunit 148099 "SAF-T Test Helper"
     end;
 
     local procedure MockCustLedgEntry(PostingDate: Date; CustNo: Code[20]; Amount: Decimal)
+    begin
+        MockCustLedgEntry(PostingDate, CustNo, Amount, Amount, "Gen. Journal Document Type"::" ");
+    end;
+
+    procedure MockCustLedgEntry(PostingDate: Date; CustNo: Code[20]; Amount: Decimal; AmountDtldCustLedgEntry: Decimal; DocumentType: Enum "Gen. Journal Document Type")
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
@@ -261,6 +266,9 @@ codeunit 148099 "SAF-T Test Helper"
         CustLedgerEntry."Entry No." := LibraryUtility.GetNewRecNo(CustLedgerEntry, CustLedgerEntry.FieldNo("Entry No."));
         CustLedgerEntry."Posting Date" := PostingDate;
         CustLedgerEntry."Customer No." := CustNo;
+        if not (DocumentType in ["Gen. Journal Document Type"::Payment, "Gen. Journal Document Type"::Refund]) then
+            CustLedgerEntry."Sales (LCY)" := Amount;
+        CustLedgerEntry."Document Type" := DocumentType;
         CustLedgerEntry.Insert();
         DetailedCustLedgEntry.Init();
         DetailedCustLedgEntry."Entry No." :=
@@ -268,11 +276,16 @@ codeunit 148099 "SAF-T Test Helper"
         DetailedCustLedgEntry."Cust. Ledger Entry No." := CustLedgerEntry."Entry No.";
         DetailedCustLedgEntry."Posting Date" := CustLedgerEntry."Posting Date";
         DetailedCustLedgEntry."Customer No." := CustLedgerEntry."Customer No.";
-        DetailedCustLedgEntry."Amount (LCY)" := Amount;
+        DetailedCustLedgEntry."Amount (LCY)" := AmountDtldCustLedgEntry;
         DetailedCustLedgEntry.Insert();
     end;
 
     local procedure MockVendLedgEntry(PostingDate: Date; VendNo: Code[20]; Amount: Decimal)
+    begin
+        MockVendLedgEntry(PostingDate, VendNo, Amount, Amount, "Gen. Journal Document Type"::" ");
+    end;
+
+    procedure MockVendLedgEntry(PostingDate: Date; VendNo: Code[20]; Amount: Decimal; AmountDtldVendLedgEntry: Decimal; DocumentType: Enum "Gen. Journal Document Type")
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
@@ -281,6 +294,9 @@ codeunit 148099 "SAF-T Test Helper"
         VendorLedgerEntry."Entry No." := LibraryUtility.GetNewRecNo(VendorLedgerEntry, VendorLedgerEntry.FieldNo("Entry No."));
         VendorLedgerEntry."Posting Date" := PostingDate;
         VendorLedgerEntry."Vendor No." := VendNo;
+        if not (DocumentType in ["Gen. Journal Document Type"::Payment, "Gen. Journal Document Type"::Refund]) then
+            VendorLedgerEntry."Purchase (LCY)" := Amount;
+        VendorLedgerEntry."Document Type" := DocumentType;
         VendorLedgerEntry.Insert();
         DetailedVendorLedgEntry.Init();
         DetailedVendorLedgEntry."Entry No." :=
@@ -288,7 +304,7 @@ codeunit 148099 "SAF-T Test Helper"
         DetailedVendorLedgEntry."Vendor Ledger Entry No." := VendorLedgerEntry."Entry No.";
         DetailedVendorLedgEntry."Posting Date" := VendorLedgerEntry."Posting Date";
         DetailedVendorLedgEntry."Vendor No." := VendorLedgerEntry."Vendor No.";
-        DetailedVendorLedgEntry."Amount (LCY)" := Amount;
+        DetailedVendorLedgEntry."Amount (LCY)" := AmountDtldVendLedgEntry;
         DetailedVendorLedgEntry.Insert();
     end;
 

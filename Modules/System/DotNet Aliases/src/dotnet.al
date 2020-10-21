@@ -1587,6 +1587,10 @@ dotnet
         {
         }
 
+        type("System.Net.Mail.MailAddress"; "MailAddress")
+        {
+        }
+
         type("System.Net.Mime.ContentType"; "HttpContentType")
         {
         }
@@ -2244,6 +2248,13 @@ dotnet
         }
 
         type("MimeKit.ContentObject"; "MimeContentObject")
+        {
+        }
+    }
+
+    assembly("IDAutomation.LinearFontEncoder")
+    {
+        type("IDAutomation.Linear.FontEncoder"; "FontEncoder")
         {
         }
     }

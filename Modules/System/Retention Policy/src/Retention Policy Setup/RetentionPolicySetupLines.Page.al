@@ -30,8 +30,8 @@ page 3902 "Retention Policy Setup Lines"
 
                     trigger OnAssistEdit()
                     begin
-                        if not Rec.Locked then
-                            SetTableFilter();
+                        if not Rec.IsLocked() then
+                            Rec.SetTableFilter();
                     end;
                 }
                 field("Retention Period"; Rec."Retention Period")
@@ -41,12 +41,21 @@ page 3902 "Retention Policy Setup Lines"
                     Editable = not Rec.Locked;
                     Style = Subordinate;
                     StyleExpr = Rec.Locked;
+                    ShowMandatory = true;
                 }
                 field(Enabled; Rec.Enabled)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether the retention policy is enabled for this subset.';
                     Editable = not Rec.Locked;
+                    Style = Subordinate;
+                    StyleExpr = Rec.Locked;
+                }
+                field(Locked; Rec.Locked)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specified whether the retention policy is editable for this subset.';
+                    Editable = false;
                     Style = Subordinate;
                     StyleExpr = Rec.Locked;
                 }
@@ -59,6 +68,7 @@ page 3902 "Retention Policy Setup Lines"
                     Visible = false;
                     Style = Subordinate;
                     StyleExpr = Rec.Locked;
+                    ShowMandatory = true;
                 }
                 field("Date Field Name"; Rec."Date Field Name")
                 {

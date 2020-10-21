@@ -58,9 +58,9 @@ codeunit 149004 "BCPT Header"
     local procedure LogTelemetryWhenSuiteChangesStateOnAfterModifyABTHeader(var Rec: Record "BCPT Header"; var xRec: Record "BCPT Header"; RunTrigger: Boolean)
     var
         TelemetryCustomDimensions: Dictionary of [Text, Text];
-        PerformanceRunStartedLbl: Label 'Business Central Performance Toolkit run started.', Locked = true;
-        PerformanceRunFinishedLbl: Label 'Business Central Performance Toolkit run finished.', Locked = true;
-        PerformanceRunCancelledLbl: Label 'Business Central Performance Toolkit run cancelled.', Locked = true;
+        PerformanceRunStartedLbl: Label 'Performance Toolkit run started.', Locked = true;
+        PerformanceRunFinishedLbl: Label 'Performance Toolkit run finished.', Locked = true;
+        PerformanceRunCancelledLbl: Label 'Performance Toolkit run cancelled.', Locked = true;
     begin
         if Rec.Status <> xRec.Status then begin
             TelemetryCustomDimensions.Add(Rec.FieldCaption(Code), Rec.Code);

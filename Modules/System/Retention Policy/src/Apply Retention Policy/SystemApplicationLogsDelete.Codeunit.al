@@ -20,16 +20,16 @@ codeunit 3913 "System Application Logs Delete"
         if Handled then
             exit;
 
-        // if no filters have been set, something is wrong.
-        if (RecRef.GetFilters() = '') and (not RecRef.MarkedOnly()) then
-            RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(NoFiltersErr, RecRef.Number, RecRef.Name));
-
         // check if we can handle the table
         if not (RecRef.Number in [Database::"Retention Policy Log Entry"]) then
             exit;
 
+        // if no filters have been set, something is wrong.
+        if (RecRef.GetFilters() = '') and (not RecRef.MarkedOnly()) then
+            RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(NoFiltersErr, RecRef.Number, RecRef.Name));
+
         // delete all remaining records
-        RecRef.DeleteAll();
+        RecRef.DeleteAll(true);
 
         // set handled
         Handled := true;

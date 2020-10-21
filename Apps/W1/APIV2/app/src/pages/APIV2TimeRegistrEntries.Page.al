@@ -106,7 +106,7 @@ page 30041 "APIV2 - Time Registr. Entries"
                 }
                 field(jobTaskNumber; "Job Task No.")
                 {
-                    Caption = 'Job Task Number';
+                    Caption = 'Job Task No.';
                 }
                 field(absence; "Cause of Absence Code")
                 {
@@ -211,15 +211,15 @@ page 30041 "APIV2 - Time Registr. Entries"
         Job: Record Job;
         LinesLoaded: Boolean;
         BlankGUID: Guid;
-        EmployeeIdDoesNotMatchAnEmployeeErr: Label 'The "employeeId" does not match to an Employee.';
+        EmployeeIdDoesNotMatchAnEmployeeErr: Label 'The "employeeId" does not match to an Employee.', Comment = 'employeeId is a field name and should not be translated.';
         EmployeeValuesDontMatchErr: Label 'The employee values do not match to a specific Employee.';
-        EmployeeNumberDoesNotMatchAnEmployeeErr: Label 'The "employeeNumber" does not match to an Employee.';
-        JobIdDoesNotMatchAJobErr: Label 'The "jobId" does not match to a Job.';
+        EmployeeNumberDoesNotMatchAnEmployeeErr: Label 'The "employeeNumber" does not match to an Employee.', Comment = 'employeeNumber is a field name and should not be translated.';
+        JobIdDoesNotMatchAJobErr: Label 'The "jobId" does not match to a Job.', Comment = 'jobId is a field name and should not be translated.';
         JobValuesDontMatchErr: Label 'The employee values do not match to a specific Employee.';
-        JobNumberDoesNotMatchAJobErr: label 'The "jobNumber" does not match to a Job.';
-        CannotModifyEmployeeIdErr: Label 'The "employeeId" cannot be modified.';
+        JobNumberDoesNotMatchAJobErr: label 'The "jobNumber" does not match to a Job.', Comment = 'jobNumber is a field name and should not be translated.';
+        CannotModifyEmployeeIdErr: Label 'The "employeeId" cannot be modified.', Comment = 'employeeId is a field name and should not be translated.';
         CannotModifyDateErr: Label 'The date cannot be modified.';
-        CannotChangeEmployeeIdErr: Label 'The value for "employeeId" cannot be modified.';
+        CannotChangeEmployeeIdErr: Label 'The value for "employeeId" cannot be modified.', Comment = 'employeeId is a field name and should not be translated.';
         CannotChangeEmployeeNumberErr: Label 'The value for employee number cannot be modified.';
         EmployeeIdOrNumberShouldBeSpecifiedErr: Label 'You must specify an Employee ID or Employee number to get the time registration entries.';
 }

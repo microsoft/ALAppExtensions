@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the _Exclude_AnonymizedDataSharing_ extension.",
     "description":  "Tests for the _Exclude_AnonymizedDataSharing_ extension.",
-    "version":  "17.0.0.0",
+    "version":  "17.1.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
@@ -15,13 +15,13 @@
                              "id":  "063B3AC9-C464-4899-96E0-70D5425854E4",
                              "name":  "_Exclude_AnonymizedDataSharing_",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          }
                      ],
     "screenshots":  [
@@ -40,5 +40,5 @@
                  ],
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "17.0.0.0"
+    "application":  "17.1.0.0"
 }

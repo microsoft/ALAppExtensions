@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the Sales and Inventory Forecast extension.",
     "description":  "Tests for the Sales and Inventory Forecast extension.",
-    "version":  "17.0.0.0",
+    "version":  "17.1.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
@@ -15,20 +15,20 @@
                              "id":  "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
                              "name":  "Sales and Inventory Forecast",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          },
                          {
-                             "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
-                             "publisher": "Microsoft",
-                             "name": "Library Variable Storage",
-                             "version": "17.0.0.0"
-                         } 
+                             "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
+                             "publisher":  "Microsoft",
+                             "name":  "Library Variable Storage",
+                             "version":  "17.1.0.0"
+                         }
                      ],
     "screenshots":  [
 
@@ -46,5 +46,5 @@
                  ],
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "17.0.0.0"
+    "application":  "17.1.0.0"
 }

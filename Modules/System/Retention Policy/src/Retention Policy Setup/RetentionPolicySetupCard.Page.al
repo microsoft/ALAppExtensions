@@ -25,6 +25,7 @@ page 3901 "Retention Policy Setup Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the ID of the table to which the retention policy applies.';
                     Importance = Promoted;
+                    ShowMandatory = true;
                 }
                 field(TableName; Rec."Table Name")
                 {
@@ -48,8 +49,9 @@ page 3901 "Retention Policy Setup Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies an identifier for the retention period.';
-                    Editable = "Apply to all records";
+                    Editable = Rec."Apply to all records";
                     Importance = Promoted;
+                    ShowMandatory = Rec."Apply to all records";
                 }
 
                 field(Manual; Rec.Manual)
@@ -80,8 +82,9 @@ page 3901 "Retention Policy Setup Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the number of the date or datetime field on the table used to determine the age of a record.';
-                    Editable = "Apply to all records";
+                    Editable = Rec."Apply to all records";
                     Importance = Additional;
+                    ShowMandatory = true;
                 }
                 field("Date Field Name"; Rec."Date Field Name")
                 {
@@ -101,7 +104,7 @@ page 3901 "Retention Policy Setup Card"
                 ApplicationArea = All;
                 Caption = 'Record Retention Policy', Comment = 'Record as in ''a record in a table''.';
                 SubPageLink = "Table ID" = Field("Table ID");
-                Visible = NOT "Apply to all records";
+                Visible = NOT Rec."Apply to all records";
             }
         }
     }
@@ -166,22 +169,32 @@ page 3901 "Retention Policy Setup Card"
         ExpiredRecordCount: Integer;
         BackgroundTaskId: Integer;
         ExpiredRecordCountStyleTxt: Text;
+        ReadPermissionNotificationId: Guid;
 
     trigger OnAfterGetCurrRecord()
     var
         RetentionPolicySetup: Record "Retention Policy Setup";
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
+        ReadPermissionNotification: Notification;
         PageBackgroundParameters: Dictionary of [Text, Text];
     begin
         if not RetentionPolicySetup.GetBySystemId(SystemId) then
             exit;
+
+        if not RetentionPolicySetupImpl.TableExists(Rec."Table Id") then
+            exit;
+
         PageBackgroundParameters.Add(Rec.FieldName(SystemId), format(Rec.SystemId));
         CurrPage.EnqueueBackgroundTask(BackgroundTaskId, Codeunit::"PBT Expired Record Count", PageBackgroundParameters, PageBackgroundTaskTimeout());
         ExpiredRecordCount := 0;
         ExpiredRecordCountStyleTxt := 'Subordinate';
         PrevEnabledState := Rec.Enabled;
 
-        RetentionPolicySetupImpl.NotifyOnMissingReadPermission(Rec."Table Id");
+        if not IsNullGuid(ReadPermissionNotificationId) then begin
+            ReadPermissionNotification.Id(ReadPermissionNotificationId);
+            ReadPermissionNotification.Recall();
+        end;
+        ReadPermissionNotificationId := RetentionPolicySetupImpl.NotifyOnMissingReadPermission(Rec."Table Id");
     end;
 
     trigger OnPageBackgroundTaskCompleted(TaskId: Integer; Results: Dictionary of [Text, Text])

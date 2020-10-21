@@ -18,14 +18,14 @@ codeunit 8892 "Email Scenario Impl."
 
         // Find the account for the provided scenario
         if EmailScenario.Get(Scenario) then
-            if AllEmailAccounts.Get(EmailScenario."Account Id") then begin
+            if AllEmailAccounts.Get(EmailScenario."Account Id", EmailScenario.Connector) then begin
                 EmailAccount := AllEmailAccounts;
                 exit(true);
             end;
 
         // Fallback to the default account if the scenario isn't mapped or the mapped account doesn't exist
         if EmailScenario.Get(Enum::"Email Scenario"::Default) then
-            if AllEmailAccounts.Get(EmailScenario."Account Id") then begin
+            if AllEmailAccounts.Get(EmailScenario."Account Id", EmailScenario.Connector) then begin
                 EmailAccount := AllEmailAccounts;
                 exit(true);
             end;
@@ -46,6 +46,14 @@ codeunit 8892 "Email Scenario Impl."
         EmailScenario.Connector := EmailAccount.Connector;
 
         EmailScenario.Modify();
+    end;
+
+    procedure UnassignScenario(Scenario: Enum "Email Scenario")
+    var
+        EmailScenario: Record "Email Scenario";
+    begin
+        if EmailScenario.Get(Scenario) then
+            EmailScenario.Delete();
     end;
 
     /// <summary>
@@ -104,6 +112,9 @@ codeunit 8892 "Email Scenario Impl."
     local procedure GetEmailScenariosForAccount(EmailAccount: Record "Email Account"; var EmailAccountScenarios: Record "Email Account Scenario")
     var
         EmailScenarios: Record "Email Scenario";
+        ValidEmailScenarios: DotNet Hashtable;
+        IsScenarioValid: Boolean;
+        Scenario: Integer;
     begin
         EmailAccountScenarios.Reset();
         EmailAccountScenarios.DeleteAll();
@@ -115,10 +126,17 @@ codeunit 8892 "Email Scenario Impl."
         if not EmailScenarios.FindSet() then
             exit;
 
+        // Find all valid scenarios. Invalid scenario may occur if the extension that added them was removed.
+        ValidEmailScenarios := ValidEmailScenarios.Hashtable();
+        foreach Scenario in Enum::"Email Scenario".Ordinals() do
+            ValidEmailScenarios.Add(Scenario, Scenario);
+
         // Convert Email Scenario-s to Email Account Scenario-s so they can be sorted by "Display Name"
         repeat
-            // Add entry for every scenario that uses the email account. Skip the default scenario.
-            if EmailScenarios.Scenario <> Enum::"Email Scenario"::Default then begin
+            IsScenarioValid := ValidEmailScenarios.Contains(EmailScenarios.Scenario.AsInteger());
+
+            // Add entry for every scenario that exists and uses the email account. Skip the default scenario.
+            if (EmailScenarios.Scenario <> Enum::"Email Scenario"::Default) and IsScenarioValid then begin
                 EmailAccountScenarios.Scenario := EmailScenarios.Scenario.AsInteger();
                 EmailAccountScenarios."Account Id" := EmailScenarios."Account Id";
                 EmailAccountScenarios.Connector := EmailScenarios.Connector;
@@ -153,6 +171,8 @@ codeunit 8892 "Email Scenario Impl."
         SelectedScenarios: Record "Email Account Scenario";
         ScenariosForAccount: Page "Email Scenarios For Account";
     begin
+        EmailAccountImpl.CheckPermissions();
+
         if EmailAccount.EntryType <> EmailAccount.EntryType::Account then // wrong entry, the entry should be of type "Account"
             exit;
 
@@ -192,6 +212,7 @@ codeunit 8892 "Email Scenario Impl."
         CurrentScenario, i : Integer;
         IsAvailable: Boolean;
     begin
+        EmailScenarios.Reset();
         EmailScenarios.DeleteAll();
         i := 1;
 
@@ -224,15 +245,17 @@ codeunit 8892 "Email Scenario Impl."
         EmailAccount: Codeunit "Email Account";
         AccountsPage: Page "Email Accounts";
     begin
+        EmailAccountImpl.CheckPermissions();
+
         if not EmailScenario.FindSet() then
             exit(false);
 
         EmailAccount.GetAllAccounts(false, SelectedAccount);
-        if SelectedAccount.Get(EmailScenario."Account Id") then;
+        if SelectedAccount.Get(EmailScenario."Account Id", EmailScenario.Connector) then;
 
         AccountsPage.EnableLookupMode();
         AccountsPage.SetRecord(SelectedAccount);
-        AccountsPage.Caption := StrSubstNo(ChangeEmailAccountForScenarioTxt, EmailScenario."Display Name");
+        AccountsPage.Caption := ChangeEmailAccountForScenarioTxt;
 
         if AccountsPage.RunModal() <> Action::LookupOK then
             exit(false);
@@ -254,18 +277,12 @@ codeunit 8892 "Email Scenario Impl."
         exit(true);
     end;
 
-    procedure ViewEmailAccount(EmailScenario: Record "Email Account Scenario")
-    var
-        EmailConnector: Interface "Email Connector";
-    begin
-        EmailConnector := EmailScenario.Connector;
-        EmailConnector.ShowAccountInformation(EmailScenario."Account Id");
-    end;
-
     procedure DeleteScenario(var EmailScenario: Record "Email Account Scenario"): Boolean
     var
         Scenario: Record "Email Scenario";
     begin
+        EmailAccountImpl.CheckPermissions();
+
         if not EmailScenario.FindSet() then
             exit(false);
 
@@ -294,7 +311,8 @@ codeunit 8892 "Email Scenario Impl."
     end;
 
     var
+        EmailAccountImpl: Codeunit "Email Account Impl.";
         AccountDisplayLbl: Label '%1 (%2)', Locked = true;
-        ChangeEmailAccountForScenarioTxt: Label 'Change e-mail account used for scenario %1', Comment = '%1 = the name of the scenario, e.g. Notification';
+        ChangeEmailAccountForScenarioTxt: Label 'Change e-mail account used for the selected scenarios';
         ScenariosForAccountCaptionTxt: Label 'Assign scenarios to account %1', Comment = '%1 = the name of the e-mail accout, e.g. Notification Account (notification@cronus.com)';
 }

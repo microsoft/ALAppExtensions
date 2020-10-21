@@ -14,7 +14,7 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryDimension: Codeunit "Library - Dimension";
         Assert: Codeunit "Assert";
-        GraphMgtCustomerPayments: Codeunit "Graph Mgt - Customer Payments";
+        GraphMgtJournal: Codeunit "Graph Mgt - Journal";
         GraphMgtJournalLines: Codeunit "Graph Mgt - Journal Lines";
         LibraryGraphJournalLines: Codeunit "Library - Graph Journal Lines";
         JournalLinesServiceNameTxt: Label 'journalLines';
@@ -36,21 +36,21 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         Dimension: Record "Dimension";
         DimensionValue: Record "Dimension Value";
         JournalName: Code[10];
-        CustomerPaymentsGUID: Guid;
+        JournalLineGUID: Guid;
         LineNo: Integer;
         LineJSON: Text;
         TargetURL: Text;
         ResponseText: Text;
     begin
-        // [SCENARIO] Create a dimension line in a customer payment through a POST method and check if it was created
+        // [SCENARIO] Create a dimension line in journal through a POST method and check if it was created
         LibraryGraphJournalLines.Initialize();
 
         // [GIVEN] a journal
-        JournalName := LibraryGraphJournalLines.CreateCustomerPaymentsJournal();
+        JournalName := LibraryGraphJournalLines.CreateJournal();
 
-        // [GIVEN] a line in the Customer Payments
-        LineNo := LibraryGraphJournalLines.GetNextCustomerPaymentNo(JournalName);
-        CustomerPaymentsGUID := CreateCustomerPayment(JournalName);
+        // [GIVEN] a line in the journal
+        LineNo := LibraryGraphJournalLines.GetNextJournalLineNo(JournalName);
+        JournalLineGUID := CreateJournalLine(JournalName);
 
         // [GIVEN] a dimension with a value
         LibraryDimension.CreateDimension(Dimension);
@@ -61,15 +61,15 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         Commit();
 
         // [WHEN] we POST the JSON to the web service
-        TargetURL := LibraryGraphMgt.CreateTargetURLWithSubpage(CustomerPaymentsGUID, Page::"APIV2 - JournalLines", JournalLinesServiceNameTxt, ServiceNameTxt);
+        TargetURL := LibraryGraphMgt.CreateTargetURLWithSubpage(JournalLineGUID, Page::"APIV2 - JournalLines", JournalLinesServiceNameTxt, ServiceNameTxt);
         LibraryGraphMgt.PostToWebService(TargetURL, LineJSON, ResponseText);
 
-        // [THEN] the response text should contain the dimension information and the customer payment should have the new dimension
+        // [THEN] the response text should contain the dimension information and the journal should have the new dimension
         Assert.AreNotEqual('', ResponseText, 'JSON Should not be blank');
         LibraryGraphMgt.VerifyIDInJson(ResponseText);
         VerifyJSONContainsDimensionValues(ResponseText, Dimension.Code, DimensionValue.Code);
 
-        GraphMgtCustomerPayments.SetCustomerPaymentsFilters(GenJournalLine);
+        GenJournalLine.SetRange("Journal Template Name", GraphMgtJournal.GetDefaultJournalLinesTemplateName());
         GenJournalLine.SetRange("Line No.", LineNo);
         GenJournalLine.FindFirst();
         Assert.IsTrue(
@@ -109,7 +109,7 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         Dimension: Record "Dimension";
         DimensionValue: Record "Dimension Value";
         JournalName: Code[10];
-        CustomerPaymentsGUID: Guid;
+        JournalLineGUID: Guid;
         LineNo: Integer;
         LineJSON: array[2] of Text;
         DimensionCode: Code[20];
@@ -121,11 +121,11 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         LibraryGraphJournalLines.Initialize();
 
         // [GIVEN] a journal
-        JournalName := LibraryGraphJournalLines.CreateCustomerPaymentsJournal();
+        JournalName := LibraryGraphJournalLines.CreateJournal();
 
-        // [GIVEN] a customer payment in the General Journal Table
-        LineNo := LibraryGraphJournalLines.GetNextCustomerPaymentNo(JournalName);
-        CustomerPaymentsGUID := CreateCustomerPayment(JournalName);
+        // [GIVEN] a journal in the General Journal Table
+        LineNo := LibraryGraphJournalLines.GetNextJournalLineNo(JournalName);
+        JournalLineGUID := CreateJournalLine(JournalName);
 
         // [GIVEN] 2 dimension json texts
         LibraryDimension.CreateDimension(Dimension);
@@ -138,17 +138,17 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         LineJSON[2] := CreateDimensionJSON(DimensionCode, DimensionValueCode[2]);
         Commit();
 
-        TargetURL := LibraryGraphMgt.CreateTargetURLWithSubpage(CustomerPaymentsGUID, Page::"APIV2 - JournalLines", JournalLinesServiceNameTxt, ServiceNameTxt);
+        TargetURL := LibraryGraphMgt.CreateTargetURLWithSubpage(JournalLineGUID, Page::"APIV2 - JournalLines", JournalLinesServiceNameTxt, ServiceNameTxt);
         LibraryGraphMgt.PostToWebService(TargetURL, LineJSON[1], ResponseText);
 
-        // [WHEN] we POST the JSON to the web service, with the customer payment filter
+        // [WHEN] we POST the JSON to the web service, with the journal filter
         ResponseText := '';
         asserterror LibraryGraphMgt.PostToWebService(TargetURL, LineJSON[2], ResponseText);
 
         // [THEN] the POST should fail and the dimension should stay the same
         Assert.AreEqual('', ResponseText, 'The POST should fail.');
 
-        GraphMgtCustomerPayments.SetCustomerPaymentsFilters(GenJournalLine);
+        GenJournalLine.SetRange("Journal Template Name", GraphMgtJournal.GetDefaultJournalLinesTemplateName());
         GenJournalLine.SetRange("Line No.", LineNo);
         GenJournalLine.FindFirst();
         Assert.IsTrue(
@@ -170,7 +170,7 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         TargetURL: Text;
     begin
         // [SCENARIO] Create dimension lines in a journal line and use a GET method to retrieve them
-        // [GIVEN] a customer payment in the General Journal Table
+        // [GIVEN] a journal in the General Journal Table
         LibraryGraphJournalLines.Initialize();
 
         JournalName := LibraryGraphJournalLines.CreateJournal();
@@ -190,7 +190,7 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         LineJSON[1] := CreateDimensionJSON(DimensionCode[1], DimensionValueCode[1]);
         Commit();
 
-        // [GIVEN] the dimension lines are added in the customer payment
+        // [GIVEN] the dimension lines are added in the journal
         TargetURL := LibraryGraphMgt.CreateTargetURLWithSubpage(JournalLineGUID, Page::"APIV2 - JournalLines", JournalLinesServiceNameTxt, ServiceNameTxt);
         LibraryGraphMgt.PostToWebService(TargetURL, LineJSON[2], ResponseText);
         LibraryGraphMgt.PostToWebService(TargetURL, LineJSON[1], ResponseText);
@@ -276,7 +276,7 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         TargetURL := LibraryGraphMgt.CreateTargetURLWithSubpage(JournalLineGUID, Page::"APIV2 - JournalLines", JournalLinesServiceNameTxt, ServiceNameTxt) + '(' + LibraryGraphMgt.StripBrackets(Format(DimensionGUID)) + ')';
         LibraryGraphMgt.PatchToWebService(TargetURL, LineJSON[2], ResponseText);
 
-        // [THEN] the dimension lines in the customer payment should have the values that were given
+        // [THEN] the dimension lines in the journal should have the values that were given
         Assert.AreNotEqual('', ResponseText, 'JSON Should not be blank');
         LibraryGraphMgt.VerifyIDInJson(ResponseText);
         VerifyJSONContainsDimensionValues(ResponseText, DimensionCode, DimensionValueCode[2]);
@@ -389,20 +389,6 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         LineJSON := LibraryGraphMgt.AddPropertytoJSON(LineJSON, DimensionValueCodeNameTxt, DimensionValueCode);
 
         exit(LineJSON);
-    end;
-
-    local procedure CreateCustomerPayment(JournalName: Code[10]): Guid
-    var
-        GenJournalLine: Record "Gen. Journal Line";
-        LineNo: Integer;
-        BlankGUID: Guid;
-    begin
-        LineNo := LibraryGraphJournalLines.CreateCustomerPayment(JournalName, '', BlankGUID, '', BlankGUID, 0, '');
-        GraphMgtCustomerPayments.SetCustomerPaymentsTemplateAndBatch(GenJournalLine, JournalName);
-        GraphMgtCustomerPayments.SetCustomerPaymentsFilters(GenJournalLine);
-        GenJournalLine.SetRange("Line No.", LineNo);
-        GenJournalLine.FindFirst();
-        exit(GenJournalLine.SystemId);
     end;
 
     local procedure CreateJournalLine(JournalName: Code[10]): Guid

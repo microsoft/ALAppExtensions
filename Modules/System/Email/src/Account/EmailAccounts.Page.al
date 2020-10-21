@@ -21,6 +21,7 @@ page 8887 "Email Accounts"
     Editable = false;
     ShowFilter = false;
     LinksAllowed = false;
+    RefreshOnActivate = true;
 
     layout
     {
@@ -92,7 +93,7 @@ page 8887 "Email Accounts"
                 field(EmailConnector; Connector)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the type of email connector that the account is added to.';
+                    ToolTip = 'Specifies the type of email extension that the account is added to.';
                     Visible = false;
                 }
             }
@@ -103,50 +104,6 @@ page 8887 "Email Accounts"
     {
         area(Creation)
         {
-            action(AddAccount)
-            {
-                ApplicationArea = All;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = New;
-                Image = Add;
-                Caption = 'Add an email account';
-                ToolTip = 'Add an email account.';
-                Visible = not LookupMode;
-
-                trigger OnAction()
-                begin
-                    Page.RunModal(Page::"Email Account Wizard");
-                    GetEmailAccounts();
-                end;
-            }
-        }
-
-        area(Processing)
-        {
-            action(MakeDefault)
-            {
-                ApplicationArea = All;
-                Image = Default;
-                Caption = 'Set as default';
-                ToolTip = 'Mark the selected email account as the default account. This account will be used for all scenarios for which an account is not specified.';
-                Visible = not LookupMode;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                Scope = Repeater;
-                Enabled = not IsDefault;
-
-                trigger OnAction()
-                var
-                    EmailAccountImpl: Codeunit "Email Account Impl.";
-                begin
-                    EmailAccountImpl.MakeDefault(Rec);
-                    GetEmailAccounts(); // Refresh the email account
-                end;
-            }
-
             action(View)
             {
                 ApplicationArea = All;
@@ -160,13 +117,57 @@ page 8887 "Email Accounts"
                     ShowAccountInformation();
                 end;
             }
+
+            action(AddAccount)
+            {
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = New;
+                Image = Add;
+                Caption = 'Add an email account';
+                ToolTip = 'Add an email account.';
+                Visible = (not LookupMode) and CanUserManageEmailSetup;
+
+                trigger OnAction()
+                begin
+                    Page.RunModal(Page::"Email Account Wizard");
+
+                    UpdateEmailAccounts();
+                end;
+            }
+        }
+
+        area(Processing)
+        {
+            action(SendEmail)
+            {
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                Image = PostMail;
+                Caption = 'Compose Email';
+                ToolTip = 'Compose a new email message.';
+                Visible = not LookupMode;
+
+                trigger OnAction()
+                var
+                    Email: Codeunit "Email";
+                    EmailMessage: Codeunit "Email Message";
+                begin
+                    EmailMessage.Create('', '', '', true);
+                    Email.OpenInEditor(EmailMessage, Rec);
+                end;
+            }
+
             action(SendTestMail)
             {
                 ApplicationArea = All;
                 Promoted = true;
                 PromotedOnly = true;
                 PromotedCategory = Process;
-                Image = SendMail;
+                Image = MailSetup;
                 Caption = 'Send Test Email';
                 ToolTip = 'Send a test email to verify your email settings.';
                 RunObject = codeunit "Email Test Mail";
@@ -174,26 +175,29 @@ page 8887 "Email Accounts"
                 Visible = not LookupMode;
             }
 
-            action(SendEmail)
+            action(MakeDefault)
             {
                 ApplicationArea = All;
+                Image = Default;
+                Caption = 'Set as default';
+                ToolTip = 'Mark the selected email account as the default account. This account will be used for all scenarios for which an account is not specified.';
+                Visible = (not LookupMode) and CanUserManageEmailSetup;
                 Promoted = true;
                 PromotedOnly = true;
                 PromotedCategory = Process;
-                Image = SendMail;
-                Caption = 'Send Email';
-                ToolTip = 'Send the email message.';
-                Visible = not LookupMode;
+                PromotedIsBig = true;
+                Scope = Repeater;
+                Enabled = not IsDefault;
 
                 trigger OnAction()
-                var
-                    EmailEditor: Page "Email Editor";
                 begin
-                    EmailEditor.SetEmailAccount(Rec);
-                    EmailEditor.SetHtmlFormattedBody(true);
-                    EmailEditor.Run();
+                    EmailAccountImpl.MakeDefault(Rec);
+
+                    UpdateAccounts := true;
+                    CurrPage.Update(false);
                 end;
             }
+
             action(Delete)
             {
                 ApplicationArea = All;
@@ -203,31 +207,53 @@ page 8887 "Email Accounts"
                 Image = Delete;
                 Caption = 'Delete email account';
                 ToolTip = 'Delete the email account.';
-                Visible = not LookupMode;
+                Visible = (not LookupMode) and CanUserManageEmailSetup;
                 Scope = Repeater;
 
                 trigger OnAction()
-                var
-                    EmailAccountImpl: Codeunit "Email Account Impl.";
                 begin
-                    EmailAccountImpl.Delete(Rec, IsDefault);
+                    CurrPage.SetSelectionFilter(Rec);
+                    EmailAccountImpl.OnAfterSetSelectionFilter(Rec);
 
-                    GetEmailAccounts();
+                    EmailAccountImpl.DeleteAccounts(Rec);
+
+                    UpdateEmailAccounts();
                 end;
             }
         }
 
         area(Navigation)
         {
+            action(Outbox)
+            {
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Category4;
+                Image = CreateJobSalesInvoice;
+                Caption = 'Email Outbox';
+                ToolTip = 'View emails for the selected account that are either waiting to be sent, or could not be sent because something went wrong.';
+                RunObject = page "Email Outbox";
+                Visible = not LookupMode;
+
+                trigger OnAction()
+                var
+                    EmailOutbox: Page "Email Outbox";
+                begin
+                    EmailOutbox.SetEmailAccountId(Rec."Account Id");
+                    EmailOutbox.Run();
+                end;
+            }
+
             action(SentEmails)
             {
                 ApplicationArea = All;
                 Promoted = true;
                 PromotedOnly = true;
                 PromotedCategory = Category4;
-                Image = Navigate;
+                Image = Archive;
                 Caption = 'Sent Emails';
-                ToolTip = 'View the list of emails that you have sent from your email accounts.';
+                ToolTip = 'View the list of emails that you have sent from the selected email account.';
                 Visible = not LookupMode;
 
                 trigger OnAction()
@@ -240,52 +266,52 @@ page 8887 "Email Accounts"
 
             }
 
-            action(Outbox)
-            {
-                ApplicationArea = All;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Category4;
-                Image = Navigate;
-                Caption = 'Email Outbox';
-                ToolTip = 'View emails that are waiting to be sent or could not be sent because something went wrong.';
-                RunObject = page "Email Outbox";
-                Visible = not LookupMode;
-            }
-
             action(EmailScenarioSetup)
             {
                 ApplicationArea = All;
                 Promoted = true;
                 PromotedOnly = true;
                 PromotedCategory = Category4;
-                Image = Navigate;
-                Caption = 'Assign Scenarios';
+                Image = Answers;
+                Caption = 'Email Scenarios';
                 ToolTip = 'Assign scenarios to the email accounts.';
-                RunObject = page "Email Scenario Setup";
                 Visible = not LookupMode;
+
+                trigger OnAction()
+                var
+                    EmailScenarioSetup: Page "Email Scenario Setup";
+                begin
+                    EmailScenarioSetup.SetEmailAccountId(Rec."Account Id", Rec.Connector);
+                    EmailScenarioSetup.Run();
+                end;
             }
         }
     }
 
     trigger OnOpenPage()
     begin
+        CanUserManageEmailSetup := EmailAccountImpl.IsUserEmailAdmin();
         Rec.SetCurrentKey("Account Id", Connector);
-        GetEmailAccounts();
+        UpdateEmailAccounts();
         ShowLogo := true;
     end;
 
     trigger OnAfterGetRecord()
     begin
-        IsDefault := DefaultEmailAccount."Account Id" = Rec."Account Id";
+        // Updating the accounts is done via OnAfterGetRecord in the cases when an account was changed from the corresponding connector's page
+        if UpdateAccounts then begin
+            UpdateAccounts := false;
+            UpdateEmailAccounts();
+        end;
 
         DefaultTxt := '';
 
+        IsDefault := DefaultEmailAccount."Account Id" = Rec."Account Id";
         if IsDefault then
             DefaultTxt := '✓';
     end;
 
-    local procedure GetEmailAccounts()
+    local procedure UpdateEmailAccounts()
     var
         EmailAccount: Codeunit "Email Account";
         EmailScenario: Codeunit "Email Scenario";
@@ -304,22 +330,32 @@ page 8887 "Email Accounts"
             if Rec.Find() then;
         end else
             if Rec.FindFirst() then;
+
         CurrPage.Update(false);
     end;
 
     local procedure ShowAccountInformation()
     var
+        EmailAccountImpl: Codeunit "Email Account Impl.";
         Connector: Interface "Email Connector";
     begin
+        UpdateAccounts := true;
+
+        if not EmailAccountImpl.IsValidConnector(Rec.Connector.AsInteger()) then
+            Error(EmailConnectorHasBeenUninstalledMsg);
+
         Connector := Rec.Connector;
         Connector.ShowAccountInformation(Rec."Account Id");
-
-        GetEmailAccounts(); // Refresh the email accounts
     end;
 
     procedure GetAccount(var Account: Record "Email Account")
     begin
         Account := Rec;
+    end;
+
+    procedure SetAccount(var Account: Record "Email Account")
+    begin
+        Rec := Account;
     end;
 
     procedure EnableLookupMode()
@@ -330,9 +366,13 @@ page 8887 "Email Accounts"
 
     var
         DefaultEmailAccount: Record "Email Account";
+        EmailAccountImpl: Codeunit "Email Account Impl.";
         [InDataSet]
         IsDefault: Boolean;
+        CanUserManageEmailSetup: Boolean;
         DefaultTxt: Text;
+        UpdateAccounts: Boolean;
         ShowLogo: Boolean;
         LookupMode: Boolean;
+        EmailConnectorHasBeenUninstalledMsg: Label 'The selected email extension has been uninstalled. To view information about the email account, you must reinstall the extension.';
 }

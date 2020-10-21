@@ -3,61 +3,100 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 1384 "XmlWriter Impl."
+codeunit 1484 "XmlWriter Impl."
 {
     Access = Internal;
-    SingleInstance = true;
 
     var
         StringBuilder: DotNet StringBuilder;
         StringWriter: DotNet StringWriter;
         XmlTextWriter: DotNet XmlTextWriter;
+        Initialized: Boolean;
 
-    procedure XmlWriterCreateDocument();
+    procedure WriteStartDocument();
     begin
-        StringBuilder := StringBuilder.StringBuilder();
-        StringWriter := StringWriter.StringWriter(StringBuilder);
-        XmlTextWriter := XmlTextWriter.XmlTextWriter(StringWriter);
+        Initialize();
         XmlTextWriter.WriteStartDocument();
+    end;
+
+    procedure WriteStartElement(LocalName: Text);
+    begin
+        if not Initialized then
+            Initialize();
+
+        XmlTextWriter.WriteStartElement(LocalName);
     end;
 
     procedure WriteStartElement(Prefix: Text; LocalName: Text; NameSpace: Text);
     begin
+        if not Initialized then
+            Initialize();
+
         XmlTextWriter.WriteStartElement(Prefix, LocalName, NameSpace);
     end;
 
     procedure WriteElementString(LocalName: Text; ElementValue: Text)
     begin
+        if not Initialized then
+            Initialize();
+
         XmlTextWriter.WriteElementString(LocalName, ElementValue);
     end;
 
     procedure WriteEndElement()
     begin
+        if not Initialized then
+            Initialize();
+
         XmlTextWriter.WriteEndElement();
     end;
 
     procedure WriteAttributeString(LocalName: Text; ElementValue: Text)
     begin
+        if not Initialized then
+            Initialize();
+
         XmlTextWriter.WriteAttributeString(LocalName, ElementValue);
     end;
 
-    procedure WriteAttributeString(Prefix: Text; LocalName: Text; Ns: Text; ElementValue: Text)
+    procedure WriteAttributeString(Prefix: Text; LocalName: Text; Namespace: Text; ElementValue: Text)
     begin
-        XmlTextWriter.WriteAttributeString(Prefix, LocalName, Ns, ElementValue);
+        if not Initialized then
+            Initialize();
+
+        XmlTextWriter.WriteAttributeString(Prefix, LocalName, Namespace, ElementValue);
     end;
 
     procedure WriteEndDocument()
     begin
+        if not Initialized then
+            Initialize();
+
         XmlTextWriter.WriteEndDocument();
     end;
 
     procedure WriteComment(ParComment: Text)
     begin
+        if not Initialized then
+            Initialize();
+
         XmlTextWriter.WriteComment(ParComment);
     end;
 
-    procedure XmlWriterToBigText(VAR XmlBigText: BigText)
+    procedure ToBigText(var XmlBigText: BigText)
     begin
+        if not Initialized then
+            Initialize();
+
+        Clear(XmlBigText);
         XmlBigText.AddText(StringBuilder.ToString());
+    end;
+
+    local procedure Initialize()
+    begin
+        StringBuilder := StringBuilder.StringBuilder();
+        StringWriter := StringWriter.StringWriter(StringBuilder);
+        XmlTextWriter := XmlTextWriter.XmlTextWriter(StringWriter);
+        Initialized := true;
     end;
 }

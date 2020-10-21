@@ -1,5 +1,6 @@
 codeunit 10671 "SAF-T XML Import"
 {
+    Permissions = TableData 2000000182 = rimd;
     TableNo = "SAF-T Mapping Range";
 
     var

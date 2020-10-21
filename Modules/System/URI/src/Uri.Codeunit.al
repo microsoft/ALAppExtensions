@@ -79,6 +79,19 @@ codeunit 3060 Uri
     end;
 
     /// <summary>
+    /// Checks if the provded string is a valid URI.
+    /// </summary>
+    /// <param name="UriString">The string to check.</param>
+    /// <returns>True if the provided string is a valid URI; otherwise - false.</returns>
+    [TryFunction]
+    procedure IsValidUri(UriString: Text)
+    var
+        LocalUri: DotNet Uri;
+    begin
+        LocalUri := LocalUri.Uri(UriString); // If creating the URI succeeds, then the UriString is a valid URI.
+    end;
+
+    /// <summary>
     /// Gets the underlying .Net Uri variable.
     /// </summary>
     /// <param name="OutUri">A .Net object of class Uri that holds the underlying .Net Uri variable.</param>

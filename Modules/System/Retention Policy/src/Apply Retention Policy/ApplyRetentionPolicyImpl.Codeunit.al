@@ -314,10 +314,11 @@ codeunit 3904 "Apply Retention Policy Impl."
         RetenPolFiltering := RetenPolAllowedTables.GetRetenPolFiltering(RetentionPolicySetup."Table Id");
         if RetentionPolicySetup."Apply to all records" then begin
             RecordsToDelete := RetenPolFiltering.ApplyRetentionPolicyAllRecordFilters(RetentionPolicySetup, RecRef, TempRetenPolFilteringParam);
-            if RecRef.GetFilters() = '' then begin
-                RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(NoFiltersReturnedErr, RecRef.Number, RecRef.Caption));
-                exit(false);
-            end;
+            if RecordsToDelete then
+                if RecRef.GetFilters() = '' then begin
+                    RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(NoFiltersReturnedErr, RecRef.Number, RecRef.Caption));
+                    exit(false);
+                end;
             exit(RecordsToDelete);
         end;
 

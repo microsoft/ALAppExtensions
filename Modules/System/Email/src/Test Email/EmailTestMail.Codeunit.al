@@ -21,11 +21,9 @@ codeunit 8887 "Email Test Mail"
         Email: Codeunit Email;
         Message: Codeunit "Email Message";
         EmailUserSpecifiedAddress: Page "Email User-Specified Address";
-        IEmailConnector: Interface "Email Connector";
         EmailRecipient: Text;
         EmailChoices: Text;
         SelectedEmailChoice: Integer;
-        Recipients: List of [Text];
         EmailBody: Text;
         EmailChoicesSubLbl: Label '%1,%2', Locked = true;
     begin
@@ -42,16 +40,13 @@ codeunit 8887 "Email Test Mail"
             else
                 exit;
 
-        Recipients.Add(EmailRecipient);
-
-        IEmailConnector := Rec.Connector;
         Email.OnGetTestEmailBody(Rec.Connector, EmailBody);
 
         if EmailBody = '' then
             EmailBody := StrSubstNo(TestEmailBodyTxt, UserId(), Rec.Connector);
 
-        Message.CreateMessage(Recipients, TestEmailSubjectTxt, EmailBody, true);
-        if Email.Send(Message.GetId(), Rec."Account Id", Rec.Connector) then
+        Message.Create(EmailRecipient, TestEmailSubjectTxt, EmailBody, true);
+        if Email.Send(Message, Rec) then
             Message(StrSubstNo(TestEmailSuccessMsg, EmailRecipient))
         else
             Error(TestEmailFailedMsg);

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Stores Upgrade Tags to track which methods were executed.",
     "description":  "Upgrade Tags are used within upgrade codeunits to know which upgrade methods have been run and to prevent executing the same upgrade code twice. They can also be used to skip the uprade methods on a specific company or to fix the upgrade that went wrong.",
-    "version":  "17.0.0.0",
+    "version":  "17.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -18,10 +18,10 @@
                     ],
     "platform":  "17.0.0.0",
     "idRanges":  [
-                    {
-                        "from":  9992,
-                        "to":  9994
-                    },
+                     {
+                         "from":  9992,
+                         "to":  9994
+                     },
                      {
                          "from":  9996,
                          "to":  9996
@@ -32,6 +32,12 @@
                      }
                  ],
     "target":  "Cloud",
-    "internalsVisibleTo": [{"id": "b2d9e77d-e41c-48e1-bce5-5d36db326f74", "name": "Upgrade Tag Tests", "publisher": "Microsoft"}],
+    "internalsVisibleTo":  [
+                               {
+                                   "id":  "b2d9e77d-e41c-48e1-bce5-5d36db326f74",
+                                   "name":  "Upgrade Tag Tests",
+                                   "publisher":  "Microsoft"
+                               }
+                           ],
     "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
 }

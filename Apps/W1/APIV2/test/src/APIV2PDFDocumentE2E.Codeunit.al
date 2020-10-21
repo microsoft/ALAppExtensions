@@ -20,8 +20,23 @@ codeunit 139841 "APIV2 - PDF Document E2E"
         QuoteServiceNameTxt: Label 'salesQuotes';
 
     local procedure Initialize()
+    var
+        CompanyInformation: Record "Company Information";
     begin
         WorkDate := Today;
+
+        CompanyInformation.Get();
+        if CompanyInformation."Giro No." = '' then
+            CompanyInformation."Giro No." := '1234567';
+        if CompanyInformation.IBAN = '' then
+            CompanyInformation.IBAN := 'GB213 2342 34';
+        if CompanyInformation."Bank Name" = '' then
+            CompanyInformation."Bank Name" := 'My Bank';
+        if CompanyInformation."Bank Account No." = '' then
+            CompanyInformation."Bank Account No." := '12431243';
+        if CompanyInformation."SWIFT Code" = '' then
+            CompanyInformation."SWIFT Code" := 'GBBAKKXX';
+        CompanyInformation.Modify();
     end;
 
     [Test]

@@ -161,7 +161,7 @@ page 30009 "APIV2 - Customers"
                 }
                 field(taxRegistrationNumber; "VAT Registration No.")
                 {
-                    Caption = 'Tax Registration Number';
+                    Caption = 'Tax Registration No.';
 
                     trigger OnValidate()
                     begin
@@ -386,14 +386,14 @@ page 30009 "APIV2 - Customers"
         CurrencyCodeTxt: Text;
         TaxAreaDisplayNameGlobal: Text;
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.';
-        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.';
-        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.';
-        PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.';
-        ShipmentMethodIdDoesNotMatchAShipmentMethodErr: Label 'The "shipmentMethodId" does not match to a Shipment Method.';
-        PaymentMethodIdDoesNotMatchAPaymentMethodErr: Label 'The "paymentMethodId" does not match to a Payment Method.';
+        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.', Comment = 'currencyId is a field name and should not be translated.';
+        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.', Comment = 'currencyCode is a field name and should not be translated.';
+        PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.', Comment = 'paymentTermsId is a field name and should not be translated.';
+        ShipmentMethodIdDoesNotMatchAShipmentMethodErr: Label 'The "shipmentMethodId" does not match to a Shipment Method.', Comment = 'shipmentMethodId is a field name and should not be translated.';
+        PaymentMethodIdDoesNotMatchAPaymentMethodErr: Label 'The "paymentMethodId" does not match to a Payment Method.', Comment = 'paymentMethodId is a field name and should not be translated.';
         BlankGUID: Guid;
-        NotProvidedCustomerNameErr: Label 'A "displayName" must be provided.';
-        BlankCustomerNameErr: Label 'The blank "displayName" is not allowed.';
+        NotProvidedCustomerNameErr: Label 'A "displayName" must be provided.', Comment = 'displayName is a field name and should not be translated.';
+        BlankCustomerNameErr: Label 'The blank "displayName" is not allowed.', Comment = 'displayName is a field name and should not be translated.';
 
     local procedure SetCalculatedFields()
     var

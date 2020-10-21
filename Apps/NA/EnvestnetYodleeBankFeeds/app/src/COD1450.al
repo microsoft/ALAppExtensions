@@ -100,6 +100,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         ConsumerUnitializedTxt: Label 'Consumer is not initialized.', Locked = true;
         ProcessingWindowMsg: Label 'Please wait while the server is processing your request.\This may take several minutes.';
         RemoteServerErr: Label 'The remote server returned an error: (%1) %2.', Locked = true;
+        LCYCurrencyCodeMostBeInISOFormatErr: Label 'The Currency code must be in ISO 4217 format eq use USD instead of US';
         CurrencyMismatchOnOnlineBankAccountErr: Label 'The online bank account %1 has two mismatching currency codes: %2 and %3.', Comment = '%1 - bank account name, %2 - currency code, %3 - currency code';
         CurrencyMismatchOnOnlineBankAccountTelemetryErr: Label 'The online bank account has two mismatching currency codes: %1 and %2.', Locked = true;
         LinkingToAccountWithEmptyCurrencyQst: Label 'The online bank account %1 has no currency code.\Do you want to link it to your bank account?', Comment = '%1 - bank account name';
@@ -179,6 +180,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
     procedure CheckSetup();
     var
         MSYodleeBankServiceSetup: Record 1450;
+        GeneralLedgerSetup: Record "General Ledger Setup";
         CobrandToken: Text;
         ConsumerToken: Text;
     begin
@@ -188,6 +190,9 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         MSYodleeBankServiceSetup.GET();
         MSYodleeBankServiceSetup.TESTFIELD("Bank Feed Import Format");
         MSYodleeBankServiceSetup.TESTFIELD("User Profile Email Address");
+        GeneralLedgerSetup.Get();
+        If StrLen(GeneralLedgerSetup."LCY Code") <> 3 then
+            GeneralLedgerSetup.FieldError("LCY Code", LCYCurrencyCodeMostBeInISOFormatErr);
 
         MESSAGE(SetupSuccessMsg);
     end;

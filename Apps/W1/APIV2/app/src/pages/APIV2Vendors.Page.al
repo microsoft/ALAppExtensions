@@ -119,7 +119,7 @@ page 30010 "APIV2 - Vendors"
                 }
                 field(taxRegistrationNumber; "VAT Registration No.")
                 {
-                    Caption = 'Tax Registration Number';
+                    Caption = 'Tax Registration No.';
 
                     trigger OnValidate()
                     begin
@@ -330,10 +330,10 @@ page 30010 "APIV2 - Vendors"
         CurrencyCodeTxt: Text;
         IRS1099VendorCode: Code[10];
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.';
-        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.';
-        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.';
-        PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.';
-        PaymentMethodIdDoesNotMatchAPaymentMethodErr: Label 'The "paymentMethodId" does not match to a Payment Method.';
+        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.', Comment = 'currencyId is a field name and should not be translated.';
+        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.', Comment = 'currencyCode is a field name and should not be translated.';
+        PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.', Comment = 'paymentTermsId is a field name and should not be translated.';
+        PaymentMethodIdDoesNotMatchAPaymentMethodErr: Label 'The "paymentMethodId" does not match to a Payment Method.', Comment = 'paymentMethodId is a field name and should not be translated.';
         BlankGUID: Guid;
 
     local procedure SetCalculatedFields()

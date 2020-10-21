@@ -39,7 +39,7 @@ page 30055 "APIV2 - Customer Payments"
                 }
                 field(lineNumber; "Line No.")
                 {
-                    Caption = 'Line Number';
+                    Caption = 'Line No.';
                 }
                 field(customerId; "Customer Id")
                 {
@@ -60,7 +60,7 @@ page 30055 "APIV2 - Customer Payments"
                 }
                 field(customerNumber; "Account No.")
                 {
-                    Caption = 'Customer Number';
+                    Caption = 'Customer No.';
                     TableRelation = Customer;
 
                     trigger OnValidate()
@@ -88,11 +88,11 @@ page 30055 "APIV2 - Customer Payments"
                 }
                 field(documentNumber; "Document No.")
                 {
-                    Caption = 'Document Number';
+                    Caption = 'Document No.';
                 }
                 field(externalDocumentNumber; "External Document No.")
                 {
-                    Caption = 'External Document Number';
+                    Caption = 'External Document No.';
                 }
                 field(amount; Amount)
                 {
@@ -127,7 +127,7 @@ page 30055 "APIV2 - Customer Payments"
                 }
                 field(appliesToInvoiceNumber; AppliesToInvoiceNumberText)
                 {
-                    Caption = 'Applies To Invoice Number';
+                    Caption = 'Applies To Invoice No.';
 
                     trigger OnValidate()
                     var
@@ -263,10 +263,10 @@ page 30055 "APIV2 - Customer Payments"
         FiltersNotSpecifiedErr: Label 'You must specify a journal batch ID or a journal ID to get a journal line.';
         CannotEditBatchNameErr: Label 'The Journal Batch Display Name isn''t editable.';
         CustomerValuesDontMatchErr: Label 'The customer values do not match to a specific Customer.';
-        CustomerIdDoesNotMatchACustomerErr: Label 'The "customerId" does not match to a Customer.';
-        CustomerNumberDoesNotMatchACustomerErr: Label 'The "customerNumber" does not match to a Customer.';
-        AppliesToDocValuesDontMatchErr: Label 'The AppliesToInvoice values do not match to the same Invoice.';
-        AppliesToInvoiceIdDoesNotMatchAnInvoiceErr: Label 'The "appliesToInvoiceId" should be the ID of an Open, Paid, Corrective, or Canceled Invoice.';
+        CustomerIdDoesNotMatchACustomerErr: Label 'The "customerId" does not match to a Customer.', Comment = 'customerId is a field name and should not be translated.';
+        CustomerNumberDoesNotMatchACustomerErr: Label 'The "customerNumber" does not match to a Customer.', Comment = 'customerNumber is a field name and should not be translated.';
+        AppliesToDocValuesDontMatchErr: Label 'The Applies To Invoice values do not match to the same Invoice.';
+        AppliesToInvoiceIdDoesNotMatchAnInvoiceErr: Label 'The "appliesToInvoiceId" should be the ID of an Open, Paid, Corrective, or Canceled Invoice.', Comment = 'appliesToInvoiceId is a field name and should not be translated.';
         FiltersChecked: Boolean;
         BlankGUID: Guid;
 

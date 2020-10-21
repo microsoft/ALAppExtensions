@@ -28,7 +28,7 @@ page 30018 "APIV2 - G/L Entries"
                 }
                 field(entryNumber; "Entry No.")
                 {
-                    Caption = 'Entry Number';
+                    Caption = 'Entry No.';
                     Editable = false;
                 }
                 field(postingDate; "Posting Date")
@@ -37,7 +37,7 @@ page 30018 "APIV2 - G/L Entries"
                 }
                 field(documentNumber; "Document No.")
                 {
-                    Caption = 'Document Number';
+                    Caption = 'Document No.';
                 }
                 field(documentType; "Document Type")
                 {
@@ -49,7 +49,7 @@ page 30018 "APIV2 - G/L Entries"
                 }
                 field(accountNumber; "G/L Account No.")
                 {
-                    Caption = 'Account Number';
+                    Caption = 'Account No.';
                 }
                 field(description; Description)
                 {

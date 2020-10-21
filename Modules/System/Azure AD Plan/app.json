@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Retrieve plans in Azure AD and manage plans",
     "description":  "Retrieve plans in Azure AD and manage plans",
-    "version":  "17.0.0.0",
+    "version":  "17.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,43 +15,43 @@
                              "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          },
                          {
                              "id":  "959630b2-01c5-48d8-a477-d6d40da855fb",
                              "name":  "User Login Times",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          },
                          {
                              "id":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
                              "name":  "Azure AD Graph",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          },
                          {
                              "id":  "f2cc2ef8-949f-47d1-85b8-10bd6f8bc61c",
                              "name":  "Azure AD User",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          },
                          {
                              "id":  "c56e3ef4-7ab0-4636-ae87-013a62f12213",
                              "name":  "User Permissions",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          },
                          {
                              "id":  "93b83ef6-9666-4c1d-b130-c232f4047621",
                              "name":  "Upgrade Tags",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          }
                      ],
     "screenshots":  [

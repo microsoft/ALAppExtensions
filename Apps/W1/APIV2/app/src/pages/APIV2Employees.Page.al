@@ -24,7 +24,7 @@ page 30017 "APIV2 - Employees"
                 }
                 field(number; "No.")
                 {
-                    Caption = 'Number';
+                    Caption = 'No.';
                 }
                 field(displayName; EmployeeDisplayName)
                 {

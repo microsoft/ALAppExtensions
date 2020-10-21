@@ -9,80 +9,70 @@ codeunit 8905 "Email Message Impl."
     Permissions = tabledata "Sent Email" = r,
                   tabledata "Email Outbox" = rim,
                   tabledata "Email Message" = rimd,
-                  tabledata "Email Error" = d,
+                  tabledata "Email Error" = rd,
                   tabledata "Email Recipient" = rid,
                   tabledata "Email Message Attachment" = rid;
 
-    procedure CreateMessage(Recipients: List of [Text]; Subject: Text; Body: Text; HtmlFormatted: Boolean)
+    procedure Create(EmailMessage: Codeunit "Email Message Impl.")
+    begin
+        Create(EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::"To"),
+                EmailMessage.GetSubject(), EmailMessage.GetBody(), EmailMessage.IsBodyHTMLFormatted());
+
+        SetRecipients(Enum::"Email Recipient Type"::CC, EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::CC));
+        SetRecipients(Enum::"Email Recipient Type"::Bcc, EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::Bcc));
+
+        if EmailMessage.Attachments_First() then
+            repeat
+                AddAttachment(EmailMessage.Attachments_GetName(), EmailMessage.Attachments_GetContentType(), EmailMessage.Attachments_GetContentBase64());
+            until EmailMessage.Attachments_Next() = 0;
+    end;
+
+    procedure Create(ToRecipients: Text; Subject: Text; Body: Text; HtmlFormatted: Boolean)
     var
         EmptyList: List of [Text];
     begin
 #pragma warning disable AA0205
-        CreateMessage(Recipients, Subject, Body, HtmlFormatted, EmptyList, EmptyList);
+        Create(EmptyList, Subject, Body, HtmlFormatted);
+#pragma warning restore AA0205
+
+        SetRecipients(Enum::"Email Recipient Type"::"To", ToRecipients);
+    end;
+
+    procedure Create(Recipients: List of [Text]; Subject: Text; Body: Text; HtmlFormatted: Boolean)
+    var
+        EmptyList: List of [Text];
+    begin
+#pragma warning disable AA0205
+        Create(Recipients, Subject, Body, HtmlFormatted, EmptyList, EmptyList);
 #pragma warning restore AA0205
     end;
 
-    procedure CreateMessage(Recipients: List of [Text]; Subject: Text; Body: Text; HtmlFormatted: Boolean; CCRecipients: List of [Text]; BCCRecipients: List of [Text])
-    begin
-        CreateMessage(Recipients, Subject, Body, HtmlFormatted, CCRecipients, BCCRecipients, CreateGuid());
-    end;
-
-    procedure CreateMessage(Recipients: List of [Text]; Subject: Text; Body: Text; HtmlFormatted: Boolean; CCRecipients: List of [Text]; BCCRecipients: List of [Text]; Id: Guid)
+    procedure Create(Recipients: List of [Text]; Subject: Text; Body: Text; HtmlFormatted: Boolean; CCRecipients: List of [Text]; BCCRecipients: List of [Text])
     begin
         Clear(Attachments);
         Clear(Message);
-        Message.Id := Id;
-        Message.Editable := true;
+
+        Message.Id := CreateGuid();
         Message.Insert();
 
         UpdateMessage(Recipients, Subject, Body, HtmlFormatted, CCRecipients, BCCRecipients);
     end;
 
-    procedure UpdateMessage(Recipients: List of [Text]; Subject: Text; Body: Text; HtmlFormatted: Boolean; CCRecipients: List of [Text]; BCCRecipients: List of [Text])
-    var
-        EmailRecipient: Record "Email Recipient";
-        EmailRecipientType: Enum "Email Recipient Type";
-        Recipient: Text;
-        BodyOutStream: OutStream;
-        FailedToReplaceInLineImagesErr: Label 'Failed to replace inline images message (XmlDocument.ReadFrom failed).', Locked = true;
+    procedure UpdateMessage(ToRecipients: List of [Text]; Subject: Text; Body: Text; HtmlFormatted: Boolean; CCRecipients: List of [Text]; BCCRecipients: List of [Text])
     begin
-        if HtmlFormatted then
-            if not ReplaceInLineImagesWithAttachements(Body) then
-                Session.LogMessage('0000CTW', FailedToReplaceInLineImagesErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+        SetBody(Body);
+        SetSubject(Subject);
+        SetBodyHTMLFormatted(HtmlFormatted);
+        Modify();
 
-        Message.Body.CreateOutStream(BodyOutStream, TextEncoding::UTF8);
-        BodyOutStream.Write(Body);
-        Message.Subject := CopyStr(Subject, 1, MaxStrLen(Message.Subject));
-        Message."HTML Formatted Body" := HtmlFormatted;
+        SetRecipients(Enum::"Email Recipient Type"::"To", ToRecipients);
+        SetRecipients(Enum::"Email Recipient Type"::Cc, CCRecipients);
+        SetRecipients(Enum::"Email Recipient Type"::Bcc, BCCRecipients);
+    end;
+
+    procedure Modify()
+    begin
         Message.Modify();
-
-        EmailRecipient.SetRange("Email Message Id", Message.Id);
-        if not EmailRecipient.IsEmpty() then
-            EmailRecipient.DeleteAll();
-
-        foreach Recipient in Recipients do begin
-            EmailRecipient.Init();
-            EmailRecipient."Email Message Id" := Message.Id;
-            EmailRecipient."Email Recipient Type" := EmailRecipientType::"To";
-            EmailRecipient."Email Address" := CopyStr(Recipient, 1, MaxStrLen(EmailRecipient."Email Address"));
-            EmailRecipient.Insert();
-        end;
-
-        foreach Recipient in CCRecipients do begin
-            EmailRecipient.Init();
-            EmailRecipient."Email Message Id" := Message.Id;
-            EmailRecipient."Email Recipient Type" := EmailRecipientType::Cc;
-            EmailRecipient."Email Address" := CopyStr(Recipient, 1, MaxStrLen(EmailRecipient."Email Address"));
-            EmailRecipient.Insert();
-        end;
-
-        foreach Recipient in BCCRecipients do begin
-            EmailRecipient.Init();
-            EmailRecipient."Email Message Id" := Message.Id;
-            EmailRecipient."Email Recipient Type" := EmailRecipientType::Bcc;
-            EmailRecipient."Email Address" := CopyStr(Recipient, 1, MaxStrLen(EmailRecipient."Email Address"));
-            EmailRecipient.Insert();
-        end;
     end;
 
     procedure GetBody() BodyText: Text
@@ -94,14 +84,43 @@ codeunit 8905 "Email Message Impl."
         BodyInStream.Read(BodyText);
     end;
 
+    procedure SetBody(BodyText: Text)
+    var
+        BodyOutStream: OutStream;
+    begin
+        Clear(Message.Body);
+
+        if BodyText = '' then
+            exit;
+
+        ReplaceRgbaColorsWithRgb(BodyText);
+        Message.Body.CreateOutStream(BodyOutStream, TextEncoding::UTF8);
+        BodyOutStream.Write(BodyText);
+    end;
+
     procedure GetSubject(): Text[2048]
     begin
         exit(Message.Subject);
     end;
 
+    procedure SetSubject(Subject: Text)
+    begin
+        Message.Subject := CopyStr(Subject, 1, MaxStrLen(Message.Subject));
+    end;
+
     procedure IsBodyHTMLFormatted(): Boolean
     begin
         exit(Message."HTML Formatted Body");
+    end;
+
+    procedure SetBodyHTMLFormatted(Value: Boolean)
+    begin
+        Message."HTML Formatted Body" := Value;
+    end;
+
+    procedure IsReadOnly(): Boolean
+    begin
+        exit(not Message.Editable);
     end;
 
     procedure GetContentTypeFromFilename(FileName: Text): Text[250]
@@ -161,64 +180,6 @@ codeunit 8905 "Email Message Impl."
         exit('');
     end;
 
-    procedure ReplaceInLineImagesWithAttachements(var Body: Text): Boolean
-    var
-        Base64ImgRegexPattern: DotNet Regex;
-        Document: XmlDocument;
-        ReadOptions: XmlReadOptions;
-        WriteOptions: XmlWriteOptions;
-        ImageElements: XmlNodeList;
-        ImageElement: XmlNode;
-        ImageElementAttribute: XmlAttribute;
-        Base64ImgMatch: DotNet Match;
-        String: DotNet String;
-        Filename: Text[250];
-        DocumentSource: Text;
-        ImageElementValue: Text;
-        Base64Img: Text;
-        MediaType: Text;
-        MediaSubtype: Text;
-        ContentId: Text[40];
-        ImageElementAttributeLbl: Label 'cid:%1', Comment = '%1 - Content Id', Locked = true;
-    begin
-        if Body = '' then
-            exit(true);
-
-        ReadOptions.PreserveWhitespace(true);
-
-        if not XmlDocument.ReadFrom(Body, ReadOptions, Document) then
-            exit(false);
-
-        // Get all <img> elements
-        ImageElements := Document.GetDescendantElements('img');
-
-        if ImageElements.Count() = 0 then
-            exit(true); // No images to convert
-
-        Base64ImgRegexPattern := Base64ImgRegexPattern.Regex('data:(.*);base64,(.*)');
-        foreach ImageElement in ImageElements do
-            if ImageElement.AsXmlElement().Attributes().Get('src', ImageElementAttribute) then begin
-                ImageElementValue := ImageElementAttribute.Value();
-                Base64ImgMatch := Base64ImgRegexPattern.Match(ImageElementValue);
-
-                if not String.IsNullOrEmpty(Base64ImgMatch.Value) then begin
-                    MediaType := Base64ImgMatch.Groups.Item(1).Value();
-                    MediaSubtype := MediaType.Split('/').Get(2);
-                    Base64Img := Base64ImgMatch.Groups.Item(2).Value();
-
-                    ContentId := CopyStr(Format(CreateGuid(), 0, 3), 1, 40);
-                    Filename := CopyStr(ContentId + '.' + MediaSubtype, 1, 250);
-
-                    AddInLineAttachment(Filename, CopyStr(MediaType, 1, 250), ContentId, Base64Img);
-                    ImageElementAttribute.Value(StrSubstNo(ImageElementAttributeLbl, ContentId));
-                end;
-            end;
-        WriteOptions.PreserveWhitespace(true);
-        Document.WriteTo(WriteOptions, DocumentSource);
-        Body := DocumentSource;
-        exit(true);
-    end;
-
     procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentBase64: Text)
     var
         EmailAttachment: Record "Email Message Attachment";
@@ -233,6 +194,11 @@ codeunit 8905 "Email Message Impl."
     end;
 
     procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream)
+    begin
+        AddAttachmentInternal(AttachmentName, ContentType, AttachmentInStream);
+    end;
+
+    procedure AddAttachmentInternal(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream) Size: Integer
     var
         EmailAttachment: Record "Email Message Attachment";
         AttachmentOutstream: OutStream;
@@ -242,18 +208,15 @@ codeunit 8905 "Email Message Impl."
         EmailAttachment.Attachment.CreateOutStream(AttachmentOutstream);
         CopyStream(AttachmentOutstream, AttachmentInStream);
         EmailAttachment.Insert();
+
+        exit(EmailAttachment.Attachment.Length);
     end;
 
-    local procedure AddInLineAttachment(AttachmentName: Text[250]; ContentType: Text[250]; ContentId: Text[40]; AttachmentBase64: Text)
+    local procedure ReplaceRgbaColorsWithRgb(var Body: Text)
     var
-        EmailAttachment: Record "Email Message Attachment";
-        Base64Convert: Codeunit "Base64 Convert";
-        AttachmentOutstream: OutStream;
+        RgbaRegexPattern: DotNet Regex;
     begin
-        AddAttachment(AttachmentName, ContentType, true, ContentId, EmailAttachment);
-        EmailAttachment.Attachment.CreateOutStream(AttachmentOutstream);
-        Base64Convert.FromBase64(AttachmentBase64, AttachmentOutstream);
-        EmailAttachment.Insert();
+        Body := RgbaRegexPattern.Replace(Body, RbgaPatternTok, RgbReplacementTok);
     end;
 
     local procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; InLine: Boolean; ContentId: Text[40]; var EmailAttachment: Record "Email Message Attachment")
@@ -279,37 +242,52 @@ codeunit 8905 "Email Message Impl."
         until EmailRecipients.Next() = 0;
     end;
 
-    procedure UpdateRecipients(Recipients: list of [Text]; CcRecipients: list of [Text]; BccRecipients: list of [Text])
+    procedure GetRecipientsAsText(RecipientType: Enum "Email Recipient Type"): Text
     var
-        EmailRecipients: Record "Email Recipient";
+        RecipientList: List of [Text];
+        Recipient, Result : Text;
+    begin
+        GetRecipients(RecipientType, RecipientList);
+
+        foreach Recipient in RecipientList do
+            Result := Result + ';' + Recipient;
+
+        Result := DelChr(Result, '<>', ';'); // trim extra semicolons
+        exit(Result);
+    end;
+
+    procedure SetRecipients(RecipientType: Enum "Email Recipient Type"; RecipientsText: Text)
+    var
+        RecipientsList: List of [Text];
+    begin
+        RecipientsList := RecipientsText.Split(';');
+
+        SetRecipients(RecipientType, RecipientsList);
+    end;
+
+    procedure SetRecipients(RecipientType: Enum "Email Recipient Type"; Recipients: List of [Text])
+    var
+        EmailRecipientRecord: Record "Email Recipient";
+        UniqueRecipients: Dictionary of [Text, Text];
         Recipient: Text;
     begin
-        EmailRecipients.SetRange("Email Message Id", Message.Id);
-        if not EmailRecipients.IsEmpty() then
-            EmailRecipients.DeleteAll();
+        EmailRecipientRecord.SetRange("Email Message Id", Message.Id);
+        EmailRecipientRecord.SetRange("Email Recipient Type", RecipientType);
+
+        if not EmailRecipientRecord.IsEmpty() then
+            EmailRecipientRecord.DeleteAll();
 
         foreach Recipient in Recipients do begin
-            EmailRecipients.Init();
-            EmailRecipients."Email Message Id" := Message.Id;
-            EmailRecipients."Email Recipient Type" := Enum::"Email Recipient Type"::"To";
-            EmailRecipients."Email Address" := CopyStr(Recipient, 1, MaxStrLen(EmailRecipients."Email Address"));
-            EmailRecipients.Insert();
-        end;
+            Recipient := DelChr(Recipient, '<>'); // trim the whitespaces around
+            if Recipient <> '' then
+                if UniqueRecipients.Add(Recipient, Recipient) then begin
+                    EmailRecipientRecord.Init();
+                    EmailRecipientRecord."Email Message Id" := Message.Id;
+                    EmailRecipientRecord."Email Recipient Type" := RecipientType;
+                    EmailRecipientRecord."Email Address" := CopyStr(Recipient, 1, MaxStrLen(EmailRecipientRecord."Email Address"));
 
-        foreach Recipient in CcRecipients do begin
-            EmailRecipients.Init();
-            EmailRecipients."Email Message Id" := Message.Id;
-            EmailRecipients."Email Recipient Type" := Enum::"Email Recipient Type"::Cc;
-            EmailRecipients."Email Address" := CopyStr(Recipient, 1, MaxStrLen(EmailRecipients."Email Address"));
-            EmailRecipients.Insert();
-        end;
-
-        foreach Recipient in BccRecipients do begin
-            EmailRecipients.Init();
-            EmailRecipients."Email Message Id" := Message.Id;
-            EmailRecipients."Email Recipient Type" := Enum::"Email Recipient Type"::Bcc;
-            EmailRecipients."Email Address" := CopyStr(Recipient, 1, MaxStrLen(EmailRecipients."Email Address"));
-            EmailRecipients.Insert();
+                    EmailRecipientRecord.Insert();
+                end;
         end;
     end;
 
@@ -370,157 +348,40 @@ codeunit 8905 "Email Message Impl."
         exit(Message.Id);
     end;
 
-    procedure Find(MessageId: guid): Boolean
+    procedure Get(MessageId: guid): Boolean
     begin
         Clear(Attachments);
-        Message.SetRange(Id, MessageId);
+
         exit(Message.Get(MessageId));
     end;
 
-    procedure OpenNewEditableCopyInEditor(AccountId: guid; Connector: Enum "Email Connector")
+    procedure ValidateRecipients(RecipientType: Enum "Email Recipient Type")
     var
-        EmailRecipient: Record "Email Recipient";
-        CopyEmailRecipient: Record "Email Recipient";
-        EmailMessageAttachments: Record "Email Message Attachment";
-        EmailMessage: Record "Email Message";
-        TempEmailAccounts: Record "Email Account" temporary;
-        EmailEditor: Page "Email Editor";
-        EmailConnectorInterface: Interface "Email Connector";
-        InStream: InStream;
+        Recipients: List of [Text];
     begin
-        if not UserHasPermissionToOpenMessage() then
-            Error(EmailMessageOpenPermissionErr);
+        GetRecipients(RecipientType, Recipients);
 
-        Message.CalcFields(Body);
-        EmailMessage.Copy(Message);
-        EmailMessage.Editable := true;
-        EmailMessage.Id := CreateGuid();
-        EmailMessage.Insert();
-
-        // Copy recipients
-        EmailRecipient.SetRange("Email Message Id", Message.Id);
-        if EmailRecipient.FindSet() then
-            repeat
-                CopyEmailRecipient.Copy(EmailRecipient);
-                CopyEmailRecipient."Email Message Id" := EmailMessage.Id;
-                CopyEmailRecipient.Insert();
-            until EmailRecipient.Next() = 0;
-
-        // Copy attachments
-        EmailMessageAttachments.SetRange("Email Message Id", Message.Id);
-        if EmailMessageAttachments.FindSet() then begin
-            Message := EmailMessage;
-            repeat
-                EmailMessageAttachments.CalcFields(Attachment);
-                EmailMessageAttachments.Attachment.CreateInStream(InStream);
-                AddAttachment(EmailMessageAttachments."Attachment Name", EmailMessageAttachments."Content Type", InStream);
-            until EmailMessageAttachments.Next() = 0;
-        end;
-
-        EmailConnectorInterface := Connector;
-        EmailConnectorInterface.GetAccounts(TempEmailAccounts);
-        TempEmailAccounts.SetRange("Account Id", AccountId);
-        if TempEmailAccounts.FindFirst() then;
-
-        Message.CalcFields(Body);
-        EmailEditor.SetRecord(EmailMessage);
-        EmailEditor.SetEmailAccount(TempEmailAccounts);
-        EmailEditor.Run()
+        ValidateRecipients(Recipients, RecipientType);
     end;
 
-    procedure OpenInEditor()
+    procedure ValidateRecipients(Recipients: List of [Text]; RecipientType: Enum "Email Recipient Type")
     var
-        TempDummyEmailAccounts: Record "Email Account" temporary;
-        WasEmailSent: Boolean;
-    begin
-        OpenInEditor(TempDummyEmailAccounts, false, WasEmailSent);
-    end;
-
-    procedure OpenInEditor(AccountId: guid)
-    var
-        TempEmailAccounts: Record "Email Account" temporary;
         EmailAccount: Codeunit "Email Account";
-        WasEmailSent: Boolean;
+        Recipient: Text;
     begin
-        EmailAccount.GetAllAccounts(false, TempEmailAccounts);
-        TempEmailAccounts.SetRange("Account Id", AccountId);
-        if TempEmailAccounts.FindFirst() then;
+        if (RecipientType = RecipientType::"To") and (Recipients.Count() = 0) then
+            Error(NoToAccountErr);
 
-        OpenInEditor(TempEmailAccounts, false, WasEmailSent);
-    end;
-
-    procedure OpenInEditor(AccountId: guid; Connector: Enum "Email Connector")
-    begin
-        OpenInEditor(AccountId, Connector, 0);
-    end;
-
-    procedure OpenInEditor(AccountId: Guid; Connector: Enum "Email Connector"; OutboxId: BigInteger)
-    var
-        TempEmailAccounts: Record "Email Account" temporary;
-        IConnector: Interface "Email Connector";
-        WasEmailSent: Boolean;
-    begin
-        IConnector := Connector;
-        IConnector.GetAccounts(TempEmailAccounts);
-        TempEmailAccounts.SetRange("Account Id", AccountId);
-        if TempEmailAccounts.FindFirst() then
-            TempEmailAccounts.Connector := Connector;
-
-        OpenInEditor(TempEmailAccounts, false, OutboxId, WasEmailSent);
-    end;
-
-    procedure OpenInEditor(TempAccount: Record "Email Account" temporary; IsModal: Boolean; var WasEmailSent: Boolean)
-    begin
-        OpenInEditor(TempAccount, IsModal, 0, WasEmailSent);
-    end;
-
-    procedure OpenInEditor(TempAccount: Record "Email Account" temporary; IsModal: Boolean; OutboxId: BigInteger; var WasEmailSent: Boolean)
-    var
-        EmailOutbox: Record "Email Outbox";
-        EmailEditor: Page "Email Editor";
-    begin
-        if not Message.Get(Message.Id) then begin
-            Message(MessageNoLongerAvailableErr);
-            exit;
-        end;
-
-        if not UserHasPermissionToOpenMessage() then
-            Error(EmailMessageOpenPermissionErr);
-
-        if EmailOutbox.Get(OutboxId) then
-            EmailEditor.SetOutbox(EmailOutbox);
-
-        Message.CalcFields(Body);
-        EmailEditor.SetRecord(Message);
-        EmailEditor.SaveRecord();
-
-        if not IsNullGuid(TempAccount."Account Id") then
-            EmailEditor.SetEmailAccount(TempAccount);
-
-        if Message.Subject <> '' then
-            EmailEditor.Caption(Message.Subject);
-
-        if IsModal then
-            EmailEditor.RunModal()
-        else
-            EmailEditor.Run();
-
-        WasEmailSent := EmailEditor.WasEmailSent();
+        foreach Recipient in Recipients do
+            EmailAccount.ValidateEmailAddress(Recipient, false);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sent Email", 'OnAfterDeleteEvent', '', false, false)]
-    local procedure OnBeforeDeleteSentEmail(var Rec: Record "Sent Email"; RunTrigger: Boolean)
+    local procedure OnAfterDeleteSentEmail(var Rec: Record "Sent Email"; RunTrigger: Boolean)
     var
-        EmailOutbox: Record "Email Outbox";
-        SentEmail: Record "Sent Email";
         EmailMessage: Record "Email Message";
     begin
-        EmailOutbox.SetRange("Message Id", Rec."Message Id");
-        if not EmailOutbox.IsEmpty() then
-            exit;
-
-        SentEmail.SetRange("Message Id", Rec."Message Id");
-        if not SentEmail.IsEmpty() then
+        if Rec.IsTemporary() then
             exit;
 
         if EmailMessage.Get(Rec."Message Id") then
@@ -528,22 +389,20 @@ codeunit 8905 "Email Message Impl."
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Email Outbox", 'OnAfterDeleteEvent', '', false, false)]
-    local procedure OnBeforeDeleteEmailOutbox(var Rec: Record "Email Outbox"; RunTrigger: Boolean)
+    local procedure OnAfterDeleteEmailOutbox(var Rec: Record "Email Outbox"; RunTrigger: Boolean)
     var
-        EmailOutbox: Record "Email Outbox";
         SentEmail: Record "Sent Email";
         EmailMessage: Record "Email Message";
         EmailError: Record "Email Error";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         EmailError.SetRange("Outbox Id", Rec.Id);
         EmailError.DeleteAll(true);
 
         SentEmail.SetRange("Message Id", Rec."Message Id");
         if not SentEmail.IsEmpty() then
-            exit;
-
-        EmailOutbox.SetRange("Message Id", Rec."Message Id");
-        if not EmailOutbox.IsEmpty then
             exit;
 
         if EmailMessage.Get(Rec."Message Id") then
@@ -556,7 +415,7 @@ codeunit 8905 "Email Message Impl."
         EmaiMessageAttachemnt: Record "Email Message Attachment";
         EmailRecipient: Record "Email Recipient";
     begin
-        if Rec.IsTemporary then
+        if Rec.IsTemporary() then
             exit;
 
         EmaiMessageAttachemnt.SetRange("Email Message Id", Rec.Id);
@@ -572,14 +431,16 @@ codeunit 8905 "Email Message Impl."
         EmailOutbox: Record "Email Outbox";
         EmailMessageOld: Record "Email Message";
     begin
-        if Rec.IsTemporary then
+        if Rec.IsTemporary() then
             exit;
+
         EmailOutbox.SetRange("Message Id", Rec.Id);
         EmailOutbox.SetFilter(Status, '%1|%2', EmailOutbox.Status::Queued, EmailOutbox.Status::Processing);
+
         if not EmailOutbox.IsEmpty() then
             Error(EmailMessageQueuedCannotModifyErr);
 
-        if EmailMessageOld.Get(Rec.Id) and not EmailMessageOld.Editable then
+        if EmailMessageOld.Get(Rec.Id) and (not EmailMessageOld.Editable) then
             Error(EmailMessageSentCannotModifyErr);
     end;
 
@@ -646,7 +507,7 @@ codeunit 8905 "Email Message Impl."
         EmailOutbox: Record "Email Outbox";
         SentEmail: Record "Sent Email";
     begin
-        if Rec.IsTemporary then
+        if Rec.IsTemporary() then
             exit;
 
         EmailOutbox.SetRange("Message Id", Rec."Email Message Id");
@@ -657,84 +518,6 @@ codeunit 8905 "Email Message Impl."
         SentEmail.SetRange("Message Id", Rec."Email Message Id");
         if not SentEmail.IsEmpty() then
             Error(EmailMessageSentCannotInsertRecipientErr);
-    end;
-
-    procedure UploadAttachmentEditorAction(MessageId: guid)
-    var
-        EmailMessageAttachment: Record "Email Message Attachment";
-        EmailMessageImpl: Codeunit "Email Message Impl.";
-        FileName: Text;
-        Instream: Instream;
-        OutStream: OutStream;
-    begin
-        EmailMessageAttachment.Init();
-        EmailMessageAttachment."Email Message Id" := MessageId;
-        if not UploadIntoStream('', '', '', FileName, Instream) then
-            exit;
-
-        EmailMessageAttachment."Attachment Name" := CopyStr(FileName, 1, 250);
-        EmailMessageAttachment."Content Type" := EmailMessageImpl.GetContentTypeFromFilename(Filename);
-        EmailMessageAttachment.Attachment.CreateOutStream(OutStream);
-        CopyStream(OutStream, Instream);
-        EmailMessageAttachment.Insert();
-
-        Session.LogMessage('0000CTX', StrSubstNo(UploadingAttachmentMsg, EmailMessageAttachment.Attachment.Length, EmailMessageAttachment."Content Type"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-    end;
-
-    procedure InsertOutboxFromEditor(Account: Record "Email Account")
-    var
-        EmailOutbox: Record "Email Outbox";
-    begin
-        EmailOutbox.Init();
-        EmailOutbox."Message Id" := Message.Id;
-        EmailOutbox.Description := Message.Subject;
-        EmailOutbox.Connector := Account.Connector;
-        EmailOutbox."Account Id" := Account."Account Id";
-        EmailOutbox.Status := Enum::"Email Status"::Draft;
-        EmailOutbox."User Security Id" := UserSecurityId();
-        EmailOutbox."Send From" := Account."Email Address";
-        EmailOutbox.Insert();
-    end;
-
-    procedure UpdateOutboxFromEditor(EmailOutBox: Record "Email Outbox"; Account: Record "Email Account")
-    begin
-        if not EmailOutbox.Find() then
-            exit;
-        EmailOutbox.Description := Message.Subject;
-        EmailOutbox."Account Id" := Account."Account Id";
-        EmailOutbox.Connector := Account.Connector;
-        EmailOutbox."Send From" := Account."Email Address";
-        EmailOutbox.Modify();
-    end;
-
-    procedure CreateOrUpdateMessageFromEditor(ToRecipient: Text; CcRecipient: Text; BccRecipient: Text; Subject: Text; Body: Text; HtmlFormatted: Boolean; MessageId: guid)
-    var
-        Recipients: List of [Text];
-        CcRecipients: List of [Text];
-        BccRecipients: List of [Text];
-    begin
-        ConvertRecipientsToLists(ToRecipient, CcRecipient, BccRecipient, Recipients, CcRecipients, BccRecipients);
-
-        if Message.Id = MessageId then
-            UpdateMessage(Recipients, Subject, Body, HtmlFormatted, CcRecipients, BccRecipients)
-        else
-            CreateMessage(Recipients, Subject, Body, HtmlFormatted, CcRecipients, BccRecipients, MessageId)
-    end;
-
-    local procedure ConvertRecipientsToLists(ToRecipient: Text; CcRecipient: Text; BccRecipient: Text; var Recipients: List of [Text]; var CcRecipients: List of [Text]; var BccRecipients: List of [Text])
-    begin
-        // Remove the separator from the start and the end
-        ToRecipient := DelChr(ToRecipient, '<>', ';');
-        if ToRecipient <> '' then
-            Recipients.AddRange(ToRecipient.Split(';'));
-
-        CcRecipient := DelChr(CcRecipient, '<>', ';');
-        if CcRecipient <> '' then
-            CcRecipients.AddRange(CcRecipient.Split(';'));
-
-        BccRecipient := DelChr(BccRecipient, '<>', ';');
-        if BccRecipient <> '' then
-            BccRecipients.AddRange(BccRecipient.Split(';'));
     end;
 
     local procedure UserHasPermissionToOpenMessage(): Boolean
@@ -755,7 +538,7 @@ codeunit 8905 "Email Message Impl."
         exit(true);
     end;
 
-    procedure LockEmailMessage()
+    procedure MarkAsReadOnly()
     begin
         if Message.Editable then begin
             Message.Editable := false;
@@ -781,8 +564,7 @@ codeunit 8905 "Email Message Impl."
         EmailMessageSentCannotDeleteRecipientErr: Label 'Cannot delete the recipient because the email has already been sent.';
         EmailMessageQueuedCannotInsertRecipientErr: Label 'Cannot add a recipient because the email is queued to be sent.';
         EmailMessageSentCannotInsertRecipientErr: Label 'Cannot add the recipient because the email has already been sent.';
-        MessageNoLongerAvailableErr: Label 'The email message is no longer available.';
-        EmailMessageOpenPermissionErr: Label 'You can only open your own email messages.';
-        EmailCategoryLbl: Label 'Email', Locked = true;
-        UploadingAttachmentMsg: Label 'Sending email with attachment file size: %1, Content type: %2', Comment = '%1 - File size, %2 - Content type', Locked = true;
+        NoToAccountErr: Label 'You must specify a valid email account to send the message to.';
+        RgbReplacementTok: Label 'rgb($1, $2, $3)', Locked = true;
+        RbgaPatternTok: Label 'rgba\((\d+), ?(\d+), ?(\d+), ?\d+\)', Locked = true;
 }

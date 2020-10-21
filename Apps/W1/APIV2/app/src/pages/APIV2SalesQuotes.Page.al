@@ -40,7 +40,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(externalDocumentNumber; "External Document No.")
                 {
-                    Caption = 'External Document Number';
+                    Caption = 'External Document No.';
 
                     trigger OnValidate()
                     begin
@@ -206,7 +206,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(sellToAddressLine1; "Sell-to Address")
                 {
-                    Caption = 'Sell To Address Line 1';
+                    Caption = 'Sell-to Address Line 1';
 
                     trigger OnValidate()
                     begin
@@ -215,7 +215,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(sellToAddressLine2; "Sell-to Address 2")
                 {
-                    Caption = 'Sell To Address Line 2';
+                    Caption = 'Sell-to Address Line 2';
 
                     trigger OnValidate()
                     begin
@@ -224,7 +224,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(sellToCity; "Sell-to City")
                 {
-                    Caption = 'Sell To City';
+                    Caption = 'Sell-to City';
 
                     trigger OnValidate()
                     begin
@@ -233,7 +233,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(sellToCountry; "Sell-to Country/Region Code")
                 {
-                    Caption = 'Sell To Country/Region Code';
+                    Caption = 'Sell-to Country/Region Code';
 
                     trigger OnValidate()
                     begin
@@ -242,7 +242,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(sellToState; "Sell-to County")
                 {
-                    Caption = 'Sell To State';
+                    Caption = 'Sell-to State';
 
                     trigger OnValidate()
                     begin
@@ -251,7 +251,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(sellToPostCode; "Sell-to Post Code")
                 {
-                    Caption = 'Sell To Post Code';
+                    Caption = 'Sell-to Post Code';
 
                     trigger OnValidate()
                     begin
@@ -260,7 +260,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(billToAddressLine1; "Bill-To Address")
                 {
-                    Caption = 'Bill To Address Line 1';
+                    Caption = 'Bill-to Address Line 1';
 
                     trigger OnValidate()
                     begin
@@ -269,7 +269,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(billToAddressLine2; "Bill-To Address 2")
                 {
-                    Caption = 'Bill To Address Line 2';
+                    Caption = 'Bill-to Address Line 2';
 
                     trigger OnValidate()
                     begin
@@ -278,7 +278,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(billToCity; "Bill-To City")
                 {
-                    Caption = 'Bill To City';
+                    Caption = 'Bill-to City';
 
                     trigger OnValidate()
                     begin
@@ -287,7 +287,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(billToCountry; "Bill-To Country/Region Code")
                 {
-                    Caption = 'Bill To Country/Region Code';
+                    Caption = 'Bill-to Country/Region Code';
 
                     trigger OnValidate()
                     begin
@@ -296,7 +296,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(billToState; "Bill-To County")
                 {
-                    Caption = 'Bill To State';
+                    Caption = 'Bill-to State';
 
                     trigger OnValidate()
                     begin
@@ -305,7 +305,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(billToPostCode; "Bill-To Post Code")
                 {
-                    Caption = 'Bill To Post Code';
+                    Caption = 'Bill-to Post Code';
 
                     trigger OnValidate()
                     begin
@@ -314,7 +314,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(shipToAddressLine1; "Ship-to Address")
                 {
-                    Caption = 'Ship To Address Line 1';
+                    Caption = 'Ship-to Address Line 1';
 
                     trigger OnValidate()
                     begin
@@ -325,7 +325,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(shipToAddressLine2; "Ship-to Address 2")
                 {
-                    Caption = 'Ship To Address Line 2';
+                    Caption = 'Ship-to Address Line 2';
 
                     trigger OnValidate()
                     begin
@@ -336,7 +336,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(shipToCity; "Ship-to City")
                 {
-                    Caption = 'Ship To City';
+                    Caption = 'Ship-to City';
 
                     trigger OnValidate()
                     begin
@@ -347,7 +347,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(shipToCountry; "Ship-to Country/Region Code")
                 {
-                    Caption = 'Ship To Country/Region Code';
+                    Caption = 'Ship-to Country/Region Code';
 
                     trigger OnValidate()
                     begin
@@ -358,7 +358,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(shipToState; "Ship-to County")
                 {
-                    Caption = 'Ship To State';
+                    Caption = 'Ship-to State';
 
                     trigger OnValidate()
                     begin
@@ -369,7 +369,7 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 field(shipToPostCode; "Ship-to Post Code")
                 {
-                    Caption = 'Ship To Post Code';
+                    Caption = 'Ship-to Post Code';
 
                     trigger OnValidate()
                     begin
@@ -672,16 +672,16 @@ page 30037 "APIV2 - Sales Quotes"
         CurrencyCodeTxt: Text;
         CouldNotFindSellToCustomerErr: Label 'The sell-to customer cannot be found.';
         CouldNotFindBillToCustomerErr: Label 'The bill-to customer cannot be found.';
-        CannotChangeIDErr: Label 'The "id" cannot be changed.';
-        SellToCustomerNotProvidedErr: Label 'A "customerNumber" or a "customerId" must be provided.';
+        CannotChangeIDErr: Label 'The "id" cannot be changed.', Comment = 'id is a field name and should not be translated.';
+        SellToCustomerNotProvidedErr: Label 'A "customerNumber" or a "customerId" must be provided.', Comment = 'customerNumber and customerId are field names and should not be translated.';
         SellToCustomerValuesDontMatchErr: Label 'The sell-to customer values do not match to a specific Customer.';
         BillToCustomerValuesDontMatchErr: Label 'The bill-to customer values do not match to a specific Customer.';
         SalesQuotePermissionsErr: Label 'You do not have permissions to read Sales Quotes.';
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.';
-        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.';
-        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.';
-        PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.';
-        ShipmentMethodIdDoesNotMatchAShipmentMethodErr: Label 'The "shipmentMethodId" does not match to a Shipment Method.';
+        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.', Comment = 'currencyId is a field name and should not be translated.';
+        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.', Comment = 'currencyCode is a field name and should not be translated.';
+        PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.', Comment = 'paymentTermsId is a field name and should not be translated.';
+        ShipmentMethodIdDoesNotMatchAShipmentMethodErr: Label 'The "shipmentMethodId" does not match to a Shipment Method.', Comment = 'shipmentMethodId is a field name and should not be translated.';
         DiscountAmountSet: Boolean;
         InvoiceDiscountAmount: Decimal;
         BlankGUID: Guid;

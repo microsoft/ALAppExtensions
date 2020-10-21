@@ -20,8 +20,17 @@ page 8884 "Email User-Specified Address"
                 {
                     ApplicationArea = Basic, Suite, Invoicing;
                     Caption = 'Email Address';
-                    ExtendedDatatype = EMail;
                     ToolTip = 'Specifies the email address of the recipient.';
+                    ShowMandatory = true;
+                    NotBlank = true;
+                    ExtendedDatatype = EMail;
+
+                    trigger OnValidate()
+                    var
+                        EmailAccount: Codeunit "Email Account";
+                    begin
+                        EmailAccount.ValidateEmailAddress(EmailAddress);
+                    end;
                 }
             }
         }

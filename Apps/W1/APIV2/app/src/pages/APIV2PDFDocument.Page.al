@@ -90,8 +90,8 @@ page 30056 "APIV2 - PDF Document"
         GraphMgtAttachmentBuffer: Codeunit "Graph Mgt - Attachment Buffer";
         PdfGenerated: Boolean;
         ConflictingIdsErr: Label 'You have specified conflicting identifiers: %1 and %2.', Comment = '%1 - a GUID, %2 - a GUID';
-        MissingParentIdErr: Label 'You must specify a parentId in the request body.';
-        MissingParentTypeErr: Label 'You must specify a parentType in the request body.';
+        MissingParentIdErr: Label 'You must specify a parentId in the request body.', Comment = 'parentId is a field name and should not be translated.';
+        MissingParentTypeErr: Label 'You must specify a parentType in the request body.', Comment = 'parentType is a field name and should not be translated.';
         DocumentTypeInvalidErr: Label 'Document type is not valid.';
 
     local procedure ConvertDocumentTypeFilterToEnum(DocumentTypeFilter: Text): Enum "Attachment Entity Buffer Document Type"

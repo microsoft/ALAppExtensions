@@ -82,6 +82,21 @@ page 20052 "APIV1 - Item Variants"
             Validate("Item Id", GetFilter("Item Id"));
     end;
 
+    trigger OnModifyRecord(): Boolean
+    var
+        ItemVariant: Record "Item Variant";
+    begin
+        ItemVariant.GetBySystemId(Rec.SystemId);
+        if "Item No." = ItemVariant."Item No." then
+            Modify(true)
+        else begin
+            ItemVariant.TransferFields(Rec, false);
+            ItemVariant.Rename("Item No.", "Code");
+            TransferFields(ItemVariant, true);
+        end;
+        exit(false);
+    end;
+
     var
         Item: Record Item;
         ItemIdDoesNotMatchAnEmployeeErr: Label 'The "itemId" does not match to an Item.', Locked = true;

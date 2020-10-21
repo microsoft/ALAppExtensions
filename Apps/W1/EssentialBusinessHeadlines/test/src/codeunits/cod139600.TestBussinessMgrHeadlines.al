@@ -26,6 +26,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         LibraryResource: Codeunit "Library - Resource";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryHeadlines: Codeunit "Library - Headlines";
         TestEssentialBusHeadlines: Codeunit "Test Essential Bus. Headlines";
         HeadlineRcBusinessManagerPage: TestPage "Headline RC Business Manager";
         HeadlineRcRelationshipMgtPage: TestPage "Headline RC Relationship Mgt.";
@@ -752,6 +753,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         if IsInitialized then
             exit;
 
+        BindSubscription(LibraryHeadlines);
         Bindsubscription(TestEssentialBusHeadlines);
         LibraryERMCountryData.UpdateLocalData();
         FillInCompanyForCurrentUser();

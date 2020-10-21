@@ -22,6 +22,7 @@ page 3900 "Retention Periods"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the identifier of the retention period.';
+                    ShowMandatory = true;
                 }
                 field(Description; Rec.Description)
                 {
@@ -43,7 +44,8 @@ page 3900 "Retention Periods"
                 {
                     ApplicationArea = All;
                     Tooltip = 'Specifies the date formula used to calculate the expiration date for the retention period.';
-                    Editable = "Retention Period" = "Retention Period"::Custom;
+                    Editable = Rec."Retention Period" = Rec."Retention Period"::Custom;
+                    ShowMandatory = Rec."Retention Period" = Rec."Retention Period"::Custom;
 
                     trigger OnValidate()
                     begin

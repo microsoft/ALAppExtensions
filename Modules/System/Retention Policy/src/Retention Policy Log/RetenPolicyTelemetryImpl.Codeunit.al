@@ -4,9 +4,10 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
     Permissions = tabledata "Retention Policy Log Entry" = r;
 
     var
-        FirstRetenPolEnabledLbl: Label 'First retention policy enabled', Locked = true;
-        LastRetenPolDisabledLbl: Label 'Last retention policy disabled', Locked = true;
-        RecordsDeletedLbl: Label 'Deleted %1 records from Table %2, %3', Locked = true;
+        FirstRetenPolEnabledLbl: Label 'First retention policy enabled on: %1', Locked = true;
+        LastRetenPolDisabledLbl: Label 'Last retention policy disabled on: %1', Locked = true;
+        RecordsDeletedLbl: Label 'Records Deleted Using Retention Policy: Deleted %1 records from Table %2, %3', Locked = true;
+        RetenPolEntryLoggedLbl: Label 'Retention Policy Log Entry Logged: %1', Locked = true;
 
     procedure SendLogEntryToTelemetry(RetentionPolicyLogEntry: Record "Retention Policy Log Entry")
     var
@@ -18,9 +19,10 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
 
         TelemetryDimensions.Add('CompanyName', CompanyName());
         TelemetryDimensions.Add(RetentionPolicyLogEntry.FieldName(Category), Format(RetentionPolicyLogEntry.Category));
-        TelemetryDimensions.Add(RetentionPolicyLogEntry.FieldName("Message Type"), Format(RetentionPolicyLogEntry."Message Type"));
+        TelemetryDimensions.Add(DelChr(RetentionPolicyLogEntry.FieldName("Message Type"), '=', ' '), Format(RetentionPolicyLogEntry."Message Type"));
+        TelemetryDimensions.Add('LogEntry', RetentionPolicyLogEntry.Message);
 
-        Session.LogMessage('0000D3L', RetentionPolicyLogEntry.Message, ConvertMessageTypeToVerbosity(RetentionPolicyLogEntry."Message Type"), DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        Session.LogMessage('0000D3L', StrSubstNo(RetenPolEntryLoggedLbl, RetentionPolicyLogEntry."Message Type"), ConvertMessageTypeToVerbosity(RetentionPolicyLogEntry."Message Type"), DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
         GlobalLanguage := SavedGlobalLanguage;
     end;
 
@@ -29,10 +31,10 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         TelemetryDimensions.Add('CompanyName', CompanyName());
-        TelemetryDimensions.Add('Table No.', Format(TableNo, 0, 9));
-        TelemetryDimensions.Add('Table Name', TableName);
-        TelemetryDimensions.Add('Records Deleted', Format(RecordCount, 0, 9));
-        TelemetryDimensions.Add('Manual Run', Format(ManualRun, 0, 9));
+        TelemetryDimensions.Add('TableNo', Format(TableNo, 0, 9));
+        TelemetryDimensions.Add('TableName', TableName);
+        TelemetryDimensions.Add('RecordsDeleted', Format(RecordCount, 0, 9));
+        TelemetryDimensions.Add('ManualRun', Format(ManualRun, 0, 9));
 
         Session.LogMessage('0000D6H', StrSubstNo(RecordsDeletedLbl, RecordCount, TableNo, TableName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
     end;
@@ -47,7 +49,8 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
 
         RetentionPolicySetup.SetRange(Enabled, true);
         if (RetentionPolicySetup.Count() = 1) and Rec.Enabled then begin
-            SendTelemetryOnFirstRetentionPolicyEnabled();
+            Rec.CalcFields("Table Name");
+            SendTelemetryOnFirstRetentionPolicyEnabled(Rec."Table Id", Rec."Table Name");
             exit;
         end;
     end;
@@ -61,15 +64,17 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         if Rec.IsTemporary() then
             exit;
 
+        Rec.CalcFields("Table Name");
+
         RetentionPolicySetup.SetRange(Enabled, true);
         Count := RetentionPolicySetup.Count();
         if (Count = 1) and Rec.Enabled and (not xrec.Enabled) then begin
-            SendTelemetryOnFirstRetentionPolicyEnabled();
+            SendTelemetryOnFirstRetentionPolicyEnabled(Rec."Table Id", Rec."Table Name");
             exit;
         end;
 
         if (Count = 0) and xRec.Enabled and (not Rec.Enabled) then begin
-            SendTelemetryOnLastRetentionPolicyDisabled();
+            SendTelemetryOnLastRetentionPolicyDisabled(Rec."Table Id", Rec."Table Name");
             exit;
         end;
     end;
@@ -84,7 +89,8 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
 
         RetentionPolicySetup.SetRange(Enabled, true);
         if (RetentionPolicySetup.Count() = 0) and Rec.Enabled then begin
-            SendTelemetryOnLastRetentionPolicyDisabled();
+            Rec.CalcFields("Table Name");
+            SendTelemetryOnLastRetentionPolicyDisabled(Rec."Table Id", Rec."Table Name");
             exit;
         end;
     end;
@@ -103,19 +109,23 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         end;
     end;
 
-    local procedure SendTelemetryOnFirstRetentionPolicyEnabled()
+    local procedure SendTelemetryOnFirstRetentionPolicyEnabled(TableNo: Integer; TableName: Text)
     var
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         TelemetryDimensions.Add('CompanyName', CompanyName());
-        Session.LogMessage('0000D6I', FirstRetenPolEnabledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        TelemetryDimensions.Add('TableNo', Format(TableNo, 0, 9));
+        TelemetryDimensions.Add('TableName', TableName);
+        Session.LogMessage('0000D6I', StrSubstNo(FirstRetenPolEnabledLbl, CompanyName()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
     end;
 
-    local procedure SendTelemetryOnLastRetentionPolicyDisabled()
+    local procedure SendTelemetryOnLastRetentionPolicyDisabled(TableNo: Integer; TableName: Text)
     var
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         TelemetryDimensions.Add('CompanyName', CompanyName());
-        Session.LogMessage('0000D6J', LastRetenPolDisabledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        TelemetryDimensions.Add('TableNo', Format(TableNo, 0, 9));
+        TelemetryDimensions.Add('TableName', TableName);
+        Session.LogMessage('0000D6J', StrSubstNo(LastRetenPolDisabledLbl, CompanyName()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
     end;
 }

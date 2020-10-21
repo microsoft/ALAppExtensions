@@ -83,10 +83,26 @@ page 30052 "APIV2 - Item Variants"
             Validate("Item Id", GetFilter("Item Id"));
     end;
 
+    trigger OnModifyRecord(): Boolean
+    var
+        ItemVariant: Record "Item Variant";
+    begin
+        ItemVariant.GetBySystemId(Rec.SystemId);
+
+        if "Item No." = ItemVariant."Item No." then
+            Modify(true)
+        else begin
+            ItemVariant.TransferFields(Rec, false);
+            ItemVariant.Rename("Item No.", "Code");
+            TransferFields(ItemVariant, true);
+        end;
+        exit(false);
+    end;
+
     var
         Item: Record Item;
-        ItemIdDoesNotMatchAnEmployeeErr: Label 'The "itemId" does not match to an Item.';
-        ItemNumberDoesNotMatchAnEmployeeErr: Label 'The "itemNumber" does not match to an Item.';
+        ItemIdDoesNotMatchAnEmployeeErr: Label 'The "itemId" does not match to an Item.', Comment = 'itemId is a field name and should not be translated.';
+        ItemNumberDoesNotMatchAnEmployeeErr: Label 'The "itemNumber" does not match to an Item.', Comment = 'itemNumber is a field name and should not be translated.';
         ItemValuesDontMatchErr: Label 'The item values do not match to a specific Item.';
         BlankGuid: Guid;
 }

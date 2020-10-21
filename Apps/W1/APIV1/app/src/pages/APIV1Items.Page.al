@@ -255,7 +255,7 @@ page 20008 "APIV1 - Items"
                     Caption = 'Variants', Locked = true;
                     EntityName = 'itemVariant';
                     EntitySetName = 'itemVariants';
-                    SubPageLink = "Item Id" = field(SystemId), "Item No." = field("No.");
+                    SubPageLink = "Item Id" = field(SystemId);
                 }
             }
         }
