@@ -117,3 +117,17 @@ procedure GetApiSubscriptionDelayTime(): Integer
 *[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
 
 The time value in milliseconds.
+### GetTestAutomationEnabled (Method) <a name="GetTestAutomationEnabled"></a> 
+Checks whether the Test Automation is enabled.
+
+Gets the value of the server setting TestAutomationEnabled.
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure GetTestAutomationEnabled(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if enabled; otherwise, false.

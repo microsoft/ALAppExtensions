@@ -3,7 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-/// <summary></summary>
+/// <summary>
+/// A page to enter an email address.
+/// </summary>
 page 8884 "Email User-Specified Address"
 {
     Caption = 'Enter Email Address';
@@ -39,11 +41,19 @@ page 8884 "Email User-Specified Address"
     var
         EmailAddress: Text;
 
+    /// <summary>
+    /// Gets the email address that has been entered.
+    /// </summary>
+    /// <returns>An email address</returns>
     procedure GetEmailAddress(): Text
     begin
         exit(EmailAddress);
     end;
 
+    /// <summary>
+    /// Sets the inital value to be displayed.
+    /// </summary>
+    /// <param name="Address">The value to be prefilled</param>
     procedure SetEmailAddress(Address: Text)
     begin
         EmailAddress := Address;

@@ -426,6 +426,168 @@ The stream of digital signature.
 
 True if the digital signature is valid.
 
+## DESCryptoServiceProvider (Codeunit 1379)
+
+ Provides helper functions for the Data Encryption Standard (DES)
+ 
+
+### EncryptText (Method) <a name="EncryptText"></a> 
+
+ Encrypts text with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure EncryptText(DecryptedText: Text; Password: Text; Salt: Text)EncryptedText: Text
+```
+#### Parameters
+*DecryptedText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the text to encrypt
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of DotNet System.Security.Cryptography.Rfc2898DeriveBytes
+
+*Salt ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes
+
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+
+### DecryptText (Method) <a name="DecryptText"></a> 
+
+ Decrypts text with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure DecryptText(EncryptedText: Text; Password: Text; Salt: Text)DecryptedText: Text
+```
+#### Parameters
+*EncryptedText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the text to decrypt
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of DotNet System.Security.Cryptography.Rfc2898DeriveBytes
+
+*Salt ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes
+
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+
+### EncryptStream (Method) <a name="EncryptStream"></a> 
+
+ Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[Obsolete('Replaced, add the salt parameter to continue using this function', '18.0')]
+procedure EncryptStream(Password: Text; InputInstream: InStream; var OutputOutstream: Outstream)
+```
+#### Parameters
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes
+
+*InputInstream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+Represents the input instream data to encrypt
+
+*OutputOutstream ([Outstream]())* 
+
+Represents the output instream encrypted data
+
+### DecryptStream (Method) <a name="DecryptStream"></a> 
+
+ Decrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[Obsolete('Replaced, add the salt parameter to continue using this function', '18.0')]
+procedure DecryptStream(Password: Text; InputInstream: InStream; var OutputOutstream: Outstream)
+```
+#### Parameters
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes
+
+*InputInstream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+Represents the input instream data to decrypt
+
+*OutputOutstream ([Outstream]())* 
+
+Represents the output instream decrypted data
+
+### EncryptStream (Method) <a name="EncryptStream"></a> 
+
+ Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure EncryptStream(Password: Text; Salt: Text; InputInstream: InStream; var OutputOutstream: Outstream)
+```
+#### Parameters
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes
+
+*Salt ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes
+
+*InputInstream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+Represents the input instream data to encrypt
+
+*OutputOutstream ([Outstream]())* 
+
+Represents the output instream encrypted data
+
+### DecryptStream (Method) <a name="DecryptStream"></a> 
+
+ Decrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure DecryptStream(Password: Text; Salt: Text; InputInstream: InStream; var OutputOutstream: Outstream)
+```
+#### Parameters
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes
+
+*Salt ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes
+
+*InputInstream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+Represents the input instream data to decrypt
+
+*OutputOutstream ([Outstream]())* 
+
+Represents the output instream decrypted data
+
+
 ## Rfc2898DeriveBytes (Codeunit 1378)
 
  Provides helper functions for the Advanced Encryption Standard.

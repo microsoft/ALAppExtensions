@@ -32,7 +32,7 @@ codeunit 8894 "Email Account"
     /// <summary>
     /// Checks if there is at least one email account registered in Business Central.
     /// </summary>
-    /// <return>True if there is any account registered in the system, otherwise - false.</return>
+    /// <returns>True if there is any account registered in the system, otherwise - false.</returns>
     procedure IsAnyAccountRegistered(): Boolean
     begin
         exit(EmailAccountImpl.IsAnyAccountRegistered());

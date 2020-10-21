@@ -84,6 +84,8 @@ True if there is at least one translation; false, otherwise.
  To get the value of the description field for an item record, call GetValue(Item, Item.FIELDNO(Description)).
  
 
+If the RecVariant parameter is the type Record, and it is temporary.
+
 
  Gets the value of a field in the global language for the record.
  
@@ -115,6 +117,8 @@ The translated value.
  To get the value of the Description field for an item record in Danish, call GetValue(Item, Item.FIELDNO(Description), 1030).
  
 
+If the RecVariant parameter is the type Record, and it is temporary.
+
 
  Gets the value of a field in the language that is specified for the record.
  
@@ -141,6 +145,8 @@ The ID of the language in which to get the field value.
 
 The translated value.
 ### Set (Method) <a name="Set"></a> 
+If the RecVariant parameter is the type Record, and it is temporary.
+
 
  Sets the value of a field to the global language for the record.
  
@@ -163,6 +169,8 @@ The ID of the field to store the translation for.
 The translated value to set.
 
 ### Set (Method) <a name="Set"></a> 
+If the RecVariant parameter is the type Record, and it is temporary.
+
 
  Sets the value of a field to the language specified for the record.
  
@@ -189,6 +197,8 @@ The language id to set the value for.
 The translated value to set.
 
 ### Delete (Method) <a name="Delete"></a> 
+If the RecVariant parameter is the type Record, and it is temporary.
+
 
  Deletes all translations for a persisted (non temporary) record.
  
@@ -203,6 +213,8 @@ procedure Delete(RecVariant: Variant)
 The record for which the translations will be deleted.
 
 ### Delete (Method) <a name="Delete"></a> 
+If the RecVariant parameter is the type Record, and it is temporary.
+
 
  Deletes the translation for a field on a persisted (non temporary) record.
  
@@ -221,6 +233,8 @@ The record with a field for which the translation will be deleted.
 Id of the field for which the translation will be deleted.
 
 ### Show (Method) <a name="Show"></a> 
+If the RecVariant parameter is the type Record, and it is temporary.
+
 
  Shows all language translations that are available for a field in a new page.
  

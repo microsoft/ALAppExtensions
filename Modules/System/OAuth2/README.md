@@ -22,7 +22,7 @@ Use this module to do the following:
 
 ### AcquireTokenByAuthorizationCode (Method) <a name="AcquireTokenByAuthorizationCode"></a> 
 
- Gets the authorization token based on the authorization code via the OAuth2.0 code grant flow. 
+ Gets the authorization token based on the authorization code via the OAuth2 v1.0 code grant flow. 
  
 
 #### Syntax
@@ -64,9 +64,101 @@ Exit parameter containing the access token. When this parameter is empty, check 
 
 Exit parameter containing the encountered error in the authorization code grant flow. This parameter will be empty in case the token is aquired successfuly.
 
+### AcquireTokenByAuthorizationCode (Method) <a name="AcquireTokenByAuthorizationCode"></a> 
+
+ Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireTokenByAuthorizationCode(ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var AuthCodeErr: Text)
+```
+#### Parameters
+*ClientId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.
+
+*ClientSecret ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) secret configured in the "Azure Portal - Certificates & Secrets".
+
+*OAuthAuthorityUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The identity authorization provider URL.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*Scopes ([List of [Text]]())* 
+
+A list of scopes that you want the user to consent to.
+
+*PromptInteraction ([Enum "Prompt Interaction"]())* 
+
+Indicates the type of user interaction that is required.
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token. When this parameter is empty, check the AuthCodeErr for a description of the error.
+
+*AuthCodeErr ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the encountered error in the authorization code grant flow. This parameter will be empty in case the token is aquired successfuly.
+
+### AcquireTokenAndTokenCacheByAuthorizationCode (Method) <a name="AcquireTokenAndTokenCacheByAuthorizationCode"></a> 
+
+ Gets the access token and token cache state with authorization code flow. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireTokenAndTokenCacheByAuthorizationCode(ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var TokenCache: Text; var Error: Text)
+```
+#### Parameters
+*ClientId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.
+
+*ClientSecret ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) secret configured in the "Azure Portal - Certificates & Secrets".
+
+*OAuthAuthorityUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The identity authorization provider URL.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*Scopes ([List of [Text]]())* 
+
+A list of scopes that you want the user to consent to.
+
+*PromptInteraction ([Enum "Prompt Interaction"]())* 
+
+Indicates the type of user interaction that is required.
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token. When this parameter is empty, check the Error for a description of the error.
+
+*TokenCache ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the token cache acquired when the access token was requested.
+
+*Error ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the encountered error in the authorization code grant flow. This parameter will be empty in case the token is aquired successfuly.
+
 ### AcquireOnBehalfOfToken (Method) <a name="AcquireOnBehalfOfToken"></a> 
 
- Gets the authentication token via the On-Behalf-Of OAuth2.0 protocol flow. 
+ Gets the authentication token via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
  
 
 #### Syntax
@@ -88,9 +180,65 @@ The Application ID of the resource the application is requesting access to. This
 
 Exit parameter containing the access token.
 
+### AcquireOnBehalfOfToken (Method) <a name="AcquireOnBehalfOfToken"></a> 
+
+ Gets the authentication token via the On-Behalf-Of OAuth2 v2.0 protocol flow. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireOnBehalfOfToken(RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text)
+```
+#### Parameters
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*Scopes ([List of [Text]]())* 
+
+A list of scopes that you want the user to consent to.
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token.
+
+### RequestClientCredentialsAdminPermissions (Method) <a name="RequestClientCredentialsAdminPermissions"></a> 
+
+ Request the permissions from a directory admin.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure RequestClientCredentialsAdminPermissions(ClientId: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; var HasGrantConsentSucceeded: Boolean; var PermissionGrantError: Text)
+```
+#### Parameters
+*ClientId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) ID that the Azure portal – App registrations experience assigned to your app.
+
+*OAuthAuthorityUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The identity authorization provider URL.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*HasGrantConsentSucceeded ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Exit parameter indicating the success of granting application permissions.
+
+*PermissionGrantError ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the encountered error in the application permissions grant. This parameter will be empty in case the flow is completed successfuly.
+
 ### AcquireTokenWithClientCredentials (Method) <a name="AcquireTokenWithClientCredentials"></a> 
 
- Gets the access token via the Client Credentials grant flow. 
+ Gets the access token via the Client Credentials OAuth2 v1.0 grant flow. 
  
 
 #### Syntax
@@ -124,14 +272,51 @@ The Application ID of the resource the application is requesting access to. This
 
 Exit parameter containing the access token.
 
-### AcquireAuthorizationCodeTokenFromCache (Method) <a name="AcquireAuthorizationCodeTokenFromCache"></a> 
+### AcquireTokenWithClientCredentials (Method) <a name="AcquireTokenWithClientCredentials"></a> 
 
- Gets the access token from the cache. 
+ Gets the access token via the Client Credentials OAuth2 v2.0 grant flow. 
  
 
 #### Syntax
 ```
 [NonDebuggable]
+[TryFunction]
+procedure AcquireTokenWithClientCredentials(ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text)
+```
+#### Parameters
+*ClientId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) ID that the Azure portal – App registrations experience assigned to your app.
+
+*ClientSecret ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) secret configured in the Azure Portal - Certificates & Secrets.
+
+*OAuthAuthorityUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The identity authorization provider URL.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*Scopes ([List of [Text]]())* 
+
+A list of scopes that you want the user to consent to.
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token.
+
+### AcquireAuthorizationCodeTokenFromCache (Method) <a name="AcquireAuthorizationCodeTokenFromCache"></a> 
+
+ Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[Obsolete('Added OAuthority parameter', '17.0')]
 [TryFunction]
 procedure AcquireAuthorizationCodeTokenFromCache(ClientId: Text; ClientSecret: Text; RedirectURL: Text; ResourceURL: Text; var AccessToken: Text)
 ```
@@ -156,9 +341,81 @@ The Application ID of the resource the application is requesting access to. This
 
 Exit parameter containing the access token.
 
+### AcquireAuthorizationCodeTokenFromCache (Method) <a name="AcquireAuthorizationCodeTokenFromCache"></a> 
+
+ Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireAuthorizationCodeTokenFromCache(ClientId: Text; ClientSecret: Text; RedirectURL: Text; OAuthAuthorityUrl: Text; ResourceURL: Text; var AccessToken: Text)
+```
+#### Parameters
+*ClientId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) ID that the Azure portal – App registrations experience assigned to your app.
+
+*ClientSecret ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) secret configured in the Azure Portal - Certificates & Secrets.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*OAuthAuthorityUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The identity authorization provider URL.
+
+*ResourceURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application ID of the resource the application is requesting access to. This parameter can be empty.
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token.
+
+### AcquireAuthorizationCodeTokenFromCache (Method) <a name="AcquireAuthorizationCodeTokenFromCache"></a> 
+
+ Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireAuthorizationCodeTokenFromCache(ClientId: Text; ClientSecret: Text; RedirectURL: Text; OAuthAuthorityUrl: Text; Scopes: List of [Text]; var AccessToken: Text)
+```
+#### Parameters
+*ClientId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) ID that the Azure portal – App registrations experience assigned to your app.
+
+*ClientSecret ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) secret configured in the Azure Portal - Certificates & Secrets.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*OAuthAuthorityUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+
+
+*Scopes ([List of [Text]]())* 
+
+A list of scopes that you want the user to consent to.
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token.
+
 ### AcquireOnBehalfAccessTokenAndRefreshToken (Method) <a name="AcquireOnBehalfAccessTokenAndRefreshToken"></a> 
 
- Gets the access and refresh token via the On-Behalf-Of OAuth2.0 protocol flow. 
+ Gets the access and refresh token via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
  
 
 #### Syntax
@@ -188,9 +445,105 @@ Exit parameter containing the access token.
 
 Exit parameter containing the refresh_token that you acquired when you requested an access token.
 
+### AcquireOnBehalfAccessTokenAndTokenCache (Method) <a name="AcquireOnBehalfAccessTokenAndTokenCache"></a> 
+
+ Gets the access token and token cache  via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireOnBehalfAccessTokenAndTokenCache(OAuthAuthorityUrl: Text; RedirectURL: Text; ResourceURL: Text; var AccessToken: Text; var TokenCache: Text)
+```
+#### Parameters
+*OAuthAuthorityUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The identity authorization provider URL.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*ResourceURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application ID of the resource the application is requesting access to. This parameter can be empty.
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token.
+
+*TokenCache ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the token cache acquired when the access token was requested .
+
+### AcquireOnBehalfAccessTokenAndRefreshToken (Method) <a name="AcquireOnBehalfAccessTokenAndRefreshToken"></a> 
+
+ Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireOnBehalfAccessTokenAndRefreshToken(OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text; var RefreshToken: Text)
+```
+#### Parameters
+*OAuthAuthorityUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The identity authorization provider URL.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*Scopes ([List of [Text]]())* 
+
+A list of scopes that you want the user to consent to.
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token.
+
+*RefreshToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the refresh_token that you acquired when you requested an access token.
+
+### AcquireOnBehalfAccessTokenAndTokenCache (Method) <a name="AcquireOnBehalfAccessTokenAndTokenCache"></a> 
+
+ Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireOnBehalfAccessTokenAndTokenCache(OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text; var TokenCache: Text)
+```
+#### Parameters
+*OAuthAuthorityUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The identity authorization provider URL.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*Scopes ([List of [Text]]())* 
+
+A list of scopes that you want the user to consent to.
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token.
+
+*TokenCache ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the token cache acquired when the access token was requested .
+
 ### AcquireOnBehalfOfTokenByRefreshToken (Method) <a name="AcquireOnBehalfOfTokenByRefreshToken"></a> 
 
- Gets the access and refresh token via the On-Behalf-Of OAuth2.0 protocol flow. 
+ Gets the access and refresh token via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
  
 
 #### Syntax
@@ -224,14 +577,180 @@ Exit parameter containing the access token.
 
 Exit parameter containing the new refresh token.
 
+### AcquireOnBehalfOfTokenByTokenCache (Method) <a name="AcquireOnBehalfOfTokenByTokenCache"></a> 
+
+ Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireOnBehalfOfTokenByTokenCache(LoginHint: Text; RedirectURL: Text; ResourceURL: Text; TokenCache: Text; var AccessToken: Text; var NewTokenCache: Text)
+```
+#### Parameters
+*LoginHint ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The user login hint, i.e. authentication email.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*ResourceURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application ID of the resource the application is requesting access to. This parameter can be empty.
+
+*TokenCache ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The token cache acquired when the access token was requested .
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token.
+
+*NewTokenCache ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the new token cache.
+
+### AcquireOnBehalfOfTokenByRefreshToken (Method) <a name="AcquireOnBehalfOfTokenByRefreshToken"></a> 
+
+ Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireOnBehalfOfTokenByRefreshToken(ClientId: Text; RedirectURL: Text; Scopes: List of [Text]; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
+```
+#### Parameters
+*ClientId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) ID that the Azure portal – App registrations experience assigned to your app.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*Scopes ([List of [Text]]())* 
+
+A list of scopes that you want the user to consent to.
+
+*RefreshToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The refresh_token that you acquired when you requested an access token.
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token.
+
+*NewRefreshToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the new refresh token.
+
+### AcquireOnBehalfOfTokenByTokenCache (Method) <a name="AcquireOnBehalfOfTokenByTokenCache"></a> 
+
+ Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireOnBehalfOfTokenByTokenCache(LoginHint: Text; RedirectURL: Text; Scopes: List of [Text]; TokenCache: Text; var AccessToken: Text; var NewTokenCache: Text)
+```
+#### Parameters
+*LoginHint ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The user login hint, i.e. authentication email.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*Scopes ([List of [Text]]())* 
+
+A list of scopes that you want the user to consent to.
+
+*TokenCache ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The token cache acquired when the access token was requested .
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token.
+
+*NewTokenCache ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the new token cache.
+
+### AcquireOnBehalfOfTokenByTokenCache (Method) <a name="AcquireOnBehalfOfTokenByTokenCache"></a> 
+
+ Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[TryFunction]
+procedure AcquireOnBehalfOfTokenByTokenCache(ClientId: Text; ClientSecret: Text; LoginHint: Text; RedirectURL: Text; Scopes: List of [Text]; TokenCache: Text; var AccessToken: Text; var NewTokenCache: Text)
+```
+#### Parameters
+*ClientId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) ID that the Azure portal - App registrations experience assigned to your app.
+
+*ClientSecret ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Application (client) secret configured in the Azure Portal - Certificates & Secrets.
+
+*LoginHint ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The user login hint, i.e. authentication email.
+
+*RedirectURL ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.
+
+*Scopes ([List of [Text]]())* 
+
+A list of scopes that you want the user to consent to.
+
+*TokenCache ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The token cache acquired when the access token was requested .
+
+*AccessToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the access token.
+
+*NewTokenCache ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Exit parameter containing the new token cache.
+
+### GetDefaultRedirectURL (Method) <a name="GetDefaultRedirectURL"></a> 
+
+ Returns the default Business Central redirectURL 
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetDefaultRedirectURL(var RedirectUrl: text)
+```
+#### Parameters
+*RedirectUrl ([text]())* 
+
+
+
 
 ## OAuth2ControlAddIn (Page 502)
-### SetOAuth2CodeFlowGrantProperties (Method) <a name="SetOAuth2CodeFlowGrantProperties"></a> 
+### SetOAuth2Properties (Method) <a name="SetOAuth2Properties"></a> 
 #### Syntax
 ```
 [Scope('OnPrem')]
-[NonDebuggable]
-procedure SetOAuth2CodeFlowGrantProperties(AuthRequestUrl: Text; AuthInitialState: Text)
+procedure SetOAuth2Properties(AuthRequestUrl: Text; AuthInitialState: Text)
 ```
 #### Parameters
 *AuthRequestUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
@@ -253,15 +772,26 @@ procedure GetAuthCode(): Text
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 
-### GetAuthCodeError (Method) <a name="GetAuthCodeError"></a> 
+### GetAuthError (Method) <a name="GetAuthError"></a> 
 #### Syntax
 ```
 [Scope('OnPrem')]
 [NonDebuggable]
-procedure GetAuthCodeError(): Text
+procedure GetAuthError(): Text
 ```
 #### Return Value
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+
+### GetGrantConsentSuccess (Method) <a name="GetGrantConsentSuccess"></a> 
+#### Syntax
+```
+[Scope('OnPrem')]
+[NonDebuggable]
+procedure GetGrantConsentSuccess(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 
 

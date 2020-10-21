@@ -101,6 +101,29 @@ The user's security ID.
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 The user's authentication object ID.
+### TryGetUserAuthenticationObjectId (Method) <a name="TryGetUserAuthenticationObjectId"></a> 
+    
+ Tries to get the user's authentication object ID.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure TryGetUserAuthenticationObjectId(UserSecurityId: Guid; var AuthenticationObjectId: Text): Boolean
+```
+#### Parameters
+*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The user's security ID.
+
+*AuthenticationObjectId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Var parameter that hold the user's authention object ID.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the call was successful; otherwise - false.
 ### GetUser (Method) <a name="GetUser"></a> 
     
  Gets the user from a given Authentication object ID.
@@ -236,7 +259,10 @@ The full name of the provided Graph user. Can be used to assign to "Full Name" f
  Gets the preferred language ID of the provided Graph user.
  
 
-Preferred language ID is derived from preferredLanguage property on the Graph user.
+
+ Preferred language ID is derived from preferredLanguage property on the Graph user. 
+ If the preferred language is not set or it is set to a language that is not supported in Business Central, the function returns 0.
+ 
 
 #### Syntax
 ```
