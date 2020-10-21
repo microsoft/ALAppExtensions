@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Tests for the Navigation Bar Subscribers module",
-    "version":  "17.0.0.0",
+    "version":  "17.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -12,23 +12,23 @@
     "logo":  "",
     "dependencies":  [
                          {
-                            "id":  "901c89b7-132b-4c59-bb3f-2bfa4fbc70b5",
-                            "name":  "Navigation Bar Subscribers",
-                            "publisher":  "Microsoft",
-                            "version":  "17.0.0.0"
+                             "id":  "901c89b7-132b-4c59-bb3f-2bfa4fbc70b5",
+                             "name":  "Navigation Bar Subscribers",
+                             "publisher":  "Microsoft",
+                             "version":  "17.1.0.0"
                          },
                          {
-                            "id":  "086892d7-4d8b-4e4a-a522-5efdf47923e3",
-                            "name":  "Assisted Setup",
-                            "publisher":  "Microsoft",
-                            "version":  "17.0.0.0"
-                        },
-                        {
-                            "id":  "87c6506c-a822-4ce9-a1c4-aba1b3822e09",
-                            "name":  "Advanced Settings",
-                            "publisher":  "Microsoft",
-                            "version":  "17.0.0.0"
-                        }
+                             "id":  "086892d7-4d8b-4e4a-a522-5efdf47923e3",
+                             "name":  "Assisted Setup",
+                             "publisher":  "Microsoft",
+                             "version":  "17.1.0.0"
+                         },
+                         {
+                             "id":  "87c6506c-a822-4ce9-a1c4-aba1b3822e09",
+                             "name":  "Advanced Settings",
+                             "publisher":  "Microsoft",
+                             "version":  "17.1.0.0"
+                         }
                      ],
     "screenshots":  [
 

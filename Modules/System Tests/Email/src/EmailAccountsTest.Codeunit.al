@@ -11,6 +11,7 @@ codeunit 134686 "Email Accounts Test"
     var
         Assert: Codeunit "Library Assert";
         AccountNameLbl: Label '%1 (%2)';
+        AccountToSelect: Guid;
 
     [Test]
     [Scope('OnPrem')]
@@ -31,7 +32,7 @@ codeunit 134686 "Email Accounts Test"
         AccountsPage.OpenView();
 
         // [Then] The email entry is visible on the page
-        Assert.IsTrue(AccountsPage.GoToKey(EmailAccount."Account Id"), 'The email account should be on the page');
+        Assert.IsTrue(AccountsPage.GoToKey(EmailAccount."Account Id", EmailAccount.Connector), 'The email account should be on the page');
 
         Assert.AreEqual(EmailAccount."Email Address", Format(AccountsPage.EmailAddress), 'The email address on the page is wrong');
         Assert.AreEqual(EmailAccount.Name, Format(AccountsPage.NameField), 'The account name on the page is wrong');
@@ -57,11 +58,11 @@ codeunit 134686 "Email Accounts Test"
         AccountsPage.OpenView();
 
         // [Then] The email entries are visible on the page
-        Assert.IsTrue(AccountsPage.GoToKey(FirstEmailAccount."Account Id"), 'The first email account should be on the page');
+        Assert.IsTrue(AccountsPage.GoToKey(FirstEmailAccount."Account Id", Enum::"Email Connector"::"Test Email Connector"), 'The first email account should be on the page');
         Assert.AreEqual(FirstEmailAccount."Email Address", Format(AccountsPage.EmailAddress), 'The first email address on the page is wrong');
         Assert.AreEqual(FirstEmailAccount.Name, Format(AccountsPage.NameField), 'The first account name on the page is wrong');
 
-        Assert.IsTrue(AccountsPage.GoToKey(SecondEmailAccount."Account Id"), 'The second email account should be on the page');
+        Assert.IsTrue(AccountsPage.GoToKey(SecondEmailAccount."Account Id", Enum::"Email Connector"::"Test Email Connector"), 'The second email account should be on the page');
         Assert.AreEqual(SecondEmailAccount."Email Address", Format(AccountsPage.EmailAddress), 'The second email address on the page is wrong');
         Assert.AreEqual(SecondEmailAccount.Name, Format(AccountsPage.NameField), 'The second account name on the page is wrong');
     end;
@@ -81,7 +82,10 @@ codeunit 134686 "Email Accounts Test"
         AccountWizardPage.Trap();
         Page.Run(Page::"Email Account Wizard");
 
-        // [THEN] The welcome screen is shown and the test connector is shown
+        // [WHEN] The next field is invoked
+        AccountWizardPage.Next.Invoke();
+
+        // [THEN] The connector screen is shown and the test connector is shown
         Assert.IsTrue(AccountWizardPage.Logo.Visible(), 'Connector Logo should be visible');
         Assert.IsTrue(AccountWizardPage.Name.Visible(), 'Connector Name should be visible');
         Assert.IsTrue(AccountWizardPage.Details.Visible(), 'Connector Details should be visible');
@@ -129,7 +133,7 @@ codeunit 134686 "Email Accounts Test"
 
         // [WHEN] The Send Email action is invoked
         Accounts.OpenView();
-        Accounts.GoToKey(TempAccount."Account Id");
+        Accounts.GoToKey(TempAccount."Account Id", TempAccount.Connector);
         Accounts.SendEmail.Invoke();
 
         // [THEN] The Editor page opens to create a new message
@@ -240,6 +244,278 @@ codeunit 134686 "Email Accounts Test"
         Assert.IsTrue(EmailAccount.IsAnyAccountRegistered(), 'There should be a registered account');
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure DeleteAllAccountsTest()
+    var
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailAccountsSelectionMock: Codeunit "Email Accounts Selection Mock";
+        EmailAccountsTestPage: TestPage "Email Accounts";
+        FirstAccountId, SecondAccountId, ThirdAccountId : Guid;
+    begin
+        // [SCENARIO] When all accounts are deleted, the Email Accounts page is empty
+
+        // [GIVEN] A connector is installed and three account are added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(FirstAccountId);
+        ConnectorMock.AddAccount(SecondAccountId);
+        ConnectorMock.AddAccount(ThirdAccountId);
+
+        // [WHEN] Open the Email Accounts page
+        EmailAccountsTestPage.OpenView();
+
+        // [WHEN] Select all of the accounts
+        BindSubscription(EmailAccountsSelectionMock);
+        EmailAccountsSelectionMock.SelectAccount(FirstAccountId);
+        EmailAccountsSelectionMock.SelectAccount(SecondAccountId);
+        EmailAccountsSelectionMock.SelectAccount(ThirdAccountId);
+
+        // [WHEN] Delete action is invoked and the action is confirmed (see ConfirmYesHandler)
+        EmailAccountsTestPage.Delete.Invoke();
+
+        // [THEN] The page is empty
+        Assert.IsFalse(EmailAccountsTestPage.First(), 'The Email Accounts page should be empty');
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmNoHandler')]
+    procedure DeleteAllAccountsCancelTest()
+    var
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailAccountsSelectionMock: Codeunit "Email Accounts Selection Mock";
+        EmailAccountsTestPage: TestPage "Email Accounts";
+        FirstAccountId, SecondAccountId, ThirdAccountId : Guid;
+    begin
+        // [SCENARIO] When all accounts are about to be deleted but the action in canceled, the Email Accounts page contains all of them.
+
+        // [GIVEN] A connector is installed and three account are added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(FirstAccountId);
+        ConnectorMock.AddAccount(SecondAccountId);
+        ConnectorMock.AddAccount(ThirdAccountId);
+
+        // [WHEN] Open the Email Accounts page
+        EmailAccountsTestPage.OpenView();
+
+        // [WHEN] Select all of the accounts
+        BindSubscription(EmailAccountsSelectionMock);
+        EmailAccountsSelectionMock.SelectAccount(FirstAccountId);
+        EmailAccountsSelectionMock.SelectAccount(SecondAccountId);
+        EmailAccountsSelectionMock.SelectAccount(ThirdAccountId);
+
+        // [WHEN] Delete action is invoked and the action is not confirmed (see ConfirmNoHandler)
+        EmailAccountsTestPage.Delete.Invoke();
+
+        // [THEN] All of the accounts are on the page
+        Assert.IsTrue(EmailAccountsTestPage.GoToKey(FirstAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The first email account should be on the page');
+        Assert.IsTrue(EmailAccountsTestPage.GoToKey(SecondAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The second email account should be on the page');
+        Assert.IsTrue(EmailAccountsTestPage.GoToKey(ThirdAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The third email account should be on the page');
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure DeleteSomeAccountsTest()
+    var
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailAccountsSelectionMock: Codeunit "Email Accounts Selection Mock";
+        EmailAccountsTestPage: TestPage "Email Accounts";
+        FirstAccountId, SecondAccountId, ThirdAccountId : Guid;
+    begin
+        // [SCENARIO] When some accounts are deleted, they cannot be found on the page
+
+        // [GIVEN] A connector is installed and three account are added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(FirstAccountId);
+        ConnectorMock.AddAccount(SecondAccountId);
+        ConnectorMock.AddAccount(ThirdAccountId);
+
+        // [WHEN] Open the Email Accounts page
+        EmailAccountsTestPage.OpenView();
+
+        // [WHEN] Select only two of the accounts
+        BindSubscription(EmailAccountsSelectionMock);
+        EmailAccountsSelectionMock.SelectAccount(FirstAccountId);
+        EmailAccountsSelectionMock.SelectAccount(ThirdAccountId);
+
+        // [WHEN] Delete action is invoked and the action is confirmed (see ConfirmYesHandler)
+        EmailAccountsTestPage.Delete.Invoke();
+
+        // [THEN] The deleted accounts are not on the page, the non-deleted accounts are on the page.
+        Assert.IsFalse(EmailAccountsTestPage.GoToKey(FirstAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The first email account should not be on the page');
+        Assert.IsTrue(EmailAccountsTestPage.GoToKey(SecondAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The second email account should be on the page');
+        Assert.IsFalse(EmailAccountsTestPage.GoToKey(ThirdAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The third email account should not be on the page');
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure DeleteNonDefaultAccountTest()
+    var
+        SecondAccount: Record "Email Account";
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailAccountsSelectionMock: Codeunit "Email Accounts Selection Mock";
+        EmailScenario: Codeunit "Email Scenario";
+        EmailAccountsTestPage: TestPage "Email Accounts";
+        FirstAccountId, ThirdAccountId : Guid;
+    begin
+        // [SCENARIO] When the a non default account is deleted, the user is not prompted to choose a new default account.
+
+        // [GIVEN] A connector is installed and three account are added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(FirstAccountId);
+        ConnectorMock.AddAccount(SecondAccount);
+        ConnectorMock.AddAccount(ThirdAccountId);
+
+        // [GIVEN] The second account is set as default
+        EmailScenario.SetDefaultEmailAccount(SecondAccount);
+
+        // [WHEN] Open the Email Accounts page
+        EmailAccountsTestPage.OpenView();
+
+        // [WHEN] Select a non-default account
+        BindSubscription(EmailAccountsSelectionMock);
+        EmailAccountsSelectionMock.SelectAccount(FirstAccountId);
+
+        // [WHEN] Delete action is invoked and the action is confirmed (see ConfirmYesHandler)
+        EmailAccountsTestPage.Delete.Invoke();
+
+        // [THEN] The deleted accounts are not on the page, the non-deleted accounts are on the page.
+        Assert.IsFalse(EmailAccountsTestPage.GoToKey(FirstAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The first email account should not be on the page');
+
+        Assert.IsTrue(EmailAccountsTestPage.GoToKey(SecondAccount."Account Id", Enum::"Email Connector"::"Test Email Connector"), 'The second email account should be on the page');
+        Assert.IsTrue(GetDefaultFieldValueAsBoolean(EmailAccountsTestPage.DefaultField.Value), 'The second account should be marked as default');
+
+        Assert.IsTrue(EmailAccountsTestPage.GoToKey(ThirdAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The third email account should be on the page');
+        Assert.IsFalse(GetDefaultFieldValueAsBoolean(EmailAccountsTestPage.DefaultField.Value), 'The third account should not be marked as default');
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure DeleteDefaultAccountTest()
+    var
+        SecondAccount: Record "Email Account";
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailAccountsSelectionMock: Codeunit "Email Accounts Selection Mock";
+        EmailScenario: Codeunit "Email Scenario";
+        EmailAccountsTestPage: TestPage "Email Accounts";
+        FirstAccountId, ThirdAccountId : Guid;
+    begin
+        // [SCENARIO] When the default account is deleted, the user is not prompted to choose a new default account if there's only one account left
+
+        // [GIVEN] A connector is installed and three account are added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(FirstAccountId);
+        ConnectorMock.AddAccount(SecondAccount);
+        ConnectorMock.AddAccount(ThirdAccountId);
+
+        // [GIVEN] The second account is set as default
+        EmailScenario.SetDefaultEmailAccount(SecondAccount);
+
+        // [WHEN] Open the Email Accounts page
+        EmailAccountsTestPage.OpenView();
+
+        // [WHEN] Select accounts including the default one
+        BindSubscription(EmailAccountsSelectionMock);
+        EmailAccountsSelectionMock.SelectAccount(SecondAccount."Account Id");
+        EmailAccountsSelectionMock.SelectAccount(ThirdAccountId);
+
+        // [WHEN] Delete action is invoked and the action is confirmed (see ConfirmYesHandler)
+        EmailAccountsTestPage.Delete.Invoke();
+
+        // [THEN] The deleted accounts are not on the page, the non-deleted accounts are on the page.
+        Assert.IsTrue(EmailAccountsTestPage.GoToKey(FirstAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The first email account should be on the page');
+        Assert.IsTrue(GetDefaultFieldValueAsBoolean(EmailAccountsTestPage.DefaultField.Value), 'The first account should be marked as default');
+
+        Assert.IsFalse(EmailAccountsTestPage.GoToKey(SecondAccount."Account Id", Enum::"Email Connector"::"Test Email Connector"), 'The second email account should not be on the page');
+        Assert.IsFalse(EmailAccountsTestPage.GoToKey(ThirdAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The third email account should not be on the page');
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler,ChooseNewDefaultAccountCancelHandler')]
+    procedure DeleteDefaultAccountPromptNewAccountCancelTest()
+    var
+        SecondAccount: Record "Email Account";
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailAccountsSelectionMock: Codeunit "Email Accounts Selection Mock";
+        EmailScenario: Codeunit "Email Scenario";
+        EmailAccountsTestPage: TestPage "Email Accounts";
+        FirstAccountId, ThirdAccountId : Guid;
+    begin
+        // [SCENARIO] When the default account is deleted, the user is prompted to choose a new default account but they cancel.
+
+        // [GIVEN] A connector is installed and three account are added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(FirstAccountId);
+        ConnectorMock.AddAccount(SecondAccount);
+        ConnectorMock.AddAccount(ThirdAccountId);
+
+        // [GIVEN] The second account is set as default
+        EmailScenario.SetDefaultEmailAccount(SecondAccount);
+
+        // [WHEN] Open the Email Accounts page
+        EmailAccountsTestPage.OpenView();
+
+        // [WHEN] Select the default account
+        BindSubscription(EmailAccountsSelectionMock);
+        EmailAccountsSelectionMock.SelectAccount(SecondAccount."Account Id");
+
+        // [WHEN] Delete action is invoked and the action is confirmed (see ConfirmYesHandler)
+        AccountToSelect := ThirdAccountId; // The third account is selected as the new default account
+        EmailAccountsTestPage.Delete.Invoke();
+
+        // [THEN] The default account was deleted and there is no new default account
+        Assert.IsTrue(EmailAccountsTestPage.GoToKey(FirstAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The first email account should be on the page');
+        Assert.IsFalse(GetDefaultFieldValueAsBoolean(EmailAccountsTestPage.DefaultField.Value), 'The third account should not be marked as default');
+
+        Assert.IsFalse(EmailAccountsTestPage.GoToKey(SecondAccount."Account Id", Enum::"Email Connector"::"Test Email Connector"), 'The second email account should not be on the page');
+
+        Assert.IsTrue(EmailAccountsTestPage.GoToKey(ThirdAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The third email account should be on the page');
+        Assert.IsFalse(GetDefaultFieldValueAsBoolean(EmailAccountsTestPage.DefaultField.Value), 'The third account should not be marked as default');
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler,ChooseNewDefaultAccountHandler')]
+    procedure DeleteDefaultAccountPromptNewAccountTest()
+    var
+        SecondAccount: Record "Email Account";
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailAccountsSelectionMock: Codeunit "Email Accounts Selection Mock";
+        EmailScenario: Codeunit "Email Scenario";
+        EmailAccountsTestPage: TestPage "Email Accounts";
+        FirstAccountId, ThirdAccountId : Guid;
+    begin
+        // [SCENARIO] When the default account is deleted, the user is prompted to choose a new default account
+
+        // [GIVEN] A connector is installed and three account are added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(FirstAccountId);
+        ConnectorMock.AddAccount(SecondAccount);
+        ConnectorMock.AddAccount(ThirdAccountId);
+
+        // [GIVEN] The second account is set as default
+        EmailScenario.SetDefaultEmailAccount(SecondAccount);
+
+        // [WHEN] Open the Email Accounts page
+        EmailAccountsTestPage.OpenView();
+
+        // [WHEN] Select the default account
+        BindSubscription(EmailAccountsSelectionMock);
+        EmailAccountsSelectionMock.SelectAccount(SecondAccount."Account Id");
+
+        // [WHEN] Delete action is invoked and the action is confirmed (see ConfirmYesHandler)
+        AccountToSelect := ThirdAccountId; // The third account is selected as the new default account
+        EmailAccountsTestPage.Delete.Invoke();
+
+        // [THEN] The second account is not on the page, the third account is set as default
+        Assert.IsTrue(EmailAccountsTestPage.GoToKey(FirstAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The first email account should be on the page');
+        Assert.IsFalse(GetDefaultFieldValueAsBoolean(EmailAccountsTestPage.DefaultField.Value), 'The first account should not be marked as default');
+
+        Assert.IsFalse(EmailAccountsTestPage.GoToKey(SecondAccount."Account Id", Enum::"Email Connector"::"Test Email Connector"), 'The second email account should not be on the page');
+
+        Assert.IsTrue(EmailAccountsTestPage.GoToKey(ThirdAccountId, Enum::"Email Connector"::"Test Email Connector"), 'The third email account should be on the page');
+        Assert.IsTrue(GetDefaultFieldValueAsBoolean(EmailAccountsTestPage.DefaultField.Value), 'The third account should be marked as default');
+    end;
+
+
     [ModalPageHandler]
     procedure AddAccountModalPageHandler(var AccountWizzardTestPage: TestPage "Email Account Wizard")
     begin
@@ -252,4 +528,40 @@ codeunit 134686 "Email Accounts Test"
 
     end;
 
+    [ModalPageHandler]
+    procedure ChooseAccountCancel(var AccountWizzardTestPage: TestPage "Email Account Wizard")
+    begin
+
+    end;
+
+    [ModalPageHandler]
+    procedure ChooseNewDefaultAccountCancelHandler(var AccountsPage: TestPage "Email Accounts")
+    begin
+        AccountsPage.Cancel().Invoke();
+    end;
+
+
+    [ModalPageHandler]
+    procedure ChooseNewDefaultAccountHandler(var AccountsPage: TestPage "Email Accounts")
+    begin
+        AccountsPage.GoToKey(AccountToSelect, Enum::"Email Connector"::"Test Email Connector");
+        AccountsPage.OK().Invoke();
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmYesHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmNoHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := false;
+    end;
+
+    local procedure GetDefaultFieldValueAsBoolean(DefaultFieldValue: Text): Boolean
+    begin
+        exit(DefaultFieldValue = '✓');
+    end;
 }

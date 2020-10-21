@@ -121,12 +121,12 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(billToName; "Bill-to Name")
                 {
-                    Caption = 'Bill To Name';
+                    Caption = 'Bill-to Name';
                     Editable = false;
                 }
                 field(billToCustomerId; "Bill-to Customer Id")
                 {
-                    Caption = 'Bill To Customer Id';
+                    Caption = 'Bill-to Customer Id';
 
                     trigger OnValidate()
                     var
@@ -144,7 +144,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(billToCustomerNumber; "Bill-to Customer No.")
                 {
-                    Caption = 'Bill To Customer Number';
+                    Caption = 'Bill-to Customer No.';
 
                     trigger OnValidate()
                     var
@@ -168,7 +168,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(shipToName; "Ship-to Name")
                 {
-                    Caption = 'Ship To Name';
+                    Caption = 'Ship-to Name';
 
                     trigger OnValidate()
                     begin
@@ -181,7 +181,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(shipToContact; "Ship-to Contact")
                 {
-                    Caption = 'Ship To Contact';
+                    Caption = 'Ship-to Contact';
 
                     trigger OnValidate()
                     begin
@@ -194,7 +194,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(sellToAddressLine1; "Sell-to Address")
                 {
-                    Caption = 'Sell To Address Line 1';
+                    Caption = 'Sell-to Address Line 1';
 
                     trigger OnValidate()
                     begin
@@ -203,7 +203,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(sellToAddressLine2; "Sell-to Address 2")
                 {
-                    Caption = 'Sell To Address Line 2';
+                    Caption = 'Sell-to Address Line 2';
 
                     trigger OnValidate()
                     begin
@@ -212,7 +212,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(sellToCity; "Sell-to City")
                 {
-                    Caption = 'Sell To City';
+                    Caption = 'Sell-to City';
 
                     trigger OnValidate()
                     begin
@@ -221,7 +221,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(sellToCountry; "Sell-to Country/Region Code")
                 {
-                    Caption = 'Sell To Country/Region Code';
+                    Caption = 'Sell-to Country/Region Code';
 
                     trigger OnValidate()
                     begin
@@ -230,7 +230,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(sellToState; "Sell-to County")
                 {
-                    Caption = 'Sell To State';
+                    Caption = 'Sell-to State';
 
                     trigger OnValidate()
                     begin
@@ -239,7 +239,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(sellToPostCode; "Sell-to Post Code")
                 {
-                    Caption = 'Sell To Post Code';
+                    Caption = 'Sell-to Post Code';
 
                     trigger OnValidate()
                     begin
@@ -248,22 +248,22 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(billToAddressLine1; "Bill-to Address")
                 {
-                    Caption = 'Bill To Address Line 1';
+                    Caption = 'Bill-to Address Line 1';
                     Editable = false;
                 }
                 field(billToAddressLine2; "Bill-to Address 2")
                 {
-                    Caption = 'Bill To Address Line 2';
+                    Caption = 'Bill-to Address Line 2';
                     Editable = false;
                 }
                 field(billToCity; "Bill-to City")
                 {
-                    Caption = 'Bill To City';
+                    Caption = 'Bill-to City';
                     Editable = false;
                 }
                 field(billToCountry; "Bill-to Country/Region Code")
                 {
-                    Caption = 'Bill To Country/Region Code';
+                    Caption = 'Bill-to Country/Region Code';
                     Editable = false;
                 }
                 field(billToState; "Bill-to County")
@@ -273,12 +273,12 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(billToPostCode; "Bill-to Post Code")
                 {
-                    Caption = 'Bill To Post Code';
+                    Caption = 'Bill-to Post Code';
                     Editable = false;
                 }
                 field(shipToAddressLine1; "Ship-to Address")
                 {
-                    Caption = 'Ship To Address Line 1';
+                    Caption = 'Ship-to Address Line 1';
 
                     trigger OnValidate()
                     begin
@@ -289,7 +289,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(shipToAddressLine2; "Ship-to Address 2")
                 {
-                    Caption = 'Ship To Address Line 2';
+                    Caption = 'Ship-to Address Line 2';
 
                     trigger OnValidate()
                     begin
@@ -300,7 +300,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(shipToCity; "Ship-to City")
                 {
-                    Caption = 'Ship To City';
+                    Caption = 'Ship-to City';
 
                     trigger OnValidate()
                     begin
@@ -311,7 +311,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(shipToCountry; "Ship-to Country/Region Code")
                 {
-                    Caption = 'Ship To Country/Region Code';
+                    Caption = 'Ship-to Country/Region Code';
 
                     trigger OnValidate()
                     begin
@@ -322,7 +322,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(shipToState; "Ship-to County")
                 {
-                    Caption = 'Ship To State';
+                    Caption = 'Ship-to State';
 
                     trigger OnValidate()
                     begin
@@ -333,7 +333,7 @@ page 30028 "APIV2 - Sales Orders"
                 }
                 field(shipToPostCode; "Ship-to Post Code")
                 {
-                    Caption = 'Ship To Post Code';
+                    Caption = 'Ship-to Post Code';
 
                     trigger OnValidate()
                     begin
@@ -634,8 +634,8 @@ page 30028 "APIV2 - Sales Orders"
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         LCYCurrencyCode: Code[10];
         CurrencyCodeTxt: Text;
-        CannotChangeIDErr: Label 'The "id" cannot be changed.';
-        SellToCustomerNotProvidedErr: Label 'A "customerNumber" or a "customerId" must be provided.';
+        CannotChangeIDErr: Label 'The "id" cannot be changed.', Comment = 'id is a field name and should not be translated.';
+        SellToCustomerNotProvidedErr: Label 'A "customerNumber" or a "customerId" must be provided.', Comment = 'customerNumber and customerId are field names and should not be translated.';
         SellToCustomerValuesDontMatchErr: Label 'The sell-to customer values do not match to a specific Customer.';
         BillToCustomerValuesDontMatchErr: Label 'The bill-to customer values do not match to a specific Customer.';
         CouldNotFindSellToCustomerErr: Label 'The sell-to customer cannot be found.';
@@ -643,10 +643,10 @@ page 30028 "APIV2 - Sales Orders"
         PartialOrderShipping: Boolean;
         SalesOrderPermissionsErr: Label 'You do not have permissions to read Sales Orders.';
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.';
-        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.';
-        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.';
-        PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.';
-        ShipmentMethodIdDoesNotMatchAShipmentMethodErr: Label 'The "shipmentMethodId" does not match to a Shipment Method.';
+        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.', Comment = 'currencyId is a field name and should not be translated.';
+        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.', Comment = 'currencyCode is a field name and should not be translated.';
+        PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.', Comment = 'paymentTermsId is a field name and should not be translated.';
+        ShipmentMethodIdDoesNotMatchAShipmentMethodErr: Label 'The "shipmentMethodId" does not match to a Shipment Method.', Comment = 'shipmentMethodId is a field name and should not be translated.';
         CannotFindOrderErr: Label 'The order cannot be found.';
         DiscountAmountSet: Boolean;
         InvoiceDiscountAmount: Decimal;

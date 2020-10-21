@@ -629,7 +629,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         TestCoverLetterPaymentLinkInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('EmailEditorHandler,MessageHandler,CloseEmailEditorHandler')]
     procedure TestCoverLetterPaymentLink();
     var

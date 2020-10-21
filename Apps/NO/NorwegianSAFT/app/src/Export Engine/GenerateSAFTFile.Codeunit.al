@@ -283,6 +283,7 @@ codeunit 10673 "Generate SAF-T File"
     var
         CustomerPostingGroup: Record "Customer Posting Group";
         CustomerBankAccount: Record "Customer Bank Account";
+        CustLedgerEntry: Record "Cust. Ledger Entry";
         OpeningDebitBalance: Decimal;
         ClosingDebitBalance: Decimal;
         OpeningCreditBalance: Decimal;
@@ -291,6 +292,11 @@ codeunit 10673 "Generate SAF-T File"
         FirstName: Text;
         LastName: Text;
     begin
+        CustLedgerEntry.SetCurrentKey("Customer No.", "Posting Date");
+        CustLedgerEntry.SetRange("Customer No.", Customer."No.");
+        CustLedgerEntry.SetRange("Posting Date", SAFTExportHeader."Starting Date", closingdate(SAFTExportHeader."Ending Date"));
+        if CustLedgerEntry.IsEmpty() then
+            exit;
         Customer.SetRange("Date Filter", 0D, closingdate(SAFTExportHeader."Starting Date" - 1));
         Customer.CalcFields("Net Change (LCY)");
         if Customer."Net Change (LCY)" > 0 then
@@ -303,8 +309,6 @@ codeunit 10673 "Generate SAF-T File"
             ClosingDebitBalance := Customer."Net Change (LCY)"
         else
             ClosingCreditBalance := -Customer."Net Change (LCY)";
-        If (ClosingDebitBalance = 0) and (ClosingCreditBalance = 0) then
-            exit;
 
         SAFTXMLHelper.AddNewXMLNode('Customer', '');
         SAFTXMLHelper.AppendXMLNode('RegistrationNumber', Customer."VAT Registration No.");
@@ -365,6 +369,7 @@ codeunit 10673 "Generate SAF-T File"
     var
         VendorPostingGroup: Record "Vendor Posting Group";
         VendorBankAccount: Record "Vendor Bank Account";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
         OpeningDebitBalance: Decimal;
         ClosingDebitBalance: Decimal;
         OpeningCreditBalance: Decimal;
@@ -373,6 +378,11 @@ codeunit 10673 "Generate SAF-T File"
         FirstName: Text;
         LastName: Text;
     begin
+        VendorLedgerEntry.SetCurrentKey("Vendor No.", "Posting Date");
+        VendorLedgerEntry.SetRange("Vendor No.", Vendor."No.");
+        VendorLedgerEntry.SetRange("Posting Date", SAFTExportHeader."Starting Date", closingdate(SAFTExportHeader."Ending Date"));
+        if VendorLedgerEntry.IsEmpty() then
+            exit;
         Vendor.SetRange("Date Filter", 0D, closingdate(SAFTExportHeader."Starting Date" - 1));
         Vendor.CalcFields("Net Change (LCY)");
         if Vendor."Net Change (LCY)" > 0 then
@@ -385,8 +395,6 @@ codeunit 10673 "Generate SAF-T File"
             ClosingDebitBalance := Vendor."Net Change (LCY)"
         else
             ClosingCreditBalance := -Vendor."Net Change (LCY)";
-        If (ClosingDebitBalance = 0) and (ClosingCreditBalance = 0) then
-            exit;
 
         SAFTXMLHelper.AddNewXMLNode('Supplier', '');
         SAFTXMLHelper.AppendXMLNode('RegistrationNumber', Vendor."VAT Registration No.");

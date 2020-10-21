@@ -261,4 +261,10 @@ page 149004 "BCPT Lines"
             exit(0);
         exit(round((100 * (No - BaseNo)) / BaseNo, 0.1));
     end;
+
+    internal procedure Refresh()
+    begin
+        CurrPage.Update(false);
+        if Find() then;
+    end;
 }

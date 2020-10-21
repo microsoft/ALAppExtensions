@@ -1,0 +1,36 @@
+{
+    "id": "fb8910aa-5068-4331-bdd7-03e7af8c4f96",
+    "name": "Barcode Test",
+    "publisher": "Microsoft",
+    "brief": "",
+    "description": "Verify the barcode font .Net",
+    "version": "17.1.0.0",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help": "",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo": "",
+    "dependencies": [
+        {
+            "id": "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+            "name": "DotNet Aliases",
+            "publisher": "Microsoft",
+            "version": "17.1.0.0"
+        },
+        {
+            "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+            "name": "Library Assert",
+            "publisher": "Microsoft",
+            "version": "17.1.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "17.0.0.0",
+    "idRanges": [
+        {
+            "from": 135042,
+            "to": 135042
+        }
+    ],
+    "target": "OnPrem"
+}

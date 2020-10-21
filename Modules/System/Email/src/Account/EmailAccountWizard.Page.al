@@ -11,7 +11,7 @@ page 8886 "Email Account Wizard"
     PageType = NavigatePage;
     ApplicationArea = All;
     UsageCategory = Administration;
-    Caption = 'Set Up Email Account';
+    Caption = 'Set Up Email';
     SourceTable = "Email Connector";
     SourceTableTemporary = true;
     InsertAllowed = false;
@@ -25,29 +25,12 @@ page 8886 "Email Account Wizard"
     {
         area(Content)
         {
-            group(Header)
-            {
-                ShowCaption = false;
-                Visible = ConnectorsGroupVisible and not Done;
-
-                group(Privacy)
-                {
-                    Caption = 'Privacy notice';
-                    InstructionalText = 'By adding an email account you acknowledge that the email provider might be able to access the data you send in emails from Business Central.';
-                }
-
-                group(UsageWarning)
-                {
-                    ShowCaption = false;
-                    InstructionalText = 'Use caution when adding email accounts. The accounts are available to all of your Business Central users.';
-                }
-            }
 
             group(Done)
             {
                 Editable = false;
                 ShowCaption = false;
-                Visible = TopBannerVisible and not Done;
+                Visible = not DoneVisible and TopBannerVisible;
                 field(NotDoneIcon; MediaResourcesStandard."Media Reference")
                 {
                     ApplicationArea = All;
@@ -61,7 +44,7 @@ page 8886 "Email Account Wizard"
             {
                 Editable = false;
                 ShowCaption = false;
-                Visible = TopBannerVisible and Done;
+                Visible = DoneVisible and TopBannerVisible;
                 field(DoneIcon; MediaResourcesDone."Media Reference")
                 {
                     ApplicationArea = All;
@@ -72,9 +55,58 @@ page 8886 "Email Account Wizard"
                 }
             }
 
+            group(Header)
+            {
+                ShowCaption = false;
+                Visible = WelcomeVisible;
+
+                group(HeaderText)
+                {
+                    Caption = 'Welcome to email in Business Central';
+                    InstructionalText = 'Make outbound email communications easier by connecting email accounts to Business Central. For example, send sales quotes and orders without opening an email app.';
+                }
+
+                field(LearnMoreHeader; LearnMoreTok)
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    ShowCaption = false;
+                    Caption = ' ';
+                    ToolTip = 'View information about how to set up the email capabilities.';
+
+                    trigger OnDrillDown()
+                    begin
+                        Hyperlink(LearnMoreURLTxt);
+                    end;
+                }
+
+                group(Privacy)
+                {
+                    Caption = 'Privacy notice';
+                    InstructionalText = 'By adding an email account you acknowledge that the email provider might be able to access the data you send in emails from Business Central.';
+                }
+
+                group(GetStartedText)
+                {
+                    Caption = 'Let''s go!';
+                    InstructionalText = 'Choose Next to get started.';
+                }
+            }
+
+            group(ConnectorHeader)
+            {
+                ShowCaption = false;
+                Visible = ChooseConnectorVisible and ConnectorsAvailable;
+
+                label(UsageWarning)
+                {
+                    Caption = 'Use caution when adding email accounts. Depending on your setup, accounts can be available to all users.';
+                }
+            }
+
             group(ConnectorsGroup)
             {
-                Visible = ConnectorsGroupVisible and not Done;
+                Visible = ChooseConnectorVisible and ConnectorsAvailable;
                 label("Specify the type of email account to add")
                 {
                     ApplicationArea = All;
@@ -83,18 +115,18 @@ page 8886 "Email Account Wizard"
                 repeater(Connectors)
                 {
                     ShowCaption = false;
-                    Visible = ConnectorsGroupVisible;
+                    Visible = ChooseConnectorVisible and ConnectorsAvailable;
                     FreezeColumn = Name;
                     Editable = false;
 
-                    #pragma warning disable 
+#pragma warning disable
                     field(Logo; Logo)
-                    #pragma warning enable 
+#pragma warning enable 
                     {
                         ApplicationArea = All;
                         Caption = ' ';
                         Editable = false;
-                        Visible = ConnectorsGroupVisible;
+                        Visible = ChooseConnectorVisible;
                         ToolTip = 'Select the type of account you want to create.';
                         ShowCaption = false;
                         Width = 1;
@@ -121,7 +153,7 @@ page 8886 "Email Account Wizard"
 
             group(NoConnectrosAvailableGroup)
             {
-                Visible = not ConnectorsGroupVisible and not Done;
+                Visible = ChooseConnectorVisible and not ConnectorsAvailable;
                 label(NoConnectorsAvailable)
                 {
                     ApplicationArea = All;
@@ -176,7 +208,7 @@ page 8886 "Email Account Wizard"
                     Editable = false;
                     ShowCaption = false;
                     Caption = ' ';
-                    ToolTip = 'Navigate to Extension Management page.';
+                    ToolTip = 'View information about how to set up the email capabilities.';
 
                     trigger OnDrillDown()
                     begin
@@ -187,7 +219,7 @@ page 8886 "Email Account Wizard"
 
             group(LastPage)
             {
-                Visible = Done;
+                Visible = DoneVisible;
 
                 group(AllSet)
                 {
@@ -239,7 +271,7 @@ page 8886 "Email Account Wizard"
             action(Cancel)
             {
                 ApplicationArea = All;
-                Visible = not Done;
+                Visible = CancelActionVisible;
                 Caption = 'Cancel';
                 ToolTip = 'Cancel';
                 InFooterBar = true;
@@ -251,38 +283,42 @@ page 8886 "Email Account Wizard"
                 end;
             }
 
+            action(Back)
+            {
+                ApplicationArea = All;
+                Visible = BackActionVisible;
+                Enabled = BackActionEnabled;
+                Caption = 'Back';
+                ToolTip = 'Back';
+                InFooterBar = true;
+                Image = PreviousRecord;
+
+                trigger OnAction()
+                begin
+                    NextStep(true);
+                end;
+            }
+
             action(Next)
             {
                 ApplicationArea = All;
-                Visible = not Done and ConnectorsGroupVisible;
+                Visible = NextActionVisible;
+                Enabled = NextActionEnabled;
                 Caption = 'Next';
                 ToolTip = 'Next';
                 InFooterBar = true;
                 Image = NextRecord;
 
                 trigger OnAction()
-                var
-                    EmailConnector: Interface "Email Connector";
                 begin
-                    if (Rec.Connector = 0) then exit;
-                    EmailConnector := Rec.Connector;
-
-                    ClearLastError();
-                    Done := EmailConnector.RegisterAccount(RegisteredAccount);
-
-                    RegisteredAccount.Connector := Rec.Connector;
-
-                    if Done then begin
-                        Session.LogMessage('0000CTH', Format(Rec.Connector) + ' account has been setup.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-                    end else
-                        Session.LogMessage('0000CTI', StrSubstNo(Format(Rec.Connector) + ' account has failed to setup. Error: %1', GetLastErrorCallStack()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+                    NextStep(false);
                 end;
             }
 
             action(Finish)
             {
                 ApplicationArea = All;
-                Visible = Done;
+                Visible = FinishActionVisible;
                 Caption = 'Finish';
                 ToolTip = 'Finish';
                 InFooterBar = true;
@@ -302,7 +338,7 @@ page 8886 "Email Account Wizard"
             action(TestEmail)
             {
                 ApplicationArea = All;
-                Visible = Done;
+                Visible = TestEmailActionVisible;
                 Caption = 'Send Test Email';
                 ToolTip = 'Send Test Email';
                 InFooterBar = true;
@@ -326,7 +362,7 @@ page 8886 "Email Account Wizard"
         DurationAsInt: Integer;
     begin
         DurationAsInt := CurrentDateTime() - StartTime;
-        if Done then
+        if Step = Step::Done then
             Session.LogMessage('0000CTK', StrSubstNo(AccountCreationSuccessfullyCompletedDurationLbl, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl)
         else
             Session.LogMessage('0000CTL', StrSubstNo(AccountCreationFailureDurationLbl, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
@@ -335,17 +371,122 @@ page 8886 "Email Account Wizard"
     trigger OnInit()
     var
         DefaultAccount: Record "Email Account";
-        EmailImpl: Codeunit "Email Impl";
+        EmailAccountImpl: Codeunit "Email Account Impl.";
         EmailScenario: Codeunit "Email Scenario";
     begin
-        EmailImpl.FindAllConnectors(Rec);
+        EmailAccountImpl.CheckPermissions();
+
+        Step := Step::Welcome;
+        SetDefaultControls();
+        ShowWelcomeStep();
+
+        EmailAccountImpl.FindAllConnectors(Rec);
 
         if not EmailScenario.GetDefaultEmailAccount(DefaultAccount) then
             SetAsDefault := true;
 
-        ConnectorsGroupVisible := Rec.FindFirst(); // Set the focus on the first record
+        ConnectorsAvailable := Rec.FindFirst(); // Set the focus on the first record
         AppSourceAvailable := AppSource.IsAvailable();
         LoadTopBanners();
+    end;
+
+    local procedure NextStep(Backwards: Boolean)
+    begin
+        if Backwards then
+            Step -= 1
+        else
+            Step += 1;
+
+        SetDefaultControls();
+
+        case Step of
+            Step::Welcome:
+                ShowWelcomeStep();
+            Step::"Choose Connector":
+                ShowChooseConnectorStep();
+            Step::"Register Account":
+                ShowRegisterAccountStep();
+            Step::"Done":
+                ShowDoneStep();
+        end;
+    end;
+
+    local procedure ShowWelcomeStep()
+    begin
+        WelcomeVisible := true;
+        BackActionEnabled := false;
+    end;
+
+    local procedure ShowChooseConnectorStep()
+    begin
+        if not ConnectorsAvailable then
+            NextActionEnabled := false;
+
+        ChooseConnectorVisible := true;
+    end;
+
+    local procedure ShowRegisterAccountStep()
+    var
+        AccountWasRegistered: Boolean;
+        ConnectorSucceeded: Boolean;
+    begin
+        ConnectorSucceeded := TryRegisterAccount(AccountWasRegistered);
+
+        if AccountWasRegistered then begin
+            Session.LogMessage('0000CTH', Format(Rec.Connector) + ' account has been setup.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            NextStep(false);
+        end else begin
+            Session.LogMessage('0000CTI', StrSubstNo(Format(Rec.Connector) + ' account has failed to setup. Error: %1', GetLastErrorCallStack()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            NextStep(true);
+        end;
+
+        if not ConnectorSucceeded then
+            Error(GetLastErrorText());
+    end;
+
+    [TryFunction]
+    local procedure TryRegisterAccount(var AccountWasRegistered: Boolean)
+    var
+        EmailAccountImpl: Codeunit "Email Account Impl.";
+        EmailConnector: Interface "Email Connector";
+    begin
+        // Check to validate that the connector is still installed
+        // The connector could have been uninstalled by another user/session
+        if not EmailAccountImpl.IsValidConnector(Rec.Connector) then
+            Error(EmailConnectorHasBeenUninstalledMsg);
+
+        EmailConnector := Rec.Connector;
+
+        ClearLastError();
+        AccountWasRegistered := EmailConnector.RegisterAccount(RegisteredAccount);
+        RegisteredAccount.Connector := Rec.Connector;
+    end;
+
+    local procedure ShowDoneStep()
+    begin
+        DoneVisible := true;
+        BackActionVisible := false;
+        NextActionVisible := false;
+        CancelActionVisible := false;
+        FinishActionVisible := true;
+        TestEmailActionVisible := true;
+    end;
+
+    local procedure SetDefaultControls()
+    begin
+        // Actions
+        BackActionVisible := true;
+        BackActionEnabled := true;
+        NextActionVisible := true;
+        NextActionEnabled := true;
+        CancelActionVisible := true;
+        FinishActionVisible := false;
+        TestEmailActionVisible := false;
+
+        // Groups
+        WelcomeVisible := false;
+        ChooseConnectorVisible := false;
+        DoneVisible := false;
     end;
 
     local procedure LoadTopBanners()
@@ -356,28 +497,37 @@ page 8886 "Email Account Wizard"
             TopBannerVisible := MediaResourcesDone."Media Reference".HasValue();
     end;
 
-
     var
+        Step: Option Welcome,"Choose Connector","Register Account",Done;
         RegisteredAccount: Record "Email Account";
         MediaResourcesStandard: Record "Media Resources";
         MediaResourcesDone: Record "Media Resources";
-        ConnectorsGroupVisible: Boolean;
         AppSourceTok: Label 'AppSource';
         ExtensionManagementTok: Label 'Extension Management';
         EmailCategoryLbl: Label 'Email', Locked = true;
         LearnMoreURLTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2134520', Locked = true;
-        LearnMoreTok: Label 'Learn More';
+        LearnMoreTok: Label 'Learn more';
         AccountCreationSuccessfullyCompletedDurationLbl: Label 'Successful creation of account completed. Duration: %1 milliseconds.', Comment = '%1 - Duration', Locked = true;
         AccountCreationFailureDurationLbl: Label 'Creation of account failed. Duration: %1 milliseconds.', Comment = '%1 - Duration', Locked = true;
+        EmailConnectorHasBeenUninstalledMsg: Label 'The selected email extension has been uninstalled. You must reinstall the extension to add an account with it.';
         [RunOnClient]
         AppSource: DotNet AppSource;
         [InDataSet]
         AppSourceAvailable: Boolean;
         [InDataSet]
         TopBannerVisible: Boolean;
+        BackActionVisible: Boolean;
+        BackActionEnabled: Boolean;
+        NextActionVisible: Boolean;
+        NextActionEnabled: Boolean;
+        CancelActionVisible: Boolean;
+        FinishActionVisible: Boolean;
+        TestEmailActionVisible: Boolean;
+        WelcomeVisible: Boolean;
+        ChooseConnectorVisible: Boolean;
+        DoneVisible: Boolean;
         AccountId: Guid;
-        [InDataSet]
-        Done: Boolean;
+        ConnectorsAvailable: Boolean;
         SetAsDefault: Boolean;
         StartTime: DateTime;
 }

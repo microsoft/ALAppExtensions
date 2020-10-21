@@ -12,7 +12,7 @@ codeunit 8890 "Send Email"
     var
         EmailMessage: Codeunit "Email Message";
     begin
-        EmailMessage.Find(Rec.Id);
+        EmailMessage.Get(Rec.Id);
         EmailConnector.Send(EmailMessage, AccountId);
     end;
 

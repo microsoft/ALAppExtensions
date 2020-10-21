@@ -202,16 +202,16 @@ page 30022 "APIV2 - Dimension Set Lines"
         NewDimensionSet: Boolean;
         ParentNotSpecifiedErr: Label 'You must get to the parent first to get to the dimension set line.';
         ParentIDRequiredErr: Label 'You must get to the parent first to create a dimension set line.';
-        IdOrCodeShouldBeFilledErr: Label 'The ID or Code field must be filled in.';
-        ValueIdOrValueCodeShouldBeFilledErr: Label 'The valueId or valueCode field must be filled in.';
-        IdAndCodeCannotBeModifiedErr: Label 'The ID and Code fields cannot be modified.';
+        IdOrCodeShouldBeFilledErr: Label 'The id or code field must be filled in.', Comment = 'id and code are field names and should not be translated.';
+        ValueIdOrValueCodeShouldBeFilledErr: Label 'The valueId or valueCode field must be filled in.', Comment = 'valueId and valueCode are field names and should not be translated.';
+        IdAndCodeCannotBeModifiedErr: Label 'The ID and Code fields cannot be modified.', Comment = 'id and code are field names and should not be translated.';
         RecordDoesntExistErr: Label 'Could not find the record.';
         DimensionFieldsDontMatchErr: Label 'The dimension field values do not match to a specific Dimension.';
-        DimensionIdDoesNotMatchADimensionErr: Label 'The "id" does not match to a Dimension.';
-        DimensionCodeDoesNotMatchADimensionErr: Label 'The "code" does not match to a Dimension.';
-        DimensionValueFieldsDontMatchErr: Label 'The values of the Dimension Code field and the Dimension ID field do not refer to the same Dmension Value.';
-        DimensionValueIdDoesNotMatchADimensionValueErr: Label 'The "valueId" does not match to a Dimension Value.';
-        DimensionValueCodeDoesNotMatchADimensionValueErr: Label 'The "valueCode" does not match to a Dimension Value.';
+        DimensionIdDoesNotMatchADimensionErr: Label 'The "id" does not match to a Dimension.', Comment = 'id is a field name and should not be translated.';
+        DimensionCodeDoesNotMatchADimensionErr: Label 'The "code" does not match to a Dimension.', Comment = 'id is a field name and should not be translated.';
+        DimensionValueFieldsDontMatchErr: Label 'The values of the Dimension Code field and the Dimension ID field do not refer to the same Dimension Value.';
+        DimensionValueIdDoesNotMatchADimensionValueErr: Label 'The "valueId" does not match to a Dimension Value.', Comment = 'valueId is a field name and should not be translated.';
+        DimensionValueCodeDoesNotMatchADimensionValueErr: Label 'The "valueCode" does not match to a Dimension Value.', Comment = 'valueCode is a field name and should not be translated.';
 
     local procedure LoadLinesFromFilter(ParentIdFilter: Text; ParentTypeFilter: Text): Boolean
     var

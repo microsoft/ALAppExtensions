@@ -58,7 +58,7 @@ page 8893 "Email Scenario Setup"
             {
                 action(AddScenario)
                 {
-                    Visible = TypeOfEntry = TypeOfEntry::Account;
+                    Visible = (TypeOfEntry = TypeOfEntry::Account) and CanUserManageEmailSetup;
 
                     ApplicationArea = All;
                     Caption = 'Assign scenarios';
@@ -72,8 +72,11 @@ page 8893 "Email Scenario Setup"
 
                     trigger OnAction()
                     begin
-                        if EmailScenarioImpl.AddScenarios(Rec) then
-                            EmailScenarioImpl.GetScenariosByEmailAccount(Rec);
+                        SelectedRecord := Rec;
+                        EmailScenarioImpl.AddScenarios(Rec);
+
+                        EmailScenarioImpl.GetScenariosByEmailAccount(Rec);
+                        SetSelectedRecord();
                     end;
                 }
             }
@@ -82,7 +85,7 @@ page 8893 "Email Scenario Setup"
             {
                 action(ChangeAccount)
                 {
-                    Visible = TypeOfEntry = TypeOfEntry::Scenario;
+                    Visible = (TypeOfEntry = TypeOfEntry::Scenario) and CanUserManageEmailSetup;
 
                     ApplicationArea = All;
                     Caption = 'Reassign';
@@ -97,15 +100,17 @@ page 8893 "Email Scenario Setup"
                     trigger OnAction()
                     begin
                         CurrPage.SetSelectionFilter(Rec);
+                        SelectedRecord := Rec;
 
-                        if EmailScenarioImpl.ChangeAccount(Rec) then
-                            EmailScenarioImpl.GetScenariosByEmailAccount(Rec); // refresh the data on the page
+                        EmailScenarioImpl.ChangeAccount(Rec);
+                        EmailScenarioImpl.GetScenariosByEmailAccount(Rec); // refresh the data on the page
+                        SetSelectedRecord();
                     end;
                 }
 
                 action(Unassign)
                 {
-                    Visible = TypeOfEntry = TypeOfEntry::Scenario;
+                    Visible = (TypeOfEntry = TypeOfEntry::Scenario) and CanUserManageEmailSetup;
 
                     ApplicationArea = All;
                     Caption = 'Unassign';
@@ -120,9 +125,11 @@ page 8893 "Email Scenario Setup"
                     trigger OnAction()
                     begin
                         CurrPage.SetSelectionFilter(Rec);
+                        SelectedRecord := Rec;
 
-                        if EmailScenarioImpl.DeleteScenario(Rec) then
-                            EmailScenarioImpl.GetScenariosByEmailAccount(Rec); // refresh the data on the page
+                        EmailScenarioImpl.DeleteScenario(Rec);
+                        EmailScenarioImpl.GetScenariosByEmailAccount(Rec); // refresh the data on the page
+                        SetSelectedRecord();
                     end;
                 }
             }
@@ -131,7 +138,12 @@ page 8893 "Email Scenario Setup"
 
     trigger OnOpenPage()
     begin
+        CanUserManageEmailSetup := EmailAccountImpl.IsUserEmailAdmin();
         EmailScenarioImpl.GetScenariosByEmailAccount(Rec);
+
+        // Set selection
+        if not Rec.Get(-1, EmailAccountId, EmailConnector) then
+            if Rec.FindFirst() then;
     end;
 
     trigger OnAfterGetRecord()
@@ -153,9 +165,27 @@ page 8893 "Email Scenario Setup"
         end;
     end;
 
+    // Used to set the focus on an email account
+    internal procedure SetEmailAccountId(AccountId: Guid; Connector: Enum "Email Connector")
+    begin
+        EmailAccountId := AccountId;
+        EmailConnector := Connector;
+    end;
+
+    local procedure SetSelectedRecord()
+    begin
+        if not Rec.Get(SelectedRecord.Scenario, SelectedRecord."Account Id", SelectedRecord.Connector) then
+            Rec.FindFirst();
+    end;
+
     var
+        SelectedRecord: Record "Email Account Scenario";
         EmailScenarioImpl: Codeunit "Email Scenario Impl.";
+        EmailAccountImpl: Codeunit "Email Account Impl.";
+        EmailAccountId: Guid;
+        EmailConnector: Enum "Email Connector";
         Style, DefaultTxt : Text;
         TypeOfEntry: Option Account,Scenario;
         Indentation: Integer;
+        CanUserManageEmailSetup: Boolean;
 }

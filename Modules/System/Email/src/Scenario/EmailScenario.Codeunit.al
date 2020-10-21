@@ -49,6 +49,15 @@ codeunit 8893 "Email Scenario"
         EmailScenarioImpl.SetEmailAccount(Scenario, EmailAccount);
     end;
 
+    /// <summary>
+    /// Unassign an email scenario. The scenario will then use the default email account.
+    /// </summary>
+    /// <param name="Scenario">The scenario to unassign.</param>
+    procedure UnassignScenario(Scenario: Enum "Email Scenario")
+    begin
+        EmailScenarioImpl.UnassignScenario(Scenario);
+    end;
+
     var
         EmailScenarioImpl: Codeunit "Email Scenario Impl.";
 }

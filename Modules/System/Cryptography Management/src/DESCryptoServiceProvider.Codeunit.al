@@ -49,7 +49,7 @@ codeunit 1379 DESCryptoServiceProvider
     /// <param name="InputInstream">Represents the input instream data to encrypt</param>
     /// <param name="OutputOutstream">Represents the output instream encrypted data</param>
     [NonDebuggable]
-    [Obsolete('(Removed,Add the salt parameter to continue using this function)')]
+    [Obsolete('Replaced, add the salt parameter to continue using this function', '18.0')]
     procedure EncryptStream(Password: Text; InputInstream: InStream; var OutputOutstream: Outstream)
     begin
         DESCryptoServiceProviderImpl.EncryptStream(Password, Password, InputInstream, OutputOutstream);
@@ -62,7 +62,7 @@ codeunit 1379 DESCryptoServiceProvider
     /// <param name="InputInstream">Represents the input instream data to decrypt</param>
     /// <param name="OutputOutstream">Represents the output instream decrypted data</param>
     [NonDebuggable]
-    [Obsolete('(Removed,Add the salt parameter to continue using this function)')]
+    [Obsolete('Replaced, add the salt parameter to continue using this function', '18.0')]
     procedure DecryptStream(Password: Text; InputInstream: InStream; var OutputOutstream: Outstream)
     begin
         DESCryptoServiceProviderImpl.DecryptStream(Password, Password, InputInstream, OutputOutstream);

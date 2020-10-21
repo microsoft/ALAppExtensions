@@ -41,7 +41,7 @@ page 30013 "APIV2 - Cust. Paym. Journals"
                 }
                 field(balancingAccountNumber; "Bal. Account No.")
                 {
-                    Caption = 'Balancing Account Number';
+                    Caption = 'Balancing Account No.';
                     Editable = false;
                 }
                 part(customerPayments; "APIV2 - Customer Payments")

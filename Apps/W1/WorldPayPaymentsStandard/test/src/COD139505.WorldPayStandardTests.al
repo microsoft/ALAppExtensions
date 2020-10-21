@@ -610,7 +610,7 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         TestCoverLetterPaymentLinkInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('EmailEditorHandler,MessageHandler,CloseEmailEditorHandler')]
     procedure TestCoverLetterPaymentLink();
     var

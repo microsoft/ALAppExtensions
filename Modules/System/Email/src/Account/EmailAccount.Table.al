@@ -3,7 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-/// <summary></summary>
+/// <summary>
+/// A common representation of an email account.
+/// </summary>
 table 8902 "Email Account"
 {
     Extensible = false;
@@ -47,7 +49,7 @@ table 8902 "Email Account"
 
     keys
     {
-        key(PK; "Account Id")
+        key(PK; "Account Id", Connector)
         {
             Clustered = true;
         }

@@ -1,0 +1,42 @@
+{
+    "id":  "e6328152-bb29-4664-9dae-3bc7eaae1fd8",
+    "name":  "Email - Outlook REST API",
+    "publisher":  "Microsoft",
+    "version":  "17.1.0.0",
+    "brief":  "Provides a library that enables email connectors to communicate with the Outlook and Graph APIs.",
+    "description":  "This extension provides a library that enables email connectors to communicate with the Outlook and Graph APIs to retrieve user information and send email messages.",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=865141",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+                             "publisher":  "Microsoft",
+                             "name":  "System Application",
+                             "version":  "17.1.0.0"
+                         }
+                     ],
+    "internalsVisibleTo":  [
+                               {
+                                   "id":  "b5034210-b258-4983-8858-f5cbfd54cb35",
+                                   "publisher":  "Microsoft",
+                                   "name":  "Library Outlook REST API"
+                               }
+                           ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "17.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  4506,
+                         "to":  4510
+                     }
+                 ],
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520",
+    "showMyCode":  true,
+    "runtime":  "6.0",
+    "target":  "Cloud"
+}

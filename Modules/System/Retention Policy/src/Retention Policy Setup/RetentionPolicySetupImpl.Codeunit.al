@@ -16,12 +16,13 @@ codeunit 3903 "Retention Policy Setup Impl."
         RetentionPeriodLockedErr: Label 'You cannot modify the retention period %1 because one or more mandatory retention policies are using it.', Comment = '%1 = a retention period code';
         TableNotAllowedErrorLbl: Label 'Table %1 %2 is not in the list of allowed tables.', Comment = '%1 = table number, %2 = table name';
         FilterPageBuilderCaptionLbl: Label '%1 Filters', Comment = '%1 = Table caption (i.e. Change Log Entry';
-        MinExpirationDateErr: Label 'The expiration date for this retention policy must be equal to or before %1.', Comment = '%1 = Date';
+        MinExpirationDateErr: Label 'The mandatory minimum retention period for this retention policy is %1 days. The expiration date for this retention policy must be equal to or before %2.', Comment = '%1 integer, %2 = Date';
         RetentionPolicySetupLineLockedErr: Label 'The retention policy setup for table %1, %2 has mandatory filters that cannot be modified.', Comment = '%1 = table number, %2 = table caption';
         RetenPolAllowedTableFilterMismatchLbl: Label 'The retention policy allow list contains a mismatched filter for table ID %1. Filter table ID is %2', Comment = '%1 = table number, %2 = table number';
         DeleteAllowedInfoLbl: Label 'Allowed deletion of the locked retention policy setup line for table %1, %2.', Comment = '%1 = table number, %2 = table caption';
         DeleteAllowedList: List of [Integer];
         ReadPermissionNotificationLbl: Label 'The number of expired records cannot be calculated because you do not have read permission on table %1, %2.', Comment = '%1 = table number, %2 = table caption';
+        TableDoesNotExistLbl: Label 'Table %1 does not exist.', Comment = '%1 = table number';
 
     procedure SetTableFilterView(var RetentionPolicySetupLine: Record "Retention Policy Setup Line"): Text
     var
@@ -96,10 +97,15 @@ codeunit 3903 "Retention Policy Setup Impl."
         AllObjWithCaption: Record AllObjWithCaption;
         RetentionPolicySetup: Record "Retention Policy Setup";
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
+        AllowedTablesFilter: Text;
     begin
+        AllowedTablesFilter := RetenPolAllowedTables.GetAllowedTables();
         AllObjWithCaption.FilterGroup := 2;
         AllObjWithCaption.SetRange("Object Type", AllObjWithCaption."Object Type"::Table);
-        AllObjWithCaption.SetFilter("Object ID", RetenPolAllowedTables.GetAllowedTables());
+        If AllowedTablesFilter <> '' then
+            AllObjWithCaption.SetFilter("Object ID", AllowedTablesFilter)
+        else
+            AllObjWithCaption.SetRange("Object ID", 0); // show empty list
         AllObjWithCaption.FilterGroup := 0;
 
         if RetentionPolicySetup.Get(TableId) then begin
@@ -131,6 +137,17 @@ codeunit 3903 "Retention Policy Setup Impl."
             repeat
                 FilterText += '&<>' + Format(RetentionPolicySetup."Table Id");
             until RetentionPolicySetup.Next() = 0;
+    end;
+
+    procedure TableExists(TableId: Integer): Boolean
+    var
+        AllObj: record allObj;
+        RetentionPolicyLog: codeunit "Retention Policy Log";
+    begin
+        if not AllObj.Get(AllObj."Object Type"::Table, TableId) then begin
+            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(TableDoesNotExistLbl, TableId));
+            exit;
+        end;
     end;
 
     procedure DateFieldNoLookup(TableId: Integer; FieldNo: Integer): Integer
@@ -169,37 +186,34 @@ codeunit 3903 "Retention Policy Setup Impl."
     procedure ValidateRetentionPeriod(RetentionPolicySetup: Record "Retention Policy Setup")
     var
         RetentionPeriod: Record "Retention Period";
-        RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
-        RetentionPolicyLog: Codeunit "Retention Policy Log";
-        RetentionPeriodInterface: Interface "Retention Period";
-        ExpirationDate: Date;
-        MinExpirationDate: Date;
     begin
-        if RetentionPeriod.Get(RetentionPolicySetup."Retention Period") then begin
-            RetentionPeriodInterface := RetentionPeriod."Retention Period";
-            ExpirationDate := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod);
-            MinExpirationDate := RetenPolAllowedTables.CalcMinimumExpirationDate(RetentionPolicySetup."Table Id");
-            if ExpirationDate > MinExpirationDate then
-                RetentionPolicyLog.LogError(LogCategory(), StrsubstNo(MinExpirationDateErr, MinExpirationDate));
-        end;
+        if RetentionPeriod.Get(RetentionPolicySetup."Retention Period") then
+            ValidateRetentionPeriod(RetentionPeriod, RetentionPolicySetup."Table ID");
     end;
 
     procedure ValidateRetentionPeriod(RetentionPolicySetupLine: Record "Retention Policy Setup Line")
     var
         RetentionPeriod: Record "Retention Period";
+    begin
+        if RetentionPeriod.Get(RetentionPolicySetupLine."Retention Period") then
+            ValidateRetentionPeriod(RetentionPeriod, RetentionPolicySetupLine."Table ID");
+    end;
+
+    local procedure ValidateRetentionPeriod(var RetentionPeriod: Record "Retention Period"; TableId: Integer)
+    var
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         RetentionPeriodInterface: Interface "Retention Period";
         ExpirationDate: Date;
         MinExpirationDate: Date;
     begin
-        if RetentionPeriod.Get(RetentionPolicySetupLine."Retention Period") then begin
-            RetentionPeriodInterface := RetentionPeriod."Retention Period";
-            ExpirationDate := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod);
-            MinExpirationDate := RetenPolAllowedTables.CalcMinimumExpirationDate(RetentionPolicySetupLine."Table Id");
-            if ExpirationDate > MinExpirationDate then
-                RetentionPolicyLog.LogError(LogCategory(), StrsubstNo(MinExpirationDateErr, MinExpirationDate));
-        end;
+        RetentionPeriodInterface := RetentionPeriod."Retention Period";
+        ExpirationDate := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod);
+        if ExpirationDate = 99991231D then // "Never Delete"
+            exit;
+        MinExpirationDate := RetenPolAllowedTables.CalcMinimumExpirationDate(TableId);
+        if ExpirationDate > MinExpirationDate then
+            RetentionPolicyLog.LogError(LogCategory(), StrsubstNo(MinExpirationDateErr, RetenPolAllowedTables.GetMandatoryMinimumRetentionDays(TableId), MinExpirationDate));
     end;
 
     procedure LogCategory(): Enum "Retention Policy Log Category"
@@ -312,7 +326,7 @@ codeunit 3903 "Retention Policy Setup Impl."
                 RetentionPolicySetupLine.Validate("Retention Period", FindOrCreateRetentionPeriod(RetentionPeriodEnum, RetPeriodCalc));
                 RetentionPolicySetupLine.Validate("Date Field No.", DateFieldNo);
                 RetentionPolicySetupLine.Validate(Locked, Locked);
-                if RetentionPolicySetupLine.Locked then
+                if RetentionPolicySetupLine.IsLocked() then
                     RetentionPolicySetupLine.Validate(Enabled, true)
                 else
                     RetentionPolicySetupLine.Validate(Enabled, Enabled);
@@ -373,7 +387,7 @@ codeunit 3903 "Retention Policy Setup Impl."
         DeleteAllowedList.Add(TableId);
     end;
 
-    procedure NotifyOnMissingReadPermission(TableId: Integer)
+    procedure NotifyOnMissingReadPermission(TableId: Integer): Guid
     var
         RetentionPolicySetup: Record "Retention Policy Setup";
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
@@ -387,8 +401,10 @@ codeunit 3903 "Retention Policy Setup Impl."
         if RetentionPolicySetup.Get(TableId) then
             RetentionPolicySetup.CalcFields("Table Caption");
 
+        ReadPermissionNotification.Id := CreateGuid();
         ReadPermissionNotification.Message(StrSubstNo(ReadPermissionNotificationLbl, TableId, RetentionPolicySetup."Table Caption"));
         ReadPermissionNotification.Send();
+        exit(ReadPermissionNotification.Id())
     end;
 
     /// <Summary>
@@ -397,10 +413,10 @@ codeunit 3903 "Retention Policy Setup Impl."
     /// These elements combined are to ensure that only procedure DeleteRetentionPolicySetup can delete locked lines from the table.
     /// You should only be able to delete locked lines when deleting the 'header' Retention Policy Setup record.
     /// </Summary>
-    # pragma warning disable AA0150 // Parameter 'DeleteAllowed' is declared by reference but never changed in method 'OnVerifyDeleteAllowed'.
+#pragma warning disable AA0150 // Parameter 'DeleteAllowed' is declared by reference but never changed in method 'OnVerifyDeleteAllowed'.
     [InternalEvent(false)]
     internal procedure OnVerifyDeleteAllowed(TableId: Integer; var DeleteAllowed: Boolean)
-    # pragma warning restore AA0150
+#pragma warning restore AA0150
     begin
     end;
 
@@ -418,7 +434,7 @@ codeunit 3903 "Retention Policy Setup Impl."
         if RetentionPolicySetupLine.IsTemporary then
             exit;
 
-        if RetentionPolicySetupLine.Locked then begin
+        if RetentionPolicySetupLine.IsLocked() then begin
             RetentionPolicySetupLine.CalcFields("Table Caption");
             OnVerifyDeleteAllowed(RetentionPolicySetupLine."Table ID", DeleteAllowed);
             if DeleteAllowed then begin

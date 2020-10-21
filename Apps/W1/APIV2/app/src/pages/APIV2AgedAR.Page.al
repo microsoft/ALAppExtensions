@@ -28,7 +28,7 @@ page 30031 "APIV2 - Aged AR"
                 }
                 field(customerNumber; "No.")
                 {
-                    Caption = 'Customer Number';
+                    Caption = 'Customer No.';
                 }
                 field(name; Name)
                 {

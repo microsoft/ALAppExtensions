@@ -1131,7 +1131,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         PostAndSendServiceInvoiceOIOUBLWithPrintAndEmailInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendServiceInvoiceOIOUBLWithPrintAndEmail();
     var
@@ -1190,7 +1190,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         PostAndSendServiceInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendServiceInvoiceOIOUBLAndPDFWithPrintAndEmail();
     var
@@ -1247,7 +1247,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         SendPostedServiceInvoiceOIOUBLWithPrintAndEmailInteranl();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('ProfileSelectionMethodAndCloseEmailStrMenuHandler,ServiceInvoiceRequestPageHandler,EmailEditorHandler')]
     procedure SendPostedServiceInvoiceOIOUBLWithPrintAndEmail()
     var
@@ -1369,7 +1369,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         PostAndSendServiceCrMemoOIOUBLWithPrintAndEmailInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceCreditMemoRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendServiceCrMemoOIOUBLWithPrintAndEmail();
     var

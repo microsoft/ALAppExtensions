@@ -20,21 +20,21 @@ enum 149000 "BCPT Header Status"
     /// <summary>
     /// Specifies that the BCPT Header state is Running.
     /// </summary>
-    value(10; Running)
+    value(20; Running)
     {
     }
 
     /// <summary>
     /// Specifies that the BCPT Header state is Completed.
     /// </summary>
-    value(20; Completed)
+    value(30; Completed)
     {
     }
 
     /// <summary>
     /// Specifies that the BCPT Header state is Cancelled.
     /// </summary>
-    value(30; Cancelled)
+    value(40; Cancelled)
     {
     }
 }

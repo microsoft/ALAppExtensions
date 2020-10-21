@@ -21,9 +21,11 @@ codeunit 1885 "Sandbox Cleanup Impl."
         if Company.FindSet() then
             repeat
                 SandboxCleanup.OnClearConfiguration(Company.Name);
+                SandboxCleanup.OnClearCompanyConfiguration(Company.Name);
             until Company.Next() = 0;
 
         SandboxCleanup.OnClearConfiguration('');
+        SandboxCleanup.OnClearDatabaseConfiguration();
     end;
 }
 

@@ -10,6 +10,7 @@ Use this module to do the following:
 - Acquire the authorization code token from cache or a new refreshed token if the existing one has expired. This requires that the token was obtained earlier through the authorization code flow. This returns either the current token from cache or will try to refresh it in the background and return a new access token.<br />
 - Acquire the access and refresh tokens by using the OBO flow. For more information, see [Service-to-service calls that use delegated user identity in the On-Behalf-Of flow](https://docs.microsoft.com/en-us/azure/active-directory/azuread-dev/v1-oauth2-on-behalf-of-flow/) for v1.0 or [Microsoft identity platform and OAuth 2.0 On-Behalf-Of flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow) for v2.0.<br />.<br />
 - Acquire the OBO token from cache or a new refreshed token if the existing one has expired. This requires that the token was obtained earlier through the OBO flow. This returns either the current token from cache or will try to refresh it in the background and return a new access token.<br />
+- Retrieve Business Central default Redirect URL.<br />
 
 
 

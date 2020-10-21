@@ -25,7 +25,7 @@ page 30008 "APIV2 - Items"
                 }
                 field(number; "No.")
                 {
-                    Caption = 'Number';
+                    Caption = 'No.';
                 }
                 field(displayName; Description)
                 {
@@ -235,7 +235,7 @@ page 30008 "APIV2 - Items"
                     Caption = 'Variants';
                     EntityName = 'itemVariant';
                     EntitySetName = 'itemVariants';
-                    SubPageLink = "Item Id" = field(SystemId), "Item No." = field("No.");
+                    SubPageLink = "Item Id" = field(SystemId);
                 }
             }
         }
@@ -303,14 +303,14 @@ page 30008 "APIV2 - Items"
         BaseUnitOfMeasureCode: Code[10];
         InventoryValue: Decimal;
         UnitOfMeasureValuesDontMatchErr: Label 'The unit of measure values do not match to a specific Unit of Measure.';
-        UnitOfMeasureIdDoesNotMatchAUnitOfMeasureErr: Label 'The "unitOfMeasureId" does not match to a Unit of Measure.';
+        UnitOfMeasureIdDoesNotMatchAUnitOfMeasureErr: Label 'The "unitOfMeasureId" does not match to a Unit of Measure.', Comment = 'unitOfMeasureId is a field name and should not be translated.';
         BlankGUID: Guid;
         TaxGroupValuesDontMatchErr: Label 'The tax group values do not match to a specific Tax Group.';
-        TaxGroupIdDoesNotMatchATaxGroupErr: Label 'The "taxGroupId" does not match to a Tax Group.';
-        TaxGroupCodeDoesNotMatchATaxGroupErr: Label 'The "taxGroupCode" does not match to a Tax Group.';
-        ItemCategoryIdDoesNotMatchAnItemCategoryGroupErr: Label 'The "itemCategoryId" does not match to a specific ItemCategory group.';
+        TaxGroupIdDoesNotMatchATaxGroupErr: Label 'The "taxGroupId" does not match to a Tax Group.', Comment = 'taxGroupId is a field name and should not be translated.';
+        TaxGroupCodeDoesNotMatchATaxGroupErr: Label 'The "taxGroupCode" does not match to a Tax Group.', Comment = 'taxGroupCode is a field name and should not be translated.';
+        ItemCategoryIdDoesNotMatchAnItemCategoryGroupErr: Label 'The "itemCategoryId" does not match to a specific Item Category group.', Comment = 'itemCategoryId is a field name and should not be translated.';
         ItemCategoriesValuesDontMatchErr: Label 'The item categories values do not match to a specific item category.';
-        ItemCategoryCodeDoesNotMatchATaxGroupErr: Label 'The "itemCategoryCode" does not match to a Item Category.';
+        ItemCategoryCodeDoesNotMatchATaxGroupErr: Label 'The "itemCategoryCode" does not match to a Item Category.', Comment = 'itemCategoryCode is a field name and should not be translated.';
         InventoryCannotBeChangedInAPostRequestErr: Label 'Inventory cannot be changed during on insert.';
 
     local procedure SetCalculatedFields()

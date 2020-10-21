@@ -3,53 +3,171 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 11111567 "Xml Writer Test"
+codeunit 139911 "Xml Writer Test"
 {
     Subtype = Test;
 
     var
-        XmlWriterImpl: Codeunit "XmlWriter Impl.";
+        Assert: Codeunit "Library Assert";
 
     [Test]
-    procedure TestXmlWriter()
+    procedure TestAllXmlWriter()
     var
-        VarXmlTextWriter: DotNet XmlTextWriter;
-        VarStringBuilder: DotNet StringBuilder;
-        VarStringWriter: DotNet StringWriter;
+        XmlWriter: Codeunit XmlWriter;
         XmlBigText: BigText;
-        ExpectedText: Text;
-        LibraryAssert: Codeunit "Library Assert";
     begin
-        // [GIVEN] The expected XmlText
-        ExpectedText := GetXmlText();
-
-        // [WHEN] Create an Xml Document with XmlWriter
-        XmlWriterImpl.XmlWriterCreateDocument();
-        XmlWriterImpl.WriteStartElement('', 'export', '');
-        XmlWriterImpl.WriteStartElement('', 'meta', '');
-        XmlWriterImpl.WriteAttributeString('mt', 'type', '', 'test');
-        XmlWriterImpl.WriteElementString('tableno', '5200');
-        XmlWriterImpl.WriteEndElement();
-        XmlWriterImpl.WriteStartElement('', 'employees', '');
-        XmlWriterImpl.WriteStartElement('', 'employee', '');
-        XmlWriterImpl.WriteAttributeString('no', '123');
-        XmlWriterImpl.WriteAttributeString('name', 'Angela');
-        XmlWriterImpl.WriteStartElement('', 'details', '');
-        XmlWriterImpl.WriteElementString('company', 'Mercash');
-        XmlWriterImpl.WriteElementString('city', 'Hoorn');
-        XmlWriterImpl.WriteEndElement();
-        XmlWriterImpl.WriteEndElement();
-        XmlWriterImpl.WriteEndElement();
-        XmlWriterImpl.WriteComment('This is an awesome module');
-        XmlWriterImpl.WriteEndElement();
-        XmlWriterImpl.WriteEndDocument();
-        XmlWriterImpl.XmlWriterToBigText(XmlBigText);
+        // [GIVEN] Create an Xml Document with XmlWriter
+        XmlWriter.WriteStartDocument();
+        XmlWriter.WriteStartElement('export');
+        XmlWriter.WriteStartElement('meta');
+        XmlWriter.WriteAttributeString('mt', 'type', '', 'test');
+        XmlWriter.WriteElementString('tableno', '5200');
+        XmlWriter.WriteEndElement();
+        XmlWriter.WriteStartElement('employees');
+        XmlWriter.WriteStartElement('employee');
+        XmlWriter.WriteAttributeString('no', '123');
+        XmlWriter.WriteAttributeString('name', 'Angela');
+        XmlWriter.WriteStartElement('details');
+        XmlWriter.WriteElementString('company', 'Mercash');
+        XmlWriter.WriteElementString('city', 'Hoorn');
+        XmlWriter.WriteEndElement();
+        XmlWriter.WriteEndElement();
+        XmlWriter.WriteEndElement();
+        XmlWriter.WriteComment('This is an awesome module');
+        XmlWriter.WriteEndElement();
+        XmlWriter.WriteEndDocument();
+        XmlWriter.ToBigText(XmlBigText);
 
         // [THEN] Verify Result 
-        LibraryAssert.AreEqual(ExpectedText, FORMAT(XmlBigText), 'Unexpected text when creating a Xml Document with Xml Writer');
+        Assert.AreEqual(GetXmlText(), Format(XmlBigText), 'Unexpected text when creating a Xml Document with XmlWriter');
     end;
 
-    procedure GetXmlText(): Text;
+    [Test]
+    procedure TestWriteStartDocument()
+    var
+        XmlWriter: Codeunit "XmlWriter";
+        XmlBigText: BigText;
+    begin
+        // [GIVEN] Initialized XmlWriter
+        XmlWriter.WriteStartDocument();
+
+        // [THEN] Get XmlDocument to text
+        XmlWriter.ToBigText(XmlBigText);
+        Assert.AreEqual('<?xml version="1.0" encoding="utf-16"?>', Format(XmlBigText), 'Unexpected text when creating a Xml Document with XmlWriter');
+    end;
+
+    [Test]
+    procedure TestWriteElementString()
+    var
+        XmlWriter: Codeunit "XmlWriter";
+        XmlBigText: BigText;
+    begin
+        // [GIVEN] Initialized XmlWriter with root element
+        XmlWriter.WriteStartDocument();
+
+        // [WHEN] Write an element and end document
+        XmlWriter.WriteElementString('TestEle', 'Test element value');
+        XmlWriter.WriteEndDocument();
+
+        // [THEN] Get XmlDocument to text
+        XmlWriter.ToBigText(XmlBigText);
+        Assert.AreEqual('<?xml version="1.0" encoding="utf-16"?><TestEle>Test element value</TestEle>', Format(XmlBigText), 'Unexpected text when creating a Xml Document with XmlWriter');
+    end;
+
+    [Test]
+    procedure TestWriteEndDocumentNoElement()
+    var
+        XmlWriter: Codeunit "XmlWriter";
+    begin
+        // [GIVEN] Initialized XmlWriter with root element
+        XmlWriter.WriteStartDocument();
+
+        // [WHEN] Error expected when trying to write end document
+        asserterror XmlWriter.WriteEndDocument();
+        Assert.ExpectedError('A call to System.Xml.XmlTextWriter.WriteEndDocument failed with this message: Document does not have a root element.');
+    end;
+
+    [Test]
+    procedure TestWriteStartElement()
+    var
+        XmlWriter: Codeunit "XmlWriter";
+        XmlBigText: BigText;
+    begin
+        // [GIVEN] Initialized XmlWriter with root element
+        XmlWriter.WriteStartDocument();
+
+        // [WHEN] Write start element and end document
+        XmlWriter.WriteStartElement('TestLocalName');
+        XmlWriter.WriteEndDocument();
+
+        // [THEN] Get XmlDocument to text
+        XmlWriter.ToBigText(XmlBigText);
+        Assert.AreEqual('<?xml version="1.0" encoding="utf-16"?><TestLocalName />', Format(XmlBigText), 'Unexpected text when creating a Xml Document with XmlWriter');
+    end;
+
+    [Test]
+    procedure TestWriteEndElement()
+    var
+        XmlWriter: Codeunit "XmlWriter";
+        XmlBigText: BigText;
+    begin
+        // [GIVEN] Initialized XmlWriter with root element
+        XmlWriter.WriteStartDocument();
+
+        // [WHEN] Write element string
+        XmlWriter.WriteStartElement('TestLocalName');
+        XmlWriter.WriteElementString('InnerElement', 'Value');
+        XmlWriter.WriteEndElement();
+        XmlWriter.WriteEndDocument();
+
+        // [THEN] Get XmlDocument to text
+        XmlWriter.ToBigText(XmlBigText);
+        Assert.AreEqual('<?xml version="1.0" encoding="utf-16"?><TestLocalName><InnerElement>Value</InnerElement></TestLocalName>', Format(XmlBigText), 'Unexpected text when creating a Xml Document with XmlWriter');
+    end;
+
+    [Test]
+    procedure TestWriteAttributeString()
+    var
+        XmlWriter: Codeunit "XmlWriter";
+        XmlBigText: BigText;
+    begin
+        // [GIVEN] Initialized XmlWriter with root element
+        XmlWriter.WriteStartDocument();
+
+        // [WHEN] Write attribute strings with overloads
+        XmlWriter.WriteStartElement('TestElement');
+        XmlWriter.WriteAttributeString('LocalName', 'Element');
+        XmlWriter.WriteStartElement('ello');
+        XmlWriter.WriteAttributeString('Pre', 'LocalName', 'NS', 'Element');
+        XmlWriter.WriteEndElement();
+        XmlWriter.WriteEndElement();
+        XmlWriter.WriteEndDocument();
+
+        // [THEN] Get XmlDocument to text
+        XmlWriter.ToBigText(XmlBigText);
+        Assert.AreEqual('<?xml version="1.0" encoding="utf-16"?><TestElement LocalName="Element"><ello Pre:LocalName="Element" xmlns:Pre="NS" /></TestElement>', Format(XmlBigText), 'Unexpected text when creating a Xml Document with XmlWriter');
+    end;
+
+    [Test]
+    procedure TestWriteComment()
+    var
+        XmlWriter: Codeunit "XmlWriter";
+        XmlBigText: BigText;
+    begin
+        // [GIVEN] Initialized XmlWriter with root element
+        XmlWriter.WriteStartDocument();
+
+        // [WHEN] Write comment
+        XmlWriter.WriteStartElement('TestElement');
+        XmlWriter.WriteComment('This is a good module');
+        XmlWriter.WriteEndDocument();
+
+        // [THEN] Get XmlDocument to text
+        XmlWriter.ToBigText(XmlBigText);
+        Assert.AreEqual('<?xml version="1.0" encoding="utf-16"?><TestElement><!--This is a good module--></TestElement>', Format(XmlBigText), 'Unexpected text when creating a Xml Document with XmlWriter');
+    end;
+
+    local procedure GetXmlText(): Text;
     begin
         Exit('<?xml version="1.0" encoding="utf-16"?><export><meta type="test"><tableno>5200</tableno></meta>' +
         '<employees><employee no="123" name="Angela"><details><company>Mercash</company><city>Hoorn</city></details></employee></employees>' +

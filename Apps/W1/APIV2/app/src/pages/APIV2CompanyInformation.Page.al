@@ -71,7 +71,7 @@ page 30011 "APIV2 - Company Information"
                 }
                 field(taxRegistrationNumber; "VAT Registration No.")
                 {
-                    Caption = 'Tax Registration Number';
+                    Caption = 'Tax Registration No.';
                 }
                 field(currencyCode; LCYCurrencyCode)
                 {

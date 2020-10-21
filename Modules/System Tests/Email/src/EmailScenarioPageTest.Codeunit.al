@@ -62,7 +62,7 @@ codeunit 134695 "Email Scenario Page Test"
         // Actions visibility is as expected
         Assert.IsTrue(EmailScenarioPage.AddScenario.Visible(), 'The action "Add Scenarios" should be visible');
         Assert.IsFalse(EmailScenarioPage.ChangeAccount.Visible(), 'The action "Change Accounts" should not be visible');
-        Assert.IsFalse(EmailScenarioPage.Unassign.Visible(), 'The action "Delete" should not be visible');
+        Assert.IsFalse(EmailScenarioPage.Unassign.Visible(), 'The action "Unassign" should not be visible');
 
         Assert.IsFalse(EmailScenarioPage.Next(), 'There should not be another entry on the page');
     end;
@@ -97,7 +97,7 @@ codeunit 134695 "Email Scenario Page Test"
         // Actions visibility is as expected
         Assert.IsTrue(EmailScenarioPage.AddScenario.Visible(), 'The action "Add Scenarios" should be visible');
         Assert.IsFalse(EmailScenarioPage.ChangeAccount.Visible(), 'The action "Change Accounts" should not be visible');
-        Assert.IsFalse(EmailScenarioPage.Unassign.Visible(), 'The action "Delete" should not be visible');
+        Assert.IsFalse(EmailScenarioPage.Unassign.Visible(), 'The action "Unassign" should not be visible');
 
         Assert.IsFalse(EmailScenarioPage.Next(), 'There should not be another entry on the page');
     end;
@@ -135,8 +135,9 @@ codeunit 134695 "Email Scenario Page Test"
         // Actions visibility is as expected
         Assert.IsTrue(EmailScenarioPage.AddScenario.Visible(), 'The action "Add Scenarios" should be visible');
         Assert.IsFalse(EmailScenarioPage.ChangeAccount.Visible(), 'The action "Change Accounts" should not be visible');
-        Assert.IsFalse(EmailScenarioPage.Unassign.Visible(), 'The action "Delete" should not be visible');
+        Assert.IsFalse(EmailScenarioPage.Unassign.Visible(), 'The action "Unassign" should not be visible');
 
+        EmailScenarioPage.Expand(true);
         Assert.IsTrue(EmailScenarioPage.Next(), 'There should be another entry on the page');
 
         // Properies are as expected
@@ -146,10 +147,10 @@ codeunit 134695 "Email Scenario Page Test"
         // Actions visibility is as expected
         Assert.IsFalse(EmailScenarioPage.AddScenario.Visible(), 'The action "Add Scenarios" should be visible');
         Assert.IsTrue(EmailScenarioPage.ChangeAccount.Visible(), 'The action "Change Accounts" should not be visible');
-        Assert.IsTrue(EmailScenarioPage.Unassign.Visible(), 'The action "Delete" should not be visible');
+        Assert.IsTrue(EmailScenarioPage.Unassign.Visible(), 'The action "Unassign" should not be visible');
     end;
 
-    //[Test] // TODO - Unstable
+    [Test]
     [Scope('OnPrem')]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure PageOpenTwoAcountsTwoScenariosTest()
@@ -181,6 +182,7 @@ codeunit 134695 "Email Scenario Page Test"
         Assert.AreEqual(StrSubstNo(DisplayNameTxt, SecondEmailAccount.Name, SecondEmailAccount."Email Address"), EmailScenarioPage.Name.Value, 'Wrong second entry name');
         Assert.IsFalse(GetDefaultFieldValueAsBoolean(EmailScenarioPage.Default.Value), 'The account should not be marked as default');
 
+        EmailScenarioPage.Expand(true);
         Assert.IsTrue(EmailScenarioPage.Next(), 'There should be a third entry on the page');
         Assert.AreEqual(Format(Enum::"Email Scenario"::"Test Email Scenario"), EmailScenarioPage.Name.Value, 'Wrong third entry name');
         Assert.IsFalse(GetDefaultFieldValueAsBoolean(EmailScenarioPage.Default.Value), 'The account should not be marked as default');

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Test library for the Email module",
     "description":  "Test library for the Email module",
-    "version":  "17.0.0.0",
+    "version":  "17.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,29 +15,29 @@
                              "id":  "9c4a2cf2-be3a-4aa3-833b-99a5ffd11f25",
                              "name":  "Email",
                              "publisher":  "Microsoft",
-                             "version":  "17.0.0.0"
+                             "version":  "17.1.0.0"
                          },
                          {
-                            "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
-                            "name":  "Any",
-                            "publisher":  "Microsoft",
-                            "version":  "17.0.0.0"
+                             "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+                             "name":  "Any",
+                             "publisher":  "Microsoft",
+                             "version":  "17.1.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
     "platform":  "17.0.0.0",
-    "idRanges": [
-                    {
-                        "from":  134684,
-                        "to":  134688
-                    },
-                    {
-                        "from":  134694,
-                        "to":  134694
-                    }
-                ],
-    "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2134520",
+    "idRanges":  [
+                     {
+                         "from":  134684,
+                         "to":  134688
+                     },
+                     {
+                         "from":  134694,
+                         "to":  134694
+                     }
+                 ],
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520",
     "target":  "OnPrem"
 }

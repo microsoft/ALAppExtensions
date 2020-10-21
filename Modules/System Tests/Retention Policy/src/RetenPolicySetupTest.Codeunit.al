@@ -445,7 +445,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         // verify
         // line1
         RetentionPolicySetupLine.Get(RetentionPolicySetup."Table Id", 10000);
-        Assert.IsTrue(RetentionPolicySetupLine.Locked, 'The line should be locked');
+        Assert.IsTrue(RetentionPolicySetupLine.IsLocked(), 'The line should be locked');
         Assert.IsTrue(RetentionPolicySetupLine.Enabled, 'The line should be enabled');
         Assert.AreNotEqual(RetentionPolicySetupLine."Retention Period", '', 'The retention period field must not be blank');
         Assert.AreEqual(RetentionPolicySetupLine."Date Field No.", RetentionPolicySetupLine.FieldNo(SystemCreatedAt), 'The date field number must be 2000000001');
@@ -453,7 +453,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         Assert.AreEqual(RetentionPolicySetupLine.GetTableFilterView(), RetentionPolicyTestData4.GetView(false), 'The table filter is wrong');
         // line2
         RetentionPolicySetupLine.Get(RetentionPolicySetup."Table Id", 20000);
-        Assert.IsFalse(RetentionPolicySetupLine.Locked, 'The line should not be locked');
+        Assert.IsFalse(RetentionPolicySetupLine.IsLocked(), 'The line should not be locked');
         Assert.IsFalse(RetentionPolicySetupLine.Enabled, 'The line should not be enabled');
         Assert.AreNotEqual(RetentionPolicySetupLine."Retention Period", '', 'The retention period field must not be blank');
         Assert.AreEqual(RetentionPolicySetupLine."Date Field No.", RetentionPolicyTestData4.FieldNo("DateTime Field"), 'The date field number must be 3');
@@ -498,7 +498,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup."Table Id" := Database::"Retention Policy Test Data 4";
         RetentionPolicySetup.Insert();
         RetentionPolicySetupLine.SetRange("Table ID", Database::"Retention Policy Test Data 4");
-        #pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
+#pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
         RetentionPolicySetupLine.SetRange(Locked, true);
         // #pragma warning enable AA0210
         RetentionPolicySetupLine.FindFirst();
@@ -531,7 +531,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup."Table Id" := Database::"Retention Policy Test Data 4";
         RetentionPolicySetup.Insert();
         RetentionPolicySetupLine.SetRange("Table ID", Database::"Retention Policy Test Data 4");
-        #pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
+#pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
         RetentionPolicySetupLine.SetRange(Locked, true);
         // #pragma warning enable AA0210
         RetentionPolicySetupLine.FindFirst();
@@ -557,7 +557,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup."Table Id" := Database::"Retention Policy Test Data 4";
         RetentionPolicySetup.Insert();
         RetentionPolicySetupLine.SetRange("Table ID", Database::"Retention Policy Test Data 4");
-        #pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
+#pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
         RetentionPolicySetupLine.SetRange(Locked, true);
         // #pragma warning enable AA0210
         RetentionPolicySetupLine.FindFirst();
@@ -570,6 +570,34 @@ codeunit 138701 "Reten. Policy Setup Test"
 
         // verify
         Assert.ExpectedError('You cannot modify the retention period');
+    end;
+
+    [Test]
+    procedure TestValidateRetentionPeriodNeverDeleteWithMinRetentionDays()
+    var
+        RetentionPolicySetup: Record "Retention Policy Setup";
+        RetentionPolicySetupLine: Record "Retention Policy Setup Line";
+        RetentionPeriod: Record "Retention Period";
+    begin
+        // setup
+        RetentionPolicySetup.DeleteAll(true); // delete setup + lines + locked lines
+        RetentionPolicySetupLine.DeleteAll(true); // delete orphaned lines
+        RetentionPeriod.DeleteAll(true);
+
+        RetentionPeriod.Code := CopyStr(UpperCase(Format(RetentionPeriod."Retention period"::"Never Delete")), 1, MaxStrLen(RetentionPeriod.Code));
+        RetentionPeriod.Validate("Retention Period", RetentionPeriod."Retention period"::"Never Delete");
+        RetentionPeriod.Insert();
+
+        RetentionPolicySetup.Validate("Table Id", Database::"Retention Policy Test Data");
+        RetentionPolicySetup.Insert(true);
+
+        // exercise
+        ClearLastError();
+        RetentionPolicySetup.validate("Retention Period", RetentionPeriod.Code);
+
+        // verify
+        // no error
+        Assert.AreEqual('', GetLastErrorText(), 'No error was expected');
     end;
 
     [FilterPageHandler]

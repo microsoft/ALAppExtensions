@@ -26,7 +26,6 @@ table 3901 "Retention Policy Setup"
             begin
                 RetenPolAllowedTables.IsAllowedTable(Rec."Table Id");
                 Rec.Validate("Date Field No.", RetenPolAllowedTables.GetDefaultDateFieldNo(Rec."Table Id"));
-                Rec.CalcFields("Table Name", "Table Caption");
             end;
 
             trigger OnLookup()
@@ -40,7 +39,7 @@ table 3901 "Retention Policy Setup"
         {
             FieldClass = FlowField;
             CalcFormula = lookup(AllObjWithCaption."Object Name" where("Object Type" = const(Table), "Object ID" = Field("Table Id")));
-            Editable = true;
+            Editable = false;
 
             trigger OnLookup()
             var

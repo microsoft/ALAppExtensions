@@ -7,19 +7,21 @@ page 8885 "Email Activities"
 {
     PageType = CardPart;
     Caption = 'Email Status';
+
     layout
     {
         area(content)
         {
             cuegroup(OutboxCueContainer)
             {
-                ShowCaption = false;
+                Caption = 'Email Status';
+
                 field("Failed Emails"; FailedOutboxEmails)
                 {
                     ApplicationArea = Basic, Suite;
                     StyleExpr = OutboxCueStyle;
                     Caption = 'Failed Emails in Outbox';
-                    ToolTip = 'View all emails that were not successfully sent by users in the current company.';
+                    ToolTip = 'View all emails that were not successfully sent.';
 
 
                     trigger OnDrillDown()
@@ -35,7 +37,7 @@ page 8885 "Email Activities"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Draft Emails in Outbox';
-                    ToolTip = 'View all emails that are saved as drafts by users in the current company.';
+                    ToolTip = 'View all emails that are saved as drafts.';
 
 
                     trigger OnDrillDown()
@@ -65,22 +67,34 @@ page 8885 "Email Activities"
         }
     }
 
-    trigger OnOpenPage();
+    trigger OnAfterGetCurrRecord()
+    var
+        TaskParameters: Dictionary of [Text, Text];
     begin
-        PastDate := CreateDateTime(CalcDate('<CD-30D>', Today()), Time());
-        SentEmails := EmailImpl.CountSentEmails(PastDate);
+        PastDate := CreateDateTime(CalcDate('<-30D>', Today()), Time());
+        TaskParameters.Add('PastDate', Format(PastDate));
 
-        DraftOutboxEmails := EmailImpl.CountEmailsInOutbox(Enum::"Email Status"::Draft);
-        FailedOutboxEmails := EmailImpl.CountEmailsInOutbox(Enum::"Email Status"::Failed);
+        CurrPage.EnqueueBackgroundTask(EmailActivitiesTaskId, Codeunit::"Email Activities", TaskParameters, 60000, PageBackgroundTaskErrorLevel::Warning);
+    end;
 
-        if FailedOutboxEmails = 0 then
-            OutboxCueStyle := 'Favorable'
-        else
-            OutboxCueStyle := 'Unfavorable';
+    trigger OnPageBackgroundTaskCompleted(TaskId: Integer; Results: Dictionary of [Text, Text])
+    var
+        EmailActivities: Codeunit "Email Activities";
+    begin
+        if TaskId = EmailActivitiesTaskId then begin
+            Evaluate(SentEmails, Results.Get(EmailActivities.GetSentEmailsKey()));
+            Evaluate(DraftOutboxEmails, Results.Get(EmailActivities.GetDraftEmailsKey()));
+            Evaluate(FailedOutboxEmails, Results.Get(EmailActivities.GetFailedEmailsKey()));
+
+            if FailedOutboxEmails = 0 then
+                OutboxCueStyle := 'Favorable'
+            else
+                OutboxCueStyle := 'Unfavorable';
+        end;
     end;
 
     var
-        EmailImpl: Codeunit "Email Impl";
+        EmailActivitiesTaskId: Integer;
         FailedOutboxEmails: Integer;
         DraftOutboxEmails: Integer;
         SentEmails: Integer;

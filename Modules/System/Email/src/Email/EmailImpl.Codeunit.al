@@ -6,142 +6,188 @@
 codeunit 8900 "Email Impl"
 {
     Access = Internal;
-    Permissions = tabledata "Sent Email" = r,
-                  tabledata "Email Outbox" = rim,
+    Permissions = tabledata "Sent Email" = rd,
+                  tabledata "Email Outbox" = rimd,
                   tabledata "Email Message" = r,
-                  tabledata "Email Error" = r;
+                  tabledata "Email Error" = r,
+                  tabledata "Email Recipient" = r;
 
     var
-        EmailSendNoRecipientsMsg: Label 'You must specify one or more recipients.';
         EmailMessageDoesNotExistMsg: Label 'The email message has been deleted by another user.';
-        EmailAccountwasRemovedErr: Label 'The email account: %1 of type: %2 was removed', Comment = '%1 = Account Name, %2 = The type of the Account';
+        EmailMessageCannotBeEditedErr: Label 'The email message has already been sent and cannot be edited.';
+        InvalidEmailAccountErr: Label 'The provided email account does not exist.';
 
-    procedure Enqueue(EmailMessageId: Guid)
+    #region API
+
+    procedure SaveAsDraft(EmailMessage: Codeunit "Email Message")
     var
+        EmailOutbox: Record "Email Outbox";
+    begin
+        SaveAsDraft(EmailMessage, EmailOutbox);
+    end;
+
+    procedure SaveAsDraft(EmailMessage: Codeunit "Email Message"; var EmailOutbox: Record "Email Outbox")
+    var
+        EmailMessageImpl: Codeunit "Email Message Impl.";
         EmptyConnector: Enum "Email Connector";
         EmptyGuid: Guid;
     begin
-        Enqueue(EmailMessageId, EmptyGuid, EmptyConnector, false);
-    end;
-
-    procedure Enqueue(EmailMessageId: Guid; AccountId: Guid; EmailConnector: Enum "Email Connector")
-    begin
-        Enqueue(EmailMessageId, AccountId, EmailConnector, true);
-    end;
-
-    procedure Enqueue(EmailMessageId: Guid; AccountId: Guid; EmailConnector: Enum "Email Connector"; Queue: Boolean)
-    var
-        EmailOutbox: Record "Email Outbox";
-        EmailMessage: Record "Email Message";
-        TaskId: Guid;
-    begin
-        if not EmailMessage.Get(EmailMessageId) then
+        if not EmailMessageImpl.Get(EmailMessage.GetId()) then
             Error(EmailMessageDoesNotExistMsg);
 
-        CreateEmailOutbox(EmailMessageId, AccountId, EmailConnector, EmailMessage.Subject, Queue, EmailOutbox);
+        if GetEmailOutbox(EmailMessage.GetId(), EmailOutbox) and IsOutboxEnqueued(EmailOutbox) then
+            exit;
 
-        if Queue then begin
+        CreateOrUpdateEmailOutbox(EmailMessageImpl, EmptyGuid, EmptyConnector, Enum::"Email Status"::Draft, '', EmailOutbox);
+    end;
+
+    procedure Enqueue(EmailMessage: Codeunit "Email Message"; EmailScenario: Enum "Email Scenario")
+    var
+        EmailAccount: Record "Email Account";
+        EmailScenarios: Codeunit "Email Scenario";
+    begin
+        EmailScenarios.GetEmailAccount(EmailScenario, EmailAccount);
+
+        Enqueue(EmailMessage, EmailAccount."Account Id", EmailAccount.Connector);
+    end;
+
+    procedure Enqueue(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector")
+    var
+        EmailOutbox: Record "Email Outbox";
+    begin
+        Send(EmailMessage, EmailAccountId, EmailConnector, true, EmailOutbox);
+    end;
+
+    procedure Send(EmailMessage: Codeunit "Email Message"; EmailScenario: Enum "Email Scenario"): Boolean
+    var
+        EmailAccount: Record "Email Account";
+        EmailScenarios: Codeunit "Email Scenario";
+    begin
+        EmailScenarios.GetEmailAccount(EmailScenario, EmailAccount);
+
+        exit(Send(EmailMessage, EmailAccount."Account Id", EmailAccount.Connector));
+    end;
+
+    procedure Send(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"): Boolean
+    var
+        EmailOutbox: Record "Email Outbox";
+    begin
+        exit(Send(EmailMessage, EmailAccountId, EmailConnector, false, EmailOutbox));
+    end;
+
+
+    procedure Send(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"; var EmailOutbox: Record "Email Outbox"): Boolean
+    begin
+        exit(Send(EmailMessage, EmailAccountId, EmailConnector, false, EmailOutbox));
+    end;
+
+    procedure OpenInEditor(EmailMessage: Codeunit "Email Message"; EmailScenario: Enum "Email Scenario"; IsModal: Boolean): Enum "Email Action"
+    var
+        EmailAccount: Record "Email Account";
+        EmailScenarios: Codeunit "Email Scenario";
+    begin
+        EmailScenarios.GetEmailAccount(EmailScenario, EmailAccount);
+
+        exit(OpenInEditor(EmailMessage, EmailAccount."Account Id", EmailAccount.Connector, IsModal));
+    end;
+
+    procedure OpenInEditor(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"; IsModal: Boolean): Enum "Email Action"
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailMessageImpl: Codeunit "Email Message Impl.";
+        EmailEditor: Codeunit "Email Editor";
+        IsNew, IsEnqueued : Boolean;
+    begin
+        if not EmailMessageImpl.Get(EmailMessage.GetId()) then
+            Error(EmailMessageDoesNotExistMsg);
+
+        if EmailMessageImpl.IsReadOnly() then
+            Error(EmailMessageCannotBeEditedErr);
+
+        IsNew := not GetEmailOutbox(EmailMessageImpl.GetId(), EmailOutbox);
+        IsEnqueued := (not IsNew) and IsOutboxEnqueued(EmailOutbox);
+
+        if not IsEnqueued then begin
+            // Modify the outbox only if it hasn't been enqueued yet
+            CreateOrUpdateEmailOutbox(EmailMessageImpl, EmailAccountId, EmailConnector, Enum::"Email Status"::Draft, '', EmailOutbox);
+            Commit(); // Commit the changes in case the messageis to be open modally
+        end;
+
+        if IsNew then
+            EmailEditor.SetAsNew();
+
+        exit(EmailEditor.Open(EmailOutbox, IsModal));
+    end;
+
+    local procedure GetEmailOutbox(EmailMessageId: Guid; var EmailOutbox: Record "Email Outbox"): Boolean
+    begin
+        EmailOutbox.SetRange("Message Id", EmailMessageId);
+        exit(EmailOutbox.FindFirst());
+    end;
+
+    local procedure IsOutboxEnqueued(EmailOutbox: Record "Email Outbox"): Boolean
+    begin
+        exit((EmailOutbox.Status in [Enum::"Email Status"::Queued, Enum::"Email Status"::Processing]));
+    end;
+
+    local procedure Send(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"; InBackground: Boolean; var EmailOutbox: Record "Email Outbox"): Boolean
+    var
+        Accounts: Record "Email Account";
+        EmailAccount: Codeunit "Email Account";
+        EmailMessageImpl: Codeunit "Email Message Impl.";
+        EmailDispatcher: Codeunit "Email Dispatcher";
+        TaskId: Guid;
+    begin
+        if not EmailMessageImpl.Get(EmailMessage.GetId()) then
+            Error(EmailMessageDoesNotExistMsg);
+
+        if GetEmailOutbox(EmailMessage.GetId(), EmailOutbox) and IsOutboxEnqueued(EmailOutbox) then
+            exit;
+
+        EmailMessageImpl.ValidateRecipients(Enum::"Email Recipient Type"::"To");
+        EmailMessageImpl.ValidateRecipients(Enum::"Email Recipient Type"::Cc);
+        EmailMessageImpl.ValidateRecipients(Enum::"Email Recipient Type"::Bcc);
+
+        // Validate email account
+        EmailAccount.GetAllAccounts(false, Accounts);
+        if not Accounts.Get(EmailAccountId, EmailConnector) then
+            Error(InvalidEmailAccountErr);
+
+        CreateOrUpdateEmailOutbox(EmailMessageImpl, EmailAccountId, EmailConnector, Enum::"Email Status"::Queued, Accounts."Email Address", EmailOutbox);
+
+        if InBackground then begin
             TaskId := TaskScheduler.CreateTask(Codeunit::"Email Dispatcher", 0, true, CompanyName(), CurrentDateTime(), EmailOutbox.RecordId());
             EmailOutbox."Task Scheduler Id" := TaskId;
             EmailOutbox.Modify();
+        end else begin // Send the email in foreground
+            Commit();
+
+            EmailDispatcher.Run(EmailOutbox);
+            exit(EmailDispatcher.GetSuccess());
         end;
     end;
 
-    procedure Send(EmailMessageId: Guid; AccountId: Guid; EmailConnector: Enum "Email Connector"): Boolean
-    var
-        EmailOutbox: Record "Email Outbox";
-        EmailMessage: Record "Email Message";
-        EmailDispatcher: Codeunit "Email Dispatcher";
+    local procedure CreateOrUpdateEmailOutbox(EmailMessage: Codeunit "Email Message Impl."; AccountId: Guid; EmailConnector: Enum "Email Connector"; Status: Enum "Email Status";
+                                                                SentFrom: Text; var EmailOutbox: Record "Email Outbox")
     begin
-        if not EmailMessage.Get(EmailMessageId) then
-            Error(EmailMessageDoesNotExistMsg);
-
-        CreateEmailOutbox(EmailMessageId, AccountId, EmailConnector, EmailMessage.Subject, true, EmailOutbox);
-        Commit();
-
-        EmailDispatcher.Run(EmailOutbox);
-        exit(EmailDispatcher.GetSuccess());
-    end;
-
-    procedure IsAnyConnectorInstalled(): Boolean
-    var
-        EmailConnector: Enum "Email Connector";
-    begin
-        exit(EmailConnector.Names.Count() > 0);
-    end;
-
-    internal procedure SendEmail(var EmailOutbox: Record "Email Outbox")
-    var
-        EmailRecipients: Record "Email Recipient";
-    begin
-        if EmailOutbox.Status = EmailOutbox.Status::Processing then
-            exit;
-
-        if IsNullGuid(EmailOutbox."Account Id") then
-            exit;
-
-        EmailRecipients.SetRange("Email Message Id", EmailOutbox."Message Id");
-        if EmailRecipients.IsEmpty() then begin
-            Message(EmailSendNoRecipientsMsg);
-            exit;
+        if not GetEmailOutbox(EmailMessage.GetId(), EmailOutbox) then begin
+            EmailOutbox."Message Id" := EmailMessage.GetId();
+            EmailOutbox.Insert();
         end;
-
-        CreateEmailTask(EmailOutbox);
-    end;
-
-    internal procedure QueueEmail(var SentEmail: Record "Sent Email")
-    var
-        EmailOutbox: Record "Email Outbox";
-    begin
-        CreateEmailOutbox(SentEmail."Message Id", SentEmail."Account Id", SentEmail.Connector, SentEmail.Description, true, EmailOutbox);
-
-        CreateEmailTask(EmailOutbox);
-    end;
-
-    internal procedure QueueEmailNow(var EmailOutbox: Record "Email Outbox")
-    begin
-        if EmailOutbox.Status = EmailOutbox.Status::Processing then
-            exit;
-
-        Codeunit.Run(Codeunit::"Email Dispatcher", EmailOutbox);
-    end;
-
-    local procedure CreateEmailOutbox(EmailMessageId: Guid; AccountId: Guid; EmailConnector: Enum "Email Connector"; EmailSubject: Text;
-                                                                                                 Queue: Boolean; var EmailOutbox: Record "Email Outbox")
-    var
-        Accounts: Record "Email Account";
-        Account: Codeunit "Email Account";
-    begin
-        if Queue then begin
-            Account.GetAllAccounts(false, Accounts);
-            if not Accounts.Get(AccountId) then
-                Error(EmailAccountwasRemovedErr, Accounts.Name, Accounts.Connector);
-
-            EmailOutbox."Send From" := Accounts."Email Address";
-            EmailOutbox.Status := EmailOutbox.Status::Queued;
-        end else
-            EmailOutbox.Status := EmailOutbox.Status::Draft;
 
         EmailOutbox.Connector := EmailConnector;
-        EmailOutbox."Message Id" := EmailMessageId;
         EmailOutbox."Account Id" := AccountId;
-        EmailOutbox.Description := CopyStr(EmailSubject, 1, MaxStrLen(EmailOutbox.Description));
+        EmailOutbox.Description := CopyStr(EmailMessage.GetSubject(), 1, MaxStrLen(EmailOutbox.Description));
         EmailOutbox."User Security Id" := UserSecurityId();
-        EmailOutbox."Date Queued" := CurrentDateTime();
+        EmailOutbox."Send From" := CopyStr(SentFrom, 1, MaxStrLen(EmailOutbox."Send From"));
+        EmailOutbox.Status := Status;
+        if Status = Enum::"Email Status"::Queued then
+            EmailOutbox."Date Queued" := CurrentDateTime();
 
-        EmailOutbox.Insert();
-    end;
-
-    local procedure CreateEmailTask(var EmailOutbox: Record "Email Outbox")
-    var
-        TaskId: Guid;
-    begin
-        TaskId := TaskScheduler.CreateTask(Codeunit::"Email Dispatcher", 0, true, CompanyName(), CurrentDateTime(), EmailOutbox.RecordId());
-
-        EmailOutbox."Task Scheduler Id" := TaskId;
-        EmailOutbox.Status := EmailOutbox.Status::Queued;
         EmailOutbox.Modify();
     end;
+
+    #endregion
 
     procedure FindLastErrorCallStack(EmailOutboxId: BigInteger): Text
     var
@@ -157,37 +203,20 @@ codeunit 8900 "Email Impl"
         exit(ErrorText);
     end;
 
-    procedure FindAllConnectors(var EmailConnector: Record "Email Connector")
-    var
-        Base64Convert: Codeunit "Base64 Convert";
-        ConnectorInterface: Interface "Email Connector";
-        Connector: Enum "Email Connector";
-        ConnectorLogoBase64: Text;
-        OutStream: Outstream;
-    begin
-        foreach Connector in Enum::"Email Connector".Ordinals() do begin
-            ConnectorInterface := Connector;
-            ConnectorLogoBase64 := ConnectorInterface.GetLogoAsBase64();
-            EmailConnector.Connector := Connector;
-            EmailConnector.Description := ConnectorInterface.GetDescription();
-            if ConnectorLogoBase64 <> '' then begin
-                EmailConnector.Logo.CreateOutStream(OutStream);
-                Base64Convert.FromBase64(ConnectorLogoBase64, OutStream);
-            end;
-            EmailConnector.Insert();
-        end;
-    end;
-
-    procedure RefreshEmailOutboxForUser(EmailStatus: Enum "Email Status"; var EmailOutboxForUser: Record "Email Outbox For User" temporary)
+    procedure RefreshEmailOutboxForUser(EmailAccountId: Guid; EmailStatus: Enum "Email Status"; var EmailOutboxForUser: Record "Email Outbox" temporary)
     var
         EmailOutbox: Record "Email Outbox";
-        UserPermissions: Codeunit "User Permissions";
+        EmailAccountImpl: Codeunit "Email Account Impl.";
     begin
         if not EmailOutboxForUser.IsEmpty() then
             EmailOutboxForUser.DeleteAll();
 
-        if not UserPermissions.IsSuper(UserSecurityId()) then
+        if not EmailAccountImpl.IsUserEmailAdmin() then
             EmailOutbox.SetRange("User Security Id", UserSecurityId());
+
+        // If opening Email Outbox page from Email Accounts, filter to selected account
+        if not IsNullGuid(EmailAccountId) then
+            EmailOutbox.SetRange("Account Id", EmailAccountId);
 
         if EmailStatus.AsInteger() <> 0 then
             EmailOutboxForUser.SetRange(Status, EmailStatus);
@@ -199,33 +228,14 @@ codeunit 8900 "Email Impl"
             until EmailOutbox.Next() = 0;
     end;
 
-    procedure RefreshSentMailForUser(AccountId: Guid; NewerThan: DateTime; var SentEmailForUser: Record "Sent Email For User")
-    var
-        SentEmail: Record "Sent Email";
-        UserPermissions: Codeunit "User Permissions";
-    begin
-        if not SentEmailForUser.IsEmpty() then
-            SentEmailForUser.DeleteAll();
-
-        if not UserPermissions.IsSuper(UserSecurityId()) then
-            SentEmail.SetRange("User Security Id", UserSecurityId());
-        if not IsNullGuid(AccountId) then
-            SentEmail.SetRange("Account Id", AccountId);
-
-        if NewerThan <> 0DT then
-            SentEmailForUser.SetRange("Date Time Sent", NewerThan, System.CurrentDateTime());
-
-        if SentEmail.FindSet() then
-            repeat
-                SentEmailForUser.TransferFields(SentEmail);
-                SentEmailForUser.Insert();
-            until SentEmail.Next() = 0;
-    end;
-
     internal procedure CountEmailsInOutbox(EmailStatus: Enum "Email Status"): Integer
     var
         EmailOutbox: Record "Email Outbox";
+        EmailAccountImpl: Codeunit "Email Account Impl.";
     begin
+        if not EmailAccountImpl.IsUserEmailAdmin() then
+            EmailOutbox.SetRange("User Security Id", UserSecurityId());
+
         EmailOutbox.SetRange(Status, EmailStatus);
         exit(EmailOutbox.Count());
     end;
@@ -233,8 +243,25 @@ codeunit 8900 "Email Impl"
     internal procedure CountSentEmails(NewerThan: DateTime): Integer
     var
         SentEmails: Record "Sent Email";
+        EmailAccountImpl: Codeunit "Email Account Impl.";
     begin
+        if not EmailAccountImpl.IsUserEmailAdmin() then
+            SentEmails.SetRange("User Security Id", UserSecurityId());
+
         SentEmails.SetRange("Date Time Sent", NewerThan, System.CurrentDateTime());
         exit(SentEmails.Count());
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sandbox Cleanup", 'OnClearCompanyConfiguration', '', false, false)]
+    local procedure DeleteEmailsForSandbox(CompanyName: Text)
+    var
+        SentEmail: Record "Sent Email";
+        EmailOutbox: Record "Email Outbox";
+    begin
+        SentEmail.ChangeCompany(CompanyName);
+        SentEmail.DeleteAll();
+
+        EmailOutbox.ChangeCompany(CompanyName);
+        EmailOutbox.DeleteAll();
     end;
 }

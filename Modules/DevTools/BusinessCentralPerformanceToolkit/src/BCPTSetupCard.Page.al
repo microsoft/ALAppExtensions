@@ -115,10 +115,12 @@ page 149001 "BCPT Setup Card"
 
                 trigger OnAction()
                 begin
+                    CurrPage.Update(false);
+                    Find();
                     Rec.CurrentRunType := Rec.CurrentRunType::BCPT;
                     Rec.Modify();
                     BCPTStartTests.StartBCPTSuite(Rec);
-                    CurrPage.update(true);
+                    CurrPage.Update(false);
                 end;
             }
             action(StartPRT)
@@ -134,10 +136,12 @@ page 149001 "BCPT Setup Card"
 
                 trigger OnAction()
                 begin
+                    CurrPage.Update(false);
+                    Find();
                     Rec.CurrentRunType := Rec.CurrentRunType::PRT;
                     Rec.Modify();
                     BCPTStartTests.StartBCPTSuite(Rec);
-                    CurrPage.Update(true);
+                    CurrPage.Update(false);
                 end;
             }
             action(Stop)
@@ -158,6 +162,10 @@ page 149001 "BCPT Setup Card"
                     MaxDateTime: DateTime;
                     SomethingWentWrongErr: Label 'It is taking longer to stop the run than expected. You can reopen the page later to check the status or you can invoke "Reset Status" action.';
                 begin
+                    CurrPage.Update(false);
+                    Rec.Find();
+                    if Rec.Status <> Rec.Status::Running then
+                        exit;
                     Window.Open('Cancelling all sessions...');
                     MaxDateTime := CurrentDateTime() + (60000 * 5); // Wait for a max of 5 mins
                     BCPTStartTests.StopBCPTSuite(Rec);
@@ -172,6 +180,23 @@ page 149001 "BCPT Setup Card"
                         until BCPTLine.IsEmpty;
                     Window.Close();
 
+                    CurrPage.Update(false);
+                    CurrPage.BCPTLines.Page.Refresh();
+                end;
+            }
+            action(RefreshStatus)
+            {
+                ApplicationArea = All;
+                Caption = 'Refresh';
+                ToolTip = 'Refreshes the page.';
+                Image = Refresh;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+
+                trigger OnAction()
+                begin
+                    Find();
                     CurrPage.Update(false);
                 end;
             }

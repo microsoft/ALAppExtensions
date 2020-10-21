@@ -32,7 +32,7 @@ codeunit 139610 SendRemittanceAdvice
         SendRemittanceAdviceFromPaymentJournalInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('SelectSendingOptionHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure SendRemittanceAdviceFromPaymentJournal()
     var
@@ -82,7 +82,7 @@ codeunit 139610 SendRemittanceAdvice
         SendRemittanceAdviceFromVendorLedgerEntryInternal();
     end;
 
-    // [Test]
+    [Test]
     [HandlerFunctions('SelectSendingOptionHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure SendRemittanceAdviceFromVendorLedgerEntry()
     var

@@ -95,7 +95,7 @@ page 30045 "APIV2 - Sales Quote Lines"
                 }
                 field(lineObjectNumber; "No.")
                 {
-                    Caption = 'Line Object Number';
+                    Caption = 'Line Object No.';
 
                     trigger OnValidate()
                     var
@@ -346,12 +346,12 @@ page 30045 "APIV2 - Sales Quote Lines"
         TempItemFieldSet: Record 2000000041 temporary;
         LinesLoaded: Boolean;
         IDOrDocumentIdShouldBeSpecifiedForLinesErr: Label 'You must specify an Id or a Document Id to get the lines.';
-        CannotChangeDocumentIdNoErr: Label 'The value for "documentId" cannot be modified.';
+        CannotChangeDocumentIdNoErr: Label 'The value for "documentId" cannot be modified.', Comment = 'documentId is a field name and should not be translated.';
         CannotChangeLineNoErr: Label 'The value for sequence cannot be modified. Delete and insert the line again.';
-        BothItemIdAndAccountIdAreSpecifiedErr: Label 'Both "itemId" and "accountId" are specified. Specify only one of them.';
+        BothItemIdAndAccountIdAreSpecifiedErr: Label 'Both "itemId" and "accountId" are specified. Specify only one of them.', Comment = 'itemId and accountId are field names and should not be translated.';
         ItemDoesNotExistErr: Label 'Item does not exist.';
         AccountDoesNotExistErr: Label 'Account does not exist.';
-        CannotChangeLineObjectNoErr: Label 'The value for "lineObjectNumber" cannot be modified.';
+        CannotChangeLineObjectNoErr: Label 'The value for "lineObjectNumber" cannot be modified.', Comment = 'lineObjectNumber is a field name and should not be translated.';
 
     local procedure RegisterFieldSet(FieldNo: Integer)
     var

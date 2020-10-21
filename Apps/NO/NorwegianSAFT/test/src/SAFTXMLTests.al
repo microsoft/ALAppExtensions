@@ -13,6 +13,8 @@ codeunit 148103 "SAF-T XML Tests"
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryRandom: Codeunit "Library - Random";
         LibraryUtility: Codeunit "Library - Utility";
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryPurchase: Codeunit "Library - Purchase";
         SAFTTestHelper: Codeunit "SAF-T Test Helper";
         Assert: Codeunit Assert;
         SAFTMappingType: Enum "SAF-T Mapping Type";
@@ -55,6 +57,7 @@ codeunit 148103 "SAF-T XML Tests"
         // TFS 349472: All customer and vendor bank accounts exports
         // TFS 350284: All xnl nodes predefined with 'n1:'
         // TFS 350284: Both sales and purchase VAT Entry information exports 
+        // TFS 372962: Customer and vendor with zero balance should be presented
         VerifyMasterDataStructureWithStdAccMapping(TempXMLBuffer, SAFTExportHeader."Mapping Range Code", NumberOfMasterDataRecords);
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -563,6 +566,152 @@ codeunit 148103 "SAF-T XML Tests"
             SAFTTestHelper.FormatDate(GLEntry."Posting Date"));
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure CustomerIDWithZeroBalanceInvoiceAndPayment();
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        Customer: Record Customer;
+        CustNo: Code[20];
+        Cust2No: Code[20];
+        Amount: Decimal;
+    begin
+        // [SCENARIO 372962] CustomerID of Customer with zero balance and non-zero sales must be presented in XML
+        Initialize();
+
+        // [GIVEN] SAF-T Setup
+        BasicSAFTSetup(SAFTExportHeader);
+
+        // [GIVEN] Customer with 2 Customer Ledger Entries - Invoice and Payment
+        Customer.FindFirst();
+        CustNo := Customer."No.";
+        Amount := LibraryRandom.RandIntInRange(100, 1000);
+        SAFTTestHelper.MockCustLedgEntry(
+            SAFTExportHeader."Starting Date", CustNo, Amount, Amount, "Gen. Journal Document Type"::Invoice);
+        SAFTTestHelper.MockCustLedgEntry(
+            SAFTExportHeader."Starting Date", CustNo, 0, -Amount, "Gen. Journal Document Type"::Payment);
+
+        // [GIVEN] Customer2 without any ledger entries
+        Cust2No := LibrarySales.CreateCustomerNo();
+
+        // [WHEN] Export SAF-T
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+
+        // [THEN] Master file contains the 'n1:CustomerID' for Customer with zero balance
+        VerifyXMLNodeOfMasterFile(SAFTExportHeader, 'CustomerID', CustNo);
+
+        // [THEN] Master file does not contain the 'n1:CustomerID' for Customer2
+        VerifyNonExistingXMLNodeOfMasterFile(SAFTExportHeader, 'CustomerID', Cust2No);
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure VendorIDWithZeroBalanceInvoiceAndPayment();
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        Vendor: Record Vendor;
+        VendNo: Code[20];
+        Vend2No: Code[20];
+        Amount: Decimal;
+    begin
+        // [SCENARIO 372962] SupplierID of Vendor with zero balance and non-zero sales must be presented in XML
+        Initialize();
+
+        // [GIVEN] SAF-T Setup
+        BasicSAFTSetup(SAFTExportHeader);
+
+        // [GIVEN] Vendor with 2 Vendor Ledger Entries - Invoice and Payment
+        Vendor.FindFirst();
+        VendNo := Vendor."No.";
+        Amount := LibraryRandom.RandIntInRange(100, 1000);
+        SAFTTestHelper.MockVendLedgEntry(
+            SAFTExportHeader."Starting Date", VendNo, Amount, Amount, "Gen. Journal Document Type"::Invoice);
+        SAFTTestHelper.MockVendLedgEntry(
+            SAFTExportHeader."Starting Date", VendNo, 0, -Amount, "Gen. Journal Document Type"::Payment);
+
+        // [GIVEN] Vendor2 without any ledger entries
+        Vend2No := LibraryPurchase.CreateVendorNo();
+
+        // [WHEN] Export SAF-T
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+
+        // [THEN] Master file contains the 'n1:SupplierID' for Vendor with zero balance
+        VerifyXMLNodeOfMasterFile(SAFTExportHeader, 'SupplierID', VendNo);
+
+        // [THEN] Master file does not contain the 'n1:SupplierID' for Vendor2
+        VerifyNonExistingXMLNodeOfMasterFile(SAFTExportHeader, 'SupplierID', Vend2No);
+        LibraryVariableStorage.AssertEmpty();
+    END;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure CustomerIDWithZeroBalanceInvoiceAndCreditMemo();
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        Customer: Record Customer;
+        CustNo: Code[20];
+        Amount: Decimal;
+    begin
+        // [SCENARIO 372962] CustomerID of Customer with zero balance and non-zero sales must be presented in XML
+        Initialize();
+
+        // [GIVEN] SAF-T Setup
+        BasicSAFTSetup(SAFTExportHeader);
+
+        // [GIVEN] Customer with 2 Customer Ledger Entries - Invoice and Credit Memo
+        Customer.FindFirst();
+        CustNo := Customer."No.";
+        Amount := LibraryRandom.RandIntInRange(100, 1000);
+        SAFTTestHelper.MockCustLedgEntry(
+            SAFTExportHeader."Starting Date", CustNo, Amount, Amount, "Gen. Journal Document Type"::Invoice);
+        SAFTTestHelper.MockCustLedgEntry(
+            SAFTExportHeader."Starting Date", CustNo, -Amount, -Amount, "Gen. Journal Document Type"::"Credit Memo");
+
+        // [WHEN] Export SAF-T
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+
+        // [THEN] Master file contains the 'n1:CustomerID' for Customer with zero balance
+        VerifyXMLNodeOfMasterFile(SAFTExportHeader, 'CustomerID', CustNo);
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure VendorIDWithZeroBalanceInvoiceAndCreditMemo();
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        Vendor: Record Vendor;
+        VendNo: Code[20];
+        Amount: Decimal;
+    begin
+        // [SCENARIO 372962] SupplierID of Vendor with zero balance and non-zero sales must be presented in XML
+        Initialize();
+
+        // [GIVEN] SAF-T Setup
+        BasicSAFTSetup(SAFTExportHeader);
+
+        // [GIVEN] Vendor with 2 Vendor Ledger Entries - Invoice and Credit Memo
+        Vendor.FindFirst();
+        VendNo := Vendor."No.";
+        Amount := LibraryRandom.RandIntInRange(100, 1000);
+        SAFTTestHelper.MockVendLedgEntry(
+            SAFTExportHeader."Starting Date", VendNo, Amount, Amount, "Gen. Journal Document Type"::Invoice);
+        SAFTTestHelper.MockVendLedgEntry(
+            SAFTExportHeader."Starting Date", VendNo, -Amount, -Amount, "Gen. Journal Document Type"::"Credit Memo");
+
+        // [WHEN] Export SAF-T
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+
+        // [THEN] Master file contains the 'n1:SupplierID' for Vendor with zero balance
+        VerifyXMLNodeOfMasterFile(SAFTExportHeader, 'SupplierID', VendNo);
+        LibraryVariableStorage.AssertEmpty();
+    END;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"SAF-T XML Tests");
@@ -599,13 +748,14 @@ codeunit 148103 "SAF-T XML Tests"
         until GLEntry.Next() = 0;
     end;
 
-    local procedure FindGLEntryWithGenPostingType(var GLEntry: Record "G/L Entry"; DocType: Integer; PostingDate: Date; DocNo: Code[20])
+    local procedure BasicSAFTSetup(var SAFTExportHeader: Record "SAF-T Export Header");
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
     begin
-        GLEntry.SetRange("Document Type", DocType);
-        GLEntry.SetRange("Posting Date", PostingDate);
-        GLEntry.SetRange("Document No.", DocNo);
-        GLEntry.SetFilter("Gen. Posting Type", '<>%1', 0);
-        GLEntry.FindFirst();
+        SAFTTestHelper.SetupSAFT(
+          SAFTMappingRange, "SAF-T Mapping Type"::"Four Digit Standard Account", LibraryRandom.RandIntInRange(3, 5));
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code);
     end;
 
     local procedure VerifyHeaderStructure(var TempXMLBuffer: Record "XML Buffer" temporary; SAFTExportLine: Record "SAF-T Export Line")
@@ -1079,6 +1229,32 @@ codeunit 148103 "SAF-T XML Tests"
             TempXMLBuffer, 'n1:TaxBase', SAFTTestHelper.FormatAmount(abs(VATEntry.Base)));
         VerifyAmountInfo(TempXMLBuffer, 'TaxAmount', abs(VATEntry.Amount));
     end;
+
+    local procedure VerifyXMLNodeOfMasterFile(SAFTExportHeader: Record "SAF-T Export Header"; XmlName: Text[250]; XmlValue: Text[250]);
+    var
+        SAFTExportLine: Record "SAF-T Export Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        SAFTExportLine.SetRange(Status, SAFTExportLine.Status::Completed);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        TempXMLBuffer.SetFilter(Name, XmlName);
+        TempXMLBuffer.FindFirst();
+        TempXMLBuffer.TestField(Value, XmlValue);
+    END;
+
+    local procedure VerifyNonExistingXMLNodeOfMasterFile(SAFTExportHeader: Record "SAF-T Export Header"; XmlName: Text[250]; XmlValue: Text[250]);
+    var
+        SAFTExportLine: Record "SAF-T Export Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        SAFTExportLine.SetRange(Status, SAFTExportLine.Status::Completed);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        TempXMLBuffer.SetRange(Name, XmlName);
+        TempXMLBuffer.SetRange(Value, XmlValue);
+        Assert.RecordIsEmpty(TempXMLBuffer);
+    END;
 
     local procedure GetSAFTTaxCodeFromVATPostinSetup(VATPostingSetup: Record "VAT Posting Setup"; EntryType: Integer): Integer
     var

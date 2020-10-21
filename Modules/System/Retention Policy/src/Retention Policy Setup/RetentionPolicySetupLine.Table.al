@@ -128,11 +128,20 @@ table 3902 "Retention Policy Setup Line"
     /// <summary>
     /// Use this procedure to get the filter in text format stored in the current record.
     /// </summary>
-    /// <returns>fhe Filter in text format.</returns>
+    /// <returns>The Filter in text format.</returns>
     procedure GetTableFilterText(): Text[2048]
     var
         RetentionPolicy: Codeunit "Retention Policy Setup";
     begin
         exit(RetentionPolicy.GetTableFilterText(Rec));
+    end;
+
+    /// <summary>
+    /// Use this procedure to verify whether the retention policy setup line is locked.
+    /// </summary>
+    /// <returns>True if the line is locked.</returns>
+    procedure IsLocked(): Boolean
+    begin
+        exit(Rec.Locked)
     end;
 }

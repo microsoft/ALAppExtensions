@@ -35,7 +35,7 @@ page 8894 "Email Scenarios for Account"
         }
     }
 
-    procedure GetSelectedScenarios(var Result: Record "Email Account Scenario")
+    internal procedure GetSelectedScenarios(var Result: Record "Email Account Scenario")
     begin
         Result.Reset();
         Result.DeleteAll();
@@ -55,6 +55,7 @@ page 8894 "Email Scenarios for Account"
     begin
         EmailScenario.GetAvailableScenariosForAccount(Rec, Rec);
         Rec.SetCurrentKey("Display Name");
+        if Rec.FindFirst() then; // set the selection to the first record
     end;
 
     var

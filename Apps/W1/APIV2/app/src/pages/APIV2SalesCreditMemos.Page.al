@@ -30,7 +30,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(number; "No.")
                 {
-                    Caption = 'Number';
+                    Caption = 'No.';
                     Editable = false;
 
                     trigger OnValidate()
@@ -40,7 +40,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(externalDocumentNumber; "External Document No.")
                 {
-                    Caption = 'External Document Number';
+                    Caption = 'External Document No.';
 
                     trigger OnValidate()
                     begin
@@ -179,7 +179,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(sellToAddressLine1; "Sell-to Address")
                 {
-                    Caption = 'Sell To Address Line 1';
+                    Caption = 'Sell-to Address Line 1';
 
                     trigger OnValidate()
                     begin
@@ -188,7 +188,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(sellToAddressLine2; "Sell-to Address 2")
                 {
-                    Caption = 'Sell To Address Line 2';
+                    Caption = 'Sell-to Address Line 2';
 
                     trigger OnValidate()
                     begin
@@ -197,7 +197,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(sellToCity; "Sell-to City")
                 {
-                    Caption = 'Sell To City';
+                    Caption = 'Sell-to City';
 
                     trigger OnValidate()
                     begin
@@ -206,7 +206,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(sellToCountry; "Sell-to Country/Region Code")
                 {
-                    Caption = 'Sell To Country/Region Code';
+                    Caption = 'Sell-to Country/Region Code';
 
                     trigger OnValidate()
                     begin
@@ -215,7 +215,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(sellToState; "Sell-to County")
                 {
-                    Caption = 'Sell To State';
+                    Caption = 'Sell-to State';
 
                     trigger OnValidate()
                     begin
@@ -224,7 +224,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(sellToPostCode; "Sell-to Post Code")
                 {
-                    Caption = 'Sell To Post Code';
+                    Caption = 'Sell-to Post Code';
 
                     trigger OnValidate()
                     begin
@@ -233,7 +233,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(billToAddressLine1; "Bill-to Address")
                 {
-                    Caption = 'Bill To Address Line 1';
+                    Caption = 'Bill-to Address Line 1';
 
                     trigger OnValidate()
                     begin
@@ -242,7 +242,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(billToAddressLine2; "Bill-to Address 2")
                 {
-                    Caption = 'Bill To Address Line 2';
+                    Caption = 'Bill-to Address Line 2';
 
                     trigger OnValidate()
                     begin
@@ -251,7 +251,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(billToCity; "Bill-to City")
                 {
-                    Caption = 'Bill To City';
+                    Caption = 'Bill-to City';
 
                     trigger OnValidate()
                     begin
@@ -260,7 +260,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(billToCountry; "Bill-to Country/Region Code")
                 {
-                    Caption = 'Bill To Country/Region Code';
+                    Caption = 'Bill-to Country/Region Code';
 
                     trigger OnValidate()
                     begin
@@ -269,7 +269,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(billToState; "Bill-to County")
                 {
-                    Caption = 'Bill To State';
+                    Caption = 'Bill-to State';
 
                     trigger OnValidate()
                     begin
@@ -278,7 +278,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 field(billToPostCode; "Bill-to Post Code")
                 {
-                    Caption = 'Bill To Post Code';
+                    Caption = 'Bill-to Post Code';
 
                     trigger OnValidate()
                     begin
@@ -607,10 +607,10 @@ page 30038 "APIV2 - Sales Credit Memos"
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         LCYCurrencyCode: Code[10];
         CurrencyCodeTxt: Text;
-        CannotChangeIDErr: Label 'The "id" cannot be changed.';
+        CannotChangeIDErr: Label 'The "id" cannot be changed.', Comment = 'id is a field name and should not be translated.';
         CouldNotFindSellToCustomerErr: Label 'The sell-to customer cannot be found.';
         CouldNotFindBillToCustomerErr: Label 'The bill-to customer cannot be found.';
-        SellToCustomerNotProvidedErr: Label 'A "customerNumber" or a "customerId" must be provided.';
+        SellToCustomerNotProvidedErr: Label 'A "customerNumber" or a "customerId" must be provided.', Comment = 'customerNumber and customerId are field names and should not be translated.';
         SellToCustomerValuesDontMatchErr: Label 'The sell-to customer values do not match to a specific Customer.';
         BillToCustomerValuesDontMatchErr: Label 'The bill-to customer values do not match to a specific Customer.';
         PermissionFilterFormatTxt: Label '<>%1&<>%2', Locked = true;
@@ -619,13 +619,13 @@ page 30038 "APIV2 - Sales Credit Memos"
         InvoiceDiscountAmount: Decimal;
         SalesInvoiceId: Guid;
         InvoiceNo: Code[20];
-        InvoiceValuesDontMatchErr: Label 'The "invoiceId" and "invoiceNumber" do not match to a specific Invoice.';
-        InvoiceIdDoesNotMatchAnInvoiceErr: Label 'The "invoiceId" does not match to an Invoice.';
+        InvoiceValuesDontMatchErr: Label 'The "invoiceId" and "invoiceNumber" do not match to a specific Invoice.', Comment = 'invoiceId and invoiceNumber are field names and should not be translated.';
+        InvoiceIdDoesNotMatchAnInvoiceErr: Label 'The "invoiceId" does not match to an Invoice.', Comment = 'invoiceId is a field name and should not be translated.';
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.';
-        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.';
-        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.';
-        PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.';
-        ShipmentMethodIdDoesNotMatchAShipmentMethodErr: Label 'The "shipmentMethodId" does not match to a Shipment Method.';
+        CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.', Comment = 'currencyId is a field name and should not be translated.';
+        CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.', Comment = 'currencyCode is a field name and should not be translated.';
+        PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.', Comment = 'paymentTermsId is a field name and should not be translated.';
+        ShipmentMethodIdDoesNotMatchAShipmentMethodErr: Label 'The "shipmentMethodId" does not match to a Shipment Method.', Comment = 'shipmentMethodId is a field name and should not be translated.';
         PostedCreditMemoActionErr: Label 'The action can be applied to a posted credit memo only.';
         DraftCreditMemoActionErr: Label 'The action can be applied to a draft credit memo only.';
         CannotFindCreditMemoErr: Label 'The credit memo cannot be found.';

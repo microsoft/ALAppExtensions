@@ -230,6 +230,35 @@ codeunit 134693 "Email Scenario Test"
         Assert.AreEqual(EmailScenarios.Connector, AnotherAccount.Connector, 'Wrong connector');
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure UnassignScenarioTest()
+    var
+        Account: Record "Email Account";
+        DefaultAccount: Record "Email Account";
+        ResultAccount: Record "Email Account";
+    begin
+        // [Scenario] When unassigning a scenario then it falls back to the default account.
+
+        // [Given] Two accounts, one default and one not 
+        Initialize();
+        ConnectorMock.AddAccount(Account);
+        ConnectorMock.AddAccount(DefaultAccount);
+        EmailScenario.SetDefaultEmailAccount(DefaultAccount);
+        EmailScenario.SetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", Account);
+
+        // mid-test verification
+        EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", ResultAccount);
+        Assert.AreEqual(Account."Account Id", ResultAccount."Account Id", 'Wrong account');
+
+        // [When] Unassign the email scenario
+        EmailScenario.UnassignScenario(Enum::"Email Scenario"::"Test Email Scenario");
+
+        // [Then] The default account is returned for that account
+        EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", ResultAccount);
+        Assert.AreEqual(DefaultAccount."Account Id", ResultAccount."Account Id", 'The default account should have been returned');
+    end;
+
     local procedure Initialize()
     begin
         EmailScenarioMock.DeleteAllMappings();

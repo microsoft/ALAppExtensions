@@ -42,6 +42,10 @@ codeunit 13622 "OIOUBL-Subscribers"
         IsStandardExportCodeunit := OIOUBLManagement.IsStandardExportCodeunitID(ExportCodeunitID);
 
         if not IsStandardExportCodeunit then begin
+            OnBeforeRunNonStandardCodeunit(ExportCodeunitID, RecordVariant, IsHandled);
+            if IsHandled then
+                exit;
+
             Codeunit.Run(ExportCodeunitID, RecordVariant);
             IsHandled := true;
             exit;
@@ -159,6 +163,11 @@ codeunit 13622 "OIOUBL-Subscribers"
         RecordExportBuffer.SetFilter(ServerFilePath, SourceFile);
         if not RecordExportBuffer.IsEmpty() then
             IsHandled := true;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeRunNonStandardCodeunit(ExportCodeunitID: Integer; RecordVariant: Variant; var IsHandled: Boolean)
+    begin
     end;
 
 }

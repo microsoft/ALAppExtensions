@@ -406,4 +406,11 @@ codeunit 2501 "Extension Marketplace"
     begin
         // Provides an option to rewrite URL in non SaaS environments.
     end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'OpenAppSourceMarket', '', false, false)]
+    local procedure OpenAppsourceMarket()
+    begin
+        page.Run(Page::"Extension Marketplace");
+    end;
 }

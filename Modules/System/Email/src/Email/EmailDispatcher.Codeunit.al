@@ -7,7 +7,7 @@ codeunit 8888 "Email Dispatcher"
 {
     Access = Internal;
     TableNo = "Email Outbox";
-    Permissions = tabledata "Sent Email" = rim,
+    Permissions = tabledata "Sent Email" = i,
                   tabledata "Email Outbox" = rimd,
                   tabledata "Email Message" = r,
                   tabledata "Email Error" = ri;
@@ -27,14 +27,13 @@ codeunit 8888 "Email Dispatcher"
     trigger OnRun()
     var
         EmailMessage: Record "Email Message";
-        EmailOutBox: Record "Email Outbox";
         SendEmail: Codeunit "Send Email";
     begin
         Session.LogMessage('0000CTM', Format(Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
         Session.LogMessage('0000D0X', StrSubstNo(ProcessingEmailMsg, Rec."Message Id", Rec.Connector, Rec."Account Id"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
         UpdateOutboxStatus(Rec, Rec.Status::Processing);
 
-        if EmailMessageImpl.Find(Rec."Message Id") then begin
+        if EmailMessageImpl.Get(Rec."Message Id") then begin
             LogAttachments();
 
             SendEmail.SetConnector(Rec.Connector);
@@ -47,12 +46,8 @@ codeunit 8888 "Email Dispatcher"
                 Session.LogMessage('0000CTO', StrSubstNo(SuccessfullySentEmailMsg, Rec."Message Id", Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
                 InsertToSentEmail(Rec);
 
-                // Delete from Outbox after successful sending and any previous failures
-                EmailOutBox.SetRange("Message Id", Rec."Message Id");
-                EmailOutBox.SetRange(Status, Enum::"Email Status"::Failed);
-                EmailOutBox.DeleteAll();
                 Rec.Delete();
-                EmailMessageImpl.LockEmailMessage();
+                EmailMessageImpl.MarkAsReadOnly();
             end
             else begin
                 Session.LogMessage('0000CTP', StrSubstNo(FailedToSendEmailMsg, Rec."Message Id"), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
@@ -72,14 +67,10 @@ codeunit 8888 "Email Dispatcher"
     var
         SentEmail: Record "Sent Email";
     begin
-        SentEmail."Message Id" := EmailOutbox."Message Id";
-        SentEmail."Account Id" := EmailOutbox."Account Id";
-        SentEmail."User Security Id" := EmailOutbox."User Security Id";
-        SentEmail.Connector := EmailOutbox.Connector;
-        SentEmail.Description := EmailOutbox.Description;
+        SentEmail.TransferFields(EmailOutbox);
         SentEmail."Date Time Sent" := CurrentDateTime();
-        SentEmail."Sent From" := EmailOutbox."Send From";
         SentEmail.Insert();
+
         Commit();
     end;
 

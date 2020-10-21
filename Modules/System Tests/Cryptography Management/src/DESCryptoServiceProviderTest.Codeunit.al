@@ -49,13 +49,13 @@ codeunit 132588 "DESCryptoServiceProvider Test"
     [Test]
     procedure TestEncryptStream()
     var
-        DESCryptoServiceProvider: Codeunit "DESCryptoServiceProvider Impl.";
+        TempBlob: Codeunit "Temp Blob";
+        DESCryptoServiceProvider: Codeunit "DESCryptoServiceProvider";
         LibraryAssert: Codeunit "Library Assert";
+        Base64Convert: Codeunit "Base64 Convert";
         InputInstream: InStream;
         OutputOutstream: Outstream;
         OutputInstream: InStream;
-        Base64Convert: Codeunit "Base64 Convert";
-        TempBlob: Record TempBlob temporary;
         Pixel: Text;
         ExpectedEncryptedText: Text;
         EncryptedStreamText: Text;
@@ -68,15 +68,15 @@ codeunit 132588 "DESCryptoServiceProvider Test"
         Salt := 'Test1234';
         Pixel := 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==';
 
-        TempBlob.Blob.CreateOutStream(OutputOutstream);
+        TempBlob.CreateOutStream(OutputOutstream);
         Base64Convert.FromBase64(Pixel, OutputOutstream);
-        TempBlob.Blob.CreateInStream(InputInstream);
-        TempBlob.Blob.CreateOutStream(OutputOutstream);
+        TempBlob.CreateInStream(InputInstream);
+        TempBlob.CreateOutStream(OutputOutstream);
 
         // [WHEN] Encrypt Stream
-        DESCryptoServiceProvider.EncryptStreamWithDESCryptoServiceProvider(Password, Salt, InputInstream, OutputOutstream);
+        DESCryptoServiceProvider.EncryptStream(Password, Salt, InputInstream, OutputOutstream);
 
-        TempBlob.Blob.CreateInStream(OutputInstream);
+        TempBlob.CreateInStream(OutputInstream);
         EncryptedStreamText := Base64Convert.ToBase64(OutputInstream);
 
         // [THEN] Verify Result 
@@ -86,10 +86,10 @@ codeunit 132588 "DESCryptoServiceProvider Test"
     [Test]
     procedure TestDecryptStream()
     var
-        DESCryptoServiceProvider: Codeunit "DESCryptoServiceProvider Impl.";
+        TempBlob: Codeunit "Temp Blob";
+        DESCryptoServiceProvider: Codeunit "DESCryptoServiceProvider";
         Base64Convert: Codeunit "Base64 Convert";
         LibraryAssert: Codeunit "Library Assert";
-        TempBlob: Record "Temp Blob" temporary;
         OutputOutstream: Outstream;
         OutputInstream: InStream;
         EncryptedStreamText: Text;
@@ -97,7 +97,6 @@ codeunit 132588 "DESCryptoServiceProvider Test"
         ExpectedDecryptedStreamText: Text;
         Password: Text;
         Salt: Text;
-        DecryptedText: Text;
         InputInstream: InStream;
     begin
         // [GIVEN] With Encryption Key
@@ -106,16 +105,16 @@ codeunit 132588 "DESCryptoServiceProvider Test"
         Salt := 'Test1234';
         ExpectedDecryptedStreamText := 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==';
 
-        TempBlob.Blob.CreateOutStream(OutputOutstream);
+        TempBlob.CreateOutStream(OutputOutstream);
         Base64Convert.FromBase64(EncryptedStreamText, OutputOutstream);
-        TempBlob.Blob.CreateInStream(InputInstream);
-        TempBlob.Blob.CreateOutStream(OutputOutstream);
+        TempBlob.CreateInStream(InputInstream);
+        TempBlob.CreateOutStream(OutputOutstream);
 
         // [WHEN] Decrypt Stream
-        DESCryptoServiceProvider.DecryptStreamWithDESCryptoServiceProvider(Password, Salt, InputInstream, OutputOutstream);
+        DESCryptoServiceProvider.DecryptStream(Password, Salt, InputInstream, OutputOutstream);
 
         // [THEN] Verify Result 
-        TempBlob.Blob.CreateInStream(OutputInstream);
+        TempBlob.CreateInStream(OutputInstream);
         DecryptedStreamText := Base64Convert.ToBase64(OutputInstream);
 
         LibraryAssert.AreEqual(ExpectedDecryptedStreamText, DecryptedStreamText, 'Unexpected value when decrypting stream text using DESCryptoServiceProvider');

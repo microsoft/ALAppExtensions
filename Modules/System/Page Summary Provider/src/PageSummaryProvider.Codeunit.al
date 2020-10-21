@@ -54,7 +54,7 @@ codeunit 2718 "Page Summary Provider"
     //  <param name="FieldsJsonArray">The Json array that will be used to summarize fields if the event is handled.</param>
     //  <param name="Handled">Specifies whether the event has been handled and no further execution should occur.</param>
     [IntegrationEvent(false, false)]
-    internal procedure OnBeforeGetPageSummary(PageId: Integer; RecId: RecordId; var FieldsJsonArray: JsonArray; Handled: Boolean)
+    internal procedure OnBeforeGetPageSummary(PageId: Integer; RecId: RecordId; var FieldsJsonArray: JsonArray; var Handled: Boolean)
     begin
     end;
 
