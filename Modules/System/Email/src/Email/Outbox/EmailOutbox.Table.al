@@ -109,4 +109,54 @@ table 8888 "Email Outbox"
         {
         }
     }
+
+    procedure GetMessageId(var MessageId: Guid)
+    begin
+        MessageId := Rec."Account Id";
+    end;
+
+    procedure GetAccountId(var AccountId: Guid)
+    begin
+        AccountId := Rec."Account Id";
+    end;
+
+    procedure GetUserSecurityId(var UserSecurityId: Guid)
+    begin
+        UserSecurityId := Rec."User Security Id";
+    end;
+
+    procedure GetConnector(): Enum "Email Connector"
+    begin
+        exit(Rec.Connector);
+    end;
+
+    procedure GetEmailStatus(): Enum "Email Status"
+    begin
+        exit(Rec.Status);
+    end;
+
+    procedure GetDescription(): Text[2048]
+    begin
+        exit(Rec.Description);
+    end;
+
+    procedure GetErrorMessage(): Text[2048]
+    begin
+        exit(Rec."Error Message");
+    end;
+
+    procedure GetDateQueued(): DateTime
+    begin
+        exit(Rec."Date Queued");
+    end;
+
+    procedure GetDateFailed(): DateTime
+    begin
+        exit(Rec."Date Failed");
+    end;
+
+    procedure GetSendFrom(): Text[250]
+    begin
+        exit(Rec."Send From");
+    end;
 }

@@ -84,4 +84,39 @@ table 8889 "Sent Email"
         {
         }
     }
+
+    procedure GetMessageId(var MessageId: Guid)
+    begin
+        MessageId := Rec."Account Id";
+    end;
+
+    procedure GetAccountId(var AccountId: Guid)
+    begin
+        AccountId := Rec."Account Id";
+    end;
+
+    procedure GetUserSecurityId(var UserSecurityId: Guid)
+    begin
+        UserSecurityId := Rec."User Security Id";
+    end;
+
+    procedure GetConnector(): Enum "Email Connector"
+    begin
+        exit(Rec.Connector);
+    end;
+
+    procedure GetDescription(): Text[2048]
+    begin
+        exit(Rec.Description);
+    end;
+
+    procedure GetDateTimeSent(): DateTime
+    begin
+        exit(Rec."Date Time Sent");
+    end;
+
+    procedure GetSentFrom(): Text[250]
+    begin
+        exit(Rec."Sent From");
+    end;
 }
