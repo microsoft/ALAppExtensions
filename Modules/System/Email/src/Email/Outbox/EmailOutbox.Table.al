@@ -113,34 +113,30 @@ table 8888 "Email Outbox"
     /// <summary>
     /// Returns the "Message Id" of the Email Outbox Entry
     /// </summary>
-    /// <param name="MessageId"></param>
-    procedure GetMessageId(var MessageId: Guid)
+    procedure GetMessageId(): Guid
     begin
-        MessageId := Rec."Message Id";
+        exit(Rec."Message Id");
     end;
 
     /// <summary>
     /// Returns the "Account Id" of the Email Outbox Entry
     /// </summary>
-    /// <param name="AccountId"></param>
-    procedure GetAccountId(var AccountId: Guid)
+    procedure GetAccountId(): Guid
     begin
-        AccountId := Rec."Account Id";
+        exit(Rec."Account Id");
     end;
 
     /// <summary>
     /// Returns the "User Security Id" of the Email Outbox Entry
     /// </summary>
-    /// <param name="UserSecurityId"></param>
-    procedure GetUserSecurityId(var UserSecurityId: Guid)
+    procedure GetUserSecurityId(): Guid
     begin
-        UserSecurityId := Rec."User Security Id";
+        exit(Rec."User Security Id");
     end;
 
     /// <summary>
     /// Returns the "Connector" of the Email Outbox Entry
     /// </summary>
-    /// <returns></returns>
     procedure GetConnector(): Enum "Email Connector"
     begin
         exit(Rec.Connector);
@@ -149,7 +145,6 @@ table 8888 "Email Outbox"
     /// <summary>
     /// Returns the "Status" of the Email Outbox Entry
     /// </summary>
-    /// <returns></returns>
     procedure GetEmailStatus(): Enum "Email Status"
     begin
         exit(Rec.Status);
@@ -158,7 +153,6 @@ table 8888 "Email Outbox"
     /// <summary>
     /// Returns the "Description" of the Email Outbox Entry
     /// </summary>
-    /// <returns></returns>
     procedure GetDescription(): Text[2048]
     begin
         exit(Rec.Description);
@@ -167,7 +161,6 @@ table 8888 "Email Outbox"
     /// <summary>
     /// Returns the "Error Message" of the Email Outbox Entry
     /// </summary>
-    /// <returns></returns>
     procedure GetErrorMessage(): Text[2048]
     begin
         exit(Rec."Error Message");
@@ -176,7 +169,6 @@ table 8888 "Email Outbox"
     /// <summary>
     /// Returns the "Date Queued" of the Email Outbox Entry
     /// </summary>
-    /// <returns></returns>
     procedure GetDateQueued(): DateTime
     begin
         exit(Rec."Date Queued");
@@ -185,7 +177,6 @@ table 8888 "Email Outbox"
     /// <summary>
     /// Returns the "Date Failed" of the Email Outbox Entry
     /// </summary>
-    /// <returns></returns>
     procedure GetDateFailed(): DateTime
     begin
         exit(Rec."Date Failed");
@@ -194,7 +185,6 @@ table 8888 "Email Outbox"
     /// <summary>
     /// Returns the "Send From" of the Email Outbox Entry
     /// </summary>
-    /// <returns></returns>
     procedure GetSendFrom(): Text[250]
     begin
         exit(Rec."Send From");
