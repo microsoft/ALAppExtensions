@@ -110,51 +110,91 @@ table 8888 "Email Outbox"
         }
     }
 
+    /// <summary>
+    /// Returns the "Message Id" of the Email Outbox Entry
+    /// </summary>
+    /// <param name="MessageId"></param>
     procedure GetMessageId(var MessageId: Guid)
     begin
-        MessageId := Rec."Account Id";
+        MessageId := Rec."Message Id";
     end;
 
+    /// <summary>
+    /// Returns the "Account Id" of the Email Outbox Entry
+    /// </summary>
+    /// <param name="AccountId"></param>
     procedure GetAccountId(var AccountId: Guid)
     begin
         AccountId := Rec."Account Id";
     end;
 
+    /// <summary>
+    /// Returns the "User Security Id" of the Email Outbox Entry
+    /// </summary>
+    /// <param name="UserSecurityId"></param>
     procedure GetUserSecurityId(var UserSecurityId: Guid)
     begin
         UserSecurityId := Rec."User Security Id";
     end;
 
+    /// <summary>
+    /// Returns the "Connector" of the Email Outbox Entry
+    /// </summary>
+    /// <returns></returns>
     procedure GetConnector(): Enum "Email Connector"
     begin
         exit(Rec.Connector);
     end;
 
+    /// <summary>
+    /// Returns the "Status" of the Email Outbox Entry
+    /// </summary>
+    /// <returns></returns>
     procedure GetEmailStatus(): Enum "Email Status"
     begin
         exit(Rec.Status);
     end;
 
+    /// <summary>
+    /// Returns the "Description" of the Email Outbox Entry
+    /// </summary>
+    /// <returns></returns>
     procedure GetDescription(): Text[2048]
     begin
         exit(Rec.Description);
     end;
 
+    /// <summary>
+    /// Returns the "Error Message" of the Email Outbox Entry
+    /// </summary>
+    /// <returns></returns>
     procedure GetErrorMessage(): Text[2048]
     begin
         exit(Rec."Error Message");
     end;
 
+    /// <summary>
+    /// Returns the "Date Queued" of the Email Outbox Entry
+    /// </summary>
+    /// <returns></returns>
     procedure GetDateQueued(): DateTime
     begin
         exit(Rec."Date Queued");
     end;
 
+    /// <summary>
+    /// Returns the "Date Failed" of the Email Outbox Entry
+    /// </summary>
+    /// <returns></returns>
     procedure GetDateFailed(): DateTime
     begin
         exit(Rec."Date Failed");
     end;
 
+    /// <summary>
+    /// Returns the "Send From" of the Email Outbox Entry
+    /// </summary>
+    /// <returns></returns>
     procedure GetSendFrom(): Text[250]
     begin
         exit(Rec."Send From");

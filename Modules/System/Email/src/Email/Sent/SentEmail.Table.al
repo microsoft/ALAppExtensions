@@ -85,36 +85,66 @@ table 8889 "Sent Email"
         }
     }
 
+
+
+    /// <summary>
+    /// Returns the "Message Id" of the Sent Email Entry
+    /// </summary>
+    /// <param name="MessageId"></param>
     procedure GetMessageId(var MessageId: Guid)
     begin
-        MessageId := Rec."Account Id";
+        MessageId := Rec."Message Id";
     end;
 
+    /// <summary>
+    /// Returns the "Account Id" of the Sent Email Entry
+    /// </summary>
+    /// <param name="AccountId"></param>
     procedure GetAccountId(var AccountId: Guid)
     begin
         AccountId := Rec."Account Id";
     end;
 
+    /// <summary>
+    /// Returns the "User Security Id" of the Sent Email Entry
+    /// </summary>
+    /// <param name="UserSecurityId"></param>
     procedure GetUserSecurityId(var UserSecurityId: Guid)
     begin
         UserSecurityId := Rec."User Security Id";
     end;
 
+    /// <summary>
+    /// Returns the "Connector" of the Sent Email Entry
+    /// </summary>
+    /// <returns></returns>
     procedure GetConnector(): Enum "Email Connector"
     begin
         exit(Rec.Connector);
     end;
 
+    /// <summary>
+    /// Returns the "Description" of the Sent Email Entry
+    /// </summary>
+    /// <returns></returns>
     procedure GetDescription(): Text[2048]
     begin
         exit(Rec.Description);
     end;
 
+    /// <summary>
+    /// Returns the "Date Time Sent" of the Sent Email Entry
+    /// </summary>
+    /// <returns></returns>
     procedure GetDateTimeSent(): DateTime
     begin
         exit(Rec."Date Time Sent");
     end;
 
+    /// <summary>
+    /// Returns the "Sent From" of the Sent Email Entry
+    /// </summary>
+    /// <returns></returns>
     procedure GetSentFrom(): Text[250]
     begin
         exit(Rec."Sent From");
