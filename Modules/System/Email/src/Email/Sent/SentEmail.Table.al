@@ -122,7 +122,7 @@ table 8889 "Sent Email"
     /// <summary>
     /// Returns the "Description" of the Sent Email Entry
     /// </summary>
-    procedure GetDescription(): Text[2048]
+    procedure GetDescription(): Text
     begin
         exit(Rec.Description);
     end;

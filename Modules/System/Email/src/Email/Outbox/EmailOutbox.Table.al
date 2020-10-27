@@ -153,7 +153,7 @@ table 8888 "Email Outbox"
     /// <summary>
     /// Returns the "Description" of the Email Outbox Entry
     /// </summary>
-    procedure GetDescription(): Text[2048]
+    procedure GetDescription(): Text
     begin
         exit(Rec.Description);
     end;
@@ -161,7 +161,7 @@ table 8888 "Email Outbox"
     /// <summary>
     /// Returns the "Error Message" of the Email Outbox Entry
     /// </summary>
-    procedure GetErrorMessage(): Text[2048]
+    procedure GetErrorMessage(): Text
     begin
         exit(Rec."Error Message");
     end;
