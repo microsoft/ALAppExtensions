@@ -278,7 +278,7 @@ page 130451 "AL Test Tool"
                     PromotedCategory = Process;
                     PromotedIsBig = true;
                     PromotedOnly = true;
-                    ToolTip = 'Updates the test methods for the entire test suite.';
+                    ToolTip = 'Updates the test methods for the test codeunits in the active filter set.';
 
                     trigger OnAction()
                     var

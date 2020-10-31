@@ -267,7 +267,6 @@ codeunit 130456 "Test Suite Mgt."
         TestRunnerGetMethods: Codeunit "Test Runner - Get Methods";
     begin
         BackupTestMethodLine.Copy(TestMethodLine);
-        TestMethodLine.Reset();
         TestMethodLine.SetRange("Test Suite", BackupTestMethodLine."Test Suite");
         TestMethodLine.SetRange("Line Type", TestMethodLine."Line Type"::Function);
         TestMethodLine.DeleteAll();
