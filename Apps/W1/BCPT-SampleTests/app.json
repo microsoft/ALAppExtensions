@@ -22,7 +22,7 @@
 
                     ],
     "platform":  "17.0.0.0",
-    "application": "17.1.0.0",
+    "application": "17.0.0.0",
     "idRanges":  [
                      {
                          "from":  149100,
@@ -31,5 +31,6 @@
                  ],
     "contextSensitiveHelpUrl": "https://docs.microsoft.com/dynamics365/business-central/",
     "showMyCode": true,
-    "target": "Cloud"
+    "target": "Cloud",
+    "runtime": "6.0"
 }
