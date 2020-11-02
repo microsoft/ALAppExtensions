@@ -5,7 +5,6 @@
 table 149002 "BCPT Log Entry"
 {
     DataClassification = SystemMetadata;
-    DrillDownPageId = "BCPT Log Entries";
     Extensible = false;
     Access = Internal;
 
