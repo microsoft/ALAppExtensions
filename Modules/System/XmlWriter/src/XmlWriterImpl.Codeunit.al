@@ -19,6 +19,12 @@ codeunit 1484 "XmlWriter Impl."
         XmlTextWriter.WriteStartDocument();
     end;
 
+    procedure WriteProcessingInstruction(Encoding: Text)
+    begin
+        Initialize();
+        XmlTextWriter.WriteProcessingInstruction('xml', STRSUBSTNO('version="1.0" encoding="%1" standalone="no"', Encoding));
+    end;
+
     procedure WriteStartElement(LocalName: Text);
     begin
         if not Initialized then
@@ -41,6 +47,14 @@ codeunit 1484 "XmlWriter Impl."
             Initialize();
 
         XmlTextWriter.WriteElementString(LocalName, ElementValue);
+    end;
+
+    procedure WriteString(ElementText: Text)
+    begin
+        if not Initialized then
+            Initialize();
+
+        XmlTextWriter.WriteString(ElementText);
     end;
 
     procedure WriteEndElement()

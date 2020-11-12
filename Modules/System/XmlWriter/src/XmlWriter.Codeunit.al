@@ -22,6 +22,15 @@ codeunit 1483 "XmlWriter"
     end;
 
     /// <summary>
+    /// Writes the Processing Instruction
+    /// </summary>
+    /// <param name="Encoding">Encoding of the xml</param>
+    procedure WriteProcessingInstruction(Encoding: Text)
+    begin
+        XmlWriterImpl.WriteProcessingInstruction(Encoding);
+    end;
+
+    /// <summary>
     /// Writes the specified start tag.
     /// </summary>
     /// <param name="LocalName">The local name of the element.</param>
@@ -49,6 +58,15 @@ codeunit 1483 "XmlWriter"
     procedure WriteElementString(LocalName: Text; ElementValue: Text)
     begin
         XmlWriterImpl.WriteElementString(LocalName, ElementValue);
+    end;
+
+    /// <summary>
+    /// Writes the given text content.
+    /// </summary>
+    /// <param name="ElementText">Text to write.</param>
+    procedure WriteString(ElementText: Text)
+    begin
+        XmlWriterImpl.WriteString(ElementText);
     end;
 
     /// <summary>
