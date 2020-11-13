@@ -25,9 +25,9 @@ codeunit 1483 "XmlWriter"
     /// Writes the Processing Instruction
     /// </summary>
     /// <param name="Encoding">Encoding of the xml</param>
-    procedure WriteProcessingInstruction(Encoding: Text)
+    procedure WriteProcessingInstruction(Name: Text; "Text": Text)
     begin
-        XmlWriterImpl.WriteProcessingInstruction(Encoding);
+        XmlWriterImpl.WriteProcessingInstruction(Name, "Text");
     end;
 
     /// <summary>

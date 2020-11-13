@@ -19,10 +19,10 @@ codeunit 1484 "XmlWriter Impl."
         XmlTextWriter.WriteStartDocument();
     end;
 
-    procedure WriteProcessingInstruction(Encoding: Text)
+    procedure WriteProcessingInstruction(Name: Text; "Text": Text)
     begin
         Initialize();
-        XmlTextWriter.WriteProcessingInstruction('xml', STRSUBSTNO('version="1.0" encoding="%1" standalone="no"', Encoding));
+        XmlTextWriter.WriteProcessingInstruction(Name, "Text");
     end;
 
     procedure WriteStartElement(LocalName: Text);

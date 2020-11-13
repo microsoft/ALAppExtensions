@@ -174,7 +174,7 @@ codeunit 139911 "Xml Writer Test"
         XmlWriter: Codeunit "XmlWriter";
     begin
         // [GIVEN] Initialized XmlWriter with root element
-        XmlWriter.WriteProcessingInstruction('utf-8');
+        XmlWriter.WriteProcessingInstruction('xml', 'version="1.0" encoding="utf-8" standalone="no"');
 
         // [WHEN] Write string
         XmlWriter.WriteStartElement('names');
