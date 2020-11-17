@@ -483,7 +483,6 @@ codeunit 148081 "MTDTestOAuthWebService"
     var
         VATReportSetup: Record "VAT Report Setup";
         TempBlob: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
         JObject: JsonObject;
         OutStream: OutStream;
     begin
@@ -493,9 +492,7 @@ codeunit 148081 "MTDTestOAuthWebService"
             JObject.Add('Gov-Client-Public-IP', GovClientPublicIP);
             TempBlob.CreateOutStream(OutStream);
             JObject.WriteTo(OutStream);
-            RecordRef.GetTable(VATReportSetup);
-            TempBlob.ToRecordRef(RecordRef, VATReportSetup.FieldNo("MTD FP WebClient Json"));
-            RecordRef.SetTable(VATReportSetup);
+            TempBlob.ToRecord(VATReportSetup, VATReportSetup.FieldNo("MTD FP WebClient Json"));
         end;
         VATReportSetup.Modify();
     end;

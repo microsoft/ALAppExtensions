@@ -9,7 +9,6 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         BankAccount: Record "Bank Account";
         TempBlob: Codeunit "Temp Blob";
         FileMgt: Codeunit "File Management";
-        RecordRef: RecordRef;
         BankFileName: Text;
     begin
         PayBankAcountNo := GetBankAccountNo(Rec."Entry No.");
@@ -24,9 +23,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
             LogInternalError(DownloadFromStreamErr, DataClassification::SystemMetadata, Verbosity::Error);
 
         Get("Entry No.");
-        RecordRef.GetTable(Rec);
-        TempBlob.ToRecordRef(RecordRef, FieldNo("File Content"));
-        RecordRef.SetTable(Rec);
+        TempBlob.ToRecord(Rec, FieldNo("File Content"));
         Modify();
     end;
 

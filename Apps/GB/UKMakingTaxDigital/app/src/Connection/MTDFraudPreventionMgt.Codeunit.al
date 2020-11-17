@@ -97,7 +97,6 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
     local procedure CollectDataForClient(var DueDateTime: DateTime; JsonFieldNo: Integer)
     var
         TempBlob: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
         Expired: Boolean;
         OutStream: OutStream;
         InStream: InStream;
@@ -113,9 +112,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
             TempBlob.CreateOutStream(OutStream);
             if JObject.WriteTo(JsonText) then
                 OutStream.Write(JsonText);
-            RecordRef.GetTable(VATReportSetup);
-            TempBlob.ToRecordRef(RecordRef, JsonFieldNo);
-            RecordRef.SetTable(VATReportSetup);
+            TempBlob.ToRecord(VATReportSetup, JsonFieldNo);
             DueDateTime := CalcNextDueDateTime();
             VATReportSetup.Modify();
         end else begin

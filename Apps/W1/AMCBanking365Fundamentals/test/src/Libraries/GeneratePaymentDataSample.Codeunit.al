@@ -7,14 +7,11 @@ codeunit 135082 "Generate Payment Data Sample"
     var
         TempBlob: Codeunit "Temp Blob";
         ExpBankConvExtDataHndl: Codeunit "AMC Bank Exp. CT Hndl";
-        RecordRef: RecordRef;
     begin
         ExpBankConvExtDataHndl.ConvertPaymentDataToFormat(TempBlob, Rec);
 
         Find();
-        RecordRef.GetTable(Rec);
-        TempBlob.ToRecordRef(RecordRef, FieldNo("File Content"));
-        RecordRef.SetTable(Rec);
+        TempBlob.ToRecord(Rec, FieldNo("File Content"));
         Modify();
     end;
 }

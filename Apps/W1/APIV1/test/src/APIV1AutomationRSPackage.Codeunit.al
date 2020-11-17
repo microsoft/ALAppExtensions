@@ -108,7 +108,6 @@ codeunit 139731 "APIV1 - Automation RS Package"
         ConfigPackage: Record "Config. Package";
         TenantConfigPackageFile: Record "Tenant Config. Package File";
         TempBlobRSPackageFile: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
         StartTime: DateTime;
         ResponseText: Text;
         TargetURL: Text;
@@ -123,9 +122,7 @@ codeunit 139731 "APIV1 - Automation RS Package"
         ConfigPackage.Validate("Package Name", ConfigPackage.Code);
         ConfigPackage.Modify(true);
         TenantConfigPackageFile.Validate(Code, ConfigPackage.Code);
-        RecordRef.GetTable(TenantConfigPackageFile);
-        TempBlobRSPackageFile.ToRecordRef(RecordRef, TenantConfigPackageFile.FieldNo(Content));
-        RecordRef.SetTable(TenantConfigPackageFile);
+        TempBlobRSPackageFile.ToRecord(TenantConfigPackageFile, TenantConfigPackageFile.FieldNo(Content));
         TenantConfigPackageFile.Insert(TRUE);
 
         Commit();
@@ -157,7 +154,6 @@ codeunit 139731 "APIV1 - Automation RS Package"
         ConfigPackage: Record "Config. Package";
         TenantConfigPackageFile: Record "Tenant Config. Package File";
         TempBlobRSPackageFile: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
         StartTime: DateTime;
         ResponseText: Text;
         TargetURL: Text;
@@ -171,9 +167,7 @@ codeunit 139731 "APIV1 - Automation RS Package"
         LibraryRapidStart.CreatePackage(ConfigPackage);
         TenantConfigPackageFile.Validate(Code, ConfigPackage.Code);
 
-        RecordRef.GetTable(TenantConfigPackageFile);
-        TempBlobRSPackageFile.ToRecordRef(RecordRef, TenantConfigPackageFile.FieldNo(Content));
-        RecordRef.SetTable(TenantConfigPackageFile);
+        TempBlobRSPackageFile.ToRecord(TenantConfigPackageFile, TenantConfigPackageFile.FieldNo(Content));
         TenantConfigPackageFile.Insert(true);
 
         Commit();
@@ -205,7 +199,6 @@ codeunit 139731 "APIV1 - Automation RS Package"
         ConfigPackage: Record "Config. Package";
         TenantConfigPackageFile: Record "Tenant Config. Package File";
         TempBlobRSPackageFile: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
         StartTime: DateTime;
         ResponseText: Text;
         TargetURL: Text;
@@ -219,9 +212,7 @@ codeunit 139731 "APIV1 - Automation RS Package"
         CreateTestPackage(ConfigPackage);
         TenantConfigPackageFile.VALIDATE(Code, ConfigPackage.Code);
 
-        RecordRef.GetTable(TenantConfigPackageFile);
-        TempBlobRSPackageFile.ToRecordRef(RecordRef, TenantConfigPackageFile.FieldNo(Content));
-        RecordRef.SetTable(TenantConfigPackageFile);
+        TempBlobRSPackageFile.ToRecord(TenantConfigPackageFile, TenantConfigPackageFile.FieldNo(Content));
         TenantConfigPackageFile.INSERT(TRUE);
 
         CODEUNIT.RUN(CODEUNIT::"Automation - Import RSPackage", ConfigPackage);

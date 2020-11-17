@@ -496,8 +496,6 @@ codeunit 132558 "AMC Banking Credential UT"
     var
         DataExchMapping: Record "Data Exch. Mapping";
         BodyTempBlob: Codeunit "Temp Blob";
-
-        RecordRef: RecordRef;
         BodyOutputStream: OutStream;
     begin
         BodyTempBlob.CreateOutStream(BodyOutputStream, TEXTENCODING::UTF8);
@@ -507,9 +505,7 @@ codeunit 132558 "AMC Banking Credential UT"
         DataExchMapping.FindFirst();
 
         TempDataExch.Init();
-        RecordRef.GetTable(TempDataExch);
-        BodyTempBlob.ToRecordRef(RecordRef, TempDataExch.FieldNo("File Content"));
-        RecordRef.SetTable(TempDataExch);
+        BodyTempBlob.ToRecord(TempDataExch, TempDataExch.FieldNo("File Content"));
         TempDataExch."Data Exch. Def Code" := DataExchMapping."Data Exch. Def Code";
         TempDataExch.Insert();
     end;
@@ -518,7 +514,6 @@ codeunit 132558 "AMC Banking Credential UT"
     var
         DataExchMapping: Record "Data Exch. Mapping";
         BodyTempBlob: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
         BodyOutputStream: OutStream;
     begin
         BodyTempBlob.CreateOutStream(BodyOutputStream, TEXTENCODING::Windows);
@@ -526,9 +521,7 @@ codeunit 132558 "AMC Banking Credential UT"
         DataExchMapping.SetRange("Pre-Mapping Codeunit", CODEUNIT::"AMC Bank Imp.-Pre-Mapping");
         DataExchMapping.FindFirst();
         TempDataExch.Init();
-        RecordRef.GetTable(TempDataExch);
-        BodyTempBlob.ToRecordRef(RecordRef, TempDataExch.FieldNo("File Content"));
-        RecordRef.SetTable(TempDataExch);
+        BodyTempBlob.ToRecord(TempDataExch, TempDataExch.FieldNo("File Content"));
         TempDataExch."Data Exch. Def Code" := DataExchMapping."Data Exch. Def Code";
         TempDataExch.Insert();
     end;

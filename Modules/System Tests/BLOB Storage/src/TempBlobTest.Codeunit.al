@@ -77,6 +77,35 @@ codeunit 135030 "Temp Blob Test"
     end;
 
     [Test]
+    procedure WriteToRecordTest()
+    var
+        Media: Record Media;
+        TempBlob: Codeunit "Temp Blob";
+        BlobInStream: InStream;
+        OutputText: Text;
+        BlobFieldNo: Integer;
+        IntegerFieldNo: Integer;
+    begin
+        // [SCENARIO] TempBlob can be exported to Record.
+
+        IntegerFieldNo := 5; // Height
+        BlobFieldNo := 3; // Content
+
+        // [GIVEN] A value in TempBlob.
+        WriteSampleTextToBlob(TempBlob);
+
+        // [THEN] cannot get a value from non-BLOB field.
+        asserterror TempBlob.ToRecord(Media, IntegerFieldNo);
+
+        TempBlob.ToRecord(Media, BlobFieldNo);
+        Media.Content.CreateInStream(BlobInStream);
+        BlobInStream.ReadText(OutputText);
+
+        // [THEN] The same value is copied on the record.
+        Assert.AreEqual(SampleTxt, OutputText, 'Same text was expected.');
+    end;    
+
+    [Test]
     procedure ReadFromRecordRefTest()
     var
         Media: Record Media;

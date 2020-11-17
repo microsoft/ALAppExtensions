@@ -32,12 +32,9 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
     procedure ConvertBankStatementToFormat(var TempBlobBankStatement: Codeunit "Temp Blob"; var DataExch: Record "Data Exch.")
     var
         TempBlobResult: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
     begin
         SendReportExportRequestToWebService(TempBlobResult, TempBlobBankStatement, AMCBankServMgt.GetAppCaller());
-        RecordRef.GetTable(DataExch);
-        TempBlobResult.ToRecordRef(RecordRef, DataExch.FieldNo("File Content"));
-        RecordRef.SetTable(DataExch);
+        TempBlobResult.ToRecord(DataExch, DataExch.FieldNo("File Content"));
     end;
 
     local procedure SendReportExportRequestToWebService(var TempBlobStatement: Codeunit "Temp Blob"; var TempBlobBody: Codeunit "Temp Blob"; AppCaller: text[30])

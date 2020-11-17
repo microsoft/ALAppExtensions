@@ -50,6 +50,15 @@ codeunit 4107 "Temp Blob Impl."
         FromRecordRef(RecordRef, FieldNo);
     end;
 
+    procedure ToRecord(var RecordVariant: Variant; FieldNo: Integer)
+    var
+        RecordRef: RecordRef;
+    begin
+        RecordRef.GetTable(RecordVariant);
+        ToRecordRef(RecordRef, FieldNo);
+        RecordRef.SetTable(RecordVariant);
+    end;
+
     procedure FromRecordRef(RecordRef: RecordRef; FieldNo: Integer)
     var
         BlobFieldRef: FieldRef;

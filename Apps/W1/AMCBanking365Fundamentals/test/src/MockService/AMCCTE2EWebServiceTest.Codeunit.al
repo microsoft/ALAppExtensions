@@ -428,16 +428,13 @@ codeunit 135087 "AMC CT E2E Web Service Test"
     var
         DataExchMapping: Record "Data Exch. Mapping";
         BodyTempBlob: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
     begin
         LibraryAMCWebService.PrepareAMCBodyForConversion(BodyTempBlob, UniqueText);
         DataExchMapping.SetRange("Pre-Mapping Codeunit", CODEUNIT::"AMC Bank Exp. CT Pre-Map");
         DataExchMapping.FindFirst();
 
         TempDataExch.Init();
-        RecordRef.GetTable(TempDataExch);
-        BodyTempBlob.ToRecordRef(RecordRef, TempDataExch.FieldNo("File Content"));
-        RecordRef.SetTable(TempDataExch);
+        BodyTempBlob.ToRecord(TempDataExch, TempDataExch.FieldNo("File Content"));
         TempDataExch."Data Exch. Def Code" := DataExchMapping."Data Exch. Def Code";
         TempDataExch.Insert();
     end;
