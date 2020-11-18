@@ -125,8 +125,8 @@ codeunit 9201 BarcodeProvider implements IBarcodeProvider
     /// Subscribe to this event to change the default behavior by changing the provided parameter(s).
     /// </summary>
     /// <seealso cref="GetEncoder"/>
-    /// <param name="var iBarcodeEncoder">Parameter of type interface iBarcodeEncoder.</param>
-    /// <param name="UseSymbology">Parameter of type enum BarcodeParameters.</param>
+    /// <param name="iBarcodeEncoder">Parameter of type interface IBarcodeEncoder.</param>
+    /// <param name="UseSymbology">Parameter of type Enum BarcodeSymbology.</param>
     [IntegrationEvent(false, false)]
     local procedure OnFindBarcodeEncoderSymbology(var iBarcodeEncoder: interface IBarcodeEncoder; UseSymbology: Enum BarcodeSymbology);
     begin
@@ -138,8 +138,8 @@ codeunit 9201 BarcodeProvider implements IBarcodeProvider
     /// </summary>
     /// <seealso cref="FontEncoder"/>
     /// <seealso cref="Base64Encoder"/>  
-    /// <seealso cref="ValidateInputString"/>    
-    /// <param name="var iBarcodeEncoder">Parameter of type interface iBarcodeEncoder.</param>
+    /// <seealso cref="ValidateInputString"/>   
+    /// <param name="iBarcodeEncoder">Parameter of type interface IBarcodeEncoder.</param>
     /// <param name="TempBarcodeParameters">Parameter of type record BarcodeParameters temporary.</param>
     [IntegrationEvent(false, false)]
     local procedure OnFindBarcodeEncoderParameters(var iBarcodeEncoder: interface IBarcodeEncoder; var TempBarcodeParameters: record BarcodeParameters temporary);
