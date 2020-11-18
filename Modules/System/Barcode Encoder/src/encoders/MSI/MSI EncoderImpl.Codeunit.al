@@ -33,6 +33,20 @@ codeunit 9231 MSI_BarcodeEncoderImpl
     end;
 
     /// <summary> 
+    /// Encodes the barcode string to generate a barcode image in Base64 format
+    /// From: https://en.wikipedia.org/wiki/MSI_Barcode/
+    /// MSI (also known as Modified Plessey) is a barcode symbology developed by the MSI Data Corporation, based on the original Plessey Code symbology. 
+    /// It is a continuous symbology that is not self-checking. MSI is used primarily for inventory control, marking storage containers and shelves in warehouse environments.   
+    /// </summary>
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <param name="Base64Image">Parameter of type Text.</param>
+    /// <param name="IsHandled">Parameter of type Boolean.</param>
+    procedure Base64ImageEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Image: Text; IsHandled: Boolean)
+    begin
+        if IsHandled then exit;
+    end;
+
+    /// <summary> 
     /// Validates the Input String of the barcode.
     /// From: https://en.wikipedia.org/wiki/Interleaved_2_of_5
     /// Assumes that input is not-null and non-empty
@@ -40,28 +54,22 @@ codeunit 9231 MSI_BarcodeEncoderImpl
     /// Using regex from https://www.neodynamic.com/Products/Help/BarcodeWinControl2.5/working_barcode_symbologies.htm
     /// </summary>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
-    /// <param name="ValidationResult">Parameter of type Boolean.</param>
+    /// <param name="InputStringOK">Parameter of type Boolean.</param>
     /// <param name="IsHandled">Parameter of type Boolean.</param>
-    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; var ValidationResult: Boolean; IsHandled: Boolean)
+    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; var InputStringOK: Boolean; IsHandled: Boolean)
     var
         RegexPattern: codeunit Regex;
     begin
         if IsHandled then exit;
 
-        ValidationResult := true;
+        InputStringOK := true;
         // null or empty
         if (TempBarcodeParameters."Input String" = '') then begin
-            ValidationResult := false;
+            InputStringOK := false;
             exit;
         end;
 
         // match any string containing non-digit characters
-        ValidationResult := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '@"[^\d]"');
-    end;
-
-    // Format the Inputstring of the barcode
-    procedure Barcode(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Data: Text; IsHandled: Boolean)
-    begin
-        if IsHandled then exit;
+        InputStringOK := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '@"[^\d]"');
     end;
 }

@@ -33,6 +33,22 @@ codeunit 9223 UPCA_BarcodeEncoderImpl
     end;
 
     /// <summary> 
+    /// Encodes the barcode string to generate a barcode image in Base64 format
+    /// From: https://en.wikipedia.org/wiki/Universal_Product_Code
+    /// The Universal Product Code (UPC; redundantly: UPC code) is a barcode symbology that is widely used in the United States, Canada, Europe, Australia, New Zealand, and other countries for tracking trade items in stores.
+    /// UPC (technically refers to UPC-A) consists of 12 numeric digits that are uniquely assigned to each trade item. Along with the related EAN barcode, the UPC is the barcode mainly used for scanning of trade items at the point of sale, per GS1 specifications. 
+    /// UPC data structures are a component of GTINs and follow the global GS1 specification, which is based on international standards. But some retailers (clothing, furniture) do not use the GS1 system (rather other barcode symbologies or article number systems). 
+    /// On the other hand, some retailers use the EAN/UPC barcode symbology, but without using a GTIN (for products sold in their own stores only).    
+    /// </summary>
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <param name="Base64Image">Parameter of type Text.</param>
+    /// <param name="IsHandled">Parameter of type Boolean.</param>
+    procedure Base64ImageEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Image: Text; IsHandled: Boolean)
+    begin
+        if IsHandled then exit;
+    end;
+
+    /// <summary> 
     /// Validates the Input String of the barcode.
     /// From: https://en.wikipedia.org/wiki/Universal_Product_Code
     /// Assumes that input is not-null and non-empty
@@ -40,18 +56,18 @@ codeunit 9223 UPCA_BarcodeEncoderImpl
     /// Using regex from https://www.neodynamic.com/Products/Help/BarcodeWinControl2.5/working_barcode_symbologies.htm
     /// </summary>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary which sets the neccessary parameters for the requested barcode.</param>
-    /// <param name="ValidationResult">Parameter of type Boolean.</param>
+    /// <param name="InputStringOK">Parameter of type Boolean.</param>
     /// <param name="IsHandled">Parameter of type Boolean.</param>
-    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; var ValidationResult: Boolean; IsHandled: Boolean)
+    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; var InputStringOK: Boolean; IsHandled: Boolean)
     var
         RegexPattern: codeunit Regex;
     begin
         if IsHandled then exit;
 
-        ValidationResult := true;
+        InputStringOK := true;
         // null or empty
         if (TempBarcodeParameters."Input String" = '') then begin
-            ValidationResult := false;
+            InputStringOK := false;
             exit;
         end;
 
@@ -66,15 +82,9 @@ codeunit 9223 UPCA_BarcodeEncoderImpl
             17:
                 exit;
             else
-                ValidationResult := false;
+                InputStringOK := false;
         end;
         // match any string containing non-digit characters
-        ValidationResult := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '@"[^\d]"');
-    end;
-
-    // Format the Inputstring of the barcode
-    procedure Barcode(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Data: Text; IsHandled: Boolean)
-    begin
-        if IsHandled then exit;
+        InputStringOK := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '@"[^\d]"');
     end;
 }

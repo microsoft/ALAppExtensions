@@ -14,8 +14,14 @@ codeunit 9211 Code39_BarcodeEncoderImpl
     /// <summary> 
     /// Encodes the barcode string to print a barcode using the IDautomation barcode font.
     /// From: https://en.wikipedia.org/wiki/Code_39/
-    /// aka Alpha39, Code 3 of 9, Code 3/9, Type 39, USS Code 39, or USD-3
-    /// Replace any spaces with = signs
+    /// Code 39 (also known as Alpha39, Code 3 of 9, Code 3/9, Type 39, USS Code 39, or USD-3) is a variable length, discrete barcode symbology.
+    /// The Code 39 specification defines 43 characters, consisting of uppercase letters (A through Z), numeric digits (0 through 9) and a number of special characters (-, ., $, /, +, %, and space). 
+    /// An additional character (denoted '*') is used for both start and stop delimiters. 
+    /// Each character is composed of nine elements: five bars and four spaces. 
+    /// Three of the nine elements in each character are wide (binary value 1), and six elements are narrow (binary value 0). 
+    /// The width ratio between narrow and wide is not critical, and may be chosen between 1:2 and 1:3.
+    /// Code 39 is sometimes used with an optional modulo 43 check digit. Using it requires this feature to be enabled in the barcode reader. The code with check digit is referred to as Code 39 mod 43.
+    /// 
     /// IDAutomation Uses ! as stop/start symbol
     /// Extended Code 39 barcode fonts barcode fonts are provided to easily encode lower case and special characters in a self checking font environment and begin with IDAutomationSX. 
     /// Extended Code 39 fonts are not compatible with IDAutomation's font encoders, such as the MOD43 function, and the asterisk (*) must be used as the start and stop character. 
@@ -53,6 +59,24 @@ codeunit 9211 Code39_BarcodeEncoderImpl
     end;
 
     /// <summary> 
+    /// Encodes the barcode string to generate a barcode image in Base64 format
+    /// From: https://en.wikipedia.org/wiki/Code_39/
+    /// Code 39 (also known as Alpha39, Code 3 of 9, Code 3/9, Type 39, USS Code 39, or USD-3) is a variable length, discrete barcode symbology.
+    /// The Code 39 specification defines 43 characters, consisting of uppercase letters (A through Z), numeric digits (0 through 9) and a number of special characters (-, ., $, /, +, %, and space). 
+    /// An additional character (denoted '*') is used for both start and stop delimiters. 
+    /// Each character is composed of nine elements: five bars and four spaces. 
+    /// Three of the nine elements in each character are wide (binary value 1), and six elements are narrow (binary value 0). 
+    /// The width ratio between narrow and wide is not critical, and may be chosen between 1:2 and 1:3.
+    /// Code 39 is sometimes used with an optional modulo 43 check digit. Using it requires this feature to be enabled in the barcode reader. The code with check digit is referred to as Code 39 mod 43.
+    /// </summary>
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary which sets the neccessary parameters for the requested barcode.</param>
+    /// <param name="IsHandled">Parameter of type Boolean.</param>
+    procedure Base64ImageEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Image: Text; IsHandled: Boolean)
+    begin
+        if IsHandled then exit;
+    end;
+
+    /// <summary> 
     /// Validates if the Input String is a valid string to encode the barcode.
     /// From: https://en.wikipedia.org/wiki/Code_39
     /// The Code 39 specification defines 43 characters, consisting of 
@@ -61,31 +85,25 @@ codeunit 9211 Code39_BarcodeEncoderImpl
     /// Using regex from https://www.neodynamic.com/Products/Help/BarcodeWinControl2.5/working_barcode_symbologies.htm
     /// </summary>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary which sets the neccessary parameters for the requested barcode.</param>
-    /// <param name="ValidationResult">Parameter of type Boolean.</param>
+    /// <param name="InputStringOK">Parameter of type Boolean.</param>
     /// <param name="IsHandled">Parameter of type Boolean.</param>
-    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; var ValidationResult: Boolean; IsHandled: Boolean)
+    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; var InputStringOK: Boolean; IsHandled: Boolean)
     var
         RegexPattern: codeunit Regex;
     begin
         if IsHandled then exit;
 
-        ValidationResult := true;
+        InputStringOK := true;
         // null or empty
         if (TempBarcodeParameters."Input String" = '') then begin
-            ValidationResult := false;
+            InputStringOK := false;
             exit;
         end;
 
         // Verify if input string containings only valid characters
         if TempBarcodeParameters."Allow Extended Charset" then
-            ValidationResult := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[\000-\177]*$')
+            InputStringOK := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[\000-\177]*$')
         else
-            ValidationResult := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[0-9A-Z\-.$\/\+%\*\s]*$');
-    end;
-
-    // Format the Inputstring of the barcode
-    procedure Barcode(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Data: Text; IsHandled: Boolean)
-    begin
-        if IsHandled then exit;
+            InputStringOK := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[0-9A-Z\-.$\/\+%\*\s]*$');
     end;
 }

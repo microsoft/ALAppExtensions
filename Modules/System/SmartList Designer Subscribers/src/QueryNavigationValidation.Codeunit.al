@@ -14,15 +14,15 @@ codeunit 2890 "Query Navigation Validation"
     /// Checks that the contents of the Query Navigation record is still valid.
     /// </summary>
     /// <param name="NavigationRec">The Query Navigation record to validate.</param>
-    /// <param name="ValidationResult">A record containing the details about the results of the validation.</param>
+    /// <param name="InputStringOK">A record containing the details about the results of the validation.</param>
     /// <returns>True if the record is valid; Otherwise false.</returns>
-    procedure ValidateNavigation(NavigationRec: Record "Query Navigation"; var ValidationResult: Record "Query Navigation Validation"): Boolean
+    procedure ValidateNavigation(NavigationRec: Record "Query Navigation"; var InputStringOK: Record "Query Navigation Validation"): Boolean
     begin
         exit(ValidateNavigation(
             NavigationRec."Source Query Object Id",
             NavigationRec."Target Page Id",
             NavigationRec."Linking Data Item Name",
-            ValidationResult));
+            InputStringOK));
     end;
 
     /// <summary>
@@ -35,9 +35,9 @@ codeunit 2890 "Query Navigation Validation"
     /// This restricts the records on the target page based on the data within the selected query row when the 
     /// navigation item is selected.
     /// </param>
-    /// <param name="ValidationResult">A record containing the details about the results of the validation.</param>
+    /// <param name="InputStringOK">A record containing the details about the results of the validation.</param>
     /// <returns>True if the data represents a valid record; Otherwise false.</returns>
-    procedure ValidateNavigation(SourceQueryObjectId: Integer; TargetPageId: Integer; LinkingDataItemName: Text; var ValidationResult: Record "Query Navigation Validation"): Boolean
+    procedure ValidateNavigation(SourceQueryObjectId: Integer; TargetPageId: Integer; LinkingDataItemName: Text; var InputStringOK: Record "Query Navigation Validation"): Boolean
     var
         QueryNavValidationImpl: Codeunit "Query Nav Validation Impl";
     begin
@@ -45,6 +45,6 @@ codeunit 2890 "Query Navigation Validation"
             SourceQueryObjectId,
             TargetPageId,
             LinkingDataItemName,
-            ValidationResult));
+            InputStringOK));
     end;
 }

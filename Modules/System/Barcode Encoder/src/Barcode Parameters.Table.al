@@ -67,6 +67,7 @@ table 9200 BarcodeParameters
     /// <summary> 
     /// Encodes the input string to printable a barcode using the barcode font.
     /// </summary>
+    /// <returns>Return variable "EncodedText" of type Text.</returns>
     procedure EncodeBarcodeFont() EncodedText: Text
     var
         iBarcodeProvider: Interface IBarcodeProvider;
@@ -79,8 +80,24 @@ table 9200 BarcodeParameters
     end;
 
     /// <summary> 
+    /// Encodes the input string to printable a barcode image as base64 string.
+    /// </summary>
+    /// <returns>Return variable "Base64Image" of type Text.</returns>
+    procedure EncodeBarcodeImage() Base64Image: Text
+    var
+        iBarcodeProvider: Interface IBarcodeProvider;
+    begin
+        // Find correct Provider
+        iBarcodeProvider := Provider;
+
+        // Write Barcode Data as an Base64 Image
+        Base64Image := iBarcodeProvider.Base64ImageEncoder(Rec);
+    end;
+
+    /// <summary> 
     /// Validates if the Input String is a valid string to encode the barcode.
     /// </summary>
+    /// <returns>Return variable "ValidatedResult" of type Boolean.</returns>
     procedure ValidateInputString() ValidatedResult: Boolean
     var
         iBarcodeProvider: Interface IBarcodeProvider;
@@ -95,15 +112,5 @@ table 9200 BarcodeParameters
             error(InvalidStringFormatErrMsg, "Input String", Provider, Symbology);
     end;
 
-    procedure FormatBarcode() Base64Data: Text
-    var
-        iBarcodeProvider: Interface IBarcodeProvider;
-    begin
-        // Find correct Provider
-        iBarcodeProvider := Provider;
-
-        // Write Barcode Data 
-        Base64Data := iBarcodeProvider.Barcode(Rec);
-    end;
 }
 

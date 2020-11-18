@@ -44,7 +44,7 @@ codeunit 2889 "SmartList Designer Sub Impl."
     local procedure DefaultOnInvalidQueryNavigation(Id: BigInteger)
     var
         QueryNavigationRec: Record "Query Navigation";
-        ValidationResult: Record "Query Navigation Validation";
+        InputStringOK: Record "Query Navigation Validation";
         SmartListDesignerSubscribers: Codeunit "SmartList Designer Subscribers";
         QueryNavigationValidation: Codeunit "Query Navigation Validation";
         Handled: Boolean;
@@ -55,8 +55,8 @@ codeunit 2889 "SmartList Designer Sub Impl."
         if not Handled then begin
             QueryNavigationRec.SetRange(Id, Id);
             if QueryNavigationRec.FindFirst() and
-               (not QueryNavigationValidation.ValidateNavigation(QueryNavigationRec, ValidationResult)) then
-                Error(ValidationResult.Reason);
+               (not QueryNavigationValidation.ValidateNavigation(QueryNavigationRec, InputStringOK)) then
+                Error(InputStringOK.Reason);
         end;
     end;
 }

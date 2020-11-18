@@ -27,14 +27,14 @@ Collection of the default subscribers to system events and corresponding overrid
 
 #### Syntax
 ```
-procedure ValidateNavigation(NavigationRec: Record "Query Navigation"; var ValidationResult: Record "Query Navigation Validation"): Boolean
+procedure ValidateNavigation(NavigationRec: Record "Query Navigation"; var InputStringOK: Record "Query Navigation Validation"): Boolean
 ```
 #### Parameters
 *NavigationRec ([Record "Query Navigation"]())* 
 
 The Query Navigation record to validate.
 
-*ValidationResult ([Record "Query Navigation Validation"]())* 
+*InputStringOK ([Record "Query Navigation Validation"]())* 
 
 A record containing the details about the results of the validation.
 
@@ -49,7 +49,7 @@ True if the record is valid; Otherwise false.
 
 #### Syntax
 ```
-procedure ValidateNavigation(SourceQueryObjectId: Integer; TargetPageId: Integer; LinkingDataItemName: Text; var ValidationResult: Record "Query Navigation Validation"): Boolean
+procedure ValidateNavigation(SourceQueryObjectId: Integer; TargetPageId: Integer; LinkingDataItemName: Text; var InputStringOK: Record "Query Navigation Validation"): Boolean
 ```
 #### Parameters
 *SourceQueryObjectId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
@@ -68,7 +68,7 @@ The ID of the page that the query navigation opens.
  navigation item is selected.
  
 
-*ValidationResult ([Record "Query Navigation Validation"]())* 
+*InputStringOK ([Record "Query Navigation Validation"]())* 
 
 A record containing the details about the results of the validation.
 

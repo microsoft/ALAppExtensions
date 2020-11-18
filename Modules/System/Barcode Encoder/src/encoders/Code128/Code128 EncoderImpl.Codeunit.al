@@ -50,6 +50,22 @@ codeunit 9217 Code128_BarcodeEncoderImpl
     end;
 
     /// <summary> 
+    /// Encodes the barcode string to generate a barcode image in Base64 format
+    /// From: https://en.wikipedia.org/wiki/Code_128/
+    /// Code 128 is a high-density linear barcode symbology defined in ISO/IEC 15417:2007.[1] It is used for alphanumeric or numeric-only barcodes. 
+    /// It can encode all 128 characters of ASCII and, by use of an extension symbol (FNC4), the Latin-1 characters defined in ISO/IEC 8859-1. 
+    /// It generally results in more compact barcodes compared to other methods like Code 39, especially when the texts contain mostly digits.
+    /// GS1-128 (formerly known as UCC/EAN-128) is a subset of Code 128 and is used extensively worldwide in shipping and packaging industries as a product identification code for the container and pallet levels in the supply chain.    
+    /// </summary>
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <param name="Base64Image">Parameter of type Text.</param>
+    /// <param name="IsHandled">Parameter of type Boolean.</param>
+    procedure Base64ImageEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Image: Text; var IsHandled: Boolean)
+    begin
+        if IsHandled then exit;
+    end;
+
+    /// <summary> 
     /// Validates if the Input String is a valid string to encode the barcode.
     /// From: https://en.wikipedia.org/wiki/Code_128/
     /// Code 128 includes 108 symbols: 103 data symbols, 3 start symbols, and 2 stop symbols. 
@@ -66,19 +82,19 @@ codeunit 9217 Code128_BarcodeEncoderImpl
     ///    -  128C (Code Set C) – 00–99 (encodes two digits with a single code point) and FNC1
     /// </summary>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
-    /// <param name="ValidationResult">Parameter of type Boolean.</param>
+    /// <param name="InputStringOK">Parameter of type Boolean.</param>
     /// <param name="IsHandled">Parameter of type Boolean.</param>
-    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; var ValidationResult: Boolean; IsHandled: Boolean)
+    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; var InputStringOK: Boolean; IsHandled: Boolean)
     var
         RegexPattern: codeunit Regex;
     begin
         if IsHandled then exit;
 
-        ValidationResult := true;
+        InputStringOK := true;
 
         // null or empty
         if (TempBarcodeParameters."Input String" = '') then begin
-            ValidationResult := false;
+            InputStringOK := false;
             exit;
         end;
 
@@ -86,19 +102,13 @@ codeunit 9217 Code128_BarcodeEncoderImpl
             '':
                 Error(No128CodeSetDefinedErr);
             'a':
-                ValidationResult := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[\000-\137]*$');
+                InputStringOK := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[\000-\137]*$');
             'b':
-                ValidationResult := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[\040-\177]*$');
+                InputStringOK := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[\040-\177]*$');
             'c':
-                ValidationResult := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^(([0-9]{2})+?)*$');
+                InputStringOK := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^(([0-9]{2})+?)*$');
             else
-                ValidationResult := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[\000-\177]*$');
+                InputStringOK := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[\000-\177]*$');
         end;
-    end;
-
-    // Format the Inputstring of the barcode
-    procedure Barcode(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Data: Text; var IsHandled: Boolean)
-    begin
-        if IsHandled then exit;
     end;
 }

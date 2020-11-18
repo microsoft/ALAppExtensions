@@ -17,17 +17,42 @@ codeunit 9228 PostnetBarcodeEncoder implements IBarcodeEncoder
     /// POSTNET (Postal Numeric Encoding Technique) is a barcode symbology used by the United States Postal Service to assist in directing mail. 
     /// The ZIP Code or ZIP+4 code is encoded in half- and full-height bars.[1] Most often, the delivery point is added, usually being the last two digits of the address or PO box number.    
     /// </summary>
+    /// <seealso cref="OnBeforeEncodeFont"/> 
+    /// <seealso cref="OnAfterEncodeFont"/>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <returns>Return variable "EncodedText" of type Text.</returns>
     procedure FontEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary) EncodedText: Text
     var
         SymbologyEncoderImpl: Codeunit Postnet_BarcodeEncoderImpl;
         IsHandled: Boolean;
     begin
-        OnBeforeEncodeSymbology(TempBarcodeParameters, EncodedText, IsHandled);
+        OnBeforeEncodeFont(TempBarcodeParameters, EncodedText, IsHandled);
 
         SymbologyEncoderImpl.FontEncoder(TempBarcodeParameters, EncodedText, IsHandled);
 
-        OnAfterEncodeSymbology(TempBarcodeParameters, EncodedText);
+        OnAfterEncodeFont(TempBarcodeParameters, EncodedText);
+    end;
+
+    /// <summary> 
+    /// Encodes the barcode string to generate a barcode image in Base64 format
+    /// From: https://en.wikipedia.org/wiki/POSTNET
+    /// POSTNET (Postal Numeric Encoding Technique) is a barcode symbology used by the United States Postal Service to assist in directing mail. 
+    /// The ZIP Code or ZIP+4 code is encoded in half- and full-height bars.[1] Most often, the delivery point is added, usually being the last two digits of the address or PO box number.
+    /// </summary>
+    /// <seealso cref="OnBeforeEncodeBase64Image"/> 
+    /// <seealso cref="OnAfterEncodeBase64Image"/>
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <returns>Return variable "Base64Image" of type Text.</returns>
+    procedure Base64ImageEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary) Base64Image: Text
+    var
+        SymbologyEncoderImpl: Codeunit Postnet_BarcodeEncoderImpl;
+        IsHandled: Boolean;
+    begin
+        OnBeforeEncodeBase64Image(TempBarcodeParameters, Base64Image, IsHandled);
+
+        SymbologyEncoderImpl.Base64ImageEncoder(TempBarcodeParameters, Base64Image, IsHandled);
+
+        OnAfterEncodeBase64Image(TempBarcodeParameters, Base64Image);
     end;
 
     /// <summary> 
@@ -40,58 +65,107 @@ codeunit 9228 PostnetBarcodeEncoder implements IBarcodeEncoder
     /// or DPBC POSTNET - 9 digit ZIP code data + two DPBC numbers
     /// Using regex from https://www.neodynamic.com/Products/Help/BarcodeWinControl2.5/working_barcode_symbologies.htm
     /// </summary>
+    /// <seealso cref="OnBeforeValidateInputString"/> 
+    /// <seealso cref="OnAfterValidateInputString"/>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
-    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary) ValidationResult: Boolean
+    /// <returns>Return variable "InputStringOK" of type Boolean.</returns>
+    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary) InputStringOK: Boolean
     var
         SymbologyEncoderImpl: Codeunit Postnet_BarcodeEncoderImpl;
         IsHandled: Boolean;
     begin
-        OnBeforeValidateSymbology(TempBarcodeParameters, ValidationResult, IsHandled);
+        OnBeforeValidateInputString(TempBarcodeParameters, InputStringOK, IsHandled);
 
-        SymbologyEncoderImpl.ValidateInputString(TempBarcodeParameters, ValidationResult, IsHandled);
+        SymbologyEncoderImpl.ValidateInputString(TempBarcodeParameters, InputStringOK, IsHandled);
 
-        OnAfterValidateSymbology(TempBarcodeParameters, ValidationResult);
+        OnAfterValidateInputString(TempBarcodeParameters, InputStringOK);
     end;
 
-    procedure Barcode(var TempBarcodeParameters: Record BarcodeParameters temporary) Base64Data: Text
-    var
-        SymbologyEncoderImpl: Codeunit Postnet_BarcodeEncoderImpl;
-        IsHandled: Boolean;
+    /// <summary> 
+    /// Shows if this encoder is implemented as a Barcode Font Encoder
+    /// </summary>
+    /// <returns>Return variable "Boolean".</returns>
+    procedure IsFontEncoder(): Boolean
     begin
-        OnBeforeFormatSymbology(TempBarcodeParameters, Base64Data, IsHandled);
-
-        SymbologyEncoderImpl.Barcode(TempBarcodeParameters, Base64Data, IsHandled);
-
-        OnAfterFormatSymbology(TempBarcodeParameters, Base64Data);
+        exit(true);
     end;
 
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeEncodeSymbology(var TempBarcodeParameters: Record BarcodeParameters temporary; var EncodedText: Text; var IsHandled: Boolean)
+    /// <summary> 
+    /// Shows if this encoder is implemeted as a Barcode Image in Base64 format
+    /// </summary>
+    /// <returns>Return variable "Boolean".</returns>
+    procedure IsBase64ImageEncoder(): Boolean
     begin
+        exit(false);
     end;
 
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterEncodeSymbology(var TempBarcodeParameters: Record BarcodeParameters temporary; var EncodedText: Text)
-    begin
-    end;
 
+    /// <summary> 
+    /// Event publisher to overule the standard encoding
+    /// </summary>
+    /// <seealso cref="FontEncoder"/>
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <param name="EncodedText">Parameter of type Text.</param>
+    /// <param name="IsHandled">Parameter of type Boolean.</param>
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeValidateSymbology(var TempBarcodeParameters: Record BarcodeParameters temporary; var ValidationResult: boolean; var IsHandled: Boolean)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterValidateSymbology(var TempBarcodeParameters: Record BarcodeParameters temporary; ValidationResult: boolean)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeFormatSymbology(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Data: Text; var IsHandled: Boolean)
+    local procedure OnBeforeEncodeFont(var TempBarcodeParameters: Record BarcodeParameters temporary; var EncodedText: Text; var IsHandled: Boolean)
     begin
     end;
 
+    /// <summary> 
+    /// Event publisher to process the generated encoded text the standard encoding
+    /// </summary>
+    /// <seealso cref="FontEncoder"/>    
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <param name="EncodedText">Parameter of type Text.</param>
     [IntegrationEvent(false, false)]
-    local procedure OnAfterFormatSymbology(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Data: Text)
+    local procedure OnAfterEncodeFont(var TempBarcodeParameters: Record BarcodeParameters temporary; var EncodedText: Text)
+    begin
+    end;
+
+    /// <summary> 
+    /// Event publisher to overule the standard validation of the encoding
+    /// </summary>
+    /// <seealso cref="Base64ImageEncoder"/> 
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <param name="InputStringOK">Parameter of type Boolean.</param>
+    /// <param name="IsHandled">Parameter of type Boolean.</param>
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; var InputStringOK: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    /// <summary> 
+    /// Event publisher to add additional validation to the standard encoding
+    /// </summary>
+    /// <seealso cref="ValidateInputString"/> 
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <param name="InputStringOK">Parameter of type Boolean.</param>
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; InputStringOK: Boolean)
+    begin
+    end;
+
+    /// <summary> 
+    /// Event publisher to overule the standard encoding
+    /// </summary>
+    /// <seealso cref="ValidateInputString"/> 
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <param name="Base64Image">Parameter of type Text.</param>
+    /// <param name="IsHandled">Parameter of type Boolean.</param>
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeEncodeBase64Image(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Image: Text; var IsHandled: Boolean)
+    begin
+    end;
+
+    /// <summary> 
+    /// Event publisher to process the generated encoded base64 text of the standard encoding
+    /// </summary>
+    /// <seealso cref="Base64ImageEncoder"/> 
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <param name="Base64Image">Parameter of type Text.</param>
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterEncodeBase64Image(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Image: Text)
     begin
     end;
 }

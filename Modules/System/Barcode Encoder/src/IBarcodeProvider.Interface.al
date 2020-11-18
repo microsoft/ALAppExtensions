@@ -27,15 +27,15 @@ interface IBarcodeProvider
     /// function ValidateInputString, which validates the Input string and used Paramaters if they apply the symbolgy standards.
     /// </summary>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters which sets the neccessary parameters for the requested barcode.</param>
-    /// <returns>Return variable "ValidationResult" of type Boolean.</returns>
-    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary) ValidationResult: Boolean;
+    /// <returns>Return variable "InputStringOK" of type Boolean.</returns>
+    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary) InputStringOK: Boolean;
 
     /// <summary> 
     /// Function Barcode returning the generated Barcode as Base64 data.
     /// </summary>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters which sets the neccessary parameters for the requested barcode.</param>
-    /// <returns>Return variable "Base64Data" of type text.</returns>
-    procedure Barcode(var TempBarcodeParameters: Record BarcodeParameters temporary) Base64Data: text;
+    /// <returns>Return variable "Base64Image" of type text.</returns>
+    procedure Base64ImageEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary) Base64Image: text;
 
     /// <summary> 
     /// Function GetlistofImplementedEncoders to return a list of the Symbology encoders implemented by this provider

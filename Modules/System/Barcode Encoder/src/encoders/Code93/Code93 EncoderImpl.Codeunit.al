@@ -31,6 +31,22 @@ codeunit 9215 Code93_BarcodeEncoderImpl
     end;
 
     /// <summary> 
+    /// Encodes the barcode string to generate a barcode image in Base64 format
+    /// From: https://en.wikipedia.org/wiki/Code_93/
+    /// It is an alphanumeric, variable length symbology. Code 93 is used primarily by Canada Post to encode supplementary delivery information. 
+    /// Every symbol includes two check characters.
+    /// Each Code 93 character is nine modules wide, and always has three bars and three spaces, thus the name. 
+    /// Each bar and space is from 1 to 4 modules wide. (For comparison, a Code 39 character consists of five bars and four spaces, three of which are wide, for a total width of 13–16 modules.)
+    /// </summary>
+    /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
+    /// <param name="Base64Image">Parameter of type Text.</param>
+    /// <param name="IsHandled">Parameter of type Boolean.</param>
+    procedure Base64ImageEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Image: Text; IsHandled: Boolean)
+    begin
+        if IsHandled then exit;
+    end;
+
+    /// <summary> 
     /// Validates if the Input String is a valid string to encode the barcode.
     /// From: https://en.wikipedia.org/wiki/Code_93
     /// Each Code 93 character is nine modules wide, and always has three bars and three spaces, thus the name. 
@@ -44,31 +60,25 @@ codeunit 9215 Code93_BarcodeEncoderImpl
     /// Using regex from https://www.neodynamic.com/Products/Help/BarcodeWinControl2.5/working_barcode_symbologies.htm
     /// </summary>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary which sets the neccessary parameters for the requested barcode.</param>
-    /// <param name="ValidationResult">Parameter of type Boolean.</param>
+    /// <param name="InputStringOK">Parameter of type Boolean.</param>
     /// <param name="IsHandled">Parameter of type Boolean.</param>
-    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; var ValidationResult: Boolean; IsHandled: Boolean)
+    procedure ValidateInputString(var TempBarcodeParameters: Record BarcodeParameters temporary; var InputStringOK: Boolean; IsHandled: Boolean)
     var
         RegexPattern: codeunit Regex;
     begin
         if IsHandled then exit;
 
-        ValidationResult := true;
+        InputStringOK := true;
         // null or empty
         if (TempBarcodeParameters."Input String" = '') then begin
-            ValidationResult := false;
+            InputStringOK := false;
             exit;
         end;
 
         // Verify if input string containings only valid characters
         if TempBarcodeParameters."Allow Extended Charset" then
-            ValidationResult := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[\000-\177]*$')
+            InputStringOK := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[\000-\177]*$')
         else
-            ValidationResult := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[0-9A-Z\-.$\/\+%\*\s]*$');
-    end;
-
-    // Format the Inputstring of the barcode
-    procedure Barcode(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Data: Text; IsHandled: Boolean)
-    begin
-        if IsHandled then exit;
+            InputStringOK := RegexPattern.IsMatch(TempBarcodeParameters."Input String", '^[0-9A-Z\-.$\/\+%\*\s]*$');
     end;
 }
