@@ -146,7 +146,7 @@ codeunit 9201 BarcodeProvider implements IBarcodeProvider
     var
         Providers: Enum BarcodeProviders;
         ListOfEncoders: list of [Text];
-        CannotFindBarcodeEncoderErr: label 'Provider %1: Barcode Symbol Encoder %2 is implemented by this provider!';
+        CannotFindBarcodeEncoderErr: label 'Provider %1: Barcode Symbol Encoder %2 is not implemented by this provider!', comment = '%1 Provider Caption, %2 = Symbology Caption';
     begin
         // Find which standard encoding handler to use
         GetListofImplementedEncoders(ListOfEncoders);

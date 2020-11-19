@@ -97,7 +97,7 @@ table 9200 BarcodeParameters
     var
         iBarcodeProvider: Interface IBarcodeProvider;
         iBarcodeEncoder: Interface IBarcodeEncoder;
-        InvalidStringFormatErrMsg: label 'Input String %1 contains invalid characters for the chosen provider %2 and encoding symbolgy %3';
+        InvalidStringFormatErrMsg: label 'Input String %1 contains invalid characters for the chosen provider %2 and encoding symbolgy %3', comment = '%1 = Input String, %2 = Provider Caption, %3 = Symbology Caption';
     begin
         // Find correct Provider
         iBarcodeProvider := Provider;
