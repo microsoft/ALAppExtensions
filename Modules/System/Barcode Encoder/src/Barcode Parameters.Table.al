@@ -28,11 +28,6 @@ table 9200 BarcodeParameters
             Caption = 'use Symbology';
             DataClassification = CustomerContent;
         }
-        field(100; ReverseColors; Boolean)
-        {
-            Caption = 'Reverse Colors';
-            DataClassification = CustomerContent;
-        }
         field(110; OptionParameterString; Text[100])
         {
             Caption = 'Optional Parameters';
@@ -112,5 +107,44 @@ table 9200 BarcodeParameters
             error(InvalidStringFormatErrMsg, "Input String", Provider, Symbology);
     end;
 
+    /// <summary> 
+    /// Shows if this encoder is implemented as a Barcode Font Encoder
+    /// </summary>
+    /// <returns>Return variable "Boolean".</returns>
+    procedure IsFontEncoder(): Boolean
+    var
+        iBarcodeProvider: Interface IBarcodeProvider;
+        iBarcodeEncoder: Interface IBarcodeEncoder;
+        NotImplementedErr: Label 'Base64 Image Encoding is currently not implemented for Provider%1 and Symbology %2', comment = '%1 =  Provider Caption, %2 = Symbology Caption';
+    begin
+        // Find correct Provider
+        iBarcodeProvider := Provider;
+
+        // Get correct Encoder
+        if not iBarcodeProvider.IsFontEncoder(iBarcodeEncoder, Rec.Symbology) then
+            error(NotImplementedErr, Rec.Provider, Rec.Symbology);
+
+        exit(iBarcodeEncoder.IsFontEncoder());
+    end;
+
+    /// <summary> 
+    /// Shows if this encoder is implemented as a Base64 Image Barcode
+    /// </summary>
+    /// <returns>Return variable "Boolean".</returns>
+    procedure IsBase64ImageEncoder(): Boolean
+    var
+        iBarcodeProvider: Interface IBarcodeProvider;
+        iBarcodeEncoder: Interface IBarcodeEncoder;
+        NotImplementedErr: Label 'Base64 Image Encoding is currently not implemented for Provider%1 and Symbology %2', comment = '%1 =  Provider Caption, %2 = Symbology Caption';
+    begin
+        // Find correct Provider
+        iBarcodeProvider := Provider;
+
+        // Get correct Encoder
+        if not iBarcodeProvider.IsFontEncoder(iBarcodeEncoder, Rec.Symbology) then
+            error(NotImplementedErr, Rec.Provider, Rec.Symbology);
+
+        exit(iBarcodeEncoder.IsBase64ImageEncoder());
+    end;
 }
 

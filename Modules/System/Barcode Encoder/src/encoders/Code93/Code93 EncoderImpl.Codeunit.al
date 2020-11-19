@@ -37,13 +37,19 @@ codeunit 9215 Code93_BarcodeEncoderImpl
     /// Every symbol includes two check characters.
     /// Each Code 93 character is nine modules wide, and always has three bars and three spaces, thus the name. 
     /// Each bar and space is from 1 to 4 modules wide. (For comparison, a Code 39 character consists of five bars and four spaces, three of which are wide, for a total width of 13–16 modules.)
+    /// 
+    /// This Function is currently throwing an error when the paramater "IsHandled" = false, and is reserved for future use when Base64ImageEncoding will be supported.
     /// </summary>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
     /// <param name="Base64Image">Parameter of type Text.</param>
     /// <param name="IsHandled">Parameter of type Boolean.</param>
-    procedure Base64ImageEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Image: Text; IsHandled: Boolean)
+    procedure Base64ImageEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Image: Text; IsHandled: Boolean);
+    var
+        NotImplementedErr: Label 'Base64 Image Encoding is currently not implemented for Provider%1 and Symbology %2', comment = '%1 =  Provider Caption, %2 = Symbology Caption';
     begin
         if IsHandled then exit;
+
+        Error(NotImplementedErr, TempBarcodeParameters.Provider, TempBarcodeParameters.Symbology);
     end;
 
     /// <summary> 

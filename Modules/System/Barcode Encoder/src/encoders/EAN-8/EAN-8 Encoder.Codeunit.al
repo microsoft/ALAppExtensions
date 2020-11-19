@@ -21,6 +21,8 @@ codeunit 9218 EAN8BarcodeEncoder implements IBarcodeEncoder
     /// A GTIN-8 begins with a 2- or 3-digit GS1 prefix (which is assigned to each national GS1 authority) followed by a 5- or 4-digit item reference element depending on the length of the GS1 prefix), and a checksum digit.
     /// EAN-8 codes are common throughout the world, and companies may also use them to encode RCN-8 (8-digit Restricted Circulation Numbers), and use them to identify own-brand products sold only in their stores. 
     /// RCN-8 are a subset of GTIN-8 which begin with a first digit of 0 or 2. 
+    /// 
+    /// Use the Function IsFontEncoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeFont()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeFont"/> 
     /// <seealso cref="OnAfterEncodeFont"/>
@@ -48,6 +50,9 @@ codeunit 9218 EAN8BarcodeEncoder implements IBarcodeEncoder
     /// A GTIN-8 begins with a 2- or 3-digit GS1 prefix (which is assigned to each national GS1 authority) followed by a 5- or 4-digit item reference element depending on the length of the GS1 prefix), and a checksum digit.
     /// EAN-8 codes are common throughout the world, and companies may also use them to encode RCN-8 (8-digit Restricted Circulation Numbers), and use them to identify own-brand products sold only in their stores. 
     /// RCN-8 are a subset of GTIN-8 which begin with a first digit of 0 or 2. 
+    /// 
+    /// This Function is currently throwing an error and is reserved for future use when Base64ImageEncoding will be supported.
+    /// Use the Function IsBase64Encoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeBase64Image()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeBase64Image"/> 
     /// <seealso cref="OnAfterEncodeBase64Image"/>

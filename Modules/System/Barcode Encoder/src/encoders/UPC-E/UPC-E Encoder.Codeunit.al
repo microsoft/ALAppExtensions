@@ -18,6 +18,8 @@ codeunit 9224 UPCE_BarcodeEncoder implements IBarcodeEncoder
     /// This symbology differs from UPC-A in that it only uses a 6-digit code, does not use M (middle) guard pattern, and the E (end) guard pattern is formed as space-bar-space-bar-space-bar, i.e. UPC-E barcode follows the pattern SDDDDDDE. 
     /// The way in which a 6-digit UPC-E relates to a 12-digit UPC-A, is determined by UPC-E numerical pattern and UPC-E parity pattern. 
     /// It can only correspond to UPC-A number system 0 or 1, the value of which, along with the UPC-A check digit, determines the UPC-E parity pattern of the encoding.
+    /// 
+    /// Use the Function IsFontEncoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeFont()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeFont"/> 
     /// <seealso cref="OnAfterEncodeFont"/>
@@ -42,6 +44,9 @@ codeunit 9224 UPCE_BarcodeEncoder implements IBarcodeEncoder
     /// This symbology differs from UPC-A in that it only uses a 6-digit code, does not use M (middle) guard pattern, and the E (end) guard pattern is formed as space-bar-space-bar-space-bar, i.e. UPC-E barcode follows the pattern SDDDDDDE. 
     /// The way in which a 6-digit UPC-E relates to a 12-digit UPC-A, is determined by UPC-E numerical pattern and UPC-E parity pattern. 
     /// It can only correspond to UPC-A number system 0 or 1, the value of which, along with the UPC-A check digit, determines the UPC-E parity pattern of the encoding.
+    /// 
+    /// This Function is currently throwing an error and is reserved for future use when Base64ImageEncoding will be supported.
+    /// Use the Function IsBase64Encoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeBase64Image()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeBase64Image"/> 
     /// <seealso cref="OnAfterEncodeBase64Image"/>

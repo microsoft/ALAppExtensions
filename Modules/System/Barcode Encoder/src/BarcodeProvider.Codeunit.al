@@ -21,6 +21,42 @@ codeunit 9201 BarcodeProvider implements IBarcodeProvider
     end;
 
     /// <summary> 
+    /// Shows if this encoder is implemented as a Barcode Font Encoder
+    /// </summary>
+    /// <param name="iBarcodeEncoder">Parameter of type interface IBarcodeEncoder.</param>
+    /// <param name="UseSymbology">Parameter of type Enum BarcodeSymbology.</param>
+    /// <returns>Return variable "Boolean".</returns>
+    procedure IsFontEncoder(var iBarcodeEncoder: interface IBarcodeEncoder; UseSymbology: Enum BarcodeSymbology): Boolean
+    begin
+        // First Find correct Barcode Encoder based at Symbolgy set in Record
+        if TryGetBarcodeEncoder(iBarcodeEncoder, UseSymbology) then
+            OnFindBarcodeEncoderSymbology(iBarcodeEncoder, UseSymbology)
+        else
+            Error(GetLastErrorText);
+
+        // Verify if this is a Font Encoder
+        exit(iBarcodeEncoder.IsFontEncoder());
+    end;
+
+    /// <summary> 
+    /// Shows if this encoder is implemeted as a Barcode Image in Base64 format
+    /// </summary>
+    /// <param name="iBarcodeEncoder">Parameter of type interface IBarcodeEncoder.</param>
+    /// <param name="UseSymbology">Parameter of type Enum BarcodeSymbology.</param>
+    /// <returns>Return variable "Boolean".</returns>
+    procedure IsBase64ImageEncoder(var iBarcodeEncoder: interface IBarcodeEncoder; UseSymbology: Enum BarcodeSymbology): Boolean
+    begin
+        // First Find correct Barcode Encoder based at Symbolgy set in Record
+        if TryGetBarcodeEncoder(iBarcodeEncoder, UseSymbology) then
+            OnFindBarcodeEncoderSymbology(iBarcodeEncoder, UseSymbology)
+        else
+            Error(GetLastErrorText);
+
+        // Verify if this is a Base64 Image Encoder
+        exit(iBarcodeEncoder.IsBase64ImageEncoder());
+    end;
+
+    /// <summary> 
     /// Encodes the barcode string to print a barcode using the providers barcode font encoder.
     /// </summary>
     /// <seealso cref="OnFindBarcodeEncoderParameters"/>

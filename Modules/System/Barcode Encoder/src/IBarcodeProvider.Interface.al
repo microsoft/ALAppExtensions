@@ -17,6 +17,22 @@ interface IBarcodeProvider
     procedure GetEncoder(var iBarcodeEncoder: interface IBarcodeEncoder; UseSymbology: Enum BarcodeSymbology)
 
     /// <summary> 
+    /// Shows if this encoder is implemented as a Barcode Font Encoder
+    /// </summary>
+    /// <param name="iBarcodeEncoder">Parameter of type interface IBarcodeEncoder.</param>
+    /// <param name="UseSymbology">Parameter of type Enum BarcodeSymbology.</param>
+    /// <returns>Return variable "Boolean".</returns>
+    procedure IsFontEncoder(var iBarcodeEncoder: interface IBarcodeEncoder; UseSymbology: Enum BarcodeSymbology): Boolean
+
+    /// <summary> 
+    /// Shows if this encoder is implemeted as a Barcode Image in Base64 format
+    /// </summary>
+    /// <param name="iBarcodeEncoder">Parameter of type interface IBarcodeEncoder.</param>
+    /// <param name="UseSymbology">Parameter of type Enum BarcodeSymbology.</param>
+    /// <returns>Return variable "Boolean".</returns>
+    procedure IsBase64ImageEncoder(var iBarcodeEncoder: interface IBarcodeEncoder; UseSymbology: Enum BarcodeSymbology): Boolean
+
+    /// <summary> 
     /// Function Encode encodes the Inputstring and generates a barcode according to the parameters set.
     /// </summary>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters which sets the neccessary parameters for the requested barcode.</param>

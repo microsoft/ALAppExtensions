@@ -20,6 +20,8 @@ codeunit 9212 CodabarBarcodeEncoder implements IBarcodeEncoder
     /// The Codabar character set consists of barcode symbols representing characters 0-9, Letters A to D and the following symbols: - $ / +. 
     /// Additional data may be encoded in the actual choice of start and stop codes. The uppercase letters A, B, C, and D are used for start and stop codes. 
     /// The parentheses ( ) may also be used as the start and stop code to eliminate the letters from appearing in the human-readable version of the fonts.
+    /// 
+    /// Use the Function IsFontEncoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeFont()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeFont"/> 
     /// <seealso cref="OnAfterEncodeFont"/> 
@@ -46,6 +48,9 @@ codeunit 9212 CodabarBarcodeEncoder implements IBarcodeEncoder
     /// The Codabar character set consists of barcode symbols representing characters 0-9, Letters A to D and the following symbols: - $ / +. 
     /// Additional data may be encoded in the actual choice of start and stop codes. The uppercase letters A, B, C, and D are used for start and stop codes. 
     /// The parentheses ( ) may also be used as the start and stop code to eliminate the letters from appearing in the human-readable version of the fonts.
+    /// 
+    /// This Function is currently throwing an error and is reserved for future use when Base64ImageEncoding will be supported.
+    /// Use the Function IsBase64Encoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeBase64Image()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeBase64Image"/> 
     /// <seealso cref="OnAfterEncodeBase64Image"/>

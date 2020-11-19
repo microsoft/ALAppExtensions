@@ -18,6 +18,8 @@ codeunit 9214 Code93BarcodeEncoder implements IBarcodeEncoder
     /// Every symbol includes two check characters.
     /// Each Code 93 character is nine modules wide, and always has three bars and three spaces, thus the name. 
     /// Each bar and space is from 1 to 4 modules wide. (For comparison, a Code 39 character consists of five bars and four spaces, three of which are wide, for a total width of 13–16 modules.)
+    /// 
+    /// Use the Function IsFontEncoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeFont()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeFont"/> 
     /// <seealso cref="OnAfterEncodeFont"/>
@@ -42,6 +44,9 @@ codeunit 9214 Code93BarcodeEncoder implements IBarcodeEncoder
     /// Every symbol includes two check characters.
     /// Each Code 93 character is nine modules wide, and always has three bars and three spaces, thus the name. 
     /// Each bar and space is from 1 to 4 modules wide. (For comparison, a Code 39 character consists of five bars and four spaces, three of which are wide, for a total width of 13–16 modules.)
+    /// 
+    /// This Function is currently throwing an error and is reserved for future use when Base64ImageEncoding will be supported.
+    /// Use the Function IsBase64Encoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeBase64Image()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeBase64Image"/> 
     /// <seealso cref="OnAfterEncodeBase64Image"/>

@@ -41,13 +41,19 @@ codeunit 9221 EAN13_BarcodeEncoderImpl
     /// EAN-13 barcodes also indicate the country in which the company that sells the product is based (which may or may not be the same as the country in which the good is manufactured). 
     /// The three leading digits of the code determine this, according to the GS1 country codes. Every UPC-A code can be easily converted to the equivalent EAN-13 code by prepending 0 digit to the UPC-A code. 
     /// This does not change the check digit. All point-of-sale systems can now understand both equally.
+    /// 
+    /// This Function is currently throwing an error when the paramater "IsHandled" = false, and is reserved for future use when Base64ImageEncoding will be supported.
     /// </summary>
     /// <param name="TempBarcodeParameters">Parameter of type Record BarcodeParameters temporary.</param>
     /// <param name="Base64Image">Parameter of type Text.</param>
     /// <param name="IsHandled">Parameter of type Boolean.</param>
-    procedure Base64ImageEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Image: Text; IsHandled: Boolean)
+    procedure Base64ImageEncoder(var TempBarcodeParameters: Record BarcodeParameters temporary; var Base64Image: Text; IsHandled: Boolean);
+    var
+        NotImplementedErr: Label 'Base64 Image Encoding is currently not implemented for Provider%1 and Symbology %2', comment = '%1 =  Provider Caption, %2 = Symbology Caption';
     begin
         if IsHandled then exit;
+
+        Error(NotImplementedErr, TempBarcodeParameters.Provider, TempBarcodeParameters.Symbology);
     end;
 
     /// <summary> 

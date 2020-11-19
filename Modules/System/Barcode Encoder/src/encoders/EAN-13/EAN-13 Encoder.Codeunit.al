@@ -19,6 +19,8 @@ codeunit 9220 EAN13BarcodeEncoder implements IBarcodeEncoder
     /// EAN-13 barcodes also indicate the country in which the company that sells the product is based (which may or may not be the same as the country in which the good is manufactured). 
     /// The three leading digits of the code determine this, according to the GS1 country codes. Every UPC-A code can be easily converted to the equivalent EAN-13 code by prepending 0 digit to the UPC-A code. 
     /// This does not change the check digit. All point-of-sale systems can now understand both equally.
+    /// 
+    /// Use the Function IsFontEncoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeFont()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeFont"/> 
     /// <seealso cref="OnAfterEncodeFont"/>
@@ -45,6 +47,9 @@ codeunit 9220 EAN13BarcodeEncoder implements IBarcodeEncoder
     /// EAN-13 barcodes also indicate the country in which the company that sells the product is based (which may or may not be the same as the country in which the good is manufactured). 
     /// The three leading digits of the code determine this, according to the GS1 country codes. Every UPC-A code can be easily converted to the equivalent EAN-13 code by prepending 0 digit to the UPC-A code. 
     /// This does not change the check digit. All point-of-sale systems can now understand both equally.
+    /// 
+    /// This Function is currently throwing an error and is reserved for future use when Base64ImageEncoding will be supported.
+    /// Use the Function IsBase64Encoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeBase64Image()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeBase64Image"/> 
     /// <seealso cref="OnAfterEncodeBase64Image"/>

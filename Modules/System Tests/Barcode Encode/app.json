@@ -1,6 +1,6 @@
 {
     "id": "fb8910aa-5068-4331-bdd7-03e7af8c4f96",
-    "name": "Barcode Test",
+    "name": "Barcode Encode Test",
     "publisher": "Microsoft",
     "brief": "",
     "description": "Verify the barcode font .Net",
@@ -10,8 +10,7 @@
     "help": "",
     "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo": "",
-    "dependencies": [
-        {
+    "dependencies": [{
             "id": "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
             "name": "DotNet Aliases",
             "publisher": "Microsoft",
@@ -26,11 +25,9 @@
     ],
     "screenshots": [],
     "platform": "17.0.0.0",
-    "idRanges": [
-        {
-            "from": 135042,
-            "to": 135042
-        }
-    ],
+    "idRanges": [{
+        "from": 135042,
+        "to": 135042
+    }],
     "target": "OnPrem"
 }

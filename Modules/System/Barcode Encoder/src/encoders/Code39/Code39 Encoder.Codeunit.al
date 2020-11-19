@@ -26,6 +26,8 @@ codeunit 9210 Code39BarcodeEncoder implements IBarcodeEncoder
     /// Extended Code 39 barcode fonts barcode fonts are provided to easily encode lower case and special characters in a self checking font environment and begin with IDAutomationSX. 
     /// Extended Code 39 fonts are not compatible with IDAutomation's font encoders, such as the MOD43 function, and the asterisk (*) must be used as the start and stop character. 
     /// For extended characters to scan properly, the scanner must first be enabled to read extended code 39. These fonts are not part of the standard install, and therefore must be manually installed.
+    /// 
+    /// Use the Function IsFontEncoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeFont()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeFont"/> 
     /// <seealso cref="OnAfterEncodeFont"/>
@@ -53,6 +55,9 @@ codeunit 9210 Code39BarcodeEncoder implements IBarcodeEncoder
     /// Three of the nine elements in each character are wide (binary value 1), and six elements are narrow (binary value 0). 
     /// The width ratio between narrow and wide is not critical, and may be chosen between 1:2 and 1:3.
     /// Code 39 is sometimes used with an optional modulo 43 check digit. Using it requires this feature to be enabled in the barcode reader. The code with check digit is referred to as Code 39 mod 43.
+    /// 
+    /// This Function is currently throwing an error and is reserved for future use when Base64ImageEncoding will be supported.
+    /// Use the Function IsBase64Encoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeBase64Image()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeBase64Image"/> 
     /// <seealso cref="OnAfterEncodeBase64Image"/>

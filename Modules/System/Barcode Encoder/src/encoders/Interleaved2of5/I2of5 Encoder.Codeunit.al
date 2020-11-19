@@ -18,6 +18,8 @@ codeunit 9226 I2of5BarcodeEncoder implements IBarcodeEncoder
     /// It is used commercially on 135 film, for ITF-14 barcodes, and on cartons of some products, while the products inside are labeled with UPC or EAN.
     /// ITF encodes pairs of digits; the first digit is encoded in the five bars (or black lines), while the second digit is encoded in the five spaces (or white lines) interleaved with them. 
     /// Two out of every five bars or spaces are wide (hence exactly 2 of 5).
+    /// 
+    /// Use the Function IsFontEncoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeFont()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeFont"/> 
     /// <seealso cref="OnAfterEncodeFont"/>
@@ -42,6 +44,9 @@ codeunit 9226 I2of5BarcodeEncoder implements IBarcodeEncoder
     /// It is used commercially on 135 film, for ITF-14 barcodes, and on cartons of some products, while the products inside are labeled with UPC or EAN.
     /// ITF encodes pairs of digits; the first digit is encoded in the five bars (or black lines), while the second digit is encoded in the five spaces (or white lines) interleaved with them. 
     /// Two out of every five bars or spaces are wide (hence exactly 2 of 5).
+    /// 
+    /// This Function is currently throwing an error and is reserved for future use when Base64ImageEncoding will be supported.
+    /// Use the Function IsBase64Encoder() to check if this function implemented to prevent an error, or implement your own function by subscribing to event OnBeforeEncodeBase64Image()
     /// </summary>
     /// <seealso cref="OnBeforeEncodeBase64Image"/> 
     /// <seealso cref="OnAfterEncodeBase64Image"/>
