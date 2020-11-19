@@ -27,7 +27,7 @@ page 130451 "AL Test Tool"
             {
                 ApplicationArea = All;
                 Caption = 'Suite Name';
-                ToolTip = 'Updates the test methods for the entire test suite.';
+                ToolTip = 'Specifies the currently selected Test Suite';
 
                 trigger OnLookup(var Text: Text): Boolean
                 var
@@ -278,7 +278,7 @@ page 130451 "AL Test Tool"
                     PromotedCategory = Process;
                     PromotedIsBig = true;
                     PromotedOnly = true;
-                    ToolTip = 'Updates the test methods for the test codeunits in the active filter set.';
+                    ToolTip = 'Updates the test methods for the entire test suite.';
 
                     trigger OnAction()
                     var
