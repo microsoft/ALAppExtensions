@@ -27,7 +27,7 @@ page 130451 "AL Test Tool"
             {
                 ApplicationArea = All;
                 Caption = 'Suite Name';
-                ToolTip = 'Specifies the currently selected Test Suite';
+                ToolTip = 'Updates the test methods for the entire test suite.';
 
                 trigger OnLookup(var Text: Text): Boolean
                 var
