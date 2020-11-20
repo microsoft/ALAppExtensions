@@ -407,11 +407,9 @@ report 11016 "Create XML-File VAT Adv.Notif."
             if not AddElement(XmlRootElem, XmlElemNew, 'Erstellungsdatum', Format(Today(), 0, '<year4><month,2><day,2>'), XmlNameSpace) then
                 exit;
         end else begin
-            if not AddElement(XmlRootElem, XmlElemNew, 'Anmeldungssteuern', '', XmlNameSpace) then
+            if not AddElement(XmlRootElem, XmlElemNew, 'Anmeldungssteuern', '', StrSubstNo(AnmeldungssteuernXmlNameSpaceTxt, Date2DMY("Sales VAT Advance Notif."."Starting Date", 3))) then
                 exit;
             XmlRootElem := XmlElemNew;
-            if not XmlRootElem.Add(XmlAttribute.Create('xmlns', StrSubstNo(AnmeldungssteuernXmlNameSpaceTxt, Date2DMY("Sales VAT Advance Notif."."Starting Date", 3)))) then
-                exit;
             if not XmlRootElem.Add(XmlAttribute.Create('version', Format(Date2DMY("Sales VAT Advance Notif."."Starting Date", 3)))) then
                 exit;
             if not AddElement(XmlRootElem, XmlElemNew, 'Erstellungsdatum', Format(Today(), 0, '<year4><month,2><day,2>'), XmlNameSpace) then
