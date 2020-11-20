@@ -127,6 +127,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
         ElsterTok: Label 'ElsterTelemetryCategoryTok', Locked = true;
         CreateXMLFileMsg: Label 'Creating XML file', Locked = true;
         CreateXMLFileSuccessMsg: Label 'XML file created successfully', Locked = true;
+        AnmeldungssteuernXmlNameSpaceTxt: Label 'http://finkonsens.de/elster/elsteranmeldung/ustva/v%1', Locked = true;
         Window: Dialog;
         SubsequentAction: Option "Only create","Create and export";
         TaxAmount: array[100] of Decimal;
@@ -373,37 +374,65 @@ report 11016 "Create XML-File VAT Adv.Notif."
         if not AddElement(XmlRootElem, XmlElemNew, 'Nutzdaten', '', XmlNameSpace) then
             exit;
         XmlRootElem := XmlElemNew;
-        if not AddElement(XmlRootElem, XmlElemNew, 'Anmeldungssteuern', '', XmlNameSpace) then
-            exit;
-        XmlRootElem := XmlElemNew;
-        if not XmlRootElem.Add(XmlAttribute.Create('art', 'UStVA')) then
-            exit;
-        if ("Sales VAT Advance Notif."."Starting Date" >= DMY2Date(1, 7, 2011)) and
-           ("Sales VAT Advance Notif."."Starting Date" <= DMY2Date(31, 12, 2011))
-        then
-            NotificationVersion := '02'
-        else
-            NotificationVersion := '01';
-        if not XmlRootElem.Add(XmlAttribute.Create('version', Format(Date2DMY("Sales VAT Advance Notif."."Starting Date", 3)) + NotificationVersion)) then
-            exit;
-        if not AddElement(XmlRootElem, XmlElemNew, 'DatenLieferant', '', XmlNameSpace) then
-            exit;
-        XmlRootElem := XmlElemNew;
-        if not AddElement(XmlRootElem, XmlElemNew, 'Name', ContactForTaxOffice, XmlNameSpace) then
-            exit;
-        if CompanyInfo.Address <> '' then begin
-            if not AddElement(XmlRootElem, XmlElemNew, 'Strasse', CompanyInfo.Address, XmlNameSpace) then
+        if ("Sales VAT Advance Notif."."Starting Date" <= DMY2Date(31, 12, 2020)) then begin
+            if not AddElement(XmlRootElem, XmlElemNew, 'Anmeldungssteuern', '', XmlNameSpace) then
                 exit;
-        end else
-            if not AddElement(XmlRootElem, XmlElemNew, 'Strasse', CompanyInfo."Address 2", XmlNameSpace) then
+            XmlRootElem := XmlElemNew;
+            if not XmlRootElem.Add(XmlAttribute.Create('art', 'UStVA')) then
                 exit;
-        if not AddElement(XmlRootElem, XmlElemNew, 'PLZ', CompanyInfo."Post Code", XmlNameSpace) then
-            exit;
-        if not AddElement(XmlRootElem, XmlElemNew, 'Ort', CompanyInfo.City, XmlNameSpace) then
-            exit;
-        XmlRootElem.GetParent(XmlRootElem);
-        if not AddElement(XmlRootElem, XmlElemNew, 'Erstellungsdatum', Format(Today(), 0, '<year4><month,2><day,2>'), XmlNameSpace) then
-            exit;
+            if ("Sales VAT Advance Notif."."Starting Date" >= DMY2Date(1, 7, 2011)) and
+               ("Sales VAT Advance Notif."."Starting Date" <= DMY2Date(31, 12, 2011))
+            then
+                NotificationVersion := '02'
+            else
+                NotificationVersion := '01';
+            if not XmlRootElem.Add(XmlAttribute.Create('version', Format(Date2DMY("Sales VAT Advance Notif."."Starting Date", 3)) + NotificationVersion)) then
+                exit;
+            if not AddElement(XmlRootElem, XmlElemNew, 'DatenLieferant', '', XmlNameSpace) then
+                exit;
+            XmlRootElem := XmlElemNew;
+            if not AddElement(XmlRootElem, XmlElemNew, 'Name', ContactForTaxOffice, XmlNameSpace) then
+                exit;
+            if CompanyInfo.Address <> '' then begin
+                if not AddElement(XmlRootElem, XmlElemNew, 'Strasse', CompanyInfo.Address, XmlNameSpace) then
+                    exit;
+            end else
+                if not AddElement(XmlRootElem, XmlElemNew, 'Strasse', CompanyInfo."Address 2", XmlNameSpace) then
+                    exit;
+            if not AddElement(XmlRootElem, XmlElemNew, 'PLZ', CompanyInfo."Post Code", XmlNameSpace) then
+                exit;
+            if not AddElement(XmlRootElem, XmlElemNew, 'Ort', CompanyInfo.City, XmlNameSpace) then
+                exit;
+            XmlRootElem.GetParent(XmlRootElem);
+            if not AddElement(XmlRootElem, XmlElemNew, 'Erstellungsdatum', Format(Today(), 0, '<year4><month,2><day,2>'), XmlNameSpace) then
+                exit;
+        end else begin
+            if not AddElement(XmlRootElem, XmlElemNew, 'Anmeldungssteuern', '', XmlNameSpace) then
+                exit;
+            XmlRootElem := XmlElemNew;
+            if not XmlRootElem.Add(XmlAttribute.Create('xmlns', StrSubstNo(AnmeldungssteuernXmlNameSpaceTxt, Date2DMY("Sales VAT Advance Notif."."Starting Date", 3)))) then
+                exit;
+            if not XmlRootElem.Add(XmlAttribute.Create('version', Format(Date2DMY("Sales VAT Advance Notif."."Starting Date", 3)))) then
+                exit;
+            if not AddElement(XmlRootElem, XmlElemNew, 'Erstellungsdatum', Format(Today(), 0, '<year4><month,2><day,2>'), XmlNameSpace) then
+                exit;
+            if not AddElement(XmlRootElem, XmlElemNew, 'DatenLieferant', '', XmlNameSpace) then
+                exit;
+            XmlRootElem := XmlElemNew;
+            if not AddElement(XmlRootElem, XmlElemNew, 'Name', ContactForTaxOffice, XmlNameSpace) then
+                exit;
+            if CompanyInfo.Address <> '' then begin
+                if not AddElement(XmlRootElem, XmlElemNew, 'Strasse', CompanyInfo.Address, XmlNameSpace) then
+                    exit;
+            end else
+                if not AddElement(XmlRootElem, XmlElemNew, 'Strasse', CompanyInfo."Address 2", XmlNameSpace) then
+                    exit;
+            if not AddElement(XmlRootElem, XmlElemNew, 'PLZ', CompanyInfo."Post Code", XmlNameSpace) then
+                exit;
+            if not AddElement(XmlRootElem, XmlElemNew, 'Ort', CompanyInfo.City, XmlNameSpace) then
+                exit;
+            XmlRootElem.GetParent(XmlRootElem);
+        end;
         if not AddElement(XmlRootElem, XmlElemNew, 'Steuerfall', '', XmlNameSpace) then
             exit;
         XmlRootElem := XmlElemNew;
