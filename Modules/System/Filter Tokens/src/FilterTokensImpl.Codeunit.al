@@ -308,28 +308,29 @@ codeunit 58 "Filter Tokens Impl."
         Position := 1;
         FindText(DateToken, DateFilter, Position);
 
-        if DateToken <> '' then
-            case DateToken of
-                CopyStr('TODAY', 1, StrLen(DateToken)), CopyStr(TodayTxt, 1, StrLen(DateToken)):
-                    Handled := FindDate(Today(), Date1, Date2);
-                CopyStr('WORKDATE', 1, StrLen(DateToken)), CopyStr(WorkdateTxt, 1, StrLen(DateToken)):
-                    Handled := FindDate(WorkDate(), Date1, Date2);
-                CopyStr('NOW', 1, StrLen(DateToken)), CopyStr(NowTxt, 1, StrLen(DateToken)):
-                    Handled := FindDate(DT2Date(CurrentDateTime()), Date1, Date2);
-                CopyStr('YESTERDAY', 1, StrLen(DateToken)), CopyStr(YesterdayTxt, 1, StrLen(DateToken)):
-                    Handled := FindDate(CalcDate('<-1D>'), Date1, Date2);
-                CopyStr('TOMORROW', 1, StrLen(DateToken)), CopyStr(TomorrowTxt, 1, StrLen(DateToken)):
-                    Handled := FindDate(CalcDate('<1D>'), Date1, Date2);
-                CopyStr('WEEK', 1, StrLen(DateToken)), CopyStr(WeekTxt, 1, StrLen(DateToken)):
-                    Handled := FindDates('<-CW>', '<CW>', Date1, Date2);
-                CopyStr('MONTH', 1, StrLen(DateToken)), CopyStr(MonthTxt, 1, StrLen(DateToken)):
-                    Handled := FindDates('<-CM>', '<CM>', Date1, Date2);
-                CopyStr('QUARTER', 1, StrLen(DateToken)), CopyStr(QuarterTxt, 1, StrLen(DateToken)):
-                    Handled := FindDates('<-CQ>', '<CQ>', Date1, Date2);
-                else
-                    FilterTokens.OnResolveDateFilterToken(DateFilter, Date1, Date2, Handled);
-            end
-        else
+        if DateToken <> '' then begin
+            FilterTokens.OnResolveDateFilterToken(DateFilter, Date1, Date2, Handled);
+
+            if not Handled then
+                case DateToken of
+                    CopyStr('TODAY', 1, StrLen(DateToken)), CopyStr(TodayTxt, 1, StrLen(DateToken)):
+                        Handled := FindDate(Today(), Date1, Date2);
+                    CopyStr('WORKDATE', 1, StrLen(DateToken)), CopyStr(WorkdateTxt, 1, StrLen(DateToken)):
+                        Handled := FindDate(WorkDate(), Date1, Date2);
+                    CopyStr('NOW', 1, StrLen(DateToken)), CopyStr(NowTxt, 1, StrLen(DateToken)):
+                        Handled := FindDate(DT2Date(CurrentDateTime()), Date1, Date2);
+                    CopyStr('YESTERDAY', 1, StrLen(DateToken)), CopyStr(YesterdayTxt, 1, StrLen(DateToken)):
+                        Handled := FindDate(CalcDate('<-1D>'), Date1, Date2);
+                    CopyStr('TOMORROW', 1, StrLen(DateToken)), CopyStr(TomorrowTxt, 1, StrLen(DateToken)):
+                        Handled := FindDate(CalcDate('<1D>'), Date1, Date2);
+                    CopyStr('WEEK', 1, StrLen(DateToken)), CopyStr(WeekTxt, 1, StrLen(DateToken)):
+                        Handled := FindDates('<-CW>', '<CW>', Date1, Date2);
+                    CopyStr('MONTH', 1, StrLen(DateToken)), CopyStr(MonthTxt, 1, StrLen(DateToken)):
+                        Handled := FindDates('<-CM>', '<CM>', Date1, Date2);
+                    CopyStr('QUARTER', 1, StrLen(DateToken)), CopyStr(QuarterTxt, 1, StrLen(DateToken)):
+                        Handled := FindDates('<-CQ>', '<CQ>', Date1, Date2);
+                end
+        end else
             if (DateFilter <> '') and Evaluate(Date1, DateFilter) then begin
                 Date2 := Date1;
                 Handled := true;

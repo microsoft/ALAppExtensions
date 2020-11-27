@@ -1,0 +1,135 @@
+#pragma warning disable AL0432
+codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
+{
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
+    ObsoleteTag = '17.0';
+
+    [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template", 'OnBeforeRenameEvent', '', false, false)]
+    local procedure SyncOnBeforeRenameStockkeepingUnitTemplate(var Rec: Record "Stockkeeping Unit Template"; var xRec: Record "Stockkeeping Unit Template")
+    var
+        StockkeepingUnitTemplateCZL: Record "Stockkeeping Unit Template CZL";
+        SyncLoopingHelper: Codeunit "Sync. Looping Helper";
+    begin
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template", 0) then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template CZL", 0);
+        if StockkeepingUnitTemplateCZL.Get(xRec."Item Category Code", xRec."Location Code") then
+            StockkeepingUnitTemplateCZL.Rename(Rec."Item Category Code", Rec."Location Code");
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template CZL", 0);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template", 'OnAfterInsertEvent', '', false, false)]
+    local procedure SyncOnAfterInsertStockkeepingUnitTemplate(var Rec: Record "Stockkeeping Unit Template")
+    begin
+        SyncStockkeepingUnitTemplate(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template", 'OnAfterModifyEvent', '', false, false)]
+    local procedure SyncOnAfterModifyStockkeepingUnitTemplate(var Rec: Record "Stockkeeping Unit Template")
+    begin
+        SyncStockkeepingUnitTemplate(Rec);
+    end;
+
+    local procedure SyncStockkeepingUnitTemplate(var Rec: Record "Stockkeeping Unit Template")
+    var
+        StockkeepingUnitTemplateCZL: Record "Stockkeeping Unit Template CZL";
+        SyncLoopingHelper: Codeunit "Sync. Looping Helper";
+    begin
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template", 0) then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template CZL", 0);
+        if not StockkeepingUnitTemplateCZL.Get(Rec."Item Category Code", Rec."Location Code") then begin
+            StockkeepingUnitTemplateCZL.Init();
+            StockkeepingUnitTemplateCZL."Item Category Code" := Rec."Item Category Code";
+            StockkeepingUnitTemplateCZL."Location Code" := Rec."Location Code";
+            StockkeepingUnitTemplateCZL.Insert(false);
+        end;
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template CZL", 0);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template", 'OnBeforeDeleteEvent', '', false, false)]
+    local procedure SyncOnBeforeDeleteStockkeepingUnitTemplate(var Rec: Record "Stockkeeping Unit Template")
+    var
+        StockkeepingUnitTemplateCZL: Record "Stockkeeping Unit Template CZL";
+        SyncLoopingHelper: Codeunit "Sync. Looping Helper";
+    begin
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template", 0) then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template CZL", 0);
+        if StockkeepingUnitTemplateCZL.Get(Rec."Item Category Code", Rec."Location Code") then
+            StockkeepingUnitTemplateCZL.Delete(false);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template CZL", 0);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template CZL", 'OnBeforeRenameEvent', '', false, false)]
+    local procedure SyncOnBeforeRenameStockkeepingUnitTemplateCZL(var Rec: Record "Stockkeeping Unit Template CZL"; var xRec: Record "Stockkeeping Unit Template CZL")
+    var
+        StockkeepingUnitTemplate: Record "Stockkeeping Unit Template";
+        SyncLoopingHelper: Codeunit "Sync. Looping Helper";
+    begin
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template CZL", 0) then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template", 0);
+        if StockkeepingUnitTemplate.Get(xRec."Item Category Code", xRec."Location Code") then
+            StockkeepingUnitTemplate.Rename(Rec."Item Category Code", Rec."Location Code");
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template", 0);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template CZL", 'OnAfterInsertEvent', '', false, false)]
+    local procedure SyncOnAfterInsertStockkeepingUnitTemplateCZL(var Rec: Record "Stockkeeping Unit Template CZL")
+    begin
+        SyncStockkeepingUnitTemplateCZL(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template CZL", 'OnAfterModifyEvent', '', false, false)]
+    local procedure SyncOnAfterModifyStockkeepingUnitTemplateCZL(var Rec: Record "Stockkeeping Unit Template CZL")
+    begin
+        SyncStockkeepingUnitTemplateCZL(Rec);
+    end;
+
+    local procedure SyncStockkeepingUnitTemplateCZL(var Rec: Record "Stockkeeping Unit Template CZL")
+    var
+        StockkeepingUnitTemplate: Record "Stockkeeping Unit Template";
+        SyncLoopingHelper: Codeunit "Sync. Looping Helper";
+    begin
+        if NavApp.IsInstalling() then
+            exit;
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template CZL", 0) then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template", 0);
+        if not StockkeepingUnitTemplate.Get(Rec."Item Category Code", Rec."Location Code") then begin
+            StockkeepingUnitTemplate.Init();
+            StockkeepingUnitTemplate."Item Category Code" := Rec."Item Category Code";
+            StockkeepingUnitTemplate."Location Code" := Rec."Location Code";
+            StockkeepingUnitTemplate.Insert(false);
+        end;
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template", 0);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template CZL", 'OnBeforeDeleteEvent', '', false, false)]
+    local procedure SyncOnBeforeDeleteStockkeepingUnitTemplateCZL(var Rec: Record "Stockkeeping Unit Template CZL")
+    var
+        StockkeepingUnitTemplate: Record "Stockkeeping Unit Template";
+        SyncLoopingHelper: Codeunit "Sync. Looping Helper";
+    begin
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template CZL", 0) then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template", 0);
+        if StockkeepingUnitTemplate.Get(Rec."Item Category Code", Rec."Location Code") then
+            StockkeepingUnitTemplate.Delete(false);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template", 0);
+    end;
+}

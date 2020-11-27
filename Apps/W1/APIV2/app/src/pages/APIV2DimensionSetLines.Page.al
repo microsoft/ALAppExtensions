@@ -137,7 +137,7 @@ page 30022 "APIV2 - Dimension Set Lines"
                 Error(ParentNotSpecifiedErr);
         end;
 
-        exit(LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter));
+        exit(LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter, false));
     end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
@@ -158,11 +158,11 @@ page 30022 "APIV2 - Dimension Set Lines"
         DimensionId := "Dimension Id";
         Insert(true);
 
-        LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter);
+        LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter, true);
         SaveDimensions(ParentIdFilter, ParentTypeFilter);
 
         if not NewDimensionSet then
-            LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter);
+            LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter, true);
         Get(ParentIdFilter, DimensionId);
         SetCalculatedFields();
 
@@ -181,7 +181,7 @@ page 30022 "APIV2 - Dimension Set Lines"
         Modify(true);
 
         SaveDimensions(GetFilter("Parent Id"), GetFilter("Parent Type"));
-        LoadLinesFromFilter(GetFilter("Parent Id"), GetFilter("Parent Type"));
+        LoadLinesFromFilter(GetFilter("Parent Id"), GetFilter("Parent Type"), false);
         Get("Parent Id", Dimension.SystemId);
         SetCalculatedFields();
 
@@ -212,14 +212,15 @@ page 30022 "APIV2 - Dimension Set Lines"
         DimensionValueFieldsDontMatchErr: Label 'The values of the Dimension Code field and the Dimension ID field do not refer to the same Dimension Value.';
         DimensionValueIdDoesNotMatchADimensionValueErr: Label 'The "valueId" does not match to a Dimension Value.', Comment = 'valueId is a field name and should not be translated.';
         DimensionValueCodeDoesNotMatchADimensionValueErr: Label 'The "valueCode" does not match to a Dimension Value.', Comment = 'valueCode is a field name and should not be translated.';
+        RecordAlreadyExistErr: Label 'The dimension set line already exists. Check existing dimension set lines and the default dimension set lines on the parent.';
 
-    local procedure LoadLinesFromFilter(ParentIdFilter: Text; ParentTypeFilter: Text): Boolean
+    local procedure LoadLinesFromFilter(ParentIdFilter: Text; ParentTypeFilter: Text; IsInsert: Boolean): Boolean
     var
         FilterView: Text;
     begin
         if not LinesLoaded then begin
             FilterView := GetView();
-            LoadLinesFromId(ParentIdFilter, ParentTypeFilter);
+            LoadLinesFromId(ParentIdFilter, ParentTypeFilter, IsInsert);
             SetView(FilterView);
             if not FindFirst() then
                 exit(false);
@@ -229,9 +230,10 @@ page 30022 "APIV2 - Dimension Set Lines"
         exit(true);
     end;
 
-    local procedure LoadLinesFromId(ParentIdFilter: Text; ParentTypeFilter: Text)
+    local procedure LoadLinesFromId(ParentIdFilter: Text; ParentTypeFilter: Text; IsInsert: Boolean)
     var
         TempDimensionSetEntry: Record "Dimension Set Entry" temporary;
+        Dimension: Record Dimension;
         DimensionManagement: Codeunit "DimensionManagement";
         DimensionSetId: Integer;
     begin
@@ -248,6 +250,11 @@ page 30022 "APIV2 - Dimension Set Lines"
             exit;
 
         repeat
+            if IsInsert then begin
+                Dimension.Get(TempDimensionSetEntry."Dimension Code");
+                if Rec.Get(ParentIdFilter, Dimension.SystemId) then
+                    Error(RecordAlreadyExistErr);
+            end;
             Clear(Rec);
             TransferFields(TempDimensionSetEntry, true);
             "Parent Id" := ParentIdFilter;
@@ -567,6 +574,8 @@ page 30022 "APIV2 - Dimension Set Lines"
 
     local procedure ClearCalculatedFields()
     begin
+        Clear(GlobalDimension);
+        Clear(GlobalDimensionValue);
         Clear(GlobalDimensionValueId);
         Clear(GlobalDimensionValueCode);
     end;

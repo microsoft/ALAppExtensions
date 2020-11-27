@@ -90,6 +90,9 @@ codeunit 9996 "Upgrade Tag Impl."
         UpgradeTags: Record "Upgrade Tags";
         RenameUpgradeTags: Record "Upgrade Tags";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         UpgradeTags.SetRange(Company, xRec.Name);
         if not UpgradeTags.FindSet(true) then
             exit;
@@ -103,6 +106,9 @@ codeunit 9996 "Upgrade Tag Impl."
     [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterInsertEvent', '', false, false)]
     local procedure UpdateUpgradeTagsOnInsertCompany(var Rec: Record Company; RunTrigger: Boolean)
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         SetAllUpgradeTags(Rec.Name);
     end;
 
@@ -111,6 +117,9 @@ codeunit 9996 "Upgrade Tag Impl."
     var
         UpgradeTags: Record "Upgrade Tags";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         UpgradeTags.SetRange(Company, Rec.Name);
         UpgradeTags.DeleteAll();
     end;

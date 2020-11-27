@@ -22,8 +22,9 @@ codeunit 1483 "XmlWriter"
     end;
 
     /// <summary>
-    /// Writes the Processing Instruction
+    /// Writes the Processing Instruction.
     /// </summary>
+    /// <remarks>This function reinitializes the XML Writer.</remarks>
     /// <param name="Name">The name of the processing instruction.</param>
     /// <param name="Text">The text to include in the processing instruction.</param>
     procedure WriteProcessingInstruction(Name: Text; "Text": Text)

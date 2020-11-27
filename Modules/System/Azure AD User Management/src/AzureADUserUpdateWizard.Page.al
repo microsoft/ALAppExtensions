@@ -35,43 +35,45 @@ page 9515 "Azure AD User Update Wizard"
                 group(NoteGroup)
                 {
                     Caption = 'Note:';
-                    InstructionalText = 'It can take up to 72 hours for a change in Office 365 to become available to Business Central. If a change within that period does not appear in Business Central after you update users, try again later.';
+                    InstructionalText = 'It can take up to 72 hours for a change in Office 365 to become available to Business Central.';
                 }
             }
-            group(AvailableUpdates)
+            group("No Updates")
             {
-                Visible = AvailableUpdatesVisible;
-                Caption = 'Available Updates';
-                group(TotalUpdatesGroup)
+                Visible = NoAvailableUpdatesVisible;
+                Caption = 'No updates';
+                InstructionalText = 'There are no updates from Office 365. You can exit this guide.';
+                ShowCaption = false;
+            }
+            group("Total Updates To Confirm")
+            {
+                Visible = TotalUpdatesToConfirmVisible;
+                Caption = 'License updates to confirm';
+
+                label(TotalUpdatesToConfirmLbl)
                 {
+                    ApplicationArea = All;
+                    CaptionClass = TotalUpdatesToConfirm;
                     ShowCaption = false;
-                    label(TotalUpdatesAvailableLbl)
-                    {
-                        ApplicationArea = All;
-                        CaptionClass = TotalUpdatesAvailable;
-                        ShowCaption = false;
-                    }
-                    label(TotalUpdatesToConfirmLbl)
-                    {
-                        ApplicationArea = All;
-                        CaptionClass = TotalUpdatesToConfirm;
-                        ShowCaption = false;
-                        Visible = TotalUpdatesToConfirmVisible;
-                    }
-                    label(TotalUpdatesReadyToApplyLbl)
-                    {
-                        ApplicationArea = All;
-                        CaptionClass = TotalUpdatesReadyToApply;
-                        ShowCaption = false;
-                        Visible = TotalUpdatesReadyToApplyVisible;
-                    }
+                }
+            }
+            group("Total Updates Ready To Apply")
+            {
+                Visible = TotalUpdatesReadyToApplyVisible;
+                Caption = 'Available updates';
+
+                label(TotalUpdatesReadyToApplyLbl)
+                {
+                    ApplicationArea = All;
+                    CaptionClass = TotalUpdatesReadyToApply;
+                    ShowCaption = false;
                 }
             }
             group(ConfirmPermissionChanges)
             {
                 Visible = ConfirmPermissionChangesVisible;
                 Caption = 'Confirm permission changes';
-                InstructionalText = 'Apply the permissions from the new license or keep the current permissions.';
+                InstructionalText = 'For each update with Select in the Action column, you must either choose Keep current to disregard the updated permissions, or Append to update the user permissions.';
                 group(PermissionsGroup)
                 {
                     ShowCaption = false;
@@ -102,6 +104,11 @@ page 9515 "Azure AD User Update Wizard"
                             ToolTip = 'Choose how this license change should be handled';
                             ApplicationArea = All;
                             Enabled = "Update Type" = "Update Type"::Change;
+
+                            trigger OnValidate()
+                            begin
+                                SetDoneSelectingPermissionsButtonEnabled();
+                            end;
                         }
                     }
                 }
@@ -110,7 +117,7 @@ page 9515 "Azure AD User Update Wizard"
             {
                 Visible = ListOfChangesVisible;
                 Caption = 'List of changes';
-                InstructionalText = 'These changes will be applied when you choose Finish.';
+                InstructionalText = 'To apply the changes, choose Finish.';
                 group(ChangesGroup)
                 {
                     ShowCaption = false;
@@ -200,14 +207,22 @@ page 9515 "Azure AD User Update Wizard"
 
                 trigger OnAction()
                 begin
-                    MakeAllGroupsInvisible();
-                    AvailableUpdatesVisible := true;
-                    SetVisiblityOnActions();
-                    TotalUpdatesAvailable := StrSubstNo(TotalUpdatesAvailableTxt, CountOfApplicableUpdates + CountOfManagedPermissionUpdates);
-                    TotalUpdatesReadyToApply := StrSubstNo(TotalUpdatesReadyToApplyTxt, CountOfApplicableUpdates);
-                    TotalUpdatesReadyToApplyVisible := CountOfApplicableUpdates > 0;
-                    TotalUpdatesToConfirm := StrSubstNo(TotalUpdatesToConfirmTxt, CountOfManagedPermissionUpdates);
-                    TotalUpdatesToConfirmVisible := CountOfManagedPermissionUpdates > 0;
+                    ShowOverview();
+                end;
+            }
+            action(DoneSelectingPermissions)
+            {
+                ApplicationArea = All;
+                Caption = 'Next';
+                ToolTip = 'Proceed to applying the user updates';
+                Image = NextRecord;
+                Visible = DoneSelectingPermissionsButtonVisible;
+                Enabled = DoneSelectingPermissionsButtonEnabled;
+                InFooterBar = true;
+
+                trigger OnAction()
+                begin
+                    ShowOverview();
                 end;
             }
             action(Next)
@@ -225,20 +240,13 @@ page 9515 "Azure AD User Update Wizard"
                 begin
                     AzureADUserMgtImpl.FetchUpdatesFromAzureGraph(Rec);
 
-                    MakeAllGroupsInvisible();
-                    AvailableUpdatesVisible := true;
-                    SetVisiblityOnActions();
-                    TotalUpdatesAvailable := StrSubstNo(TotalUpdatesAvailableTxt, CountOfApplicableUpdates + CountOfManagedPermissionUpdates);
-                    TotalUpdatesReadyToApply := StrSubstNo(TotalUpdatesReadyToApplyTxt, CountOfApplicableUpdates);
-                    TotalUpdatesReadyToApplyVisible := CountOfApplicableUpdates > 0;
-                    TotalUpdatesToConfirm := StrSubstNo(TotalUpdatesToConfirmTxt, CountOfManagedPermissionUpdates);
-                    TotalUpdatesToConfirmVisible := CountOfManagedPermissionUpdates > 0;
+                    ShowOverview();
                 end;
             }
             action(ManagePermissionUpdates)
             {
                 ApplicationArea = All;
-                Caption = 'Manage permission updates';
+                Caption = 'Next';
                 ToolTip = 'Confirm the permission updates to be applied';
                 Visible = ManagePermissionUpdatesButtonVisible;
                 Image = Questionaire;
@@ -248,7 +256,9 @@ page 9515 "Azure AD User Update Wizard"
                 begin
                     MakeAllGroupsInvisible();
                     SetVisiblityOnActions();
-                    BackButtonVisible := true;
+                    BackButtonVisible := false;
+                    DoneSelectingPermissionsButtonVisible := true;
+                    DoneSelectingPermissionsButtonEnabled := false;
                     ManagePermissionUpdatesButtonVisible := false;
                     ConfirmPermissionChangesVisible := true;
                     SetRange("Update Entity", "Update Entity"::Plan);
@@ -321,8 +331,6 @@ page 9515 "Azure AD User Update Wizard"
         [InDataSet]
         WelcomeVisible: Boolean;
         [InDataSet]
-        AvailableUpdatesVisible: Boolean;
-        [InDataSet]
         ConfirmPermissionChangesVisible: Boolean;
         [InDataSet]
         ListOfChangesVisible: Boolean;
@@ -343,6 +351,10 @@ page 9515 "Azure AD User Update Wizard"
         ApplyUpdatesButtonVisible: Boolean;
         [InDataSet]
         CloseButtonVisible: Boolean;
+        [InDataSet]
+        DoneSelectingPermissionsButtonVisible: Boolean;
+        [InDataSet]
+        DoneSelectingPermissionsButtonEnabled: Boolean;
 
         CountOfManagedPermissionUpdates: Integer;
         CountOfApplicableUpdates: Integer;
@@ -351,16 +363,19 @@ page 9515 "Azure AD User Update Wizard"
         NumberOfUpdatesApplied: Text;
         NumberOfUpdatesAppliedTxt: Label '%1 out of %2 updates have been applied in Business Central. You can close this guide.', Comment = '%1 = An integer count of total updates applied; %2 = total count of updates';
 
-        TotalUpdatesAvailable: Text;
-        TotalUpdatesAvailableTxt: Label 'Number of available updates: %1.', Comment = '%1 = An integer count of total updates to apply';
+        [InDataSet]
+        NoAvailableUpdatesVisible: Boolean;
 
         TotalUpdatesToConfirm: Text;
+        [InDataSet]
         TotalUpdatesToConfirmVisible: Boolean;
-        TotalUpdatesToConfirmTxt: Label 'Number of license updates for users who have customized permissions: %1. The default permissions from the new license will replace the custom permissions. You must either apply the new permissions now or keep the current permissions. To do that, choose Manage permission updates.', Comment = '%1 = An integer count of total updates to get confirmation on';
+        TotalUpdatesToConfirmSingularTxt: Label 'We found %1 license update for a user who has customized permissions. Before continuing, you must either keep the current permissions or add the permissions associated with the new license for the user.', Comment = '%1 = An integer count of total updates to get confirmation on';
+        TotalUpdatesToConfirmPluralTxt: Label 'We found %1 license updates for users who have customized permissions. Before continuing, you must either keep the current permissions or add the permissions associated with the new license for those users.', Comment = '%1 = An integer count of total updates to get confirmation on';
 
         TotalUpdatesReadyToApply: Text;
+        [InDataSet]
         TotalUpdatesReadyToApplyVisible: Boolean;
-        TotalUpdatesReadyToApplyTxt: Label 'Number of available changes: %1. These can be name, email address, preferred language, and user access changes. Choose View changes to see the list.', Comment = '%1 = An integer count of total updates ready to apply';
+        TotalUpdatesReadyToApplyTxt: Label 'Number of updates ready to be applied: %1. These can be name, email address, preferred language, and user access changes. Choose View changes to see the list.', Comment = '%1 = An integer count of total updates ready to apply';
 
         CannotUpdateUsersFromOfficeErr: Label 'You do not have sufficient previleges to update users from Office 365';
 
@@ -378,13 +393,55 @@ page 9515 "Azure AD User Update Wizard"
         NextButtonVisible := true;
     end;
 
+    trigger OnAfterGetCurrRecord()
+    begin
+        if DoneSelectingPermissionsButtonVisible then
+            SetDoneSelectingPermissionsButtonEnabled();
+    end;
+
+    local procedure SetDoneSelectingPermissionsButtonEnabled()
+    var
+        TempAzureADUserUpdateBuffer: Record "Azure AD User Update Buffer" temporary;
+    begin
+        if Rec."Permission Change Action" = Rec."Permission Change Action"::Select then begin
+            DoneSelectingPermissionsButtonEnabled := false;
+            exit;
+        end;
+
+        TempAzureADUserUpdateBuffer.Copy(Rec, true); // share the same table
+        TempAzureADUserUpdateBuffer.SetRange("Permission Change Action", TempAzureADUserUpdateBuffer."Permission Change Action"::Select);
+        // exclude the current record
+        TempAzureADUserUpdateBuffer.SetFilter("Authentication Object ID", '<>%1', Rec."Authentication Object ID");
+
+        // if all of the update actions are chosen, enable the "Next" button.
+        if TempAzureADUserUpdateBuffer.IsEmpty() then
+            DoneSelectingPermissionsButtonEnabled := true;
+    end;
+
     local procedure MakeAllGroupsInvisible()
     begin
         WelcomeVisible := false;
-        AvailableUpdatesVisible := false;
+        TotalUpdatesToConfirmVisible := false;
         ConfirmPermissionChangesVisible := false;
+        TotalUpdatesReadyToApplyVisible := false;
+        NoAvailableUpdatesVisible := false;
         ListOfChangesVisible := false;
         FinishedVisible := false;
+    end;
+
+    local procedure ShowOverview()
+    begin
+        MakeAllGroupsInvisible();
+        SetVisiblityOnActions();
+        TotalUpdatesToConfirmVisible := CountOfManagedPermissionUpdates > 0;
+        if CountOfManagedPermissionUpdates = 1 then
+            TotalUpdatesToConfirm := StrSubstNo(TotalUpdatesToConfirmSingularTxt, CountOfManagedPermissionUpdates)
+        else
+            TotalUpdatesToConfirm := StrSubstNo(TotalUpdatesToConfirmPluralTxt, CountOfManagedPermissionUpdates);
+        TotalUpdatesReadyToApplyVisible := (CountOfApplicableUpdates > 0) and (not TotalUpdatesToConfirmVisible);
+        TotalUpdatesReadyToApply := StrSubstNo(TotalUpdatesReadyToApplyTxt, CountOfApplicableUpdates);
+        if (not TotalUpdatesReadyToApplyVisible) and (not TotalUpdatesToConfirmVisible) then
+            NoAvailableUpdatesVisible := true;
     end;
 
     local procedure SetVisiblityOnActions()
@@ -396,6 +453,7 @@ page 9515 "Azure AD User Update Wizard"
         BackButtonVisible := false;
         NextButtonVisible := false;
         CloseButtonVisible := false;
+        DoneSelectingPermissionsButtonVisible := false;
         TotalNumberOfUpdates := Count();
 
         SetRange("Needs User Review", true);
@@ -404,7 +462,7 @@ page 9515 "Azure AD User Update Wizard"
 
         ApplyUpdatesButtonVisible := (CountOfManagedPermissionUpdates = 0) and (CountOfApplicableUpdates > 0);
         ManagePermissionUpdatesButtonVisible := CountOfManagedPermissionUpdates > 0;
-        ViewChangesButtonVisible := CountOfApplicableUpdates > 0;
+        ViewChangesButtonVisible := (CountOfApplicableUpdates > 0) and (not ManagePermissionUpdatesButtonVisible);
         SetRange("Needs User Review");
         if CountOfApplicableUpdates + CountOfManagedPermissionUpdates = 0 then begin
             CloseButtonVisible := true;

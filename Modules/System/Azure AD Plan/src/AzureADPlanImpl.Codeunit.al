@@ -39,6 +39,7 @@ codeunit 9018 "Azure AD Plan Impl."
         EssentialsPlanNameTxt: Label 'Dynamics 365 Business Central Essential', Locked = true;
         PremiumPlanNameTxt: Label 'Dynamics 365 Business Central Premium', Locked = true;
 
+    [NonDebuggable]
     procedure IsPlanAssigned(PlanGUID: Guid): Boolean
     var
         UsersInPlans: Query "Users in Plans";
@@ -50,11 +51,13 @@ codeunit 9018 "Azure AD Plan Impl."
             exit(UsersInPlans.Read());
     end;
 
+    [NonDebuggable]
     procedure IsPlanAssignedToUser(PlanGUID: Guid): Boolean
     begin
         exit(IsPlanAssignedToUser(PlanGUID, UserSecurityId()));
     end;
 
+    [NonDebuggable]
     procedure IsPlanAssignedToUser(PlanGUID: Guid; UserGUID: Guid): Boolean
     var
         UserPlan: Record "User Plan";
@@ -64,6 +67,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(not UserPlan.IsEmpty());
     end;
 
+    [NonDebuggable]
     procedure IsGraphUserEntitledFromServicePlan(var GraphUser: DotNet UserInfo): Boolean
     var
         AssignedPlan: DotNet ServicePlanInfo;
@@ -83,6 +87,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(FALSE);
     end;
 
+    [NonDebuggable]
     procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo; AppendPermissionsOnNewPlan: Boolean; RemoveUserGroupsOnDeletePlan: Boolean)
     var
         TempPlan: Record Plan temporary;
@@ -102,14 +107,20 @@ codeunit 9018 "Azure AD Plan Impl."
         AddNewlyAssignedUserPlans(TempPlan, UserSecurityId, HasUserBeenSetupBefore, AppendPermissionsOnNewPlan);
     end;
 
-    procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissionsOnNewPlan: Boolean; RemoveUserGroupsOnDeletePlan: Boolean)
+    [NonDebuggable]
+    procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissionsOnNewPlan: Boolean; RemoveUserGroupsOnDeletePlan: Boolean; RemovePlansOnDeleteUser: Boolean)
     var
+        TempDummyPlan: Record Plan temporary;
         GraphUser: DotNet UserInfo;
     begin
         if AzureADGraphUser.GetGraphUser(UserSecurityID, true, GraphUser) then
-            UpdateUserPlans(UserSecurityId, GraphUser, AppendPermissionsOnNewPlan, RemoveUserGroupsOnDeletePlan);
+            UpdateUserPlans(UserSecurityId, GraphUser, AppendPermissionsOnNewPlan, RemoveUserGroupsOnDeletePlan)
+        else
+            if RemovePlansOnDeleteUser then
+                RemoveUnassignedUserPlans(TempDummyPlan, UserSecurityId, RemoveUserGroupsOnDeletePlan);
     end;
 
+    [NonDebuggable]
     procedure UpdateUserPlans()
     var
         User: Record User;
@@ -121,10 +132,11 @@ codeunit 9018 "Azure AD Plan Impl."
             exit;
 
         repeat
-            UpdateUserPlans(User."User Security ID", true, true);
+            UpdateUserPlans(User."User Security ID", true, true, false);
         until User.Next() = 0;
     end;
 
+    [NonDebuggable]
     procedure RefreshUserPlanAssignments(UserSecurityID: Guid)
     var
         User: Record User;
@@ -152,11 +164,13 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [TryFunction]
+    [NonDebuggable]
     procedure TryGetAzureUserPlanRoleCenterId(var RoleCenterID: Integer; UserSecurityID: Guid)
     begin
         RoleCenterID := GetAzureUserPlanRoleCenterId(UserSecurityID);
     end;
 
+    [NonDebuggable]
     procedure DoPlansExist(): Boolean
     var
         Plan: Record Plan;
@@ -164,6 +178,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(not Plan.IsEmpty());
     end;
 
+    [NonDebuggable]
     procedure DoUserPlansExist(): Boolean
     var
         UserPlan: Record "User Plan";
@@ -171,6 +186,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(not UserPlan.IsEmpty());
     end;
 
+    [NonDebuggable]
     procedure DoesPlanExist(PlanGUID: Guid): Boolean
     var
         Plan: Record Plan;
@@ -178,6 +194,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(Plan.Get(PlanGUID));
     end;
 
+    [NonDebuggable]
     procedure DoesUserHavePlans(UserSecurityId: Guid): Boolean
     var
         UserPlan: Record "User Plan";
@@ -186,6 +203,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(not UserPlan.IsEmpty());
     end;
 
+    [NonDebuggable]
     procedure GetAvailablePlansCount(): Integer
     var
         Plan: Record Plan;
@@ -193,6 +211,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(Plan.Count());
     end;
 
+    [NonDebuggable]
     procedure SetTestInProgress(EnableTestability: Boolean)
     begin
         IsTest := EnableTestability;
@@ -200,6 +219,7 @@ codeunit 9018 "Azure AD Plan Impl."
         AzureADGraphUser.SetTestInProgress(EnableTestability);
     end;
 
+    [NonDebuggable]
     procedure CheckMixedPlans()
     var
         DummyDictionary: Dictionary of [Text, List of [Text]];
@@ -207,6 +227,7 @@ codeunit 9018 "Azure AD Plan Impl."
         CheckMixedPlans(DummyDictionary, false);
     end;
 
+    [NonDebuggable]
     procedure CheckMixedPlans(PlanNamesPerUserFromGraph: Dictionary of [Text, List of [Text]]; ErrorOutForAdmin: Boolean)
     var
         Company: Record Company;
@@ -249,6 +270,7 @@ codeunit 9018 "Azure AD Plan Impl."
         Message(MixedPlansMsg, UserAuthenticationEmailFirst, UserAuthenticationEmailSecond);
     end;
 
+    [NonDebuggable]
     procedure MixedPlansExist(): Boolean
     var
         EmptyDictionary: Dictionary of [Text, List of [Text]];
@@ -260,6 +282,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(MixedPlansExist(EmptyDictionary, FirstConflictingID, SecondConflictingID, FirstConflictingPlanName, SecondConflictingPlanName));
     end;
 
+    [NonDebuggable]
     procedure MixedPlansExist(PlanNamesPerUserFromGraph: Dictionary of [Text, List of [Text]]; var UserAuthenticationEmailFirstConflicting: Text; var UserAuthenticationEmailSecondConflicting: Text; var FirstConflictingPlanName: Text; var SecondConflictingPlanName: Text): Boolean
     var
         PlanIds: Codeunit "Plan Ids";
@@ -308,6 +331,7 @@ codeunit 9018 "Azure AD Plan Impl."
         end;
     end;
 
+    [NonDebuggable]
     local procedure GetAuthenticationEmailFromAuthenticationObjectID(UserAuthenticationObjectID: Text): Text
     var
         User: Record User;
@@ -321,6 +345,7 @@ codeunit 9018 "Azure AD Plan Impl."
         end;
     end;
 
+    [NonDebuggable]
     local procedure GetPlanName(PlanId: Guid) PlanName: Text
     var
         PlanIds: Codeunit "Plan Ids";
@@ -335,6 +360,7 @@ codeunit 9018 "Azure AD Plan Impl."
         end;
     end;
 
+    [NonDebuggable]
     local procedure PlansExist(var PlanNamesPerUser: Dictionary of [Text, List of [Text]]; PlanId: Guid; var AuthenticationObjectIDs: List of [Text]; var PlanNames: List of [Text]): Boolean
     var
         Plan: Record Plan;
@@ -356,6 +382,7 @@ codeunit 9018 "Azure AD Plan Impl."
         end;
     end;
 
+    [NonDebuggable]
     local procedure RemoveUnassignedUserPlans(var TempPlan: Record Plan temporary; UserSecurityID: Guid; RemoveUserGroupsOnDeletePlan: Boolean)
     var
         NavUserPlan: Record "User Plan";
@@ -399,6 +426,7 @@ codeunit 9018 "Azure AD Plan Impl."
             until TempNavUserPlan.Next() = 0;
     end;
 
+    [NonDebuggable]
     local procedure GetGraphUserPlans(var TempPlan: Record "Plan" temporary; var GraphUser: DotNet UserInfo)
     var
         AssignedPlan: DotNet ServicePlanInfo;
@@ -448,6 +476,7 @@ codeunit 9018 "Azure AD Plan Impl."
             Session.LogMessage('00009L7', StrSubstNo(NotBCUserMsg, Format(GraphUser.DisplayName())), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
     end;
 
+    [NonDebuggable]
     local procedure IsDeviceRole(var GraphUser: DotNet UserInfo): Boolean
     var
         GroupInfo: DotNet GroupInfo;
@@ -465,6 +494,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(false);
     end;
 
+    [NonDebuggable]
     local procedure GetDevicesPlanInfo(var PlanId: Guid; var PlanName: Text)
     var
         MembershipEntitlement: Record "Membership Entitlement";
@@ -483,6 +513,7 @@ codeunit 9018 "Azure AD Plan Impl."
 
     end;
 
+    [NonDebuggable]
     local procedure InsertFromTempPlan(TempPlan: Record Plan temporary)
     var
         Plan: Record Plan;
@@ -493,6 +524,7 @@ codeunit 9018 "Azure AD Plan Impl."
         end;
     end;
 
+    [NonDebuggable]
     local procedure UpdateUserFromAzureGraph(var User: Record User; var GraphUser: DotNet UserInfo): Boolean
     var
         IsUserModified: Boolean;
@@ -502,6 +534,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(IsUserModified);
     end;
 
+    [NonDebuggable]
     local procedure IsBCServicePlan(ServicePlanId: Guid): Boolean
     var
         Plan: Record "Plan";
@@ -512,6 +545,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(Plan.GET(ServicePlanId));
     end;
 
+    [NonDebuggable]
     local procedure GetAzureUserPlanRoleCenterId(UserSecurityID: Guid): Integer
     var
         TempPlan: Record "Plan" temporary;
@@ -534,6 +568,7 @@ codeunit 9018 "Azure AD Plan Impl."
         exit(TempPlan."Role Center ID");
     end;
 
+    [NonDebuggable]
     local procedure AddNewlyAssignedUserPlans(var Plan: Record Plan; UserSecurityID: Guid; UserHadBeenSetupBefore: Boolean; AppendPermissionsOnNewPlan: Boolean)
     var
         UserPlan: Record "User Plan";
@@ -572,6 +607,7 @@ codeunit 9018 "Azure AD Plan Impl."
         end;
     end;
 
+    [NonDebuggable]
     local procedure AddToTempPlan(ServicePlanId: Guid; ServicePlanName: Text; var TempPlan: Record "Plan" temporary)
     var
         Plan: Record "Plan";
@@ -593,6 +629,7 @@ codeunit 9018 "Azure AD Plan Impl."
         end;
     end;
 
+    [NonDebuggable]
     local procedure IsUserAdmin(SecurityID: Guid): Boolean
     var
         PlanIds: Codeunit "Plan Ids";
@@ -602,6 +639,7 @@ codeunit 9018 "Azure AD Plan Impl."
             or IsPlanAssignedToUser(PlanIds.GetDelegatedAdminPlanId(), SecurityID));
     end;
 
+    [NonDebuggable]
     procedure GetPlanIDs(GraphUser: DotNet UserInfo; var PlanIDs: List of [Guid])
     var
         TempPlan: Record Plan temporary;
@@ -614,6 +652,7 @@ codeunit 9018 "Azure AD Plan Impl."
             until TempPlan.Next() = 0;
     end;
 
+    [NonDebuggable]
     procedure GetPlanNames(GraphUser: DotNet UserInfo; var PlanNames: List of [Text])
     var
         TempPlan: Record Plan temporary;
@@ -635,6 +674,7 @@ codeunit 9018 "Azure AD Plan Impl."
             until TempPlan.Next() = 0;
     end;
 
+    [NonDebuggable]
     procedure GetPlanNames(UserSecID: Guid; var PlanNames: List of [Text])
     var
         UserPlan: Record "User Plan";
@@ -648,6 +688,7 @@ codeunit 9018 "Azure AD Plan Impl."
             until UserPlan.Next() = 0;
     end;
 
+    [NonDebuggable]
     procedure CheckIfPlansDifferent(GraphUser: DotNet UserInfo; UserSecID: Guid): Boolean
     var
         TempPlan: Record Plan temporary;

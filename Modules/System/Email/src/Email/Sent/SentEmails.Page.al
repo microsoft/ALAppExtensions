@@ -9,6 +9,7 @@
 page 8883 "Sent Emails"
 {
     PageType = List;
+    Caption = 'Sent Emails';
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "Sent Email";
@@ -111,6 +112,7 @@ page 8883 "Sent Emails"
             action(Refresh)
             {
                 ApplicationArea = All;
+                Caption = 'Refresh';
                 ToolTip = 'Refresh';
                 Image = Refresh;
                 Promoted = true;

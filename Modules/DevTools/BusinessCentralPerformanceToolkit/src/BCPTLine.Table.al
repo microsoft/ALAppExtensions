@@ -151,6 +151,15 @@ table 149001 "BCPT Line"
         {
             Caption = 'Run in Foreground';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                CodeunitMetadata: Record "CodeUnit Metadata";
+            begin
+                CodeunitMetadata.Get(Rec."Codeunit ID");
+                if (CodeunitMetadata.SubType = CodeunitMetadata.SubType::Test) and (not Rec."Run in Foreground") then
+                    Error(RunInBackgroundNotSupportedErr);
+            end;
         }
         field(19; Sequence; Option)
         {
@@ -232,6 +241,7 @@ table 149001 "BCPT Line"
     var
         NotSupportedCodeunitErr: Label 'Codeunit %1 can not be used for benchmark testing.', Comment = '%1 = codeunit name';
         ParameterNotSupportedErr: Label 'Parameter is not supported for the selected codeunit. You can only set parameters on codeunit that implemented "BCPT Test Param. Provider" interface.';
+        RunInBackgroundNotSupportedErr: Label 'Codeunit with SubType "Test" cannot be executed in background.';
         BCPTTestParamProvider: Interface "BCPT Test Param. Provider";
         BCPTTestParamProviderInitialized: Boolean;
 

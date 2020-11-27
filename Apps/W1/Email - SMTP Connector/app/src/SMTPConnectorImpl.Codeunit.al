@@ -108,7 +108,7 @@ codeunit 4513 "SMTP Connector Impl."
         if not Result then begin
             SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
 
-            Session.LogMessage('00009UM', StrSubstNo(SmtpConnectTelemetryErrorMsg,
+            Session.LogMessage('00009UB', StrSubstNo(SmtpConnectTelemetryErrorMsg,
                     SMTPAccount.Server,
                     SMTPAccount."Server Port",
                     SMTPErrorCode), Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
@@ -116,7 +116,7 @@ codeunit 4513 "SMTP Connector Impl."
             Error(ConnectionFailureErr, SMTPAccount.Server);
         end;
 
-        Session.LogMessage('00009UN', StrSubstNo(SmtpConnectedTelemetryMsg,
+        Session.LogMessage('00009UV', StrSubstNo(SmtpConnectedTelemetryMsg,
                 SMTPAccount.Server,
                 SMTPAccount."Server Port"), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
@@ -128,7 +128,7 @@ codeunit 4513 "SMTP Connector Impl."
                 Disconnect();
                 SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
 
-                Session.LogMessage('00009XS', StrSubstNo(SmtpAuthenticateTelemetryErrorMsg,
+                Session.LogMessage('00009XD', StrSubstNo(SmtpAuthenticateTelemetryErrorMsg,
                         SMTPAccount."User Name",
                         SMTPAccount.Server,
                         SMTPAccount."Server Port",
@@ -137,7 +137,7 @@ codeunit 4513 "SMTP Connector Impl."
                 Error(AuthenticationFailureErr, SMTPAccount.Server);
             end;
 
-            Session.LogMessage('00009XT', StrSubstNo(SmtpAuthenticateTelemetryMsg,
+            Session.LogMessage('00009XF', StrSubstNo(SmtpAuthenticateTelemetryMsg,
                     SMTPAccount."User Name",
                     SMTPAccount.Server,
                     SMTPAccount."Server Port"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
@@ -152,12 +152,12 @@ codeunit 4513 "SMTP Connector Impl."
             Disconnect();
 
             SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
-            Session.LogMessage('00009UO', StrSubstNo(SmtpSendTelemetryErrorMsg, SMTPErrorCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+            Session.LogMessage('00009UZ', StrSubstNo(SmtpSendTelemetryErrorMsg, SMTPErrorCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
             Error(SendingFailureErr);
         end;
 
-        Session.LogMessage('00009UP', SmtpSendTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+        Session.LogMessage('00009UX', SmtpSendTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
     end;
 
     procedure GetDescription(): Text[250]

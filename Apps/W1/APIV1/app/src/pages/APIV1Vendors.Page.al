@@ -293,6 +293,7 @@ page 20010 "APIV1 - Vendors"
         GraphMgtVendor: Codeunit "Graph Mgt - Vendor";
     begin
         PostalAddressJSON := GraphMgtVendor.PostalAddressToJSON(Rec);
+
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;
 

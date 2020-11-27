@@ -9,7 +9,6 @@ table 9999 "Upgrade Tags"
     Caption = 'Upgrade Tags';
     DataClassification = SystemMetadata;
     DataPerCompany = false;
-    ReplicateData = false;
 
     fields
     {

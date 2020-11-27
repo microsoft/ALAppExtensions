@@ -128,8 +128,10 @@ codeunit 1470 "Headlines Impl."
     var
         LogInManagement: Codeunit "User Login Time Tracker";
         LimitDateTime: DateTime;
+        TenMinutesInMilliseconds: Integer;
     begin
-        LimitDateTime := CreateDateTime(Today(), Time() - (10 * 60 * 1000)); // greet if login is in the last 10 minutes, then stop greeting
+        TenMinutesInMilliseconds := 10 * 60 * 1000;
+        LimitDateTime := CurrentDateTime() - TenMinutesInMilliseconds; // greet if login is in the last 10 minutes, then stop greeting
         exit(LogInManagement.UserLoggedInSinceDateTime(LimitDateTime));
     end;
 

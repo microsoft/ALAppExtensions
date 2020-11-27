@@ -613,6 +613,7 @@ page 20012 "APIV1 - Sales Invoices"
         SellingPostalAddressJSONText := GraphMgtSalesInvoice.SellToCustomerAddressToJSON(Rec);
         BillingPostalAddressJSONText := GraphMgtSalesInvoice.BillToCustomerAddressToJSON(Rec);
         ShippingPostalAddressJSONText := GraphMgtSalesInvoice.ShipToCustomerAddressToJSON(Rec);
+
         GetRemainingAmount();
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;

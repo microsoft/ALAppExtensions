@@ -13,7 +13,8 @@ page 149000 "BCPT Setup List"
     RefreshOnActivate = true;
     UsageCategory = Lists;
     Extensible = false;
-    AdditionalSearchTerms = 'BCPT,Benchmark';
+    AdditionalSearchTerms = 'BCPT,Benchmark,Perf,Toolkit';
+    ApplicationArea = All;
 
     layout
     {

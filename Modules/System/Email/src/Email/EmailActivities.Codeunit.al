@@ -15,13 +15,17 @@ codeunit 8885 "Email Activities"
         DraftOutboxEmails: Integer;
         FailedOutboxEmails: Integer;
         PastDate: DateTime;
+        IsAdmin: Boolean;
     begin
         if not Evaluate(PastDate, Page.GetBackgroundParameters().Get('PastDate')) then
             Error(ParsePastDateErr);
 
-        SentEmails := EmailImpl.CountSentEmails(PastDate);
-        DraftOutboxEmails := EmailImpl.CountEmailsInOutbox(Enum::"Email Status"::Draft);
-        FailedOutboxEmails := EmailImpl.CountEmailsInOutbox(Enum::"Email Status"::Failed);
+        if not Evaluate(IsAdmin, Page.GetBackgroundParameters().Get('Admin')) then
+            Error(ParseAdminErr);
+
+        SentEmails := EmailImpl.CountSentEmails(PastDate, IsAdmin);
+        DraftOutboxEmails := EmailImpl.CountEmailsInOutbox(Enum::"Email Status"::Draft, IsAdmin);
+        FailedOutboxEmails := EmailImpl.CountEmailsInOutbox(Enum::"Email Status"::Failed, IsAdmin);
 
         Result.Add(GetSentEmailsKey(), Format(SentEmails));
         Result.Add(GetDraftEmailsKey(), Format(DraftOutboxEmails));
@@ -47,4 +51,5 @@ codeunit 8885 "Email Activities"
 
     var
         ParsePastDateErr: Label 'Could not parse parameter PastDate.';
+        ParseAdminErr: Label 'Could not parse parameter Admin.';
 }

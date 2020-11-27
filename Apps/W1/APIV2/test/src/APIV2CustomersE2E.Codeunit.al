@@ -159,7 +159,9 @@ codeunit 139802 "APIV2 - Customers E2E"
         // [GIVEN] The user has constructed a customer object containing a templated country code.
         CreateSimpleCustomer(TempCustomer);
         TempCustomer."Country/Region Code" := CountryRegion.Code;
-        RequestBody := GetSimpleCustomerJSON(TempCustomer);
+        RequestBody := LibraryGraphMgt.AddPropertytoJSON(RequestBody, 'number', TempCustomer."No.");
+        RequestBody := LibraryGraphMgt.AddPropertytoJSON(RequestBody, 'displayName', TempCustomer.Name);
+        RequestBody := LibraryGraphMgt.AddPropertytoJSON(RequestBody, 'country', TempCustomer."Country/Region Code");
 
         // [WHEN] The user sends the request to the endpoint in a POST request.
         LibraryGraphMgt.PostToWebService(TargetURL, RequestBody, Response);

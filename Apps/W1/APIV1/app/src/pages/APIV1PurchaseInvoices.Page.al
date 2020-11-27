@@ -446,6 +446,7 @@ page 20042 "APIV1 - Purchase Invoices"
         BuyFromPostalAddressJSONText := GraphMgtPurchaseInvoice.BuyFromVendorAddressToJSON(Rec);
         PayToPostalAddressJSONText := GraphMgtPurchaseInvoice.PayToVendorAddressToJSON(Rec);
         ShipToPostalAddressJSONText := GraphMgtPurchaseInvoice.ShipToVendorAddressToJSON(Rec);
+
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;
 

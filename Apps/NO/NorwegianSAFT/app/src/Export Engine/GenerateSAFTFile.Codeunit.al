@@ -632,6 +632,7 @@ codeunit 10673 "Generate SAF-T File"
         AmountXMLNode: Text;
         Amount: Decimal;
         LastTransactionNo: Integer;
+        IsHandled: Boolean;
     begin
         repeat
             if LastTransactionNo <> GLEntry."Transaction No." then begin
@@ -658,7 +659,10 @@ codeunit 10673 "Generate SAF-T File"
                 GLEntry.Description := GLEntry."G/L Account No.";
             SAFTXMLHelper.AppendXMLNode('Description', GLEntry.Description);
             SAFTExportMgt.GetAmountInfoFromGLEntry(AmountXMLNode, Amount, GLEntry);
-            ExportAmountInfo(AmountXMLNode, Amount);
+            IsHandled := false;
+            OnBeforeExportGLEntryAmountInfo(SAFTXMLHelper, AmountXMLNode, GLEntry, IsHandled);
+            If not IsHandled then
+                ExportAmountInfo(AmountXMLNode, Amount);
             if (GLEntry."VAT Bus. Posting Group" <> '') or (GLEntry."VAT Prod. Posting Group" <> '') then begin
                 GLEntryVATEntryLink.SetRange("G/L Entry No.", GLEntry."Entry No.");
                 if GLEntryVATEntryLink.FindFirst() then begin
@@ -701,6 +705,7 @@ codeunit 10673 "Generate SAF-T File"
     local procedure ExportTaxInformation(VATEntry: Record 254)
     var
         VATPostingSetup: Record "VAT Posting Setup";
+        IsHandled: Boolean;
     begin
         if not (VATEntry.Type in [VATEntry.Type::Sale, VATEntry.Type::Purchase]) then
             exit;
@@ -714,7 +719,10 @@ codeunit 10673 "Generate SAF-T File"
             SAFTXMLHelper.AppendXMLNode('TaxCode', Format(VATPostingSetup."Purchase SAF-T Tax Code"));
         SAFTXMLHelper.AppendXMLNode('TaxPercentage', FormatAmount(VATPostingSetup."VAT %"));
         SAFTXMLHelper.AppendXMLNode('TaxBase', FormatAmount(abs(VATEntry.Base)));
-        ExportAmountInfo('TaxAmount', abs(VATEntry.Amount));
+        IsHandled := false;
+        OnBeforeExportVATEntryAmountInfo(SAFTXMLHelper, VATEntry, IsHandled);
+        if not IsHandled then
+            ExportAmountInfo('TaxAmount', abs(VATEntry.Amount));
         SAFTXMLHelper.FinalizeXMLNode();
     end;
 
@@ -960,4 +968,17 @@ codeunit 10673 "Generate SAF-T File"
     begin
 
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeExportGLEntryAmountInfo(var SAFTXMLHelper: Codeunit "SAF-T XML Helper"; AmountXMLNode: Text; GLEntry: Record "G/L Entry"; var IsHandled: Boolean)
+    begin
+
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeExportVATEntryAmountInfo(var SAFTXMLHelper: Codeunit "SAF-T XML Helper"; VATEntry: Record "VAT Entry"; var IsHandled: Boolean)
+    begin
+
+    end;
+
 }

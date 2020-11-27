@@ -17,8 +17,9 @@ codeunit 8888 "Email Dispatcher"
         Success: Boolean;
         EmailCategoryLbl: Label 'Email', Locked = true;
         ProcessingEmailMsg: Label 'Processing email %1 for the %2 connector and %3 account.', Comment = '%1 - Email Message Id, %2 - Connector, %3 - Account Id', Locked = true;
-        SuccessfullySentEmailMsg: Label 'The email %1 was successfully sent using the %2 email connector.', Comment = '%1 - Email Message Id, %2 - Connector', Locked = true;
-        FailedToSendEmailMsg: Label 'Failed to send email %1.', Comment = '%1 - Email Message Id', Locked = true;
+        SuccessfullySentEmailMsg: Label 'Email sent successfully', Locked = true;
+        SuccessfullySentEmailDetailedMsg: Label 'The email %1 was successfully sent using the %2 email connector.', Comment = '%1 - Email Message Id, %2 - Connector', Locked = true;
+        FailedToSendEmailMsg: Label 'Failed to send email', Locked = true;
         FailedToSendEmailErrorMsg: Label 'Could not send the email %1 because of the following error: %2. Call stack: %3.', Comment = '%1 - Email Message Id, %2 - Error message, %3 - Error call stack', Locked = true;
         FailedToFindEmailMessageMsg: Label 'Failed to find email message %1', Comment = '%1 - Email Message Id', Locked = true;
         FailedToFindEmailMessageErrorMsg: Label 'The email message has been deleted by another user.';
@@ -28,8 +29,9 @@ codeunit 8888 "Email Dispatcher"
     var
         EmailMessage: Record "Email Message";
         SendEmail: Codeunit "Send Email";
+        Dimensions: Dictionary of [Text, Text];
     begin
-        Session.LogMessage('0000CTM', Format(Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+        Session.LogMessage('0000CTM', Format(Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl, 'EmailMessageID', Rec."Message Id");
         Session.LogMessage('0000D0X', StrSubstNo(ProcessingEmailMsg, Rec."Message Id", Rec.Connector, Rec."Account Id"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
         UpdateOutboxStatus(Rec, Rec.Status::Processing);
 
@@ -42,16 +44,22 @@ codeunit 8888 "Email Dispatcher"
             EmailMessageImpl.GetEmailMessage(EmailMessage);
             Success := SendEmail.Run(EmailMessage);
 
+            Dimensions.Add('Category', EmailCategoryLbl);
+            Dimensions.Add('EmailMessageID', Format(Rec."Message Id", 0, 4));
+            Dimensions.Add('Connector', Format(Rec.Connector));
+
             if Success then begin
-                Session.LogMessage('0000CTO', StrSubstNo(SuccessfullySentEmailMsg, Rec."Message Id", Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+                Session.LogMessage('0000CTV', SuccessfullySentEmailMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+                Session.LogMessage('0000CTO', StrSubstNo(SuccessfullySentEmailDetailedMsg, Rec."Message Id", Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
                 InsertToSentEmail(Rec);
 
                 Rec.Delete();
                 EmailMessageImpl.MarkAsReadOnly();
             end
             else begin
-                Session.LogMessage('0000CTP', StrSubstNo(FailedToSendEmailMsg, Rec."Message Id"), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+                Session.LogMessage('0000CTP', FailedToSendEmailMsg, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
                 Session.LogMessage('0000CTQ', StrSubstNo(FailedToSendEmailErrorMsg, Rec."Message Id", GetLastErrorText(), GetLastErrorCallStack()), Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+
                 UpdateOutboxError(GetLastErrorText(), Rec);
                 UpdateOutboxStatus(Rec, Rec.Status::Failed);
             end;
@@ -104,7 +112,7 @@ codeunit 8888 "Email Dispatcher"
             exit;
 
         repeat
-            Session.LogMessage('0000CTS', StrSubstNo(AttachmentMsg, EmailMessageImpl.Attachments_GetLength(), EmailMessageImpl.Attachments_GetContentType()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            Session.LogMessage('0000CTS', StrSubstNo(AttachmentMsg, EmailMessageImpl.Attachments_GetLength(), EmailMessageImpl.Attachments_GetContentType()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl, 'EmailMessageID', EmailMessageImpl.GetId());
         until EmailMessageImpl.Attachments_Next() = 0;
     end;
 

@@ -9,6 +9,7 @@
 page 8887 "Email Accounts"
 {
     PageType = List;
+    Caption = 'Email Accounts';
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "Email Account";
@@ -96,6 +97,17 @@ page 8887 "Email Accounts"
                     ToolTip = 'Specifies the type of email extension that the account is added to.';
                     Visible = false;
                 }
+            }
+        }
+
+        area(factboxes)
+        {
+            part(Scenarios; "Email Scenarios FactBox")
+            {
+                Caption = 'Email Scenarios';
+                ToolTip = 'The email scenarios assigned to the selected account.';
+                SubPageLink = "Account Id" = field("Account Id"), Connector = field(Connector), Scenario = filter(<> 0); // Do not show Default scenario
+                ApplicationArea = All;
             }
         }
     }

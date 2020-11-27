@@ -53,30 +53,32 @@ codeunit 149004 "BCPT Header"
         BCPTLogEntry.DeleteAll(true);
     end;
 
-
-    [EventSubscriber(ObjectType::Table, Database::"BCPT Header", 'OnAfterModifyEvent', '', false, false)]
-    local procedure LogTelemetryWhenSuiteChangesStateOnAfterModifyABTHeader(var Rec: Record "BCPT Header"; var xRec: Record "BCPT Header"; RunTrigger: Boolean)
+    procedure SetRunStatus(var BCPTHeader: Record "BCPT Header"; BCPTHeaderStatus: Enum "BCPT Header Status")
     var
         TelemetryCustomDimensions: Dictionary of [Text, Text];
         PerformanceRunStartedLbl: Label 'Performance Toolkit run started.', Locked = true;
         PerformanceRunFinishedLbl: Label 'Performance Toolkit run finished.', Locked = true;
         PerformanceRunCancelledLbl: Label 'Performance Toolkit run cancelled.', Locked = true;
     begin
-        if Rec.Status <> xRec.Status then begin
-            TelemetryCustomDimensions.Add(Rec.FieldCaption(Code), Rec.Code);
-            TelemetryCustomDimensions.Add(Rec.FieldCaption("Duration (minutes)"), Format(Rec."Duration (minutes)"));
-            TelemetryCustomDimensions.Add(Rec.FieldCaption(CurrentRunType), Format(Rec.CurrentRunType));
-            Rec.CalcFields("Total No. of Sessions");
-            TelemetryCustomDimensions.Add(Rec.FieldCaption("Total No. of Sessions"), Format(Rec."Total No. of Sessions"));
+        TelemetryCustomDimensions.Add(BCPTHeader.FieldCaption(Code), BCPTHeader.Code);
+        TelemetryCustomDimensions.Add(BCPTHeader.FieldCaption("Duration (minutes)"), Format(BCPTHeader."Duration (minutes)"));
+        TelemetryCustomDimensions.Add(BCPTHeader.FieldCaption(CurrentRunType), Format(BCPTHeader.CurrentRunType));
+        BCPTHeader.CalcFields("Total No. of Sessions");
+        TelemetryCustomDimensions.Add(BCPTHeader.FieldCaption("Total No. of Sessions"), Format(BCPTHeader."Total No. of Sessions"));
 
-            case (true) of
-                (xRec.Status in [xRec.Status::" ", xRec.Status::Completed]) and (Rec.Status = Rec.Status::Running):
-                    Session.LogMessage('0000DHR', PerformanceRunStartedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryCustomDimensions);
-                (xRec.Status = xRec.Status::Running) and (Rec.Status = Rec.Status::Completed):
-                    Session.LogMessage('0000DHS', PerformanceRunFinishedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryCustomDimensions);
-                (xRec.Status = xRec.Status::Running) and (Rec.Status = Rec.Status::Cancelled):
-                    Session.LogMessage('0000DHT', PerformanceRunCancelledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryCustomDimensions);
-            end;
+        BCPTHeader.Status := BCPTHeaderStatus;
+
+        case BCPTHeaderStatus of
+            BCPTHeaderStatus::Running:
+                Session.LogMessage('0000DHR', PerformanceRunStartedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryCustomDimensions);
+            BCPTHeaderStatus::Completed:
+                Session.LogMessage('0000DHS', PerformanceRunFinishedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryCustomDimensions);
+            BCPTHeaderStatus::Cancelled:
+                Session.LogMessage('0000DHT', PerformanceRunCancelledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryCustomDimensions);
         end;
+        BCPTHeader.Modify();
+        Commit();
+
     end;
+
 }
