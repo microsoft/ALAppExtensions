@@ -18,14 +18,14 @@ Advanced Encryption Standard functionality:
 - Initializes a new instance of the RijndaelManaged class providing the encryption key and block size.
 - Initializes a new instance of the RijndaelManaged class providing the encryption key, block size and cipher mode.
 - Initializes a new instance of the RijndaelManaged class providing the encryption key, block size, cipher mode and padding mode.
-- Set a new block size value for the RijnadaelManaged class.
-- Set a new cipher mode value for the RijnadaelManaged class.
-- Set a new padding mode value for the RijnadaelManaged class.
-- Set the key and vector for the RijnadaelManaged class.
+- Set a new block size value for the RijndaelManaged class.
+- Set a new cipher mode value for the RijndaelManaged class.
+- Set a new padding mode value for the RijndaelManaged class.
+- Set the key and vector for the RijndaelManaged class.
 - Determine whether the specified key size is valid for the current algorithm.
 - Specify the key sizes, in bits, that are supported by the symmetric algorithm.
 - Specify the block sizes, in bits, that are supported by the symmetric algorithm.
-- Get the key and vector from the RijnadaelManaged class.
+- Get the key and vector from the RijndaelManaged class.
 - Return plain text as an encrypted value.
 - Return encrypted text as plain text.
 
@@ -722,7 +722,7 @@ Represents the padding mode used in the symmetric algorithm.. Valid values: None
 
 ### SetBlockSize (Method) <a name="SetBlockSize"></a> 
 
- Sets a new block size value for the RijnadaelManaged class.
+ Sets a new block size value for the RijndaelManaged class.
  
 
 #### Syntax
@@ -736,7 +736,7 @@ Represents the block size, in bits, of the cryptographic operation.
 
 ### SetCipherMode (Method) <a name="SetCipherMode"></a> 
 
- Sets a new cipher mode value for the RijnadaelManaged class.
+ Sets a new cipher mode value for the RijndaelManaged class.
  
 
 #### Syntax
@@ -750,7 +750,7 @@ Represents the cipher mode used in the symmetric algorithm. Valid values: ECB,CB
 
 ### SetPaddingMode (Method) <a name="SetPaddingMode"></a> 
 
- Sets a new padding mode value for the RijnadaelManaged class.
+ Sets a new padding mode value for the RijndaelManaged class.
  
 
 #### Syntax
@@ -764,7 +764,7 @@ Represents the padding mode used in the symmetric algorithm.. Valid values: None
 
 ### SetEncryptionData (Method) <a name="SetEncryptionData"></a> 
 
- Sets the key and vector for the RijnadaelManaged class.
+ Sets the key and vector for the RijndaelManaged class.
  
 
 #### Syntax
@@ -844,7 +844,7 @@ Skip Size in bits
 
 ### GetEncryptionData (Method) <a name="GetEncryptionData"></a> 
 
- Gets the key and vector from the RijnadaelManaged class
+ Gets the key and vector from the RijndaelManaged class
  
 
 #### Syntax
