@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests the Extension Management module.",
     "description":  "Provides tests for installing and uninstalling extensions and their dependencies. Tests the tooling for retrieving different versions of the extensions.",
-    "version":  "17.1.0.0",
+    "version":  "17.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
     "help":  "",
@@ -15,13 +15,13 @@
                              "id":  "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
                              "publisher":  "Microsoft",
                              "name":  "Extension Management",
-                             "version":  "17.1.0.0"
+                             "version":  "17.2.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "publisher":  "Microsoft",
                              "name":  "Library Assert",
-                             "version":  "17.1.0.0"
+                             "version":  "17.2.0.0"
                          }
                      ],
     "screenshots":  [

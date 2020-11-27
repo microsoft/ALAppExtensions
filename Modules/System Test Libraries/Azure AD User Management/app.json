@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Library function to initialize test data for Azure AD User Management module",
-    "version":  "17.1.0.0",
+    "version":  "17.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "574d5c26-62d4-4541-bc36-0fbbaed0072a",
                              "name":  "Azure AD User Management",
                              "publisher":  "Microsoft",
-                             "version":  "17.1.0.0"
+                             "version":  "17.2.0.0"
                          }
                      ],
     "screenshots":  [

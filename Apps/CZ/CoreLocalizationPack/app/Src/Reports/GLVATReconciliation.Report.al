@@ -1,0 +1,127 @@
+report 11793 "G/L VAT Reconciliation CZL"
+{
+    DefaultLayout = RDLC;
+    RDLCLayout = './Src/Reports/GLVATReconciliation.rdl';
+    ApplicationArea = Basic, Suite;
+    Caption = 'G/L VAT Reconciliation';
+    UsageCategory = ReportsAndAnalysis;
+    PreviewMode = PrintLayout;
+
+    dataset
+    {
+        dataitem("G/L Account"; "G/L Account")
+        {
+            DataItemTableView = sorting("No.");
+            PrintOnlyIfDetail = true;
+            RequestFilterFields = "No.";
+            column(COMPANYNAME; CompanyProperty.DisplayName())
+            {
+            }
+            column(GLAccFilter; GLAccFilter)
+            {
+            }
+            column(GLAccount__No__; "No.")
+            {
+            }
+            column(GLAccount_Name; Name)
+            {
+            }
+            column(GLEntry__VAT_Amount_; "G/L Entry"."VAT Amount")
+            {
+            }
+            dataitem("G/L Entry"; "G/L Entry")
+            {
+                DataItemLink = "G/L Account No." = field("No.");
+                DataItemTableView = sorting("G/L Account No.", "Posting Date");
+                RequestFilterFields = "Posting Date", "VAT Date CZL";
+                column(GLEntry_Posting_Date_; "Posting Date")
+                {
+                    IncludeCaption = true;
+                }
+                column(GLEntry_VAT_Date_; "VAT Date CZL")
+                {
+                    IncludeCaption = true;
+                }
+                column(GLEntry_Document_Type_; "Document Type")
+                {
+                    IncludeCaption = true;
+                }
+                column(GLEntry_Document_No__; "Document No.")
+                {
+                    IncludeCaption = true;
+                }
+                column(GLEntry_Description; Description)
+                {
+                    IncludeCaption = true;
+                }
+                column(GLEntry_Gen__Posting_Type_; "Gen. Posting Type")
+                {
+                    IncludeCaption = true;
+                }
+                column(GLEntry_Gen__Bus__Posting_Group_; "Gen. Bus. Posting Group")
+                {
+                    IncludeCaption = true;
+                }
+                column(GLEntry_Gen__Prod__Posting_Group_; "Gen. Prod. Posting Group")
+                {
+                    IncludeCaption = true;
+                }
+                column(GLEntry_Amount; Amount)
+                {
+                    IncludeCaption = true;
+                }
+                column(GLEntry_VAT_Amount; "VAT Amount")
+                {
+                    IncludeCaption = true;
+                }
+                column(GLEntry_Entry_No; "Entry No.")
+                {
+                    IncludeCaption = true;
+                }
+                trigger OnAfterGetRecord()
+                begin
+                    if DifferentOnly and ("Posting Date" = "VAT Date CZL") then
+                        CurrReport.Skip();
+                end;
+            }
+        }
+    }
+    requestpage
+    {
+        SaveValues = true;
+
+        layout
+        {
+            area(content)
+            {
+                group(Options)
+                {
+                    Caption = 'Options';
+                    field(DifferentOnlyCZL; DifferentOnly)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Show Different VAT and Posting Dates Only';
+                        MultiLine = true;
+                        ToolTip = 'Specifies when the different vat and posting dates only is to be show.';
+                    }
+                }
+            }
+        }
+    }
+    labels
+    {
+        ReportCaptionLbl = 'G/L VAT Reconciliation';
+        PageLbl = 'Page';
+        TotalLbl = 'Total';
+        AccountNoLbl = 'Account No.';
+    }
+    trigger OnPreReport()
+    begin
+        if "G/L Account".GetFilters() <> '' then
+            GLAccFilter := "G/L Account".Tablecaption() + ': ' + "G/L Account".GetFilters();
+    end;
+
+    var
+        GLAccFilter: Text;
+        DifferentOnly: Boolean;
+}

@@ -228,24 +228,22 @@ codeunit 8900 "Email Impl"
             until EmailOutbox.Next() = 0;
     end;
 
-    internal procedure CountEmailsInOutbox(EmailStatus: Enum "Email Status"): Integer
+    internal procedure CountEmailsInOutbox(EmailStatus: Enum "Email Status"; IsAdmin: Boolean): Integer
     var
         EmailOutbox: Record "Email Outbox";
-        EmailAccountImpl: Codeunit "Email Account Impl.";
     begin
-        if not EmailAccountImpl.IsUserEmailAdmin() then
+        if not IsAdmin then
             EmailOutbox.SetRange("User Security Id", UserSecurityId());
 
         EmailOutbox.SetRange(Status, EmailStatus);
         exit(EmailOutbox.Count());
     end;
 
-    internal procedure CountSentEmails(NewerThan: DateTime): Integer
+    internal procedure CountSentEmails(NewerThan: DateTime; IsAdmin: Boolean): Integer
     var
         SentEmails: Record "Sent Email";
-        EmailAccountImpl: Codeunit "Email Account Impl.";
     begin
-        if not EmailAccountImpl.IsUserEmailAdmin() then
+        if not IsAdmin then
             SentEmails.SetRange("User Security Id", UserSecurityId());
 
         SentEmails.SetRange("Date Time Sent", NewerThan, System.CurrentDateTime());

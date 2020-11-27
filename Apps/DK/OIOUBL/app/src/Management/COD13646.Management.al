@@ -131,8 +131,15 @@ codeunit 13646 "OIOUBL-Management"
         exit(FALSE);
     end;
 
-    procedure IsOIOUBLSendingProfile(DocumentSendingProfile: Record 60): Boolean;
+    procedure IsOIOUBLSendingProfile(DocumentSendingProfile: Record 60) Result: Boolean;
+    var
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeIsOIOUBLSendingProfile(DocumentSendingProfile, Result, IsHandled);
+        if IsHandled then
+            exit(Result);
+
         exit(
           (DocumentSendingProfile."Electronic Format" = OIOUBLFormatNameTxt) OR
           (DocumentSendingProfile."E-Mail Format" = OIOUBLFormatNameTxt) OR
@@ -252,6 +259,11 @@ codeunit 13646 "OIOUBL-Management"
             TempBlob.CreateInStream(ZipInStream);
             DownloadFromStream(ZipInStream, ZipArchiveSaveDialogTxt, ClientZipFolder, ZipArchiveFilterTxt, ClientZipFileName);
         end;
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeIsOIOUBLSendingProfile(DocumentSendingProfile: Record "Document Sending Profile"; var Result: Boolean; var IsHandled: Boolean)
+    begin
     end;
 
     [IntegrationEvent(true, false)]

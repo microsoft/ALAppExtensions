@@ -19,6 +19,7 @@ codeunit 9057 "Plan Upgrade"
         RenamePlansAndDeleteOldPlans();
     end;
 
+    [NonDebuggable]
     local procedure UpdateSubscriptionPlan()
     var
         Plan: Record "Plan";
@@ -46,6 +47,7 @@ codeunit 9057 "Plan Upgrade"
         UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetAddDeviceISVEmbUpgradeTag());
     end;
 
+    [NonDebuggable]
     local procedure RenamePlansAndDeleteOldPlans()
     var
         UpgradeTag: Codeunit "Upgrade Tag";
@@ -82,6 +84,7 @@ codeunit 9057 "Plan Upgrade"
         UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetRenamePlansUpgradeTag());
     end;
 
+    [NonDebuggable]
     local procedure DeletePlan(PlanId: guid)
     var
         Plan: Record "Plan";
@@ -90,6 +93,7 @@ codeunit 9057 "Plan Upgrade"
             Plan.Delete();
     end;
 
+    [NonDebuggable]
     local procedure RenameOrCreatePlan(PlanId: guid; NewName: Text)
     var
         Plan: Record "Plan";
@@ -101,6 +105,7 @@ codeunit 9057 "Plan Upgrade"
             CreatePlan(PlanId, CopyStr(NewName, 1, 50), 0);
     end;
 
+    [NonDebuggable]
     local procedure CreatePlan(PlanGuid: Guid; PlanName: Text[50]; RoleCenterId: Integer)
     var
         Plan: Record Plan;

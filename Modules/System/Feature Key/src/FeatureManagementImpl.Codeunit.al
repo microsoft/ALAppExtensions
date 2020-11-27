@@ -61,21 +61,6 @@ codeunit 2610 "Feature Management Impl."
     end;
 
     /// <summary>
-    /// Inserts records to "Feature Data Update Status" table to show features status per company.
-    /// </summary>
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterInitialization', '', false, false)]
-    local procedure InitializeFeatureDataUpdateStatuses()
-    var
-        FeatureKey: Record "Feature Key";
-        FeatureDataUpdateStatus: Record "Feature Data Update Status";
-    begin
-        if FeatureKey.FindSet() then
-            repeat
-                InitializeFeatureDataUpdateStatus(FeatureKey, FeatureDataUpdateStatus);
-            until FeatureKey.Next() = 0;
-    end;
-
-    /// <summary>
     /// Inserts record to "Feature Data Update Status" table to show the feature status per company.
     /// </summary>
     local procedure InitializeFeatureDataUpdateStatus(FeatureKey: Record "Feature Key"; var FeatureDataUpdateStatus: Record "Feature Data Update Status")
@@ -245,9 +230,10 @@ codeunit 2610 "Feature Management Impl."
         FeatureKey: Record "Feature Key";
         FeatureDataUpdateStatus: Record "Feature Data Update Status";
     begin
-        if FeatureKey.Get(FeatureId) and (FeatureKey.Enabled = FeatureKey.Enabled::"All Users") then
-            if FeatureDataUpdateStatus.Get(FeatureId, CompanyName()) then
-                exit(FeatureDataUpdateStatus."Feature Status" in ["Feature Status"::Complete, "Feature Status"::Enabled])
+        if FeatureKey.Get(FeatureId) then begin
+            InitializeFeatureDataUpdateStatus(FeatureKey, FeatureDataUpdateStatus);
+            exit(FeatureDataUpdateStatus."Feature Status" in ["Feature Status"::Complete, "Feature Status"::Enabled])
+        end;
     end;
 
     local procedure IsSessionActive(FeatureDataUpdateStatus: Record "Feature Data Update Status"): Boolean;
@@ -387,7 +373,7 @@ codeunit 2610 "Feature Management Impl."
             Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TagCategoryTxt);
     end;
 
-    [EventSubscriber(ObjectType::Table, 2000000006, 'OnAfterDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterDeleteEvent', '', false, false)]
     local procedure OnAfterCompanyDeleteRemoveReferences(var Rec: Record Company; RunTrigger: Boolean)
     var
         FeatureDataUpdateStatus: Record "Feature Data Update Status";
@@ -397,5 +383,24 @@ codeunit 2610 "Feature Management Impl."
 
         FeatureDataUpdateStatus.SetRange("Company Name", Rec.Name);
         FeatureDataUpdateStatus.DeleteAll();
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterRenameEvent', '', false, false)]
+    local procedure OnAfterCompanyRenameMoveReferences(var Rec: Record Company; var xRec: Record Company)
+    var
+        FeatureDataUpdateStatus: Record "Feature Data Update Status";
+        RenameFeatureDataUpdateStatus: Record "Feature Data Update Status";
+    begin
+        if Rec.IsTemporary then
+            exit;
+
+        FeatureDataUpdateStatus.SetRange("Company Name", xRec.Name);
+        if not FeatureDataUpdateStatus.FindSet(true) then
+            exit;
+
+        repeat
+            RenameFeatureDataUpdateStatus.GetBySystemId(FeatureDataUpdateStatus.SystemId);
+            RenameFeatureDataUpdateStatus.Rename(RenameFeatureDataUpdateStatus."Feature Key", Rec.Name);
+        until FeatureDataUpdateStatus.Next() = 0;
     end;
 }

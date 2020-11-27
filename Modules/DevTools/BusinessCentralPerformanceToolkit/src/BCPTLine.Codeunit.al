@@ -152,8 +152,7 @@ codeunit 149005 "BCPT Line"
         BCPTRoleWrapperImpl: Codeunit "BCPT Role Wrapper"; // single instance
     begin
         BCPTLine.Testfield("BCPT Code");
-        if BCPTHeader.Code = '' then
-            BCPTHeader.Get(BCPTLine."BCPT Code");
+        BCPTRoleWrapperImpl.GetBCPTHeader(BCPTHeader);
         Clear(BCPTLogEntry);
         BCPTLogEntry."BCPT Code" := BCPTLine."BCPT Code";
         BCPTLogEntry."BCPT Line No." := BCPTLine."Line No.";
@@ -184,9 +183,11 @@ codeunit 149005 "BCPT Line"
     var
         BCPTRoleWrapperImpl: Codeunit "BCPT Role Wrapper"; // single instance
         Dimensions: Dictionary of [Text, Text];
+        TelemetryLogLbl: Label 'Performance Toolkit - %1 - %2 - %3', Locked = true;
     begin
         Dimensions.Add('code', BCPTLogEntry."BCPT Code");
         Dimensions.Add('codeunitId', Format(BCPTLogEntry."Codeunit ID"));
+        BCPTLogEntry.CalcFields("Codeunit Name");
         Dimensions.Add('codeunitName', BCPTLogEntry."Codeunit Name");
         Dimensions.Add('operation', BCPTLogEntry.Operation);
         Dimensions.Add('tag', BCPTLogEntry.Tag);
@@ -195,9 +196,10 @@ codeunit 149005 "BCPT Line"
         Dimensions.Add('startTime', Format(BCPTLogEntry."Start Time"));
         Dimensions.Add('endTime', Format(BCPTLogEntry."End Time"));
         Dimensions.Add('duration', Format(BCPTLogEntry."Duration (ms)"));
+        Dimensions.Add('sessionNo', Format(BCPTLogEntry."Session No."));
         Session.LogMessage(
             '0000DGF',
-            StrSubstNo(BCPTRoleWrapperImpl.GetScenarioLbl(), BCPTLogEntry."BCPT Code", BCPTLogEntry.Status),
+            StrSubstNo(TelemetryLogLbl, BCPTLogEntry."BCPT Code", BCPTRoleWrapperImpl.GetScenarioLbl(), BCPTLogEntry.Status),
             Verbosity::Normal,
             DataClassification::SystemMetadata,
             TelemetryScope::All,

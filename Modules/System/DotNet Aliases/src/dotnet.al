@@ -679,6 +679,10 @@ dotnet
         {
         }
 
+        type("Microsoft.Dynamics.Nav.Runtime.CompoundTokenInfo"; "CompoundTokenInfo")
+        {
+        }
+
         type("Microsoft.Dynamics.Nav.Runtime.Designer.DesignerFieldProperty"; "DesignerFieldProperty")
         {
         }
@@ -1097,6 +1101,14 @@ dotnet
         }
 
         type("Microsoft.Office.Interop.Word.WdWindowState"; "WdWindowState")
+        {
+        }
+
+        type("Microsoft.Office.Interop.Word.Fields"; "Microsoft.Office.Interop.Word.Fields")
+        {
+        }
+
+        type("Microsoft.Office.Interop.Word.Range"; "Microsoft.Office.Interop.Word.Range")
         {
         }
     }

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Contains helper methods for getting information about the tenant and general settings.",
     "description":  "Contains helper methods for getting information about the tenant and general settings, such as determining whether this is a production or sandbox environment, or deployed as an online or on-premises version, and so on.",
-    "version":  "17.1.0.0",
+    "version":  "17.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,7 +15,7 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "17.1.0.0"
+                             "version":  "17.2.0.0"
                          }
                      ],
     "internalsVisibleTo":  [

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Looks up and plays videos.",
     "description":  "Provides a page where you look up and select videos. For example, use this to access video tutorials.",
-    "version":  "17.1.0.0",
+    "version":  "17.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",

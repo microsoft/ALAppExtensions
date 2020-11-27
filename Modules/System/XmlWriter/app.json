@@ -1,31 +1,33 @@
 {
-    "id": "e88f7ce1-ef3d-42c0-ba61-63699c60d12f",
-    "name": "XML Writer",
-    "publisher": "Microsoft",
-    "brief": "Write XML quickly with System.Xml.XmlTextWriter.",
-    "description": "Provides a fast, non-cached, forward-only way to create streams or files with XML data that conforms to guidelines for W3C Extensible Markup Language (XML) 1.0 and Namespaces.",
-    "version": "17.1.0.0",
-    "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
-    "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help": "https://go.microsoft.com/fwlink/?linkid=2103698",
-    "url": "https://go.microsoft.com/fwlink/?linkid=724011",
-    "logo": "",
-    "dependencies": [
-        {
-            "id": "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
-            "name": "DotNet Aliases",
-            "publisher": "Microsoft",
-            "version": "17.1.0.0"
-        }
-    ],
-    "screenshots": [],
-    "platform": "17.0.0.0",
-    "idRanges": [
-        {
-            "from": 1483,
-            "to": 1484
-        }
-    ],
-    "target": "OnPrem",
-    "contextSensitiveHelpUrl": "https://docs.microsoft.com/dynamics365/business-central/"
+    "id":  "e88f7ce1-ef3d-42c0-ba61-63699c60d12f",
+    "name":  "XML Writer",
+    "publisher":  "Microsoft",
+    "brief":  "Write XML quickly with System.Xml.XmlTextWriter.",
+    "description":  "Provides a fast, non-cached, forward-only way to create streams or files with XML data that conforms to guidelines for W3C Extensible Markup Language (XML) 1.0 and Namespaces.",
+    "version":  "17.2.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "name":  "DotNet Aliases",
+                             "publisher":  "Microsoft",
+                             "version":  "17.2.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "17.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  1483,
+                         "to":  1484
+                     }
+                 ],
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
 }

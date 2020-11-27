@@ -271,6 +271,42 @@ page 1450 "MS - Yodlee Bank Service Setup"
                     MSYodleeBankSession.ResetSessionTokens();
                 end;
             }
+            action(Disable)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Disable Service';
+                Image = Delete;
+                ToolTip = 'Stop using this service. Use this action only if something went wrong when you turned off the "Enabled" toggle.';
+
+                trigger OnAction();
+                var
+                    MSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link";
+                    MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
+                begin
+                    if CONFIRM(RemoveConsumerOnDeleteQst, TRUE) then begin
+                        if MSYodleeServiceMgt.UnregisterConsumer() then
+                            exit
+                        else begin
+                            DeletePassword("Cobrand Name");
+                            DeletePassword("Cobrand Password");
+                            DeletePassword("Consumer Password");
+                            DeleteSessionTokens();
+
+                            GET();
+                            clear("Consumer Password");
+                            clear("Consumer Name");
+                            clear("Cobrand Name");
+                            clear("Cobrand Password");
+                            MODIFY(TRUE);
+                            Session.LogMessage('0000DXY', UserRemovedWithoutUnregisteringTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+                            MSYodleeBankAccLink.DELETEALL(TRUE);
+                            Enabled := false;
+                            ValidateEnabled();
+                        end;
+                    end else
+                        ERROR('');
+                end;
+            }
             action(ShowAdvancedSettings)
             {
                 ApplicationArea = Basic, Suite;
@@ -408,6 +444,10 @@ page 1450 "MS - Yodlee Bank Service Setup"
         EnabledWarningTok: Label 'You must disable the service before you can make changes.';
         DisableEnableQst: Label 'Do you want to disable the bank feed service?';
         RemoveConsumerOnDisableQst: Label 'Disabling the service will unlink all online bank accounts.\\Do you want to continue?';
+        RemoveConsumerOnDeleteQst: Label 'Disabling the service will break all links from the service to online bank accounts.\\Do you want to continue?';
+        YodleeTelemetryCategoryTok: Label 'AL Yodlee', Locked = true;
+        UserRemovedWithoutUnregisteringTxt: Label 'Unregistering consumer didn''t work, and the user removed the user name without unregistering.', Locked = true;
+
         UserProfileEmaiLAddressIsVisible: Boolean;
 
     local procedure UpdateBasedOnEnable();
@@ -482,6 +522,7 @@ page 1450 "MS - Yodlee Bank Service Setup"
             MSYodleeServiceMgt.UnlinkAllBankAccounts();
             if not HasPassword("Consumer Password") THEN begin
                 "Consumer Name" := '';
+                if IsolatedStorage.Delete("Consumer Password", DataScope::Company) then;
                 "Consumer Password" := EmptyGuid;
                 Modify();
             end;

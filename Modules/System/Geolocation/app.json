@@ -2,7 +2,7 @@
     "id":  "7f03f010-1703-47eb-a3cd-c6d28b8a806c",
     "name":  "Geolocation",
     "publisher":  "Microsoft",
-    "version":  "17.1.0.0",
+    "version":  "17.2.0.0",
     "brief":  "Provides access to geographical location data on client devices.",
     "description":  "Open the Geolocation page and request geographical location data on your client device. The page will communicate the availability of data about the location.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -15,7 +15,7 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "17.1.0.0"
+                             "version":  "17.2.0.0"
                          }
                      ],
     "internalsVisibleTo":  [

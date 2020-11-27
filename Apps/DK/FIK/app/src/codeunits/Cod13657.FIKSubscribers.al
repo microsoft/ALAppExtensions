@@ -14,14 +14,17 @@ codeunit 13657 FIKSubscribers
         EmptyPaymentDetailsErr: Label '%1, %2 or %3 must be used for payments.', Comment = '%1=Field;%2=Field;%3=Field';
         SimultaneousPaymentDetailsErr: Label '%1 and %2 cannot be used simultaneously for payments.', comment = '%1=Field;%2=Field';
 
-        //cod11
+    //cod11
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnAfterCheckGenJnlLine', '', false, false)]
     procedure OnAfterCheckGenJnlLine(var GenJournalLine: Record "Gen. Journal Line");
     VAR
         Vendor: Record Vendor;
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         FIKMgt: Codeunit FIKManagement;
     begin
-        IF (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) AND Vendor.GET(GenJournalLine."Account No.") THEN
+        PurchasesPayablesSetup.Get();
+
+        if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) and Vendor.Get(GenJournalLine."Account No.") and not PurchasesPayablesSetup."Copy Inv. No. To Pmt. Ref." then
             FIKMgt.EvaluateFIK(GenJournalLine."Payment Reference", GenJournalLine."Payment Method Code");
     end;
 

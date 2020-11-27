@@ -65,6 +65,38 @@ codeunit 8894 "Email Account"
         EmailAccountImpl.ValidateEmailAddress(EmailAddress, AllowEmptyValue);
     end;
 
+    /// <summary>
+    /// Validates email addresses and displays an error if any are invalid.
+    /// </summary>
+    /// <remarks>If the provided email address is an empty string, the function will do nothing.</remarks>
+    /// <param name="EmailAddresses">The email addresses to validate, separated by semicolons.</param>
+    /// <error>The email address "%1" is not valid.</error>
+    /// <returns>True if all email addresses are valid; false otherwise.</returns>
+    [TryFunction]
+    procedure ValidateEmailAddresses(EmailAddresses: Text)
+    begin
+        EmailAccountImpl.ValidateEmailAddresses(EmailAddresses, true);
+    end;
+
+    /// <summary>
+    /// Validates email addresses and displays an error if any are invalid.
+    /// </summary>
+    /// <param name="EmailAddresses">The email addresses to validate, separated by semicolons.</param>
+    /// <param name="AllowEmptyValue">Indicates whether to skip the validation if no email address is provided.</param>
+    /// <error>The email address "%1" is not valid.</error>
+    /// <error>The email address cannot be empty.</error>
+    /// <returns>True if all email addresses are valid; false otherwise.</returns>
+    [TryFunction]
+    procedure ValidateEmailAddresses(EmailAddresses: Text; AllowEmptyValue: Boolean)
+    begin
+        EmailAccountImpl.ValidateEmailAddresses(EmailAddresses, AllowEmptyValue);
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterValidateEmailAddress(EmailAddress: Text; AllowEmptyValue: Boolean)
+    begin
+    end;
+
     var
         EmailAccountImpl: Codeunit "Email Account Impl.";
 }

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Library functions to initialize test data for Camera and Media Interaction module",
-    "version":  "17.1.0.0",
+    "version":  "17.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,13 +15,13 @@
                              "id":  "46992a88-9fae-4e32-948b-2b07735ea10a",
                              "name":  "Camera and Media Interaction",
                              "publisher":  "Microsoft",
-                             "version":  "17.1.0.0"
+                             "version":  "17.2.0.0"
                          },
                          {
                              "id":  "0846d207-5dec-4c1b-afd8-6a25e1e14b9d",
                              "name":  "Base64 Convert",
                              "publisher":  "Microsoft",
-                             "version":  "17.1.0.0"
+                             "version":  "17.2.0.0"
                          }
                      ],
     "screenshots":  [

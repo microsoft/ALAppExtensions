@@ -215,8 +215,21 @@ codeunit 8889 "Email Account Impl."
     end;
 
     [TryFunction]
+    procedure ValidateEmailAddresses(EmailAddresses: Text; AllowEmptyValue: Boolean)
+    var
+        EmailAddress: Text;
+    begin
+        if (EmailAddresses = '') and not AllowEmptyValue then
+            Error(EmptyEmailAddressErr);
+
+        foreach EmailAddress in EmailAddresses.Split(';') do
+            ValidateEmailAddress(EmailAddress, AllowEmptyValue);
+    end;
+
+    [TryFunction]
     procedure ValidateEmailAddress(EmailAddress: Text; AllowEmptyValue: Boolean)
     var
+        EmailAccount: Codeunit "Email Account";
         ValidatedEmailAddress: Text;
     begin
         if (EmailAddress = '') and not AllowEmptyValue then
@@ -231,6 +244,8 @@ codeunit 8889 "Email Account Impl."
             if not (ValidatedEmailAddress = EmailAddress) then
                 Error(InvalidEmailAddressErr, EmailAddress);
         end;
+
+        EmailAccount.OnAfterValidateEmailAddress(EmailAddress, AllowEmptyValue);
     end;
 
     [TryFunction]

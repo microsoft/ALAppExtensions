@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Allows testing of code relying on different client types",
     "description":  "The purpose of this module is to allow testing of units that rely on client type other than the one on which the test executes. This is achieved by using the method GetCurrentClientType in the unit to compare the client type and subscribing to the event OnAfterGetCurrentClientType to alter the client type in the test.",
-    "version":  "17.1.0.0",
+    "version":  "17.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
