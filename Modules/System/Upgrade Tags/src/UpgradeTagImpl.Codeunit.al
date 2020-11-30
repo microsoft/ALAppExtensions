@@ -35,10 +35,7 @@ codeunit 9996 "Upgrade Tag Impl."
     begin
         ConstUpgradeTags.Reset;
         ConstUpgradeTags.SetRange(Tag, ExistingTag);
-        if ConstUpgradeTags.FindSet then
-            repeat
-                ConstUpgradeTags.ModifyAll(ConstUpgradeTags."Skipped Upgrade", true);
-            until ConstUpgradeTags.next = 0;
+        ConstUpgradeTags.ModifyAll(ConstUpgradeTags."Skipped Upgrade", true);
     end;
 
     procedure SetSkippedUpgrade(ExistingTag: Code[250]; TagCompanyName: Code[30])
@@ -48,9 +45,7 @@ codeunit 9996 "Upgrade Tag Impl."
         ConstUpgradeTags.Reset;
         ConstUpgradeTags.SetRange(Tag, ExistingTag);
         ConstUpgradeTags.SetRange(Company, TagCompanyName);
-        if ConstUpgradeTags.FindSet then begin
-            ConstUpgradeTags.ModifyAll(ConstUpgradeTags."Skipped Upgrade", true);
-        end;
+        ConstUpgradeTags.ModifyAll(ConstUpgradeTags."Skipped Upgrade", true);
     end;
 
     procedure SetAllUpgradeTags()
