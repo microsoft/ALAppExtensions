@@ -51,7 +51,7 @@ codeunit 9999 "Upgrade Tag"
     /// <summary>
     /// Sets the upgrade tag to skipped.
     /// </summary>
-    /// <param name="ExistingTag">Tag code to get the Tag</param>
+    /// <param name="ExistingTag">Tag code to set the skipped field</param>
     procedure SetSkippedUpgrade(ExistingTag: Code[250])
     begin
         UpgradeTagImpl.SetSkippedUpgrade(ExistingTag);
@@ -60,7 +60,8 @@ codeunit 9999 "Upgrade Tag"
     /// <summary>
     /// Sets the upgrade tag to skipped.
     /// </summary>
-    /// <param name="ExistingTag">Tag code to get the Tag</param>
+    /// <param name="ExistingTag">Tag code to set the skipped field</param>
+    /// <param name="TagCompanyName">Name of the company to check existance of tag</param>
     procedure SetSkippedUpgrade(ExistingTag: Code[250]; TagCompanyName: Code[30])
     begin
         UpgradeTagImpl.SetSkippedUpgrade(ExistingTag, TagCompanyName);
