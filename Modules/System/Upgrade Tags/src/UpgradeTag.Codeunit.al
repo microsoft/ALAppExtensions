@@ -49,6 +49,24 @@ codeunit 9999 "Upgrade Tag"
     end;
 
     /// <summary>
+    /// Sets the upgrade tag to skipped.
+    /// </summary>
+    /// <param name="ExistingTag">Tag code to get the Tag</param>
+    procedure SetSkippedUpgrade(ExistingTag: Code[250])
+    begin
+        UpgradeTagImpl.SetSkippedUpgrade(ExistingTag);
+    end;
+
+    /// <summary>
+    /// Sets the upgrade tag to skipped.
+    /// </summary>
+    /// <param name="ExistingTag">Tag code to get the Tag</param>
+    procedure SetSkippedUpgrade(ExistingTag: Code[250]; TagCompanyName: Code[30])
+    begin
+        UpgradeTagImpl.SetSkippedUpgrade(ExistingTag, TagCompanyName);
+    end;
+
+    /// <summary>
     /// This method should be used to set all upgrade tags in a new company. 
     /// The method is called from codeunit 2 - Company Initialize.
     /// </summary>
@@ -74,7 +92,7 @@ codeunit 9999 "Upgrade Tag"
     /// List of upgrade tags that should be inserted if they do not exist.
     /// </param>
     [IntegrationEvent(false, false)]
-    internal procedure OnGetPerCompanyUpgradeTags(var PerCompanyUpgradeTags: List of [Code[250]])
+    procedure OnGetPerCompanyUpgradeTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
     end;
 
@@ -85,7 +103,7 @@ codeunit 9999 "Upgrade Tag"
     /// List of upgrade tags that should be inserted if they do not exist.
     /// </param>
     [IntegrationEvent(false, false)]
-    internal procedure OnGetPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    procedure OnGetPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List of [Code[250]])
     begin
     end;
 }
