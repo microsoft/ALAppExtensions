@@ -51,20 +51,22 @@ codeunit 9999 "Upgrade Tag"
     /// <summary>
     /// Sets the upgrade tag to skipped.
     /// </summary>
-    /// <param name="ExistingTag">Tag code to set the skipped field</param>
-    procedure SetSkippedUpgrade(ExistingTag: Code[250])
+    /// <param name="ExistingTag">Tag code to set the Skipped Upgrade field</param>
+    /// <param name="SkipUpgrade">Sets the Skipped Upgrade field</param>
+    procedure SetSkippedUpgrade(ExistingTag: Code[250]; SkipUpgrade: Boolean): Boolean
     begin
-        UpgradeTagImpl.SetSkippedUpgrade(ExistingTag);
+        exit(UpgradeTagImpl.SetSkippedUpgrade(ExistingTag, SkipUpgrade));
     end;
 
     /// <summary>
     /// Sets the upgrade tag to skipped.
     /// </summary>
-    /// <param name="ExistingTag">Tag code to set the skipped field</param>
+    /// <param name="ExistingTag">Tag code to set the Skipped Upgrade field</param>
     /// <param name="TagCompanyName">Name of the company to check existance of tag</param>
-    procedure SetSkippedUpgrade(ExistingTag: Code[250]; TagCompanyName: Code[30])
+    /// <param name="SkipUpgrade">Sets the Skipped Upgrade field</param>
+    procedure SetSkippedUpgrade(ExistingTag: Code[250]; TagCompanyName: Code[30]; SkipUpgrade: Boolean): Boolean
     begin
-        UpgradeTagImpl.SetSkippedUpgrade(ExistingTag, TagCompanyName);
+        exit(UpgradeTagImpl.SetSkippedUpgrade(ExistingTag, TagCompanyName, SkipUpgrade));
     end;
 
     /// <summary>
@@ -87,13 +89,29 @@ codeunit 9999 "Upgrade Tag"
     end;
 
     /// <summary>
+    /// With this method you get all the upgrade tags by company in a list. 
+    /// </summary>
+    procedure GetPerCompanyUpgradeTags(var PerCompanyUpgradeTags: List of [Code[250]])
+    begin
+        OnGetPerDatabaseUpgradeTags(PerCompanyUpgradeTags);
+    end;
+
+    /// <summary>
+    /// With this method you get all the upgrade tags by database in a list. 
+    /// </summary>
+    procedure GetPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    begin
+        OnGetPerDatabaseUpgradeTags(PerDatabaseUpgradeTags);
+    end;
+
+    /// <summary>
     /// Use this event if you want to add upgrade tag for PerCompany upgrade method for a new company.
     /// </summary>
     /// <param name="PerCompanyUpgradeTags">
     /// List of upgrade tags that should be inserted if they do not exist.
     /// </param>
     [IntegrationEvent(false, false)]
-    procedure OnGetPerCompanyUpgradeTags(var PerCompanyUpgradeTags: List of [Code[250]])
+    internal procedure OnGetPerCompanyUpgradeTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
     end;
 
@@ -104,7 +122,7 @@ codeunit 9999 "Upgrade Tag"
     /// List of upgrade tags that should be inserted if they do not exist.
     /// </param>
     [IntegrationEvent(false, false)]
-    procedure OnGetPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    internal procedure OnGetPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List of [Code[250]])
     begin
     end;
 }
