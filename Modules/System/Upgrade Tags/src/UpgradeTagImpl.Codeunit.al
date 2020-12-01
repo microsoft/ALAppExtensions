@@ -46,6 +46,14 @@ codeunit 9996 "Upgrade Tag Impl."
             exit(false);
     end;
 
+    procedure HasUpgradeTagSkipped(ExistingTag: Code[250]; TagCompanyName: Code[30]): Boolean
+    var
+        UpgradeTags: Record "Upgrade Tags";
+    begin
+        if UpgradeTags.Get(ExistingTag, TagCompanyName) then
+            exit(UpgradeTags."Skipped Upgrade");
+    end;
+
     procedure SetAllUpgradeTags()
     var
         ConstUpgradeTags: Record "Upgrade Tags";

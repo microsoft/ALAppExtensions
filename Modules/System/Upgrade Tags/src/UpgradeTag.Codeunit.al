@@ -53,9 +53,9 @@ codeunit 9999 "Upgrade Tag"
     /// </summary>
     /// <param name="ExistingTag">Tag code to set the Skipped Upgrade field</param>
     /// <param name="SkipUpgrade">Sets the Skipped Upgrade field</param>
-    procedure SetSkippedUpgrade(ExistingTag: Code[250]; SkipUpgrade: Boolean): Boolean
+    procedure SetSkippedUpgrade(ExistingTag: Code[250]; SkipUpgrade: Boolean)
     begin
-        exit(UpgradeTagImpl.SetSkippedUpgrade(ExistingTag, SkipUpgrade));
+        UpgradeTagImpl.SetSkippedUpgrade(ExistingTag, SkipUpgrade);
     end;
 
     /// <summary>
@@ -64,9 +64,19 @@ codeunit 9999 "Upgrade Tag"
     /// <param name="ExistingTag">Tag code to set the Skipped Upgrade field</param>
     /// <param name="TagCompanyName">Name of the company to check existance of tag</param>
     /// <param name="SkipUpgrade">Sets the Skipped Upgrade field</param>
-    procedure SetSkippedUpgrade(ExistingTag: Code[250]; TagCompanyName: Code[30]; SkipUpgrade: Boolean): Boolean
+    procedure SetSkippedUpgrade(ExistingTag: Code[250]; TagCompanyName: Code[30]; SkipUpgrade: Boolean)
     begin
-        exit(UpgradeTagImpl.SetSkippedUpgrade(ExistingTag, TagCompanyName, SkipUpgrade));
+        UpgradeTagImpl.SetSkippedUpgrade(ExistingTag, TagCompanyName, SkipUpgrade);
+    end;
+
+    /// <summary>
+    /// Check if the upgrade tag is skipped.
+    /// </summary>
+    /// <param name="ExistingTag">Tag code to set the Skipped Upgrade field</param>
+    /// <param name="TagCompanyName">Name of the company to check existance of tag</param>
+    procedure HasUpgradeTagSkipped(ExistingTag: Code[250]; TagCompanyName: Code[30]): Boolean
+    begin
+        exit(UpgradeTagImpl.HasUpgradeTagSkipped(ExistingTag, TagCompanyName));
     end;
 
     /// <summary>
