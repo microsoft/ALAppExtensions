@@ -101,6 +101,9 @@ codeunit 9999 "Upgrade Tag"
     /// <summary>
     /// With this method you get all the upgrade tags by company in a list. 
     /// </summary>
+    /// <param name="PerCompanyUpgradeTags">
+    /// List of upgrade tags that should be inserted if they do not exist.
+    /// </param>
     procedure GetPerCompanyUpgradeTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         OnGetPerDatabaseUpgradeTags(PerCompanyUpgradeTags);
@@ -109,6 +112,9 @@ codeunit 9999 "Upgrade Tag"
     /// <summary>
     /// With this method you get all the upgrade tags by database in a list. 
     /// </summary>
+    /// <param name="PerCompanyUpgradeTags">
+    /// List of upgrade tags that should be inserted if they do not exist.
+    /// </param>
     procedure GetPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List of [Code[250]])
     begin
         OnGetPerDatabaseUpgradeTags(PerDatabaseUpgradeTags);
