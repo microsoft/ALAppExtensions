@@ -29,6 +29,13 @@ codeunit 9996 "Upgrade Tag Impl."
         SetUpgradeTagForCompany(NewTag, CopyStr(CompanyName(), 1, MaxStrLen(ConstUpgradeTags.Company)));
     end;
 
+    procedure SetDatabaseUpgradeTag(NewTag: Code[250])
+    var
+        ConstUpgradeTags: Record "Upgrade Tags";
+    begin
+        SetUpgradeTagForCompany(NewTag, '');
+    end;
+
     procedure SetSkippedUpgrade(ExistingTag: Code[250]; SkipUpgrade: Boolean)
     begin
         SetSkippedUpgrade(ExistingTag, CompanyName(), SkipUpgrade);

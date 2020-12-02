@@ -40,6 +40,15 @@ codeunit 9999 "Upgrade Tag"
     end;
 
     /// <summary>
+    /// Sets the upgrade tag for database upgrades.
+    /// </summary>
+    /// <param name="NewTag">Tag code to save</param>
+    procedure SetDatabaseUpgradeTag(NewTag: Code[250])
+    begin
+        UpgradeTagImpl.SetDatabaseUpgradeTag(NewTag);
+    end;
+
+    /// <summary>
     /// Sets the upgrade tag.
     /// </summary>
     /// <param name="NewTag">Tag code to save</param>
