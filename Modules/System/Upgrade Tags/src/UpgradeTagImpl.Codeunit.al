@@ -39,9 +39,12 @@ codeunit 9996 "Upgrade Tag Impl."
         UpgradeTags: Record "Upgrade Tags";
     begin
         if UpgradeTags.Get(ExistingTag, TagCompanyName) then begin
-            UpgradeTags."Skipped Upgrade" := SkipUpgrade;
-            UpgradeTags.Modify();
-            exit(true);
+            if UpgradeTags."Skipped Upgrade" <> SkipUpgrade then begin
+                UpgradeTags."Skipped Upgrade" := SkipUpgrade;
+                UpgradeTags.Modify();
+                exit(true);
+            end else
+                exit(false);
         end else
             exit(false);
     end;
@@ -51,7 +54,9 @@ codeunit 9996 "Upgrade Tag Impl."
         UpgradeTags: Record "Upgrade Tags";
     begin
         if UpgradeTags.Get(ExistingTag, TagCompanyName) then
-            exit(UpgradeTags."Skipped Upgrade");
+            exit(UpgradeTags."Skipped Upgrade")
+        else
+            exit(false);
     end;
 
     procedure SetAllUpgradeTags()
