@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PermissionSets>
+  <PermissionSet RoleID="BC Last IC AU" RoleName="Business Central (Previous) Intelligent Cloud AU">
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>11605</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+  </PermissionSet>
+</PermissionSets>

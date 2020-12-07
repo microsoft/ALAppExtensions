@@ -1,0 +1,210 @@
+{
+    "name": "Ruleset for first-party extensions",
+    "rules": [
+        {
+            "id": "AS0014",
+            "action": "None",
+            "justification": "ID range is not mandatory for first party extensions."
+        },
+        {
+            "id": "AS0015",
+            "action": "None",
+            "justification": "Translation file is not mandatory for first party extensions."
+        },
+        {
+            "id": "AS0016",
+            "action": "None",
+            "justification": "Explicitly defining the DataClassification property is not mandatory for first party extensions."
+        },
+        {
+            "id": "PTE0001",
+            "action": "None",
+            "justification": "Object Id's should not be in the free range."
+        },
+        {
+            "id": "PTE0002",
+            "action": "None",
+            "justification": "Field Id's should not be in the free range."
+        },
+        {
+            "id": "PTE0004",
+            "action": "Warning",
+            "justification": "AccountantHub does not need this. Table definitions must have a matching permission set."
+        },
+        {
+            "id": "PTE0005",
+            "action": "None",
+            "justification": "First party extensions can choose a target."
+        },
+        {
+            "id": "PTE0008",
+            "action": "Error"
+        },
+        {
+            "id": "AW0005",
+            "action": "Warning",
+            "justification": "[Logged bug to owner] We should fix this. Actions should use the Image property."
+        },
+        {
+            "id": "AW0006",
+            "action": "None",
+            "justification": "We do know that: Pages and reports should use the UsageCategory and ApplicationArea properties to be searchable."
+        },
+        {
+            "id": "AA0001",
+            "action": "Error"
+        },
+        {
+            "id": "AA0002",
+            "action": "Error"
+        },
+        {
+            "id": "AA0003",
+            "action": "Error"
+        },
+        {
+            "id": "AA0005",
+            "action": "Error"
+        },
+        {
+            "id": "AA0008",
+            "action": "Error" 
+        },
+        {
+            "id": "AA0013",
+            "action": "Error"
+        },
+        {
+            "id": "AA0018",
+            "action": "Error"
+        },
+        {
+            "id": "AA0021",
+            "action": "Error" 
+        },
+        {
+            "id": "AA0022",
+            "action": "Error"
+        },
+        {
+            "id": "AA0040",
+            "action": "Error"
+        },
+        {
+            "id": "AA0074",
+            "action": "Error"
+        },
+        {
+            "id": "AA0100",
+            "action": "Error"
+        },
+        {
+            "id": "AA0136",
+            "action": "Error"
+        },
+        {
+            "id": "AA0137",
+            "action": "None" 
+        },
+        {
+            "id": "AA0139",
+            "action": "Warning",
+            "justification": "Bug 325231: Re-Enable CodeCop rule AA0139."
+        },
+        {
+            "id": "AA0161",
+            "action": "Error"
+        },
+        {
+            "id": "AA0194",
+            "action": "Error"
+        },
+        {
+            "id": "AA0215",
+            "action": "None",
+            "justification": "1st party app with legacy files."
+
+        },
+        {
+            "id": "AS0026",
+            "action": "Error"
+        },
+        {
+            "id": "AS0047",
+            "action": "Warning",
+            "justification": "Name and publisher length not limited for first party extensions."
+        },
+        {
+            "id": "AS0051",
+            "action": "None"
+        },
+        {
+            "id": "AS0052",
+            "action": "None"
+        },
+        {
+            "id": "AS0053",
+            "action": "None"
+        },
+        {
+            "id": "AS0054",
+            "action": "None"
+        },
+        {
+            "id": "AS0055",
+            "action": "None"
+        },
+        {
+            "id": "AS0056",
+            "action": "None"
+        },
+        {
+            "id": "AS0057",
+            "action": "None"
+        },
+        {
+            "id": "AS0058",
+            "action": "None"
+        },
+        {
+            "id": "AS0059",
+            "action": "None"
+        },
+        {
+            "id": "AS0060",
+            "action": "None"
+        },
+        {
+            "id": "AS0061",
+            "action": "None"
+        },
+        {
+            "id": "AS0062",
+            "action": "None"
+        },
+        {
+            "id": "AS0063",
+            "action": "None"
+        },
+        {
+            "id": "AS0064",
+            "action": "None"
+        },
+        {
+            "id": "AS0073",
+            "action": "Error"
+        },
+        {
+            "id": "AS0074",
+            "action": "Error"
+        },
+        {
+            "id": "AS0075",
+            "action": "Error"
+        },
+        {
+            "id": "AS0076",
+            "action": "Error"
+        }
+    ]
+}
