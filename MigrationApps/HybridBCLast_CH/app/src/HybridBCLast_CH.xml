@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PermissionSets>
+  <PermissionSet RoleID="BC Last IC CH" RoleName="Business Central (Previous) Intelligent Cloud CH">
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>11505</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>11506</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>11507</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>11508</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>11509</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>11510</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>11511</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+  </PermissionSet>
+</PermissionSets>

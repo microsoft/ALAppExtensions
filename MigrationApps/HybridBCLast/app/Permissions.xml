@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PermissionSets>
+  <PermissionSet RoleID="BC Last IC" RoleName="Business Central (Previous) Intelligent Cloud">
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4020</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4021</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4023</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4024</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4026</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4027</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4028</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4029</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4051</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4052</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4053</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>Codeunit</ObjectType>
+      <ObjectID>4080</ObjectID>
+      <ReadPermission>No</ReadPermission>
+      <InsertPermission>No</InsertPermission>
+      <ModifyPermission>No</ModifyPermission>
+      <DeletePermission>No</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>TableData</ObjectType>
+      <ObjectID>4018</ObjectID>
+      <ReadPermission>Yes</ReadPermission>
+      <InsertPermission>Yes</InsertPermission>
+      <ModifyPermission>Yes</ModifyPermission>
+      <DeletePermission>Yes</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>TableData</ObjectType>
+      <ObjectID>4020</ObjectID>
+      <ReadPermission>Yes</ReadPermission>
+      <InsertPermission>Yes</InsertPermission>
+      <ModifyPermission>Yes</ModifyPermission>
+      <DeletePermission>Yes</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>TableData</ObjectType>
+      <ObjectID>4037</ObjectID>
+      <ReadPermission>Yes</ReadPermission>
+      <InsertPermission>Yes</InsertPermission>
+      <ModifyPermission>Yes</ModifyPermission>
+      <DeletePermission>Yes</DeletePermission>
+      <ExecutePermission>Yes</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+  </PermissionSet>
+</PermissionSets>
