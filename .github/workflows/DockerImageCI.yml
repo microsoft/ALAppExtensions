@@ -8,12 +8,17 @@ jobs:
   run:
     name: Run CI
     runs-on: windows-2019
+    env:
+      username: ${{ secrets.USERNAME }}
+      password: ${{ secrets.PASSWORD }}
     steps:
     - uses: actions/checkout@v2
-    - name: Install BcContainerHelper from PSGallery
+    - name: Run
       shell: powershell
       run: |
         Set-PSRepository PSGallery -InstallationPolicy Trusted
         Install-Module bccontainerhelper -force
         Import-Module BcContainerHelper
         $artifactUrl = Get-BcArtifactUrl -type sandbox -country us -select latest
+        $credential = New-Object pscredential "$username", (ConvertTo-SecureString -String "$password" -AsPlainText -Force)
+        New-BCContainer -accept_eula -containerName test -artifactUrl $artifactUrl -auth AAD -authenticationEMail "$username"
