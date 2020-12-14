@@ -3,7 +3,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-
 codeunit 13624 "OIOUBL-Initialize"
 {
     Subtype = Install;
