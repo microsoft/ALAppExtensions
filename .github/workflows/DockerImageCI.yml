@@ -20,5 +20,6 @@ jobs:
         Install-Module BcContainerHelper -force
         Import-Module BcContainerHelper -DisableNameChecking
         $artifactUrl = Get-BcArtifactUrl -type sandbox -country us -select latest
-        $credential = New-Object pscredential "$username", (ConvertTo-SecureString -String "$password" -AsPlainText -Force)
+        $passwordSecureString = ConvertTo-SecureString -String "$password" -AsPlainText -Force
+        $credential = New-Object pscredential "$username", $passwordSecureString
         New-BCContainer -accept_eula -containerName test -artifactUrl $artifactUrl -auth AAD -authenticationEMail "$username"
