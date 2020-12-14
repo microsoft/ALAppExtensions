@@ -1,13 +1,23 @@
-name: Docker Image CI
+name: CI
 
 on:
   pull_request:
     branches: [ master ]
 
 jobs:  
-  build:
+  run:
+    name: Run CI
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+    - name: Install BcContainerHelper from PSGallery
+      shell: pwsh
+      run: |
+        Set-PSRepository PSGallery -InstallationPolicy Trusted
+        Install-Module bccontainerhelper -force
+
+    - name: Create a new BC container
+      shell: pwsh
+    - run: |
+        $artifactUrl = Get-BcArtifactUrl -type sandbox -country us -select latest
