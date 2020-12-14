@@ -37,20 +37,21 @@ codeunit 9996 "Upgrade Tag Impl."
     end;
 
     procedure SetSkippedUpgrade(ExistingTag: Code[250]; SkipUpgrade: Boolean)
+    var
+        UpgradeTags: Record "Upgrade Tags";
     begin
-        SetSkippedUpgrade(ExistingTag, CompanyName(), SkipUpgrade);
+        SetSkippedUpgrade(ExistingTag, CopyStr(CompanyName(), 1, MaxStrLen(UpgradeTags.Company)), SkipUpgrade);
     end;
 
     procedure SetSkippedUpgrade(ExistingTag: Code[250]; TagCompanyName: Code[30]; SkipUpgrade: Boolean)
     var
         UpgradeTags: Record "Upgrade Tags";
     begin
-        if UpgradeTags.Get(ExistingTag, TagCompanyName) then begin
+        if UpgradeTags.Get(ExistingTag, TagCompanyName) then
             if UpgradeTags."Skipped Upgrade" <> SkipUpgrade then begin
                 UpgradeTags."Skipped Upgrade" := SkipUpgrade;
                 UpgradeTags.Modify();
             end;
-        end;
     end;
 
     procedure HasUpgradeTagSkipped(ExistingTag: Code[250]; TagCompanyName: Code[30]): Boolean
