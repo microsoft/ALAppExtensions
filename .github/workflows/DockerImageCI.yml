@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install BcContainerHelper from PSGallery
-      shell: pwsh
+      shell: powershell
       run: |
         Set-PSRepository PSGallery -InstallationPolicy Trusted
         Install-Module bccontainerhelper -force
