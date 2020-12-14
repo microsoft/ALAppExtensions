@@ -10,14 +10,9 @@ jobs:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v2
-
     - name: Install BcContainerHelper from PSGallery
       shell: pwsh
       run: |
         Set-PSRepository PSGallery -InstallationPolicy Trusted
         Install-Module bccontainerhelper -force
-
-    - name: Create a new BC container
-      shell: pwsh
-    - run: |
         $artifactUrl = Get-BcArtifactUrl -type sandbox -country us -select latest
