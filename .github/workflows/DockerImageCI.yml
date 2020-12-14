@@ -6,19 +6,19 @@ on:
 
 jobs:  
   run:
-    name: Run CI
+    name: Verify changeset
     runs-on: windows-2019
-    env:
-      username: ${{ secrets.USERNAME }}
-      password: ${{ secrets.PASSWORD }}
     steps:
     - uses: actions/checkout@v2
-    - name: Run
+    - name: Build and run
       shell: powershell
+      env:
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
       run: |
         Set-PSRepository PSGallery -InstallationPolicy Trusted
-        Install-Module bccontainerhelper -force
-        Import-Module BcContainerHelper
+        Install-Module BcContainerHelper -force
+        Import-Module BcContainerHelper -DisableNameChecking
         $artifactUrl = Get-BcArtifactUrl -type sandbox -country us -select latest
         $credential = New-Object pscredential "$username", (ConvertTo-SecureString -String "$password" -AsPlainText -Force)
         New-BCContainer -accept_eula -containerName test -artifactUrl $artifactUrl -auth AAD -authenticationEMail "$username"
