@@ -15,4 +15,5 @@ jobs:
       run: |
         Set-PSRepository PSGallery -InstallationPolicy Trusted
         Install-Module bccontainerhelper -force
+        Import-Module BcContainerHelper
         $artifactUrl = Get-BcArtifactUrl -type sandbox -country us -select latest
