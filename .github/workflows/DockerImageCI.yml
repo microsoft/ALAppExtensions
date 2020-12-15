@@ -40,6 +40,5 @@ jobs:
           -appProjectFolder $Env:GITHUB_WORKSPACE\Modules\System
           -appOutputFolder $Env:GITHUB_WORKSPACE\Modules\System
           -EnableCodeCop
-          -EnableAppSourceCop
           -EnableUICop
         shell: powershell
