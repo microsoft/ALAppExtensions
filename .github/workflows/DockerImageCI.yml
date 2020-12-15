@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v2
-    - uses: docker://alpine:3.8
+    - uses: docker://mcr.microsoft.com/businesscentral/onprem:latest-latest-us-ltsc2019
     - name: Build and run
       shell: powershell
       env:
