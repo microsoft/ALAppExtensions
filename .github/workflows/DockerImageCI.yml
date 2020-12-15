@@ -17,11 +17,10 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
         run: >
-          $artifactUrl = Get-BcArtifactUrl -type sandbox -country us -select latest
           New-BCContainer 
           -accept_eula 
           -containerName bcdev 
-          -artifactUrl $artifactUrl
+          -artifactUrl (Get-BcArtifactUrl -type sandbox -country us -select latest)
           -useBestContainerOS 
           -alwaysPull 
           -auth NavUserPassword 
