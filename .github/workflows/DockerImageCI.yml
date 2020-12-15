@@ -10,6 +10,7 @@ jobs:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v2
+    - uses: docker://alpine:3.8
     - name: Build and run
       shell: powershell
       env:
