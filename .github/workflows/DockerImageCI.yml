@@ -17,10 +17,11 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
         run: >
+          $artifactUrl = Get-BcArtifactUrl -type sandbox -country us -select latest
           New-BCContainer 
           -accept_eula 
           -containerName bcdev 
-          -imageName mcr.microsoft.com/businesscentral/onprem:latest 
+          -artifactUrl $artifactUrl
           -useBestContainerOS 
           -alwaysPull 
           -auth NavUserPassword 
