@@ -9,8 +9,8 @@ jobs:
     runs-on: windows-2019
     steps:
       - uses: actions/checkout@v1    
-      - name: Install NavContainerHelper
-        run: Install-Module NavContainerHelper -Force
+      - name: Install BcContainerHelper
+        run: Install-Module BcContainerHelper -Force
         shell: powershell
       - name: Set up Business Central container
         env:
