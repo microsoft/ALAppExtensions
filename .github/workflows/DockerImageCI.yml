@@ -16,10 +16,17 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
       run: |
+        Write-Host "Installing BcContainerHelper..."
         Set-PSRepository PSGallery -InstallationPolicy Trusted
         Install-Module BcContainerHelper -force
+        
+        Write-Host "Importing BcContainerHelper..."
         Import-Module BcContainerHelper -DisableNameChecking
+        
+        Write-Host "Getting BC artifacts..."
         $artifactUrl = Get-BcArtifactUrl -type sandbox -country us -select latest
+        
+        Write-Host "Creating a new container..."
         $passwordSecureString = ConvertTo-SecureString -String "$env:password" -AsPlainText -Force
         $credential = New-Object pscredential "$env:username", $passwordSecureString
         New-BCContainer -accept_eula -containerName test -artifactUrl $artifactUrl -auth AAD -authenticationEMail "$env:username"
