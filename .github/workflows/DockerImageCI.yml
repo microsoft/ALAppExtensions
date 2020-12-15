@@ -27,7 +27,6 @@ jobs:
           -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
           -updateHosts 
           -doNotExportObjectsToText 
-          -enableSymbolLoading
           -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\ALAppExtensions\Modules\System`:c:\project")
         shell: powershell
       - name: Compile extension
