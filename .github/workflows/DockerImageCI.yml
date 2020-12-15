@@ -27,6 +27,7 @@ jobs:
           -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
           -updateHosts
           -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\Modules\System`:c:\project")
+          -includeAL
         shell: powershell
       - name: Compile extension
         env:
@@ -38,7 +39,6 @@ jobs:
           -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
           -appProjectFolder $Env:GITHUB_WORKSPACE\Modules\System
           -appOutputFolder $Env:GITHUB_WORKSPACE\Modules\System
-          -updateSymbols
         shell: powershell
       - name: Publish extension
         env:
