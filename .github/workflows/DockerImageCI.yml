@@ -36,8 +36,8 @@ jobs:
           Compile-AppInBCContainer 
           -containerName bcdev 
           -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
-          -appProjectFolder $Env:GITHUB_WORKSPACE\ALAppExtensions\Modules\System
-          -appOutputFolder $Env:GITHUB_WORKSPACE\ALAppExtensions\Modules\System
+          -appProjectFolder $Env:GITHUB_WORKSPACE\Modules\System
+          -appOutputFolder $Env:GITHUB_WORKSPACE\Modules\System
           -updateSymbols
         shell: powershell
       - name: Publish extension
@@ -48,7 +48,7 @@ jobs:
           Publish-BCContainerApp 
           -containerName bcdev 
           -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
-          -appFile ((Get-ChildItem -Path $Env:GITHUB_WORKSPACE\ALAppExtensions\Modules\System -File *.app).FullName)
+          -appFile ((Get-ChildItem -Path $Env:GITHUB_WORKSPACE\Modules\System -File *.app).FullName)
           -skipVerification
           -sync 
           -install
