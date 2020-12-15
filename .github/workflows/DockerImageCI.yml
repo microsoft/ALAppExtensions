@@ -17,7 +17,7 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
         run: >
-          New-NavContainer 
+          New-BCContainer 
           -accept_eula 
           -containerName bcdev 
           -imageName mcr.microsoft.com/businesscentral/onprem:latest 
@@ -25,9 +25,8 @@ jobs:
           -alwaysPull 
           -auth NavUserPassword 
           -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
-          -updateHosts 
-          -doNotExportObjectsToText 
-          -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\ALAppExtensions\Modules\System`:c:\project")
+          -updateHosts
+          -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\Modules\System`:c:\project")
         shell: powershell
       - name: Compile extension
         env:
@@ -46,7 +45,7 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
         run: >
-          Publish-NavContainerApp 
+          Publish-BCContainerApp 
           -containerName bcdev 
           -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
           -appFile ((Get-ChildItem -Path $Env:GITHUB_WORKSPACE\ALAppExtensions\Modules\System -File *.app).FullName)
