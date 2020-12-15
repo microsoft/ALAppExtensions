@@ -39,17 +39,7 @@ jobs:
           -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
           -appProjectFolder $Env:GITHUB_WORKSPACE\Modules\System
           -appOutputFolder $Env:GITHUB_WORKSPACE\Modules\System
-        shell: powershell
-      - name: Publish extension
-        env:
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-        run: >
-          Publish-BCContainerApp 
-          -containerName bcdev 
-          -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
-          -appFile ((Get-ChildItem -Path $Env:GITHUB_WORKSPACE\Modules\System -File *.app).FullName)
-          -skipVerification
-          -sync 
-          -install
+          -EnableCodeCop
+          -EnableAppSourceCop
+          -EnableUICop
         shell: powershell
