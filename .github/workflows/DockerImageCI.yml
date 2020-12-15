@@ -4,20 +4,42 @@ on:
   pull_request:
     branches: [ master ]
 
-jobs:  
-  run:
-    name: Run CI
+jobs:
+  build:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Install BcContainerHelper from PSGallery
-      shell: pwsh
-      run: |
-        Set-PSRepository PSGallery -InstallationPolicy Trusted
-        Install-Module bccontainerhelper -force
-
-    - name: Create a new BC container
-      shell: pwsh
-    - run: |
-        $artifactUrl = Get-BcArtifactUrl -type sandbox -country us -select latest
+      - uses: actions/checkout@v1    
+      - name: Install BcContainerHelper
+        run: Install-Module BcContainerHelper -Force
+        shell: powershell
+      - name: Set up Business Central container
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: >
+          New-BCContainer 
+          -accept_eula 
+          -containerName bcdev 
+          -artifactUrl (Get-BcArtifactUrl -type sandbox -country us -select latest)
+          -useBestContainerOS 
+          -alwaysPull 
+          -auth NavUserPassword 
+          -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
+          -updateHosts
+          -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\Modules\System`:c:\project")
+          -includeAL
+        shell: powershell
+      - name: Compile extension
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}    
+        run: >
+          Compile-AppInBCContainer 
+          -containerName bcdev 
+          -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
+          -appProjectFolder $Env:GITHUB_WORKSPACE\Modules\System
+          -appOutputFolder $Env:GITHUB_WORKSPACE\Modules\System
+          -EnableCodeCop
+          -EnableAppSourceCop
+          -EnableUICop
+        shell: powershell
