@@ -194,7 +194,7 @@ page 130451 "AL Test Tool"
                     PromotedCategory = Process;
                     PromotedIsBig = true;
                     PromotedOnly = true;
-                    ToolTip = 'Runs selected tests.';
+                    ToolTip = 'Runs marked tests.';
 
                     trigger OnAction()
                     var
@@ -215,6 +215,7 @@ page 130451 "AL Test Tool"
                     PromotedCategory = Process;
                     PromotedIsBig = true;
                     PromotedOnly = true;
+                    ToolTip = 'Runs selected tests.';
 
                     trigger OnAction()
                     var
@@ -303,7 +304,13 @@ page 130451 "AL Test Tool"
                     var
                         TestMethodLine: Record "Test Method Line";
                         TestSuiteMgt: Codeunit "Test Suite Mgt.";
+                        DeleteQuestion: Label 'Are you sure you want to Delete the Selected Lines?';
                     begin
+                        if GuiAllowed() then begin
+                            if not Confirm(DeleteQuestion, false) then
+                                exit;
+                        end;
+
                         CurrPage.SetSelectionFilter(TestMethodLine);
                         TestMethodLine.DeleteAll(true);
                         TestSuiteMgt.CalcTestResults(Rec, Success, Failure, Skipped, NotExecuted);

@@ -250,21 +250,44 @@ codeunit 130456 "Test Suite Mgt."
     procedure GetTestMethods(var ALTestSuite: Record "AL Test Suite"; var AllObjWithCaption: Record AllObjWithCaption)
     var
         TestLineNo: Integer;
+        DialogContent: Label '-- Get Test Methods --\#1#\#2#';
+        i: Integer;
+        n: Integer;
+        d: Dialog;
     begin
         if not AllObjWithCaption.FindSet() then
             exit;
 
+        if GuiAllowed() then begin
+            i := 0;
+            n := AllObjWithCaption.Count();
+            d.Open(DialogContent);
+        end;
+
         repeat
+            if GuiAllowed() then begin
+                i += 1;
+                d.Update(1, format(AllObjWithCaption."Object Type") + '-' + format(AllObjWithCaption."Object ID") + ' - ' + AllObjWithCaption."Object Caption");
+                d.Update(2, format(i) + ' / ' + format(n) + ' ... ' + format(round(i / n * 100, 1)) + ' %');
+            end;
+
             // Must be inside of loop. Test Runner used for discovering tests is adding methods
             TestLineNo := GetLastTestLineNo(ALTestSuite) + 10000;
             AddTestMethod(AllObjWithCaption, ALTestSuite, TestLineNo);
         until AllObjWithCaption.Next() = 0;
+
+        if GuiAllowed() then
+            d.Close();
     end;
 
     procedure UpdateTestMethods(var TestMethodLine: record "Test Method Line")
     var
         BackupTestMethodLine: Record "Test Method Line";
         TestRunnerGetMethods: Codeunit "Test Runner - Get Methods";
+        DialogContent: Label '-- Update Test Methods --\#1#\#2#';
+        i: Integer;
+        n: Integer;
+        d: Dialog;
     begin
         BackupTestMethodLine.Copy(TestMethodLine);
         TestMethodLine.Reset();
@@ -272,11 +295,27 @@ codeunit 130456 "Test Suite Mgt."
         TestMethodLine.SetRange("Line Type", TestMethodLine."Line Type"::Function);
         TestMethodLine.DeleteAll();
         TestMethodLine.SetRange("Line Type", TestMethodLine."Line Type"::Codeunit);
+
+        if GuiAllowed() then begin
+            i := 0;
+            n := TestMethodLine.Count();
+            d.Open(DialogContent);
+        end;
+
         if TestMethodLine.FindSet() then
             repeat
+                if GuiAllowed() then begin
+                    i += 1;
+                    d.Update(1, format(TestMethodLine."Line Type") + '-' + format(TestMethodLine."Test Codeunit") + ' - ' + TestMethodLine.Name);
+                    d.Update(2, format(i) + ' / ' + format(n) + ' ... ' + format(round(i / n * 100, 1)) + ' %');
+                end;
+
                 TestRunnerGetMethods.SetUpdateTests(true);
                 TestRunnerGetMethods.Run(TestMethodLine);
             until TestMethodLine.Next() = 0;
+
+        if GuiAllowed() then
+            d.Close();
 
         TestMethodLine.SetRange("Test Suite", BackupTestMethodLine."Test Suite");
         TestMethodLine.SetRange("Test Codeunit", BackupTestMethodLine."Test Codeunit");
