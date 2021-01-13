@@ -1,31 +1,33 @@
 {
-  "id": "b185fd4a-677b-48d3-a701-768de7563df0",
-  "name": "Regex",
-  "publisher": "Microsoft",
-  "version": "17.2.0.0",
-  "brief": "Provides access to the .NET regular expression engine",
-  "description": "Provides access to the .NET regular expression engine.",
-  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
-  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
-  "help": "https://go.microsoft.com/fwlink/?linkid=2103698",
-  "url": "https://go.microsoft.com/fwlink/?linkid=724011",
-  "logo": "",
-  "dependencies": [
-    {
-      "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
-      "name":  "DotNet Aliases",
-      "publisher":  "Microsoft",
-      "version":  "17.2.0.0"
-    }
-  ],
-  "screenshots": [],
-  "platform": "17.0.0.0",
-  "idRanges": [
-    {
-      "from": 3960,
-      "to": 3966
-    }
-  ],
-  "target": "OnPrem",
-  "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
+    "id":  "b185fd4a-677b-48d3-a701-768de7563df0",
+    "name":  "Regex",
+    "publisher":  "Microsoft",
+    "version":  "17.3.0.0",
+    "brief":  "Provides access to the .NET regular expression engine",
+    "description":  "Provides access to the .NET regular expression engine.",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "name":  "DotNet Aliases",
+                             "publisher":  "Microsoft",
+                             "version":  "17.3.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "17.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  3960,
+                         "to":  3966
+                     }
+                 ],
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
 }

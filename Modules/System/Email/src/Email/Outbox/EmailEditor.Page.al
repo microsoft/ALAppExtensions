@@ -118,37 +118,50 @@ page 13 "Email Editor"
                 }
             }
 
-            field("Email Editor"; EmailBody)
+            group(HTMLFormattedBody)
             {
-                Caption = 'Message';
-                ApplicationArea = All;
-                ToolTip = 'Specifies the content of the email.';
-                MultiLine = true;
-                Editable = not EmailScheduled;
+                ShowCaption = false;
+                Caption = ' ';
                 Visible = IsHTMLFormatted;
 
-                trigger OnValidate()
-                begin
-                    EmailMessage.SetBody(EmailBody);
-                    EmailMessage.Modify();
-                end;
+                field("Email Editor"; EmailBody)
+                {
+                    Caption = 'Message';
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the content of the email.';
+                    MultiLine = true;
+                    Editable = not EmailScheduled;
+
+                    trigger OnValidate()
+                    begin
+                        EmailMessage.SetBody(EmailBody);
+                        EmailMessage.Modify();
+                    end;
+                }
             }
 
-            field(BodyField; EmailBody)
+            group(RawTextBody)
             {
-                Caption = 'Message';
-                ApplicationArea = All;
-                ToolTip = 'Specifies the content of the email.';
-                MultiLine = true;
-                Editable = not EmailScheduled;
+                ShowCaption = false;
+                Caption = ' ';
                 Visible = not IsHTMLFormatted;
 
-                trigger OnValidate()
-                begin
-                    EmailMessage.SetBody(EmailBody);
-                    EmailMessage.Modify();
-                end;
+                field(BodyField; EmailBody)
+                {
+                    Caption = 'Message';
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the content of the email.';
+                    MultiLine = true;
+                    Editable = not EmailScheduled;
+
+                    trigger OnValidate()
+                    begin
+                        EmailMessage.SetBody(EmailBody);
+                        EmailMessage.Modify();
+                    end;
+                }
             }
+
             part(Attachments; "Email Attachments")
             {
                 ApplicationArea = All;
@@ -231,19 +244,9 @@ page 13 "Email Editor"
         }
     }
 
-    trigger OnOpenPage()
+    trigger OnAfterGetRecord()
     begin
         EmailEditor.CheckPermissions(Rec);
-
-        if not IsNewOutbox then begin // if the outbox is set as new, do not create new outbox
-            IsNewOutbox := Rec.Id = 0;
-            if IsNewOutbox then
-                EmailEditor.CreateOutbox(Rec);
-        end;
-
-        // Disable next and previous records arrows
-        Rec.SetRange(Id, Rec.Id);
-        CurrPage.SetTableView(Rec);
 
         EmailEditor.GetEmailAccount(Rec, EmailAccount);
         EmailEditor.GetEmailMessage(Rec, EmailMessage);
@@ -255,9 +258,33 @@ page 13 "Email Editor"
         EmailBody := EmailMessage.GetBody();
         EmailSubject := EmailMessage.GetSubject();
 
+        if EmailSubject <> '' then
+            CurrPage.Caption(EmailSubject)
+        else
+            CurrPage.Caption(PageCaptionTxt); // fallback to default caption
+
         EmailScheduled := Rec.Status in [Enum::"Email Status"::Queued, Enum::"Email Status"::Processing];
         IsHTMLFormatted := EmailMessage.IsBodyHTMLFormatted();
-        CurrPage.Attachments.Page.SetEmailMessageId(EmailMessage.GetId());
+        CurrPage.Attachments.Page.UpdateValues(EmailMessage.GetId());
+    end;
+
+    trigger OnOpenPage()
+    begin
+        EmailEditor.CheckPermissions(Rec);
+
+        Rec.SetRange("User Security Id", UserSecurityId());
+        CurrPage.SetTableView(Rec);
+
+        if not IsNewOutbox then begin // if the outbox is set as new, do not create new outbox
+            IsNewOutbox := Rec.Id = 0;
+            if IsNewOutbox then
+                EmailEditor.CreateOutbox(Rec);
+        end;
+
+        if IsNewOutbox then begin  // Disable arrows if it's a new record
+            Rec.SetRange(Id, Rec.Id);
+            CurrPage.SetTableView(Rec);
+        end;
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -322,4 +349,5 @@ page 13 "Email Editor"
         FromDisplayNameLbl: Label '%1 (%2)', Comment = '%1 - Account Name, %2 - Email address', Locked = true;
         CloseThePageQst: Label 'The email has not been sent.';
         OptionsOnClosePageNewEmailLbl: Label 'Keep as draft in Email Outbox,Discard email';
+        PageCaptionTxt: Label 'Compose an Email';
 }

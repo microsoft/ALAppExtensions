@@ -447,4 +447,21 @@ page 31161 "Cash Document Subform CZP"
         DimensionManagement.UseShortcutDims(DimVisible1, DimVisible2, DimVisible3, DimVisible4, DimVisible5, DimVisible6, DimVisible7, DimVisible8);
         Clear(DimensionManagement);
     end;
+
+#if not CLEAN18
+    internal procedure LinkAdvLetters()
+    begin
+        Rec.LinkToAdvLetter();
+    end;
+
+    internal procedure LinkWholeAdvLetter()
+    begin
+        Rec.LinkWholeLetter();
+    end;
+
+    internal procedure UnLinkLinkedAdvLetters()
+    begin
+        Rec.UnLinkWholeLetter();
+    end;
+#endif
 }

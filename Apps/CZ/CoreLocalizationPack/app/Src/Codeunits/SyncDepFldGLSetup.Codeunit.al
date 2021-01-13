@@ -53,7 +53,8 @@ codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"General Ledger Setup", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statutory Reporting Setup CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statutory Reporting Setup CZL");
+        StatutoryReportingSetupCZL.ChangeCompany(Rec.CurrentCompany);
         if not StatutoryReportingSetupCZL.Get() then begin
             StatutoryReportingSetupCZL.Init();
             StatutoryReportingSetupCZL.Insert(false);

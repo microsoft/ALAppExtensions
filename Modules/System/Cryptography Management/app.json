@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Provides cryptography helper functions.",
     "description":  "Provides helper functions for encryption and hashing. For encryption in an on-premises versions, use it to turn encryption on or off, and import and export the encryption key. Encryption is always turned on for online versions.",
-    "version":  "17.2.0.0",
+    "version":  "17.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,25 +15,25 @@
                              "id":  "a2ca2793-e1b4-461d-8251-dbe934daec78",
                              "name":  "Password",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "Blob Storage",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          }
                      ],
     "screenshots":  [

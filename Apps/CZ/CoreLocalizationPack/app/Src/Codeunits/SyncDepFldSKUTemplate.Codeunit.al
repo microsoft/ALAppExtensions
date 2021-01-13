@@ -11,14 +11,17 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
         StockkeepingUnitTemplateCZL: Record "Stockkeeping Unit Template CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template CZL");
+        StockkeepingUnitTemplateCZL.ChangeCompany(Rec.CurrentCompany);
         if StockkeepingUnitTemplateCZL.Get(xRec."Item Category Code", xRec."Location Code") then
             StockkeepingUnitTemplateCZL.Rename(Rec."Item Category Code", Rec."Location Code");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template", 'OnAfterInsertEvent', '', false, false)]
@@ -38,11 +41,14 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
         StockkeepingUnitTemplateCZL: Record "Stockkeeping Unit Template CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template CZL");
+        StockkeepingUnitTemplateCZL.ChangeCompany(Rec.CurrentCompany);
         if not StockkeepingUnitTemplateCZL.Get(Rec."Item Category Code", Rec."Location Code") then begin
             StockkeepingUnitTemplateCZL.Init();
             StockkeepingUnitTemplateCZL."Item Category Code" := Rec."Item Category Code";
@@ -58,11 +64,14 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
         StockkeepingUnitTemplateCZL: Record "Stockkeeping Unit Template CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template CZL");
+        StockkeepingUnitTemplateCZL.ChangeCompany(Rec.CurrentCompany);
         if StockkeepingUnitTemplateCZL.Get(Rec."Item Category Code", Rec."Location Code") then
             StockkeepingUnitTemplateCZL.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template CZL", 0);
@@ -74,14 +83,17 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
         StockkeepingUnitTemplate: Record "Stockkeeping Unit Template";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template CZL") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template");
+        StockkeepingUnitTemplate.ChangeCompany(Rec.CurrentCompany);
         if StockkeepingUnitTemplate.Get(xRec."Item Category Code", xRec."Location Code") then
             StockkeepingUnitTemplate.Rename(Rec."Item Category Code", Rec."Location Code");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -101,13 +113,14 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
         StockkeepingUnitTemplate: Record "Stockkeeping Unit Template";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template");
+        StockkeepingUnitTemplate.ChangeCompany(Rec.CurrentCompany);
         if not StockkeepingUnitTemplate.Get(Rec."Item Category Code", Rec."Location Code") then begin
             StockkeepingUnitTemplate.Init();
             StockkeepingUnitTemplate."Item Category Code" := Rec."Item Category Code";
@@ -123,13 +136,23 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
         StockkeepingUnitTemplate: Record "Stockkeeping Unit Template";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template");
+        StockkeepingUnitTemplate.ChangeCompany(Rec.CurrentCompany);
         if StockkeepingUnitTemplate.Get(Rec."Item Category Code", Rec."Location Code") then
             StockkeepingUnitTemplate.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template", 0);
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

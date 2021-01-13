@@ -11,12 +11,17 @@ codeunit 31156 "Sync.Dep.Fld-UnrelPayerEnt CZL"
         UnreliablePayerEntryCZL: Record "Unreliable Payer Entry CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Uncertainty Payer Entry", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Unreliable Payer Entry CZL", 0);
+        if Rec.IsTemporary then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Uncertainty Payer Entry") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Unreliable Payer Entry CZL");
+        UnreliablePayerEntryCZL.ChangeCompany(Rec.CurrentCompany);
         if UnreliablePayerEntryCZL.Get(xRec."Entry No.") then
             UnreliablePayerEntryCZL.Rename(Rec."Entry No.");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Unreliable Payer Entry CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Unreliable Payer Entry CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Uncertainty Payer Entry", 'OnAfterInsertEvent', '', false, false)]
@@ -36,11 +41,14 @@ codeunit 31156 "Sync.Dep.Fld-UnrelPayerEnt CZL"
         UnreliablePayerEntryCZL: Record "Unreliable Payer Entry CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if Rec.IsTemporary() then
+        if IsFieldSynchronizationDisabled() then
+            exit;
+        if Rec.IsTemporary then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Uncertainty Payer Entry", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Unreliable Payer Entry CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Unreliable Payer Entry CZL");
+        UnreliablePayerEntryCZL.ChangeCompany(Rec.CurrentCompany);
         if not UnreliablePayerEntryCZL.Get(Rec."Entry No.") then begin
             UnreliablePayerEntryCZL.Init();
             UnreliablePayerEntryCZL."Entry No." := Rec."Entry No.";
@@ -66,26 +74,36 @@ codeunit 31156 "Sync.Dep.Fld-UnrelPayerEnt CZL"
         UnreliablePayerEntryCZL: Record "Unreliable Payer Entry CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Uncertainty Payer Entry", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Unreliable Payer Entry CZL", 0);
+        if Rec.IsTemporary then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Uncertainty Payer Entry") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Unreliable Payer Entry CZL");
+        UnreliablePayerEntryCZL.ChangeCompany(Rec.CurrentCompany);
         if UnreliablePayerEntryCZL.Get(Rec."Entry No.") then
             UnreliablePayerEntryCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Unreliable Payer Entry CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Unreliable Payer Entry CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Unreliable Payer Entry CZL", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenameUnreliablePayerEntryCZL(var Rec: Record "Unreliable Payer Entry CZL"; var xRec: Record "Unreliable Payer Entry CZL")
     var
-        UncetaintyPayerEntry: Record "Uncertainty Payer Entry";
+        UncertaintyPayerEntry: Record "Uncertainty Payer Entry";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Unreliable Payer Entry CZL", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Uncertainty Payer Entry", 0);
-        if UncetaintyPayerEntry.Get(xRec."Entry No.") then begin
-            UncetaintyPayerEntry.Rename(Rec."Entry No.");
-            SyncLoopingHelper.RestoreFieldSynchronization(Database::"Uncertainty Payer Entry", 0);
+        if Rec.IsTemporary then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Unreliable Payer Entry CZL") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Uncertainty Payer Entry");
+        UncertaintyPayerEntry.ChangeCompany(Rec.CurrentCompany);
+        if UncertaintyPayerEntry.Get(xRec."Entry No.") then begin
+            UncertaintyPayerEntry.Rename(Rec."Entry No.");
+            SyncLoopingHelper.RestoreFieldSynchronization(Database::"Uncertainty Payer Entry");
         end;
     end;
 
@@ -105,45 +123,60 @@ codeunit 31156 "Sync.Dep.Fld-UnrelPayerEnt CZL"
 
     local procedure SyncUnreliablePayerEntryCZL(var Rec: Record "Unreliable Payer Entry CZL")
     var
-        UncetaintyPayerEntry: Record "Uncertainty Payer Entry";
+        UncertaintyPayerEntry: Record "Uncertainty Payer Entry";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if Rec.IsTemporary() then
+        if IsFieldSynchronizationDisabled() then
+            exit;
+        if Rec.IsTemporary then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Unreliable Payer Entry CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Uncertainty Payer Entry", 0);
-        if not UncetaintyPayerEntry.Get(Rec."Entry No.") then begin
-            UncetaintyPayerEntry.Init();
-            UncetaintyPayerEntry."Entry No." := Rec."Entry No.";
-            UncetaintyPayerEntry.Insert(false);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Uncertainty Payer Entry");
+        UncertaintyPayerEntry.ChangeCompany(Rec.CurrentCompany);
+        if not UncertaintyPayerEntry.Get(Rec."Entry No.") then begin
+            UncertaintyPayerEntry.Init();
+            UncertaintyPayerEntry."Entry No." := Rec."Entry No.";
+            UncertaintyPayerEntry.Insert(false);
         end;
-        UncetaintyPayerEntry."Vendor No." := Rec."Vendor No.";
-        UncetaintyPayerEntry."Check Date" := Rec."Check Date";
-        UncetaintyPayerEntry."Public Date" := Rec."Public Date";
-        UncetaintyPayerEntry."End Public Date" := Rec."End Public Date";
-        UncetaintyPayerEntry."Uncertainty Payer" := Rec."Unreliable Payer";
-        UncetaintyPayerEntry."Entry Type" := Rec."Entry Type";
-        UncetaintyPayerEntry."VAT Registration No." := Rec."VAT Registration No.";
-        UncetaintyPayerEntry."Tax Office Number" := Rec."Tax Office Number";
-        UncetaintyPayerEntry."Full Bank Account No." := Rec."Full Bank Account No.";
-        UncetaintyPayerEntry."Bank Account No. Type" := Rec."Bank Account No. Type";
-        UncetaintyPayerEntry.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Uncertainty Payer Entry", 0);
+        UncertaintyPayerEntry."Vendor No." := Rec."Vendor No.";
+        UncertaintyPayerEntry."Check Date" := Rec."Check Date";
+        UncertaintyPayerEntry."Public Date" := Rec."Public Date";
+        UncertaintyPayerEntry."End Public Date" := Rec."End Public Date";
+        UncertaintyPayerEntry."Uncertainty Payer" := Rec."Unreliable Payer";
+        UncertaintyPayerEntry."Entry Type" := Rec."Entry Type";
+        UncertaintyPayerEntry."VAT Registration No." := Rec."VAT Registration No.";
+        UncertaintyPayerEntry."Tax Office Number" := Rec."Tax Office Number";
+        UncertaintyPayerEntry."Full Bank Account No." := Rec."Full Bank Account No.";
+        UncertaintyPayerEntry."Bank Account No. Type" := Rec."Bank Account No. Type";
+        UncertaintyPayerEntry.Modify(false);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Uncertainty Payer Entry");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Unreliable Payer Entry CZL", 'OnBeforeDeleteEvent', '', false, false)]
     local procedure SyncOnBeforeDeleteUnreliablePayerEntryCZL(var Rec: Record "Unreliable Payer Entry CZL")
     var
-        UncetaintyPayerEntry: Record "Uncertainty Payer Entry";
+        UncertaintyPayerEntry: Record "Uncertainty Payer Entry";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Unreliable Payer Entry CZL", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Uncertainty Payer Entry", 0);
-        if UncetaintyPayerEntry.Get(Rec."Entry No.") then begin
-            UncetaintyPayerEntry.Delete(false);
-            SyncLoopingHelper.RestoreFieldSynchronization(Database::"Uncertainty Payer Entry", 0);
+        if Rec.IsTemporary then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Unreliable Payer Entry CZL") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Uncertainty Payer Entry");
+        UncertaintyPayerEntry.ChangeCompany(Rec.CurrentCompany);
+        if UncertaintyPayerEntry.Get(Rec."Entry No.") then begin
+            UncertaintyPayerEntry.Delete(false);
+            SyncLoopingHelper.RestoreFieldSynchronization(Database::"Uncertainty Payer Entry");
         end;
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

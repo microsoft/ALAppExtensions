@@ -18,6 +18,7 @@ table 3964 Groups
     {
         field(1; GroupIndex; Integer)
         {
+            Caption = 'Group Index';
             DataClassification = SystemMetadata;
         }
         field(2; Index; Integer)
@@ -32,6 +33,7 @@ table 3964 Groups
         }
         field(4; ValueBlob; Blob)
         {
+            Caption = 'Values';
             Access = Internal;
             DataClassification = SystemMetadata; // Since this is a temp table we can do this
             Description = 'Gets the captured substring from the input string.';

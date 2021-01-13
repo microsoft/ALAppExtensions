@@ -77,7 +77,7 @@ page 30056 "APIV2 - PDF Document"
                 IdFilter := DocumentIdFilter;
 
             DocumentId := Format(DocumentIdFilter);
-            DocumentType := ConvertDocumentTypeFilterToEnum(DocumentTypeFilter);
+            Evaluate(DocumentType, DocumentTypeFilter);
             SetView(FilterView);
             if IsNullGuid(DocumentId) then
                 exit(false);
@@ -92,28 +92,4 @@ page 30056 "APIV2 - PDF Document"
         ConflictingIdsErr: Label 'You have specified conflicting identifiers: %1 and %2.', Comment = '%1 - a GUID, %2 - a GUID';
         MissingParentIdErr: Label 'You must specify a parentId in the request body.', Comment = 'parentId is a field name and should not be translated.';
         MissingParentTypeErr: Label 'You must specify a parentType in the request body.', Comment = 'parentType is a field name and should not be translated.';
-        DocumentTypeInvalidErr: Label 'Document type is not valid.';
-
-    local procedure ConvertDocumentTypeFilterToEnum(DocumentTypeFilter: Text): Enum "Attachment Entity Buffer Document Type"
-    var
-        AttachmentEntityBufferDocType: Enum "Attachment Entity Buffer Document Type";
-    begin
-        case DocumentTypeFilter of
-            'Journal':
-                exit(AttachmentEntityBufferDocType::Journal);
-            'Sales Invoice':
-                exit(AttachmentEntityBufferDocType::"Sales Invoice");
-            'Sales Quote':
-                exit(AttachmentEntityBufferDocType::"Sales Quote");
-            'Sales Order':
-                exit(AttachmentEntityBufferDocType::"Sales Order");
-            'Sales Credit Memo':
-                exit(AttachmentEntityBufferDocType::"Sales Credit Memo");
-            'Purchase Invoice':
-                exit(AttachmentEntityBufferDocType::"Purchase Invoice");
-            ' ':
-                exit(AttachmentEntityBufferDocType::" ");
-        end;
-        Error(DocumentTypeInvalidErr);
-    end;
 }

@@ -8,6 +8,7 @@
 /// </summary>
 page 1751 "Data Classification Worksheet"
 {
+    Caption = 'Data Classification Worksheet';
     Extensible = false;
     AccessByPermission = TableData "Data Sensitivity" = R;
     ApplicationArea = All;

@@ -80,25 +80,36 @@ page 12 "Email Viewer"
                 }
             }
 
-            field("Email Editor"; EmailBody)
+            group(HTMLFormattedBody)
             {
-                Caption = 'Message';
-                ApplicationArea = All;
-                ToolTip = 'Specifies the content of the email.';
-                MultiLine = true;
-                Editable = false;
+                ShowCaption = false;
+                Caption = ' ';
                 Visible = IsHTMLFormatted;
+
+                field("Email Editor"; EmailBody)
+                {
+                    Caption = 'Message';
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the content of the email.';
+                    MultiLine = true;
+                    Editable = false;
+                }
             }
 
-            field(BodyField; EmailBody)
+            group(RawTextBody)
             {
-                ApplicationArea = All;
                 ShowCaption = false;
-                Caption = 'Message';
-                ToolTip = 'Specifies the content of the email.';
-                MultiLine = true;
-                Editable = false;
+                Caption = ' ';
                 Visible = not IsHTMLFormatted;
+                field(BodyField; EmailBody)
+                {
+                    ApplicationArea = All;
+                    ShowCaption = false;
+                    Caption = 'Message';
+                    ToolTip = 'Specifies the content of the email.';
+                    MultiLine = true;
+                    Editable = false;
+                }
             }
 
 
@@ -151,16 +162,9 @@ page 12 "Email Viewer"
         }
     }
 
-    trigger OnOpenPage()
+    trigger OnAfterGetRecord()
     begin
-        if Rec.Id = 0 then
-            exit;
-
         EmailViewer.CheckPermissions(Rec);
-
-        // Disable next and previous records arrows
-        Rec.SetRange(Id, Rec.Id);
-        CurrPage.SetTableView(Rec);
 
         EmailViewer.GetEmailAccount(Rec, EmailAccount);
         EmailViewer.GetEmailMessage(Rec, EmailMessage);
@@ -172,9 +176,25 @@ page 12 "Email Viewer"
         BccRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::Bcc);
         EmailBody := EmailMessage.GetBody();
 
+        if EmailSubject <> '' then
+            CurrPage.Caption(EmailSubject)
+        else
+            CurrPage.Caption(PageCaptionTxt); // fallback to default caption
+
         IsHTMLFormatted := EmailMessage.IsBodyHTMLFormatted();
         HasAttachements := EmailMessage.Attachments_First();
-        CurrPage.Attachments.Page.SetEmailMessageId(EmailMessage.GetId());
+        CurrPage.Attachments.Page.UpdateValues(EmailMessage.GetId());
+    end;
+
+    trigger OnOpenPage()
+    begin
+        if Rec.Id = 0 then
+            exit;
+
+        EmailViewer.CheckPermissions(Rec);
+
+        Rec.SetRange("User Security Id", UserSecurityId());
+        CurrPage.SetTableView(Rec);
     end;
 
     local procedure UpdateFromField(EmailAccount: Record "Email Account" temporary)
@@ -196,4 +216,5 @@ page 12 "Email Viewer"
         [InDataSet]
         IsHTMLFormatted, HasAttachements : Boolean;
         FromDisplayNameLbl: Label '%1 (%2)', Comment = '%1 - Account Name, %2 - Email address', Locked = true;
+        PageCaptionTxt: Label 'Sent Email';
 }

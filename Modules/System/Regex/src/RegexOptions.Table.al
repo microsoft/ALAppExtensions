@@ -18,6 +18,7 @@ table 3966 "Regex Options"
     {
         field(1; IgnoreCase; Boolean)
         {
+            Caption = 'Ignore Case';
             DataClassification = SystemMetadata;
             Description = 'Specifies case-insensitive matching.';
         }
@@ -28,6 +29,7 @@ table 3966 "Regex Options"
         }
         field(3; ExplicitCapture; Boolean)
         {
+            Caption = 'Explicit Capture';
             DataClassification = SystemMetadata;
             Description = 'Specifies that the only valid captures are explicitly named or numbered groups of the form (?<name>...).';
         }
@@ -43,28 +45,33 @@ table 3966 "Regex Options"
         }
         field(6; IgnorePatternWhitespace; Boolean)
         {
+            Caption = 'Ignore Pattern Whitespace';
             DataClassification = SystemMetadata;
             Description = 'Eliminates unescaped white space from the pattern and enables comments marked with #.';
         }
         field(7; RightToLeft; Boolean)
         {
+            Caption = 'Right To Left';
             DataClassification = SystemMetadata;
             Description = 'Specifies that the search will be from right to left instead of from left to right.';
         }
         field(8; ECMAScript; Boolean)
         {
+            Caption = 'ECMA Script';
             DataClassification = SystemMetadata;
             Description = 'Enables ECMAScript-compliant behavior for the expression.';
         }
         field(9; CultureInvariant; Boolean)
         {
+            Caption = 'Culture Invariant';
             DataClassification = SystemMetadata;
             Description = 'Specifies that cultural differences in language is ignored.';
         }
         field(10; MatchTimeoutInMs; Integer)
         {
+            Caption = 'Match Timeout In Milliseconds';
             DataClassification = SystemMetadata;
-            Description = 'A time-out interval in miliseconds, to indicate when the matching should time out.';
+            Description = 'A time-out interval in milliseconds, to indicate when the matching should time out.';
             InitValue = -1; // Indicates no time-out 
         }
     }

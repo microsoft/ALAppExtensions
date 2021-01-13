@@ -1,5 +1,14 @@
-﻿page 2502 "Extension Marketplace"
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Shows the Extension Marketplace.
+/// </summary>
+page 2502 "Extension Marketplace"
 {
+    Caption = 'Extension Marketplace';
     PageType = Card;
     ApplicationArea = All;
     UsageCategory = Administration;

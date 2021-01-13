@@ -25,7 +25,9 @@ codeunit 4510 "Email - Outlook API Install"
 
         DataClassificationMgt.SetFieldToPersonal(Database::"Email - Outlook Account", Account.FieldNo(Name));
         DataClassificationMgt.SetFieldToPersonal(Database::"Email - Outlook Account", Account.FieldNo("Email Address"));
+#if not CLEAN17
         DataClassificationMgt.SetFieldToPersonal(Database::"Email - Outlook Account", Account.FieldNo("Created By"));
+#endif
 
         DataClassificationMgt.SetFieldToNormal(Database::"Email - Outlook API Setup", APISetup.FieldNo(ClientId));
         DataClassificationMgt.SetFieldToNormal(Database::"Email - Outlook API Setup", APISetup.FieldNo(ClientSecret));

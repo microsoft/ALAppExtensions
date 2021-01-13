@@ -64,6 +64,7 @@ page 30053 "APIV2 - Pictures"
 
     trigger OnFindRecord(Which: Text): Boolean
     var
+        PictureEntityParentType: Enum "Picture Entity Parent Type";
         ParentIdFilter: Text;
         ParentTypeFilter: Text;
     begin
@@ -78,7 +79,8 @@ page 30053 "APIV2 - Pictures"
                 if (ParentTypeFilter = '') or (ParentIdFilter = '') then
                     Error(ParentNotSpecifiedErr)
             end;
-            LoadDataWithParentType(ParentIdFilter, GetParentTypeFromFilter(ParentTypeFilter));
+            Evaluate(PictureEntityParentType, ParentTypeFilter);
+            LoadDataWithParentType(ParentIdFilter, PictureEntityParentType);
             Insert(true);
         end;
 
@@ -99,19 +101,5 @@ page 30053 "APIV2 - Pictures"
     var
         ParentNotSpecifiedErr: Label 'You must get to the parent first to get to the picture.';
         DataLoaded: Boolean;
-
-    local procedure GetParentTypeFromFilter(ParentTypeFilter: Text): Enum "Picture Entity Parent Type"
-    begin
-        case ParentTypeFilter of
-            'Customer':
-                exit("Parent Type"::Customer);
-            'Employee':
-                exit("Parent Type"::Employee);
-            'Item':
-                exit("Parent Type"::Item);
-            'Vendor':
-                exit("Parent Type"::Vendor);
-        end;
-    end;
 }
 

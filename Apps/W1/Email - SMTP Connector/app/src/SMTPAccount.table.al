@@ -96,7 +96,26 @@ table 4511 "SMTP Account"
         field(12; "Created By"; Text[50])
         {
             DataClassification = EndUserIdentifiableInformation;
-            TableRelation = User."User Name";
+            ObsoleteReason = 'Unused, can be replaced by SystemCreatedBy and correlate with the User table''s  User Security Id.';
+#if CLEAN17
+            ObsoleteState = Removed;
+            ObsoleteTag = '20.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '17.3';
+
+            trigger OnLookup()
+            var
+                User: Record User;
+                UserLookup: Page "User Lookup";
+            begin
+                UserLookup.LookupMode(true);
+                if UserLookup.RunModal() = Action::LookupOK then begin
+                    UserLookup.GetRecord(User);
+                    Rec.Validate("Created By", User."User Name");
+                end;
+            end;
+#endif
         }
     }
 

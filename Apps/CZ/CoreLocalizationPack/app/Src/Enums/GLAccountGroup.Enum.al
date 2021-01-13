@@ -1,16 +1,17 @@
 enum 11718 "G/L Account Group CZL"
 {
-    Extensible = true;
+    Extensible = false;
 
-    value(0; " ")
+    value(0; "Financial Accounting")
     {
+        Caption = 'Financial Accounting';
     }
-    value(1; Internal)
+    value(1; "Internal Accounting")
     {
-        Caption = 'Internal';
+        Caption = 'Internal Accounting';
     }
-    value(2; "Off-Balance")
+    value(2; "Off-Balance Accounting")
     {
-        Caption = 'Off-Balance';
+        Caption = 'Off-Balance Accounting';
     }
 }

@@ -2,7 +2,7 @@
     "id":  "aa171ba9-d3b0-450d-90fb-546b61e32074",
     "name":  "OAuth2",
     "publisher":  "Microsoft",
-    "version":  "17.2.0.0",
+    "version":  "17.3.0.0",
     "brief":  "Contains methods supporting authentication via OAuth 2.0 protocol.",
     "description":  "Contains helper methods for obtaining the authentication key and secret, or the authorization header in respect to the OAuth 2.0 authorization protocol.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,25 +15,25 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "publisher":  "Microsoft",
                              "name":  "DotNet Aliases",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "1b2efb4b-8c44-4d74-a56f-60646645bb21",
                              "name":  "URI",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "2bc4f320-b476-4b99-8caa-358664b7f37c",
                              "name":  "OAuthClientAddIn",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          }
                      ],
     "screenshots":  [

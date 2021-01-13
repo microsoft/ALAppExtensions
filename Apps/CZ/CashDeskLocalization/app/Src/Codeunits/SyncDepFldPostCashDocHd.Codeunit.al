@@ -11,14 +11,17 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
         PostedCashDocumentHeaderCZP: Record "Posted Cash Document Hdr. CZP";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Header", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Header") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Hdr. CZP", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Hdr. CZP");
+        PostedCashDocumentHeaderCZP.ChangeCompany(Rec.CurrentCompany);
         if PostedCashDocumentHeaderCZP.Get(xRec."Cash Desk No.", xRec."No.") then
             PostedCashDocumentHeaderCZP.Rename(Rec."Cash Desk No.", Rec."No.");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Hdr. CZP", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Hdr. CZP");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Posted Cash Document Header", 'OnAfterInsertEvent', '', false, false)]
@@ -38,11 +41,14 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
         PostedCashDocumentHeaderCZP: Record "Posted Cash Document Hdr. CZP";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Header", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Header") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Hdr. CZP", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Hdr. CZP");
+        PostedCashDocumentHeaderCZP.ChangeCompany(Rec.CurrentCompany);
         if not PostedCashDocumentHeaderCZP.Get(Rec."Cash Desk No.", Rec."No.") then begin
             PostedCashDocumentHeaderCZP.Init();
             PostedCashDocumentHeaderCZP."Cash Desk No." := Rec."Cash Desk No.";
@@ -83,7 +89,7 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
         PostedCashDocumentHeaderCZP."Canceled Document" := Rec."Canceled Document";
         PostedCashDocumentHeaderCZP."Dimension Set ID" := Rec."Dimension Set ID";
         PostedCashDocumentHeaderCZP.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Hdr. CZP", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Hdr. CZP");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Posted Cash Document Header", 'OnBeforeDeleteEvent', '', false, false)]
@@ -92,14 +98,17 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
         PostedCashDocumentHeaderCZP: Record "Posted Cash Document Hdr. CZP";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Header", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Header") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Hdr. CZP", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Hdr. CZP");
+        PostedCashDocumentHeaderCZP.ChangeCompany(Rec.CurrentCompany);
         if PostedCashDocumentHeaderCZP.Get(Rec."Cash Desk No.", Rec."No.") then
             PostedCashDocumentHeaderCZP.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Hdr. CZP", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Hdr. CZP");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Posted Cash Document Hdr. CZP", 'OnBeforeRenameEvent', '', false, false)]
@@ -108,14 +117,17 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
         PostedCashDocumentHeader: Record "Posted Cash Document Header";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Hdr. CZP", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Hdr. CZP") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Header", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Header");
+        PostedCashDocumentHeader.ChangeCompany(Rec.CurrentCompany);
         if PostedCashDocumentHeader.Get(xRec."Cash Desk No.", xRec."No.") then
             PostedCashDocumentHeader.Rename(Rec."Cash Desk No.", Rec."No.");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Header", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Header");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Posted Cash Document Hdr. CZP", 'OnAfterInsertEvent', '', false, false)]
@@ -135,13 +147,14 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
         PostedCashDocumentHeader: Record "Posted Cash Document Header";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Hdr. CZP", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Hdr. CZP") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Header", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Header");
+        PostedCashDocumentHeader.ChangeCompany(Rec.CurrentCompany);
         if not PostedCashDocumentHeader.Get(Rec."Cash Desk No.", Rec."No.") then begin
             PostedCashDocumentHeader.Init();
             PostedCashDocumentHeader."Cash Desk No." := Rec."Cash Desk No.";
@@ -182,7 +195,7 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
         PostedCashDocumentHeader."Canceled Document" := Rec."Canceled Document";
         PostedCashDocumentHeader."Dimension Set ID" := Rec."Dimension Set ID";
         PostedCashDocumentHeader.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Header", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Header");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Posted Cash Document Hdr. CZP", 'OnBeforeDeleteEvent', '', false, false)]
@@ -191,13 +204,23 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
         PostedCashDocumentHeader: Record "Posted Cash Document Header";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Hdr. CZP", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Posted Cash Document Hdr. CZP") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Header", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Posted Cash Document Header");
+        PostedCashDocumentHeader.ChangeCompany(Rec.CurrentCompany);
         if PostedCashDocumentHeader.Get(Rec."Cash Desk No.", Rec."No.") then
             PostedCashDocumentHeader.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Header", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Header");
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

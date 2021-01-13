@@ -88,7 +88,9 @@ page 4500 "Current User Email Account"
                     Rec."Outlook API Email Connector" := Enum::"Email Connector"::"Current User";
                     Rec."Email Address" := CurrentUserConnector.GetCurrentUsersAccountEmailAddress();
                     Rec.Name := CurrentUserConnector.GetCurrentUserAccountName();
+#if not CLEAN17
                     Rec."Created By" := CopyStr(UserId(), 1, MaxStrLen(Rec."Created By"));
+#endif
 
                     AccountAdded := Rec.Insert();
 

@@ -11,12 +11,17 @@ codeunit 31186 "Sync.Dep.Fld-VatStmtCommLn CZL"
         VATStatementCommentLineCZL: Record "VAT Statement Comment Line CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line CZL", 0);
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line CZL");
+        VATStatementCommentLineCZL.ChangeCompany(Rec.CurrentCompany);
         if VATStatementCommentLineCZL.Get(xRec."VAT Statement Template Name", xRec."VAT Statement Name", xRec."Line No.") then
             VATStatementCommentLineCZL.Rename(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Statement Comment Line", 'OnAfterInsertEvent', '', false, false)]
@@ -36,9 +41,14 @@ codeunit 31186 "Sync.Dep.Fld-VatStmtCommLn CZL"
         VATStatementCommentLineCZL: Record "VAT Statement Comment Line CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line CZL", 0);
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line CZL");
+        VATStatementCommentLineCZL.ChangeCompany(Rec.CurrentCompany);
         if not VATStatementCommentLineCZL.Get(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.") then begin
             VATStatementCommentLineCZL.Init();
             VATStatementCommentLineCZL."VAT Statement Template Name" := Rec."VAT Statement Template Name";
@@ -49,7 +59,7 @@ codeunit 31186 "Sync.Dep.Fld-VatStmtCommLn CZL"
         VATStatementCommentLineCZL.Date := Rec.Date;
         VATStatementCommentLineCZL.Comment := Rec.Comment;
         VATStatementCommentLineCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Statement Comment Line", 'OnBeforeDeleteEvent', '', false, false)]
@@ -58,12 +68,17 @@ codeunit 31186 "Sync.Dep.Fld-VatStmtCommLn CZL"
         VATStatementCommentLineCZL: Record "VAT Statement Comment Line CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line CZL", 0);
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line CZL");
+        VATStatementCommentLineCZL.ChangeCompany(Rec.CurrentCompany);
         if VATStatementCommentLineCZL.Get(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.") then
             VATStatementCommentLineCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Statement Comment Line CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -72,12 +87,17 @@ codeunit 31186 "Sync.Dep.Fld-VatStmtCommLn CZL"
         VATStatementCommentLine: Record "VAT Statement Comment Line";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line CZL", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line", 0);
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line CZL") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line");
+        VATStatementCommentLine.ChangeCompany(Rec.CurrentCompany);
         if VATStatementCommentLine.Get(xRec."VAT Statement Template Name", xRec."VAT Statement Name", xRec."Line No.") then
             VATStatementCommentLine.Rename(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Statement Comment Line CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -97,11 +117,14 @@ codeunit 31186 "Sync.Dep.Fld-VatStmtCommLn CZL"
         VATStatementCommentLine: Record "VAT Statement Comment Line";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line CZL", 0) then
+        if Rec.IsTemporary() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line", 0);
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line CZL") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line");
+        VATStatementCommentLine.ChangeCompany(Rec.CurrentCompany);
         if not VATStatementCommentLine.Get(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.") then begin
             VATStatementCommentLine.Init();
             VATStatementCommentLine."VAT Statement Template Name" := Rec."VAT Statement Template Name";
@@ -112,7 +135,7 @@ codeunit 31186 "Sync.Dep.Fld-VatStmtCommLn CZL"
         VATStatementCommentLine.Date := Rec.Date;
         VATStatementCommentLine.Comment := Rec.Comment;
         VATStatementCommentLine.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Statement Comment Line CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -121,11 +144,23 @@ codeunit 31186 "Sync.Dep.Fld-VatStmtCommLn CZL"
         VATStatementCommentLine: Record "VAT Statement Comment Line";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line CZL", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line", 0);
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Comment Line CZL") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Comment Line");
+        VATStatementCommentLine.ChangeCompany(Rec.CurrentCompany);
         if VATStatementCommentLine.Get(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.") then
             VATStatementCommentLine.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Comment Line");
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

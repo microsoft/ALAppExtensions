@@ -115,6 +115,7 @@ page 30039 "APIV2 - Attachments"
     var
         TypeHelper: Codeunit "Type Helper";
         FileManagement: Codeunit "File Management";
+        AttachmentEntityBufferDocType: Enum "Attachment Entity Buffer Document Type";
         DocumentIdFilter: Text;
         DocumentTypeFilter: Text;
         FilterView: Text;
@@ -125,7 +126,8 @@ page 30039 "APIV2 - Attachments"
             DocumentTypeFilter := GetFilter("Document Type");
             if (DocumentIdFilter <> '') and (DocumentTypeFilter <> '') then begin
                 Validate("Document Id", Format(DocumentIdFilter));
-                Validate("Document Type", ConvertDocumentTypeFilterToEnum(DocumentTypeFilter));
+                Evaluate(AttachmentEntityBufferDocType, DocumentTypeFilter);
+                Validate("Document Type", AttachmentEntityBufferDocType);
             end;
             SetView(FilterView);
         end;
@@ -166,7 +168,6 @@ page 30039 "APIV2 - Attachments"
         AttachmentsFound: Boolean;
         MissingParentIdErr: Label 'You must specify a parentId in the request body.';
         CannotModifyKeyFieldErr: Label 'You cannot change the value of the key field %1.', Comment = '%1 = Field name';
-        DocumentTypeInvalidErr: Label 'Document type is not valid.';
 
     local procedure ByteSizeFromContent()
     var
@@ -174,28 +175,5 @@ page 30039 "APIV2 - Attachments"
     begin
         TempBlob.FromRecord(Rec, FieldNo(Content));
         "Byte Size" := GraphMgtAttachmentBuffer.GetContentLength(TempBlob);
-    end;
-
-    local procedure ConvertDocumentTypeFilterToEnum(DocumentTypeFilter: Text): Enum "Attachment Entity Buffer Document Type"
-    var
-        AttachmentEntityBufferDocType: Enum "Attachment Entity Buffer Document Type";
-    begin
-        case DocumentTypeFilter of
-            'Journal':
-                exit(AttachmentEntityBufferDocType::Journal);
-            'Sales Invoice':
-                exit(AttachmentEntityBufferDocType::"Sales Invoice");
-            'Sales Quote':
-                exit(AttachmentEntityBufferDocType::"Sales Quote");
-            'Sales Order':
-                exit(AttachmentEntityBufferDocType::"Sales Order");
-            'Sales Credit Memo':
-                exit(AttachmentEntityBufferDocType::"Sales Credit Memo");
-            'Purchase Invoice':
-                exit(AttachmentEntityBufferDocType::"Purchase Invoice");
-            ' ':
-                exit(AttachmentEntityBufferDocType::" ");
-        end;
-        Error(DocumentTypeInvalidErr);
     end;
 }

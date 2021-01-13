@@ -11,22 +11,27 @@ page 1919 "MigrationQB Default Accounts"
     {
         area(content)
         {
+#if not CLEAN18
             group("Instructions")
             {
-                Visible = InitialVisable;
+                Visible = false;
                 ShowCaption = false;
-                field(Instructions1; InstructionsTxt)
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Instruction field is moved inside groups below. This group is no longer in use.';
+                ObsoleteTag = '18.0';
+            }
+#endif
+            group("Group2")
+            {
+                Visible = FirstGroupVisible;
+                ShowCaption = false;
+                field(Instructions1; Instruction1Txt)
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     MultiLine = true;
                     ShowCaption = false;
                 }
-            }
-            group("Group2")
-            {
-                Visible = FirstGroupVisible;
-                ShowCaption = false;
                 field("Sales Account"; SalesAccount)
                 {
                     ApplicationArea = Basic, Suite;
@@ -92,6 +97,13 @@ page 1919 "MigrationQB Default Accounts"
             {
                 Visible = SecondGroupVisible;
                 ShowCaption = false;
+                field(Instructions2; Instruction2Txt)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    MultiLine = true;
+                    ShowCaption = false;
+                }
                 field("COGS Account"; COGSAccount)
                 {
                     ApplicationArea = Basic, Suite;
@@ -151,6 +163,13 @@ page 1919 "MigrationQB Default Accounts"
             {
                 Visible = ThirdGroupVisible;
                 ShowCaption = false;
+                field(Instructions3; Instruction3Txt)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    MultiLine = true;
+                    ShowCaption = false;
+                }
                 field("Unit Of Measure"; UnitOfMeasure)
                 {
                     ApplicationArea = Basic, Suite;
@@ -235,23 +254,19 @@ page 1919 "MigrationQB Default Accounts"
         ThirdGroupVisible: Boolean;
         BackEnabled: Boolean;
         NextEnabled: Boolean;
-        InitialVisable: Boolean;
         Step: Option PageOne,PageTwo,PageThree,Done;
         Instruction1Txt: Label 'Enter the accounts to use when you post sales and purchase transactions to the general ledger.';
         Instruction2Txt: Label 'Enter the accounts to use when you post transactions for items, and for the sale or purchase of services.';
         Instruction3Txt: Label 'Choose the unit of measure to assign to all inventory and service items that you import.';
-        InstructionsTxt: Text;
 
     local procedure ShowPageOne()
     begin
         Step := Step::PageOne;
         BackEnabled := true;
         NextEnabled := true;
-        InitialVisable := true;
         FirstGroupVisible := true;
         SecondGroupVisible := false;
         ThirdGroupVisible := false;
-        InstructionsTxt := Instruction1Txt;
     end;
 
     local procedure ShowPageTwo()
@@ -261,7 +276,6 @@ page 1919 "MigrationQB Default Accounts"
         FirstGroupVisible := false;
         SecondGroupVisible := true;
         ThirdGroupVisible := false;
-        InstructionsTxt := Instruction2Txt;
     end;
 
     local procedure ShowPageThree()
@@ -278,7 +292,6 @@ page 1919 "MigrationQB Default Accounts"
         FirstGroupVisible := false;
         SecondGroupVisible := false;
         ThirdGroupVisible := true;
-        InstructionsTxt := Instruction3Txt;
     end;
 
     local procedure NextStep(Backwards: Boolean)

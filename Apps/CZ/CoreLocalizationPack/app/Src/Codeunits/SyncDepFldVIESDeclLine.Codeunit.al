@@ -11,14 +11,17 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
         VIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line CZL");
+        VIESDeclarationLineCZL.ChangeCompany(Rec.CurrentCompany);
         if VIESDeclarationLineCZL.Get(xRec."VIES Declaration No.", xRec."Line No.") then
             VIESDeclarationLineCZL.Rename(Rec."VIES Declaration No.", Rec."Line No.");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VIES Declaration Line", 'OnAfterInsertEvent', '', false, false)]
@@ -38,11 +41,14 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
         VIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line CZL");
+        VIESDeclarationLineCZL.ChangeCompany(Rec.CurrentCompany);
         if not VIESDeclarationLineCZL.Get(Rec."VIES Declaration No.", Rec."Line No.") then begin
             VIESDeclarationLineCZL.Init();
             VIESDeclarationLineCZL."VIES Declaration No." := Rec."VIES Declaration No.";
@@ -78,11 +84,14 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
         VIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line CZL");
+        VIESDeclarationLineCZL.ChangeCompany(Rec.CurrentCompany);
         if VIESDeclarationLineCZL.Get(Rec."VIES Declaration No.", Rec."Line No.") then
             VIESDeclarationLineCZL.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line CZL", 0);
@@ -94,14 +103,17 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
         VIESDeclarationLine: Record "VIES Declaration Line";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line CZL") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line");
+        VIESDeclarationLine.ChangeCompany(Rec.CurrentCompany);
         if VIESDeclarationLine.Get(xRec."VIES Declaration No.", xRec."Line No.") then
             VIESDeclarationLine.Rename(Rec."VIES Declaration No.", Rec."Line No.");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VIES Declaration Line CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -121,13 +133,14 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
         VIESDeclarationLine: Record "VIES Declaration Line";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line");
+        VIESDeclarationLine.ChangeCompany(Rec.CurrentCompany);
         if not VIESDeclarationLine.Get(Rec."VIES Declaration No.", Rec."Line No.") then begin
             VIESDeclarationLine.Init();
             VIESDeclarationLine."VIES Declaration No." := Rec."VIES Declaration No.";
@@ -163,13 +176,23 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
         VIESDeclarationLine: Record "VIES Declaration Line";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line");
+        VIESDeclarationLine.ChangeCompany(Rec.CurrentCompany);
         if VIESDeclarationLine.Get(Rec."VIES Declaration No.", Rec."Line No.") then
             VIESDeclarationLine.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line", 0);
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

@@ -177,9 +177,9 @@ codeunit 148051 "Registration No. CZL"
     end;
 
     [RequestPageHandler]
-    procedure HandleAresReport(var RequestPage: TestRequestPage "ARES Update CZL")
+    procedure HandleAresReport(var ARESUpdateCZL: TestRequestPage "ARES Update CZL")
     begin
-        RequestPage."FieldUpdateMask[FieldType::All]".SetValue(true);
-        RequestPage.OK().Invoke();
+        ARESUpdateCZL."FieldUpdateMask[FieldType::All]".SetValue(true);
+        ARESUpdateCZL.OK().Invoke();
     end;
 }

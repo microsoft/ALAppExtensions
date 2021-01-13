@@ -11,12 +11,17 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
         VATStatementAttachmentCZL: Record "VAT Statement Attachment CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment CZL", 0);
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment CZL");
+        VATStatementAttachmentCZL.ChangeCompany(Rec.CurrentCompany);
         if VATStatementAttachmentCZL.Get(xRec."VAT Statement Template Name", xRec."VAT Statement Name", xRec."Line No.") then
             VATStatementAttachmentCZL.Rename(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Statement Attachment", 'OnAfterInsertEvent', '', false, false)]
@@ -36,9 +41,14 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
         VATStatementAttachmentCZL: Record "VAT Statement Attachment CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment CZL", 0);
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment CZL");
+        VATStatementAttachmentCZL.ChangeCompany(Rec.CurrentCompany);
         if not VATStatementAttachmentCZL.Get(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.") then begin
             VATStatementAttachmentCZL.Init();
             VATStatementAttachmentCZL."VAT Statement Template Name" := Rec."VAT Statement Template Name";
@@ -52,7 +62,7 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
         VATStatementAttachmentCZL.Attachment := Rec.Attachment;
         VATStatementAttachmentCZL."File Name" := Rec."File Name";
         VATStatementAttachmentCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Statement Attachment", 'OnBeforeDeleteEvent', '', false, false)]
@@ -61,12 +71,17 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
         VATStatementAttachmentCZL: Record "VAT Statement Attachment CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment CZL", 0);
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment CZL");
+        VATStatementAttachmentCZL.ChangeCompany(Rec.CurrentCompany);
         if VATStatementAttachmentCZL.Get(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.") then
             VATStatementAttachmentCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Statement Attachment CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -75,12 +90,17 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
         VATStatementAttachment: Record "VAT Statement Attachment";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment CZL", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment", 0);
+        if Rec.IsTemporary() then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment CZL") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment");
+        VATStatementAttachment.ChangeCompany(Rec.CurrentCompany);
         if VATStatementAttachment.Get(xRec."VAT Statement Template Name", xRec."VAT Statement Name", xRec."Line No.") then
             VATStatementAttachment.Rename(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Statement Attachment CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -100,11 +120,14 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
         VATStatementAttachment: Record "VAT Statement Attachment";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment CZL", 0) then
+        if Rec.IsTemporary() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment", 0);
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment CZL") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment");
+        VATStatementAttachment.ChangeCompany(Rec.CurrentCompany);
         if not VATStatementAttachment.Get(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.") then begin
             VATStatementAttachment.Init();
             VATStatementAttachment."VAT Statement Template Name" := Rec."VAT Statement Template Name";
@@ -118,7 +141,7 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
         VATStatementAttachment.Attachment := Rec.Attachment;
         VATStatementAttachment."File Name" := Rec."File Name";
         VATStatementAttachment.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Statement Attachment CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -127,11 +150,23 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
         VATStatementAttachment: Record "VAT Statement Attachment";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment CZL", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment", 0);
+        if Rec.IsTemporary() then
+            exit;        
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment CZL") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment");
+        VATStatementAttachment.ChangeCompany(Rec.CurrentCompany);
         if VATStatementAttachment.Get(Rec."VAT Statement Template Name", Rec."VAT Statement Name", Rec."Line No.") then
             VATStatementAttachment.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Statement Attachment");
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

@@ -22,11 +22,14 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stat. Reporting Setup", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statutory Reporting Setup CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statutory Reporting Setup CZL");
+        StatutoryReportingSetupCZL.ChangeCompany(Rec.CurrentCompany);
         if not StatutoryReportingSetupCZL.Get(Rec."Primary Key") then begin
             StatutoryReportingSetupCZL.Init();
             StatutoryReportingSetupCZL."Primary Key" := Rec."Primary Key";
@@ -90,11 +93,14 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         GeneralLedgerSetup: Record "General Ledger Setup";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statutory Reporting Setup CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stat. Reporting Setup", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stat. Reporting Setup");
+        StatReportingSetup.ChangeCompany(Rec.CurrentCompany);
         if not StatReportingSetup.Get(Rec."Primary Key") then begin
             StatReportingSetup.Init();
             StatReportingSetup."Primary Key" := Rec."Primary Key";
@@ -139,7 +145,8 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stat. Reporting Setup", 0);
 
         UnbindSubscription(SyncLoopingHelper);
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Information", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Information");
+        CompanyInformation.ChangeCompany(Rec.CurrentCompany);
         if not CompanyInformation.Get() then begin
             CompanyInformation.Init();
             CompanyInformation.Insert(false);
@@ -157,7 +164,8 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Information", 0);
 
         UnbindSubscription(SyncLoopingHelper);
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"General Ledger Setup", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"General Ledger Setup");
+        GeneralLedgerSetup.ChangeCompany(Rec.CurrentCompany);
         if not GeneralLedgerSetup.Get() then begin
             GeneralLedgerSetup.Init();
             GeneralLedgerSetup.Insert(false);
@@ -165,5 +173,12 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         GeneralLedgerSetup."Company Officials Nos." := Rec."Company Official Nos.";
         GeneralLedgerSetup.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"General Ledger Setup", 0);
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

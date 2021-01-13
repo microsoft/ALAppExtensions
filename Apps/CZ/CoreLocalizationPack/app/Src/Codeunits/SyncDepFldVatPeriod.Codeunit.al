@@ -11,14 +11,17 @@ codeunit 31176 "Sync.Dep.Fld-VatPeriod CZL"
         VATPeriodCZL: Record "VAT Period CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Period", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Period") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period CZL");
+        VATPeriodCZL.ChangeCompany(Rec.CurrentCompany);
         if VATPeriodCZL.Get(xRec."Starting Date") then
             VATPeriodCZL.Rename(Rec."Starting Date");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Period CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Period CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Period", 'OnAfterInsertEvent', '', false, false)]
@@ -38,11 +41,14 @@ codeunit 31176 "Sync.Dep.Fld-VatPeriod CZL"
         VATPeriodCZL: Record "VAT Period CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Period", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period CZL");
+        VATPeriodCZL.ChangeCompany(Rec.CurrentCompany);
         if not VATPeriodCZL.Get(Rec."Starting Date") then begin
             VATPeriodCZL.Init();
             VATPeriodCZL."Starting Date" := Rec."Starting Date";
@@ -61,11 +67,14 @@ codeunit 31176 "Sync.Dep.Fld-VatPeriod CZL"
         VATPeriodCZL: Record "VAT Period CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Period", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period CZL");
+        VATPeriodCZL.ChangeCompany(Rec.CurrentCompany);
         if VATPeriodCZL.Get(Rec."Starting Date") then
             VATPeriodCZL.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Period CZL", 0);
@@ -77,14 +86,17 @@ codeunit 31176 "Sync.Dep.Fld-VatPeriod CZL"
         VATPeriod: Record "VAT Period";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Period CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Period CZL") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period");
+        VATPeriod.ChangeCompany(Rec.CurrentCompany);
         if VATPeriod.Get(xRec."Starting Date") then
             VATPeriod.Rename(Rec."Starting Date");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Period", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Period");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Period CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -104,13 +116,14 @@ codeunit 31176 "Sync.Dep.Fld-VatPeriod CZL"
         VATPeriod: Record "VAT Period";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Period CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period");
+        VATPeriod.ChangeCompany(Rec.CurrentCompany);
         if not VATPeriod.Get(Rec."Starting Date") then begin
             VATPeriod.Init();
             VATPeriod."Starting Date" := Rec."Starting Date";
@@ -129,13 +142,23 @@ codeunit 31176 "Sync.Dep.Fld-VatPeriod CZL"
         VATPeriod: Record "VAT Period";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Period CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Period");
+        VATPeriod.ChangeCompany(Rec.CurrentCompany);
         if VATPeriod.Get(Rec."Starting Date") then
             VATPeriod.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Period", 0);
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

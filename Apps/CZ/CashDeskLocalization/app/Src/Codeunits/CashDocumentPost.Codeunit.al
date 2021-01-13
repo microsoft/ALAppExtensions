@@ -60,6 +60,10 @@ codeunit 11729 "Cash Document-Post CZP"
         GenJnlPostLine.SetPostFromCashReq(true);
         PostHeader();
         PostLines();
+#if not CLEAN18
+        PostAdvances();
+#endif
+
         FinalizePosting(CashDocumentHeaderCZP);
         OnAfterPostCashDoc(CashDocumentHeaderCZP, GenJnlPostLine, PostedCashDocumentHdrCZP."No.");
     end;
@@ -264,6 +268,10 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJnlLine."Dimension Set ID" := CashDocumentLineCZP2."Dimension Set ID";
         TempGenJnlLine."Source Code" := SourceCodeSetup."Cash Desk CZP";
         TempGenJnlLine."Reason Code" := CashDocumentLineCZP2."Reason Code";
+#if not CLEAN18
+        TempGenJnlLine.Validate(Prepayment, CashDocumentLineCZP2."Advance Letter Link Code" <> '');
+        TempGenJnlLine."Advance Letter Link Code" := CashDocumentLineCZP2."Advance Letter Link Code";
+#endif
         TempGenJnlLine."VAT Registration No." := CashDocumentHeaderCZP2."VAT Registration No.";
         OnAfterInitGenJnlLine(TempGenJnlLine, CashDocumentHeaderCZP2, CashDocumentLineCZP2);
     end;
@@ -341,6 +349,31 @@ codeunit 11729 "Cash Document-Post CZP"
         GenJnlPostLine := GenJnlPostLineNew;
     end;
 
+#if not CLEAN18
+    [Obsolete('Remove after Advance Payment Localization for Czech will be implemented.', '18.0')]
+    internal procedure PostAdvances();
+    var
+        TempPurchAdvanceLetterHeader: Record "Purch. Advance Letter Header" temporary;
+        TempSalesAdvanceLetterHeader: Record "Sales Advance Letter Header" temporary;
+        PurchasePostAdvances: Codeunit "Purchase-Post Advances";
+        SalesPostAdvances: Codeunit "Sales-Post Advances";
+    begin
+        GenJnlPostLine.SetPostAdvInvAfterBatch(true);
+        GenJnlPostLine.xGetSalesLetterHeader(TempSalesAdvanceLetterHeader);
+        if not TempSalesAdvanceLetterHeader.IsEmpty() then begin
+            SalesPostAdvances.SetLetterHeader(TempSalesAdvanceLetterHeader);
+            SalesPostAdvances.SetGenJnlPostLine(GenJnlPostLine);
+            SalesPostAdvances.AutoPostAdvanceInvoices();
+        end;
+
+        GenJnlPostLine.xGetPurchLetterHeader(TempPurchAdvanceLetterHeader);
+        if not TempPurchAdvanceLetterHeader.IsEmpty() then begin
+            PurchasePostAdvances.SetLetterHeader(TempPurchAdvanceLetterHeader);
+            PurchasePostAdvances.SetGenJnlPostLine(GenJnlPostLine);
+            PurchasePostAdvances.AutoPostAdvanceInvoices();
+        end;
+    end;
+#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnAfterCheckGenJnlLine', '', false, false)]
     local procedure CheckCashDeskOnAfterCheckGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
     var
