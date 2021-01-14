@@ -11,14 +11,17 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
         CompanyOfficialCZL: Record "Company Official CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Officials", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Officials") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Official CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Official CZL");
+        CompanyOfficialCZL.ChangeCompany(Rec.CurrentCompany);
         if CompanyOfficialCZL.Get(xRec."No.") then
             CompanyOfficialCZL.Rename(Rec."No.");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Official CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Official CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company Officials", 'OnAfterInsertEvent', '', false, false)]
@@ -38,11 +41,14 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
         CompanyOfficialCZL: Record "Company Official CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Officials", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Official CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Official CZL");
+        CompanyOfficialCZL.ChangeCompany(Rec.CurrentCompany);
         if not CompanyOfficialCZL.Get(Rec."No.") then begin
             CompanyOfficialCZL.Init();
             CompanyOfficialCZL."No." := Rec."No.";
@@ -77,11 +83,14 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
         CompanyOfficialCZL: Record "Company Official CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Officials", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Official CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Official CZL");
+        CompanyOfficialCZL.ChangeCompany(Rec.CurrentCompany);
         if CompanyOfficialCZL.Get(Rec."No.") then
             CompanyOfficialCZL.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Official CZL", 0);
@@ -93,14 +102,17 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
         CompanyOfficials: Record "Company Officials";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Official CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Official CZL") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Officials", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Officials");
+        CompanyOfficials.ChangeCompany(Rec.CurrentCompany);
         if CompanyOfficials.Get(xRec."No.") then
             CompanyOfficials.Rename(Rec."No.");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Officials", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Officials");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company Official CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -120,13 +132,14 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
         CompanyOfficials: Record "Company Officials";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Official CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Officials", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Officials");
+        CompanyOfficials.ChangeCompany(Rec.CurrentCompany);
         if not CompanyOfficials.Get(Rec."No.") then begin
             CompanyOfficials.Init();
             CompanyOfficials."No." := Rec."No.";
@@ -161,13 +174,23 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
         CompanyOfficials: Record "Company Officials";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Official CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Officials", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Officials");
+        CompanyOfficials.ChangeCompany(Rec.CurrentCompany);
         if CompanyOfficials.Get(Rec."No.") then
             CompanyOfficials.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Officials", 0);
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

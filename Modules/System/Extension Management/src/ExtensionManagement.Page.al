@@ -8,6 +8,7 @@
 /// </summary>
 page 2500 "Extension Management"
 {
+    Caption = 'Extension Management';
     Extensible = false;
     AdditionalSearchTerms = 'app,add-in,customize,plug-in,appsource';
     ApplicationArea = All;

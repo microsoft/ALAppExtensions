@@ -4,17 +4,17 @@ codeunit 148057 "Reverse Charge CZL"
     TestPermissions = Disabled;
 
     var
-        SalesSetup: Record "Sales & Receivables Setup";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
         SalesHeader: Record "Sales Header";
         Customer: Record Customer;
         Item: Record Item;
         CommodityCZL: Record "Commodity CZL";
         CommoditySetupCZL: Record "Commodity Setup CZL";
         VATPostingSetup: Record "VAT Posting Setup";
-        UnitOfMeasure: Record "Unit of Measure";
+        UnitofMeasure: Record "Unit of Measure";
         TariffNumber: Record "Tariff Number";
         SalesLine: Record "Sales Line";
-        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        ItemUnitofMeasure: Record "Item Unit of Measure";
         LibraryERM: Codeunit "Library - ERM";
         LibrarySales: Codeunit "Library - Sales";
         LibraryRandom: Codeunit "Library - Random";
@@ -33,9 +33,9 @@ codeunit 148057 "Reverse Charge CZL"
         if isInitialized then
             exit;
 
-        SalesSetup.Get();
-        SalesSetup."Default VAT Date CZL" := SalesSetup."Default VAT Date CZL"::"Posting Date";
-        SalesSetup.Modify();
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date";
+        SalesReceivablesSetup.Modify();
 
         isInitialized := true;
         Commit();
@@ -64,14 +64,14 @@ codeunit 148057 "Reverse Charge CZL"
         CommoditySetupCZL.Insert();
 
         // [GIVEN] Unit of Measure
-        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
+        LibraryInventory.CreateUnitOfMeasureCode(UnitofMeasure);
 
         // [GIVEN] New Tariff Number
         TariffNumber.Init();
         TariffNumber."No." := CopyStr(LibraryRandom.RandText(3), 1, MaxStrLen(CommodityCZL.Code));
         TariffNumber."Statement Code CZL" := CommodityCZL.Code;
         TariffNumber."Statement Limit Code CZL" := CommodityCZL.Code;
-        TariffNumber."VAT Stat. UoM Code CZL" := UnitOfMeasure.Code;
+        TariffNumber."VAT Stat. UoM Code CZL" := UnitofMeasure.Code;
         TariffNumber."Allow Empty UoM Code CZL" := false;
         TariffNumber.Insert();
 
@@ -85,7 +85,7 @@ codeunit 148057 "Reverse Charge CZL"
         Item.Validate("VAT Prod. Posting Group", VATPostingSetup."VAT Prod. Posting Group");
         Item.Validate("Tariff No.", TariffNumber."No.");
         Item.Modify();
-        LibraryInventory.CreateItemUnitOfMeasure(ItemUnitOfMeasure, Item."No.", UnitOfMeasure.Code, 1);
+        LibraryInventory.CreateItemUnitOfMeasure(ItemUnitofMeasure, Item."No.", UnitofMeasure.Code, 1);
 
         // [GIVEN] New Sales Invoice
         LibrarySales.CreateSalesHeader(SalesHeader, SalesDocumentType::Invoice, Customer."No.");

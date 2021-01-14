@@ -10,6 +10,7 @@ codeunit 134692 "Email E2E Tests"
     var
         Assert: Codeunit "Library Assert";
         Email: Codeunit Email;
+        EmailMessageOpenPermissionErr: Label 'You can only open your own email messages.';
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -408,6 +409,93 @@ codeunit 134692 "Email E2E Tests"
         Assert.IsFalse(EmailViewer.Attachments.Delete.Visible(), 'Delete attachment was visible');
         Assert.IsFalse(EmailViewer.Attachments.Upload.Visible(), 'Visible attachment was visible');
     end;
+
+    [Test]
+    procedure EmailOutboxEntriesVisibilityTest()
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailOutboxes: TestPage "Email Outbox";
+        EmailEditor: TestPage "Email Editor";
+        EmailOutboxesIds: List of [BigInteger];
+        i: Integer;
+        iAsText: Text;
+    begin
+        // [Scenario] Email Outbox entries can only be opened by the user who created them
+
+        // Create four email outbox entries
+        EmailOutbox.DeleteAll();
+        for i := 1 to 4 do begin
+            iAsText := Format(i);
+            CreateEmailOutbox('Recipient ' + iAsText, 'Subject ' + iAsText, 'Body ' + iAsText, 'Attachment Name ' + iAsText, 'Attachment Content ' + iAsText, EmailOutbox);
+            EmailOutboxesIds.Add(EmailOutbox.Id);
+            if (i mod 2) = 0 then begin
+                EmailOutbox."User Security Id" := CreateGuid(); // some other user;
+                EmailOutbox.Modify();
+            end;
+        end;
+
+        Commit(); // Commit the Email Outbox entries so they can be loaded in the Email Editor later on.
+
+        EmailOutboxes.Trap();
+        Page.Run(Page::"Email Outbox");
+
+        EmailOutboxes.GoToKey(EmailOutboxesIds.Get(2));
+        Assert.AreEqual(Enum::"Email Status"::Draft.AsInteger(), EmailOutboxes.Status.AsInteger(), 'Wrong status on the email outbox');
+        Assert.AreEqual('Subject 2', EmailOutboxes.Desc.Value(), 'Wrong description on the email outbox');
+        Assert.AreEqual('', EmailOutboxes.Error.Value(), 'Error message field should be empty');
+        asserterror EmailOutboxes.Desc.Drilldown();
+        Assert.ExpectedError(EmailMessageOpenPermissionErr);
+
+        EmailOutboxes.GoToKey(EmailOutboxesIds.Get(4));
+        Assert.AreEqual(Enum::"Email Status"::Draft.AsInteger(), EmailOutboxes.Status.AsInteger(), 'Wrong status on the email outbox');
+        Assert.AreEqual('Subject 4', EmailOutboxes.Desc.Value(), 'Wrong description on the email outbox');
+        Assert.AreEqual('', EmailOutboxes.Error.Value(), 'Error message field should be empty');
+        asserterror EmailOutboxes.Desc.Drilldown();
+        Assert.ExpectedError(EmailMessageOpenPermissionErr);
+
+        EmailOutboxes.GoToKey(EmailOutboxesIds.Get(1));
+        Assert.AreEqual(Enum::"Email Status"::Draft.AsInteger(), EmailOutboxes.Status.AsInteger(), 'Wrong status on the email outbox');
+        Assert.AreEqual('Subject 1', EmailOutboxes.Desc.Value(), 'Wrong description on the email outbox');
+        Assert.AreEqual('', EmailOutboxes.Error.Value(), 'Error message field should be empty');
+
+        EmailEditor.Trap();
+        EmailOutboxes.Desc.Drilldown(); // opens the email editor
+
+        Assert.AreEqual('Recipient 1', EmailEditor.ToField.Value(), 'Wrong recipient on the email outbox');
+        Assert.AreEqual('Subject 1', EmailEditor.SubjectField.Value(), 'Wrong subject on email outbox in email editor');
+        Assert.AreEqual('Body 1', EmailEditor.BodyField.Value(), 'Wrong body on email outbox in email editor');
+        Assert.AreEqual('Attachment Name 1', EmailEditor.Attachments.FileName.Value(), 'Wrong attachment name on email outbox');
+
+        Assert.IsTrue(EmailEditor.Next(), 'There should be next record');
+
+        Assert.AreEqual('Recipient 3', EmailEditor.ToField.Value(), 'Wrong recipient on the email outbox');
+        Assert.AreEqual('Subject 3', EmailEditor.SubjectField.Value(), 'Wrong subject on email outbox in email editor');
+        Assert.AreEqual('Body 3', EmailEditor.BodyField.Value(), 'Wrong body on email outbox in email editor');
+        Assert.AreEqual('Attachment Name 3', EmailEditor.Attachments.FileName.Value(), 'Wrong attachment name on email outbox');
+
+        Assert.IsFalse(EmailEditor.Next(), 'There should not be next record');
+
+        Assert.IsTrue(EmailEditor.Previous(), 'There should be previous record');
+
+        Assert.AreEqual('Recipient 1', EmailEditor.ToField.Value(), 'Wrong recipient on the email outbox');
+        Assert.AreEqual('Subject 1', EmailEditor.SubjectField.Value(), 'Wrong subject on email outbox in email editor');
+        Assert.AreEqual('Body 1', EmailEditor.BodyField.Value(), 'Wrong body on email outbox in email editor');
+        Assert.AreEqual('Attachment Name 1', EmailEditor.Attachments.FileName.Value(), 'Wrong attachment name on email outbox');
+
+        Assert.IsFalse(EmailEditor.Previous(), 'There should not be previous record');
+    end;
+
+    local procedure CreateEmailOutbox(Recipient: Text; Subject: Text; Body: Text; AttachementName: Text[250]; AttachmentContent: Text; var EmailOutbox: Record "Email Outbox")
+    var
+        EmailMessage: Codeunit "Email Message";
+        Base64Convert: Codeunit "Base64 Convert";
+    begin
+        Clear(EmailOutbox);
+        EmailMessage.Create(Recipient, Subject, Body, false);
+        EmailMessage.AddAttachment(AttachementName, 'text/plain', Base64Convert.ToBase64(AttachmentContent));
+        Email.SaveAsDraft(EmailMessage, EmailOutbox);
+    end;
+
 
 
     [ModalPageHandler]

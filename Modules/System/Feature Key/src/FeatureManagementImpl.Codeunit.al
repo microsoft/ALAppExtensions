@@ -14,9 +14,11 @@ codeunit 2610 "Feature Management Impl."
         SignInAgainMsg: Label 'You must sign out and then sign in again to make the changes take effect.', Comment = '"sign out" and "sign in" are the same terms as shown in the Business Central client.';
         SignInAgainNotificationGuidTok: Label '63b6f5ec-6db4-4e87-b103-c4bcb539f09e', Locked = true;
         PreviewFeatureParameterTxt: Label 'previewfeatures=%1', Comment = '%1 = the feature ID for the feature to be previewed', Locked = true;
-        ErrorTraceTagMsg: Label 'Error on the feature data update task for feature %1 in company %2: %3', Comment = '%1- Feature id; %2 - CompanyName; %3 - error message';
-        ScheduledTraceTagMsg: Label 'The feature data update task is scheduled feature %1 in company %2 to start on %3.', Comment = '%1- Feature id; %2 - CompanyName; %3 - datetime';
-        TagCategoryTxt: Label 'Feature Data Update';
+        ErrorTraceTagMsg: Label 'Error on the feature data update task for feature %1 in company %2: %3', Comment = '%1- Feature id; %2 - CompanyName; %3 - error message', Locked = true;
+        ScheduledTraceTagMsg: Label 'The feature data update task is scheduled for feature %1 in company %2 to start on %3.', Comment = '%1- Feature id; %2 - CompanyName; %3 - datetime', Locked = true;
+        StartedTraceTagMsg: Label 'The feature data update task is started for feature %1 in company %2', Comment = '%1- Feature id; %2 - CompanyName', Locked = true;
+        FinishedTraceTagMsg: Label 'The feature data update task is successfully finished for feature %1 in company %2', Comment = '%1- Feature id; %2 - CompanyName', Locked = true;
+        TagCategoryTxt: Label 'Feature Data Update', Locked = true;
 
     /// <summary>
     /// Gets the URL to let users try out a feature.
@@ -155,11 +157,13 @@ codeunit 2610 "Feature Management Impl."
     /// </summary>
     procedure UpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; FeatureDataUpdate: Interface "Feature Data Update")
     begin
+        SendTraceTagOnStart(FeatureDataUpdateStatus);
         SetSessionInProgress(FeatureDataUpdateStatus);
         FeatureDataUpdate.UpdateData(FeatureDataUpdateStatus);
         FeatureDataUpdateStatus."Feature Status" := "Feature Status"::Complete;
         FeatureDataUpdateStatus.Modify();
         FeatureDataUpdate.AfterUpdate(FeatureDataUpdateStatus);
+        SendTraceTagOnFinish(FeatureDataUpdateStatus);
     end;
 
     /// <summary>
@@ -263,7 +267,6 @@ codeunit 2610 "Feature Management Impl."
     var
         ScheduledTask: Record "Scheduled Task";
     begin
-        //OnFindingScheduledTask(TaskId, TaskExists);
         if not TaskExists then
             exit(ScheduledTask.Get(TaskId));
     end;
@@ -351,26 +354,74 @@ codeunit 2610 "Feature Management Impl."
     /// Sends the trace tag in case of error during feature data update.
     /// </summary>
     internal procedure SendTraceTagOnError(FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    var
+        TelemetryCustomDimensions: Dictionary of [Text, Text];
     begin
+        GetTelemetryCustomDimensions(FeatureDataUpdateStatus, 'Error', TelemetryCustomDimensions);
         Session.LogMessage(
             '0000DE3',
             StrSubstNo(
                 ErrorTraceTagMsg, FeatureDataUpdateStatus."Feature Key",
                 FeatureDataUpdateStatus."Company Name", GetLastErrorText()),
-            Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TagCategoryTxt);
+            Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryCustomDimensions);
     end;
 
     /// <summary>
     /// Sends the trace tag when the feature data update is scheduled.
     /// </summary>
     local procedure SendTraceTagOnScheduling(FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    var
+        TelemetryCustomDimensions: Dictionary of [Text, Text];
     begin
+        GetTelemetryCustomDimensions(FeatureDataUpdateStatus, 'Schedule', TelemetryCustomDimensions);
         Session.LogMessage(
             '0000DE4',
             StrSubstNo(
                 ScheduledTraceTagMsg, FeatureDataUpdateStatus."Feature Key",
                 FeatureDataUpdateStatus."Company Name", Format(FeatureDataUpdateStatus."Start Date/Time", 0, 9)),
-            Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TagCategoryTxt);
+            Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryCustomDimensions);
+    end;
+
+    /// <summary>
+    /// Sends the trace tag when the feature data update is started.
+    /// </summary>
+    local procedure SendTraceTagOnStart(FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    var
+        TelemetryCustomDimensions: Dictionary of [Text, Text];
+    begin
+        GetTelemetryCustomDimensions(FeatureDataUpdateStatus, 'Start', TelemetryCustomDimensions);
+        Session.LogMessage(
+            '0000EBB',
+            StrSubstNo(
+                StartedTraceTagMsg, FeatureDataUpdateStatus."Feature Key", FeatureDataUpdateStatus."Company Name"),
+            Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryCustomDimensions);
+    end;
+
+    /// <summary>
+    /// Sends the trace tag when the feature data update is finished.
+    /// </summary>
+    local procedure SendTraceTagOnFinish(FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    var
+        TelemetryCustomDimensions: Dictionary of [Text, Text];
+    begin
+        GetTelemetryCustomDimensions(FeatureDataUpdateStatus, 'Finish', TelemetryCustomDimensions);
+        Session.LogMessage(
+            '0000EBC',
+            StrSubstNo(
+                FinishedTraceTagMsg, FeatureDataUpdateStatus."Feature Key", FeatureDataUpdateStatus."Company Name"),
+            Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryCustomDimensions);
+    end;
+
+    local procedure GetTelemetryCustomDimensions(FeatureDataUpdateStatus: Record "Feature Data Update Status"; Operation: Text; var TelemetryCustomDimensions: Dictionary of [Text, Text])
+    var
+        Company: Record Company;
+    begin
+        TelemetryCustomDimensions.Add('Category', TagCategoryTxt);
+        TelemetryCustomDimensions.Add('Operation', Operation);
+        TelemetryCustomDimensions.Add('FeatureKey', FeatureDataUpdateStatus."Feature Key");
+        TelemetryCustomDimensions.Add('CompanyName', FeatureDataUpdateStatus."Company Name");
+        if Company.Get(FeatureDataUpdateStatus."Company Name") then
+            TelemetryCustomDimensions.Add('EvaluationCompany', Format(Company."Evaluation Company", 0, 9));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterDeleteEvent', '', false, false)]

@@ -145,7 +145,6 @@ codeunit 11748 "Install Application CZL"
         StatutoryReportingSetupCZL."Accounting Manager No." := CompanyInformation."Accounting Manager No.";
         StatutoryReportingSetupCZL."Finance Manager No." := CompanyInformation."Finance Manager No.";
         StatutoryReportingSetupCZL.Modify();
-
     end;
 
     [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]

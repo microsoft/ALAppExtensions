@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Defines aliases for .NET classes for tests.",
     "description":  "Defines aliases for .NET classes so that you do not have to write the full name of the class. For example, rather than having to write \"System.Collections.Queue\", you can just use \"Queue\".",
-    "version":  "17.2.0.0",
+    "version":  "17.3.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",

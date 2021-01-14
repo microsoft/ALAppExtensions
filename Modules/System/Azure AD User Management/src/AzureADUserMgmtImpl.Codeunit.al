@@ -560,6 +560,10 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         AzureADUserUpdate."Update Type" := Enum::"Azure AD Update Type"::Remove;
 
         AzureADUserUpdate."Authentication Object ID" := CopyStr(AzureADGraphUser.GetUserAuthenticationObjectId(User."User Security ID"), 1, MaxStrLen(AzureADUserUpdate."Authentication Object ID"));
+        // If for the user doesn't have an authentication object ID (imported user, application, cleared directly in the database), assign a random one to avoid duplicate key exception.
+        if AzureADUserUpdate."Authentication Object ID" = '' then
+            AzureADUserUpdate."Authentication Object ID" := Format(CreateGuid()) + '-GENERATED';
+
         AzureADUserUpdate."User Security ID" := User."User Security ID";
         AzureADUserUpdate.Validate("Update Entity", Enum::"Azure AD User Update Entity"::Plan);
         AzureADUserUpdate."Current Value" := CopyStr(GetUpdateEntityFromUser(Enum::"Azure AD User Update Entity"::Plan, User), 1, MaxStrLen(AzureADUserUpdate."Current Value"));

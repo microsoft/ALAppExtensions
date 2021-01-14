@@ -262,7 +262,9 @@ codeunit 4513 "SMTP Connector Impl."
 
         NewSMTPAccount.Id := CreateGuid();
         NewSMTPAccount.SetPassword(Password);
+#if not CLEAN17
         NewSMTPAccount."Created By" := CopyStr(UserId(), 1, MaxStrLen(NewSMTPAccount."Created By"));
+#endif
 
         NewSMTPAccount.Insert();
 
@@ -272,16 +274,23 @@ codeunit 4513 "SMTP Connector Impl."
         EmailAccount.Connector := Enum::"Email Connector"::SMTP;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnGetTestEmailBody', '', false, false)]
-    local procedure SetTestEmailBody(Connector: Enum "Email Connector"; var Body: Text)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnGetBodyForTestEmail', '', false, false)]
+    local procedure SetTestEmailBody(Connector: Enum "Email Connector"; AccountId: Guid; var Body: Text)
+    var
+        SMTPAccountForTestEmail: Record "SMTP Account";
     begin
-        if Connector = Connector::SMTP then
-            Body := StrSubstNo(TestEmailBodyTxt,
-                               UserId(),
-                               SMTPAccount.Server,
-                               Format(SMTPAccount."Server Port"),
-                               SMTPAccount.Authentication,
-                               SMTPAccount."Secure Connection");
+        if Connector <> Connector::SMTP then
+            exit;
+
+        if not SMTPAccountForTestEmail.Get(AccountId) then
+            exit;
+
+        Body := StrSubstNo(TestEmailBodyTxt,
+                           UserId(),
+                           SMTPAccountForTestEmail.Server,
+                           Format(SMTPAccountForTestEmail."Server Port"),
+                           SMTPAccountForTestEmail.Authentication,
+                           SMTPAccountForTestEmail."Secure Connection");
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"SMTP Account", 'OnOpenPageEvent', '', false, false)]

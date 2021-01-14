@@ -12,10 +12,9 @@ codeunit 8906 "Email Editor"
     var
         EmailEditor: Page "Email Editor";
     begin
-        EmailEditor.SetRecord(EmailOutbox);
+        CheckPermissions(EmailOutbox);
 
-        if EmailOutbox.Description <> '' then
-            EmailEditor.Caption := EmailOutbox.Description;
+        EmailEditor.SetRecord(EmailOutbox);
 
         if IsNewOutbox then
             EmailEditor.SetAsNew();

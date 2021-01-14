@@ -163,7 +163,7 @@ codeunit 31054 "Install Application CZP"
                     CashDeskEventCZP.Insert();
                 end;
                 CashDeskEventCZP."Cash Desk No." := CashDeskEvent."Cash Desk No.";
-                CashDeskEventCZP."Document Type" := CashDeskEvent."Document Type";
+                CashDeskEventCZP."Document Type" := CashDeskEvent."Cash Document Type";
                 CashDeskEventCZP.Description := CashDeskEvent.Description;
                 CashDeskEventCZP."Account Type" := CashDeskEvent."Account Type";
                 CashDeskEventCZP."Account No." := CashDeskEvent."Account No.";
@@ -235,7 +235,9 @@ codeunit 31054 "Install Application CZP"
     var
         CashDocumentLine: Record "Cash Document Line";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
+        GeneralLedgerSetup: Record "General Ledger Setup";
     begin
+        GeneralLedgerSetup.Get();
         if CashDocumentLine.FindSet() then
             repeat
                 if not CashDocumentLineCZP.Get(CashDocumentLine."Cash Desk No.", CashDocumentLine."Cash Document No.", CashDocumentLine."Line No.") then begin
@@ -245,6 +247,7 @@ codeunit 31054 "Install Application CZP"
                     CashDocumentLineCZP."Line No." := CashDocumentLine."Line No.";
                     CashDocumentLineCZP.Insert();
                 end;
+                CashDocumentLineCZP."Gen. Document Type" := CashDocumentLine."Document Type";
                 CashDocumentLineCZP."Account Type" := CashDocumentLine."Account Type";
                 CashDocumentLineCZP."Account No." := CashDocumentLine."Account No.";
                 CashDocumentLineCZP."External Document No." := CashDocumentLine."External Document No.";
@@ -257,7 +260,7 @@ codeunit 31054 "Install Application CZP"
                 CashDocumentLineCZP."Description 2" := CashDocumentLine."Description 2";
                 CashDocumentLineCZP."Shortcut Dimension 1 Code" := CashDocumentLine."Shortcut Dimension 1 Code";
                 CashDocumentLineCZP."Shortcut Dimension 2 Code" := CashDocumentLine."Shortcut Dimension 2 Code";
-                CashDocumentLineCZP."Document Type" := CashDocumentLine."Document Type";
+                CashDocumentLineCZP."Document Type" := CashDocumentLine."Cash Document Type";
                 CashDocumentLineCZP."Applies-to ID" := CashDocumentLine."Applies-to ID";
                 CashDocumentLineCZP."Currency Code" := CashDocumentLine."Currency Code";
                 CashDocumentLineCZP."Cash Desk Event" := CashDocumentLine."Cash Desk Event";
@@ -286,6 +289,9 @@ codeunit 31054 "Install Application CZP"
                 CashDocumentLineCZP."Use Duplication List" := CashDocumentLine."Use Duplication List";
                 CashDocumentLineCZP."Responsibility Center" := CashDocumentLine."Responsibility Center";
                 CashDocumentLineCZP."Dimension Set ID" := CashDocumentLine."Dimension Set ID";
+                if GeneralLedgerSetup."Prepayment Type" = GeneralLedgerSetup."Prepayment Type"::Advances then
+                    if CashDocumentLine.Prepayment then
+                        CashDocumentLineCZP."Advance Letter Link Code" := CashDocumentLine."Advance Letter Link Code";
                 CashDocumentLineCZP.Modify(false);
             until CashDocumentLine.Next() = 0;
     end;
@@ -356,6 +362,7 @@ codeunit 31054 "Install Application CZP"
                     PostedCashDocumentLineCZP."Line No." := PostedCashDocumentLine."Line No.";
                     PostedCashDocumentLineCZP.Insert();
                 end;
+                PostedCashDocumentLineCZP."Gen. Document Type" := PostedCashDocumentLine."Document Type";
                 PostedCashDocumentLineCZP."Account Type" := PostedCashDocumentLine."Account Type";
                 PostedCashDocumentLineCZP."Account No." := PostedCashDocumentLine."Account No.";
                 PostedCashDocumentLineCZP."External Document No." := PostedCashDocumentLine."External Document No.";
@@ -366,7 +373,7 @@ codeunit 31054 "Install Application CZP"
                 PostedCashDocumentLineCZP."Description 2" := PostedCashDocumentLine."Description 2";
                 PostedCashDocumentLineCZP."Shortcut Dimension 1 Code" := PostedCashDocumentLine."Shortcut Dimension 1 Code";
                 PostedCashDocumentLineCZP."Shortcut Dimension 2 Code" := PostedCashDocumentLine."Shortcut Dimension 2 Code";
-                PostedCashDocumentLineCZP."Document Type" := PostedCashDocumentLine."Document Type";
+                PostedCashDocumentLineCZP."Document Type" := PostedCashDocumentLine."Cash Document Type";
                 PostedCashDocumentLineCZP."Currency Code" := PostedCashDocumentLine."Currency Code";
                 PostedCashDocumentLineCZP."Cash Desk Event" := PostedCashDocumentLine."Cash Desk Event";
                 PostedCashDocumentLineCZP."Salespers./Purch. Code" := PostedCashDocumentLine."Salespers./Purch. Code";

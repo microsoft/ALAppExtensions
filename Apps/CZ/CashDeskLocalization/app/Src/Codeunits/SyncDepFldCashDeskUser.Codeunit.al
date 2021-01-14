@@ -11,14 +11,17 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
         CashDeskUserCZP: Record "Cash Desk User CZP";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User CZP", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User CZP");
+        CashDeskUserCZP.ChangeCompany(Rec.CurrentCompany);
         if CashDeskUserCZP.Get(xRec."Cash Desk No.", xRec."User ID") then
             CashDeskUserCZP.Rename(Rec."Cash Desk No.", Rec."User ID");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User CZP", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User CZP");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Cash Desk User", 'OnAfterInsertEvent', '', false, false)]
@@ -38,11 +41,14 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
         CashDeskUserCZP: Record "Cash Desk User CZP";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User CZP", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User CZP");
+        CashDeskUserCZP.ChangeCompany(Rec.CurrentCompany);
         if not CashDeskUserCZP.Get(Rec."Cash Desk No.", Rec."User ID") then begin
             CashDeskUserCZP.Init();
             CashDeskUserCZP."Cash Desk No." := Rec."Cash Desk No.";
@@ -54,7 +60,7 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
         CashDeskUserCZP.Post := Rec.Post;
         CashDeskUserCZP."User Full Name" := Rec.GetUserName(Rec."User ID");
         CashDeskUserCZP.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User CZP", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User CZP");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Cash Desk User", 'OnBeforeDeleteEvent', '', false, false)]
@@ -63,14 +69,17 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
         CashDeskUserCZP: Record "Cash Desk User CZP";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User CZP", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User CZP");
+        CashDeskUserCZP.ChangeCompany(Rec.CurrentCompany);
         if CashDeskUserCZP.Get(Rec."Cash Desk No.", Rec."User ID") then
             CashDeskUserCZP.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User CZP", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User CZP");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Cash Desk User CZP", 'OnBeforeRenameEvent', '', false, false)]
@@ -79,14 +88,17 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
         CashDeskUser: Record "Cash Desk User";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User CZP", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User CZP") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User");
+        CashDeskUser.ChangeCompany(Rec.CurrentCompany);
         if CashDeskUser.Get(xRec."Cash Desk No.", xRec."User ID") then
             CashDeskUser.Rename(Rec."Cash Desk No.", Rec."User ID");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Cash Desk User CZP", 'OnAfterInsertEvent', '', false, false)]
@@ -106,13 +118,14 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
         CashDeskUser: Record "Cash Desk User";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User CZP", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User CZP") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User");
+        CashDeskUser.ChangeCompany(Rec.CurrentCompany);
         if not CashDeskUser.Get(Rec."Cash Desk No.", Rec."User ID") then begin
             CashDeskUser.Init();
             CashDeskUser."Cash Desk No." := Rec."Cash Desk No.";
@@ -123,7 +136,7 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
         CashDeskUser.Issue := Rec.Issue;
         CashDeskUser.Post := Rec.Post;
         CashDeskUser.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Cash Desk User CZP", 'OnBeforeDeleteEvent', '', false, false)]
@@ -132,13 +145,23 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
         CashDeskUser: Record "Cash Desk User";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User CZP", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Cash Desk User CZP") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Cash Desk User");
+        CashDeskUser.ChangeCompany(Rec.CurrentCompany);
         if CashDeskUser.Get(Rec."Cash Desk No.", Rec."User ID") then
             CashDeskUser.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User");
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

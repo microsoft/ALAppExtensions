@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Compresses and uncompresses data in a binary format.",
     "description":  "The purpose of this module is to provide ability to create, update, read and dispose a binary data compression archive.",
-    "version":  "17.2.0.0",
+    "version":  "17.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,13 +15,13 @@
                              "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "BLOB Storage",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          }
                      ],
     "screenshots":  [

@@ -4,26 +4,26 @@ codeunit 148055 "Posting Group Changing CZL"
     TestPermissions = Disabled;
 
     var
-        SalesSetup: Record "Sales & Receivables Setup";
-        PurchaseSetup: Record "Purchases & Payables Setup";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         SalesHeader: Record "Sales Header";
         PurchaseHeader: Record "Purchase Header";
         GenJournalTemplate: Record "Gen. Journal Template";
         GenJournalBatch: Record "Gen. Journal Batch";
         GenJournalLine: Record "Gen. Journal Line";
-        CustomerPostingGroupOrigin: Record "Customer Posting Group";
-        CustomerPostingGroupNew: Record "Customer Posting Group";
-        VendorPostingGroupOrigin: Record "Vendor Posting Group";
-        VendorPostingGroupNew: Record "Vendor Posting Group";
+        OriginCustomerPostingGroup: Record "Customer Posting Group";
+        NewCustomerPostingGroup: Record "Customer Posting Group";
+        OriginVendorPostingGroup: Record "Vendor Posting Group";
+        NewVendorPostingGroup: Record "Vendor Posting Group";
         Customer: Record Customer;
         Vendor: Record Vendor;
         SalesInvoiceHeader: Record "Sales Invoice Header";
         PurchInvHeader: Record "Purch. Inv. Header";
-        BankAccountPostingGroupOrigin: Record "Bank Account Posting Group";
-        BankAccountPostingGroupNew: Record "Bank Account Posting Group";
+        OriginBankAccountPostingGroup: Record "Bank Account Posting Group";
+        NewBankAccountPostingGroup: Record "Bank Account Posting Group";
         BankAccount: Record "Bank Account";
-        InventoryPostingGroupOrigin: Record "Inventory Posting Group";
-        InventoryPostingGroupNew: Record "Inventory Posting Group";
+        OriginInventoryPostingGroup: Record "Inventory Posting Group";
+        NewInventoryPostingGroup: Record "Inventory Posting Group";
         Item: Record Item;
         ItemJournalLine: Record "Item Journal Line";
         Location: Record Location;
@@ -47,14 +47,14 @@ codeunit 148055 "Posting Group Changing CZL"
         if isInitialized then
             exit;
 
-        SalesSetup.Get();
-        SalesSetup."Default VAT Date CZL" := SalesSetup."Default VAT Date CZL"::"Posting Date";
-        SalesSetup.Modify();
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date";
+        SalesReceivablesSetup.Modify();
 
-        PurchaseSetup.Get();
-        PurchaseSetup."Default VAT Date CZL" := PurchaseSetup."Default VAT Date CZL"::"Posting Date";
-        PurchaseSetup."Def. Orig. Doc. VAT Date CZL" := PurchaseSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date";
-        PurchaseSetup.Modify();
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date";
+        PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" := PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date";
+        PurchasesPayablesSetup.Modify();
 
         isInitialized := true;
         Commit();
@@ -67,12 +67,12 @@ codeunit 148055 "Posting Group Changing CZL"
         Initialize();
 
         // [GIVEN] New Customer Posting Groups
-        LibrarySales.CreateCustomerPostingGroup(CustomerPostingGroupOrigin);
-        LibrarySales.CreateCustomerPostingGroup(CustomerPostingGroupNew);
+        LibrarySales.CreateCustomerPostingGroup(OriginCustomerPostingGroup);
+        LibrarySales.CreateCustomerPostingGroup(NewCustomerPostingGroup);
 
         // [GIVEN] New Customer
         LibrarySales.CreateCustomer(Customer);
-        Customer.Validate(Customer."Customer Posting Group", CustomerPostingGroupOrigin.Code);
+        Customer.Validate(Customer."Customer Posting Group", OriginCustomerPostingGroup.Code);
         Customer.Modify();
 
         // [GIVEN] New Sales Invoice
@@ -80,10 +80,10 @@ codeunit 148055 "Posting Group Changing CZL"
         SalesInvNo := LibrarySales.PostSalesDocument(SalesHeader, false, false);
 
         // [WHEN] Customer Posting Group Change 
-        asserterror Customer.Validate("Customer Posting Group", CustomerPostingGroupNew.Code);
+        asserterror Customer.Validate("Customer Posting Group", NewCustomerPostingGroup.Code);
 
         // [THEN] Customer Posting Group not changed
-        Assert.AreEqual(Customer."Customer Posting Group", CustomerPostingGroupOrigin.Code, Customer.FieldCaption(Customer."Customer Posting Group"));
+        Assert.AreEqual(Customer."Customer Posting Group", OriginCustomerPostingGroup.Code, Customer.FieldCaption(Customer."Customer Posting Group"));
 
         // [GIVEN] Create Payment and Apply to Invoice
         SalesInvoiceHeader.Get(SalesInvNo);
@@ -91,10 +91,10 @@ codeunit 148055 "Posting Group Changing CZL"
         LibrarySales.CreatePaymentAndApplytoInvoice(GenJournalLine, Customer."No.", SalesInvNo, -SalesInvoiceHeader."Amount Including VAT");
 
         // [WHEN] Customer Posting Group Change 
-        Customer.Validate("Customer Posting Group", CustomerPostingGroupNew.Code);
+        Customer.Validate("Customer Posting Group", NewCustomerPostingGroup.Code);
 
         // [THEN] Customer Posting Group succesfully Changed
-        Assert.AreEqual(Customer."Customer Posting Group", CustomerPostingGroupNew.Code, Customer.FieldCaption(Customer."Customer Posting Group"));
+        Assert.AreEqual(Customer."Customer Posting Group", NewCustomerPostingGroup.Code, Customer.FieldCaption(Customer."Customer Posting Group"));
     end;
 
     [Test]
@@ -104,12 +104,12 @@ codeunit 148055 "Posting Group Changing CZL"
         Initialize();
 
         // [GIVEN] New Vendor Posting Groups
-        LibraryPurchase.CreateVendorPostingGroup(VendorPostingGroupOrigin);
-        LibraryPurchase.CreateVendorPostingGroup(VendorPostingGroupNew);
+        LibraryPurchase.CreateVendorPostingGroup(OriginVendorPostingGroup);
+        LibraryPurchase.CreateVendorPostingGroup(NewVendorPostingGroup);
 
         // [GIVEN] New Vendor
         LibraryPurchase.CreateVendor(Vendor);
-        Vendor.Validate(Vendor."Vendor Posting Group", VendorPostingGroupOrigin.Code);
+        Vendor.Validate(Vendor."Vendor Posting Group", OriginVendorPostingGroup.Code);
         Vendor.Modify();
 
         // [GIVEN] New Purchase Invoice
@@ -117,10 +117,10 @@ codeunit 148055 "Posting Group Changing CZL"
         PurchInvNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, false);
 
         // [WHEN] Vendor Posting Group Change 
-        asserterror Vendor.Validate("Vendor Posting Group", VendorPostingGroupNew.Code);
+        asserterror Vendor.Validate("Vendor Posting Group", NewVendorPostingGroup.Code);
 
         // [THEN] Vendor Posting Group not changed
-        Assert.AreEqual(Vendor."Vendor Posting Group", VendorPostingGroupOrigin.Code, Vendor.FieldCaption(Vendor."Vendor Posting Group"));
+        Assert.AreEqual(Vendor."Vendor Posting Group", OriginVendorPostingGroup.Code, Vendor.FieldCaption(Vendor."Vendor Posting Group"));
 
         // [GIVEN] New Gen. Journal Template created
         LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
@@ -141,10 +141,10 @@ codeunit 148055 "Posting Group Changing CZL"
         LibraryERM.PostGeneralJnlLine(GenJournalLine);
 
         // [WHEN] Vendor Posting Group Change 
-        Vendor.Validate("Vendor Posting Group", VendorPostingGroupNew.Code);
+        Vendor.Validate("Vendor Posting Group", NewVendorPostingGroup.Code);
 
         // [THEN] Vendor Posting Group succesfully Changed
-        Assert.AreEqual(Vendor."Vendor Posting Group", VendorPostingGroupNew.Code, Vendor.FieldCaption(Vendor."Vendor Posting Group"));
+        Assert.AreEqual(Vendor."Vendor Posting Group", NewVendorPostingGroup.Code, Vendor.FieldCaption(Vendor."Vendor Posting Group"));
     end;
 
     [Test]
@@ -154,16 +154,16 @@ codeunit 148055 "Posting Group Changing CZL"
         Initialize();
 
         // [GIVEN] New Bank Account Posting Groups
-        LibraryERM.CreateBankAccountPostingGroup(BankAccountPostingGroupOrigin);
-        LibraryERM.CreateBankAccountPostingGroup(BankAccountPostingGroupNew);
-        BankAccountPostingGroupOrigin.Validate(BankAccountPostingGroupOrigin."G/L Account No.", LibraryERM.CreateGLAccountNo());
-        BankAccountPostingGroupOrigin.Modify(true);
-        BankAccountPostingGroupNew.Validate(BankAccountPostingGroupNew."G/L Account No.", LibraryERM.CreateGLAccountNo());
-        BankAccountPostingGroupNew.Modify(true);
+        LibraryERM.CreateBankAccountPostingGroup(OriginBankAccountPostingGroup);
+        LibraryERM.CreateBankAccountPostingGroup(NewBankAccountPostingGroup);
+        OriginBankAccountPostingGroup.Validate(OriginBankAccountPostingGroup."G/L Account No.", LibraryERM.CreateGLAccountNo());
+        OriginBankAccountPostingGroup.Modify(true);
+        NewBankAccountPostingGroup.Validate(NewBankAccountPostingGroup."G/L Account No.", LibraryERM.CreateGLAccountNo());
+        NewBankAccountPostingGroup.Modify(true);
 
         // [GIVEN] New Bank Account
         LibraryERM.CreateBankAccount(BankAccount);
-        BankAccount.Validate(BankAccount."Bank Acc. Posting Group", BankAccountPostingGroupOrigin.Code);
+        BankAccount.Validate(BankAccount."Bank Acc. Posting Group", OriginBankAccountPostingGroup.Code);
         BankAccount.Modify(true);
 
         // [GIVEN] New Gen. Journal Template created
@@ -181,10 +181,10 @@ codeunit 148055 "Posting Group Changing CZL"
         LibraryERM.PostGeneralJnlLine(GenJournalLine);
 
         // [WHEN] Bank Account Posting Group Change 
-        asserterror BankAccount.Validate("Bank Acc. Posting Group", BankAccountPostingGroupNew.Code);
+        asserterror BankAccount.Validate("Bank Acc. Posting Group", NewBankAccountPostingGroup.Code);
 
         //[THEN] Bank Account Posting Group Not Changed
-        Assert.AreEqual(BankAccount."Bank Acc. Posting Group", BankAccountPostingGroupOrigin.Code, BankAccount.FieldCaption(BankAccount."Bank Acc. Posting Group"));
+        Assert.AreEqual(BankAccount."Bank Acc. Posting Group", OriginBankAccountPostingGroup.Code, BankAccount.FieldCaption(BankAccount."Bank Acc. Posting Group"));
 
         // [GIVEN] New Gen. Journal Template created
         LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
@@ -201,10 +201,10 @@ codeunit 148055 "Posting Group Changing CZL"
         LibraryERM.PostGeneralJnlLine(GenJournalLine);
 
         // [WHEN] Bank Account Posting Group Change 
-        BankAccount.Validate("Bank Acc. Posting Group", BankAccountPostingGroupNew.Code);
+        BankAccount.Validate("Bank Acc. Posting Group", NewBankAccountPostingGroup.Code);
 
         // [THEN] Bank Account Posting Group succesfully Changed
-        Assert.AreEqual(BankAccount."Bank Acc. Posting Group", BankAccountPostingGroupNew.Code, BankAccount.FieldCaption(BankAccount."Bank Acc. Posting Group"));
+        Assert.AreEqual(BankAccount."Bank Acc. Posting Group", NewBankAccountPostingGroup.Code, BankAccount.FieldCaption(BankAccount."Bank Acc. Posting Group"));
     end;
 
     [Test]
@@ -214,12 +214,12 @@ codeunit 148055 "Posting Group Changing CZL"
         Initialize();
 
         // [GIVEN] New Inventory Posting Groups
-        LibraryInventory.CreateInventoryPostingGroup(InventoryPostingGroupOrigin);
-        LibraryInventory.CreateInventoryPostingGroup(InventoryPostingGroupNew);
+        LibraryInventory.CreateInventoryPostingGroup(OriginInventoryPostingGroup);
+        LibraryInventory.CreateInventoryPostingGroup(NewInventoryPostingGroup);
 
         // [GIVEN] New Item
         LibraryInventory.CreateItem(Item);
-        Item.Validate(Item."Inventory Posting Group", InventoryPostingGroupOrigin.Code);
+        Item.Validate(Item."Inventory Posting Group", OriginInventoryPostingGroup.Code);
         Item.Modify(true);
 
         // [GIVEN] New Location
@@ -233,10 +233,10 @@ codeunit 148055 "Posting Group Changing CZL"
         LibraryInventory.PostItemJournalLine(ItemJournalLine."Journal Template Name", ItemJournalLine."Journal Batch Name");
 
         // [WHEN] Bank Account Posting Group Change 
-        asserterror Item.Validate("Inventory Posting Group", InventoryPostingGroupNew.Code);
+        asserterror Item.Validate("Inventory Posting Group", NewInventoryPostingGroup.Code);
 
         // [THEN] Bank Account Posting Group not changed
-        Assert.AreEqual(Item."Inventory Posting Group", InventoryPostingGroupOrigin.Code, Item.FieldCaption(Item."Inventory Posting Group"));
+        Assert.AreEqual(Item."Inventory Posting Group", OriginInventoryPostingGroup.Code, Item.FieldCaption(Item."Inventory Posting Group"));
 
         // [GIVEN] Create Item Journal Line Negative Adjmt.
         LibraryInventory.SelectItemJournalTemplateName(ItemJournalTemplate, ItemJournalTemplate.Type::Item);
@@ -248,9 +248,9 @@ codeunit 148055 "Posting Group Changing CZL"
         LibraryInventory.PostItemJournalLine(ItemJournalLine."Journal Template Name", ItemJournalLine."Journal Batch Name");
 
         // [WHEN] Item Posting Group Change 
-        Item.Validate("Inventory Posting Group", InventoryPostingGroupNew.Code);
+        Item.Validate("Inventory Posting Group", NewInventoryPostingGroup.Code);
 
         // [THEN] Item Posting Group succesfully Changed
-        Assert.AreEqual(Item."Inventory Posting Group", InventoryPostingGroupNew.Code, Item.FieldCaption(Item."Inventory Posting Group"));
+        Assert.AreEqual(Item."Inventory Posting Group", NewInventoryPostingGroup.Code, Item.FieldCaption(Item."Inventory Posting Group"));
     end;
 }

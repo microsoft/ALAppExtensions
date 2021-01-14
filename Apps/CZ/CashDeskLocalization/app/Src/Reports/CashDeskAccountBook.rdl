@@ -11,6 +11,139 @@
       <rd:DataSourceID>915d0ab7-cb3d-4963-b4ac-e79ca9244d04</rd:DataSourceID>
     </DataSource>
   </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+      <Fields>
+        <Field Name="CashDesk_No">
+          <DataField>CashDesk_No</DataField>
+        </Field>
+        <Field Name="CashDesk_Currency_Code">
+          <DataField>CashDesk_Currency_Code</DataField>
+        </Field>
+        <Field Name="CashDesk_Name">
+          <DataField>CashDesk_Name</DataField>
+        </Field>
+        <Field Name="CompanyAddress3">
+          <DataField>CompanyAddress3</DataField>
+        </Field>
+        <Field Name="CompanyAddress2">
+          <DataField>CompanyAddress2</DataField>
+        </Field>
+        <Field Name="CompanyAddress1">
+          <DataField>CompanyAddress1</DataField>
+        </Field>
+        <Field Name="CashDeskFilter">
+          <DataField>CashDeskFilter</DataField>
+        </Field>
+        <Field Name="ShowLCY">
+          <DataField>ShowLCY</DataField>
+        </Field>
+        <Field Name="ShowEntry">
+          <DataField>ShowEntry</DataField>
+        </Field>
+        <Field Name="EndDate">
+          <DataField>EndDate</DataField>
+        </Field>
+        <Field Name="StartDate">
+          <DataField>StartDate</DataField>
+        </Field>
+        <Field Name="ReceiptTotal">
+          <DataField>ReceiptTotal</DataField>
+        </Field>
+        <Field Name="ReceiptTotalFormat">
+          <DataField>ReceiptTotalFormat</DataField>
+        </Field>
+        <Field Name="PaymentTotal">
+          <DataField>PaymentTotal</DataField>
+        </Field>
+        <Field Name="PaymentTotalFormat">
+          <DataField>PaymentTotalFormat</DataField>
+        </Field>
+        <Field Name="BalanceToDate">
+          <DataField>BalanceToDate</DataField>
+        </Field>
+        <Field Name="BalanceToDateFormat">
+          <DataField>BalanceToDateFormat</DataField>
+        </Field>
+        <Field Name="BankAccountLedgerEntry_Posting_Date">
+          <DataField>BankAccountLedgerEntry_Posting_Date</DataField>
+        </Field>
+        <Field Name="BankAccountLedgerEntry_External_Document_No">
+          <DataField>BankAccountLedgerEntry_External_Document_No</DataField>
+        </Field>
+        <Field Name="BankAccountLedgerEntry_Description">
+          <DataField>BankAccountLedgerEntry_Description</DataField>
+        </Field>
+        <Field Name="BankAccountLedgerEntry_Document_No">
+          <DataField>BankAccountLedgerEntry_Document_No</DataField>
+        </Field>
+        <Field Name="BankAccountLedgerEntry_Entry_No">
+          <DataField>BankAccountLedgerEntry_Entry_No</DataField>
+        </Field>
+        <Field Name="BankAccountLedgerEntry_CashDesk_No">
+          <DataField>BankAccountLedgerEntry_CashDesk_No</DataField>
+        </Field>
+        <Field Name="Balance">
+          <DataField>Balance</DataField>
+        </Field>
+        <Field Name="BalanceFormat">
+          <DataField>BalanceFormat</DataField>
+        </Field>
+        <Field Name="Receipt">
+          <DataField>Receipt</DataField>
+        </Field>
+        <Field Name="ReceiptFormat">
+          <DataField>ReceiptFormat</DataField>
+        </Field>
+        <Field Name="Payment">
+          <DataField>Payment</DataField>
+        </Field>
+        <Field Name="PaymentFormat">
+          <DataField>PaymentFormat</DataField>
+        </Field>
+        <Field Name="PostedCashDocumentHeader_Cash_Desk_No">
+          <DataField>PostedCashDocumentHeader_Cash_Desk_No</DataField>
+        </Field>
+        <Field Name="PostedCashDocumentHeader_No">
+          <DataField>PostedCashDocumentHeader_No</DataField>
+        </Field>
+        <Field Name="PostedCashDocumentHeader_Posting_Date">
+          <DataField>PostedCashDocumentHeader_Posting_Date</DataField>
+        </Field>
+        <Field Name="PostedCashDocumentLine_Cash_Desk_No">
+          <DataField>PostedCashDocumentLine_Cash_Desk_No</DataField>
+        </Field>
+        <Field Name="PostedCashDocumentLine_Line_No">
+          <DataField>PostedCashDocumentLine_Line_No</DataField>
+        </Field>
+        <Field Name="PostedCashDocumentLine_Cash_Document_No">
+          <DataField>PostedCashDocumentLine_Cash_Document_No</DataField>
+        </Field>
+        <Field Name="PostedCashDocumentLine_External_Document_No">
+          <DataField>PostedCashDocumentLine_External_Document_No</DataField>
+        </Field>
+        <Field Name="PostedCashDocumentLine_Description">
+          <DataField>PostedCashDocumentLine_Description</DataField>
+        </Field>
+        <Field Name="PostedReceipt">
+          <DataField>PostedReceipt</DataField>
+        </Field>
+        <Field Name="PostedReceiptFormat">
+          <DataField>PostedReceiptFormat</DataField>
+        </Field>
+        <Field Name="PostedPayment">
+          <DataField>PostedPayment</DataField>
+        </Field>
+        <Field Name="PostedPaymentFormat">
+          <DataField>PostedPaymentFormat</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -19,12 +152,12 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>17.71426cm</Width>
+                  <Width>18cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>3.35138cm</Height>
+                  <Height>3.98338cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -34,30 +167,30 @@
                               <TablixBody>
                                 <TablixColumns>
                                   <TablixColumn>
-                                    <Width>2.57142cm</Width>
+                                    <Width>2.5cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>2.57142cm</Width>
+                                    <Width>2cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>2.57142cm</Width>
+                                    <Width>2cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
                                     <Width>4cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>2cm</Width>
+                                    <Width>2.5cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>2cm</Width>
+                                    <Width>2.5cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>2cm</Width>
+                                    <Width>2.5cm</Width>
                                   </TablixColumn>
                                 </TablixColumns>
                                 <TablixRows>
                                   <TablixRow>
-                                    <Height>0.35278cm</Height>
+                                    <Height>0.423cm</Height>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
@@ -247,7 +380,7 @@
                                     </TablixCells>
                                   </TablixRow>
                                   <TablixRow>
-                                    <Height>0.35278cm</Height>
+                                    <Height>0.423cm</Height>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
@@ -337,132 +470,17 @@
                                               <PaddingRight>5pt</PaddingRight>
                                             </Style>
                                           </Textbox>
+                                          <ColSpan>5</ColSpan>
                                         </CellContents>
                                       </TablixCell>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="Textbox51">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value />
-                                                    <Style>
-                                                      <FontFamily>Segoe UI</FontFamily>
-                                                      <FontSize>8pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>Textbox51</rd:DefaultName>
-                                            <Style>
-                                              <VerticalAlign>Middle</VerticalAlign>
-                                              <PaddingLeft>2pt</PaddingLeft>
-                                              <PaddingRight>2pt</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="Textbox52">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value />
-                                                    <Style>
-                                                      <FontFamily>Segoe UI</FontFamily>
-                                                      <FontSize>8pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>Textbox52</rd:DefaultName>
-                                            <Style>
-                                              <VerticalAlign>Middle</VerticalAlign>
-                                              <PaddingLeft>2pt</PaddingLeft>
-                                              <PaddingRight>2pt</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="Textbox102">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value />
-                                                    <Style>
-                                                      <FontFamily>Segoe UI</FontFamily>
-                                                      <FontSize>8pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>Textbox102</rd:DefaultName>
-                                            <Style>
-                                              <VerticalAlign>Middle</VerticalAlign>
-                                              <PaddingLeft>2pt</PaddingLeft>
-                                              <PaddingRight>2pt</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="Textbox112">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value />
-                                                    <Style>
-                                                      <FontFamily>Segoe UI</FontFamily>
-                                                      <FontSize>8pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>Textbox112</rd:DefaultName>
-                                            <Style>
-                                              <VerticalAlign>Middle</VerticalAlign>
-                                              <PaddingLeft>2pt</PaddingLeft>
-                                              <PaddingRight>2pt</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
+                                      <TablixCell />
+                                      <TablixCell />
+                                      <TablixCell />
+                                      <TablixCell />
                                     </TablixCells>
                                   </TablixRow>
                                   <TablixRow>
-                                    <Height>0.35278cm</Height>
+                                    <Height>0.423cm</Height>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
@@ -552,132 +570,17 @@
                                               <PaddingRight>5pt</PaddingRight>
                                             </Style>
                                           </Textbox>
+                                          <ColSpan>5</ColSpan>
                                         </CellContents>
                                       </TablixCell>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="Textbox60">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value />
-                                                    <Style>
-                                                      <FontFamily>Segoe UI</FontFamily>
-                                                      <FontSize>8pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>Textbox60</rd:DefaultName>
-                                            <Style>
-                                              <VerticalAlign>Middle</VerticalAlign>
-                                              <PaddingLeft>2pt</PaddingLeft>
-                                              <PaddingRight>2pt</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="Textbox61">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value />
-                                                    <Style>
-                                                      <FontFamily>Segoe UI</FontFamily>
-                                                      <FontSize>8pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>Textbox61</rd:DefaultName>
-                                            <Style>
-                                              <VerticalAlign>Middle</VerticalAlign>
-                                              <PaddingLeft>2pt</PaddingLeft>
-                                              <PaddingRight>2pt</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="Textbox103">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value />
-                                                    <Style>
-                                                      <FontFamily>Segoe UI</FontFamily>
-                                                      <FontSize>8pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>Textbox103</rd:DefaultName>
-                                            <Style>
-                                              <VerticalAlign>Middle</VerticalAlign>
-                                              <PaddingLeft>2pt</PaddingLeft>
-                                              <PaddingRight>2pt</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="Textbox113">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value />
-                                                    <Style>
-                                                      <FontFamily>Segoe UI</FontFamily>
-                                                      <FontSize>8pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>Textbox113</rd:DefaultName>
-                                            <Style>
-                                              <VerticalAlign>Middle</VerticalAlign>
-                                              <PaddingLeft>2pt</PaddingLeft>
-                                              <PaddingRight>2pt</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
+                                      <TablixCell />
+                                      <TablixCell />
+                                      <TablixCell />
+                                      <TablixCell />
                                     </TablixCells>
                                   </TablixRow>
                                   <TablixRow>
-                                    <Height>0.35278cm</Height>
+                                    <Height>0.423cm</Height>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
@@ -708,101 +611,12 @@
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
+                                          <ColSpan>4</ColSpan>
                                         </CellContents>
                                       </TablixCell>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="Textbox76">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value />
-                                                    <Style>
-                                                      <FontFamily>Segoe UI</FontFamily>
-                                                      <FontSize>8pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>Textbox76</rd:DefaultName>
-                                            <Style>
-                                              <Border />
-                                              <VerticalAlign>Middle</VerticalAlign>
-                                              <PaddingLeft>0.075cm</PaddingLeft>
-                                              <PaddingRight>0.075cm</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="Textbox280">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value />
-                                                    <Style>
-                                                      <FontFamily>Segoe UI</FontFamily>
-                                                      <FontSize>8pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>Textbox280</rd:DefaultName>
-                                            <Style>
-                                              <Border />
-                                              <VerticalAlign>Middle</VerticalAlign>
-                                              <PaddingLeft>0.075cm</PaddingLeft>
-                                              <PaddingRight>0.75cm</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="Textbox281">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value />
-                                                    <Style>
-                                                      <FontFamily>Segoe UI</FontFamily>
-                                                      <FontSize>8pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>Textbox281</rd:DefaultName>
-                                            <Style>
-                                              <Border />
-                                              <VerticalAlign>Middle</VerticalAlign>
-                                              <PaddingLeft>2pt</PaddingLeft>
-                                              <PaddingRight>2pt</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
+                                      <TablixCell />
+                                      <TablixCell />
+                                      <TablixCell />
                                       <TablixCell>
                                         <CellContents>
                                           <Textbox Name="Textbox79">
@@ -870,7 +684,7 @@
                                     </TablixCells>
                                   </TablixRow>
                                   <TablixRow>
-                                    <Height>0.35278cm</Height>
+                                    <Height>0.423cm</Height>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
@@ -1047,7 +861,7 @@
                                     </TablixCells>
                                   </TablixRow>
                                   <TablixRow>
-                                    <Height>0.35278cm</Height>
+                                    <Height>0.423cm</Height>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
@@ -1357,7 +1171,7 @@
                                     </TablixCells>
                                   </TablixRow>
                                   <TablixRow>
-                                    <Height>0.35278cm</Height>
+                                    <Height>0.423cm</Height>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
@@ -1580,7 +1394,7 @@
                                     </TablixCells>
                                   </TablixRow>
                                   <TablixRow>
-                                    <Height>0.35278cm</Height>
+                                    <Height>0.423cm</Height>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
@@ -1798,7 +1612,7 @@
                                     </TablixCells>
                                   </TablixRow>
                                   <TablixRow>
-                                    <Height>0.35278cm</Height>
+                                    <Height>0.423cm</Height>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
@@ -2083,8 +1897,8 @@
                                 </TablixMembers>
                               </TablixRowHierarchy>
                               <DataSetName>DataSet_Result</DataSetName>
-                              <Height>3.3514cm</Height>
-                              <Width>17.71426cm</Width>
+                              <Height>3.98338cm</Height>
+                              <Width>18cm</Width>
                               <Style />
                             </Tablix>
                           </ReportItems>
@@ -2121,8 +1935,8 @@
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>DataSet_Result</DataSetName>
-            <Height>3.35138cm</Height>
-            <Width>17.71426cm</Width>
+            <Height>3.98338cm</Height>
+            <Width>18cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -2130,7 +1944,7 @@
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>3.3514cm</Height>
+        <Height>3.98338cm</Height>
         <Style />
       </Body>
       <Width>18cm</Width>
@@ -2718,137 +2532,4 @@ End Function
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
   <rd:ReportID>bbc4b483-2558-46f6-9f6c-c592c9f84437</rd:ReportID>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Fields>
-        <Field Name="CashDesk_No">
-          <DataField>CashDesk_No</DataField>
-        </Field>
-        <Field Name="CashDesk_Currency_Code">
-          <DataField>CashDesk_Currency_Code</DataField>
-        </Field>
-        <Field Name="CashDesk_Name">
-          <DataField>CashDesk_Name</DataField>
-        </Field>
-        <Field Name="CompanyAddress3">
-          <DataField>CompanyAddress3</DataField>
-        </Field>
-        <Field Name="CompanyAddress2">
-          <DataField>CompanyAddress2</DataField>
-        </Field>
-        <Field Name="CompanyAddress1">
-          <DataField>CompanyAddress1</DataField>
-        </Field>
-        <Field Name="CashDeskFilter">
-          <DataField>CashDeskFilter</DataField>
-        </Field>
-        <Field Name="ShowLCY">
-          <DataField>ShowLCY</DataField>
-        </Field>
-        <Field Name="ShowEntry">
-          <DataField>ShowEntry</DataField>
-        </Field>
-        <Field Name="EndDate">
-          <DataField>EndDate</DataField>
-        </Field>
-        <Field Name="StartDate">
-          <DataField>StartDate</DataField>
-        </Field>
-        <Field Name="ReceiptTotal">
-          <DataField>ReceiptTotal</DataField>
-        </Field>
-        <Field Name="ReceiptTotalFormat">
-          <DataField>ReceiptTotalFormat</DataField>
-        </Field>
-        <Field Name="PaymentTotal">
-          <DataField>PaymentTotal</DataField>
-        </Field>
-        <Field Name="PaymentTotalFormat">
-          <DataField>PaymentTotalFormat</DataField>
-        </Field>
-        <Field Name="BalanceToDate">
-          <DataField>BalanceToDate</DataField>
-        </Field>
-        <Field Name="BalanceToDateFormat">
-          <DataField>BalanceToDateFormat</DataField>
-        </Field>
-        <Field Name="BankAccountLedgerEntry_Posting_Date">
-          <DataField>BankAccountLedgerEntry_Posting_Date</DataField>
-        </Field>
-        <Field Name="BankAccountLedgerEntry_External_Document_No">
-          <DataField>BankAccountLedgerEntry_External_Document_No</DataField>
-        </Field>
-        <Field Name="BankAccountLedgerEntry_Description">
-          <DataField>BankAccountLedgerEntry_Description</DataField>
-        </Field>
-        <Field Name="BankAccountLedgerEntry_Document_No">
-          <DataField>BankAccountLedgerEntry_Document_No</DataField>
-        </Field>
-        <Field Name="BankAccountLedgerEntry_Entry_No">
-          <DataField>BankAccountLedgerEntry_Entry_No</DataField>
-        </Field>
-        <Field Name="BankAccountLedgerEntry_CashDesk_No">
-          <DataField>BankAccountLedgerEntry_CashDesk_No</DataField>
-        </Field>
-        <Field Name="Balance">
-          <DataField>Balance</DataField>
-        </Field>
-        <Field Name="BalanceFormat">
-          <DataField>BalanceFormat</DataField>
-        </Field>
-        <Field Name="Receipt">
-          <DataField>Receipt</DataField>
-        </Field>
-        <Field Name="ReceiptFormat">
-          <DataField>ReceiptFormat</DataField>
-        </Field>
-        <Field Name="Payment">
-          <DataField>Payment</DataField>
-        </Field>
-        <Field Name="PaymentFormat">
-          <DataField>PaymentFormat</DataField>
-        </Field>
-        <Field Name="PostedCashDocumentHeader_Cash_Desk_No">
-          <DataField>PostedCashDocumentHeader_Cash_Desk_No</DataField>
-        </Field>
-        <Field Name="PostedCashDocumentHeader_No">
-          <DataField>PostedCashDocumentHeader_No</DataField>
-        </Field>
-        <Field Name="PostedCashDocumentHeader_Posting_Date">
-          <DataField>PostedCashDocumentHeader_Posting_Date</DataField>
-        </Field>
-        <Field Name="PostedCashDocumentLine_Cash_Desk_No">
-          <DataField>PostedCashDocumentLine_Cash_Desk_No</DataField>
-        </Field>
-        <Field Name="PostedCashDocumentLine_Line_No">
-          <DataField>PostedCashDocumentLine_Line_No</DataField>
-        </Field>
-        <Field Name="PostedCashDocumentLine_Cash_Document_No">
-          <DataField>PostedCashDocumentLine_Cash_Document_No</DataField>
-        </Field>
-        <Field Name="PostedCashDocumentLine_External_Document_No">
-          <DataField>PostedCashDocumentLine_External_Document_No</DataField>
-        </Field>
-        <Field Name="PostedCashDocumentLine_Description">
-          <DataField>PostedCashDocumentLine_Description</DataField>
-        </Field>
-        <Field Name="PostedReceipt">
-          <DataField>PostedReceipt</DataField>
-        </Field>
-        <Field Name="PostedReceiptFormat">
-          <DataField>PostedReceiptFormat</DataField>
-        </Field>
-        <Field Name="PostedPayment">
-          <DataField>PostedPayment</DataField>
-        </Field>
-        <Field Name="PostedPaymentFormat">
-          <DataField>PostedPaymentFormat</DataField>
-        </Field>
-      </Fields>
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-    </DataSet>
-  </DataSets>
 </Report>

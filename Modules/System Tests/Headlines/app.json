@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Tests for the Headlines module",
-    "version":  "17.2.0.0",
+    "version":  "17.3.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
@@ -15,19 +15,19 @@
                              "id":  "f3f75070-7762-41f5-9947-043a50dc9fc7",
                              "name":  "Headlines",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "9761c0ac-e4ea-4c14-8918-2f4ded158b12",
                              "name":  "User Login Times Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          }
                      ],
     "screenshots":  [

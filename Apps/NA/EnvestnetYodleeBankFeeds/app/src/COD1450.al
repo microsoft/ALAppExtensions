@@ -943,8 +943,8 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         XmlDoc: XmlDocument;
         XmlElem: XmlElement;
     begin
-        IF NOT XmlDocument.ReadFrom(Txt, XmlDoc) THEN
-            EXIT;
+        RemoveInvalidXMLCharacters(Txt);
+        XmlDocument.ReadFrom(Txt, XmlDoc);
         XmlDoc.GetRoot(XmlElem);
         Node := XmlElem.AsXmlNode();
     end;
@@ -1411,6 +1411,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         // so far, in icms we have only seen Char x014 coming from Yodlee
         // therefore remove this one first and continue only if there are more
         InputText := InputText.Replace('&#x14', '');
+        InputText := InputText.Replace('ËÇ£“ËÇÖ“í', '');
         if StrPos(InputText, '&#x') = 0 then
             exit;
 

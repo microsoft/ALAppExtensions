@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Tests for the Azure AD Plan module",
-    "version":  "17.2.0.0",
+    "version":  "17.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
     "help":  "",
@@ -15,31 +15,31 @@
                              "id":  "c1d53fcd-ec4f-4ac5-ba49-af91a1dea38c",
                              "name":  "Azure AD Plan",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "e63749f1-a7a5-4557-a943-0ae4745616bd",
                              "name":  "Azure AD Plan Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          },
                          {
                              "id":  "815d5c15-02bd-4d58-a010-b66033de6625",
                              "name":  "DotNet Aliases Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.3.0.0"
                          }
                      ],
     "screenshots":  [

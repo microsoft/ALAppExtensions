@@ -11,14 +11,17 @@ codeunit 31197 "Sync.Dep.Fld-Commodity CZL"
         CommodityCZL: Record "Commodity CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::Commodity, 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::Commodity) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Commodity CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Commodity CZL");
+        CommodityCZL.ChangeCompany(Rec.CurrentCompany);
         if CommodityCZL.Get(xRec.Code) then
             CommodityCZL.Rename(Rec.Code);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Commodity CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Commodity CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::Commodity, 'OnAfterInsertEvent', '', false, false)]
@@ -38,11 +41,14 @@ codeunit 31197 "Sync.Dep.Fld-Commodity CZL"
         CommodityCZL: Record "Commodity CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::Commodity, 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Commodity CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Commodity CZL");
+        CommodityCZL.ChangeCompany(Rec.CurrentCompany);
         if not CommodityCZL.Get(Rec.Code) then begin
             CommodityCZL.Init();
             CommodityCZL.Code := Rec.Code;
@@ -59,11 +65,14 @@ codeunit 31197 "Sync.Dep.Fld-Commodity CZL"
         CommodityCZL: Record "Commodity CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::Commodity, 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Commodity CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Commodity CZL");
+        CommodityCZL.ChangeCompany(Rec.CurrentCompany);
         if CommodityCZL.Get(Rec.Code) then
             CommodityCZL.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Commodity CZL", 0);
@@ -75,14 +84,17 @@ codeunit 31197 "Sync.Dep.Fld-Commodity CZL"
         Commodity: Record Commodity;
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity CZL") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::Commodity, 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::Commodity);
+        Commodity.ChangeCompany(Rec.CurrentCompany);
         if Commodity.Get(xRec.Code) then
             Commodity.Rename(Rec.Code);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::Commodity, 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::Commodity);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Commodity CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -102,13 +114,14 @@ codeunit 31197 "Sync.Dep.Fld-Commodity CZL"
         Commodity: Record Commodity;
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::Commodity, 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::Commodity);
+        Commodity.ChangeCompany(Rec.CurrentCompany);
         if not Commodity.Get(Rec.Code) then begin
             Commodity.Init();
             Commodity.Code := Rec.Code;
@@ -125,13 +138,23 @@ codeunit 31197 "Sync.Dep.Fld-Commodity CZL"
         Commodity: Record Commodity;
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::Commodity, 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::Commodity);
+        Commodity.ChangeCompany(Rec.CurrentCompany);
         if Commodity.Get(Rec.Code) then
             Commodity.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::Commodity, 0);
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

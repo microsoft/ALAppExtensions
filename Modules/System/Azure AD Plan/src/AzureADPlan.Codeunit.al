@@ -29,7 +29,6 @@ codeunit 9016 "Azure AD Plan"
     /// </summary>
     /// <param name="PlanGUID">the plan GUID.</param>
     /// <returns>true if the given plan is assigned to the current user.</returns>
-    [Scope('OnPrem')]
     [NonDebuggable]
     procedure IsPlanAssignedToUser(PlanGUID: Guid): Boolean
     begin
@@ -42,7 +41,6 @@ codeunit 9016 "Azure AD Plan"
     /// <param name="PlanGUID">the plan GUID.</param>
     /// <param name="UserGUID">the user GUID.</param>
     /// <returns>true if the given plan is assigned to the given user.</returns>
-    [Scope('OnPrem')]
     [NonDebuggable]
     procedure IsPlanAssignedToUser(PlanGUID: Guid; UserGUID: Guid): Boolean
     begin

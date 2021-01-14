@@ -260,6 +260,7 @@ codeunit 8900 "Email Impl"
         SentEmail.DeleteAll();
 
         EmailOutbox.ChangeCompany(CompanyName);
+        EmailOutbox.ModifyAll(Status, Enum::"Email Status"::" ");
         EmailOutbox.DeleteAll();
     end;
 }

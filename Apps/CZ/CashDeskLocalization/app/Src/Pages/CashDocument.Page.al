@@ -422,6 +422,54 @@ page 31160 "Cash Document CZP"
                         Rec.VATRounding();
                     end;
                 }
+#if not CLEAN18
+                action("Link Advance Letters")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Link Advance Letters';
+                    Enabled = LinkAdvLettersEnabled;
+                    Image = LinkWithExisting;
+                    ToolTip = 'Allow to link partial payment of advance letters.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
+                    ObsoleteTag = '18.0';
+
+                    trigger OnAction()
+                    begin
+                        CurrPage.CashDocLines.Page.LinkAdvLetters();
+                    end;
+                }
+                action("Link Whole Advance Letter")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Link Whole Advance Letter';
+                    Image = LinkAccount;
+                    ToolTip = 'Allow to link whole advance letters.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
+                    ObsoleteTag = '18.0';
+
+                    trigger OnAction()
+                    begin
+                        CurrPage.CashDocLines.Page.LinkWholeAdvLetter();
+                    end;
+                }
+                action("UnLink Linked Advance Letters")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'UnLink Linked Advance Letters';
+                    Image = UnLinkAccount;
+                    ToolTip = 'Unlinks linked advance letters';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
+                    ObsoleteTag = '18.0';
+
+                    trigger OnAction()
+                    begin
+                        CurrPage.CashDocLines.Page.UnLinkLinkedAdvLetters();
+                    end;
+                }
+#endif
                 action(CopyDocument)
                 {
                     ApplicationArea = Suite;
@@ -681,6 +729,10 @@ page 31160 "Cash Document CZP"
         OpenPostedCashDocQst: Label 'The cash document has been posted and moved to the Posted Cash Documents window.\\Do you want to open the posted cash document?';
         DocumentIsPosted: Boolean;
         DocumentIsReleased: Boolean;
+#if not CLEAN18
+        [InDataSet]
+        LinkAdvLettersEnabled: Boolean;
+#endif
 
     local procedure PostDocument(PostingCodeunitID: Integer; Navigate: Option)
     var

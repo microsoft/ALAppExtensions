@@ -1,4 +1,3 @@
-#pragma warning disable AL0432
 report 11769 "VAT Statement CZL"
 {
     DefaultLayout = RDLC;
@@ -379,6 +378,13 @@ report 11769 "VAT Statement CZL"
                                 VATEntry.CalcSums(Base, "Additional-Currency Base");
                                 Amount := ConditionalAdd(0, VATEntry.Base, VATEntry."Additional-Currency Base");
                             end;
+#pragma warning disable AL0432
+                        VATStmtLine2."Amount Type"::"Adv. Base": // This value is discontinued and should no longer be used.
+#pragma warning restore
+                            begin
+                                VATEntry.CalcSums("Advance Base", "Additional-Currency Base");
+                                Amount := ConditionalAdd(0, VATEntry."Advance Base", VATEntry."Additional-Currency Base");
+                            end;
                         VATStmtLine2."Amount Type"::"Unrealized Amount":
                             begin
                                 VATEntry.CalcSums("Remaining Unrealized Amount", "Add.-Curr. Rem. Unreal. Amount");
@@ -390,6 +396,7 @@ report 11769 "VAT Statement CZL"
                                 Amount := ConditionalAdd(0, VATEntry."Remaining Unrealized Base", VATEntry."Add.-Curr. Rem. Unreal. Base");
                             end;
                     end;
+                    OnCalcLineTotalOnBeforeCalcTotalAmountVATEntryTotaling(VATStmtLine2, VATEntry, Amount, UseAmtsInAddCurr);
                     CalcTotalAmount(VATStmtLine2, TotalAmount);
                 end;
             VATStmtLine2.Type::"Row Totaling":
@@ -416,7 +423,9 @@ report 11769 "VAT Statement CZL"
                             end;
                         until VATStmtLine2.Next() = 0;
                 end;
+#pragma warning disable AL0432
             VATStmtLine2.Type::"Formula", // This value is discontinued and should no longer be used.
+#pragma warning restore
             VATStmtLine2.Type::"Formula CZL":
                 begin
                     Amount := EvaluateExpression(true, VATStmtLine2."Row Totaling", VATStmtLine2, true);
@@ -615,6 +624,11 @@ report 11769 "VAT Statement CZL"
         end;
         CallLevel := CallLevel - 1;
         exit(Result);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCalcLineTotalOnBeforeCalcTotalAmountVATEntryTotaling(VATStatementLine: Record "VAT Statement Line"; var VATEntry: Record "VAT Entry"; var Amount: Decimal; UseAmtsInAddCurr: Boolean)
+    begin
     end;
 
     [IntegrationEvent(false, false)]

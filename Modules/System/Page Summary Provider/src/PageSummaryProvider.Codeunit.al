@@ -18,14 +18,27 @@ codeunit 2718 "Page Summary Provider"
     //  <param name="Bookmark">The Bookmark of the page for which to retrieve page summary.</param>
     /// <returns>Text value for the page summary in JSON format.</returns>
     /// <example>
-    /// {"version":"1.0",
-    /// "pageCaption":"Customer Card",
-    /// "type":Brick,
-    /// "fields":[
-    ///    {"caption":"No.","fieldValue":"01445544","type":"Code"},
-    ///    {"caption":"Name","fieldValue":"Progressive Home Furnishings","type":"Text"},
-    ///    {"caption":"Contact","fieldValue":"Mr. Scott Mitchell","type":"Text"},
-    ///    {"caption":"Balance Due (LCY)","fieldValue":"1.499,03","type":"Decimal"}]
+    /// {
+    ///   "version":"1.1",
+    ///   "pageCaption":"Customer Card",
+    ///   "pageType":Card,
+    ///   "fields":[
+    ///      {"caption":"No.","fieldValue":"01445544","type":"Code"},
+    ///      {"caption":"Name","fieldValue":"Progressive Home Furnishings","type":"Text"},
+    ///      {"caption":"Contact","fieldValue":"Mr. Scott Mitchell","type":"Text"},
+    ///      {"caption":"Balance Due (LCY)","fieldValue":"1.499,03","type":"Decimal"}]
+    ///   }
+    /// }
+    /// 
+    /// In case of an error:
+    /// {
+    ///   "version":"1.1",
+    ///   "pageCaption":"Customer Card",
+    ///   "pageType":Card,
+    ///   "error":[
+    ///     "code":"InvalidBookmark"
+    ///     "message":"The bookmark is invalid"
+    ///   ]
     /// }
     /// </example>
     procedure GetPageSummary(PageId: Integer; Bookmark: Text): Text

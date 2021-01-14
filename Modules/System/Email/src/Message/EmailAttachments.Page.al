@@ -95,16 +95,13 @@ page 8889 "Email Attachments"
         }
     }
 
-    trigger OnOpenPage()
+    internal procedure UpdateValues(MessageId: Guid)
     begin
+        EmailMessageId := MessageId;
+
         EmailMessage.Get(EmailMessageId);
         UpdateDeleteEnablement();
         IsMessageReadOnly := EmailMessage.IsReadOnly();
-    end;
-
-    internal procedure SetEmailMessageId(MessageId: Guid)
-    begin
-        EmailMessageId := MessageId;
     end;
 
     internal procedure UpdateDeleteEnablement()

@@ -182,7 +182,7 @@ Codeunit 148003 "Library - Tax CZL"
         TempBlob: Codeunit "Temp Blob";
         FileManagement: Codeunit "File Management";
         VIESDeclarationCZL: XMLport "VIES Declaration CZL";
-        OutputStream: OutStream;
+        OutStream: OutStream;
     begin
         TempVIESDeclarationLineCZL.DeleteAll();
         TempVIESDeclarationLineCZL.Reset();
@@ -193,19 +193,19 @@ Codeunit 148003 "Library - Tax CZL"
                 TempVIESDeclarationLineCZL.Insert();
             until VIESDeclarationLineCZL.Next() = 0;
 
-        TempBlob.CreateOutStream(OutputStream);
+        TempBlob.CreateOutStream(OutStream);
         VIESDeclarationCZL.SetHeader(VIESDeclarationHeaderCZL);
         VIESDeclarationCZL.SetLines(TempVIESDeclarationLineCZL);
-        VIESDeclarationCZL.SetDestination(OutputStream);
+        VIESDeclarationCZL.SetDestination(OutStream);
         VIESDeclarationCZL.Export();
 
         exit(FileManagement.BLOBExport(TempBlob, 'Default.xml', false));
     end;
 
-    procedure FindCompanyOfficials(var CompanyOfficialsCZL: Record "Company Official CZL")
+    procedure FindCompanyOfficials(var CompanyOfficialCZL: Record "Company Official CZL")
     begin
-        CompanyOfficialsCZL.Reset();
-        CompanyOfficialsCZL.FindFirst();
+        CompanyOfficialCZL.Reset();
+        CompanyOfficialCZL.FindFirst();
     end;
 
     local procedure FindFirstOpenVATEntry(var VATEntry: Record "VAT Entry")
@@ -215,11 +215,11 @@ Codeunit 148003 "Library - Tax CZL"
         VATEntry.FindFirst();
     end;
 
-    procedure FindFirstOpenVATPeriod(var VATPeriod: Record "VAT Period CZL")
+    procedure FindFirstOpenVATPeriod(var VATPeriodCZL: Record "VAT Period CZL")
     begin
-        VATPeriod.Reset();
-        VATPeriod.SetRange(Closed, false);
-        VATPeriod.FindFirst();
+        VATPeriodCZL.Reset();
+        VATPeriodCZL.SetRange(Closed, false);
+        VATPeriodCZL.FindFirst();
     end;
 
     procedure FindVATStatementTemplate(var VATStatementTemplate: Record "VAT Statement Template")

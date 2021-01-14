@@ -62,11 +62,14 @@ codeunit 31149 "Sync.Dep.Fld-CompanyInfo CZL"
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Information", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statutory Reporting Setup CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statutory Reporting Setup CZL");
+        StatutoryReportingSetupCZL.ChangeCompany(Rec.CurrentCompany);
         if not StatutoryReportingSetupCZL.Get() then begin
             StatutoryReportingSetupCZL.Init();
             StatutoryReportingSetupCZL.Insert(false);
@@ -82,5 +85,12 @@ codeunit 31149 "Sync.Dep.Fld-CompanyInfo CZL"
         StatutoryReportingSetupCZL."Finance Manager No." := Rec."Finance Manager No.";
         StatutoryReportingSetupCZL.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statutory Reporting Setup CZL", 0);
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

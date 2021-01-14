@@ -16,11 +16,14 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
         RegistrationLogCZL: Record "Registration Log CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Registration Log", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Registration Log CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Registration Log CZL");
+        RegistrationLogCZL.ChangeCompany(Rec.CurrentCompany);
         RegistrationLogCZL.Init();
         RegistrationLogCZL."Registration No." := Rec."Registration No.";
         RegistrationLogCZL."Account Type" := Rec."Account Type";
@@ -49,13 +52,14 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
         RegistrationLog: Record "Registration Log";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Registration Log CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Registration Log", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Registration Log");
+        RegistrationLog.ChangeCompany(Rec.CurrentCompany);
         RegistrationLog.Init();
         RegistrationLog."Registration No." := Rec."Registration No.";
         RegistrationLog."Account Type" := Rec."Account Type";
@@ -71,5 +75,12 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
         RegistrationLog."Verified Result" := Rec."Verified Result";
         RegistrationLog.Insert(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Registration Log", 0);
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

@@ -53,6 +53,14 @@ pageextension 11700 "Company Information CZL" extends "Company Information"
                 RunObject = Page "Company Official List CZL";
                 ToolTip = 'Contains the list of officials whitch represent the company.';
             }
+            action(DocumentFootersCZL)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Document Footers';
+                Image = DocumentEdit;
+                RunObject = Page "Document Footers CZL";
+                ToolTip = 'Allows the setup of document footers for printout.';
+            }
         }
     }
 }

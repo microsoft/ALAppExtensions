@@ -123,11 +123,11 @@ codeunit 148058 "Stockkeeping Unit Template CZL"
     end;
 
     [RequestPageHandler]
-    procedure HandleCreateSKUReport(var RequestPage: TestRequestPage "Create Stockkeeping Unit CZL")
+    procedure HandleCreateSKUReport(var CreateStockkeepingUnitCZL: TestRequestPage "Create Stockkeeping Unit CZL")
     begin
-        RequestPage.OnlyForSKUTemplatesCZL.SetValue(true);
-        RequestPage.SKUCreationMethodCZL.SetValue(0);
-        RequestPage.OK().Invoke();
+        CreateStockkeepingUnitCZL.OnlyForSKUTemplatesCZL.SetValue(true);
+        CreateStockkeepingUnitCZL.SKUCreationMethodCZL.SetValue(0);
+        CreateStockkeepingUnitCZL.OK().Invoke();
     end;
 
     [MessageHandler]

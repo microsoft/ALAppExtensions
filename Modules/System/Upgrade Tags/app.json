@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Stores Upgrade Tags to track which methods were executed.",
     "description":  "Upgrade Tags are used within upgrade codeunits to know which upgrade methods have been run and to prevent executing the same upgrade code twice. They can also be used to skip the uprade methods on a specific company or to fix the upgrade that went wrong.",
-    "version":  "17.2.0.0",
+    "version":  "17.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",

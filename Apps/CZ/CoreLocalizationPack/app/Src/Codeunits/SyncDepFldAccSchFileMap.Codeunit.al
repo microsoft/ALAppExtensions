@@ -11,14 +11,17 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
         AccScheduleFileMappingCZL: Record "Acc. Schedule File Mapping CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statement File Mapping", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statement File Mapping") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Acc. Schedule File Mapping CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Acc. Schedule File Mapping CZL");
+        AccScheduleFileMappingCZL.ChangeCompany(Rec.CurrentCompany);
         if AccScheduleFileMappingCZL.Get(xRec."Schedule Name", xRec."Schedule Line No.", xRec."Schedule Column Layout Name", xRec."Schedule Column No.", xRec."Excel Cell") then
             AccScheduleFileMappingCZL.Rename(Rec."Schedule Name", Rec."Schedule Line No.", Rec."Schedule Column Layout Name", Rec."Schedule Column No.", Rec."Excel Cell");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Acc. Schedule File Mapping CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Acc. Schedule File Mapping CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Statement File Mapping", 'OnAfterInsertEvent', '', false, false)]
@@ -38,11 +41,14 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
         AccScheduleFileMappingCZL: Record "Acc. Schedule File Mapping CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statement File Mapping", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Acc. Schedule File Mapping CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Acc. Schedule File Mapping CZL");
+        AccScheduleFileMappingCZL.ChangeCompany(Rec.CurrentCompany);
         if not AccScheduleFileMappingCZL.Get(Rec."Schedule Name", Rec."Schedule Line No.", Rec."Schedule Column Layout Name", Rec."Schedule Column No.", Rec."Excel Cell") then begin
             AccScheduleFileMappingCZL.Init();
             AccScheduleFileMappingCZL."Schedule Name" := Rec."Schedule Name";
@@ -66,11 +72,14 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
         AccScheduleFileMappingCZL: Record "Acc. Schedule File Mapping CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statement File Mapping", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Acc. Schedule File Mapping CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Acc. Schedule File Mapping CZL");
+        AccScheduleFileMappingCZL.ChangeCompany(Rec.CurrentCompany);
         if AccScheduleFileMappingCZL.Get(Rec."Schedule Name", Rec."Schedule Line No.", Rec."Schedule Column Layout Name", Rec."Schedule Column No.", Rec."Excel Cell") then
             AccScheduleFileMappingCZL.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Acc. Schedule File Mapping CZL", 0);
@@ -82,14 +91,17 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
         StatementFileMapping: Record "Statement File Mapping";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Acc. Schedule File Mapping CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Acc. Schedule File Mapping CZL") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statement File Mapping", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statement File Mapping");
+        StatementFileMapping.ChangeCompany(Rec.CurrentCompany);
         if StatementFileMapping.Get(xRec."Schedule Name", xRec."Schedule Line No.", xRec."Schedule Column Layout Name", xRec."Schedule Column No.", xRec."Excel Cell") then
             StatementFileMapping.Rename(Rec."Schedule Name", Rec."Schedule Line No.", Rec."Schedule Column Layout Name", Rec."Schedule Column No.", Rec."Excel Cell");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statement File Mapping", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statement File Mapping");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule File Mapping CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -109,13 +121,14 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
         StatementFileMapping: Record "Statement File Mapping";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Acc. Schedule File Mapping CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statement File Mapping", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statement File Mapping");
+        StatementFileMapping.ChangeCompany(Rec.CurrentCompany);
         if not StatementFileMapping.Get(Rec."Schedule Name", Rec."Schedule Line No.", Rec."Schedule Column Layout Name", Rec."Schedule Column No.", Rec."Excel Cell") then begin
             StatementFileMapping.Init();
             StatementFileMapping."Schedule Name" := Rec."Schedule Name";
@@ -139,13 +152,23 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
         StatementFileMapping: Record "Statement File Mapping";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Acc. Schedule File Mapping CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statement File Mapping", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statement File Mapping");
+        StatementFileMapping.ChangeCompany(Rec.CurrentCompany);
         if StatementFileMapping.Get(Rec."Schedule Name", Rec."Schedule Line No.", Rec."Schedule Column Layout Name", Rec."Schedule Column No.", Rec."Excel Cell") then
             StatementFileMapping.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statement File Mapping", 0);
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

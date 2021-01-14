@@ -41,8 +41,11 @@ codeunit 8887 "Email Test Mail"
                 EmailRecipient := EmailUserSpecifiedAddress.GetEmailAddress()
             else
                 exit;
-
+                
+#if not CLEAN17
         Email.OnGetTestEmailBody(Rec.Connector, EmailBody);
+#endif
+        Email.OnGetBodyForTestEmail(Rec.Connector, Rec."Account Id", EmailBody);
 
         if EmailBody = '' then
             EmailBody := StrSubstNo(TestEmailBodyTxt, UserId(), Rec.Connector);

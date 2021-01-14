@@ -6,8 +6,8 @@ codeunit 148056 "G/L Account Group CZL"
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         GenJournalLine: Record "Gen. Journal Line";
-        GLAccount1: Record "G/L Account";
-        GLAccount2: Record "G/L Account";
+        Group1GLAccount: Record "G/L Account";
+        Group2GLAccount: Record "G/L Account";
         GenJournalTemplate: Record "Gen. Journal Template";
         GenJournalBatch: Record "Gen. Journal Batch";
         LibraryReportDataset: Codeunit "Library - Report Dataset";
@@ -40,12 +40,12 @@ codeunit 148056 "G/L Account Group CZL"
         Initialize();
 
         // [GIVEN] New G/L Acount created
-        LibraryERM.CreateGLAccount(GLAccount1);
+        LibraryERM.CreateGLAccount(Group1GLAccount);
 
-        GLAccount1.Validate("Income/Balance", GLAccount1."Income/Balance"::"Balance Sheet");
-        GLAccount1.Validate("Account Category", GLAccount1."Account Category"::Assets);
-        GLAccount1."G/L Account Group CZL" := GLAccount1."G/L Account Group CZL"::" ";
-        GLAccount1.Modify();
+        Group1GLAccount.Validate("Income/Balance", Group1GLAccount."Income/Balance"::"Balance Sheet");
+        Group1GLAccount.Validate("Account Category", Group1GLAccount."Account Category"::Assets);
+        Group1GLAccount."G/L Account Group CZL" := Group1GLAccount."G/L Account Group CZL"::"Financial Accounting";
+        Group1GLAccount.Modify();
 
         // [GIVEN] New Gen. Journal Template created
         LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
@@ -56,8 +56,8 @@ codeunit 148056 "G/L Account Group CZL"
         // [GIVEN] Create and Post Gen. Journal lines
         LibraryERM.CreateGeneralJnlLineWithBalAcc(GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name,
                        DocumentType::" ", AccountType::"G/L Account",
-                       GLAccount1."No.",
-                       AccountType::"G/L Account", GLAccount1."No.", 100);
+                       Group1GLAccount."No.",
+                       AccountType::"G/L Account", Group1GLAccount."No.", 100);
         GenJournalLine.Validate(GenJournalLine."Posting Date", Today());
         GenJournalLine.Validate(GenJournalLine."Document No.", '1111');
         GenJnlPostLine.Run(GenJournalLine);
@@ -81,8 +81,8 @@ codeunit 148056 "G/L Account Group CZL"
         Initialize();
 
         // [GIVEN] New G/L Acounts created
-        CreateGLAccountWithEmptyGLAccGroup(GLAccount1);
-        CreateGLAccountWithEmptyGLAccGroup(GLAccount2);
+        CreateGLAccountWithEmptyGLAccGroup(Group1GLAccount);
+        CreateGLAccountWithEmptyGLAccGroup(Group2GLAccount);
 
         // [GIVEN] New Gen. Journal Template created
         LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
@@ -94,15 +94,15 @@ codeunit 148056 "G/L Account Group CZL"
         LibraryERM.CreateGeneralJnlLineWithBalAcc(GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name,
                        DocumentType::" ", AccountType::"G/L Account",
                        LibraryERM.CreateGLAccountNo(),
-                       AccountType::"G/L Account", GLAccount1."No.", 100);
+                       AccountType::"G/L Account", Group1GLAccount."No.", 100);
 
         GenJournalLine.Validate(GenJournalLine."Posting Date", Today());
         GenJournalLine.Validate(GenJournalLine."Document No.", '2222');
         GenJnlPostLine.Run(GenJournalLine);
 
         // [GIVEN] Change G/L Account Group CZL Values
-        GLAccount1."G/L Account Group CZL" := GLAccount2."G/L Account Group CZL"::Internal;
-        GLAccount1.Modify();
+        Group1GLAccount."G/L Account Group CZL" := Group2GLAccount."G/L Account Group CZL"::"Internal Accounting";
+        Group1GLAccount.Modify();
         Commit();
 
         // [WHEN] Run the Report G/L Acc. Group Post. Check CZL. 
@@ -113,23 +113,23 @@ codeunit 148056 "G/L Account Group CZL"
         LibraryReportDataset.AssertElementWithValueExists('DocumentNo_TempGLEntry', '2222');
 
         // [GIVEN] Change G/L Account Group CZL Values
-        GLAccount1."G/L Account Group CZL" := GLAccount2."G/L Account Group CZL"::" ";
-        GLAccount1.Modify();
+        Group1GLAccount."G/L Account Group CZL" := Group2GLAccount."G/L Account Group CZL"::"Financial Accounting";
+        Group1GLAccount.Modify();
 
         // [GIVEN] Create and Post Gen. Journal lines
         LibraryERM.CreateGeneralJnlLineWithBalAcc(GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name,
                       DocumentType::" ", AccountType::"G/L Account",
-                      GLAccount1."No.",
-                      AccountType::"G/L Account", GLAccount2."No.", 100);
+                      Group1GLAccount."No.",
+                      AccountType::"G/L Account", Group2GLAccount."No.", 100);
         GenJournalLine.Validate(GenJournalLine."Posting Date", Today());
         GenJournalLine.Validate(GenJournalLine."Document No.", '3333');
         GenJnlPostLine.Run(GenJournalLine);
 
         // [GIVEN] Change G/L Account Groups CZL Values
-        GLAccount1."G/L Account Group CZL" := GLAccount2."G/L Account Group CZL"::Internal;
-        GLAccount1.Modify();
-        GLAccount2."G/L Account Group CZL" := GLAccount2."G/L Account Group CZL"::"Off-Balance";
-        GLAccount2.Modify();
+        Group1GLAccount."G/L Account Group CZL" := Group2GLAccount."G/L Account Group CZL"::"Internal Accounting";
+        Group1GLAccount.Modify();
+        Group2GLAccount."G/L Account Group CZL" := Group2GLAccount."G/L Account Group CZL"::"Off-Balance Accounting";
+        Group2GLAccount.Modify();
         Commit();
 
         // [WHEN] Run the Report G/L Acc. Group Post. Check CZL. 
@@ -154,7 +154,7 @@ codeunit 148056 "G/L Account Group CZL"
         LibraryERM.CreateGLAccount(GLAccount);
         GLAccount.Validate("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
         GLAccount.Validate("Account Category", GLAccount."Account Category"::Assets);
-        GLAccount."G/L Account Group CZL" := GLAccount."G/L Account Group CZL"::" ";
+        GLAccount."G/L Account Group CZL" := GLAccount."G/L Account Group CZL"::"Financial Accounting";
         GLAccount.Modify();
     end;
 }

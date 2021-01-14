@@ -127,13 +127,20 @@ codeunit 2611 "Feature Management Facade"
     /// </summary>
     procedure UpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
     begin
-        if GetImplementation(FeatureDataUpdateStatus) then
+        if GetImplementation(FeatureDataUpdateStatus) then begin
             FeatureManagementImpl.UpdateData(FeatureDataUpdateStatus, FeatureDataUpdate);
+            OnAfterUpdateData(FeatureDataUpdateStatus);
+        end;
     end;
 
     internal procedure GetFeatureDataUpdateStatus(FeatureKey: Record "Feature Key"; var FeatureDataUpdateStatus: Record "Feature Data Update Status")
     begin
         FeatureManagementImpl.GetFeatureDataUpdateStatus(FeatureKey, FeatureDataUpdateStatus);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    begin
     end;
 
     [IntegrationEvent(false, false)]

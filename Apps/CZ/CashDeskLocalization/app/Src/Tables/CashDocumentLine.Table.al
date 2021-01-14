@@ -1,3 +1,4 @@
+#pragma warning disable AL0432
 table 11733 "Cash Document Line CZP"
 {
     Caption = 'Cash Document Line';
@@ -35,6 +36,10 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
+#if not CLEAN18
+                if "Account Type" <> xRec."Account Type" then
+                    TestField("Advance Letter Link Code", '');
+#endif
                 GetCashDeskEventCZP();
                 if CashDeskEventCZP."Account Type" <> CashDeskEventCZP."Account Type"::" " then
                     CashDeskEventCZP.TestField("Account Type", "Account Type");
@@ -71,12 +76,15 @@ table 11733 "Cash Document Line CZP"
                 CashDeskCZP: Record "Bank Account";
                 Employee: Record Employee;
             begin
+#if not CLEAN18
+                if "Account No." <> xRec."Account No." then
+                    TestField("Advance Letter Link Code", '');
+#endif
                 GetCashDeskEventCZP();
                 if CashDeskEventCZP."Account No." <> '' then
                     CashDeskEventCZP.TestField("Account No.", "Account No.");
 
                 GetCashDocumentHeaderCZP();
-
                 if ("Account Type" in ["Account Type"::Customer, "Account Type"::Vendor]) and ("Account No." <> '') then
                     if CashDocumentHeaderCZP."Partner No." = '' then begin
                         case "Account Type" of
@@ -397,6 +405,10 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
+#if not CLEAN18
+                if Amount <> xRec.Amount then
+                    TestField("Advance Letter Link Code", '');
+#endif
                 TestField("Account Type");
                 TestField("Account No.");
                 UpdateAmounts();
@@ -875,6 +887,17 @@ table 11733 "Cash Document Line CZP"
                 DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
             end;
         }
+#if not CLEAN18
+        field(31001; "Advance Letter Link Code"; Code[30])
+        {
+            Caption = 'Advance Letter Link Code';
+            DataClassification = CustomerContent;
+            Access = Internal;
+            ObsoleteState = Pending;
+            ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
+            ObsoleteTag = '18.0';
+        }
+#endif    
     }
 
     keys
@@ -900,6 +923,21 @@ table 11733 "Cash Document Line CZP"
         Error(RenameErr, TableCaption);
     end;
 
+#if not CLEAN18
+    trigger OnDelete()
+    var
+        PrepaymentLinksManagement: Codeunit "Prepayment Links Management";
+    begin
+        if "Advance Letter Link Code" <> '' then
+            case "Account Type" of
+                "Account Type"::Customer:
+                    PrepaymentLinksManagement.UnLinkWholeSalesLetter("Advance Letter Link Code");
+                "Account Type"::Vendor:
+                    PrepaymentLinksManagement.UnLinkWholePurchLetter("Advance Letter Link Code");
+            end;
+    end;
+
+#endif
     var
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         Currency: Record Currency;
@@ -1370,10 +1408,6 @@ table 11733 "Cash Document Line CZP"
         end;
         if "FA Posting Type" = "FA Posting Type"::" " then
             "FA Posting Type" := "FA Posting Type"::"Acquisition Cost";
-        if "FA Posting Type" = "FA Posting Type"::"Acquisition Cost" then
-            if FASetup.Get() then
-                if FASetup."FA Acquisition As Custom 2" then
-                    "FA Posting Type" := "FA Posting Type"::"Custom 2";
         FADeprBook.Get("Account No.", "Depreciation Book Code");
         FADeprBook.TestField("FA Posting Group");
         FAPostingGr.Get(FADeprBook."FA Posting Group");
@@ -1443,4 +1477,119 @@ table 11733 "Cash Document Line CZP"
         if "Cash Desk Event" <> CashDeskEventCZP.Code then
             CashDeskEventCZP.Get("Cash Desk Event");
     end;
+
+#if not CLEAN18
+    internal procedure LinkToAdvLetter()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+    begin
+        TestField("Gen. Document Type", "Gen. Document Type"::Payment);
+        if not ("Account Type" in ["Account Type"::Customer, "Account Type"::Vendor]) then
+            FieldError("Account Type");
+
+        GetCashDocumentHeaderCZP();
+        GenJournalLine.Init();
+        GenJournalLine."Line No." := "Line No.";
+        GenJournalLine."Account No." := "Account No.";
+        GenJournalLine."Document Type" := "Document Type";
+        GenJournalLine."Document No." := "Cash Document No.";
+        GenJournalLine."Currency Code" := CashDocumentHeaderCZP."Currency Code";
+        GenJournalLine."Posting Date" := CashDocumentHeaderCZP."Posting Date";
+        GenJournalLine."Posting Group" := "Posting Group";
+        GenJournalLine.Prepayment := true;
+        GenJournalLine."Prepayment Type" := GenJournalLine."Prepayment Type"::Advance;
+        GenJournalLine."Advance Letter Link Code" := "Advance Letter Link Code";
+        case "Account Type" of
+            "Account Type"::Customer:
+                begin
+                    GenJournalLine."Account Type" := GenJournalLine."Account Type"::Customer;
+                    GenJournalLine.Amount := -Amount;
+                end;
+            "Account Type"::Vendor:
+                begin
+                    GenJournalLine."Account Type" := GenJournalLine."Account Type"::Vendor;
+                    GenJournalLine.Amount := Amount;
+                end;
+        end;
+        Codeunit.Run(Codeunit::"Gen. Jnl.-Link Letters", GenJournalLine);
+
+        if (GenJournalLine."Advance Letter Link Code" <> "Advance Letter Link Code") or
+           (GenJournalLine."Posting Group" <> "Posting Group")
+        then begin
+            "Advance Letter Link Code" := GenJournalLine."Advance Letter Link Code";
+            Validate("Posting Group", GenJournalLine."Posting Group");
+            Modify();
+        end;
+    end;
+
+    internal procedure LinkWholeLetter()
+    begin
+        LinkCashDocLine();
+    end;
+
+    internal procedure UnLinkWholeLetter()
+    begin
+        UnLinkCashDocLine();
+    end;
+
+    internal procedure LinkCashDocLine()
+    var
+        PrepaymentLinksManagement: Codeunit "Prepayment Links Management";
+        LinkCode: Code[30];
+        AmountToLink: Decimal;
+        PostingGroup: Code[20];
+    begin
+        TestField("Advance Letter Link Code", '');
+        case "Document Type" of
+            "Document Type"::Receipt:
+                TestField("Account Type", "Account Type"::Customer);
+            "Document Type"::Withdrawal:
+                TestField("Account Type", "Account Type"::Vendor);
+        end;
+        TestField("Account No.");
+
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup.TestField("Prepayment Type", GeneralLedgerSetup."Prepayment Type"::Advances);
+
+        LinkCode := "Cash Document No." + ' ' + Format("Line No.");
+        case "Account Type" of
+            "Account Type"::Customer:
+                AmountToLink := PrepaymentLinksManagement.LinkWholeSalesLetter("Account No.", CashDocumentHeaderCZP."Currency Code",
+                    LinkCode, PostingGroup);
+            "Account Type"::Vendor:
+                AmountToLink := PrepaymentLinksManagement.LinkWholePurchLetter("Account No.", CashDocumentHeaderCZP."Currency Code",
+                    LinkCode, PostingGroup);
+        end;
+
+        if AmountToLink <> 0 then begin
+            Validate(Amount, AmountToLink);
+            Validate("Advance Letter Link Code", LinkCode);
+            Validate("Posting Group", PostingGroup);
+            Modify();
+        end;
+    end;
+
+    local procedure UnLinkCashDocLine()
+    var
+        PrepaymentLinksManagement: Codeunit "Prepayment Links Management";
+    begin
+        TestField("Advance Letter Link Code");
+        case "Document Type" of
+            "Document Type"::Receipt:
+                TestField("Account Type", "Account Type"::Customer);
+            "Document Type"::Withdrawal:
+                TestField("Account Type", "Account Type"::Vendor);
+        end;
+        TestField("Account No.");
+
+        case "Account Type" of
+            "Account Type"::Customer:
+                PrepaymentLinksManagement.UnLinkWholeSalesLetter("Advance Letter Link Code");
+            "Account Type"::Vendor:
+                PrepaymentLinksManagement.UnLinkWholePurchLetter("Advance Letter Link Code");
+        end;
+        Validate("Advance Letter Link Code", '');
+        Modify();
+    end;
+#endif
 }

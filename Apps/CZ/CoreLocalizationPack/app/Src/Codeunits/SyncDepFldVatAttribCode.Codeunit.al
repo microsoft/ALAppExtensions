@@ -11,12 +11,17 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
         VATAttributeCodeCZL: Record "VAT Attribute Code CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code CZL", 0);
+        if Rec.IsTemporary then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code CZL");
+        VATAttributeCodeCZL.ChangeCompany(Rec.CurrentCompany);
         if VATAttributeCodeCZL.Get(xRec."VAT Statement Template Name", xRec."Code") then
             VATAttributeCodeCZL.Rename(Rec."VAT Statement Template Name", Rec."Code");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Attribute Code", 'OnAfterInsertEvent', '', false, false)]
@@ -36,9 +41,14 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
         VATAttributeCodeCZL: Record "VAT Attribute Code CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code CZL", 0);
+        if Rec.IsTemporary then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code CZL");
+        VATAttributeCodeCZL.ChangeCompany(Rec.CurrentCompany);
         if not VATAttributeCodeCZL.Get(Rec."VAT Statement Template Name", Rec."Code") then begin
             VATAttributeCodeCZL.Init();
             VATAttributeCodeCZL."VAT Statement Template Name" := Rec."VAT Statement Template Name";
@@ -57,9 +67,14 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
         VATAttributeCodeCZL: Record "VAT Attribute Code CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code CZL", 0);
+        if Rec.IsTemporary then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code CZL");
+        VATAttributeCodeCZL.ChangeCompany(Rec.CurrentCompany);
         if VATAttributeCodeCZL.Get(Rec."VAT Statement Template Name", Rec."Code") then
             VATAttributeCodeCZL.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code CZL", 0);
@@ -71,12 +86,17 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
         VATAttributeCode: Record "VAT Attribute Code";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code CZL", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code", 0);
+        if Rec.IsTemporary then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code CZL") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code");
+        VATAttributeCode.ChangeCompany(Rec.CurrentCompany);
         if VATAttributeCode.Get(xRec."VAT Statement Template Name", xRec."Code") then
             VATAttributeCode.Rename(Rec."VAT Statement Template Name", Rec."Code");
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Attribute Code CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -96,11 +116,14 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
         VATAttributeCode: Record "VAT Attribute Code";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
+            exit;
+        if Rec.IsTemporary then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code");
+        VATAttributeCode.ChangeCompany(Rec.CurrentCompany);
         if not VATAttributeCode.Get(Rec."VAT Statement Template Name", Rec."Code") then begin
             VATAttributeCode.Init();
             VATAttributeCode."VAT Statement Template Name" := Rec."VAT Statement Template Name";
@@ -119,11 +142,23 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
         VATAttributeCode: Record "VAT Attribute Code";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code CZL", 0) then
+        if IsFieldSynchronizationDisabled() then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code", 0);
+        if Rec.IsTemporary then
+            exit;
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code CZL") then
+            exit;
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code");
+        VATAttributeCode.ChangeCompany(Rec.CurrentCompany);
         if VATAttributeCode.Get(Rec."VAT Statement Template Name", Rec."Code") then
             VATAttributeCode.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code", 0);
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }

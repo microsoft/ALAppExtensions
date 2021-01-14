@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "The Quickbooks Payroll File Import functionality allows you to import payroll transactions from a Quickbooks IIF file.",
     "description":  "The Quickbooks Payroll File Import functionality allows you to import payroll transactions from a Quickbooks IIF file.",
-    "version":  "17.2.0.0",
+    "version":  "17.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?LinkId=860351",
@@ -20,5 +20,5 @@
     "platform":  "17.0.0.0",
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "17.2.0.0"
+    "application":  "17.3.0.0"
 }

@@ -11,14 +11,17 @@ codeunit 31180 "Sync.Dep.Fld-InvtMvmtTempl CZL"
         InvtMovementTemplateCZL: Record "Invt. Movement Template CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Whse. Net Change Template", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Whse. Net Change Template") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Invt. Movement Template CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Invt. Movement Template CZL");
+        InvtMovementTemplateCZL.ChangeCompany(Rec.CurrentCompany);
         if InvtMovementTemplateCZL.Get(xRec.Name) then
             InvtMovementTemplateCZL.Rename(Rec.Name);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Invt. Movement Template CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Invt. Movement Template CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Whse. Net Change Template", 'OnAfterInsertEvent', '', false, false)]
@@ -38,11 +41,14 @@ codeunit 31180 "Sync.Dep.Fld-InvtMvmtTempl CZL"
         InvtMovementTemplateCZL: Record "Invt. Movement Template CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Whse. Net Change Template", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Invt. Movement Template CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Invt. Movement Template CZL");
+        InvtMovementTemplateCZL.ChangeCompany(Rec.CurrentCompany);
         if not InvtMovementTemplateCZL.Get(Rec.Name) then begin
             InvtMovementTemplateCZL.Init();
             InvtMovementTemplateCZL.Name := Rec.Name;
@@ -61,11 +67,14 @@ codeunit 31180 "Sync.Dep.Fld-InvtMvmtTempl CZL"
         InvtMovementTemplateCZL: Record "Invt. Movement Template CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Whse. Net Change Template", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Invt. Movement Template CZL", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Invt. Movement Template CZL");
+        InvtMovementTemplateCZL.ChangeCompany(Rec.CurrentCompany);
         if InvtMovementTemplateCZL.Get(Rec.Name) then
             InvtMovementTemplateCZL.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Invt. Movement Template CZL", 0);
@@ -77,14 +86,17 @@ codeunit 31180 "Sync.Dep.Fld-InvtMvmtTempl CZL"
         WhseNetChangeTemplate: Record "Whse. Net Change Template";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Invt. Movement Template CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Invt. Movement Template CZL") then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Whse. Net Change Template", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Whse. Net Change Template");
+        WhseNetChangeTemplate.ChangeCompany(Rec.CurrentCompany);
         if WhseNetChangeTemplate.Get(xRec.Name) then
             WhseNetChangeTemplate.Rename(Rec.Name);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Whse. Net Change Template", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Whse. Net Change Template");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Invt. Movement Template CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -104,13 +116,14 @@ codeunit 31180 "Sync.Dep.Fld-InvtMvmtTempl CZL"
         WhseNetChangeTemplate: Record "Whse. Net Change Template";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
-        if NavApp.IsInstalling() then
+        if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Invt. Movement Template CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Whse. Net Change Template", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Whse. Net Change Template");
+        WhseNetChangeTemplate.ChangeCompany(Rec.CurrentCompany);
         if not WhseNetChangeTemplate.Get(Rec.Name) then begin
             WhseNetChangeTemplate.Init();
             WhseNetChangeTemplate.Name := Rec.Name;
@@ -129,13 +142,23 @@ codeunit 31180 "Sync.Dep.Fld-InvtMvmtTempl CZL"
         WhseNetChangeTemplate: Record "Whse. Net Change Template";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if IsFieldSynchronizationDisabled() then
+            exit;
         if Rec.IsTemporary() then
             exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Invt. Movement Template CZL", 0) then
             exit;
-        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Whse. Net Change Template", 0);
+        SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Whse. Net Change Template");
+        WhseNetChangeTemplate.ChangeCompany(Rec.CurrentCompany);
         if WhseNetChangeTemplate.Get(Rec.Name) then
             WhseNetChangeTemplate.Delete(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Whse. Net Change Template", 0);
+    end;
+
+    local procedure IsFieldSynchronizationDisabled(): Boolean
+    var
+        SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
+    begin
+        exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
