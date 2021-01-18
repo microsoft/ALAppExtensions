@@ -260,13 +260,13 @@ table 149001 "BCPT Line"
     local procedure GetDefaultParametersIfAvailable(): Text[1000]
     begin
         if SetParametersProvider() then
-            exit(BCPTTestParamProvider.GetDefaultParameters());
+            exit(BCPTTestParamProvider.GetDefaultParameters(Rec));
     end;
 
     local procedure ValidateParameters(Params: Text[1000])
     begin
         if SetParametersProvider() then
-            BCPTTestParamProvider.ValidateParameters(Params)
+            BCPTTestParamProvider.ValidateParameters(Rec, Params)
         else
             if Params <> '' then
                 Error(ParameterNotSupportedErr);
