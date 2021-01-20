@@ -1,0 +1,38 @@
+{
+    "id":  "96e34a9d-38cc-48a9-9938-d2194d67143d",
+    "name":  "Encoding Test",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Tests for the encoding module",
+    "version":  "17.2.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "ad94bc69-99fa-4bf0-85b3-6dbc72bd1543",
+                             "name":  "Encoding",
+                             "publisher":  "Microsoft",
+                             "version":  "17.2.0.0"
+                         },
+                         {
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "name":  "Library Assert",
+                             "publisher":  "Microsoft",
+                             "version":  "17.2.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "17.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  132510,
+                         "to":  132510
+                     }
+                 ],
+    "target":  "OnPrem"
+}

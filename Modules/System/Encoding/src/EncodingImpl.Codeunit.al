@@ -3,11 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 1486 "Convert Impl."
+codeunit 1486 "Encoding Impl."
 {
     Access = Internal;
 
-    procedure ConvertTextEncoding(SrcCodepage: Integer; DstCodepage: Integer; Text: Text) ConvertedText: Text
+    procedure Convert(SrcCodepage: Integer; DstCodepage: Integer; Text: Text) ConvertedText: Text
     var
         Encoding: DotNet Encoding;
         SrcEncoding: DotNet Encoding;

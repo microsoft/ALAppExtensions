@@ -6,21 +6,21 @@
 /// <summary>
 /// Provides helper functions to convert data
 /// </summary>
-codeunit 1485 "Convert"
+codeunit 1485 "Encoding"
 {
     Access = Public;
 
     var
-        ConvertImpl: Codeunit "Convert Impl.";
+        EncodingImpl: Codeunit "Encoding Impl.";
 
     /// <summary>
     /// Converts a text from one encoding to another.
     /// </summary>
     /// <param name="SrcCodepage">Code page identifier of the source.</param>
     /// <param name="DstCodepage">Code page identifier of the output.</param>
-    /// <param name="Text">The text containing the characters to encode.</param>
-    procedure ConvertTextEncoding(SrcCodepage: Integer; DstCodepage: Integer; Text: Text): Text
+    /// <param name="Text">The text containing the characters to convert.</param>
+    procedure Convert(SrcCodepage: Integer; DstCodepage: Integer; Text: Text): Text
     begin
-        exit(ConvertImpl.ConvertTextEncoding(SrcCodepage, DstCodepage, Text));
+        exit(EncodingImpl.Convert(SrcCodepage, DstCodepage, Text));
     end;
 }
