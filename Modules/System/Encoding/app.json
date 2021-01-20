@@ -1,9 +1,9 @@
 {
     "id":  "ad94bc69-99fa-4bf0-85b3-6dbc72bd1543",
-    "name":  "Convert",
+    "name":  "Encoding",
     "publisher":  "Microsoft",
-    "brief":  "Provides convert helper functions.",
-    "description":  "Provides helper functions for converting",
+    "brief":  "Provides encoding helper functions.",
+    "description":  "Provides helper functions for encoding",
     "version":  "17.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
