@@ -374,14 +374,14 @@ table 11510 "Swiss QR-Bill Buffer"
     var
         SwissQRBillMgt: Codeunit "Swiss QR-Bill Mgt.";
 
-    internal procedure AddBufferRecord(SourceSwissQRBillBuffer: Record "Swiss QR-Bill Buffer")
+    procedure AddBufferRecord(SourceSwissQRBillBuffer: Record "Swiss QR-Bill Buffer")
     begin
         "Entry No." += 1;
         TransferFields(SourceSwissQRBillBuffer, false);
         Insert();
     end;
 
-    internal procedure InitBuffer(QRBillLayoutCode: Code[20])
+    procedure InitBuffer(QRBillLayoutCode: Code[20])
     var
         SwissQRBillSetup: Record "Swiss QR-Bill Setup";
     begin
@@ -576,7 +576,7 @@ table 11510 "Swiss QR-Bill Buffer"
                 "Unstructured Message" := '';
     end;
 
-    internal procedure SetSourceRecord(CustomerLedgerEntryNo: Integer)
+    procedure SetSourceRecord(CustomerLedgerEntryNo: Integer)
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
         PaymentMethod: Record "Payment Method";
