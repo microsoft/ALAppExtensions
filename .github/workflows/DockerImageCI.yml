@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  Build System Application:
     runs-on: windows-2019
     steps:
       - uses: actions/checkout@v1    
@@ -16,14 +16,13 @@ jobs:
       - name: Set environment variables
         shell: powershell
         run: |
-          $password = New-Guid
           echo "USERNAME=admin" >> $GITHUB_ENV
-          echo "PASSWORD=$password" >> $GITHUB_ENV
+          echo "RANDOM_GUID=$(New-Guid)" >> $GITHUB_ENV
 
       - name: Set up Business Central container
         env:
           USERNAME: ${{ env.USERNAME }}
-          PASSWORD: ${{ env.PASSWORD }}
+          PASSWORD: ${{ env.RANDOM_GUID }}
         shell: powershell
         run: >
           New-BCContainer 
@@ -41,7 +40,7 @@ jobs:
       - name: Compile System Application
         env:
           USERNAME: ${{ env.USERNAME }}
-          PASSWORD: ${{ env.PASSWORD }}    
+          PASSWORD: ${{ env.RANDOM_GUID }}    
         shell: powershell
         run: >
           Compile-AppInBCContainer 
