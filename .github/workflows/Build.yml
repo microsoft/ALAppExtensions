@@ -23,7 +23,6 @@ jobs:
           -accept_eula 
           -containerName bcdev 
           -artifactUrl (Get-BcArtifactUrl -type sandbox -country us -select latest)
-          -useBestContainerOS 
           -alwaysPull 
           -auth NavUserPassword 
           -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
