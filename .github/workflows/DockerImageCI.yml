@@ -10,12 +10,21 @@ jobs:
     steps:
       - uses: actions/checkout@v1    
       - name: Install BcContainerHelper
-        run: Install-Module BcContainerHelper -Force
         shell: powershell
+        run: Install-Module BcContainerHelper -Force
+
+      - name: Set environment variables
+        shell: powershell
+        run: >
+          $password = GetRandomPassword
+          Write-Host "USERNAME=admin" >> $GITHUB_ENV
+          Write-Host "PASSWORD=$password" >> $GITHUB_ENV
+
       - name: Set up Business Central container
         env:
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
+          USERNAME: ${{ env.USERNAME }}
+          PASSWORD: ${{ env.PASSWORD }}
+        shell: powershell
         run: >
           New-BCContainer 
           -accept_eula 
@@ -28,11 +37,12 @@ jobs:
           -updateHosts
           -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\Modules\System`:c:\project")
           -includeAL
-        shell: powershell
+
       - name: Compile System Application
         env:
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}    
+          USERNAME: ${{ env.USERNAME }}
+          PASSWORD: ${{ env.PASSWORD }}    
+        shell: powershell
         run: >
           Compile-AppInBCContainer 
           -containerName bcdev 
@@ -41,4 +51,3 @@ jobs:
           -appOutputFolder $Env:GITHUB_WORKSPACE\Modules\System
           -EnableCodeCop
           -EnableUICop
-        shell: powershell
