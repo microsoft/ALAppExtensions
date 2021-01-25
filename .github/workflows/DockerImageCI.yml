@@ -17,8 +17,8 @@ jobs:
         shell: powershell
         run: >
           $password = GetRandomPassword
-          Write-Host "USERNAME=admin" >> $GITHUB_ENV
-          Write-Host "PASSWORD=$password" >> $GITHUB_ENV
+          echo "USERNAME=admin" >> $GITHUB_ENV
+          echo "PASSWORD=$password" >> $GITHUB_ENV
 
       - name: Set up Business Central container
         env:
