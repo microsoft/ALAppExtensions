@@ -16,7 +16,7 @@ jobs:
       - name: Set environment variables
         shell: powershell
         run: |
-          $password = GetRandomPassword
+          $password = New-Guid
           echo "USERNAME=admin" >> $GITHUB_ENV
           echo "PASSWORD=$password" >> $GITHUB_ENV
 
