@@ -16,8 +16,9 @@ jobs:
       - name: Set environment variables
         shell: powershell
         run: |
+          $guid = New-Guid
           echo "USERNAME=admin" >> $GITHUB_ENV
-          echo "RANDOM_GUID=$(New-Guid)" >> $GITHUB_ENV
+          echo "RANDOM_GUID=$guid" >> $GITHUB_ENV
 
       - name: Set up Business Central container
         env:
