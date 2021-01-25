@@ -17,12 +17,12 @@ jobs:
         shell: powershell
         run: |
           echo "USERNAME=admin" >> $GITHUB_ENV
-          echo "RANDOM_GUID=$((New-Guid).ToString())" >> $GITHUB_ENV
+          echo "RANDOM=Deky6295" >> $GITHUB_ENV
 
       - name: Set up Business Central container
         env:
           USERNAME: ${{ env.USERNAME }}
-          PASSWORD: ${{ env.RANDOM_GUID }}
+          PASSWORD: ${{ env.RANDOM }}
         shell: powershell
         run: >
           New-BCContainer 
@@ -40,7 +40,7 @@ jobs:
       - name: Compile System Application
         env:
           USERNAME: ${{ env.USERNAME }}
-          PASSWORD: ${{ env.RANDOM_GUID }}    
+          PASSWORD: ${{ env.RANDOM }}    
         shell: powershell
         run: >
           Compile-AppInBCContainer 
