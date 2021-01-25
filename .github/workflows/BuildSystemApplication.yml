@@ -8,8 +8,8 @@ jobs:
   BuildSystemApplication:
     runs-on: windows-2019
     env:
-      USERNAME: admin
-      PASSWORD: P@ssword1
+      BC_CONTAINER_USERNAME: admin
+      BC_CONTAINER_PASSWORD: P@ssword1
     steps:
       - uses: actions/checkout@v1    
       - name: Install BcContainerHelper
@@ -26,7 +26,7 @@ jobs:
           -useBestContainerOS 
           -alwaysPull 
           -auth NavUserPassword 
-          -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
+          -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
           -updateHosts
           -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\Modules\System`:c:\project")
           -includeAL
@@ -36,7 +36,7 @@ jobs:
         run: >
           Compile-AppInBCContainer 
           -containerName bcdev 
-          -credential ([PSCredential]::new($Env:USERNAME, (ConvertTo-SecureString -String $Env:PASSWORD -AsPlainText -Force))) 
+          -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
           -appProjectFolder $Env:GITHUB_WORKSPACE\Modules\System
           -appOutputFolder $Env:GITHUB_WORKSPACE\Modules\System
           -EnableCodeCop
