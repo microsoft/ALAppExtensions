@@ -28,7 +28,7 @@ codeunit 135041 "Base64 Convert Test"
         // [SCENARIO] A string variable is converted to base-64 string
 
         // [WHEN] The string is converted
-        ConvertedText := Base64Convert.ToBase64(SampleTxt);
+        ConvertedText := '';
 
         // [THEN] The converted value is correct
         Assert.AreEqual(Base64SampleTxt, ConvertedText, ConvertionToBase64Err);
