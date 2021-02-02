@@ -31,12 +31,33 @@ codeunit 135071 "Uri Builder Test"
         // [Given] A URI with an http scheme
         UriBuilder.Init('http://microsoft.com');
 
+        // [Then] The Scheme is in place
+        Assert.AreEqual(Format(Enum::"URI Scheme Type"::http), UriBuilder.GetScheme(), 'The scheme does not match');
+
         // [When] Setting the scheme to https
-        UriBuilder.SetScheme(UriBuilder.GetScheme() + 's');
+        UriBuilder.SetScheme(Format(Enum::"URI Scheme Type"::https));
 
         // [Then] The URI is as expected
+        Assert.AreEqual(Format(Enum::"URI Scheme Type"::http), UriBuilder.GetScheme(), 'The scheme does not match');
+
         UriBuilder.GetUri(Uri);
         Assert.AreEqual('https://microsoft.com', Uri.GetAbsoluteUri(), 'The scheme does not match');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure SetIncorrectSchemeTest()
+    var
+        Uri: Codeunit Uri;
+    begin
+        // [Given] A Url
+        UriBuilder.Init('http://microsoft.com');
+
+        // [When] Setting an invalid scheme
+        asserterror UriBuilder.SetScheme('invalid scheme');
+
+        // [Then] The URI is as expected
+        Assert.ExpectedError('A call to System.UriBuilder.Scheme failed with this message: value'); // 'The scheme cannot be set to an invalid scheme name.'
     end;
 
     [Test]
@@ -46,7 +67,7 @@ codeunit 135071 "Uri Builder Test"
         Uri: Codeunit Uri;
     begin
         // [Given] A Url
-        UriBuilder.Init(http://microsoft.com/test);
+        UriBuilder.Init('http://microsoft.com/test');
 
         // [Then] The host should be 'microsoft.com'
         Assert.AreEqual('microsoft.com', UriBuilder.GetHost(), 'GetHost does not work as expected');
@@ -56,7 +77,7 @@ codeunit 135071 "Uri Builder Test"
 
         // [Then] The URI is as expected
         UriBuilder.GetUri(Uri);
-        Assert.AreEqual(http://www.example.org/test, Uri.GetAbsoluteUri(), 'The host does not match');
+        Assert.AreEqual('http://www.example.org/test', Uri.GetAbsoluteUri(), 'The host does not match');
     end;
 
     [Test]
@@ -77,6 +98,35 @@ codeunit 135071 "Uri Builder Test"
         // [Then] The URI is as expected
         UriBuilder.GetUri(Uri);
         Assert.AreEqual('http://microsoft.com:5000/test', Uri.GetAbsoluteUri(), 'The port does not match');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure SetIncorrectPortTest()
+    var
+        Uri: Codeunit Uri;
+        CRLF: Text[2];
+        expectedErr: Text;
+    begin
+        // [Setup] Expected Error Message
+        CRLF[1] := 13; // Carriage return, '\r'
+        CRLF[2] := 10; // Line feed, '\n'
+        expectedErr := StrSubstNo('A call to System.UriBuilder.Port failed with this message: Specified argument was out of the range of valid values.%1Parameter name: value', CRLF);
+
+        // [Given] A Url
+        UriBuilder.Init('http://microsoft.com');
+
+        // [When] Setting the port number too low
+        asserterror UriBuilder.SetPort(-2);
+
+        // [Then] An error occurs
+        Assert.ExpectedError(expectedErr);
+
+        // [When] Setting the port number too high
+        asserterror UriBuilder.SetPort(65536);
+
+        // [Then] An error occurs
+        Assert.ExpectedError(expectedErr);
     end;
 
     [Test]
