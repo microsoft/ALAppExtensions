@@ -7,7 +7,7 @@
 /// This enum has the Uri Scheme types.
 /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.scheme#remarks for more information.</remarks>
 /// </summary>
-enum 9751 "Uri Scheme Type"
+enum 3061 "Uri Scheme Type"
 {
     Extensible = false;
 
