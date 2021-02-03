@@ -32,13 +32,13 @@ codeunit 135071 "Uri Builder Test"
         UriBuilder.Init('http://microsoft.com');
 
         // [Then] The Scheme is in place
-        Assert.AreEqual(Format(Enum::"URI Scheme Type"::http), UriBuilder.GetScheme(), 'The scheme does not match');
+        Assert.AreEqual('http', UriBuilder.GetScheme(), 'The scheme does not match');
 
         // [When] Setting the scheme to https
-        UriBuilder.SetScheme(Format(Enum::"URI Scheme Type"::https));
+        UriBuilder.SetScheme('https');
 
         // [Then] The URI is as expected
-        Assert.AreEqual(Format(Enum::"URI Scheme Type"::http), UriBuilder.GetScheme(), 'The scheme does not match');
+        Assert.AreEqual('https', UriBuilder.GetScheme(), 'The scheme does not match');
 
         UriBuilder.GetUri(Uri);
         Assert.AreEqual('https://microsoft.com', Uri.GetAbsoluteUri(), 'The scheme does not match');
