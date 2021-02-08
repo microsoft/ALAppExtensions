@@ -7,7 +7,7 @@ codeunit 2891 "Query Nav Validation Impl"
 {
     Access = Internal;
 
-    internal procedure ValidateNavigation(SourceQueryObjectId: Integer; TargetPageId: Integer; LinkingDataItemName: Text; var InputStringOK: Record "Query Navigation Validation"): Boolean
+    internal procedure ValidateNavigation(SourceQueryObjectId: Integer; TargetPageId: Integer; LinkingDataItemName: Text; var ValidationResult: Record "Query Navigation Validation"): Boolean
     var
         Args: DotNet ALQueryNavigationValidationArgs;
         Validator: DotNet ALQueryNavigationValidator;
@@ -22,11 +22,11 @@ codeunit 2891 "Query Nav Validation Impl"
 
         Result := Validator.Validate(Args);
 
-        InputStringOK.Valid := Result.IsValid();
+        ValidationResult.Valid := Result.IsValid();
 
-        if not InputStringOK.Valid then
-            InputStringOK.Reason := Result.InvalidReason();
+        if not ValidationResult.Valid then
+            ValidationResult.Reason := Result.InvalidReason();
 
-        exit(InputStringOK.Valid);
+        exit(ValidationResult.Valid);
     end;
 }

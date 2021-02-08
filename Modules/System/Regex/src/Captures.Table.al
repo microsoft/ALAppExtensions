@@ -29,7 +29,9 @@ table 3963 Captures
         field(3; ValueBlob; Blob)
         {
             Caption = 'Value';
+            Access = Internal;
             DataClassification = SystemMetadata; // Since this is a temp table we can do this
+            Description = 'Gets the captured substring from the input string.';
         }
         field(4; Length; Integer)
         {
