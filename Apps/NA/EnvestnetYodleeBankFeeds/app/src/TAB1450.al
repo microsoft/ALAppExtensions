@@ -254,7 +254,8 @@ table 1450 "MS - Yodlee Bank Service Setup"
         EXIT(PasswordValue);
     end;
 
-    local procedure DeletePassword(PasswordKey: Guid);
+    [Scope('OnPrem')]
+    procedure DeletePassword(PasswordKey: Guid);
     var
     begin
         IF IsolatedStorage.Contains(PasswordKey, DataScope::Company) THEN
@@ -322,7 +323,8 @@ table 1450 "MS - Yodlee Bank Service Setup"
         MSYodleeServiceMgt.CheckSetup();
     end;
 
-    local procedure DeleteSessionTokens();
+    [Scope('OnPrem')]
+    procedure DeleteSessionTokens();
     var
         MSYodleeBankSession: Record 1453;
     begin

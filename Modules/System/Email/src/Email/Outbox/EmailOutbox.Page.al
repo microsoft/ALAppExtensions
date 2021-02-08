@@ -9,6 +9,7 @@
 page 8882 "Email Outbox"
 {
     PageType = List;
+    Caption = 'Email Outbox';
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "Email Outbox";
@@ -160,6 +161,7 @@ page 8882 "Email Outbox"
             action(Refresh)
             {
                 ApplicationArea = All;
+                Caption = 'Refresh';
                 ToolTip = 'Refresh';
                 Image = Refresh;
                 Promoted = true;

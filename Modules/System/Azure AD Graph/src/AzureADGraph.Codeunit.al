@@ -11,6 +11,7 @@ codeunit 9012 "Azure AD Graph"
     Access = Public;
 
     var
+        [NonDebuggable]
         AzureADGraphImpl: Codeunit "Azure AD Graph Impl.";
 
     /// <summary>
@@ -19,6 +20,7 @@ codeunit 9012 "Azure AD Graph"
     /// <param name="UserPrincipalName">The user principal name.</param>
     /// <param name="UserInfo">The user to return.</param>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetUser(UserPrincipalName: Text; var UserInfo: DotNet UserInfo)
     begin
         AzureADGraphImpl.GetUser(UserPrincipalName, UserInfo);
@@ -29,6 +31,7 @@ codeunit 9012 "Azure AD Graph"
     /// </summary>
     /// <param name="UserInfo">The user to return.</param>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetCurrentUser(var UserInfo: DotNet UserInfo)
     begin
         AzureADGraphImpl.GetCurrentUser(UserInfo);
@@ -40,6 +43,7 @@ codeunit 9012 "Azure AD Graph"
     /// <param name="AuthorizationEmail">The user's authorization email.</param>
     /// <param name="UserInfo">The user to return.</param>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetUserByAuthorizationEmail(AuthorizationEmail: Text; var UserInfo: DotNet UserInfo)
     begin
         AzureADGraphImpl.GetUserByAuthorizationEmail(AuthorizationEmail, UserInfo);
@@ -51,6 +55,7 @@ codeunit 9012 "Azure AD Graph"
     /// <param name="ObjectId">The object ID assigned to the user.</param>
     /// <param name="UserInfo">The user to return.</param>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetUserByObjectId(ObjectId: Text; var UserInfo: DotNet UserInfo)
     begin
         AzureADGraphImpl.GetUserByObjectId(ObjectId, UserInfo);
@@ -63,6 +68,7 @@ codeunit 9012 "Azure AD Graph"
     /// <param name="UserInfo">The user to return.</param>
     /// <returns>A boolean that indicates whether the user was retrieved.</returns>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure TryGetUserByObjectId(ObjectId: Text; var UserInfo: DotNet UserInfo): Boolean
     begin
         exit(AzureADGraphImpl.TryGetUserByObjectId(ObjectId, UserInfo));
@@ -75,6 +81,7 @@ codeunit 9012 "Azure AD Graph"
     /// <param name="UserAssignedPlans">The assigned plans for the user.</param>
     /// <remarks>If the provided user is null, the output parameter holding the assigned plans remains unchanged.</remarks> 
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetUserAssignedPlans(UserInfo: DotNet UserInfo; var UserAssignedPlans: DotNet GenericList1)
     begin
         AzureADGraphImpl.GetUserAssignedPlans(UserInfo, UserAssignedPlans);
@@ -87,6 +94,7 @@ codeunit 9012 "Azure AD Graph"
     /// <param name="UserRoles">The user's roles.</param>
     /// <remarks>If the provided user is null, the output parameter holding the user roles remains unchanged.</remarks>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetUserRoles(UserInfo: DotNet UserInfo; var UserRoles: DotNet GenericIEnumerable1)
     begin
         AzureADGraphImpl.GetUserRoles(UserInfo, UserRoles);
@@ -97,6 +105,7 @@ codeunit 9012 "Azure AD Graph"
     /// </summary>
     /// <param name="DirectorySubscribedSkus">The list of subscriptions to return.</param>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetDirectorySubscribedSkus(var DirectorySubscribedSkus: DotNet GenericIEnumerable1)
     begin
         AzureADGraphImpl.GetDirectorySubscribedSkus(DirectorySubscribedSkus);
@@ -107,6 +116,7 @@ codeunit 9012 "Azure AD Graph"
     /// </summary>
     /// <param name="DirectoryRoles">The directory roles to return.</param>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetDirectoryRoles(var DirectoryRoles: DotNet GenericIEnumerable1)
     begin
         AzureADGraphImpl.GetDirectoryRoles(DirectoryRoles);
@@ -117,6 +127,7 @@ codeunit 9012 "Azure AD Graph"
     /// </summary>
     /// <param name="TenantInfo">The tenant details to return.</param>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetTenantDetail(var TenantInfo: DotNet TenantInfo)
     begin
         AzureADGraphImpl.GetTenantDetail(TenantInfo);
@@ -128,6 +139,7 @@ codeunit 9012 "Azure AD Graph"
     /// <param name="NumberOfUsers">The number of users to return.</param>
     /// <param name="UserInfoPage">The list of users to return.</param>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetUsersPage(NumberOfUsers: Integer; var UserInfoPage: DotNet UserInfoPage)
     begin
         AzureADGraphImpl.GetUsersPage(NumberOfUsers, UserInfoPage);
@@ -138,6 +150,7 @@ codeunit 9012 "Azure AD Graph"
     /// </summary>
     /// <param name="TestInProgress">The value to be set to the flag.</param>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure SetTestInProgress(TestInProgress: Boolean)
     begin
         AzureADGraphImpl.SetTestInProgress(TestInProgress);
@@ -149,6 +162,7 @@ codeunit 9012 "Azure AD Graph"
     /// <param name="GraphQuery">The graph that the Azure AD Graph will be initialized with.</param>
     [IntegrationEvent(false, false)]
     [Scope('OnPrem')]
+    [NonDebuggable]
     internal procedure OnInitialize(var GraphQuery: DotNet GraphQuery)
     begin
 

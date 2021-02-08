@@ -12,11 +12,8 @@ codeunit 8907 "Email Viewer"
     var
         EmailViewer: Page "Email Viewer";
     begin
+        CheckPermissions(SentEmail);
         EmailViewer.SetRecord(SentEmail);
-
-        if SentEmail.Description <> '' then
-            EmailViewer.Caption := SentEmail.Description;
-
         EmailViewer.Run();
     end;
 

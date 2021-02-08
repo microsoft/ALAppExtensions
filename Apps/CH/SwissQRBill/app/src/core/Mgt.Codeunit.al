@@ -112,7 +112,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         exit(SwissQRBillPrint.SaveAs('', ReportFormat::Pdf, PDFFileOutStream));
     end;
 
-    internal procedure GenerateImage(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer")
+    procedure GenerateImage(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer")
     var
         TempBlob: Codeunit "Temp Blob";
         SwissQRBillImageMgt: Codeunit "Swiss QR-Bill Image Mgt.";

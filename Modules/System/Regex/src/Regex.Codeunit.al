@@ -123,7 +123,7 @@ codeunit 3960 Regex
     /// <param name="Input">The string to search for a match.</param>
     /// <param name="Pattern">A regular expression pattern to match.</param>
     /// <param name="StartAt">The zero-based character position at which to start the search.</param>
-    /// <param name="Match">The Match object to write information about the match to.</param>
+    /// <param name="Matches">The Match object to write information about the match to.</param>
     procedure Match(Input: Text; Pattern: Text; StartAt: Integer; var Matches: Record Matches)
     begin
         RegexImpl.Match(Input, Pattern, StartAt, Matches);
@@ -136,7 +136,7 @@ codeunit 3960 Regex
     /// <param name="Pattern">A regular expression pattern to match.</param>
     /// <param name="StartAt">The zero-based character position at which to start the search.</param>
     /// <param name="RegexOptions">A combination of the enumeration values that provide options for matching.</param>
-    /// <param name="Match">The Match object to write information about the match to.</param>
+    /// <param name="Matches">The Match object to write information about the match to.</param>
     procedure Match(Input: Text; Pattern: Text; StartAt: Integer; var RegexOptions: Record "Regex Options"; var Matches: Record Matches)
     begin
         RegexImpl.Match(Input, Pattern, StartAt, RegexOptions, Matches);
@@ -149,7 +149,7 @@ codeunit 3960 Regex
     /// <param name="Pattern">A regular expression pattern to match.</param>
     /// <param name="Beginning">The zero-based character position in the input string that defines the leftmost position to be searched.</param>
     /// <param name="Length">The number of characters in the substring to include in the search.</param>
-    /// <param name="Match">The Match object to write information about the match to.</param>
+    /// <param name="Matches">The Match object to write information about the match to.</param>
     procedure Match(Input: Text; Pattern: Text; Beginning: Integer; Length: Integer; var Matches: Record Matches)
     begin
         RegexImpl.Match(Input, Pattern, Beginning, Length, Matches);
@@ -163,7 +163,7 @@ codeunit 3960 Regex
     /// <param name="Beginning">The zero-based character position in the input string that defines the leftmost position to be searched.</param>
     /// <param name="Length">The number of characters in the substring to include in the search.</param>
     /// <param name="RegexOptions">A combination of the enumeration values that provide options for matching.</param>
-    /// <param name="Match">The Match object to write information about the match to.</param>
+    /// <param name="Matches">The Match object to write information about the match to.</param>
     procedure Match(Input: Text; Pattern: Text; Beginning: Integer; Length: Integer; var RegexOptions: Record "Regex Options"; var Matches: Record Matches)
     begin
         RegexImpl.Match(Input, Pattern, Beginning, Length, RegexOptions, Matches);
@@ -174,7 +174,7 @@ codeunit 3960 Regex
     /// </summary>
     /// <param name="Input">The string to search for a match.</param>
     /// <param name="Pattern">A regular expression pattern to match.</param>
-    /// <param name="Match">The Match object to write information about the match to.</param>
+    /// <param name="Matches">The Match object to write information about the match to.</param>
     procedure Match(Input: Text; Pattern: Text; var Matches: Record Matches)
     begin
         RegexImpl.Match(Input, Pattern, Matches);
@@ -186,7 +186,7 @@ codeunit 3960 Regex
     /// <param name="Input">The string to search for a match.</param>
     /// <param name="Pattern">A regular expression pattern to match.</param>
     /// <param name="RegexOptions">A combination of the enumeration values that provide options for matching.</param>
-    /// <param name="Match">The Match object to write information about the match to.</param>
+    /// <param name="Matches">The Match object to write information about the match to.</param>
     procedure Match(Input: Text; Pattern: Text; var RegexOptions: Record "Regex Options"; var Matches: Record Matches)
     begin
         RegexImpl.Match(Input, Pattern, RegexOptions, Matches);
@@ -302,6 +302,7 @@ codeunit 3960 Regex
     /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression specified in the Regex constructor. The search for the regular expression pattern starts at a specified character position in the input string.
     /// </summary>
     /// <param name="Input">The string to split.</param>
+    /// <param name="Pattern">A regular expression pattern to match.</param>
     /// <param name="Count">The maximum number of times the split can occur.</param>
     /// <param name="StartAt">The character position in the input string where the search will begin.</param>
     /// <param name="Array">An empty list that will be populated with the result of the split query.</param>
@@ -314,6 +315,7 @@ codeunit 3960 Regex
     /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression specified in the Regex constructor. The search for the regular expression pattern starts at a specified character position in the input string.
     /// </summary>
     /// <param name="Input">The string to split.</param>
+    /// <param name="Pattern">A regular expression pattern to match.</param>
     /// <param name="Count">The maximum number of times the split can occur.</param>
     /// <param name="StartAt">The character position in the input string where the search will begin.</param>
     /// <param name="RegexOptions">A combination of the enumeration values that provide options for matching.</param>
@@ -380,9 +382,9 @@ codeunit 3960 Regex
     /// </summary>
     /// <param name="Matches">The Match record to get Groups for.</param>
     /// <param name="Groups">Groups Record to write the resulting Groups to.</param>
-    procedure Groups(var Match: Record Matches; var Groups: Record Groups)
+    procedure Groups(var Matches: Record Matches; var Groups: Record Groups)
     begin
-        RegexImpl.Groups(Match, Groups)
+        RegexImpl.Groups(Matches, Groups)
     end;
 
     /// <summary>
@@ -398,11 +400,11 @@ codeunit 3960 Regex
     /// <summary>
     /// Returns the expansion of the specified replacement pattern.
     /// </summary>
-    /// <param name="Match">The Match Record to perform replacement on.</param>
+    /// <param name="Matches">The Match Record to perform replacement on.</param>
     /// <param name="Replacement">The replacement pattern to use.</param>
     /// <returns>The expanded version of the replacement parameter.</returns>
-    procedure MatchResult(var Match: Record Matches; Replacement: Text): Text
+    procedure MatchResult(var Matches: Record Matches; Replacement: Text): Text
     begin
-        exit(RegexImpl.MatchResult(Match, Replacement));
+        exit(RegexImpl.MatchResult(Matches, Replacement));
     end;
 }

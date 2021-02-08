@@ -1,0 +1,34 @@
+{
+    "ExtensionGroups": [
+        {
+            "GroupName": "VerifiedExtensions",
+            "Description": "List of verified extensions who can be installed and uninstalled",
+            "Extensions": []
+        },
+        {
+            "GroupName": "JailedExtensionGroup2",
+            "Description": "Single jailed extension who either cannot be installed with other extensions or has issues with install/uninstall or upgrade",
+            "Extensions": [
+                {
+                    "Id": "936d57e3-05fe-4aff-8459-35aa9367abec",
+                    "Name": "Dynamics GP Data Migration"
+                }
+            ]
+        },
+        {
+            "GroupName": "JailedExtensionGroup3",
+            "Description": "Single jailed extension who either cannot be installed with other extensions or has issues with install/uninstall or upgrade",
+            "Extensions": []
+        },
+        {
+            "GroupName": "Discontinued",
+            "Description": "List of extensions who are valid (VerifiedExtensions) but discontinued and should not be used in upgrade tests",
+            "Extensions": []
+        },
+        {
+            "GroupName": "ExcludedDuringMoveTests",
+            "Description": "List of extensions who are valid (VerifiedExtensions) but should not be used in upgrade tests",
+            "Extensions": []
+        }
+    ]
+}

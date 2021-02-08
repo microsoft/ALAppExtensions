@@ -98,8 +98,8 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         StoreTokenCacheOnLogin();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnGetTestEmailBody', '', false, false)]
-    local procedure UpdateTokenCacheForUserOnSendingTestEmail(Connector: Enum "Email Connector"; var Body: Text)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnGetBodyForTestEmail', '', false, false)]
+    local procedure UpdateTokenCacheForUserOnSendingTestEmail()
     var
         EnvironmentInformation: Codeunit "Environment Information";
     begin

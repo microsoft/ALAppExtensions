@@ -72,10 +72,12 @@ page 8885 "Email Activities"
 
     trigger OnAfterGetCurrRecord()
     var
+        EmailAccountImpl: Codeunit "Email Account Impl.";
         TaskParameters: Dictionary of [Text, Text];
     begin
         PastDate := CreateDateTime(CalcDate('<-30D>', Today()), Time());
         TaskParameters.Add('PastDate', Format(PastDate));
+        TaskParameters.Add('Admin', Format(EmailAccountImpl.IsUserEmailAdmin()));
 
         CurrPage.EnqueueBackgroundTask(EmailActivitiesTaskId, Codeunit::"Email Activities", TaskParameters, 60000, PageBackgroundTaskErrorLevel::Warning);
     end;

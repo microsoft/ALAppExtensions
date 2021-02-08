@@ -354,6 +354,7 @@ page 20009 "APIV1 - Customers"
         GraphMgtCustomer: Codeunit "Graph Mgt - Customer";
     begin
         PostalAddressJSON := GraphMgtCustomer.PostalAddressToJSON(Rec);
+
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
         TaxAreaDisplayNameGlobal := TaxAreaBuffer.GetTaxAreaDisplayName("Tax Area ID");
     end;

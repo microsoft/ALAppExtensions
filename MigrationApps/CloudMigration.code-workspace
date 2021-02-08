@@ -1,0 +1,144 @@
+{
+	"folders": [
+		{
+			"name": "HybridBaseDeployment-App",
+			"path": "HybridBaseDeployment\\app"
+		},
+		{
+			"name": "HybridBaseDeployment-Test",
+			"path": "HybridBaseDeployment\\test"
+		},
+		{
+			"name": "Hybrid GP-App",
+			"path": "HybridGP\\app"
+		},
+		{
+			"name": "Hybrid GP-Test",
+			"path": "HybridGP\\test"
+		},
+		{
+			"name": "GPSmartLists-App",
+			"path": "DynamicsGPHistorySmartLists"
+		},
+		{
+			"name": "HybridBC-App",
+			"path": "HybridBC\\app"
+		},
+		{
+			"name": "HybridBC-Test",
+			"path": "HybridBC\\test"
+		},
+		{
+			"name": "HybridBCLast-App",
+			"path": "HybridBCLast\\app"
+		},
+		{
+			"name": "HybridBCLast-Test",
+			"path": "HybridBCLast\\test"
+		},
+		{
+			"name": "HybridBCLast_AT-App",
+			"path": "HybridBCLast_AT\\app"
+		},
+		{
+			"name": "HybridBCLast_AT-Test",
+			"path": "HybridBCLast_AT\\test"
+		},
+		{
+			"name": "HybridBCLast_AU-App",
+			"path": "HybridBCLast_AU\\app"
+		},
+		{
+			"name": "HybridBCLast_AU-Test",
+			"path": "HybridBCLast_AU\\test"
+		},
+		{
+			"name": "HybridBCLast_BE-App",
+			"path": "HybridBCLast_BE\\app"
+		},
+		{
+			"name": "HybridBCLast_BE-Test",
+			"path": "HybridBCLast_BE\\test"
+		},
+		{
+			"name": "HybridBCLast_CA-App",
+			"path": "HybridBCLast_CA\\app"
+		},
+		{
+			"name": "HybridBCLast_CA-Test",
+			"path": "HybridBCLast_CA\\test"
+		},
+		{
+			"name": "HybridBCLast_CH-App",
+			"path": "HybridBCLast_CH\\app"
+		},
+		{
+			"name": "HybridBCLast_CH-Test",
+			"path": "HybridBCLast_CH\\test"
+		},
+		{
+			"name": "HybridBCLast_CZ-App",
+			"path": "HybridBCLast_CZ\\app"
+		},
+		{
+			"name": "HybridBCLast_CZ-Test",
+			"path": "HybridBCLast_CZ\\test"
+		},
+		{
+			"name": "HybridBCLast_DE-App",
+			"path": "HybridBCLast_DE\\app"
+		},
+		{
+			"name": "HybridBCLast_DE-Test",
+			"path": "HybridBCLast_DE\\test"
+		},
+		{
+			"name": "HybridBCLast_ES-App",
+			"path": "HybridBCLast_ES\\app"
+		},
+		{
+			"name": "HybridBCLast_ES-Test",
+			"path": "HybridBCLast_ES\\test"
+		},
+		{
+			"name": "HybridBCLast_FR-App",
+			"path": "HybridBCLast_FR\\app"
+		},
+		{
+			"name": "HybridBCLast_FR-Test",
+			"path": "HybridBCLast_FR\\test"
+		},
+		{
+			"name": "HybridBCLast_IT-App",
+			"path": "HybridBCLast_IT\\app"
+		},
+		{
+			"name": "HybridBCLast_IT-Test",
+			"path": "HybridBCLast_IT\\test"
+		},
+		{
+			"name": "HybridBCLast_MX-App",
+			"path": "HybridBCLast_MX\\app"
+		},
+		{
+			"name": "HybridBCLast_MX-Test",
+			"path": "HybridBCLast_MX\\test"
+		},
+		{
+			"name": "HybridBCLast_NZ-App",
+			"path": "HybridBCLast_NZ\\app"
+		},
+		{
+			"name": "HybridBCLast_NZ-Test",
+			"path": "HybridBCLast_NZ\\test"
+		},
+		{
+			"name": "HybridBCLast_US-App",
+			"path": "HybridBCLast_US\\app"
+		},
+		{
+			"name": "HybridBCLast_US-Test",
+			"path": "HybridBCLast_US\\test"
+		},
+	]
+}

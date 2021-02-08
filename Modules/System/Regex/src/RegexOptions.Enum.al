@@ -5,7 +5,7 @@
 
 enum 3962 RegexOptions
 {
-    Access = Internal;
+    Extensible = false;
 
     value(0; None)
     {

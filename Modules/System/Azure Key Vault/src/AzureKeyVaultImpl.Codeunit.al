@@ -13,11 +13,15 @@ codeunit 2202 "Azure Key Vault Impl."
 
 
     var
+        [NonDebuggable]
         NavAzureKeyVaultClient: DotNet AzureKeyVaultClientHelper;
+        [NonDebuggable]
         AzureKeyVaultSecretProvider: DotNet IAzureKeyVaultSecretProvider;
         SecretNotFoundErr: Label '%1 is not an application secret.', Comment = '%1 = Secret Name.';
+        [NonDebuggable]
         CachedSecretsDictionary: DotNet GenericDictionary2;
         AllowedApplicationSecretsSecretNameTxt: Label 'AllowedApplicationSecrets', Locked = true;
+        [NonDebuggable]
         AllowedSecretNamesArray: DotNet Array;
         IsKeyVaultClientInitialized: Boolean;
         NoSecretsErr: Label 'The key vault did not have any secrets that are allowed to be fetched.';
@@ -25,6 +29,7 @@ codeunit 2202 "Azure Key Vault Impl."
         AzureKeyVaultTxt: Label 'Azure Key Vault', Locked = true;
         InitializeAllowedSecretNamesErr: Label 'Initialization of allowed secret names failed.';
 
+    [NonDebuggable]
     procedure GetAzureKeyVaultSecret(SecretName: Text; var Secret: Text)
     begin
         // Gets the secret as a Text from the key vault, given a SecretName.
@@ -38,6 +43,7 @@ codeunit 2202 "Azure Key Vault Impl."
         Secret := GetSecretFromClient(SecretName);
     end;
 
+    [NonDebuggable]
     procedure SetAzureKeyVaultSecretProvider(NewAzureKeyVaultSecretProvider: DotNet IAzureKeyVaultSecretProvider)
     begin
         // Sets the secret provider to simulate the vault. Used for testing.
@@ -46,6 +52,7 @@ codeunit 2202 "Azure Key Vault Impl."
         AzureKeyVaultSecretProvider := NewAzureKeyVaultSecretProvider;
     end;
 
+    [NonDebuggable]
     procedure ClearSecrets()
     begin
         Clear(NavAzureKeyVaultClient);
@@ -59,11 +66,13 @@ codeunit 2202 "Azure Key Vault Impl."
     end;
 
     [TryFunction]
+    [NonDebuggable]
     local procedure TryGetSecretFromClient(SecretName: Text; var Secret: Text)
     begin
         Secret := GetSecretFromClient(SecretName);
     end;
 
+    [NonDebuggable]
     local procedure GetSecretFromClient(SecretName: Text) Secret: Text
     begin
         if KeyValuePairInBuffer(SecretName, Secret) then
@@ -79,6 +88,7 @@ codeunit 2202 "Azure Key Vault Impl."
         StoreKeyValuePairInBuffer(SecretName, Secret);
     end;
 
+    [NonDebuggable]
     local procedure KeyValuePairInBuffer("Key": Text; var Value: Text): Boolean
     var
         ValueFound: Boolean;
@@ -91,6 +101,7 @@ codeunit 2202 "Azure Key Vault Impl."
         exit(ValueFound);
     end;
 
+    [NonDebuggable]
     local procedure StoreKeyValuePairInBuffer("Key": Text; Value: Text)
     begin
         InitBuffer();
@@ -98,12 +109,14 @@ codeunit 2202 "Azure Key Vault Impl."
         CachedSecretsDictionary.Add(Key, Value);
     end;
 
+    [NonDebuggable]
     local procedure InitBuffer()
     begin
         if IsNull(CachedSecretsDictionary) then
             CachedSecretsDictionary := CachedSecretsDictionary.Dictionary();
     end;
 
+    [NonDebuggable]
     local procedure IsSecretNameAllowed(SecretName: Text): Boolean
     var
         Name: Text;
@@ -115,6 +128,7 @@ codeunit 2202 "Azure Key Vault Impl."
                 exit(true);
     end;
 
+    [NonDebuggable]
     local procedure InitializeAllowedSecretNames(): Boolean
     var
         AllowedSecretNames: DotNet String;

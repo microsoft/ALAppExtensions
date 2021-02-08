@@ -24,6 +24,7 @@ page 149002 "BCPT CommandLine Card"
                     trigger OnValidate()
                     var
                         BCPTHeader: record "BCPT Header";
+                        BCPTLine: record "BCPT Line";
                     begin
                         if not BCPTHeader.Get(BCPTCode) then
                             Error(CannotFindBCPTSuiteErr, BCPTCode);
@@ -32,6 +33,8 @@ page 149002 "BCPT CommandLine Card"
                         CurrentBCPTHeader := BCPTHeader;
                         DurationInMins := BCPTHeader."Duration (minutes)";
                         NoOfInstances := BCPTHeader."Total No. of Sessions";
+                        BCPTLine.SetRange("BCPT Code", BCPTCode);
+                        NoOfTests := BCPTLine.Count();
                     end;
                 }
 
@@ -46,6 +49,13 @@ page 149002 "BCPT CommandLine Card"
                 {
                     Caption = 'No. of Instances', Locked = true;
                     ToolTip = 'Specifies the number of instances that will be created.';
+                    ApplicationArea = All;
+                    Editable = false;
+                }
+                field("No. of Tests"; NoOfTests)
+                {
+                    Caption = 'No. of Tests', Locked = true;
+                    ToolTip = 'Specifies the number of BCPT Suite Lines present in the BCPT Suite';
                     ApplicationArea = All;
                     Editable = false;
                 }
@@ -72,6 +82,22 @@ page 149002 "BCPT CommandLine Card"
                     StartNextBCPT();
                 end;
             }
+            action(StartNextPRT)
+            {
+                Enabled = EnableActions;
+                ApplicationArea = All;
+                Caption = 'Start Next in Single Run mode', Locked = true;
+                Image = Start;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                ToolTip = 'Starts the next available test in PRT mode.';
+
+                trigger OnAction()
+                begin
+                    StartNextBCPTAsPRT();
+                end;
+            }
         }
     }
 
@@ -82,6 +108,7 @@ page 149002 "BCPT CommandLine Card"
         BCPTCode: Code[10];
         DurationInMins: Integer;
         NoOfInstances: Integer;
+        NoOfTests: Integer;
 
     trigger OnOpenPage()
     var
@@ -95,6 +122,15 @@ page 149002 "BCPT CommandLine Card"
         BCPTStartTests: Codeunit "BCPT Start Tests";
     begin
         CurrentBCPTHeader.CurrentRunType := CurrentBCPTHeader.CurrentRunType::BCPT;
+        CurrentBCPTHeader.Modify();
+        BCPTStartTests.StartNextBenchmarkTests(CurrentBCPTHeader);
+    end;
+
+    local procedure StartNextBCPTAsPRT()
+    var
+        BCPTStartTests: Codeunit "BCPT Start Tests";
+    begin
+        CurrentBCPTHeader.CurrentRunType := CurrentBCPTHeader.CurrentRunType::PRT;
         CurrentBCPTHeader.Modify();
         BCPTStartTests.StartNextBenchmarkTests(CurrentBCPTHeader);
     end;

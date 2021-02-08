@@ -222,13 +222,27 @@ codeunit 8901 "Email"
 
     #region Events
 
+#if not CLEAN17
     /// <summary>
     /// Integration event to override the default email body for test messages.
     /// </summary>
     /// <param name="Connector">The connector used to send the email message.</param>
     /// <param name="Body">Out param to set the email body to a new value.</param>
+    [Obsolete('The event will be removed. Subscribe to OnGetBodyForTestEmail instead', '17.3')]
     [IntegrationEvent(false, false)]
     procedure OnGetTestEmailBody(Connector: Enum "Email Connector"; var Body: Text)
+    begin
+    end;
+
+#endif
+    /// <summary>
+    /// Integration event to override the default email body for test messages.
+    /// </summary>
+    /// <param name="Connector">The connector used to send the email message.</param>
+    /// <param name="AccountId">The account ID of the email account used to send the email message.</param>
+    /// <param name="Body">Out param to set the email body to a new value.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnGetBodyForTestEmail(Connector: Enum "Email Connector"; AccountId: Guid; var Body: Text)
     begin
     end;
 

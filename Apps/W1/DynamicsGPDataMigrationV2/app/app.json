@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Enables users to migrate their Customers, Vendors, Items and Accounts from Microsoft Dynamics GP to Dynamics 365 Business Central along with opening balances for those master records. This extension will only be supported for US, CA and GB deployments/installs.",
     "description":  "This application automates the process of migrating Customers, Vendors, Items and Accounts from Microsoft Dynamics GP to Dynamics 365 Business Central. During the process supporting setup information will be created as well, for example Posting Groups. Inventory items will be set to the costing method that was chosen during the company setup process. Accounts will be setup as the main account segment from GP with dimensions as Dynamics 365 Business Central does not have account segments like Dynamics GP does.",
-    "version":  "17.1.0.0",
+    "version":  "17.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=825900",
@@ -16,7 +16,7 @@
                              "id":  "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
                              "name":  "Sales and Inventory Forecast",
                              "publisher":  "Microsoft",
-                             "version":  "17.1.0.0"
+                             "version":  "17.3.0.0"
                          }
                      ],
     "screenshots":  [
@@ -25,5 +25,5 @@
     "platform":  "17.0.0.0",
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "17.1.0.0"
+    "application":  "17.3.0.0"
 }

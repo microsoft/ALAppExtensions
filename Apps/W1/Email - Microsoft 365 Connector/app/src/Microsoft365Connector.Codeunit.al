@@ -29,7 +29,9 @@ codeunit 4503 "Microsoft 365 Connector" implements "Email Connector"
         EmailOutlookAPIHelper.SetupAzureAppRegistration();
 
         OutlookAccount."Outlook API Email Connector" := Enum::"Email Connector"::"Microsoft 365";
+#if not CLEAN17
         OutlookAccount."Created By" := CopyStr(UserId(), 1, MaxStrLen(OutlookAccount."Created By"));
+#endif
 
         Microsoft365EmailWizard.SetRecord(OutlookAccount);
         Microsoft365EmailWizard.RunModal();

@@ -8,6 +8,7 @@ codeunit 1289 "OAuth Impl."
     SingleInstance = false;
 
     [TryFunction]
+    [NonDebuggable]
     procedure GetRequestToken(ConsumerKey: Text; ConsumerSecret: Text; RequestTokenUrl: Text; CallbackUrl: Text; var AccessTokenKey: Text; var AccessTokenSecret: Text)
     var
         OAuthAuthorization: DotNet OAuthAuthorization;
@@ -28,6 +29,7 @@ codeunit 1289 "OAuth Impl."
 
 
     [TryFunction]
+    [NonDebuggable]
     procedure GetAccessToken(ConsumerKey: Text; ConsumerSecret: Text; RequestTokenUrl: Text; Verifier: Text; RequestTokenKey: Text; RequestTokenSecret: Text; var AccessTokenKey: Text; var AccessTokenSecret: Text)
     var
         OAuthAuthorization: DotNet OAuthAuthorization;
@@ -47,6 +49,7 @@ codeunit 1289 "OAuth Impl."
     end;
 
     [TryFunction]
+    [NonDebuggable]
     procedure GetAuthorizationHeader(ConsumerKey: Text; ConsumerSecret: Text; RequestTokenKey: Text; RequestTokenSecret: Text; RequestUrl: Text; RequestMethod: Enum "Http Request Type"; var AuthorizationHeader: Text)
     var
         OAuthAuthorization: DotNet OAuthAuthorization;

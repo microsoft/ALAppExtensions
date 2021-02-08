@@ -54,6 +54,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         ProcessingUserTxt: Label 'Procesing the user %1.', Comment = '%1 - Display name', Locked = true;
         DelimiterTxt: Label '|', Locked = true;
 
+    [NonDebuggable]
     procedure Run(ForUserSecurityId: Guid)
     var
         UserProperty: Record "User Property";
@@ -80,6 +81,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         AzureADPlan.RefreshUserPlanAssignments(ForUserSecurityId);
     end;
 
+    [NonDebuggable]
     procedure CreateNewUsersFromAzureAD()
     var
         User: Record User;
@@ -120,6 +122,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         end;
     end;
 
+    [NonDebuggable]
     procedure CreateNewUserFromGraphUser(GraphUser: DotNet UserInfo): Boolean
     var
         NewUserSecurityId: Guid;
@@ -136,6 +139,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         exit(false);
     end;
 
+    [NonDebuggable]
     local procedure CreateNewUserInternal(AuthenticationEmail: Text; AADObjectID: Text): Guid
     var
         NewUserSecurityId: Guid;
@@ -150,6 +154,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         exit(NewUserSecurityId);
     end;
 
+    [NonDebuggable]
     procedure IsUserTenantAdmin(): Boolean
     var
         GraphUser: DotNet UserInfo;
@@ -177,6 +182,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         exit(false);
     end;
 
+    [NonDebuggable]
     local procedure UpdateUserFromAzureGraph(var User: Record User; var GraphUser: DotNet UserInfo): Boolean
     var
         IsUserModified: Boolean;
@@ -186,6 +192,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         exit(IsUserModified);
     end;
 
+    [NonDebuggable]
     procedure UpdateUserFromGraph(var User: Record User)
     var
         AzureADGraphUserToFetch: Codeunit "Azure AD Graph User";
@@ -195,6 +202,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             AzureADGraphUserToFetch.UpdateUserFromAzureGraph(User, GraphUser);
     end;
 
+    [NonDebuggable]
     local procedure IsUserDelegated(UserSecID: Guid): Boolean
     var
         PlanIds: Codeunit "Plan Ids";
@@ -203,6 +211,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                     AzureADPlan.IsPlanAssignedToUser(PlanIds.GetHelpDeskPlanId(), UserSecID));
     end;
 
+    [NonDebuggable]
     local procedure InitializeAsNewUser(NewUserSecurityId: Guid; var GraphUser: DotNet UserInfo)
     var
         User: Record User;
@@ -213,6 +222,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         AzureADPlan.UpdateUserPlans(User."User Security ID", GraphUser);
     end;
 
+    [NonDebuggable]
     procedure SetTestInProgress(TestInProgress: Boolean)
     begin
         IsTestInProgress := TestInProgress;
@@ -221,6 +231,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         AzureADPlan.SetTestInProgress(TestInProgress);
     end;
 
+    [NonDebuggable]
     procedure SynchronizeLicensedUserFromDirectory(AuthenticationEmail: Text): Boolean
     var
         User: Record User;
@@ -239,11 +250,13 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         exit(true);
     end;
 
+    [NonDebuggable]
     procedure SynchronizeAllLicensedUsersFromDirectory()
     begin
         CreateNewUsersFromAzureAD();
     end;
 
+    [NonDebuggable]
     procedure FetchUpdatesFromAzureGraph(var AzureADUserUpdate: Record "Azure AD User Update Buffer")
     var
         User: Record User;
@@ -323,6 +336,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             Window.Close();
     end;
 
+    [NonDebuggable]
     procedure ApplyUpdatesFromAzureGraph(var AzureADUserUpdate: Record "Azure AD User Update Buffer") NumberOfSuccessfulUpdates: Integer
     var
         Window: Dialog;
@@ -353,6 +367,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             Window.Close();
     end;
 
+    [NonDebuggable]
     local procedure ConsolidatePlansNamesFromGraph(var AzureADUserUpdate: Record "Azure AD User Update Buffer"; var PlanNamesPerUserFromGraph: Dictionary of [Text, List of [Text]])
     var
         PlanNameList: List of [Text];
@@ -367,6 +382,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         AzureADUserUpdate.SetRange("Update Entity");
     end;
 
+    [NonDebuggable]
     local procedure ProcessAllUpdatesForUser(var AzureADUserUpdate: Record "Azure AD User Update Buffer") NumberOfSuccessfulUpdates: Integer
     var
         User: Record User;
@@ -392,6 +408,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     end;
 
     [TryFunction]
+    [NonDebuggable]
     local procedure ApplyUpdateFromAzureGraph(AzureADUserUpdate: Record "Azure AD User Update Buffer"; var User: Record User; var ModifyUser: Boolean; var SetAuthenticationObjectID: Boolean)
     var
         Language: Codeunit Language;
@@ -442,10 +459,11 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                     Language.SetPreferredLanguageID(User."User Security ID", PreferredLanguageId);
                 end;
             Enum::"Azure AD User Update Entity"::Plan:
-                AzureADPlan.UpdateUserPlans(User."User Security ID", AzureADUserUpdate."Permission Change Action" = AzureADUserUpdate."Permission Change Action"::Append, false);
+                AzureADPlan.UpdateUserPlans(User."User Security ID", AzureADUserUpdate."Permission Change Action" = AzureADUserUpdate."Permission Change Action"::Append, false, true);
         end;
     end;
 
+    [NonDebuggable]
     local procedure CreateUser(var User: Record User; AuthenticationObjectID: Text[80]; AuthenticationEmail: Text[250])
     var
         CurrentUserSecurityId: Guid;
@@ -464,6 +482,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         User.Modify();
     end;
 
+    [NonDebuggable]
     local procedure AddChangesForNewUser(var AzureADUserUpdate: Record "Azure AD User Update Buffer"; GraphUser: DotNet UserInfo)
     var
         UserUpdateEntities: List of [Integer];
@@ -491,6 +510,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         end;
     end;
 
+    [NonDebuggable]
     local procedure AddChangesForExistingUser(var AzureADUserUpdate: Record "Azure AD User Update Buffer"; GraphUser: DotNet UserInfo; User: Record User)
     var
         UserUpdateEntities: List of [Integer];
@@ -533,12 +553,17 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         end;
     end;
 
+    [NonDebuggable]
     local procedure AddChangesForRemovedUser(var AzureADUserUpdate: Record "Azure AD User Update Buffer"; User: Record User)
     begin
         AzureADUserUpdate.Init();
         AzureADUserUpdate."Update Type" := Enum::"Azure AD Update Type"::Remove;
 
         AzureADUserUpdate."Authentication Object ID" := CopyStr(AzureADGraphUser.GetUserAuthenticationObjectId(User."User Security ID"), 1, MaxStrLen(AzureADUserUpdate."Authentication Object ID"));
+        // If for the user doesn't have an authentication object ID (imported user, application, cleared directly in the database), assign a random one to avoid duplicate key exception.
+        if AzureADUserUpdate."Authentication Object ID" = '' then
+            AzureADUserUpdate."Authentication Object ID" := Format(CreateGuid()) + '-GENERATED';
+
         AzureADUserUpdate."User Security ID" := User."User Security ID";
         AzureADUserUpdate.Validate("Update Entity", Enum::"Azure AD User Update Entity"::Plan);
         AzureADUserUpdate."Current Value" := CopyStr(GetUpdateEntityFromUser(Enum::"Azure AD User Update Entity"::Plan, User), 1, MaxStrLen(AzureADUserUpdate."Current Value"));
@@ -548,6 +573,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         AzureADUserUpdate.Insert();
     end;
 
+    [NonDebuggable]
     local procedure GetUpdateEntityFromUser(UpdateEntity: Enum "Azure AD User Update Entity"; User: Record User): Text
     var
         UserPersonalization: Record "User Personalization";
@@ -579,6 +605,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         end;
     end;
 
+    [NonDebuggable]
     local procedure GetUpdateEntityFromGraph(UpdateEntity: Enum "Azure AD User Update Entity"; GraphUser: DotNet UserInfo): Text
     var
         PlanNames: List of [Text];
@@ -608,6 +635,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         end;
     end;
 
+    [NonDebuggable]
     local procedure ConvertListToText(MyList: List of [Text]) Result: Text
     var
         Element: Text;
@@ -618,6 +646,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         Result := Result.TrimEnd(DelimiterTxt).TrimStart(DelimiterTxt);
     end;
 
+    [NonDebuggable]
     local procedure ConvertTextToList(InputText: Text; var MyList: List of [Text])
     begin
         MyList := InputText.Split(DelimiterTxt);

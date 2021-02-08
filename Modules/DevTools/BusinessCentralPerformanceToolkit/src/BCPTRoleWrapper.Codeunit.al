@@ -107,7 +107,9 @@ codeunit 149002 "BCPT Role Wrapper"
                             DoRun := Random(1050000) > PoissonLimit;
                         end;
                 end;
-            end;
+            end else
+                if BCPTLine."Run in Foreground" and (BCPTHeader.CurrentRunType = BCPTRunType::PRT) then
+                    ExecuteNextIteration := BCPTLine.Next() <> 0;
         until (ExecuteNextIteration = false);
         BCPTHeaderCU.DecreaseNoOfTestsRunningNow(BCPTHeader);
     end;

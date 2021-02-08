@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  BuildSystemApplication:
+    runs-on: windows-2019
+    env:
+      BC_CONTAINER_USERNAME: admin
+      BC_CONTAINER_PASSWORD: P@ssword1
+    steps:
+      - uses: actions/checkout@v1    
+      - name: Install BcContainerHelper
+        shell: powershell
+        run: Install-Module BcContainerHelper -Force
+
+      - name: Set up Business Central container
+        shell: powershell
+        run: >
+          New-BCContainer 
+          -accept_eula 
+          -containerName bcdev 
+          -artifactUrl (Get-BcArtifactUrl -type sandbox -country us -select latest)
+          -alwaysPull 
+          -auth NavUserPassword 
+          -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
+          -updateHosts
+          -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\Modules\System`:c:\project")
+          -includeAL
+
+      - name: Compile System Application  
+        shell: powershell
+        run: >
+          Compile-AppInBCContainer 
+          -containerName bcdev 
+          -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
+          -appProjectFolder $Env:GITHUB_WORKSPACE\Modules\System
+          -appOutputFolder $Env:GITHUB_WORKSPACE\Modules\System
+          -EnableCodeCop
+          -EnableUICop

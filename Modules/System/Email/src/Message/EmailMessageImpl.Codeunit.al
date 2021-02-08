@@ -380,8 +380,18 @@ codeunit 8905 "Email Message Impl."
     local procedure OnAfterDeleteSentEmail(var Rec: Record "Sent Email"; RunTrigger: Boolean)
     var
         EmailMessage: Record "Email Message";
+        EmailOutbox: Record "Email Outbox";
     begin
         if Rec.IsTemporary() then
+            exit;
+        
+        if Rec.CurrentCompany() <> CompanyName() then begin
+            EmailOutbox.ChangeCompany(Rec.CurrentCompany());
+            EmailMessage.ChangeCompany(Rec.CurrentCompany());
+        end;
+         
+        EmailOutbox.SetRange("Message Id", Rec."Message Id");
+        if not EmailOutbox.IsEmpty() then
             exit;
 
         if EmailMessage.Get(Rec."Message Id") then
@@ -397,6 +407,12 @@ codeunit 8905 "Email Message Impl."
     begin
         if Rec.IsTemporary() then
             exit;
+
+        if Rec.CurrentCompany() <> CompanyName() then begin
+            EmailError.ChangeCompany(Rec.CurrentCompany());
+            EmailMessage.ChangeCompany(Rec.CurrentCompany());
+            SentEmail.ChangeCompany(Rec.CurrentCompany());
+        end;
 
         EmailError.SetRange("Outbox Id", Rec.Id);
         EmailError.DeleteAll(true);
@@ -418,6 +434,11 @@ codeunit 8905 "Email Message Impl."
         if Rec.IsTemporary() then
             exit;
 
+        if Rec.CurrentCompany() <> CompanyName() then begin
+            EmaiMessageAttachemnt.ChangeCompany(Rec.CurrentCompany());
+            EmailRecipient.ChangeCompany(Rec.CurrentCompany());
+        end;
+        
         EmaiMessageAttachemnt.SetRange("Email Message Id", Rec.Id);
         EmaiMessageAttachemnt.DeleteAll();
 
@@ -453,6 +474,11 @@ codeunit 8905 "Email Message Impl."
         if Rec.IsTemporary() then
             exit;
 
+        if Rec.CurrentCompany() <> CompanyName() then begin
+            EmailOutbox.ChangeCompany(Rec.CurrentCompany());
+            SentEmail.ChangeCompany(Rec.CurrentCompany());
+        end;
+
         EmailOutbox.SetRange("Message Id", Rec."Email Message Id");
         EmailOutbox.SetFilter(Status, '%1|%2', EmailOutbox.Status::Queued, EmailOutbox.Status::Processing);
         if not EmailOutbox.IsEmpty() then
@@ -471,6 +497,11 @@ codeunit 8905 "Email Message Impl."
     begin
         if Rec.IsTemporary() then
             exit;
+
+        if Rec.CurrentCompany() <> CompanyName() then begin
+            EmailOutbox.ChangeCompany(Rec.CurrentCompany());
+            SentEmail.ChangeCompany(Rec.CurrentCompany());
+        end;
 
         EmailOutbox.SetRange("Message Id", Rec."Email Message Id");
         EmailOutbox.SetFilter(Status, '%1|%2', EmailOutbox.Status::Queued, EmailOutbox.Status::Processing);

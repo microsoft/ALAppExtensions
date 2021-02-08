@@ -17,6 +17,7 @@ Codeunit 148029 TestFIK
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryRandom: Codeunit "Library - Random";
+        LibrarySetupStorage: Codeunit "Library - Setup Storage";
         Initialized: Boolean;
         CorrectFIK71: Text[15];
         WrongFIK71: Text[15];
@@ -1443,12 +1444,39 @@ Codeunit 148029 TestFIK
             '"Creditor No." should be padded to standard length with zeroes');
     end;
 
+    [Test]
+    procedure CopyInvoiceNoToPaymentRefDoesntBlockPosting();
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseInvoice: Record "Purch. Inv. Header";
+        PurchaseInvoiceNo: Code[20];
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 375630] When using "Copy Invoice No. To Payment Reference" Non-FIK payment method must be allowed
+        Initialize();
+
+        // [GIVEN] Purchase Invoice with a non-FIK payment method
+        LibraryPurchase.CreatePurchaseInvoice(PurchaseHeader);
+
+        // [GIVEN] "Copy Invoice No. To Payment Reference" = True in Purch & Payables setup
+        SetCopyInvNoToPmtRef(true);
+
+        // [WHEN] Post purchase invoice
+        PurchaseInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] No error and the invoice is posted
+        PurchaseInvoice.Get(PurchaseInvoiceNo);
+
+    end;
+
     LOCAL PROCEDURE Initialize();
     VAR
         CompanyInformation: Record "Company Information";
     BEGIN
+        LibrarySetupStorage.Restore();
         IF Initialized THEN
             EXIT;
+        LibrarySetupStorage.SavePurchasesSetup();
         CompanyInformation.GET();
         CompanyInformation.BankCreditorNo := '12345678';
         CompanyInformation.MODIFY();
@@ -1488,6 +1516,16 @@ Codeunit 148029 TestFIK
         PaymentMethod.VALIDATE(PaymentTypeValidation, PaymentForm);
         PaymentMethod.MODIFY(TRUE);
     END;
+
+    local procedure SetCopyInvNoToPmtRef(NewValue: Boolean);
+    var
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+    begin
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Copy Inv. No. To Pmt. Ref.", NewValue);
+        PurchasesPayablesSetup.Modify();
+
+    end;
 
     LOCAL PROCEDURE CreateGenJnlLine(VAR GenJnlLine: Record "Gen. Journal Line"; PaymentForm: Option);
     VAR

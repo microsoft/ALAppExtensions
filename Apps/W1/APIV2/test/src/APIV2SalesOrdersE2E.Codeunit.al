@@ -567,6 +567,9 @@ codeunit 139811 "APIV2 - Sales Orders E2E"
 
         // [THEN] Posted sales invoice is created
         VerifyPostedInvoiceCreated(OrderNo, OrderNoSeries);
+
+        // [THEN] Record was deleted from Sales Oreder Entity Buffer
+        VerifySalesOrderEntityBufferDeletedAfterPosting(OrderNo);        
     end;
 
     local procedure CreateOrderWithLines(var SalesHeader: Record "Sales Header")
@@ -608,9 +611,16 @@ codeunit 139811 "APIV2 - Sales Orders E2E"
         SalesInvoiceHeader.SetRange("Order No. Series", OrderNoSeries);
         SalesInvoiceHeader.SetRange("Order No.", OrderNo);
         Assert.IsTrue(SalesInvoiceHeader.FindFirst(), CannotFindInvoiceErr);
-        SalesInvoiceEntityAggregate.SetRange(Id, SalesInvoiceHeader."Draft Invoice SystemId");
+        SalesInvoiceEntityAggregate.SetRange(Id, SalesInvoiceHeader.SystemId);
         Assert.IsTrue(SalesInvoiceEntityAggregate.FindFirst(), CannotFindInvoiceErr);
         Assert.AreEqual(SalesInvoiceEntityAggregate.Status::Open, SalesInvoiceEntityAggregate.Status, InvoiceStatusErr);
+    end;
+
+    local procedure VerifySalesOrderEntityBufferDeletedAfterPosting(OrderNo: Code[20])
+    var
+        SalesOrderEntityBuffer: Record "Sales Order Entity Buffer";
+    begin
+        Assert.IsFalse(SalesOrderEntityBuffer.Get(OrderNo), 'Sales Order Entity buffer was supposed to be deleted after posting.');
     end;
 
     local procedure CreateOrderJSONWithAddress(SellToCustomer: Record "Customer"; BillToCustomer: Record "Customer"; ShipToCustomer: Record "Customer"; OrderDate: Date; PostingDate: Date): Text

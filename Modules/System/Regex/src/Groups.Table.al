@@ -18,6 +18,7 @@ table 3964 Groups
     {
         field(1; GroupIndex; Integer)
         {
+            Caption = 'Group Index';
             DataClassification = SystemMetadata;
         }
         field(2; Index; Integer)
@@ -27,11 +28,12 @@ table 3964 Groups
         }
         field(3; Name; Text[2048])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Description = 'Returns the name of the capturing group represented by the current instance.';
         }
         field(4; ValueBlob; Blob)
         {
+            Caption = 'Values';
             Access = Internal;
             DataClassification = SystemMetadata; // Since this is a temp table we can do this
             Description = 'Gets the captured substring from the input string.';
@@ -55,6 +57,10 @@ table 3964 Groups
         }
     }
 
+    /// <summary>
+    /// Reads the value of the group 
+    /// </summary>
+    /// <returns>The value of the group.</returns>
     procedure ReadValue() TextValue: Text
     var
         ValueInStream: InStream;

@@ -9,7 +9,7 @@ codeunit 135051 "Xml Validation Test"
     var
         Assert: Codeunit "Library Assert";
         XmlValidationTestHelper: Codeunit "Xml Validation Test Helper";
-        ValidationErrorTxt: Label 'A call to System.Xml.XmlDocument.Validate failed with this message: The element ''bookstore'' in namespace ''http://www.contoso.com/books'' has invalid child element ''anotherNode''.';
+        ValidationErrorTxt: Label 'The element ''bookstore'' in namespace ''http://www.contoso.com/books'' has invalid child element ''anotherNode''.';
         InvalidXmlErrTxt: Label 'The XML definition is invalid.';
         InvalidSchemaErrTxt: Label 'The schema definition is not valid XML.';
 

@@ -109,6 +109,7 @@ page 8886 "Email Account Wizard"
                 Visible = ChooseConnectorVisible and ConnectorsAvailable;
                 label("Specify the type of email account to add")
                 {
+                    Caption = 'Specify the type of email account to add';
                     ApplicationArea = All;
                 }
 

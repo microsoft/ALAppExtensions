@@ -145,7 +145,7 @@ codeunit 3961 "Regex Impl."
 
     procedure Replace(Input: Text; Pattern: Text; Replacement: Text; var RegexOptions: Record "Regex Options"): Text
     begin
-        ApplyRegexOptions(RegexOptions);
+        DotNetRegexOptions := RegexOptions.GetRegexOptions();
         exit(DotNetRegex.Replace(Input, Pattern, Replacement, DotNetRegexOptions));
     end;
 
@@ -233,7 +233,7 @@ codeunit 3961 "Regex Impl."
 
     procedure Regex(Pattern: Text; var RegexOptions: Record "Regex Options")
     begin
-        ApplyRegexOptions(RegexOptions);
+        DotNetRegexOptions := RegexOptions.GetRegexOptions();
         DotNetRegex := DotNetRegex.Regex(Pattern, DotNetRegexOptions, RegexOptions.MatchTimeoutInMs)
     end;
 
@@ -335,39 +335,5 @@ codeunit 3961 "Regex Impl."
             Index += 1;
         end;
         if Captures.FindFirst() then;
-    end;
-
-    local procedure ApplyRegexOptions(RegexOptions: Record "Regex Options")
-    var
-        CombinedOptions: Integer;
-    begin
-        if RegexOptions.IgnoreCase then
-            CombinedOptions += Enum::RegexOptions::IgnoreCase.AsInteger();
-
-        if RegexOptions.Multiline then
-            CombinedOptions += Enum::RegexOptions::Multiline.AsInteger();
-
-        if RegexOptions.ExplicitCapture then
-            CombinedOptions += Enum::RegexOptions::ExplicitCapture.AsInteger();
-
-        if RegexOptions.Compiled then
-            CombinedOptions += Enum::RegexOptions::Compiled.AsInteger();
-
-        if RegexOptions.Singleline then
-            CombinedOptions += Enum::RegexOptions::Singleline.AsInteger();
-
-        if RegexOptions.IgnorePatternWhitespace then
-            CombinedOptions += Enum::RegexOptions::IgnorePatternWhitespace.AsInteger();
-
-        if RegexOptions.RightToLeft then
-            CombinedOptions += Enum::RegexOptions::RightToLeft.AsInteger();
-
-        if RegexOptions.ECMAScript then
-            CombinedOptions += Enum::RegexOptions::ECMAScript.AsInteger();
-
-        if RegexOptions.CultureInvariant then
-            CombinedOptions += Enum::RegexOptions::CultureInvariant.AsInteger();
-
-        DotNetRegexOptions := CombinedOptions;
     end;
 }

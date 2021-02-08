@@ -72,15 +72,24 @@ table 149000 "BCPT Header"
             trigger OnValidate()
             var
                 BCPTLine: Record "BCPT Line";
+                BCPTHeaderCU: Codeunit "BCPT Header";
             begin
                 if "No. of tests running" < 0 then
                     "No. of tests running" := 0;
 
+                if "No. of tests running" <> 0 then
+                    exit;
+
                 case Status of
                     Status::Running:
                         begin
-                            Status := Status::Completed;
                             BCPTLine.SetRange("BCPT Code", "Code");
+                            BCPTLine.SetRange(Status, BCPTLine.Status::" ");
+                            if not BCPTLine.IsEmpty then
+                                exit;
+                            BCPTHeaderCU.SetRunStatus(Rec, Rec.Status::Completed);
+                            BCPTLine.SetRange("BCPT Code", "Code");
+                            BCPTLine.SetRange(Status);
                             BCPTLine.ModifyAll(Status, BCPTLine.Status::Completed);
                         end;
                     Status::Cancelled:

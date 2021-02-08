@@ -229,7 +229,7 @@ codeunit 8892 "Email Scenario Impl."
                 EmailScenarios."Account Id" := EmailAccount."Account Id";
                 EmailScenarios.Connector := EmailAccount.Connector;
                 EmailScenarios.Scenario := CurrentScenario;
-                EmailScenarios."Display Name" := Format(Enum::"Email Scenario".Names().Get(i));
+                EmailScenarios."Display Name" := Format(Enum::"Email Scenario".FromInteger(Enum::"Email Scenario".Ordinals().Get(i)));
 
                 EmailScenarios.Insert();
             end;

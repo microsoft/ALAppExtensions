@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 135205 "Azure Key Vault Test"
+codeunit 135212 "Azure Key Vault Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;

@@ -30,6 +30,9 @@ codeunit 139911 "Xml Writer Test"
         XmlWriter.WriteStartElement('details');
         XmlWriter.WriteElementString('company', 'Mercash');
         XmlWriter.WriteElementString('city', 'Hoorn');
+        XmlWriter.WriteStartElement('occupation');
+        XmlWriter.WriteString('Software Developer');
+        XmlWriter.WriteEndElement();
         XmlWriter.WriteEndElement();
         XmlWriter.WriteEndElement();
         XmlWriter.WriteEndElement();
@@ -167,10 +170,26 @@ codeunit 139911 "Xml Writer Test"
         Assert.AreEqual('<?xml version="1.0" encoding="utf-16"?><TestElement><!--This is a good module--></TestElement>', Format(XmlBigText), 'Unexpected text when creating a Xml Document with XmlWriter');
     end;
 
+    [Test]
+    procedure TestWriteProcessingInstructionAndString()
+    var
+        XmlWriter: Codeunit "XmlWriter";
+        XmlBigText: BigText;
+    begin
+        // [GIVEN] Initialized XmlWriter with root element
+        XmlWriter.WriteProcessingInstruction('xml', 'version="1.0" encoding="utf-8" standalone="no"');
+
+        // [WHEN] Get XmlDocument to text
+        XmlWriter.ToBigText(XmlBigText);
+
+        // [THEN] The result is as expected
+        Assert.AreEqual('<?xml version="1.0" encoding="utf-8" standalone="no"?>', Format(XmlBigText), 'Unexpected text when creating a Xml Document with XmlWriter');
+    end;
+
     local procedure GetXmlText(): Text;
     begin
         Exit('<?xml version="1.0" encoding="utf-16"?><export><meta type="test"><tableno>5200</tableno></meta>' +
-        '<employees><employee no="123" name="Angela"><details><company>Mercash</company><city>Hoorn</city></details></employee></employees>' +
+        '<employees><employee no="123" name="Angela"><details><company>Mercash</company><city>Hoorn</city><occupation>Software Developer</occupation></details></employee></employees>' +
         '<!--This is an awesome module--></export>')
     end;
 }

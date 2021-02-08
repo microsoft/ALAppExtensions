@@ -18,6 +18,7 @@ table 3965 Matches
     {
         field(1; MatchIndex; Integer)
         {
+            Caption = 'Match Index';
             DataClassification = SystemMetadata;
         }
         field(2; Index; Integer)
@@ -27,6 +28,7 @@ table 3965 Matches
         }
         field(3; ValueBlob; Blob)
         {
+            Caption = 'Value';
             Access = Internal;
             DataClassification = SystemMetadata; // Since this is a temp table we can do this
             Description = 'Gets the captured substring from the input string.';
@@ -50,6 +52,10 @@ table 3965 Matches
         }
     }
 
+    /// <summary>
+    /// Reads the value of the match 
+    /// </summary>
+    /// <returns>The value of the match.</returns>
     procedure ReadValue() TextValue: Text
     var
         ValueInStream: InStream;
