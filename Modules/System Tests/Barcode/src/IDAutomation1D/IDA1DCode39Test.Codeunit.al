@@ -41,7 +41,7 @@ codeunit 135044 "IDA 1D Code39 Test"
 
         BarcodeEncodeSettings."Allow Extended Charset" := true;
 
-        GenericIDAutomation1DTest.EncodeFontSuccessTest(/* input */'A1234B', Enum::"Barcode Symbology"::Code39, BarcodeEncodeSettings, /* expected result */'(A1234B)');
+        GenericIDAutomation1DTest.EncodeFontSuccessTest(/* input */'>abcd<', Enum::"Barcode Symbology"::Code39, BarcodeEncodeSettings, /* expected result */'(%I+A+B+C+D%G)');
     end;
 
     [Test]
@@ -55,7 +55,7 @@ codeunit 135044 "IDA 1D Code39 Test"
         BarcodeEncodeSettings."Allow Extended Charset" := true;
         BarcodeEncodeSettings."Enable Checksum" := true;
 
-        GenericIDAutomation1DTest.EncodeFontSuccessTest(/* input */'A1234B', Enum::"Barcode Symbology"::Code39, BarcodeEncodeSettings, /* expected result */'(A1234BV) ');
+        GenericIDAutomation1DTest.EncodeFontSuccessTest(/* input */'>abcd<', Enum::"Barcode Symbology"::Code39, BarcodeEncodeSettings, /* expected result */'(%I+A+B+C+D%GR) ');
     end;
 
     [Test]
