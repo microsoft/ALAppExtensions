@@ -8,7 +8,6 @@
 /// </summary>
 enum 9204 "Barcode Symbology"
 {
-    Access = Public;
     Extensible = true;
 
     /// <summary>
