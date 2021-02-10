@@ -29,19 +29,19 @@ codeunit 135071 "Uri Builder Test"
         Uri: Codeunit Uri;
     begin
         // [Given] A URI with an http scheme
-        UriBuilder.Init('http://microsoft.com');
+        UriBuilder.Init('http://microsoft.com:80/');
 
         // [Then] The Scheme is in place
-        Assert.AreEqual('http', UriBuilder.GetScheme(), 'The scheme does not match');
+        Assert.AreEqual('http', UriBuilder.GetScheme(), 'GetScheme does not work as expected');
 
         // [When] Setting the scheme to https
         UriBuilder.SetScheme('https');
 
         // [Then] The URI is as expected
-        Assert.AreEqual('https', UriBuilder.GetScheme(), 'The scheme does not match');
+        Assert.AreEqual('https', UriBuilder.GetScheme(), 'GetScheme after SetScheme does not work as expected');
 
         UriBuilder.GetUri(Uri);
-        Assert.AreEqual('https://microsoft.com', Uri.GetAbsoluteUri(), 'The scheme does not match');
+        Assert.AreEqual('https://microsoft.com:80/', Uri.GetAbsoluteUri(), 'The scheme does not match');
     end;
 
     [Test]
@@ -105,14 +105,8 @@ codeunit 135071 "Uri Builder Test"
     procedure SetIncorrectPortTest()
     var
         Uri: Codeunit Uri;
-        CRLF: Text[2];
-        expectedErr: Text;
+        expectedErr: Label 'A call to System.UriBuilder.Port failed with this message: Specified argument was out of the range of valid values.\Parameter name: value', Locked = true;
     begin
-        // [Setup] Expected Error Message
-        CRLF[1] := 13; // Carriage return, '\r'
-        CRLF[2] := 10; // Line feed, '\n'
-        expectedErr := StrSubstNo('A call to System.UriBuilder.Port failed with this message: Specified argument was out of the range of valid values.%1Parameter name: value', CRLF);
-
         // [Given] A Url
         UriBuilder.Init('http://microsoft.com');
 
@@ -139,7 +133,7 @@ codeunit 135071 "Uri Builder Test"
         UriBuilder.Init('http://microsoft.com/segment2/segment3/?randomquery');
 
         // [Then] The path should be /segment2/segment3
-        Assert.AreEqual('/segment2/segment3', UriBuilder.GetPath(), 'GetPath does not work as expected');
+        Assert.AreEqual('/segment2/segment3/', UriBuilder.GetPath(), 'GetPath does not work as expected');
 
         // [When] Setting the path to /test
         UriBuilder.SetPath('/test.htm');
