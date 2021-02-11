@@ -18,16 +18,6 @@ codeunit 4020 "Hybrid BC Last Wizard"
         exit(CopyStr(Name, 1, 250));
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanRunDiagnostic', '', false, false)]
-    local procedure OnCanRunDiagnostic(var CanRun: Boolean)
-    var
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-    begin
-        if not (IntelligentCloudSetup.Get() and CanHandle(IntelligentCloudSetup."Product ID")) then
-            exit;
-
-        CanRun := true;
-    end;
 
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanShowMapUsers', '', false, false)]
     local procedure OnCanShowMapUsers(var Enabled: Boolean)
@@ -82,22 +72,6 @@ codeunit 4020 "Hybrid BC Last Wizard"
         ProductName := ProductName();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductType', '', false, false)]
-    local procedure OnGetHybridProductType(var HybridProductType: Record "Hybrid Product Type")
-    var
-        extensionInfo: ModuleInfo;
-        extensionId: Guid;
-    begin
-        NavApp.GetCurrentModuleInfo(extensionInfo);
-        extensionId := extensionInfo.Id();
-        if not HybridProductType.Get(ProductIdTxt) then begin
-            HybridProductType.Init();
-            HybridProductType."App ID" := extensionId;
-            HybridProductType."Display Name" := ProductName();
-            HybridProductType.ID := ProductId();
-            HybridProductType.Insert(true);
-        end;
-    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Companies IC", 'OnBeforeCreateCompany', '', false, false)]
     local procedure HandleOnBeforeCreateCompany(ProductId: Text; var CompanyDataType: Option "Evaluation Data","Standard Data","None","Extended Data","Full No Data")

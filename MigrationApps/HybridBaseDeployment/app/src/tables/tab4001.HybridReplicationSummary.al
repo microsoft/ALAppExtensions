@@ -2,6 +2,8 @@ table 4001 "Hybrid Replication Summary"
 {
     DataPerCompany = false;
     ReplicateData = false;
+    // Do not extend this table
+    // Extensible = false;
 
     fields
     {

@@ -1,6 +1,8 @@
 table 4063 "GPPOPSerialLotHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; POPRCTNM; text[18])

@@ -248,6 +248,39 @@ report 11736 "Posted Rcpt. Cash Document CZP"
                             CurrReport.Break();
                     end;
                 }
+                dataitem(EETEntryCZL; "EET Entry CZL")
+                {
+                    DataItemLink = "Entry No." = FIELD("EET Entry No.");
+                    DataItemLinkReference = PostedCashDocumentHdrCZP;
+                    DataItemTableView = SORTING("Entry No.");
+                    column(EntryNo_EETEntry; "Entry No.")
+                    {
+                    }
+                    column(ReceiptSerialNo_EETEntry; "Receipt Serial No.")
+                    {
+                    }
+                    column(CreatedAt_EETEntry; "Created At")
+                    {
+                    }
+                    column(CashRegisterCode_EETEntry; "Cash Register Code")
+                    {
+                    }
+                    column(BusinessPremissesId_EETEntry; GetBusinessPremisesId())
+                    {
+                    }
+                    column(SalesRegimeText_EETEntry; GetSalesRegimeText())
+                    {
+                    }
+                    column(SignatureCode_EETEntry; GetSignatureCode())
+                    {
+                    }
+                    column(SecurityCode_EETEntry; "Taxpayer's Security Code")
+                    {
+                    }
+                    column(FiscalIdentificationCode_EETEntry; "Fiscal Identification Code")
+                    {
+                    }
+                }
                 dataitem("User Setup"; "User Setup")
                 {
                     DataItemLink = "User ID" = field("Posted ID");
@@ -342,6 +375,13 @@ report 11736 "Posted Rcpt. Cash Document CZP"
         VATAmtLbl = 'VAT Amount';
         VATLbl = 'VAT';
         PostedLbl = 'Posted by';
+        BusinessPremisesLbl = 'Business Premises:';
+        CashRegisterLbl = 'Cash Register:';
+        ReceiptSerialNoLbl = 'Receipt Serial No.:';
+        IssueDatetimeLbl = 'Issue Datetime:';
+        BKPLbl = 'BKP:';
+        FIKLbl = 'FIK:';
+        PKPLbl = 'PKP:';
         CopyLbl = 'Copy';
     }
 

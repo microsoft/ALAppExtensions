@@ -3,7 +3,7 @@ codeunit 31131 "Sync.Dep.Fld-CashDeskEvent CZP"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '17.0';
+    ObsoleteTag = '18.0';
 
     [EventSubscriber(ObjectType::Table, Database::"Cash Desk Event", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenameCashDeskEvent(var Rec: Record "Cash Desk Event"; var xRec: Record "Cash Desk Event")
@@ -65,6 +65,7 @@ codeunit 31131 "Sync.Dep.Fld-CashDeskEvent CZP"
         CashDeskEventCZP."Gen. Posting Type" := Rec."Gen. Posting Type";
         CashDeskEventCZP."VAT Bus. Posting Group" := Rec."VAT Bus. Posting Group";
         CashDeskEventCZP."VAT Prod. Posting Group" := Rec."VAT Prod. Posting Group";
+        CashDeskEventCZP."EET Transaction" := Rec."EET Transaction";
         CashDeskEventCZP.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk Event CZP");
     end;
@@ -148,6 +149,7 @@ codeunit 31131 "Sync.Dep.Fld-CashDeskEvent CZP"
         CashDeskEvent."Gen. Posting Type" := Rec."Gen. Posting Type";
         CashDeskEvent."VAT Bus. Posting Group" := Rec."VAT Bus. Posting Group";
         CashDeskEvent."VAT Prod. Posting Group" := Rec."VAT Prod. Posting Group";
+        CashDeskEvent."EET Transaction" := Rec."EET Transaction";
         CashDeskEvent.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk Event");
     end;

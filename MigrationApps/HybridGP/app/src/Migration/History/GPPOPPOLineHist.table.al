@@ -1,6 +1,8 @@
 table 4058 "GPPOPPOLineHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; PONUMBER; text[18])

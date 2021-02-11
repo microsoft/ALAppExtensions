@@ -2,6 +2,7 @@ table 4007 "User Mapping Source"
 {
     DataPerCompany = false;
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

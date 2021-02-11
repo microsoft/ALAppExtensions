@@ -1,6 +1,8 @@
 table 4078 "GPSOPTrxHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; SOPTYPE; Option)

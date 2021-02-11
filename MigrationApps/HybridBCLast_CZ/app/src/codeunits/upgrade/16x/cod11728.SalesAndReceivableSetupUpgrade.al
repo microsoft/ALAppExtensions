@@ -1,5 +1,9 @@
 codeunit 11728 "UPG Sales and Rec Setup CZ"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '17.0';
+
     trigger OnRun()
     begin
     end;

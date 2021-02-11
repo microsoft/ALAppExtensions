@@ -2,6 +2,7 @@ table 4048 "GP Customer Address"
 {
     Permissions = tabledata "Ship-to Address" = rim;
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

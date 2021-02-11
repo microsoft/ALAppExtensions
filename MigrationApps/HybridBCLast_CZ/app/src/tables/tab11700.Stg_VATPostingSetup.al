@@ -1,6 +1,7 @@
 table 11700 "Stg VAT Posting Setup"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

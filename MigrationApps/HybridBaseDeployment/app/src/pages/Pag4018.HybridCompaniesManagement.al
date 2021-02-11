@@ -146,7 +146,7 @@ page 4018 "Hybrid Companies Management"
 
     local procedure VerifyCompanySelection(): Boolean
     var
-        DatabaseSizeTooLargeDialog: Page "Database Size Too Large Dialog";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
         Reset();
         Rec.SetRange(Replicate, true);
@@ -154,11 +154,10 @@ page 4018 "Hybrid Companies Management"
         if not Rec.FindSet() then
             Error(NoCompaniesSelectedErr);
 
-        if Rec.GetTotalMigrationSize() > 30 then
-            if DatabaseSizeTooLargeDialog.RunModal() = Action::No then begin
-                Rec.Reset();
-                exit;
-            end;
+        if not HybridCloudManagement.CheckMigratedDataSize(Rec) then begin
+            Rec.Reset();
+            exit(false);
+        end;
 
         Rec.Reset();
         exit(true);

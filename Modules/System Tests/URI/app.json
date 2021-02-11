@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the URI module",
     "description":  "Tests for the URI module.",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,19 +15,19 @@
                              "id":  "1b2efb4b-8c44-4d74-a56f-60646645bb21",
                              "name":  "URI",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
                              "name":  "Any",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "screenshots":  [

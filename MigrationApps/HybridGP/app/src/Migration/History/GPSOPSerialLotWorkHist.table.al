@@ -1,6 +1,8 @@
 table 4074 "GPSOPSerialLotWorkHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; SOPTYPE; Option)

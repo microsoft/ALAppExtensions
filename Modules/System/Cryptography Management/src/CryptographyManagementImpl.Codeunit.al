@@ -348,99 +348,117 @@ codeunit 1279 "Cryptography Management Impl."
         exit(ConvertByteHashToString(HashBytes));
     end;
 
+    procedure SignData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    var
+        TempBlob: Codeunit "Temp Blob";
+        DataOutStream: OutStream;
+        DataInStream: InStream;
+    begin
+        if InputString = '' then
+            exit;
+        TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
+        DataOutStream.WriteText(InputString);
+        SignData(DataInStream, SignatureKey, HashAlgorithm, SignatureOutStream);
+    end;
+
+#if not CLEAN18
     procedure SignData(InputString: Text; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
     var
-        Encoding: DotNet Encoding;
+        TempBlob: Codeunit "Temp Blob";
+        DataOutStream: OutStream;
+        DataInStream: InStream;
     begin
         if InputString = '' then
             exit;
-        SignData(Encoding.UTF8().GetBytes(InputString), KeyStream, HashAlgorithmType, SignatureStream);
+        TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
+        DataOutStream.WriteText(InputString);
+        SignData(DataInStream, KeyStream, HashAlgorithmType, SignatureStream);
+    end;
+#endif
+
+    procedure SignData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    var
+        ISignatureAlgorithm: Interface SignatureAlgorithm;
+    begin
+        if DataInStream.EOS() then
+            exit;
+        ISignatureAlgorithm := SignatureKey."Signature Algorithm";
+        if SignatureKey."Key Value Type" = SignatureKey."Key Value Type"::XmlString then
+            ISignatureAlgorithm.FromXmlString(SignatureKey.ToXmlString());
+        ISignatureAlgorithm.SignData(DataInStream, HashAlgorithm, SignatureOutStream);
     end;
 
+#if not CLEAN18
     procedure SignData(DataStream: InStream; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
     var
-        MemoryStream: DotNet MemoryStream;
+        SignatureKey: Record "Signature Key";
     begin
         if DataStream.EOS() then
             exit;
-        MemoryStream := MemoryStream.MemoryStream();
-        CopyStream(MemoryStream, DataStream);
-        SignData(MemoryStream.ToArray(), KeyStream, HashAlgorithmType, SignatureStream);
+        SignatureKey."Signature Algorithm" := SignatureKey."Signature Algorithm"::RSA;
+        SignatureKey."Key Value Type" := SignatureKey."Key Value Type"::XmlString;
+        SignatureKey.WriteKeyValue(KeyStream);
+        SignData(DataStream, SignatureKey, "Hash Algorithm".FromInteger(HashAlgorithmType), SignatureStream);
     end;
+#endif
 
-    local procedure SignData(Bytes: DotNet Array; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream): Boolean
+    procedure VerifyData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
     var
-        MemoryStream: DotNet MemoryStream;
-        Signature: DotNet Array;
-    begin
-        if Bytes.Length() = 0 then
-            exit(false);
-        if not TrySignData(Bytes, KeyStream, Format(HashAlgorithmType), Signature) then
-            Error(GetLastErrorText());
-        MemoryStream := MemoryStream.MemoryStream(Signature);
-        MemoryStream.WriteTo(SignatureStream);
-        MemoryStream.Close();
-        exit(true);
-    end;
-
-    [TryFunction]
-    local procedure TrySignData(Bytes: DotNet Array; KeyStream: InStream; Algorithm: Text; var Signature: DotNet Array)
-    var
-        RSACryptoServiceProvider: DotNet RSACryptoServiceProvider;
-        StreamReader: DotNet StreamReader;
-    begin
-        StreamReader := StreamReader.StreamReader(KeyStream);
-        RSACryptoServiceProvider := RSACryptoServiceProvider.RSACryptoServiceProvider();
-        RSACryptoServiceProvider.FromXmlString(StreamReader.ReadToEnd());
-        Signature := RSACryptoServiceProvider.SignData(Bytes, Algorithm);
-        RSACryptoServiceProvider.Dispose();
-    end;
-
-    procedure VerifyData(InputString: Text; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
-    var
-        Encoding: DotNet Encoding;
+        TempBlob: Codeunit "Temp Blob";
+        DataOutStream: OutStream;
+        DataInStream: InStream;
     begin
         if InputString = '' then
             exit(false);
-        exit(VerifyData(Encoding.UTF8().GetBytes(InputString), "Key", HashAlgorithmType, SignatureStream));
+        TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
+        DataOutStream.WriteText(InputString);
+        exit(VerifyData(DataInStream, SignatureKey, HashAlgorithm, SignatureInStream));
     end;
 
+#if not CLEAN18
+    procedure VerifyData(InputString: Text; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+    var
+        TempBlob: Codeunit "Temp Blob";
+        DataOutStream: OutStream;
+        DataInStream: InStream;
+    begin
+        if InputString = '' then
+            exit(false);
+        TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
+        DataOutStream.WriteText(InputString);
+        exit(VerifyData(DataInStream, "Key", HashAlgorithmType, SignatureStream));
+    end;
+#endif
+
+    procedure VerifyData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+    var
+        ISignatureAlgorithm: Interface SignatureAlgorithm;
+    begin
+        if DataInStream.EOS() then
+            exit(false);
+        ISignatureAlgorithm := SignatureKey."Signature Algorithm";
+        if SignatureKey."Key Value Type" = SignatureKey."Key Value Type"::XmlString then
+            ISignatureAlgorithm.FromXmlString(SignatureKey.ToXmlString());
+        exit(ISignatureAlgorithm.VerifyData(DataInStream, HashAlgorithm, SignatureInStream));
+    end;
+
+#if not CLEAN18
     procedure VerifyData(DataStream: InStream; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
     var
-        MemoryStream: DotNet MemoryStream;
+        SignatureKey: Record "Signature Key";
     begin
         if DataStream.EOS() then
             exit(false);
-        MemoryStream := MemoryStream.MemoryStream();
-        CopyStream(MemoryStream, DataStream);
-        exit(VerifyData(MemoryStream.ToArray(), "Key", HashAlgorithmType, SignatureStream));
+        SignatureKey."Signature Algorithm" := SignatureKey."Signature Algorithm"::RSA;
+        SignatureKey."Key Value Type" := SignatureKey."Key Value Type"::XmlString;
+        SignatureKey.FromXmlString("Key");
+        exit(VerifyData(DataStream, SignatureKey, "Hash Algorithm".FromInteger(HashAlgorithmType), SignatureStream));
     end;
-
-    local procedure VerifyData(Bytes: DotNet Array; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
-    var
-        MemoryStream: DotNet MemoryStream;
-        Verified: Boolean;
-    begin
-        if Bytes.Length() = 0 then
-            exit(false);
-        MemoryStream := MemoryStream.MemoryStream();
-        CopyStream(MemoryStream, SignatureStream);
-        Verified := TryVerifyData(Bytes, "Key", Format(HashAlgorithmType), MemoryStream.ToArray());
-        if not Verified and (GetLastErrorText() <> '') then
-            Error(GetLastErrorText());
-        exit(Verified);
-    end;
-
-    [TryFunction]
-    local procedure TryVerifyData(Bytes: DotNet Array; "Key": Text; Algorithm: Text; Signature: DotNet Array)
-    var
-        RSACryptoServiceProvider: DotNet RSACryptoServiceProvider;
-    begin
-        RSACryptoServiceProvider := RSACryptoServiceProvider.RSACryptoServiceProvider();
-        RSACryptoServiceProvider.FromXmlString("Key");
-        if not RSACryptoServiceProvider.VerifyData(Bytes, Algorithm, Signature) then
-            Error('');
-    end;
+#endif
 
     procedure InitRijndaelProvider()
     begin
@@ -579,9 +597,9 @@ codeunit 1279 "Cryptography Management Impl."
         DecMemoryStream := DecMemoryStream.MemoryStream(Convert.FromBase64String(EncryptedText));
         DecCryptoStream := DecCryptoStream.CryptoStream(DecMemoryStream, Decryptor, CryptoStreamMode.Read);
         DecStreamReader := DecStreamReader.StreamReader(DecCryptoStream);
-        #pragma warning disable AA0205
+#pragma warning disable AA0205
         PlainText := DelChr(DecStreamReader.ReadToEnd(), '>', NullChar);
-        #pragma warning restore
+#pragma warning restore
         DecStreamReader.Close();
         DecCryptoStream.Close();
         DecMemoryStream.Close();

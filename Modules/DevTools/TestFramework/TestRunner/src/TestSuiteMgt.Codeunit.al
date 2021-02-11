@@ -17,8 +17,8 @@ codeunit 130456 "Test Suite Mgt."
         SelectTestsToRunQst: Label '&All,Active &Codeunit,Active &Line', Locked = true;
         SelectCodeunitsToRunQst: Label '&All,Active &Codeunit', Locked = true;
         DefaultTestSuiteNameTxt: Label 'DEFAULT', Locked = true;
-        DialogContentGettingTestMethods: Label '-- Getting Test Methods --\#1#\#2#';
-        DialogContentUpdatingTestMethods: Label '-- Updating Test Methods --\#1#\#2#';
+        DialogGettingTestsMsg: Label 'Getting Tests: \#1#\#2#', Comment = '1 = Object being processed, 2 = Progress';
+        DialogUpdatingTestsMsg: Label 'Updating Tests: \#1#\#2#', Comment = '1 = Object being processed, 2 = Progress';
 
     procedure RunTestSuiteSelection(var TestMethodLine: Record "Test Method Line")
     var
@@ -262,14 +262,14 @@ codeunit 130456 "Test Suite Mgt."
         if GuiAllowed() then begin
             Counter := 0;
             TotalCount := AllObjWithCaption.Count();
-            Window.Open(DialogContentGettingTestMethods);
+            Window.Open(DialogGettingTestsMsg);
         end;
 
         repeat
             if GuiAllowed() then begin
                 Counter += 1;
-                Window.Update(1, format(AllObjWithCaption."Object Type") + '-' + format(AllObjWithCaption."Object ID") + ' - ' + AllObjWithCaption."Object Caption");
-                Window.Update(2, format(Counter) + ' / ' + format(TotalCount) + ' ... ' + format(round(Counter / TotalCount * 100, 1)) + ' %');
+                Window.Update(1, format(AllObjWithCaption."Object Type") + ' ' + format(AllObjWithCaption."Object ID") + ' - ' + AllObjWithCaption."Object Caption");
+                Window.Update(2, format(Counter) + '/' + format(TotalCount) + ' (' + format(round(Counter / TotalCount * 100, 1)) + '%)');
             end;
 
             // Must be inside of loop. Test Runner used for discovering tests is adding methods
@@ -299,15 +299,15 @@ codeunit 130456 "Test Suite Mgt."
         if GuiAllowed() then begin
             Counter := 0;
             TotalCount := TestMethodLine.Count();
-            Window.Open(DialogContentUpdatingTestMethods);
+            Window.Open(DialogUpdatingTestsMsg);
         end;
 
         if TestMethodLine.FindSet() then
             repeat
                 if GuiAllowed() then begin
                     Counter += 1;
-                    Window.Update(1, format(TestMethodLine."Line Type") + '-' + format(TestMethodLine."Test Codeunit") + ' - ' + TestMethodLine.Name);
-                    Window.Update(2, format(Counter) + ' / ' + format(TotalCount) + ' ... ' + format(round(Counter / TotalCount * 100, 1)) + ' %');
+                    Window.Update(1, format(TestMethodLine."Line Type") + ' ' + format(TestMethodLine."Test Codeunit") + ' - ' + TestMethodLine.Name);
+                    Window.Update(2, format(Counter) + '/' + format(TotalCount) + ' (' + format(round(Counter / TotalCount * 100, 1)) + '%)');
                 end;
 
                 TestRunnerGetMethods.SetUpdateTests(true);

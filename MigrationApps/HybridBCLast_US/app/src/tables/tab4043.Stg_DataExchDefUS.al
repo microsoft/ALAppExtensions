@@ -1,6 +1,7 @@
 table 4043 "Stg Data Exch Def US"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

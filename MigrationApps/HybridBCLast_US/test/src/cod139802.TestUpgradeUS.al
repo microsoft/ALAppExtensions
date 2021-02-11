@@ -46,10 +46,21 @@ codeunit 139802 "Test Upgrade US"
         // [SCENARIO] US data migration (14x -> 15x) skips upgrade code for 1099 records if it has already happened.
         // [GIVEN] 1099 records have already been updated.
         IRS1099FormBox.DeleteAll();
-        IRS1099FormBox.Init();
         IRS1099FormBox.Code := 'DIV-07';
         IRS1099FormBox.Description := 'Section 1337 Gains';
         IRS1099FormBox."Minimum Reportable" := 1000;
+        IRS1099FormBox.Insert();
+
+        CLEAR(IRS1099FormBox);
+        IRS1099FormBox.Code := 'NEC-01';
+        IRS1099FormBox.Description := 'Payer made direct sales of $5000 or more of consumer products';
+        IRS1099FormBox."Minimum Reportable" := 5000;
+        IRS1099FormBox.Insert();
+
+        CLEAR(IRS1099FormBox);
+        IRS1099FormBox.Code := 'NEC-04';
+        IRS1099FormBox.Description := 'Federal income tax withheld';
+        IRS1099FormBox."Minimum Reportable" := 0;
         IRS1099FormBox.Insert();
 
         // [WHEN] The upgrade trigger is called
@@ -57,8 +68,10 @@ codeunit 139802 "Test Upgrade US"
         W1CompanyHandler.OnUpgradePerCompanyDataForVersion(HybridReplicationSummary, CountryCodeTxt, 15.0);
 
         // [THEN] The 1099 records are unchanged
-        Assert.AreEqual(1, IRS1099FormBox.Count(), 'Unexpected count of records.');
+        Assert.AreEqual(3, IRS1099FormBox.Count(), 'Unexpected count of records.');
         IRS1099FormBox.Get('DIV-07');
+        IRS1099FormBox.Get('NEC-01');
+        IRS1099FormBox.Get('NEC-04');
     end;
 
     // [Test]

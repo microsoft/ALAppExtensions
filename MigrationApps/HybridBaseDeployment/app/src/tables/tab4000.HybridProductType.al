@@ -2,6 +2,7 @@ table 4000 "Hybrid Product Type"
 {
     DataPerCompany = false;
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

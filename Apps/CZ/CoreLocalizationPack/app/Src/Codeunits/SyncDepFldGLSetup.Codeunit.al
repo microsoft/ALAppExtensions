@@ -51,7 +51,7 @@ codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
     begin
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"General Ledger Setup", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"General Ledger Setup") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statutory Reporting Setup CZL");
         StatutoryReportingSetupCZL.ChangeCompany(Rec.CurrentCompany);
@@ -61,6 +61,6 @@ codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
         end;
         StatutoryReportingSetupCZL."Company Official Nos." := Rec."Company Officials Nos.";
         StatutoryReportingSetupCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statutory Reporting Setup CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statutory Reporting Setup CZL");
     end;
 }

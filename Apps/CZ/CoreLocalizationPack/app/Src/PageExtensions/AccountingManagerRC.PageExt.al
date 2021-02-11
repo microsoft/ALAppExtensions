@@ -2,6 +2,25 @@ pageextension 11796 "Accounting Manager RC CZL" extends "Accounting Manager Role
 {
     actions
     {
+        addafter("&Closing Trial Balance")
+        {
+            action("Balance Sheet CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Balance Sheet';
+                Image = PrintReport;
+                RunObject = Report "Balance Sheet CZL";
+                ToolTip = 'Open the report for balance sheet.';
+            }
+            action("Income Statement CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Income Statement';
+                Image = PrintReport;
+                RunObject = Report "Income Statement CZL";
+                ToolTip = 'Open the report for income statement.';
+            }
+        }
         addafter("VAT E&xceptions")
         {
             action("VAT &Statement CZL")
@@ -12,6 +31,7 @@ pageextension 11796 "Accounting Manager RC CZL" extends "Accounting Manager Role
                 RunObject = Report "VAT Statement CZL";
                 ToolTip = 'View a statement of posted VAT and calculate the duty liable to the customs authorities for the selected period.';
             }
+
         }
         addafter("Intrastat &Journal")
         {

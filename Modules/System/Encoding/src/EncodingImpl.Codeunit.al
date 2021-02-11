@@ -3,23 +3,23 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 1486 "Encoding Impl."
+codeunit 1487 "Encoding Impl."
 {
     Access = Internal;
 
-    procedure Convert(SrcCodepage: Integer; DstCodepage: Integer; Text: Text) ConvertedText: Text
+    procedure Convert(SourceCodepage: Integer; DestinationCodepage: Integer; Text: Text) ConvertedText: Text
     var
         Encoding: DotNet Encoding;
-        SrcEncoding: DotNet Encoding;
-        DstEncoding: DotNet Encoding;
-        SrcBytes: DotNet Array;
-        DstBytes: DotNet Array;
+        SourceEncoding: DotNet Encoding;
+        DestinationEncoding: DotNet Encoding;
+        SourceBytes: DotNet Array;
+        DestinationBytes: DotNet Array;
     begin
-        SrcEncoding := Encoding.GetEncoding(SrcCodepage);
-        DstEncoding := Encoding.GetEncoding(DstCodepage);
+        SourceEncoding := Encoding.GetEncoding(SourceCodepage);
+        DestinationEncoding := Encoding.GetEncoding(DestinationCodepage);
 
-        SrcBytes := SrcEncoding.GetBytes(Text);
-        DstBytes := Encoding.Convert(SrcEncoding, DstEncoding, SrcBytes);
-        ConvertedText := DstEncoding.GetString(DstBytes);
+        SourceBytes := SourceEncoding.GetBytes(Text);
+        DestinationBytes := Encoding.Convert(SourceEncoding, DestinationEncoding, SourceBytes);
+        ConvertedText := DestinationEncoding.GetString(DestinationBytes);
     end;
 }

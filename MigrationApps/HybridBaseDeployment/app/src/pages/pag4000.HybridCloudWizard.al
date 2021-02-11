@@ -127,10 +127,20 @@
                                 HybridProduct.SetTableView(TempHybridProductType);
                                 HybridProduct.SetRecord(TempHybridProductType);
                                 HybridProduct.LookupMode(true);
-                                HybridProduct.RunModal();
-                                HybridProduct.GetRecord(TempHybridProductType);
+                                if HybridProduct.RunModal() in [Action::LookupOK, Action::OK, Action::Yes] then begin
+                                    HybridProduct.GetRecord(TempHybridProductType);
+                                    if TempHybridProductType.ID = '' then begin
+                                        Session.LogMessage('SmbMig-005', StrSubstNo(BlankProductFoundTxt, Format(TempHybridProductType)), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', 'CloudMigration');
+                                        Error(BlankProductIdErr);
+                                    end;
+                                end
+                                else
+                                    exit;
 
-                                "Product ID" := TempHybridProductType.ID;
+
+                                Rec."Product ID" := TempHybridProductType.ID;
+
+                                Rec.Modify();
                                 NextEnabled := true;
                             end;
                         }
@@ -474,7 +484,7 @@
                 trigger OnAction()
                 var
                     HybridCompany: Record "Hybrid Company";
-                    DatabaseSizeTooLargeDialog: Page "Database Size Too Large Dialog";
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                 begin
                     if (Step = Step::Intro) and (not IsSaas) then begin
                         NavigateToBusinessCentral();
@@ -495,9 +505,10 @@
                         if not HybridCompany.FindSet() then
                             Error(NoCompaniesSelectedErr);
 
-                        if HybridCompany.GetTotalMigrationSize() > 30 then
-                            if DatabaseSizeTooLargeDialog.RunModal() = Action::No then
-                                exit;
+                        if not HybridCloudManagement.CheckMigratedDataSize(HybridCompany) then begin
+                            HybridCompany.Reset();
+                            exit;
+                        end;
 
                         HybridCompany.SetRange(Name, CompanyName());
 
@@ -637,8 +648,9 @@
         NotificationIdTxt: Label 'ce917438-506c-4724-9b01-13c1b860e851', Locked = true;
         RunWizardPermissionErr: Label 'You do not have permissions to execute this task. Contact your system administrator.';
         CannotEnableReplicationForCompanyErr: Label 'The current company may not be enabled for replication.';
-
         OpenCloudMigrationPageQst: Label 'The migration has now been set up.\\ Would you like to open the Cloud Migration Management page to manage your data migrations?';
+        BlankProductIdErr: Label 'The ID of the specified product is blank. If you see this message again, contact technical support.';
+        BlankProductFoundTxt: Label 'Blank product ID found for %1.', Locked = true, Comment = '%1 - Record that was selected';
 
     local procedure NextStep(Backwards: Boolean)
     var

@@ -2,6 +2,8 @@ table 4003 "Intelligent Cloud Setup"
 {
     DataPerCompany = false;
     ReplicateData = false;
+    // Do not extend this table
+    // Extensible = false;
 
     fields
     {

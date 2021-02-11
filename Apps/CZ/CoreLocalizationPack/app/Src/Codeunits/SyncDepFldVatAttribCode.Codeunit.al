@@ -58,7 +58,7 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
         VATAttributeCodeCZL.Description := Rec.Description;
         VATAttributeCodeCZL."XML Code" := Rec."XML Code";
         VATAttributeCodeCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Attribute Code", 'OnBeforeDeleteEvent', '', false, false)]
@@ -77,7 +77,7 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
         VATAttributeCodeCZL.ChangeCompany(Rec.CurrentCompany);
         if VATAttributeCodeCZL.Get(Rec."VAT Statement Template Name", Rec."Code") then
             VATAttributeCodeCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Attribute Code CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -120,7 +120,7 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
             exit;
         if Rec.IsTemporary then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Attribute Code CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Attribute Code");
         VATAttributeCode.ChangeCompany(Rec.CurrentCompany);
@@ -133,7 +133,7 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
         VATAttributeCode.Description := CopyStr(Rec.Description, 1, MaxStrLen(VATAttributeCode.Description));
         VATAttributeCode."XML Code" := Rec."XML Code";
         VATAttributeCode.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Attribute Code CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -152,7 +152,7 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
         VATAttributeCode.ChangeCompany(Rec.CurrentCompany);
         if VATAttributeCode.Get(Rec."VAT Statement Template Name", Rec."Code") then
             VATAttributeCode.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Attribute Code");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

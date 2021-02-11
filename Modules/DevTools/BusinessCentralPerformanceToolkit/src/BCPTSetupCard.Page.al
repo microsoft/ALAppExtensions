@@ -15,7 +15,7 @@ page 149001 "BCPT Setup Card"
         {
             group(General)
             {
-                Enabled = Status <> Status::Running;
+                Enabled = Rec.Status <> Rec.Status::Running;
 
                 field("Code"; Rec."Code")
                 {
@@ -92,7 +92,7 @@ page 149001 "BCPT Setup Card"
             part(BCPTLines; "BCPT Lines")
             {
                 ApplicationArea = All;
-                Enabled = Status <> Status::Running;
+                Enabled = Rec.Status <> Rec.Status::Running;
                 SubPageLink = "BCPT Code" = FIELD("Code"), "Version Filter" = field(Version), "Base Version Filter" = field("Base Version");
             }
 
@@ -104,7 +104,7 @@ page 149001 "BCPT Setup Card"
         {
             action(Start)
             {
-                Enabled = (EnableActions and (Status <> Status::Running));
+                Enabled = (EnableActions and (Rec.Status <> Rec.Status::Running));
                 ApplicationArea = All;
                 Caption = 'Start';
                 Image = Start;
@@ -202,7 +202,7 @@ page 149001 "BCPT Setup Card"
             }
             action(ResetStatus)
             {
-                Enabled = Status = Status::Running;
+                Enabled = Rec.Status = Rec.Status::Running;
                 ApplicationArea = All;
                 Caption = 'Reset Status';
                 ToolTip = 'Reset the status.';

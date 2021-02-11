@@ -42,9 +42,11 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         ServInvHeader2: Record "Service Invoice Header";
         RecordExportBuffer: Record "Record Export Buffer";
         ElectronicDocumentFormat: Record "Electronic Document Format";
+#if not CLEAN17
         RBMgt: Codeunit "File Management";
-        OIOUBLManagement: Codeunit "OIOUBL-Management";
         EnvironmentInfo: Codeunit "Environment Information";
+#endif
+        OIOUBLManagement: Codeunit "OIOUBL-Management";
         FromFile: Text[1024];
         DocumentType: Option "Quote","Order","Invoice","Credit Memo";
     begin
@@ -52,8 +54,10 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
 
         ServiceMgtSetup.Get();
 
+#if not CLEAN17
         if RBMgt.IsLocalFileSystemAccessible() and not EnvironmentInfo.IsSaaS() then
             ServiceMgtSetup.OIOUBLVerifyAndSetPath(DocumentType::Invoice);
+#endif
 
         OIOUBLManagement.UpdateRecordExportBuffer(
             ServiceInvoiceHeader.RecordId(),
@@ -209,6 +213,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         TotalTaxAmount: Decimal;
         OutputFile: File;
         FileOutstream: Outstream;
+        IsHandled: Boolean;
     begin
         CODEUNIT.RUN(CODEUNIT::"OIOUBL-Check Service Invoice", ServiceInvoiceHeader);
         ReadGLSetup();
@@ -296,7 +301,10 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
             OIOUBLXMLGenerator.InsertDelivery(XMLCurrNode, DeliveryAddress, CalcDate('<0D>'));
 
             // Invoice->PaymentMeans
-            OIOUBLXMLGenerator.InsertPaymentMeans(XMLCurrNode, "Due Date");
+            IsHandled := false;
+            OnCreateXMLOnBeforeInsertPaymentMeans(XMLCurrNode, ServiceInvoiceHeader, IsHandled);
+            if not IsHandled then
+                OIOUBLXMLGenerator.InsertPaymentMeans(XMLCurrNode, "Due Date");
 
             // Invoice->PaymentTerms
             ServInvLine2.RESET();
@@ -422,6 +430,11 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(var XMLdocOut: XmlDocument; ServiceInvoiceHeader: Record "Service Invoice Header"; DocNameSpace: Text[250]; DocNameSpace2: Text[250])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnBeforeInsertPaymentMeans(var XMLCurrNode: XmlElement; ServiceInvoiceHeader: Record "Service Invoice Header"; var IsHandled: boolean)
     begin
     end;
 }

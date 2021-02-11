@@ -24,7 +24,7 @@
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>4.05513in</Height>
+                  <Height>5.10701in</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -2237,6 +2237,589 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                 </Border>
                               </Style>
                             </Tablix>
+                            <Tablix Name="Tablix2">
+                              <TablixBody>
+                                <TablixColumns>
+                                  <TablixColumn>
+                                    <Width>3.46016cm</Width>
+                                  </TablixColumn>
+                                  <TablixColumn>
+                                    <Width>3.03984cm</Width>
+                                  </TablixColumn>
+                                  <TablixColumn>
+                                    <Width>1.53984cm</Width>
+                                  </TablixColumn>
+                                  <TablixColumn>
+                                    <Width>3.96015cm</Width>
+                                  </TablixColumn>
+                                  <TablixColumn>
+                                    <Width>3.00002cm</Width>
+                                  </TablixColumn>
+                                </TablixColumns>
+                                <TablixRows>
+                                  <TablixRow>
+                                    <Height>0.45cm</Height>
+                                    <TablixCells>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox2">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Parameters!BusinessPremisesLbl.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox2</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox4">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Fields!BusinessPremissesId_EETEntry.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox4</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox7">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value />
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox7</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox23">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Parameters!ReceiptSerialNoLbl.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox23</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox32">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Fields!ReceiptSerialNo_EETEntry.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox32</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                    </TablixCells>
+                                  </TablixRow>
+                                  <TablixRow>
+                                    <Height>0.45cm</Height>
+                                    <TablixCells>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox8">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Parameters!CashRegisterLbl.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox8</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox10">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Fields!CashRegisterCode_EETEntry.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox10</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox15">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value />
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox15</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox24">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Parameters!IssueDatetimeLbl.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox24</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox27">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Fields!CreatedAt_EETEntry.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                      <Format>d.M.yyyy HH:mm:ss</Format>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox27</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                    </TablixCells>
+                                  </TablixRow>
+                                  <TablixRow>
+                                    <Height>0.45cm</Height>
+                                    <TablixCells>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox17">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Parameters!BKPLbl.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox17</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox18">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Fields!SecurityCode_EETEntry.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox18</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                          <ColSpan>4</ColSpan>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell />
+                                      <TablixCell />
+                                      <TablixCell />
+                                    </TablixCells>
+                                  </TablixRow>
+                                  <TablixRow>
+                                    <Height>0.45cm</Height>
+                                    <TablixCells>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox20">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=IIf(Fields!FiscalIdentificationCode_EETEntry.Value &gt; "",Parameters!FIKLbl.Value,Parameters!PKPLbl.Value)</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox20</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox21">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=IIf(Fields!FiscalIdentificationCode_EETEntry.Value &gt; "",Fields!FiscalIdentificationCode_EETEntry.Value,Fields!SignatureCode_EETEntry.Value)</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox21</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                          <ColSpan>4</ColSpan>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell />
+                                      <TablixCell />
+                                      <TablixCell />
+                                    </TablixCells>
+                                  </TablixRow>
+                                  <TablixRow>
+                                    <Height>0.45cm</Height>
+                                    <TablixCells>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox34">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Fields!SalesRegimeText_EETEntry.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox34</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                          <ColSpan>5</ColSpan>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell />
+                                      <TablixCell />
+                                      <TablixCell />
+                                      <TablixCell />
+                                    </TablixCells>
+                                  </TablixRow>
+                                </TablixRows>
+                              </TablixBody>
+                              <TablixColumnHierarchy>
+                                <TablixMembers>
+                                  <TablixMember />
+                                  <TablixMember />
+                                  <TablixMember />
+                                  <TablixMember />
+                                  <TablixMember />
+                                </TablixMembers>
+                              </TablixColumnHierarchy>
+                              <TablixRowHierarchy>
+                                <TablixMembers>
+                                  <TablixMember>
+                                    <Group Name="Details3" />
+                                    <TablixMembers>
+                                      <TablixMember />
+                                      <TablixMember />
+                                      <TablixMember />
+                                      <TablixMember />
+                                      <TablixMember />
+                                    </TablixMembers>
+                                  </TablixMember>
+                                </TablixMembers>
+                              </TablixRowHierarchy>
+                              <Filters>
+                                <Filter>
+                                  <FilterExpression>=Fields!EntryNo_EETEntry.Value</FilterExpression>
+                                  <Operator>GreaterThan</Operator>
+                                  <FilterValues>
+                                    <FilterValue DataType="Integer">0</FilterValue>
+                                  </FilterValues>
+                                </Filter>
+                              </Filters>
+                              <Top>10.6cm</Top>
+                              <Height>2.25cm</Height>
+                              <Width>15.00001cm</Width>
+                              <ZIndex>4</ZIndex>
+                              <Visibility>
+                                <Hidden>=First(Fields!EntryNo_EETEntry.Value) Is Nothing</Hidden>
+                              </Visibility>
+                              <Style>
+                                <Border>
+                                  <Style>None</Style>
+                                </Border>
+                              </Style>
+                            </Tablix>
                             <Tablix Name="VatAmounts">
                               <TablixBody>
                                 <TablixColumns>
@@ -3024,7 +3607,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                               <Top>207.01866pt</Top>
                               <Height>0.70868in</Height>
                               <Width>5.70865in</Width>
-                              <ZIndex>4</ZIndex>
+                              <ZIndex>5</ZIndex>
                               <Visibility>
                                 <Hidden>=First(Fields!VATAmtLineVATIdentifier.Value) Is Nothing</Hidden>
                               </Visibility>
@@ -3079,7 +3662,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
               </Filter>
             </Filters>
             <Left>0.00001cm</Left>
-            <Height>4.05513in</Height>
+            <Height>5.10701in</Height>
             <Width>17.99999cm</Width>
             <Style>
               <Border>
@@ -3088,7 +3671,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>10.30002cm</Height>
+        <Height>12.97181cm</Height>
         <Style />
       </Body>
       <Width>18cm</Width>
@@ -3417,6 +4000,69 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
       </DefaultValue>
       <Prompt>PostedLbl</Prompt>
     </ReportParameter>
+    <ReportParameter Name="BusinessPremisesLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>BusinessPremisesLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>BusinessPremisesLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="CashRegisterLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>CashRegisterLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>CashRegisterLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="ReceiptSerialNoLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>ReceiptSerialNoLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>ReceiptSerialNoLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="IssueDatetimeLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>IssueDatetimeLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>IssueDatetimeLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="BKPLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>BKPLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>BKPLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="FIKLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>FIKLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>FIKLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="PKPLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>PKPLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>PKPLbl</Prompt>
+    </ReportParameter>
     <ReportParameter Name="CopyLbl">
       <DataType>String</DataType>
       <DefaultValue>
@@ -3583,7 +4229,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>1</NumberOfColumns>
-      <NumberOfRows>28</NumberOfRows>
+      <NumberOfRows>35</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
@@ -3638,91 +4284,126 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>10</RowIndex>
-          <ParameterName>CopyLbl</ParameterName>
+          <ParameterName>BusinessPremisesLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>11</RowIndex>
-          <ParameterName>PostingDate_PostedCashDocumentHeaderCaption</ParameterName>
+          <ParameterName>CashRegisterLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>12</RowIndex>
-          <ParameterName>PaymentPurpose_PostedCashDocumentHeaderCaption</ParameterName>
+          <ParameterName>ReceiptSerialNoLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>13</RowIndex>
-          <ParameterName>RegistrationNo_PostedCashDocumentHeaderCaption</ParameterName>
+          <ParameterName>IssueDatetimeLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>14</RowIndex>
-          <ParameterName>VATRegistrationNo_PostedCashDocumentHeaderCaption</ParameterName>
+          <ParameterName>BKPLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>15</RowIndex>
-          <ParameterName>ReceivedFrom_PostedCashDocumentHeaderCaption</ParameterName>
+          <ParameterName>FIKLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>16</RowIndex>
-          <ParameterName>IdentificationCardNo_PostedCashDocumentHeaderCaption</ParameterName>
+          <ParameterName>PKPLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>17</RowIndex>
-          <ParameterName>ReceivedBy_PostedCashDocumentHeaderCaption</ParameterName>
+          <ParameterName>CopyLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>18</RowIndex>
-          <ParameterName>Description_PostedCashDocumentLineCaption</ParameterName>
+          <ParameterName>PostingDate_PostedCashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>19</RowIndex>
-          <ParameterName>AmountIncludingVAT_PostedCashDocumentLineCaption</ParameterName>
+          <ParameterName>PaymentPurpose_PostedCashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>20</RowIndex>
-          <ParameterName>VAT_PostedCashDocumentLineCaption</ParameterName>
+          <ParameterName>RegistrationNo_PostedCashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>21</RowIndex>
-          <ParameterName>VATAmount_PostedCashDocumentLineCaption</ParameterName>
+          <ParameterName>VATRegistrationNo_PostedCashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>22</RowIndex>
-          <ParameterName>VATBaseAmount_PostedCashDocumentLineCaption</ParameterName>
+          <ParameterName>ReceivedFrom_PostedCashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>23</RowIndex>
-          <ParameterName>VATAmtLineVATPerCaption</ParameterName>
+          <ParameterName>IdentificationCardNo_PostedCashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>24</RowIndex>
-          <ParameterName>AccountNo_GLEntryCaption</ParameterName>
+          <ParameterName>ReceivedBy_PostedCashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>25</RowIndex>
-          <ParameterName>Description_GLEntryCaption</ParameterName>
+          <ParameterName>Description_PostedCashDocumentLineCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>26</RowIndex>
-          <ParameterName>DebitAmount_GLEntryCaption</ParameterName>
+          <ParameterName>AmountIncludingVAT_PostedCashDocumentLineCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>27</RowIndex>
+          <ParameterName>VAT_PostedCashDocumentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>28</RowIndex>
+          <ParameterName>VATAmount_PostedCashDocumentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>29</RowIndex>
+          <ParameterName>VATBaseAmount_PostedCashDocumentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>30</RowIndex>
+          <ParameterName>VATAmtLineVATPerCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>31</RowIndex>
+          <ParameterName>AccountNo_GLEntryCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>32</RowIndex>
+          <ParameterName>Description_GLEntryCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>33</RowIndex>
+          <ParameterName>DebitAmount_GLEntryCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>34</RowIndex>
           <ParameterName>CreditAmount_GLEntryCaption</ParameterName>
         </CellDefinition>
       </CellDefinitions>
@@ -4008,6 +4689,33 @@ End Function</Code>
         </Field>
         <Field Name="CreditAmount_GLEntryFormat">
           <DataField>CreditAmount_GLEntryFormat</DataField>
+        </Field>
+        <Field Name="EntryNo_EETEntry">
+          <DataField>EntryNo_EETEntry</DataField>
+        </Field>
+        <Field Name="ReceiptSerialNo_EETEntry">
+          <DataField>ReceiptSerialNo_EETEntry</DataField>
+        </Field>
+        <Field Name="CreatedAt_EETEntry">
+          <DataField>CreatedAt_EETEntry</DataField>
+        </Field>
+        <Field Name="CashRegisterCode_EETEntry">
+          <DataField>CashRegisterCode_EETEntry</DataField>
+        </Field>
+        <Field Name="BusinessPremissesId_EETEntry">
+          <DataField>BusinessPremissesId_EETEntry</DataField>
+        </Field>
+        <Field Name="SalesRegimeText_EETEntry">
+          <DataField>SalesRegimeText_EETEntry</DataField>
+        </Field>
+        <Field Name="SignatureCode_EETEntry">
+          <DataField>SignatureCode_EETEntry</DataField>
+        </Field>
+        <Field Name="SecurityCode_EETEntry">
+          <DataField>SecurityCode_EETEntry</DataField>
+        </Field>
+        <Field Name="FiscalIdentificationCode_EETEntry">
+          <DataField>FiscalIdentificationCode_EETEntry</DataField>
         </Field>
         <Field Name="FullName_Employee">
           <DataField>FullName_Employee</DataField>

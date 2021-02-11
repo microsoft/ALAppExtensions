@@ -3,7 +3,7 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '17.0';
+    ObsoleteTag = '18.0';
 
     [EventSubscriber(ObjectType::Table, Database::"Posted Cash Document Header", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenamePostedCashDocumentHeader(var Rec: Record "Posted Cash Document Header"; var xRec: Record "Posted Cash Document Header")
@@ -88,6 +88,7 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
         PostedCashDocumentHeaderCZP."Partner No." := Rec."Partner No.";
         PostedCashDocumentHeaderCZP."Canceled Document" := Rec."Canceled Document";
         PostedCashDocumentHeaderCZP."Dimension Set ID" := Rec."Dimension Set ID";
+        PostedCashDocumentHeaderCZP."EET Entry No." := Rec."EET Entry No.";
         PostedCashDocumentHeaderCZP.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Hdr. CZP");
     end;
@@ -194,6 +195,7 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
         PostedCashDocumentHeader."Partner No." := Rec."Partner No.";
         PostedCashDocumentHeader."Canceled Document" := Rec."Canceled Document";
         PostedCashDocumentHeader."Dimension Set ID" := Rec."Dimension Set ID";
+        PostedCashDocumentHeader."EET Entry No." := Rec."EET Entry No.";
         PostedCashDocumentHeader.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Header");
     end;

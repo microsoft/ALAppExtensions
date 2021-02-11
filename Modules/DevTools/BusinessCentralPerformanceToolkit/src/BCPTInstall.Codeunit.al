@@ -10,7 +10,7 @@ codeunit 149020 "BCPT Install"
     var
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-        if EnvironmentInformation.IsSaas() and (not EnvironmentInformation.IsSandbox()) then
+        if EnvironmentInformation.IsSaaSInfrastructure() and (not EnvironmentInformation.IsSandbox()) then
             Error(CannotInstallErr);
     end;
 

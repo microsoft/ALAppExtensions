@@ -295,6 +295,8 @@ codeunit 139653 "Replication Mgt Page Tests"
         MigrationTableMapping: TestPage "Migration Table Mapping";
     begin
         // [SCENARIO] User can enter a substring of the extension name, and the page will fill in the rest
+        if not PublishedApplication.WritePermission then
+            exit;
 
         // [GIVEN] The intelligent cloud is set up
         Initialize(true);
@@ -411,7 +413,6 @@ codeunit 139653 "Replication Mgt Page Tests"
     end;
 
     [Test]
-    [HandlerFunctions('SendNotificationHandler')]
     procedure TestIntelligentCloudManagementPagewithUpdateNotification()
     var
         ReplicationManagementPage: TestPage "Intelligent Cloud Management";
@@ -825,12 +826,6 @@ codeunit 139653 "Replication Mgt Page Tests"
         Assert.IsTrue(hybridCloudReady.Editable(), 'Intelligent Cloud Ready page should be enabled.');
     end;
 
-    [SendNotificationHandler]
-    procedure SendNotificationHandler(var Notification: Notification): Boolean;
-    begin
-        Assert.AreEqual(ICUpdateAvailableTxt, Notification.Message(), 'Update available notification message was different than expected');
-    end;
-
     local procedure VerifyActionsVisibleState(ReplicationManagementPage: TestPage "Intelligent Cloud Management"; IsSaas: Boolean)
     begin
         // Cloud only actions.
@@ -903,5 +898,5 @@ codeunit 139653 "Replication Mgt Page Tests"
         NewIntegrationKeyTxt: Label 'New Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';
         TestPrimaryKeyTxt: Label 'TestPrimaryKey';
         ICUpdateAvailableTxt: Label 'An update is available for the Cloud Migration.';
-        UpdateReplicationTxt: Label 'The update has com        pleted successfully.';
+        UpdateReplicationTxt: Label 'The update has completed successfully.';
 }

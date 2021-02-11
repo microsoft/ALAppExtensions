@@ -1115,11 +1115,11 @@ dotnet
 
     assembly("mscorlib")
     {
-
+#if not CLEAN17
         type("Microsoft.Win32.Registry"; "Registry")
         {
         }
-
+#endif
         type("System.Activator"; "Activator")
         {
         }
@@ -1391,6 +1391,9 @@ dotnet
         type("System.Security.Cryptography.HashAlgorithm"; "HashAlgorithm")
         {
         }
+        type("System.Security.Cryptography.HashAlgorithmName"; "HashAlgorithmName")
+        {
+        }
 
         type("System.Security.Cryptography.KeyedHashAlgorithm"; "KeyedHashAlgorithm")
         {
@@ -1401,6 +1404,9 @@ dotnet
         }
 
         type("System.Security.Cryptography.RSACryptoServiceProvider"; "RSACryptoServiceProvider")
+        {
+        }
+        type("System.Security.Cryptography.DSACryptoServiceProvider"; "DSACryptoServiceProvider")
         {
         }
 
@@ -1550,11 +1556,11 @@ dotnet
         type("System.Diagnostics.FileVersionInfo"; "FileVersionInfo")
         {
         }
-
+#if not CLEAN17
         type("System.Diagnostics.Process"; "Process")
         {
         }
-
+#endif
         type("System.Diagnostics.Stopwatch"; "Stopwatch")
         {
         }
@@ -1934,6 +1940,9 @@ dotnet
         {
         }
 
+        type("System.Security.Cryptography.Xml.SignedInfo"; "SignedInfo")
+        {
+        }
         type("System.Security.Cryptography.Xml.SignedXml"; "SignedXml")
         {
         }

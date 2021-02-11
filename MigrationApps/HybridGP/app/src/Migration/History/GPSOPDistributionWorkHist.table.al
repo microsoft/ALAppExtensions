@@ -1,6 +1,8 @@
 table 4070 "GPSOPDistributionWorkHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; SOPTYPE; Option)

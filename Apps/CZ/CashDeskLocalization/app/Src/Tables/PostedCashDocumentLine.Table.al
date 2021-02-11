@@ -307,6 +307,12 @@ table 11738 "Posted Cash Document Line CZP"
             TableRelation = "Responsibility Center";
             DataClassification = CustomerContent;
         }
+        field(101; "EET Transaction"; Boolean)
+        {
+            Caption = 'EET Transaction';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';

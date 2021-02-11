@@ -282,22 +282,22 @@ page 30009 "APIV2 - Customers"
                         RegisterFieldSet(FieldNo(Blocked));
                     end;
                 }
-                part(customerFinancialDetails; "APIV2 - Cust Financial Details")
-                {
-                    //TODO - WaitingModernDevProperty, Caption = 'Customer Financial Details';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
-                    EntityName = 'customerFinancialDetail';
-                    EntitySetName = 'customerFinancialDetails';
-                    SubPageLink = SystemId = Field(SystemId);
-                }
                 field(lastModifiedDateTime; SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                 }
+                part(customerFinancialDetails; "APIV2 - Cust Financial Details")
+                {
+                    Caption = 'Customer Financial Details';
+                    Multiplicity = ZeroOrOne;
+                    EntityName = 'customerFinancialDetail';
+                    EntitySetName = 'customerFinancialDetails';
+                    SubPageLink = SystemId = Field(SystemId);
+                }
                 part(picture; "APIV2 - Pictures")
                 {
-                    //TODO - WaitingModernDevProperty, Caption = 'Picture';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
+                    Caption = 'Picture';
+                    Multiplicity = ZeroOrOne;
                     EntityName = 'picture';
                     EntitySetName = 'pictures';
                     SubPageLink = Id = Field(SystemId), "Parent Type" = const(1);
@@ -311,8 +311,8 @@ page 30009 "APIV2 - Customers"
                 }
                 part(agedAccountsReceivable; "APIV2 - Aged AR")
                 {
-                    //TODO - WaitingModernDevProperty, Caption = 'Aged Accounts Receivable';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
+                    Caption = 'Aged Accounts Receivable';
+                    Multiplicity = ZeroOrOne;
                     EntityName = 'agedAccountsReceivable';
                     EntitySetName = 'agedAccountsReceivables';
                     SubPageLink = AccountId = Field(SystemId);

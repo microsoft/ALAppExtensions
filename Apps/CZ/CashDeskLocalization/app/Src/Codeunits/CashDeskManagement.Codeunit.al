@@ -411,6 +411,7 @@ codeunit 11724 "Cash Desk Management CZP"
         CashDeskUserCZP: Record "Cash Desk User CZP";
         CashDocHeaderCZP: Record "Cash Document Header CZP";
         CashDeskCZP: Record "Cash Desk CZP";
+        EETManagementCZL: Codeunit "EET Management CZL";
     begin
         if (CashDeskNo = '') or (ActionType = ActionType::" ") then
             exit;
@@ -434,6 +435,11 @@ codeunit 11724 "Cash Desk Management CZP"
             ActionType::Post, ActionType::"Post and Print":
                 begin
                     CashDeskUserCZP.SetRange(Post, true);
+                    if EETManagementCZL.IsEETEnabled() then
+                        if CashDeskCZP.IsEETCashRegister() and CashDeskUserCZP.IsEmpty() then begin
+                            CashDeskUserCZP.SetRange(Post);
+                            CashDeskUserCZP.SetRange("Post EET Only", true);
+                        end;
                     if (CashDeskCZP."Responsibility ID (Post)" <> '') and (CashDeskCZP."Responsibility ID (Post)" <> UserId) then
                         Error(NotPermToPostErr, CashDocHeaderCZP.TableCaption);
                 end;
@@ -543,6 +549,7 @@ codeunit 11724 "Cash Desk Management CZP"
 
         if CashDeskCZP.FindSet() then
             repeat
+                CashDeskUserCZP.Reset();
                 CashDeskAllowedToUser := CashDeskUserCZP.IsEmpty();
                 CashDeskUserCZP.SetRange("Cash Desk No.", CashDeskCZP."No.");
                 CashDeskUserCZP.SetRange("User ID", UserCode);

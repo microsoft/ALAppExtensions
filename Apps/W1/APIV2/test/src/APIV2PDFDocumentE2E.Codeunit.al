@@ -23,8 +23,6 @@ codeunit 139841 "APIV2 - PDF Document E2E"
     var
         CompanyInformation: Record "Company Information";
     begin
-        WorkDate := Today;
-
         CompanyInformation.Get();
         if CompanyInformation."Giro No." = '' then
             CompanyInformation."Giro No." := '1234567';

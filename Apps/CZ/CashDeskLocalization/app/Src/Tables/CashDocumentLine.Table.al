@@ -495,7 +495,12 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
+#if not CLEAN18
+                if "Cash Desk Event" <> xRec."Cash Desk Event" then begin
+                    TestField("Advance Letter Link Code", '');
+#else
                 if "Cash Desk Event" <> xRec."Cash Desk Event" then
+#endif
                     if "Cash Desk Event" <> '' then begin
                         CashDeskCZP.Get("Cash Desk No.");
                         GetCashDeskEventCZP();
@@ -533,6 +538,9 @@ table 11733 "Cash Document Line CZP"
                           Database::"Responsibility Center", "Responsibility Center",
                           Database::"Cash Desk Event CZP", "Cash Desk Event");
                     end;
+#if not CLEAN18
+                end;
+#endif
             end;
         }
         field(42; "Salespers./Purch. Code"; Code[20])
@@ -870,6 +878,12 @@ table 11733 "Cash Document Line CZP"
                   Database::"Cash Desk Event CZP", "Cash Desk Event");
             end;
         }
+        field(101; "EET Transaction"; Boolean)
+        {
+            Caption = 'EET Transaction';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
@@ -887,17 +901,24 @@ table 11733 "Cash Document Line CZP"
                 DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
             end;
         }
-#if not CLEAN18
         field(31001; "Advance Letter Link Code"; Code[30])
         {
             Caption = 'Advance Letter Link Code';
             DataClassification = CustomerContent;
             Access = Internal;
+#if CLEAN18
+            ObsoleteState = Removed;
+#else
             ObsoleteState = Pending;
+#endif    
             ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
             ObsoleteTag = '18.0';
+
+            trigger OnValidate()
+            begin
+                UpdateEETTransaction();
+            end;
         }
-#endif    
     }
 
     keys
@@ -916,6 +937,12 @@ table 11733 "Cash Document Line CZP"
     begin
         LockTable();
         InitRecord();
+        UpdateEETTransaction();
+    end;
+
+    trigger OnModify()
+    begin
+        UpdateEETTransaction();
     end;
 
     trigger OnRename()
@@ -1089,6 +1116,8 @@ table 11733 "Cash Document Line CZP"
         CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
     begin
         CashDocumentHeaderCZP.Get("Cash Desk No.", "Cash Document No.");
+        if "Account Type" = "Account Type"::Customer then
+            CashDocumentHeaderCZP.TestNotEETCashRegister();
         CashDocumentPostCZP.InitGenJnlLine(CashDocumentHeaderCZP, Rec);
         CashDocumentPostCZP.GetGenJnlLine(GenJnlLine);
         Codeunit.Run(Codeunit::"Gen. Jnl.-Apply", GenJnlLine);
@@ -1478,7 +1507,76 @@ table 11733 "Cash Document Line CZP"
             CashDeskEventCZP.Get("Cash Desk Event");
     end;
 
+    local procedure IsEETTransaction(): Boolean
+    var
+        EETCashRegisterCZL: Record "EET Cash Register CZL";
+        EETTransaction: Boolean;
+        IsHandled: Boolean;
+    begin
+        OnBeforeIsEETTransaction(Rec, EETTransaction, IsHandled);
+        if IsHandled then
+            exit(EETTransaction);
+
+        if not EETCashRegisterCZL.FindByCashRegisterNo("EET Cash Register Type CZL"::"Cash Desk", "Cash Desk No.") then
+            exit(false);
+
+        if "Cash Desk Event" = '' then
 #if not CLEAN18
+            exit(IsInvoicePayment() or IsCreditMemoRefund() or IsAdvancePayment() or IsAdvanceRefund());
+#else
+            exit(IsInvoicePayment() or IsCreditMemoRefund());
+#endif
+
+        GetCashDeskEventCZP();
+        exit(CashDeskEventCZP."EET Transaction");
+    end;
+
+    procedure UpdateEETTransaction()
+    begin
+        if not "System-Created Entry" then
+            "EET Transaction" := IsEETTransaction();
+    end;
+
+    procedure IsInvoicePayment(): Boolean
+    begin
+        exit(
+            ("Account Type" = "Account Type"::Customer) and
+            ("Gen. Document Type" = "Gen. Document Type"::Payment) and
+            ("Applies-To Doc. Type" = "Applies-To Doc. Type"::Invoice) and
+            ("Applies-To Doc. No." <> ''));
+    end;
+
+    procedure IsCreditMemoRefund(): Boolean
+    begin
+        exit(
+            ("Account Type" = "Account Type"::Customer) and
+            ("Gen. Document Type" = "Gen. Document Type"::Refund) and
+            ("Applies-To Doc. Type" = "Applies-To Doc. Type"::"Credit Memo") and
+            ("Applies-To Doc. No." <> ''));
+    end;
+
+#if not CLEAN18
+    internal procedure IsAdvancePayment(): Boolean
+    begin
+        exit(
+          ("Account Type" = "Account Type"::Customer) and
+          ("Gen. Document Type" = "Gen. Document Type"::Payment) and
+          ("Advance Letter Link Code" <> ''));
+    end;
+
+    internal procedure IsAdvanceRefund(): Boolean
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+    begin
+        if ("Account Type" = "Account Type"::Customer) and
+           ("Gen. Document Type" = "Gen. Document Type"::Refund) and
+           ("Applies-To Doc. Type" = "Applies-To Doc. Type"::Payment) and
+           ("Applies-To Doc. No." <> '')
+        then
+            if SalesCrMemoHeader.Get("Applies-To Doc. No.") then
+                exit(SalesCrMemoHeader."Prepayment Credit Memo");
+    end;
+
     internal procedure LinkToAdvLetter()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -1516,7 +1614,7 @@ table 11733 "Cash Document Line CZP"
         if (GenJournalLine."Advance Letter Link Code" <> "Advance Letter Link Code") or
            (GenJournalLine."Posting Group" <> "Posting Group")
         then begin
-            "Advance Letter Link Code" := GenJournalLine."Advance Letter Link Code";
+            Validate("Advance Letter Link Code", GenJournalLine."Advance Letter Link Code");
             Validate("Posting Group", GenJournalLine."Posting Group");
             Modify();
         end;
@@ -1573,7 +1671,9 @@ table 11733 "Cash Document Line CZP"
     var
         PrepaymentLinksManagement: Codeunit "Prepayment Links Management";
     begin
-        TestField("Advance Letter Link Code");
+        if "Advance Letter Link Code" = '' then
+            exit;
+
         case "Document Type" of
             "Document Type"::Receipt:
                 TestField("Account Type", "Account Type"::Customer);
@@ -1592,4 +1692,9 @@ table 11733 "Cash Document Line CZP"
         Modify();
     end;
 #endif
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeIsEETTransaction(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETTransaction: Boolean; var IsHandled: Boolean)
+    begin
+    end;
 }

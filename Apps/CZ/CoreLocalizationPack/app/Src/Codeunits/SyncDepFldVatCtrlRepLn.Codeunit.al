@@ -45,7 +45,7 @@ codeunit 31178 "Sync.Dep.Fld-VatCtrlRepLn CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Control Report Line", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Control Report Line") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Ctrl. Report Line CZL");
         VATCtrlReportLineCZL.ChangeCompany(Rec.CurrentCompany);
@@ -82,7 +82,7 @@ codeunit 31178 "Sync.Dep.Fld-VatCtrlRepLn CZL"
         VATCtrlReportLineCZL."Closed by Document No." := Rec."Closed by Document No.";
         VATCtrlReportLineCZL."Closed Date" := Rec."Closed Date";
         VATCtrlReportLineCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Line CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Line CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Control Report Line", 'OnBeforeDeleteEvent', '', false, false)]
@@ -95,13 +95,13 @@ codeunit 31178 "Sync.Dep.Fld-VatCtrlRepLn CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Control Report Line", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Control Report Line") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Ctrl. Report Line CZL");
         VATCtrlReportLineCZL.ChangeCompany(Rec.CurrentCompany);
         if VATCtrlReportLineCZL.Get(Rec."Control Report No.", Rec."Line No.") then
             VATCtrlReportLineCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Line CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Line CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Ctrl. Report Line CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -144,7 +144,7 @@ codeunit 31178 "Sync.Dep.Fld-VatCtrlRepLn CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Line CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Line CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Control Report Line");
         VATControlReportLine.ChangeCompany(Rec.CurrentCompany);
@@ -181,7 +181,7 @@ codeunit 31178 "Sync.Dep.Fld-VatCtrlRepLn CZL"
         VATControlReportLine."Closed by Document No." := Rec."Closed by Document No.";
         VATControlReportLine."Closed Date" := Rec."Closed Date";
         VATControlReportLine.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Control Report Line", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Control Report Line");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Ctrl. Report Line CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -194,13 +194,13 @@ codeunit 31178 "Sync.Dep.Fld-VatCtrlRepLn CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Line CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Line CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Control Report Line");
         VATControlReportLine.ChangeCompany(Rec.CurrentCompany);
         if VATControlReportLine.Get(Rec."VAT Ctrl. Report No.", Rec."Line No.") then
             VATControlReportLine.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Control Report Line", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Control Report Line");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

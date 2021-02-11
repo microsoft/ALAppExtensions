@@ -2,6 +2,8 @@ table 4016 "GP Item Location"
 {
     ReplicateData = false;
     Description = 'IV_Location_SETP';
+    Extensible = false;
+
 
     fields
     {

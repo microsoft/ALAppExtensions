@@ -49,11 +49,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         NotEmptyParameterErr: Label 'Email parameter %1 is not empty.', Locked = true;
         MailingJobErr: Label 'The mailing job is not created.', Locked = true;
 
-    local procedure Initialize()
-    begin
-        WorkDate := Today();
-    end;
-
     local procedure InitializeForSending()
     var
         TempAccount: Record "Email Account" temporary;
@@ -63,7 +58,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         ConnectorMock.AddAccount(TempAccount);
         DeleteJobQueueEntry(CODEUNIT::"Document-Mailing");
         DeleteJobQueueEntry(CODEUNIT::"O365 Sales Cancel Invoice");
-        Initialize();
     end;
 
     [Test]
@@ -78,7 +72,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
     begin
         // [SCENARIO 184721] Create posted and unposted Sales invoices and use a GET method to retrieve them
         // [GIVEN] 2 invoices, one posted and one unposted
-        Initialize();
         CreateSalesInvoices(InvoiceID1, InvoiceID2);
         Commit();
 
@@ -104,6 +97,7 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         ShipToCustomer: Record "Customer";
         CustomerNo: Text;
         InvoiceDate: Date;
+        InvoicePostingDate: Date;
         ResponseText: Text;
         InvoiceNumber: Text;
         TargetURL: Text;
@@ -111,15 +105,15 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
     begin
         // [SCENARIO 184721] Create posted and unposted Sales invoices and use HTTP POST to delete them
         // [GIVEN] 2 invoices, one posted and one unposted
-        Initialize();
 
         LibrarySales.CreateCustomer(SellToCustomer);
         LibrarySales.CreateCustomer(BillToCustomer);
         LibrarySales.CreateCustomer(ShipToCustomer);
         CustomerNo := SellToCustomer."No.";
-        InvoiceDate := Today();
+        InvoiceDate := WorkDate();
+        InvoicePostingDate := WorkDate();
 
-        InvoiceJSON := CreateInvoiceJSONWithAddress(SellToCustomer, BillToCustomer, ShipToCustomer, InvoiceDate);
+        InvoiceJSON := CreateInvoiceJSONWithAddress(SellToCustomer, BillToCustomer, ShipToCustomer, InvoiceDate, InvoicePostingDate);
         Commit();
 
         // [WHEN] we POST the JSON to the web service
@@ -160,7 +154,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         CurrencyCode: Code[10];
     begin
         // [SCENARIO 184721] Create posted and unposted with specific currency set and use HTTP POST to create them
-        Initialize();
 
         // [GIVEN] an Invoice with a non-LCY currencyCode set
         LibrarySales.CreateCustomer(Customer);
@@ -208,7 +201,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         CurrencyCode: Code[10];
     begin
         // [SCENARIO 285872] Create posted and unposted with specific email set and use HTTP POST to create them
-        Initialize();
         Email := 'test@microsoft.com';
         // [GIVEN] an Customer with  no email set
         LibrarySales.CreateCustomer(Customer);
@@ -260,7 +252,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         InvoiceJSON: Text;
     begin
         // [SCENARIO 184721] Create unposted with specific document and due date set and use HTTP POST to create them
-        Initialize();
 
         // [GIVEN] an Invoice with a document and due date set
         LibrarySales.CreateCustomer(Customer);
@@ -331,7 +322,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         InvoiceJSON: Text;
     begin
         // [SCENARIO 184721] Create Sales Invoice, use a PATCH method to change it and then verify the changes
-        Initialize();
         LibrarySales.CreateCustomerWithAddress(SellToCustomer);
         LibrarySales.CreateCustomerWithAddress(BillToCustomer);
         LibrarySales.CreateCustomerWithAddress(ShipToCustomer);
@@ -405,7 +395,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         InvoiceWithBlanksJSON: Text;
     begin
         // [SCENARIO 184721] Create Sales Invoice with all the Ids filled, use a PATCH method to blank the Ids and the Codes
-        Initialize();
         LibrarySales.CreateCustomerWithAddress(Customer);
 
         // [GIVEN] a currency
@@ -471,7 +460,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
     begin
         // [SCENARIO 184721] Create draft invoice and issue a patch request to change the number
         // [GIVEN] 1 draft invoice and a json with a new number
-        Initialize();
         LibrarySales.CreateSalesInvoice(SalesHeader);
         NewInvoiceNumber := CopyStr(CreateGuid(), 1, MaxStrLen(SalesHeader."No."));
         NewInvoiceNumberJSON := LibraryGraphMgt.AddPropertytoJSON('', NumberFieldTxt, NewInvoiceNumber);
@@ -494,7 +482,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
     begin
         // [SCENARIO 184721] Create unposted Sales invoice and use HTTP DELETE to delete it
         // [GIVEN] An unposted invoice
-        Initialize();
         CreateDraftSalesInvoice(SalesHeader);
         InvoiceID := SalesHeader."No.";
         Commit();
@@ -522,9 +509,10 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         Customer: Record "Customer";
         ApiRecordRef: RecordRef;
         PageRecordRef: RecordRef;
-        SalesInvoice: TestPage 43;
+        SalesInvoice: TestPage "Sales Invoice";
         CustomerNo: Text;
         InvoiceDate: Date;
+        InvoicePostingDate: Date;
         ResponseText: Text;
         TargetURL: Text;
         InvoiceJSON: Text;
@@ -532,16 +520,16 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         // [SCENARIO 184721] Create an invoice both through the client UI and through the API
         // [SCENARIO] and compare them. They should be the same and have the same fields autocompleted wherever needed.
         // [GIVEN] An unposted invoice
-        Initialize();
         LibraryGraphDocumentTools.InitializeUIPage();
         LibraryApplicationArea.DisableApplicationAreaSetup();
 
         LibrarySales.CreateCustomer(Customer);
         CustomerNo := Customer."No.";
-        InvoiceDate := Today();
+        InvoiceDate := WorkDate();
+        InvoicePostingDate := WorkDate();
 
         // [GIVEN] a json describing our new invoice
-        InvoiceJSON := CreateInvoiceJSONWithAddress(Customer, Customer, Customer, InvoiceDate);
+        InvoiceJSON := CreateInvoiceJSONWithAddress(Customer, Customer, Customer, InvoiceDate, InvoicePostingDate);
         Commit();
 
         // [WHEN] we POST the JSON to the web service and create another invoice through the test page
@@ -562,6 +550,8 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         LibraryUtility.AddTempField(
           TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Posting Description"), Database::"Sales Header");
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo(Id), Database::"Sales Header");
+        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Order Date"), Database::"Sales Header");    // it is always set as Today() in API
+        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Shipment Date"), Database::"Sales Header"); // it is always set as Today() in API
         // Special ignore case for ES
         RecordField.SetRange(TableNo, Database::"Sales Header");
         RecordField.SetRange(FieldName, 'Due Date Modified');
@@ -569,11 +559,8 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
             LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, RecordField."No.", Database::"Sales Header");
 
         // Time zone will impact how the date from the page vs WebService is saved. If removed this will fail in snap between 12:00 - 1 AM
-        if TIME() < 020000T then begin
-            LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Shipment Date"), Database::"Sales Header");
+        if TIME() < 020000T then
             LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Posting Date"), Database::"Sales Header");
-            LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Order Date"), Database::"Sales Header");
-        end;
 
         PageSalesHeader.Get(PageSalesHeader."Document Type"::Invoice, SalesInvoice."No.".Value());
         ApiRecordRef.GetTable(ApiSalesHeader);
@@ -595,7 +582,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
     begin
         // [SCENARIO 184721] When an invoice is created,the GET Method should update the invoice and assign a total
         // [GIVEN] 2 invoices, one posted and one unposted without totals assigned
-        Initialize();
         LibraryGraphDocumentTools.CreateDocumentWithDiscountPctPending(
           SalesHeader, DiscountPct, SalesHeader."Document Type"::Invoice);
         SalesHeader.CALCFIELDS("Recalculate Invoice Disc.");
@@ -627,7 +613,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
     begin
         // [SCENARIO 184721] When an invoice is created, the GET Method should update the invoice and assign a total
         // [GIVEN] 2 invoices, one posted and one unposted with discount amount that should be redistributed
-        Initialize();
         LibraryGraphDocumentTools.CreateDocumentWithDiscountPctPending(
           SalesHeader, DiscountPct, SalesHeader."Document Type"::Invoice);
         SalesHeader.CALCFIELDS(Amount);
@@ -661,7 +646,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         CurrencyCode: Code[10];
     begin
         // [SCENARIO 184721] Create an invoice wihtout Customer throws an error
-        Initialize();
 
         // [GIVEN] a sales invoice JSON with currency only
         Currency.SetFilter(Code, '<>%1', '');
@@ -690,7 +674,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         InvoiceID: Text;
     begin
         // [SCENARIO 184721] Create Sales Invoice, use a PATCH method to change it and then verify the changes
-        Initialize();
         LibrarySales.CreateCustomerWithAddress(Customer);
 
         // [GIVEN] an item with unit price and unit cost
@@ -737,7 +720,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         InvoiceID: Text;
     begin
         // [SCENARIO 184721] Clearing manually set discount
-        Initialize();
 
         // [GIVEN] an item with unit price and unit cost
         LibraryInventory.CreateItemWithUnitPriceAndUnitCost(
@@ -794,7 +776,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         PostedInvoiceEmailSubject: Text;
     begin
         // [SCENARIO] User can post a sales invoice through the API.
-        Initialize();
 
         // [GIVEN] Draft sales invoice exists
         CreateDraftSalesInvoice(SalesHeader);
@@ -879,7 +860,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         TargetURL: Text;
     begin
         // [SCENARIO] User can cancel a posted sales invoice through API.
-        Initialize();
 
         // [GIVEN] Posted sales invoice exists
         CreatePostedSalesInvoice(SalesInvoiceHeader);
@@ -1060,7 +1040,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         CreditMemoEmailSubject: Text;
     begin
         // [SCENARIO] User can create a corrective credit memo for the posted sales invoice through the API.
-        Initialize();
 
         // [GIVEN] A posted sales invoice exists
         CreatePostedSalesInvoice(SalesInvoiceHeader);
@@ -1092,27 +1071,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         GetEmailParameters(DraftCreditMemoRecordRef, InvoiceEmailAddress, InvoiceEmailSubject);
         Assert.AreEqual('', CreditMemoEmailAddress, StrSubstNo(NotEmptyParameterErr, 'Address'));
         Assert.AreEqual('', CreditMemoEmailSubject, StrSubstNo(NotEmptyParameterErr, 'Subject'));
-    end;
-
-    local procedure CreateSMTPMailSetup()
-    var
-        SMTPMailSetup: Record "SMTP Mail Setup";
-        IsNew: Boolean;
-    begin
-        IsNew := not SMTPMailSetup.FindFirst();
-
-        if IsNew then
-            SMTPMailSetup.Init();
-        SMTPMailSetup."SMTP Server" := 'SomeServer';
-        SMTPMailSetup."SMTP Server Port" := 1000;
-        SMTPMailSetup."Secure Connection" := true;
-        SMTPMailSetup.Authentication := SMTPMailSetup.Authentication::Basic;
-        SMTPMailSetup."User ID" := 'somebody@somewhere.com';
-        SMTPMailSetup.SetPassword('Some Password');
-        if IsNew then
-            SMTPMailSetup.Insert(true)
-        else
-            SMTPMailSetup.Modify(true);
     end;
 
     local procedure CreateEmailParameters(var RecordRef: RecordRef)
@@ -1277,12 +1235,13 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         Commit();
     end;
 
-    local procedure CreateInvoiceJSONWithAddress(SellToCustomer: Record "Customer"; BillToCustomer: Record "Customer"; ShipToCustomer: Record "Customer"; InvoiceDate: Date): Text
+    local procedure CreateInvoiceJSONWithAddress(SellToCustomer: Record "Customer"; BillToCustomer: Record "Customer"; ShipToCustomer: Record "Customer"; InvoiceDate: Date; InvoicePostingDate: Date): Text
     var
         InvoiceJSON: Text;
     begin
         InvoiceJSON := LibraryGraphMgt.AddPropertytoJSON('', 'customerNumber', SellToCustomer."No.");
         InvoiceJSON := LibraryGraphMgt.AddPropertytoJSON(InvoiceJSON, 'invoiceDate', InvoiceDate);
+        InvoiceJSON := LibraryGraphMgt.AddPropertytoJSON(InvoiceJSON, 'postingDate', InvoicePostingDate);
         InvoiceJSON := LibraryGraphMgt.AddPropertytoJSON(InvoiceJSON, 'billToCustomerNumber', BillToCustomer."No.");
 
         LibraryGraphDocumentTools.GetCustomerAddressJSON(InvoiceJSON, SellToCustomer, 'sellTo', false, false);
@@ -1291,7 +1250,7 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         exit(InvoiceJSON);
     end;
 
-    local procedure CreateInvoiceThroughTestPage(var SalesInvoice: TestPage 43; Customer: Record "Customer"; InvoiceDate: Date)
+    local procedure CreateInvoiceThroughTestPage(var SalesInvoice: TestPage "Sales Invoice"; Customer: Record "Customer"; InvoiceDate: Date)
     begin
         SalesInvoice.OpenNew();
         SalesInvoice."Sell-to Customer No.".SetValue(Customer."No.");

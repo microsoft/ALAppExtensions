@@ -1,6 +1,7 @@
 table 4025 "GP Codes"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

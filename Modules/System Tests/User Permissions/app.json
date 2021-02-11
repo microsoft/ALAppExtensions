@@ -2,7 +2,7 @@
     "id":  "d155439e-4a0a-4baf-9164-d372a1ee383f",
     "name":  "User Permissions Test",
     "publisher":  "Microsoft",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "brief":  "Tests for User Permissions module",
     "description":  "Tests for User Permissions module",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,25 +15,25 @@
                              "id":  "c56e3ef4-7ab0-4636-ae87-013a62f12213",
                              "name":  "User Permissions",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "cc441290-a967-4601-9a7d-b4209339415b",
                              "name":  "Environment Information Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
                              "name":  "Any",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "screenshots":  [

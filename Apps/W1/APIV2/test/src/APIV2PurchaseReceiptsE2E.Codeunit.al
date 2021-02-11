@@ -16,11 +16,6 @@ codeunit 139849 "APIV2 - Purchase Receipts E2E"
         LibraryPurchase: Codeunit "Library - Purchase";
         ReceiptServiceNameTxt: Label 'purchaseReceipts';
 
-    local procedure Initialize()
-    begin
-        WorkDate := Today();
-    end;
-
     [Test]
     procedure TestGetPurchaseReceipts()
     var
@@ -32,7 +27,6 @@ codeunit 139849 "APIV2 - Purchase Receipts E2E"
     begin
         // [SCENARIO] Create 2 purchase receipts (post sales order) and use a GET method to retrieve them
         // [GIVEN] 2 posted purchase receipts
-        Initialize();
         LibraryPurchase.CreatePurchaseOrder(PurchaseHeader);
         ReceiptNo[1] := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
         LibraryPurchase.CreatePurchaseOrder(PurchaseHeader);
@@ -63,7 +57,6 @@ codeunit 139849 "APIV2 - Purchase Receipts E2E"
     begin
         // [SCENARIO] Call GET on purchase receipt and expand the dimension set lines
         // [GIVEN] A purchase receipt.
-        Initialize();
 
         PurchRcptHeader.FindFirst();
         ReceiptIdTxt := LowerCase(Format(PurchRcptHeader.SystemId));

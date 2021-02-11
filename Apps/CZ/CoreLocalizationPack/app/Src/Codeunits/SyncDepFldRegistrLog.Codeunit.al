@@ -20,7 +20,7 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Registration Log", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Registration Log") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Registration Log CZL");
         RegistrationLogCZL.ChangeCompany(Rec.CurrentCompany);
@@ -38,7 +38,7 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
         RegistrationLogCZL."Verified Date" := Rec."Verified Date";
         RegistrationLogCZL."Verified Result" := Rec."Verified Result";
         RegistrationLogCZL.Insert(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Registration Log CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Registration Log CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Registration Log CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -56,7 +56,7 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Registration Log CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Registration Log CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Registration Log");
         RegistrationLog.ChangeCompany(Rec.CurrentCompany);
@@ -74,7 +74,7 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
         RegistrationLog."Verified Date" := Rec."Verified Date";
         RegistrationLog."Verified Result" := Rec."Verified Result";
         RegistrationLog.Insert(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Registration Log", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Registration Log");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

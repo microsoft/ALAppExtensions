@@ -14,23 +14,25 @@ codeunit 31076 "Phys.In.Order Line Handler CZL"
             Rec.TestField("Invt. Movement Template CZL", '');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Phys. Invt. Order-Finish", 'OnBeforePhysInvtOrderLineModify', '', false, false)]
-    local procedure UpdateInvtMovementTemplateOnBeforePhysInvtOrderLineModify(var PhysInvtOrderLine: Record "Phys. Invt. Order Line")
+    [EventSubscriber(ObjectType::Table, Database::"Phys. Invt. Order Line", 'OnBeforeModifyEvent', '', false, false)]
+    local procedure UpdateInvtMovementTemplateOnBeforeModifyEvent(var Rec: Record "Phys. Invt. Order Line")
+    begin
+        Rec.Validate("Invt. Movement Template CZL", GetInvtMovementTemplateName(Rec));
+    end;
+
+    local procedure GetInvtMovementTemplateName(PhysInvtOrderLine: Record "Phys. Invt. Order Line"): Code[10]
     var
         InventorySetup: Record "Inventory Setup";
     begin
         InventorySetup.Get();
-        PhysInvtOrderLine.Validate("Invt. Movement Template CZL", '');
-        if PhysInvtOrderLine."Pos. Qty. (Base)" > 0 then
-            if InventorySetup."Def.Tmpl. for Phys.Pos.Adj CZL" <> '' then begin
-                PhysInvtOrderLine.Validate("Invt. Movement Template CZL", InventorySetup."Def.Tmpl. for Phys.Pos.Adj CZL");
-                exit;
-            end;
-        if PhysInvtOrderLine."Neg. Qty. (Base)" > 0 then
-            if InventorySetup."Def.Tmpl. for Phys.Neg.Adj CZL" <> '' then begin
-                PhysInvtOrderLine.Validate("Invt. Movement Template CZL", InventorySetup."Def.Tmpl. for Phys.Neg.Adj CZL");
-                exit;
-            end;
+        case PhysInvtOrderLine."Entry Type" of
+            PhysInvtOrderLine."Entry Type"::"Positive Adjmt.":
+                exit(InventorySetup."Def.Tmpl. for Phys.Pos.Adj CZL");
+            PhysInvtOrderLine."Entry Type"::"Negative Adjmt.":
+                exit(InventorySetup."Def.Tmpl. for Phys.Neg.Adj CZL")
+            else
+                exit('');
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Phys. Invt. Order-Reopen", 'OnBeforePhysInvtOrderLineModify', '', false, false)]

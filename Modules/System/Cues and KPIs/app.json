@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Sets up Cues and KPIs",
     "description":  "This module provides setup pages and interface methods to manage cues in Business Central.",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,13 +15,13 @@
                              "id":  "7f850a76-a58c-4ade-a14f-7d7acff97115",
                              "name":  "User Selection",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "94245fbb-b5b1-416e-b8cf-484306646e82",
                              "name":  "Field Selection",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "screenshots":  [

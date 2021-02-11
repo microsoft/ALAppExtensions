@@ -6,7 +6,7 @@
 codeunit 8900 "Email Impl"
 {
     Access = Internal;
-    Permissions = tabledata "Sent Email" = rd,
+    Permissions = tabledata "Sent Email" = rimd,
                   tabledata "Email Outbox" = rimd,
                   tabledata "Email Message" = r,
                   tabledata "Email Error" = r,
@@ -16,6 +16,7 @@ codeunit 8900 "Email Impl"
         EmailMessageDoesNotExistMsg: Label 'The email message has been deleted by another user.';
         EmailMessageCannotBeEditedErr: Label 'The email message has already been sent and cannot be edited.';
         InvalidEmailAccountErr: Label 'The provided email account does not exist.';
+        InsufficientPermisionsErr: Label 'You do not have the permissions required to send emails. Ask your administrator to grant you the Read, Insert, Modify and Delete permissions for the Sent Email and Email Outbox tables.';
 
     #region API
 
@@ -138,6 +139,7 @@ codeunit 8900 "Email Impl"
         EmailDispatcher: Codeunit "Email Dispatcher";
         TaskId: Guid;
     begin
+        CheckRequiredPermissions();
         if not EmailMessageImpl.Get(EmailMessage.GetId()) then
             Error(EmailMessageDoesNotExistMsg);
 
@@ -156,13 +158,13 @@ codeunit 8900 "Email Impl"
         CreateOrUpdateEmailOutbox(EmailMessageImpl, EmailAccountId, EmailConnector, Enum::"Email Status"::Queued, Accounts."Email Address", EmailOutbox);
 
         if InBackground then begin
-            TaskId := TaskScheduler.CreateTask(Codeunit::"Email Dispatcher", 0, true, CompanyName(), CurrentDateTime(), EmailOutbox.RecordId());
+            TaskId := TaskScheduler.CreateTask(Codeunit::"Email Dispatcher", Codeunit::"Email Error Handler", true, CompanyName(), CurrentDateTime(), EmailOutbox.RecordId());
             EmailOutbox."Task Scheduler Id" := TaskId;
             EmailOutbox.Modify();
         end else begin // Send the email in foreground
             Commit();
 
-            EmailDispatcher.Run(EmailOutbox);
+            if EmailDispatcher.Run(EmailOutbox) then;
             exit(EmailDispatcher.GetSuccess());
         end;
     end;
@@ -263,4 +265,17 @@ codeunit 8900 "Email Impl"
         EmailOutbox.ModifyAll(Status, Enum::"Email Status"::" ");
         EmailOutbox.DeleteAll();
     end;
+
+    local procedure CheckRequiredPermissions()
+    var
+        SentEmail: Record "Sent Email";
+        EmailOutBox: Record "Email Outbox";
+    begin
+        if not SentEmail.ReadPermission() or
+                not SentEmail.WritePermission() or
+                not EmailOutBox.ReadPermission() or
+                not EmailOutBox.WritePermission() then
+            Error(InsufficientPermisionsErr);
+    end;
+
 }

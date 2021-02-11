@@ -18,5 +18,6 @@
     "features": [
         "LCGTranslationFile"
     ],
-    "application": "17.0.0.0"
+    "application": "18.0.0.0",
+    "internalsVisibleTo": [{"appId": "cf07faa6-4d21-428b-bfcf-8078c5b0e582", "name": "Intelligent Cloud Base Tests", "publisher": "Microsoft"}]
 }

@@ -1,6 +1,7 @@
 table 40099 "GP Checkbook MSTR"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {
@@ -195,8 +196,6 @@ table 40099 "GP Checkbook MSTR"
                     BankAccount."Bank Acc. Posting Group" := GetBankAccPostingGroup(ACTINDX);
                     UpdateBankInfo(DelChr(BANKID, '>', ' '), BankAccount);
                     BankAccount.Insert(true);
-
-                    CheckBookTransactions.MoveStagingData(CHEKBKID, BankAccount."Bank Acc. Posting Group");
                 end;
             until Next() = 0;
     end;

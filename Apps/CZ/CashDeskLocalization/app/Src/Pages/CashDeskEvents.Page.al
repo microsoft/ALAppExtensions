@@ -43,6 +43,11 @@ page 31157 "Cash Desk Events CZP"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies general document type for selected cash desk events (payment, refund).';
                 }
+                field("EET Transaction"; Rec."EET Transaction")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether rows that meet conditions for a recorded sale will be automatically populated.';
+                }
             }
         }
         area(factboxes)

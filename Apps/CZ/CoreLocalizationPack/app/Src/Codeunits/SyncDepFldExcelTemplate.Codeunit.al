@@ -47,7 +47,7 @@ codeunit 31190 "Sync.Dep.Fld-ExcelTemplate CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Excel Template", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Excel Template") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Excel Template CZL");
         ExcelTemplateCZL.ChangeCompany(Rec.CurrentCompany);
@@ -67,7 +67,7 @@ codeunit 31190 "Sync.Dep.Fld-ExcelTemplate CZL"
         end else
             Clear(ExcelTemplateCZL.Template);
         ExcelTemplateCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Excel Template CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Excel Template CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Excel Template", 'OnBeforeDeleteEvent', '', false, false)]
@@ -80,13 +80,13 @@ codeunit 31190 "Sync.Dep.Fld-ExcelTemplate CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Excel Template", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Excel Template") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Excel Template CZL");
         ExcelTemplateCZL.ChangeCompany(Rec.CurrentCompany);
         if ExcelTemplateCZL.Get(Rec.Code) then
             ExcelTemplateCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Excel Template CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Excel Template CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Excel Template CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -131,7 +131,7 @@ codeunit 31190 "Sync.Dep.Fld-ExcelTemplate CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Excel Template CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Excel Template CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Excel Template");
         ExcelTemplate.ChangeCompany(Rec.CurrentCompany);
@@ -151,7 +151,7 @@ codeunit 31190 "Sync.Dep.Fld-ExcelTemplate CZL"
         end else
             Clear(ExcelTemplate.Template);
         ExcelTemplate.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Excel Template", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Excel Template");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Excel Template CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -164,13 +164,13 @@ codeunit 31190 "Sync.Dep.Fld-ExcelTemplate CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Excel Template CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Excel Template CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Excel Template");
         ExcelTemplate.ChangeCompany(Rec.CurrentCompany);
         if ExcelTemplate.Get(Rec.Code) then
             ExcelTemplate.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Excel Template", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Excel Template");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

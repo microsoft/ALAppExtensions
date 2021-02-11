@@ -482,8 +482,8 @@ page 30037 "APIV2 - Sales Quotes"
                 }
                 part(pdfDocument; "APIV2 - PDF Document")
                 {
-                    //TODO - WaitingModernDevProperty, Caption = 'PDF Document';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
+                    Caption = 'PDF Document';
+                    Multiplicity = ZeroOrOne;
                     EntityName = 'pdfDocument';
                     EntitySetName = 'pdfDocument';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const(3);

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Stores Azure Key Vault secrets for deployments.",
     "description":  "Azure Key Vault stores secrets for deployment. These secrets are not available for apps with \"target\" cloud. ISV solutions that are deployed in their own cluster and have their own key-vault can use this module to read shared secrets. The AKV should contain an \"AllowedApplicationSecrets\" key with a comma separated list of allowed secrets. Only white-listed keys can be read from the code.",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,7 +15,7 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "internalsVisibleTo":  [

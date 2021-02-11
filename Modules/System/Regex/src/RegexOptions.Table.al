@@ -71,8 +71,9 @@ table 3966 "Regex Options"
         {
             Caption = 'Match Timeout In Milliseconds';
             DataClassification = SystemMetadata;
-            Description = 'A time-out interval in milliseconds, to indicate when the matching should time out.';
-            InitValue = -1; // Indicates no time-out 
+            Description = 'A time-out interval in milliseconds, to indicate when the matching should time out. The timeout should be at least 1000 ms.';
+            InitValue = 1000; // miliseconds
+            MinValue = 1000; // miliseconds
         }
     }
 

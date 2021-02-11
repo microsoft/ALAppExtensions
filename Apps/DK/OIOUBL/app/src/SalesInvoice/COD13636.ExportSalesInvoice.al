@@ -42,18 +42,24 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         SalesInvHeader2: Record "Sales Invoice Header";
         RecordExportBuffer: Record "Record Export Buffer";
         ElectronicDocumentFormat: Record "Electronic Document Format";
+#if not CLEAN17
         RBMgt: Codeunit "File Management";
-        OIOUBLManagement: Codeunit "OIOUBL-Management";
         EnvironmentInfo: Codeunit "Environment Information";
+#endif
+        OIOUBLManagement: Codeunit "OIOUBL-Management";
         FromFile: Text[1024];
+#if not CLEAN17
         DocumentType: Option "Quote","Order","Invoice","Credit Memo","Blanket Order","Return Order","Finance Charge","Reminder";
+#endif
     begin
         FromFile := CreateXML(SalesInvoiceHeader);
 
         SalesSetup.Get();
 
+#if not CLEAN17
         if RBMgt.IsLocalFileSystemAccessible() and not EnvironmentInfo.IsSaaS() then
             SalesSetup.VerifyAndSetOIOUBLSetupPath(DocumentType::Invoice);
+#endif
 
         OIOUBLManagement.UpdateRecordExportBuffer(
             SalesInvoiceHeader.RecordId(),
@@ -230,6 +236,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         TotalTaxAmount: Decimal;
         OutputFile: File;
         FileOutstream: Outstream;
+        IsHandled: Boolean;
     begin
         CODEUNIT.RUN(CODEUNIT::"OIOUBL-Check Sales Invoice", SalesInvoiceHeader);
         ReadGLSetup();
@@ -298,6 +305,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
               SalesInvoiceHeader."Order Date");
 
         // Invoice->AccountingSupplierParty
+        OnCreateXMLOnBeforeInsertAccountingSupplierParty(XMLCurrNode, SalesInvoiceHeader);
         OIOUBLXMLGenerator.InsertAccountingSupplierParty(XMLCurrNode, SalesInvoiceHeader."Salesperson Code");
 
         // Invoice->AccountingCustomerParty
@@ -326,7 +334,10 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         OIOUBLXMLGenerator.InsertDelivery(XMLCurrNode, DeliveryAddress, SalesInvoiceHeader."Shipment Date");
 
         // Invoice->PaymentMeans
-        OIOUBLXMLGenerator.InsertPaymentMeans(XMLCurrNode, SalesInvoiceHeader."Due Date");
+        IsHandled := false;
+        OnCreateXMLOnBeforeInsertPaymentMeans(XMLCurrNode, SalesInvoiceHeader, IsHandled);
+        if not IsHandled then
+            OIOUBLXMLGenerator.InsertPaymentMeans(XMLCurrNode, SalesInvoiceHeader."Due Date");
 
         // Invoice->PaymentTerms
         SalesInvLine2.RESET();
@@ -440,6 +451,16 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(var XMLdocOut: XmlDocument; SalesInvoiceHeader: Record "Sales Invoice Header"; DocNameSpace: Text[250]; DocNameSpace2: Text[250])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnBeforeInsertPaymentMeans(var XMLCurrNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnBeforeInsertAccountingSupplierParty(var XMLCurrNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header")
     begin
     end;
 }

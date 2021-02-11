@@ -1,6 +1,7 @@
 table 4096 "GP Vendor"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

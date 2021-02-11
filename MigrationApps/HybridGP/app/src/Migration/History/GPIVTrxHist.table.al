@@ -1,6 +1,8 @@
 table 4052 "GPIVTrxHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; TRXSORCE; text[14])

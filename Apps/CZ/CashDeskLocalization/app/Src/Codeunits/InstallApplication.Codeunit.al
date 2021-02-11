@@ -3,6 +3,11 @@ codeunit 31054 "Install Application CZP"
 {
     Subtype = Install;
 
+    trigger OnInstallAppPerDatabase()
+    begin
+        CopyPermission();
+    end;
+
     trigger OnInstallAppPerCompany()
     begin
         if not InitializeDone() then
@@ -41,6 +46,40 @@ codeunit 31054 "Install Application CZP"
         CopySourceCodeSetup();
         CopyUserSetup();
         CopyGeneralLedgerSetup();
+    end;
+
+    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
+    local procedure CopyPermission();
+    begin
+        InsertTableDataPermissions(Database::"Cash Document Header", Database::"Cash Document Header CZP");
+        InsertTableDataPermissions(Database::"Cash Document Line", Database::"Cash Document Line CZP");
+        InsertTableDataPermissions(Database::"Posted Cash Document Header", Database::"Posted Cash Document Hdr. CZP");
+        InsertTableDataPermissions(Database::"Posted Cash Document Line", Database::"Posted Cash Document Line CZP");
+        InsertTableDataPermissions(Database::"Currency Nominal Value", Database::"Currency Nominal Value CZP");
+        InsertTableDataPermissions(Database::"Bank Account", Database::"Cash Desk CZP");
+        InsertTableDataPermissions(Database::"Cash Desk User", Database::"Cash Desk User CZP");
+        InsertTableDataPermissions(Database::"Cash Desk Event", Database::"Cash Desk Event CZP");
+        InsertTableDataPermissions(Database::"Cash Desk Cue", Database::"Cash Desk Cue CZP");
+        InsertTableDataPermissions(Database::"Cash Desk Report Selections", Database::"Cash Desk Rep. Selections CZP");
+    end;
+
+    local procedure InsertTableDataPermissions(OldTableID: Integer; NewTableID: Integer)
+    var
+        Permission: Record Permission;
+        NewPermission: Record Permission;
+    begin
+        Permission.SetRange("Object Type", Permission."Object Type"::"Table Data");
+        Permission.SetRange("Object ID", OldTableID);
+        if not Permission.FindSet() then
+            exit;
+        repeat
+            if not NewPermission.Get(Permission."Role ID", Permission."Object Type", Permission."Object ID") then begin
+                NewPermission.Init();
+                NewPermission := Permission;
+                NewPermission."Object ID" := NewTableID;
+                NewPermission.Insert();
+            end;
+        until Permission.Next() = 0;
     end;
 
     [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
@@ -127,7 +166,7 @@ codeunit 31054 "Install Application CZP"
             until BankAccount.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
+    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
     local procedure CopyCashDeskUser();
     var
         CashDeskUser: Record "Cash Desk User";
@@ -144,12 +183,13 @@ codeunit 31054 "Install Application CZP"
                 CashDeskUserCZP.Create := CashDeskUser.Create;
                 CashDeskUserCZP.Issue := CashDeskUser.Issue;
                 CashDeskUserCZP.Post := CashDeskUser.Post;
+                CashDeskUserCZP."Post EET Only" := CashDeskUser."Post EET Only";
                 CashDeskUserCZP."User Full Name" := CashDeskUser."User Name";
                 CashDeskUserCZP.Modify(false);
             until CashDeskUser.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
+    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
     local procedure CopyCashDeskEvent();
     var
         CashDeskEvent: Record "Cash Desk Event";
@@ -171,6 +211,7 @@ codeunit 31054 "Install Application CZP"
                 CashDeskEventCZP."Global Dimension 1 Code" := CashDeskEvent."Global Dimension 1 Code";
                 CashDeskEventCZP."Global Dimension 2 Code" := CashDeskEvent."Global Dimension 2 Code";
                 CashDeskEventCZP."Gen. Posting Type" := CashDeskEvent."Gen. Posting Type";
+                CashDeskEventCZP."EET Transaction" := CashDeskEvent."EET Transaction";
                 CashDeskEventCZP."VAT Bus. Posting Group" := CashDeskEvent."VAT Bus. Posting Group";
                 CashDeskEventCZP."VAT Prod. Posting Group" := CashDeskEventCZP."VAT Prod. Posting Group";
                 CashDeskEventCZP.Modify(false);
@@ -230,7 +271,7 @@ codeunit 31054 "Install Application CZP"
             until CashDocumentHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
+    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
     local procedure CopyCashDocumentLine();
     var
         CashDocumentLine: Record "Cash Document Line";
@@ -288,15 +329,18 @@ codeunit 31054 "Install Application CZP"
                 CashDocumentLineCZP."Duplicate in Depreciation Book" := CashDocumentLine."Duplicate in Depreciation Book";
                 CashDocumentLineCZP."Use Duplication List" := CashDocumentLine."Use Duplication List";
                 CashDocumentLineCZP."Responsibility Center" := CashDocumentLine."Responsibility Center";
+                CashDocumentLineCZP."EET Transaction" := CashDocumentLine."EET Transaction";
                 CashDocumentLineCZP."Dimension Set ID" := CashDocumentLine."Dimension Set ID";
+#if not CLEAN18
                 if GeneralLedgerSetup."Prepayment Type" = GeneralLedgerSetup."Prepayment Type"::Advances then
                     if CashDocumentLine.Prepayment then
                         CashDocumentLineCZP."Advance Letter Link Code" := CashDocumentLine."Advance Letter Link Code";
+#endif
                 CashDocumentLineCZP.Modify(false);
             until CashDocumentLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
+    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
     local procedure CopyPostedCashDocumentHeader();
     var
         PostedCashDocumentHeader: Record "Posted Cash Document Header";
@@ -342,12 +386,13 @@ codeunit 31054 "Install Application CZP"
                 PostedCashDocumentHdrCZP."Partner Type" := PostedCashDocumentHeader."Partner Type";
                 PostedCashDocumentHdrCZP."Partner No." := PostedCashDocumentHeader."Partner No.";
                 PostedCashDocumentHdrCZP."Canceled Document" := PostedCashDocumentHeader."Canceled Document";
+                PostedCashDocumentHdrCZP."EET Entry No." := PostedCashDocumentHeader."EET Entry No.";
                 PostedCashDocumentHdrCZP."Dimension Set ID" := PostedCashDocumentHeader."Dimension Set ID";
                 PostedCashDocumentHdrCZP.Modify(false);
             until PostedCashDocumentHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
+    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
     local procedure CopyPostedCashDocumentLine();
     var
         PostedCashDocumentLine: Record "Posted Cash Document Line";
@@ -400,6 +445,7 @@ codeunit 31054 "Install Application CZP"
                 PostedCashDocumentLineCZP."Duplicate in Depreciation Book" := PostedCashDocumentLine."Duplicate in Depreciation Book";
                 PostedCashDocumentLineCZP."Use Duplication List" := PostedCashDocumentLine."Use Duplication List";
                 PostedCashDocumentLineCZP."Responsibility Center" := PostedCashDocumentLine."Responsibility Center";
+                PostedCashDocumentLineCZP."EET Transaction" := PostedCashDocumentLine."EET Transaction";
                 PostedCashDocumentLineCZP."Dimension Set ID" := PostedCashDocumentLine."Dimension Set ID";
                 PostedCashDocumentLineCZP.Modify(false);
             until PostedCashDocumentLine.Next() = 0;
@@ -577,12 +623,14 @@ codeunit 31054 "Install Application CZP"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure CompanyInitialize()
     var
-        DataClassEvalHandlerCZP: Codeunit "Data Class. Eval. Handler CZL";
+        DataClassEvalHandlerCZP: Codeunit "Data Class. Eval. Handler CZP";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
         InitCashDeskSourceCode();
         InitCashDeskReportSelections();
 
         DataClassEvalHandlerCZP.ApplyEvaluationClassificationsForPrivacy();
+        UpgradeTag.SetAllUpgradeTags();
     end;
 
     local procedure InitCashDeskSourceCode()

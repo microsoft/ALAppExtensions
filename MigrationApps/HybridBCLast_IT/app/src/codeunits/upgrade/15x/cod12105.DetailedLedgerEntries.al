@@ -2,6 +2,9 @@ codeunit 12105 "Detailed Ledger Entries IT"
 {
     Permissions = TableData "Detailed Cust. Ledg. Entry" = rm,
                   TableData "Detailed Vendor Ledg. Entry" = rm;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '17.0';
 
     trigger OnRun()
     begin

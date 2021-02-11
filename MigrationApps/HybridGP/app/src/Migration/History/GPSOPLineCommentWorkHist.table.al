@@ -1,6 +1,8 @@
 table 4071 "GPSOPLineCommentWorkHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; SOPNUMBE; text[22])

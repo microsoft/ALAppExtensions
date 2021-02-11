@@ -4,12 +4,12 @@ codeunit 4021 "Hybrid BC Last Management"
 
     var
         SqlCompatibilityErr: Label 'SQL database must be at compatibility level 130 or higher.';
-        DatabaseTooLargeErr: Label 'The maximum replicated data size of 30 GB has been exceeded.';
+        DatabaseTooLargeErr: Label 'The maximum allowed amount of data for migration has been exceeded. For more information on how to proceed, see  https://go.microsoft.com/fwlink/?linkid=2013440.';
         TableNotExistsErr: Label 'The table does not exist in the local instance.';
         SchemaMismatchErr: Label 'The local table schema differs from the Business Central cloud table.';
         FailurePreparingDataErr: Label 'Failed to prepare data for the table. Inner error: %1';
         FailureCopyingTableErr: Label 'Failed to copy the table. Inner error: %1';
-        UnsupportedVersionErr: Label 'Business Central on-premises must be within three major versions of the online instance.';
+        UnsupportedVersionErr: Label 'The version of the on-premises deployment does not match the requirements of Business Central online. Check if the version was set correctly on the database. For more information, see the documentation - https://go.microsoft.com/fwlink/?linkid=2148701.';
 
     procedure GetAppId() AppId: Guid
     var
@@ -30,9 +30,17 @@ codeunit 4021 "Hybrid BC Last Management"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Message Management", 'OnResolveMessageCode', '', false, false)]
     local procedure GetMessageOnResolveMessageCode(MessageCode: Code[10]; InnerMessage: Text; var Message: Text)
     var
+        InteligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridBCLastWizard: Codeunit "Hybrid BC Last Wizard";
         ErrorCodePosition: Integer;
     begin
         if Message <> '' then
+            exit;
+
+        if not InteligentCloudSetup.Get() then
+            exit;
+
+        if not (InteligentCloudSetup."Product ID" = HybridBCLastWizard.ProductId()) then
             exit;
 
         if MessageCode = '' then begin

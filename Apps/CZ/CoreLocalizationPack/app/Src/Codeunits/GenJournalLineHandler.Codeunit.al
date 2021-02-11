@@ -216,4 +216,11 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
     begin
         IsTransactionConsistent := IsTransactionConsistent and GenJnlPostAccGroupCZL.IsAcountGroupTransactionConsistent();
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromInvPostBuffer', '', false, false)]
+    local procedure CopyOnAfterCopyGenJnlLineFromInvPostBuffer(InvoicePostBuffer: Record "Invoice Post. Buffer"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+        GenJournalLine."VAT Date CZL" := InvoicePostBuffer."VAT Date CZL";
+        GenJournalLine."Original Doc. VAT Date CZL" := InvoicePostBuffer."Original Doc. VAT Date CZL";
+    end;
 }

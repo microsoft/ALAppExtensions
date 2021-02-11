@@ -68,19 +68,18 @@ codeunit 11757 "Unreliable Payer WS CZL"
                 Message(VATRegNoLimitExceededMsg, VatRegNoCount);
     end;
 
-    local procedure SendHttpRequest(RequestXmlDocument: XmlDocument; var TempBlobResponse: Codeunit "Temp Blob")
+    local procedure SendHttpRequest(RequestXmlDocument: XmlDocument; var ResponseTempBlob: Codeunit "Temp Blob")
     var
         SOAPWSRequestManagementCZL: Codeunit "SOAP WS Request Management CZL";
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
-        TempBlobRequest: Codeunit "Temp Blob";
     begin
         SOAPWSRequestManagementCZL.SetStreamEncoding(TextEncoding::Windows);
         SOAPWSRequestManagementCZL.SetTimeout(10000);
         SOAPWSRequestManagementCZL.DisableHttpsCheck();
-        SOAPWSRequestManagementCZL.SendRequestToWebService(UnreliablePayerMgtCZL.GetUnreliablePayerServiceURL(), RequestXmlDocument);
-        if not SOAPWSRequestManagementCZL.HasResponseFaultResult() then
-            SOAPWSRequestManagementCZL.GetResponseContent(TempBlobResponse);
-        SOAPWSRequestManagementCZL.ProcessFaultResponse();
+        if SOAPWSRequestManagementCZL.SendRequestToWebService(UnreliablePayerMgtCZL.GetUnreliablePayerServiceURL(), RequestXmlDocument) then
+            SOAPWSRequestManagementCZL.GetResponseContent(ResponseTempBlob)
+        else
+            SOAPWSRequestManagementCZL.ProcessFaultResponse();
     end;
 
     local procedure FormatVATRegNo(VATRegNo: Text): Text

@@ -1,6 +1,7 @@
 table 4046 "Stg Data Exch Def CA"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

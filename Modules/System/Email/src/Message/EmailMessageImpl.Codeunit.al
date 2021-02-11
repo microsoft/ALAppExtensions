@@ -207,9 +207,10 @@ codeunit 8905 "Email Message Impl."
         AddAttachment(AttachmentName, ContentType, false, NullGuid, EmailAttachment);
         EmailAttachment.Attachment.CreateOutStream(AttachmentOutstream);
         CopyStream(AttachmentOutstream, AttachmentInStream);
+        EmailAttachment.Length := EmailAttachment.Attachment.Length();
         EmailAttachment.Insert();
 
-        exit(EmailAttachment.Attachment.Length);
+        exit(EmailAttachment.Length);
     end;
 
     local procedure ReplaceRgbaColorsWithRgb(var Body: Text)
@@ -340,7 +341,7 @@ codeunit 8905 "Email Message Impl."
 
     procedure Attachments_GetLength(): Integer
     begin
-        exit(Attachments.Attachment.Length);
+        exit(Attachments.Length);
     end;
 
     procedure GetId(): Guid
@@ -384,12 +385,12 @@ codeunit 8905 "Email Message Impl."
     begin
         if Rec.IsTemporary() then
             exit;
-        
+
         if Rec.CurrentCompany() <> CompanyName() then begin
             EmailOutbox.ChangeCompany(Rec.CurrentCompany());
             EmailMessage.ChangeCompany(Rec.CurrentCompany());
         end;
-         
+
         EmailOutbox.SetRange("Message Id", Rec."Message Id");
         if not EmailOutbox.IsEmpty() then
             exit;
@@ -438,7 +439,7 @@ codeunit 8905 "Email Message Impl."
             EmaiMessageAttachemnt.ChangeCompany(Rec.CurrentCompany());
             EmailRecipient.ChangeCompany(Rec.CurrentCompany());
         end;
-        
+
         EmaiMessageAttachemnt.SetRange("Email Message Id", Rec.Id);
         EmaiMessageAttachemnt.DeleteAll();
 

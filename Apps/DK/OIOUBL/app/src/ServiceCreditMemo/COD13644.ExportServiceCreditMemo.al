@@ -42,9 +42,11 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         ServiceCrMemoHeader2: Record "Service Cr.Memo Header";
         RecordExportBuffer: Record "Record Export Buffer";
         ElectronicDocumentFormat: Record "Electronic Document Format";
+#if not CLEAN17
         RBMgt: Codeunit "File Management";
-        OIOUBLManagement: Codeunit "OIOUBL-Management";
         EnvironmentInfo: Codeunit "Environment Information";
+#endif
+        OIOUBLManagement: Codeunit "OIOUBL-Management";
         FromFile: Text[1024];
         DocumentType: Option "Quote","Order","Invoice","Credit Memo","Blanket Order","Return Order","Finance Charge","Reminder";
     begin
@@ -52,8 +54,10 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
 
         ServiceSetup.Get();
 
+#if not CLEAN17
         if RBMgt.IsLocalFileSystemAccessible() and not EnvironmentInfo.IsSaaS() then
             ServiceSetup.OIOUBLVerifyAndSetPath(DocumentType::"Credit Memo");
+#endif
 
         OIOUBLManagement.UpdateRecordExportBuffer(
             ServiceCrMemoHeader.RecordId(),

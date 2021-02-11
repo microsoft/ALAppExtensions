@@ -45,7 +45,7 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line CZL");
         VIESDeclarationLineCZL.ChangeCompany(Rec.CurrentCompany);
@@ -75,7 +75,7 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
         VIESDeclarationLineCZL."Record Code" := Rec."Record Code";
         VIESDeclarationLineCZL."VAT Reg. No. of Original Cust." := Rec."VAT Reg. No. of Original Cust.";
         VIESDeclarationLineCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VIES Declaration Line", 'OnBeforeDeleteEvent', '', false, false)]
@@ -88,13 +88,13 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line CZL");
         VIESDeclarationLineCZL.ChangeCompany(Rec.CurrentCompany);
         if VIESDeclarationLineCZL.Get(Rec."VIES Declaration No.", Rec."Line No.") then
             VIESDeclarationLineCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VIES Declaration Line CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -137,7 +137,7 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line");
         VIESDeclarationLine.ChangeCompany(Rec.CurrentCompany);
@@ -167,7 +167,7 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
         VIESDeclarationLine."Record Code" := Rec."Record Code";
         VIESDeclarationLine."VAT Reg. No. of Original Cust." := Rec."VAT Reg. No. of Original Cust.";
         VIESDeclarationLine.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VIES Declaration Line CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -180,13 +180,13 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Line CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Line");
         VIESDeclarationLine.ChangeCompany(Rec.CurrentCompany);
         if VIESDeclarationLine.Get(Rec."VIES Declaration No.", Rec."Line No.") then
             VIESDeclarationLine.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Line");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

@@ -7,20 +7,30 @@ codeunit 11791 "Navigate Handler CZP"
     [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateFindRecords', '', false, false)]
     local procedure OnAfterNavigateFindRecords(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text;
                                                 PostingDateFilter: Text; Sender: Page Navigate)
-    var
-        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
-        BankAccount: Record "Bank Account";
-        PostedCashDocumentTxt: Label 'Posted Cash Document';
-        CashDeskLedgerEntryTxt: Label 'Cash Desk Ledger Entry';
     begin
-        if PostedCashDocumentHdrCZP.ReadPermission then begin
+        FindPostedCashDocumentHdr(DocumentEntry, DocNoFilter, PostingDateFilter, Sender);
+        FindCashDeskLedgerEntries(DocumentEntry, DocNoFilter, PostingDateFilter, Sender);
+    end;
+
+    local procedure FindPostedCashDocumentHdr(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; Sender: Page Navigate)
+    var
+        PostedCashDocumentTxt: Label 'Posted Cash Document';
+    begin
+        if PostedCashDocumentHdrCZP.ReadPermission() then begin
             PostedCashDocumentHdrCZP.Reset();
             PostedCashDocumentHdrCZP.SetFilter("No.", DocNoFilter);
             PostedCashDocumentHdrCZP.SetFilter("Posting Date", PostingDateFilter);
             Sender.InsertIntoDocEntry(DocumentEntry, Database::"Posted Cash Document Hdr. CZP", 0,
-                                        PostedCashDocumentTxt, PostedCashDocumentHdrCZP.Count());
+                PostedCashDocumentTxt, PostedCashDocumentHdrCZP.Count());
         end;
+    end;
 
+    local procedure FindCashDeskLedgerEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; Sender: Page Navigate)
+    var
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
+        BankAccount: Record "Bank Account";
+        CashDeskLedgerEntryTxt: Label 'Cash Desk Ledger Entry';
+    begin
         if NoOfRecords(DocumentEntry, Database::"Bank Account Ledger Entry") = 1 then begin
             BankAccountLedgerEntry.SetFilter("Document No.", DocNoFilter);
             BankAccountLedgerEntry.SetFilter("Posting Date", PostingDateFilter);
@@ -66,15 +76,18 @@ codeunit 11791 "Navigate Handler CZP"
     [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeNavigateShowRecords', '', false, false)]
     local procedure OnBeforeNavigateShowRecords(TableID: Integer; DocNoFilter: Text; PostingDateFilter: Text; var TempDocumentEntry: Record "Document Entry"; var IsHandled: Boolean)
     begin
-        if TableID = Database::"Posted Cash Document Hdr. CZP" then begin
-            PostedCashDocumentHdrCZP.Reset();
-            PostedCashDocumentHdrCZP.SetFilter("No.", DocNoFilter);
-            PostedCashDocumentHdrCZP.SetFilter("Posting Date", PostingDateFilter);
-            if TempDocumentEntry."No. of Records" = 1 then
-                Page.Run(Page::"Posted Cash Document CZP", PostedCashDocumentHdrCZP)
-            else
-                Page.Run(0, PostedCashDocumentHdrCZP);
-            IsHandled := true;
+        case TableID of
+            Database::"Posted Cash Document Hdr. CZP":
+                begin
+                    PostedCashDocumentHdrCZP.Reset();
+                    PostedCashDocumentHdrCZP.SetFilter("No.", DocNoFilter);
+                    PostedCashDocumentHdrCZP.SetFilter("Posting Date", PostingDateFilter);
+                    if TempDocumentEntry."No. of Records" = 1 then
+                        Page.Run(Page::"Posted Cash Document CZP", PostedCashDocumentHdrCZP)
+                    else
+                        Page.Run(0, PostedCashDocumentHdrCZP);
+                    IsHandled := true;
+                end;
         end;
     end;
 }

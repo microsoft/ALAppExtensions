@@ -3,7 +3,7 @@ codeunit 31134 "Sync.Dep.Fld-PostCashDocLn CZP"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '17.0';
+    ObsoleteTag = '18.0';
 
     [EventSubscriber(ObjectType::Table, Database::"Posted Cash Document Line", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenamePostedCashDocumentLine(var Rec: Record "Posted Cash Document Line"; var xRec: Record "Posted Cash Document Line")
@@ -94,6 +94,7 @@ codeunit 31134 "Sync.Dep.Fld-PostCashDocLn CZP"
         PostedCashDocumentLineCZP."Use Duplication List" := Rec."Use Duplication List";
         PostedCashDocumentLineCZP."Responsibility Center" := Rec."Responsibility Center";
         PostedCashDocumentLineCZP."Dimension Set ID" := Rec."Dimension Set ID";
+        PostedCashDocumentLineCZP."EET Transaction" := Rec."EET Transaction";
         PostedCashDocumentLineCZP.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Line CZP");
     end;
@@ -206,6 +207,7 @@ codeunit 31134 "Sync.Dep.Fld-PostCashDocLn CZP"
         PostedCashDocumentLine."Use Duplication List" := Rec."Use Duplication List";
         PostedCashDocumentLine."Responsibility Center" := Rec."Responsibility Center";
         PostedCashDocumentLine."Dimension Set ID" := Rec."Dimension Set ID";
+        PostedCashDocumentLine."EET Transaction" := Rec."EET Transaction";
         PostedCashDocumentLine.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Posted Cash Document Line");
     end;

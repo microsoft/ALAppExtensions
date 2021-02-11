@@ -83,6 +83,16 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
     }
     actions
     {
+#pragma warning disable AL0432        
+        modify("P&review")
+        {
+            Visible = false;
+        }
+        modify("Calc. and Post VAT Settlement")
+        {
+            Visible = false;
+        }
+#pragma warning restore AL0432        
         addfirst("VAT &Statement")
         {
             action("P&review CZL")

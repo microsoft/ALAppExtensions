@@ -21,7 +21,7 @@
             "id": "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
             "name": "Sales and Inventory Forecast",
             "publisher": "Microsoft",
-            "version": "17.0.0.0"
+            "version": "18.0.0.0"
         }
     ],
     "screenshots": [],
@@ -31,5 +31,5 @@
     "features": [
         "LCGTranslationFile"
     ],
-    "application": "17.0.0.0"
+    "application": "18.0.0.0"
 }

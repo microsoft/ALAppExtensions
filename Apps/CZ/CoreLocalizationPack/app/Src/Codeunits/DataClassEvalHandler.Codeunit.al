@@ -15,6 +15,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         Contact: Record Contact;
         CustLedgerEntry: Record "Cust. Ledger Entry";
         Customer: Record Customer;
+        EETEntryCZL: Record "EET Entry CZL";
         FinanceChargeMemoHeader: Record "Finance Charge Memo Header";
         GeneralLedgerSetup: Record "General Ledger Setup";
         GenJournalLine: Record "Gen. Journal Line";
@@ -22,6 +23,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         GLEntry: Record "G/L Entry";
         InventorySetup: Record "Inventory Setup";
         InvoicePostBuffer: Record "Invoice Post. Buffer";
+        IsolatedCertificate: Record "Isolated Certificate";
         IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header";
         IssuedReminderHeader: Record "Issued Reminder Header";
         Item: Record Item;
@@ -80,10 +82,16 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
             exit;
 
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule File Mapping CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Certificate Code CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Commodity CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Commodity Setup CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Company Official CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Document Footer CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"EET Service Setup CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"EET Business Premises CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"EET Cash Register CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"EET Entry CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"EET Entry Status Log CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Excel Template CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Invt. Movement Template CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Registration Log CZL");
@@ -104,6 +112,42 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VAT Statement Comment Line CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VIES Declaration Header CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VIES Declaration Line CZL");
+
+        DataClassificationMgt.SetFieldToPersonal(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Created By"));
+
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Entry No."));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Cash Register Type"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Cash Register No."));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Business Premises Code"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Cash Register Code"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Document No."));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo(Description));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Applied Document Type"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Applied Document No."));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Created At"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Status"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Status Last Changed At"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Message UUID"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Taxpayer's Signature Code"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Taxpayer's Security Code"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Fiscal Identification Code"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Receipt Serial No."));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Total Sales Amount"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Amount Exempted From VAT"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("VAT Base (Basic)"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("VAT Amount (Basic)"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("VAT Base (Reduced)"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("VAT Amount (Reduced)"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("VAT Base (Reduced 2)"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("VAT Amount (Reduced 2)"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Amount - Art.89"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Amount (Basic) - Art.90"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Amount (Reduced) - Art.90"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Amount (Reduced 2) - Art.90"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Amt. For Subseq. Draw/Settle"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Amt. Subseq. Drawn/Settled"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Canceled By Entry No."));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Simple Registration"));
 
         DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Line", AccScheduleLine.FieldNo("Calc CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Line", AccScheduleLine.FieldNo("Row Correction CZL"));
@@ -143,6 +187,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Def.Tmpl. for Phys.Neg.Adj CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Post. Buffer", InvoicePostBuffer.FieldNo("VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Post. Buffer", InvoicePostBuffer.FieldNo("Original Doc. VAT Date CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Isolated Certificate", IsolatedCertificate.FieldNo("Certificate Code CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Issued Fin. Charge Memo Header", IssuedFinChargeMemoHeader.FieldNo("Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Issued Fin. Charge Memo Header", IssuedFinChargeMemoHeader.FieldNo("Tax Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Issued Reminder Header", IssuedReminderHeader.FieldNo("Registration No. CZL"));

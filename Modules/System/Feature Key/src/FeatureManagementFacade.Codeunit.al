@@ -12,8 +12,6 @@ codeunit 2611 "Feature Management Facade"
 
     var
         FeatureManagementImpl: Codeunit "Feature Management Impl.";
-        FeatureDataUpdate: interface "Feature Data Update";
-        ImplementedId: Text[50];
 
     /// <summary>
     /// Returns true if the feature is enabled and data update, if required, is complete.
@@ -49,9 +47,7 @@ codeunit 2611 "Feature Management Facade"
     /// </summary>
     procedure GetImplementation(FeatureDataUpdateStatus: Record "Feature Data Update Status") Implemented: Boolean;
     begin
-        if ImplementedId <> FeatureDataUpdateStatus."Feature Key" then
-            OnGetImplementation(FeatureDataUpdateStatus, FeatureDataUpdate, ImplementedId);
-        Implemented := ImplementedId = FeatureDataUpdateStatus."Feature Key";
+        exit(FeatureManagementImpl.GetImplementation(FeatureDataUpdateStatus));
     end;
 
     /// <summary>
@@ -59,8 +55,7 @@ codeunit 2611 "Feature Management Facade"
     /// </summary>
     procedure GetTaskDescription(FeatureDataUpdateStatus: Record "Feature Data Update Status") TaskDescription: Text;
     begin
-        if GetImplementation(FeatureDataUpdateStatus) then
-            TaskDescription := FeatureDataUpdate.GetTaskDescription();
+        exit(FeatureManagementImpl.GetTaskDescription(FeatureDataUpdateStatus));
     end;
 
     /// <summary>
@@ -68,11 +63,7 @@ codeunit 2611 "Feature Management Facade"
     /// </summary>
     procedure ReviewData(FeatureDataUpdateStatus: Record "Feature Data Update Status"): Boolean;
     begin
-        if GetImplementation(FeatureDataUpdateStatus) then
-            if FeatureDataUpdate.IsDataUpdateRequired() then begin
-                FeatureDataUpdate.ReviewData();
-                exit(true);
-            end;
+        exit(FeatureManagementImpl.ReviewData(FeatureDataUpdateStatus));
     end;
 
     /// <summary>
@@ -82,36 +73,15 @@ codeunit 2611 "Feature Management Facade"
     /// <returns>true if user picked Update or Schedule and the task is scheduled or executed.</returns>
     procedure Update(var FeatureDataUpdateStatus: Record "Feature Data Update Status"): Boolean;
     begin
-        if not FeatureDataUpdateStatus."Data Update Required" then
-            exit(true);
-        if not FeatureManagementImpl.ConfirmDataUpdate(FeatureDataUpdateStatus) then
-            exit(false);
-
-        if FeatureDataUpdateStatus."Background Task" then
-            exit(ScheduleTask(FeatureDataUpdateStatus));
-        Codeunit.Run(Codeunit::"Update Feature Data", FeatureDataUpdateStatus);
-        exit(true);
+        exit(FeatureManagementImpl.Update(FeatureDataUpdateStatus));
     end;
 
     /// <summary>
     /// Creates the scheduled task.
     /// </summary>
     local procedure ScheduleTask(var FeatureDataUpdateStatus: Record "Feature Data Update Status"): Boolean;
-    var
-        DoNotScheduleTask: Boolean;
-        TaskID: Guid;
     begin
-        if not TaskScheduler.CanCreateTask() then
-            exit(false);
-
-        OnBeforeScheduleTask(FeatureDataUpdateStatus, DoNotScheduleTask, TaskID);
-        if DoNotScheduleTask then
-            FeatureDataUpdateStatus."Task ID" := TaskID
-        else
-            FeatureDataUpdateStatus."Task ID" :=
-                FeatureManagementImpl.CreateTask(FeatureDataUpdateStatus);
-        FeatureManagementImpl.ScheduleTask(FeatureDataUpdateStatus);
-        exit(true);
+        exit(FeatureManagementImpl.ScheduleTask(FeatureDataUpdateStatus));
     end;
 
     /// <summary>
@@ -127,10 +97,7 @@ codeunit 2611 "Feature Management Facade"
     /// </summary>
     procedure UpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
     begin
-        if GetImplementation(FeatureDataUpdateStatus) then begin
-            FeatureManagementImpl.UpdateData(FeatureDataUpdateStatus, FeatureDataUpdate);
-            OnAfterUpdateData(FeatureDataUpdateStatus);
-        end;
+        FeatureManagementImpl.UpdateData(FeatureDataUpdateStatus);
     end;
 
     internal procedure GetFeatureDataUpdateStatus(FeatureKey: Record "Feature Key"; var FeatureDataUpdateStatus: Record "Feature Data Update Status")
@@ -139,17 +106,17 @@ codeunit 2611 "Feature Management Facade"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterUpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    internal procedure OnAfterUpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeScheduleTask(FeatureDataUpdateStatus: Record "Feature Data Update Status"; var DoNotScheduleTask: Boolean; var TaskId: Guid)
+    internal procedure OnBeforeScheduleTask(FeatureDataUpdateStatus: Record "Feature Data Update Status"; var DoNotScheduleTask: Boolean; var TaskId: Guid)
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnGetImplementation(FeatureDataUpdateStatus: Record "Feature Data Update Status"; var FeatureDataUpdate: interface "Feature Data Update"; var ImplementedId: Text[50])
+    internal procedure OnGetImplementation(FeatureDataUpdateStatus: Record "Feature Data Update Status"; var FeatureDataUpdate: interface "Feature Data Update"; var ImplementedId: Text[50])
     begin
     end;
 

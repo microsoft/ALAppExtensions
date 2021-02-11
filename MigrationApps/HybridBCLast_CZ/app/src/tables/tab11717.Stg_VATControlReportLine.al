@@ -1,6 +1,7 @@
 table 11717 "Stg VAT Control Report Line"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

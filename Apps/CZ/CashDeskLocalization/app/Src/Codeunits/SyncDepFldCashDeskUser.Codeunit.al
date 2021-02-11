@@ -3,7 +3,7 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '17.0';
+    ObsoleteTag = '18.0';
 
     [EventSubscriber(ObjectType::Table, Database::"Cash Desk User", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenameCashDeskUser(var Rec: Record "Cash Desk User"; var xRec: Record "Cash Desk User")
@@ -58,6 +58,7 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
         CashDeskUserCZP.Create := Rec.Create;
         CashDeskUserCZP.Issue := Rec.Issue;
         CashDeskUserCZP.Post := Rec.Post;
+        CashDeskUserCZP."Post EET Only" := Rec."Post EET Only";
         CashDeskUserCZP."User Full Name" := Rec.GetUserName(Rec."User ID");
         CashDeskUserCZP.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User CZP");
@@ -135,6 +136,7 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
         CashDeskUser.Create := Rec.Create;
         CashDeskUser.Issue := Rec.Issue;
         CashDeskUser.Post := Rec.Post;
+        CashDeskUser."Post EET Only" := Rec."Post EET Only";
         CashDeskUser.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Cash Desk User");
     end;

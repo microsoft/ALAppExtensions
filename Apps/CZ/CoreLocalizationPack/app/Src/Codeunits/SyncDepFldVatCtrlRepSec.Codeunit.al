@@ -45,7 +45,7 @@ codeunit 31172 "Sync.Dep.Fld-VatCtrlRepSec CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Control Report Section", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Control Report Section") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Ctrl. Report Section CZL");
         VATCtrlReportSectionCZL.ChangeCompany(Rec.CurrentCompany);
@@ -58,7 +58,7 @@ codeunit 31172 "Sync.Dep.Fld-VatCtrlRepSec CZL"
         VATCtrlReportSectionCZL."Group By" := Rec."Group By";
         VATCtrlReportSectionCZL."Simplified Tax Doc. Sect. Code" := Rec."Simplified Tax Doc. Sect. Code";
         VATCtrlReportSectionCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Section CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Section CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Control Report Section", 'OnBeforeDeleteEvent', '', false, false)]
@@ -71,13 +71,13 @@ codeunit 31172 "Sync.Dep.Fld-VatCtrlRepSec CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Control Report Section", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Control Report Section") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Ctrl. Report Section CZL");
         VATCtrlReportSectionCZL.ChangeCompany(Rec.CurrentCompany);
         if VATCtrlReportSectionCZL.Get(Rec.Code) then
             VATCtrlReportSectionCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Section CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Section CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Ctrl. Report Section CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -120,7 +120,7 @@ codeunit 31172 "Sync.Dep.Fld-VatCtrlRepSec CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Section CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Section CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Control Report Section");
         VATControlReportSection.ChangeCompany(Rec.CurrentCompany);
@@ -133,7 +133,7 @@ codeunit 31172 "Sync.Dep.Fld-VatCtrlRepSec CZL"
         VATControlReportSection."Group By" := Rec."Group By";
         VATControlReportSection."Simplified Tax Doc. Sect. Code" := Rec."Simplified Tax Doc. Sect. Code";
         VATControlReportSection.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Control Report Section", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Control Report Section");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Ctrl. Report Section CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -146,13 +146,13 @@ codeunit 31172 "Sync.Dep.Fld-VatCtrlRepSec CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Section CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Section CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Control Report Section");
         VATControlReportSection.ChangeCompany(Rec.CurrentCompany);
         if VATControlReportSection.Get(Rec.Code) then
             VATControlReportSection.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Control Report Section", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Control Report Section");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

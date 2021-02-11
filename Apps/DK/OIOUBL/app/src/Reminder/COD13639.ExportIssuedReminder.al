@@ -256,8 +256,10 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
         XMLdocOut.WriteTo(FileOutstream);
         OutputFile.Close();
 
+#if not CLEAN17
         if RBMgt.IsLocalFileSystemAccessible() AND NOT EnvironmentInfo.IsSaaS() then
             SalesSetup.VerifyAndSetOIOUBLSetupPath(DocumentType::Reminder);
+#endif
 
         OIOUBLManagement.ExportXMLFile("No.", FromFile, SalesSetup."OIOUBL-Reminder Path");
 

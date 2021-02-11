@@ -45,7 +45,7 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statement File Mapping", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statement File Mapping") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Acc. Schedule File Mapping CZL");
         AccScheduleFileMappingCZL.ChangeCompany(Rec.CurrentCompany);
@@ -63,7 +63,7 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
         AccScheduleFileMappingCZL.Split := Rec.Split;
         AccScheduleFileMappingCZL.Offset := Rec.Offset;
         AccScheduleFileMappingCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Acc. Schedule File Mapping CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Acc. Schedule File Mapping CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Statement File Mapping", 'OnBeforeDeleteEvent', '', false, false)]
@@ -76,13 +76,13 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statement File Mapping", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statement File Mapping") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Acc. Schedule File Mapping CZL");
         AccScheduleFileMappingCZL.ChangeCompany(Rec.CurrentCompany);
         if AccScheduleFileMappingCZL.Get(Rec."Schedule Name", Rec."Schedule Line No.", Rec."Schedule Column Layout Name", Rec."Schedule Column No.", Rec."Excel Cell") then
             AccScheduleFileMappingCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Acc. Schedule File Mapping CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Acc. Schedule File Mapping CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule File Mapping CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -125,7 +125,7 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Acc. Schedule File Mapping CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Acc. Schedule File Mapping CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statement File Mapping");
         StatementFileMapping.ChangeCompany(Rec.CurrentCompany);
@@ -143,7 +143,7 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
         StatementFileMapping.Split := Rec.Split;
         StatementFileMapping.Offset := Rec.Offset;
         StatementFileMapping.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statement File Mapping", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statement File Mapping");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule File Mapping CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -156,13 +156,13 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Acc. Schedule File Mapping CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Acc. Schedule File Mapping CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statement File Mapping");
         StatementFileMapping.ChangeCompany(Rec.CurrentCompany);
         if StatementFileMapping.Get(Rec."Schedule Name", Rec."Schedule Line No.", Rec."Schedule Column Layout Name", Rec."Schedule Column No.", Rec."Excel Cell") then
             StatementFileMapping.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statement File Mapping", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statement File Mapping");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

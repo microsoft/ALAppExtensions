@@ -148,6 +148,12 @@ page 31160 "Cash Document CZP"
                     ToolTip = 'Specifies whether the unit price on the line should be displayed including or excluding VAT.';
                     Visible = false;
                 }
+                field("EET Cash Register"; Rec."EET Cash Register")
+                {
+                    ApplicationArea = Basic, Suite;
+                    DrillDown = false;
+                    ToolTip = 'Specifies whether the cash register works with EET.';
+                }
             }
             part(CashDocLines; "Cash Document Subform CZP")
             {
@@ -680,6 +686,7 @@ page 31160 "Cash Document CZP"
     trigger OnAfterGetRecord()
     begin
         UpdateEditable();
+        UpdateEnabled();
         SetControlVisibility();
     end;
 
@@ -790,6 +797,11 @@ page 31160 "Cash Document CZP"
         DateEditable := Rec.Status = Rec.Status::Open;
         ReceiptEditable := Rec."Document Type" = Rec."Document Type"::Receipt;
         WithdrawalEditable := Rec."Document Type" = Rec."Document Type"::Withdrawal;
+    end;
+
+    local procedure UpdateEnabled()
+    begin
+        LinkAdvLettersEnabled := not Rec.IsEETCashRegister();
     end;
 
     local procedure SetShowMandatoryConditions()

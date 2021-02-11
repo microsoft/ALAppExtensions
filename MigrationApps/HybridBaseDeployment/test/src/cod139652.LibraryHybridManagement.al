@@ -342,7 +342,20 @@ codeunit 139652 "Library - Hybrid Management"
     end;
 
     procedure SetAdlMigrationEnabled(Enabled: Boolean)
+    var
+        IntelligentCloud: Record "Intelligent Cloud";
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        IntelligentCloudExists: Boolean;
     begin
+        if Enabled then begin
+            IntelligentCloudExists := IntelligentCloud.Get();
+            IntelligentCloud."Enabled" := Enabled;
+            if IntelligentCloudExists then
+                IntelligentCloud.Modify()
+            else
+                IntelligentCloud.Insert();
+        end;
+
         AdlMigrationEnabled := Enabled;
     end;
 

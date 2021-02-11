@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Shows a satisfaction survey",
     "description":  "The purpose of this module is to show a satisfaction survey.",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,31 +15,31 @@
                              "id":  "3a56c7d2-a594-4682-bd90-b10bfb177620",
                              "name":  "Azure Key Vault",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
                              "name":  "Client Type Management",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "publisher":  "Microsoft",
                              "name":  "DotNet Aliases",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "93b83ef6-9666-4c1d-b130-c232f4047621",
                              "name":  "Upgrade Tags",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "screenshots":  [

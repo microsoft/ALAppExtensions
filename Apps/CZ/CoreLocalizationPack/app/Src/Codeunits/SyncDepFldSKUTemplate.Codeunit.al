@@ -45,7 +45,7 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template CZL");
         StockkeepingUnitTemplateCZL.ChangeCompany(Rec.CurrentCompany);
@@ -55,7 +55,7 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
             StockkeepingUnitTemplateCZL."Location Code" := Rec."Location Code";
             StockkeepingUnitTemplateCZL.Insert(false);
         end;
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template", 'OnBeforeDeleteEvent', '', false, false)]
@@ -68,13 +68,13 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template CZL");
         StockkeepingUnitTemplateCZL.ChangeCompany(Rec.CurrentCompany);
         if StockkeepingUnitTemplateCZL.Get(Rec."Item Category Code", Rec."Location Code") then
             StockkeepingUnitTemplateCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -117,7 +117,7 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template");
         StockkeepingUnitTemplate.ChangeCompany(Rec.CurrentCompany);
@@ -127,7 +127,7 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
             StockkeepingUnitTemplate."Location Code" := Rec."Location Code";
             StockkeepingUnitTemplate.Insert(false);
         end;
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Stockkeeping Unit Template CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -140,13 +140,13 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stockkeeping Unit Template CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stockkeeping Unit Template");
         StockkeepingUnitTemplate.ChangeCompany(Rec.CurrentCompany);
         if StockkeepingUnitTemplate.Get(Rec."Item Category Code", Rec."Location Code") then
             StockkeepingUnitTemplate.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

@@ -1,6 +1,8 @@
 table 4051 "GPIVTrxDetailHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; DOCTYPE; Option)

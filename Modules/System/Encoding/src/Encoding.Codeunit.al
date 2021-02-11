@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Provides helper functions to convert data
+/// Codeunig that exposes encoding functionality.
 /// </summary>
-codeunit 1485 "Encoding"
+codeunit 1486 "Encoding"
 {
     Access = Public;
 
@@ -16,11 +16,12 @@ codeunit 1485 "Encoding"
     /// <summary>
     /// Converts a text from one encoding to another.
     /// </summary>
-    /// <param name="SrcCodepage">Code page identifier of the source.</param>
-    /// <param name="DstCodepage">Code page identifier of the output.</param>
-    /// <param name="Text">The text containing the characters to convert.</param>
-    procedure Convert(SrcCodepage: Integer; DstCodepage: Integer; Text: Text): Text
+    /// <param name="SourceCodepage">Encoding code page identifier of the source text. Valid values are between 0 and 65535.</param>
+    /// <param name="DestinationCodepage">Encoding code page identifier for the result text. Valid values are between 0 and 65535.</param>
+    /// <param name="Text">The text to convert.</param>
+    /// <returns>The text in the destination encoding.</returns>
+    procedure Convert(SourceCodepage: Integer; DestinationCodepage: Integer; Text: Text): Text
     begin
-        exit(EncodingImpl.Convert(SrcCodepage, DstCodepage, Text));
+        exit(EncodingImpl.Convert(SourceCodepage, DestinationCodepage, Text));
     end;
 }

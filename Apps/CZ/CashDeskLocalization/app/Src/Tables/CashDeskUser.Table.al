@@ -49,6 +49,11 @@ table 11745 "Cash Desk User CZP"
             Caption = 'Post';
             DataClassification = CustomerContent;
         }
+        field(13; "Post EET Only"; Boolean)
+        {
+            Caption = 'Post EET Only';
+            DataClassification = CustomerContent;
+        }
         field(22; "User Full Name"; Text[100])
         {
             Caption = 'User Full Name';

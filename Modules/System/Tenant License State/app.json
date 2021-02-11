@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Retrieves the current state of the tenant license.",
     "description":  "Retrieves the current state of the tenant license, such as trial, paid, or suspended, including the start and end dates of the license.",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",

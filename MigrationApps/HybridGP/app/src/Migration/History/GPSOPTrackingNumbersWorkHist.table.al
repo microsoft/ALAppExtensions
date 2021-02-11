@@ -1,6 +1,8 @@
 table 4076 "GPSOPTrackingNumbersWorkHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; SOPNUMBE; text[22])

@@ -30,7 +30,8 @@ codeunit 149000 "BCPT Start Tests"
 
         BCPTHeader."No. of tests running" := 0;
         BCPTHeader.Version += 1;
-        BCPTHeader."No. of tests running" := 0;
+        BCPTHeader.Modify();
+        Commit();
 
         BCPTLine.SetRange("BCPT Code", BCPTHeader.Code);
         BCPTLine.SetFilter("Codeunit ID", '<>0');

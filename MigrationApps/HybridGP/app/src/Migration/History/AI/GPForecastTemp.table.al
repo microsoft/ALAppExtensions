@@ -1,6 +1,7 @@
 table 4031 "GPForecastTemp"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

@@ -11,76 +11,6 @@
       <rd:DataSourceID>7c4c7f03-58d1-49db-b44d-e143f0e6f98c</rd:DataSourceID>
     </DataSource>
   </DataSources>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-      <Fields>
-        <Field Name="CashDesk_No">
-          <DataField>CashDesk_No</DataField>
-        </Field>
-        <Field Name="CashDesk_Name">
-          <DataField>CashDesk_Name</DataField>
-        </Field>
-        <Field Name="CashDesk_Currency_Code">
-          <DataField>CashDesk_Currency_Code</DataField>
-        </Field>
-        <Field Name="CompanyAddress3">
-          <DataField>CompanyAddress3</DataField>
-        </Field>
-        <Field Name="CompanyAddress2">
-          <DataField>CompanyAddress2</DataField>
-        </Field>
-        <Field Name="CompanyAddress1">
-          <DataField>CompanyAddress1</DataField>
-        </Field>
-        <Field Name="CashDeskFilter">
-          <DataField>CashDeskFilter</DataField>
-        </Field>
-        <Field Name="BalanceToDate">
-          <DataField>BalanceToDate</DataField>
-        </Field>
-        <Field Name="BalanceToDateFormat">
-          <DataField>BalanceToDateFormat</DataField>
-        </Field>
-        <Field Name="Integer_Number">
-          <DataField>Integer_Number</DataField>
-        </Field>
-        <Field Name="TempCashDocHeader_Payment_Purpose">
-          <DataField>TempCashDocHeader_Payment_Purpose</DataField>
-        </Field>
-        <Field Name="TempCashDocHeader_External_Document_No">
-          <DataField>TempCashDocHeader_External_Document_No</DataField>
-        </Field>
-        <Field Name="TempCashDocHeader_Posting_Date">
-          <DataField>TempCashDocHeader_Posting_Date</DataField>
-        </Field>
-        <Field Name="TempCashDocHeader_No">
-          <DataField>TempCashDocHeader_No</DataField>
-        </Field>
-        <Field Name="Balance">
-          <DataField>Balance</DataField>
-        </Field>
-        <Field Name="BalanceFormat">
-          <DataField>BalanceFormat</DataField>
-        </Field>
-        <Field Name="Payment">
-          <DataField>Payment</DataField>
-        </Field>
-        <Field Name="PaymentFormat">
-          <DataField>PaymentFormat</DataField>
-        </Field>
-        <Field Name="Receipt">
-          <DataField>Receipt</DataField>
-        </Field>
-        <Field Name="ReceiptFormat">
-          <DataField>ReceiptFormat</DataField>
-        </Field>
-      </Fields>
-    </DataSet>
-  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -2273,4 +2203,74 @@ End Function
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
   <rd:ReportID>1fefcfd7-9e36-4e00-9dad-df5f81b4f8d0</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="CashDesk_No">
+          <DataField>CashDesk_No</DataField>
+        </Field>
+        <Field Name="CashDesk_Name">
+          <DataField>CashDesk_Name</DataField>
+        </Field>
+        <Field Name="CashDesk_Currency_Code">
+          <DataField>CashDesk_Currency_Code</DataField>
+        </Field>
+        <Field Name="CompanyAddress3">
+          <DataField>CompanyAddress3</DataField>
+        </Field>
+        <Field Name="CompanyAddress2">
+          <DataField>CompanyAddress2</DataField>
+        </Field>
+        <Field Name="CompanyAddress1">
+          <DataField>CompanyAddress1</DataField>
+        </Field>
+        <Field Name="CashDeskFilter">
+          <DataField>CashDeskFilter</DataField>
+        </Field>
+        <Field Name="BalanceToDate">
+          <DataField>BalanceToDate</DataField>
+        </Field>
+        <Field Name="BalanceToDateFormat">
+          <DataField>BalanceToDateFormat</DataField>
+        </Field>
+        <Field Name="Integer_Number">
+          <DataField>Integer_Number</DataField>
+        </Field>
+        <Field Name="TempCashDocHeader_Payment_Purpose">
+          <DataField>TempCashDocHeader_Payment_Purpose</DataField>
+        </Field>
+        <Field Name="TempCashDocHeader_External_Document_No">
+          <DataField>TempCashDocHeader_External_Document_No</DataField>
+        </Field>
+        <Field Name="TempCashDocHeader_Posting_Date">
+          <DataField>TempCashDocHeader_Posting_Date</DataField>
+        </Field>
+        <Field Name="TempCashDocHeader_No">
+          <DataField>TempCashDocHeader_No</DataField>
+        </Field>
+        <Field Name="Balance">
+          <DataField>Balance</DataField>
+        </Field>
+        <Field Name="BalanceFormat">
+          <DataField>BalanceFormat</DataField>
+        </Field>
+        <Field Name="Payment">
+          <DataField>Payment</DataField>
+        </Field>
+        <Field Name="PaymentFormat">
+          <DataField>PaymentFormat</DataField>
+        </Field>
+        <Field Name="Receipt">
+          <DataField>Receipt</DataField>
+        </Field>
+        <Field Name="ReceiptFormat">
+          <DataField>ReceiptFormat</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
 </Report>

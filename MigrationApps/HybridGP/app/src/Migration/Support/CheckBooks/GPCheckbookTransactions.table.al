@@ -1,7 +1,7 @@
 table 40101 "GP Checkbook Transactions"
 {
     ReplicateData = false;
-
+    Extensible = false;
     Permissions = tableData "Bank Account Ledger Entry" = rim;
 
     fields
@@ -216,86 +216,11 @@ table 40101 "GP Checkbook Transactions"
         }
     }
 
+    procedure MoveStagingData(CheckbookId: Code[15]; PostingGroup: Code[20])
+    begin
+
+    end;
+
     var
         PostingGroupCodeTxt: Label 'GP', Locked = true;
-
-    procedure MoveStagingData(CheckbookId: Code[15]; PostingGroup: Code[20])
-    var
-        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
-        BatchCounter: Integer;
-    begin
-        BatchCounter := 0;
-        SetRange(CHEKBKID, CheckbookId);
-        if FindSet() then
-            repeat
-                BankAccountLedgerEntry.Init();
-                BankAccountLedgerEntry."Entry No." := CMRECNUM;
-                BankAccountLedgerEntry."Document No." := Format(CMRECNUM);
-                BankAccountLedgerEntry."Transaction No." := CMRECNUM;
-                BankAccountLedgerEntry."Bank Account No." := CHEKBKID;
-                BankAccountLedgerEntry."Posting Date" := TRXDATE;
-                BankAccountLedgerEntry.Description := paidtorcvdfrom;
-                BankAccountLedgerEntry."Bank Acc. Posting Group" := PostingGroup;
-                BankAccountLedgerEntry.Open := true;
-                BankAccountLedgerEntry."Closed by Entry No." := 0;
-
-                if StrLen(CHEKBKID.Trim()) <= 8 then
-                    BankAccountLedgerEntry."Journal Batch Name" := PostingGroupCodeTxt + CopyStr(CHEKBKID.Trim(), 1, 8)
-                else
-                    BankAccountLedgerEntry."Journal Batch Name" := GetJournalBatchName(CHEKBKID, BatchCounter);
-
-                BankAccountLedgerEntry."Bal. Account No." := CMLinkID;
-                BankAccountLedgerEntry."Statement Status" := 0;
-                BankAccountLedgerEntry."Statement Line No." := 0;
-                BankAccountLedgerEntry."Document Date" := TRXDATE;
-                BankAccountLedgerEntry."External Document No." := SRCDOCNUM;
-
-                /*  
-                    GP CMTrxType we support
-                    -- 2 = cash receipt
-                    -- 3 = payment
-                */
-                if CMTrxType = 2 then begin
-                    BankAccountLedgerEntry."Document Type" := BankAccountLedgerEntry."Document Type"::" ";
-                    BankAccountLedgerEntry.Amount := TRXAMNT;
-                    BankAccountLedgerEntry."Remaining Amount" := TRXAMNT;
-                    BankAccountLedgerEntry."Amount (LCY)" := TRXAMNT;
-                    BankAccountLedgerEntry."Source Code" := 'CASHRECJNL';
-                    BankAccountLedgerEntry.Positive := true;
-                    BankAccountLedgerEntry."Bal. Account Type" := BankAccountLedgerEntry."Bal. Account Type"::Customer;
-                    BankAccountLedgerEntry."Debit Amount" := TRXAMNT;
-                    BankAccountLedgerEntry."Debit Amount (LCY)" := TRXAMNT;
-                end else begin
-                    BankAccountLedgerEntry."Document Type" := BankAccountLedgerEntry."Document Type"::Payment;
-                    BankAccountLedgerEntry.Amount := -TRXAMNT;
-                    BankAccountLedgerEntry."Remaining Amount" := -TRXAMNT;
-                    BankAccountLedgerEntry."Amount (LCY)" := -TRXAMNT;
-                    BankAccountLedgerEntry."Source Code" := 'PAYMENTJNL';
-                    BankAccountLedgerEntry.Positive := false;
-                    BankAccountLedgerEntry."Bal. Account Type" := BankAccountLedgerEntry."Bal. Account Type"::Vendor;
-                    BankAccountLedgerEntry."Credit Amount" := TRXAMNT;
-                    BankAccountLedgerEntry."Credit Amount (LCY)" := TRXAMNT;
-                end;
-
-                BankAccountLedgerEntry.Insert(true);
-            until Next() = 0;
-    end;
-
-    local procedure GetJournalBatchName(CheckBookId: Text[15]; var Counter: Integer): Code[10]
-    var
-        Name: Text[8];
-    begin
-        Counter := Counter + 1;
-
-        if Counter < 10 then
-            Name := CopyStr(CheckBookId.Trim(), 1, 7) + Format(Counter);
-
-        if (Counter > 9) and (Counter < 100) then
-            Name := CopyStr(CheckBookId.Trim(), 1, 6) + Format(Counter);
-
-        if (Counter > 99) and (Counter < 1000) then
-            Name := CopyStr(CheckBookId.Trim(), 1, 5) + Format(Counter);
-
-        exit(PostingGroupCodeTxt + Name);
-    end;
 }

@@ -16,7 +16,7 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
                 begin
                     AccScheduleLine.SetRange("Schedule Name", Rec."Schedule Name");
                     AccScheduleLine.SetFilter("Row No.", '<>%1', Rec."Row No.");
-                    if Page.RunModal(Page::"Acc. Schedule Line List", AccScheduleLine) = Action::LookupOK then
+                    if Page.RunModal(Page::"Acc. Schedule Line List CZL", AccScheduleLine) = Action::LookupOK then
                         Rec."Row Correction CZL" := AccScheduleLine."Row No.";
                 end;
             }

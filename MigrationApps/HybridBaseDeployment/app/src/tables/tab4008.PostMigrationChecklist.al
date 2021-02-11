@@ -2,6 +2,7 @@ table 4008 "Post Migration Checklist"
 {
     DataPerCompany = false;
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

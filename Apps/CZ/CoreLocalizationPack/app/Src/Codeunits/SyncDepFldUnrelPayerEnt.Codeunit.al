@@ -45,7 +45,7 @@ codeunit 31156 "Sync.Dep.Fld-UnrelPayerEnt CZL"
             exit;
         if Rec.IsTemporary then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Uncertainty Payer Entry", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Uncertainty Payer Entry") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Unreliable Payer Entry CZL");
         UnreliablePayerEntryCZL.ChangeCompany(Rec.CurrentCompany);
@@ -65,7 +65,7 @@ codeunit 31156 "Sync.Dep.Fld-UnrelPayerEnt CZL"
         UnreliablePayerEntryCZL."Full Bank Account No." := Rec."Full Bank Account No.";
         UnreliablePayerEntryCZL."Bank Account No. Type" := Rec."Bank Account No. Type";
         UnreliablePayerEntryCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Unreliable Payer Entry CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Unreliable Payer Entry CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Uncertainty Payer Entry", 'OnBeforeDeleteEvent', '', false, false)]
@@ -130,7 +130,7 @@ codeunit 31156 "Sync.Dep.Fld-UnrelPayerEnt CZL"
             exit;
         if Rec.IsTemporary then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Unreliable Payer Entry CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Unreliable Payer Entry CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Uncertainty Payer Entry");
         UncertaintyPayerEntry.ChangeCompany(Rec.CurrentCompany);

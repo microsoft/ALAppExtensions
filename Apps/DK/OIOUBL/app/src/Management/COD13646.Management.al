@@ -43,11 +43,15 @@ codeunit 13646 "OIOUBL-Management"
         if IsHandled then
             exit;
 
+#if not CLEAN17
         if FileManagement.IsLocalFileSystemAccessible() then begin
             FilePath := FileManagement.DownloadTempFile(SourceFile);
             FileManagement.CopyClientFile(FilePath, STRSUBSTNO('%1\%2', FolderPath, FileName), true);
         end else
             DOWNLOAD(SourceFile, '', FolderPath, XmlFilterTxt, FileName);
+#else
+        Download(SourceFile, '', FolderPath, XmlFilterTxt, FileName);
+#endif
     end;
 
     procedure GetOIOUBLElectronicDocumentFormatCode(): Code[20];
@@ -252,6 +256,7 @@ codeunit 13646 "OIOUBL-Management"
         TempBlob: Codeunit "Temp Blob";
         ZipInStream: InStream;
     begin
+#if not CLEAN17
         if FileManagement.IsLocalFileSystemAccessible() then
             FileManagement.CopyServerFile(ServerZipFilePath, StrSubstNo('%1\%2', ClientZipFolder, ClientZipFileName), true)
         else begin
@@ -259,6 +264,11 @@ codeunit 13646 "OIOUBL-Management"
             TempBlob.CreateInStream(ZipInStream);
             DownloadFromStream(ZipInStream, ZipArchiveSaveDialogTxt, ClientZipFolder, ZipArchiveFilterTxt, ClientZipFileName);
         end;
+#else
+        FileManagement.BLOBImportFromServerFile(TempBlob, ServerZipFilePath);
+        TempBlob.CreateInStream(ZipInStream);
+        DownloadFromStream(ZipInStream, ZipArchiveSaveDialogTxt, ClientZipFolder, ZipArchiveFilterTxt, ClientZipFileName);
+#endif
     end;
 
     [IntegrationEvent(true, false)]

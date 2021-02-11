@@ -73,6 +73,11 @@ page 31158 "Cash Desk Events Setup CZP"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the dimension value code associated with the cash desk.';
                 }
+                field("EET Transaction"; Rec."EET Transaction")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether rows that meet conditions for a recorded sale will be automatically populated.';
+                }
             }
         }
         area(factboxes)

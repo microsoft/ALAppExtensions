@@ -1,6 +1,8 @@
 table 4036 "GPIVDistributionHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; IVDOCTYP; Option)

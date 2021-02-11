@@ -26,7 +26,7 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stat. Reporting Setup", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Stat. Reporting Setup") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statutory Reporting Setup CZL");
         StatutoryReportingSetupCZL.ChangeCompany(Rec.CurrentCompany);
@@ -71,7 +71,7 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         StatutoryReportingSetupCZL."VIES Decl. Filled Employee No." := Rec."VIES Decl. Filled by Empl. No.";
         StatutoryReportingSetupCZL."VIES Number of Lines" := Rec."VIES Number of Lines";
         StatutoryReportingSetupCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statutory Reporting Setup CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statutory Reporting Setup CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Statutory Reporting Setup CZL", 'OnAfterInsertEvent', '', false, false)]
@@ -97,7 +97,7 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statutory Reporting Setup CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statutory Reporting Setup CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Stat. Reporting Setup");
         StatReportingSetup.ChangeCompany(Rec.CurrentCompany);
@@ -142,7 +142,7 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         StatReportingSetup."VIES Decl. Filled by Empl. No." := Rec."VIES Decl. Filled Employee No.";
         StatReportingSetup."VIES Number of Lines" := Rec."VIES Number of Lines";
         StatReportingSetup.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stat. Reporting Setup", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stat. Reporting Setup");
 
         UnbindSubscription(SyncLoopingHelper);
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Information");
@@ -161,7 +161,7 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         CompanyInformation."Accounting Manager No." := Rec."Accounting Manager No.";
         CompanyInformation."Finance Manager No." := Rec."Finance Manager No.";
         CompanyInformation.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Information", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Information");
 
         UnbindSubscription(SyncLoopingHelper);
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"General Ledger Setup");
@@ -172,7 +172,7 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         end;
         GeneralLedgerSetup."Company Officials Nos." := Rec."Company Official Nos.";
         GeneralLedgerSetup.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"General Ledger Setup", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"General Ledger Setup");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

@@ -480,7 +480,7 @@ table 11510 "Swiss QR-Bill Buffer"
         end;
     end;
 
-    internal procedure GetCreditorInfo(var Customer: Record Customer): Boolean
+    procedure GetCreditorInfo(var Customer: Record Customer): Boolean
     begin
         if "Creditor Name" = '' then
             exit(false);
@@ -508,7 +508,7 @@ table 11510 "Swiss QR-Bill Buffer"
         exit(true);
     end;
 
-    internal procedure GetUltimateDebitorInfo(var Customer: Record Customer): Boolean
+    procedure GetUltimateDebitorInfo(var Customer: Record Customer): Boolean
     begin
         if "UDebtor Name" = '' then
             exit(false);
@@ -556,7 +556,7 @@ table 11510 "Swiss QR-Bill Buffer"
         exit(SwissQRBillSetup."Default Layout");
     end;
 
-    internal procedure CheckLimitForUnstrAndBillInfoText()
+    procedure CheckLimitForUnstrAndBillInfoText()
     var
         UnstrMessageLen: Integer;
         BillInfoTextLen: Integer;
@@ -630,7 +630,7 @@ table 11510 "Swiss QR-Bill Buffer"
                     "Billing Information" := SwissQRBillBillingInfo.GetBillingInformation("Customer Ledger Entry No.");
     end;
 
-    internal procedure PrepareForPrint()
+    procedure PrepareForPrint()
     begin
         CheckAppendFileNameExt();
         if not "Source Record Printed" then begin

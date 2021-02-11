@@ -11,7 +11,6 @@ codeunit 139664 "GP Data Migration Tests"
     var
         GPCustomer: Record "GP Customer";
         GPVendor: Record "GP Vendor";
-        Vendor: Record Vendor;
         CustomerFacade: Codeunit "Customer Data Migration Facade";
         CustomerMigrator: Codeunit "GP Customer Migrator";
         VendorMigrator: Codeunit "GP Vendor Migrator";
@@ -104,6 +103,7 @@ codeunit 139664 "GP Data Migration Tests"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGPVendorImport()
     var
+        Vendor: Record Vendor;
         CompanyInformation: Record "Company Information";
         JArray: JsonArray;
         Country: Code[10];
@@ -195,7 +195,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [THEN] payment terms get created in BC.
         PaymentTerms.FindFirst();
-        Assert.AreEqual(11, PaymentTerms.Count(), 'Incorrect number of Payment Terms created.');
+        Assert.AreEqual(6, PaymentTerms.Count(), 'Incorrect number of Payment Terms created.');
 
         Evaluate(DiscountDateCalculation, '<D10>');
         Evaluate(DueDateCalculation, '<D10>');
@@ -262,61 +262,6 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual(2, PaymentTerms."Discount %", StrSubstNo('Invalid discount % for %1', CurrentPaymentTerm));
         Assert.AreEqual(DiscountDateCalculation, PaymentTerms."Discount Date Calculation", StrSubstNo('Invalid Discount Date Calculation for %1', CurrentPaymentTerm));
         Assert.AreEqual(DueDateCalculation, PaymentTerms."Due Date Calculation", StrSubstNo('Invalid Due Date Calculation for %1', CurrentPaymentTerm));
-
-        Evaluate(DiscountDateCalculation, 'D15');
-        Evaluate(DueDateCalculation, '<D15+30D>');
-        CurrentPaymentTerm := '3% 15th/Net 30';
-        PaymentTerms.Reset();
-        PaymentTerms.SetFilter(Code, '3% 15th/N2');
-        PaymentTerms.FindFirst();
-        Assert.AreEqual(CurrentPaymentTerm, PaymentTerms.Description, StrSubstNo('Invalid description for %1', CurrentPaymentTerm));
-        Assert.AreEqual(3, PaymentTerms."Discount %", StrSubstNo('Invalid discount % for %1', CurrentPaymentTerm));
-        Assert.AreEqual(DiscountDateCalculation, PaymentTerms."Discount Date Calculation", StrSubstNo('Invalid Discount Date Calculation for %1', CurrentPaymentTerm));
-        Assert.AreEqual(DueDateCalculation, PaymentTerms."Due Date Calculation", StrSubstNo('Invalid Due Date Calculation for %1', CurrentPaymentTerm));
-
-        Evaluate(DiscountDateCalculation, '');
-        Evaluate(DueDateCalculation, '<M4+D12>');
-        CurrentPaymentTerm := 'Bug 367155';
-        PaymentTerms.Reset();
-        PaymentTerms.SetFilter(Code, 'Bug 367155');
-        PaymentTerms.FindFirst();
-        Assert.AreEqual(CurrentPaymentTerm, PaymentTerms.Description, StrSubstNo('Invalid description for %1', CurrentPaymentTerm));
-        Assert.AreEqual(0, PaymentTerms."Discount %", StrSubstNo('Invalid discount % for %1', CurrentPaymentTerm));
-        Assert.AreEqual(DiscountDateCalculation, PaymentTerms."Discount Date Calculation", StrSubstNo('Invalid Discount Date Calculation for %1', CurrentPaymentTerm));
-        Assert.AreEqual(DueDateCalculation, PaymentTerms."Due Date Calculation", StrSubstNo('Invalid Due Date Calculation for %1', CurrentPaymentTerm));
-
-        Evaluate(DiscountDateCalculation, '<M6+D2>');
-        Evaluate(DueDateCalculation, '');
-        CurrentPaymentTerm := 'Test 1';
-        PaymentTerms.Reset();
-        PaymentTerms.SetFilter(Code, 'Test 1');
-        PaymentTerms.FindFirst();
-        Assert.AreEqual(CurrentPaymentTerm, PaymentTerms.Description, StrSubstNo('Invalid description for %1', CurrentPaymentTerm));
-        Assert.AreEqual(0, PaymentTerms."Discount %", StrSubstNo('Invalid discount % for %1', CurrentPaymentTerm));
-        Assert.AreEqual(DiscountDateCalculation, PaymentTerms."Discount Date Calculation", StrSubstNo('Invalid Discount Date Calculation for %1', CurrentPaymentTerm));
-        Assert.AreEqual(DueDateCalculation, PaymentTerms."Due Date Calculation", StrSubstNo('Invalid Due Date Calculation for %1', CurrentPaymentTerm));
-
-        Evaluate(DiscountDateCalculation, '<1M+2D>');
-        Evaluate(DueDateCalculation, '');
-        CurrentPaymentTerm := 'Test 2';
-        PaymentTerms.Reset();
-        PaymentTerms.SetFilter(Code, 'Test 2');
-        PaymentTerms.FindFirst();
-        Assert.AreEqual(CurrentPaymentTerm, PaymentTerms.Description, StrSubstNo('Invalid description for %1', CurrentPaymentTerm));
-        Assert.AreEqual(0, PaymentTerms."Discount %", StrSubstNo('Invalid discount % for %1', CurrentPaymentTerm));
-        Assert.AreEqual(DiscountDateCalculation, PaymentTerms."Discount Date Calculation", StrSubstNo('Invalid Discount Date Calculation for %1', CurrentPaymentTerm));
-        Assert.AreEqual(DueDateCalculation, PaymentTerms."Due Date Calculation", StrSubstNo('Invalid Due Date Calculation for %1', CurrentPaymentTerm));
-
-        Evaluate(DiscountDateCalculation, '<M4+D1>');
-        Evaluate(DueDateCalculation, '<M4+D1+CM>');
-        CurrentPaymentTerm := 'Test 3';
-        PaymentTerms.Reset();
-        PaymentTerms.SetFilter(Code, 'Test 3');
-        PaymentTerms.FindFirst();
-        Assert.AreEqual(CurrentPaymentTerm, PaymentTerms.Description, StrSubstNo('Invalid description for %1', CurrentPaymentTerm));
-        Assert.AreEqual(0, PaymentTerms."Discount %", StrSubstNo('Invalid discount % for %1', CurrentPaymentTerm));
-        Assert.AreEqual(DiscountDateCalculation, PaymentTerms."Discount Date Calculation", StrSubstNo('Invalid Discount Date Calculation for %1', CurrentPaymentTerm));
-        Assert.AreEqual(DueDateCalculation, PaymentTerms."Due Date Calculation", StrSubstNo('Invalid Due Date Calculation for %1', CurrentPaymentTerm));
     end;
 
     local procedure CreateGPPaymentTermsRecords()
@@ -379,7 +324,6 @@ codeunit 139664 "GP Data Migration Tests"
         GPPaymentTerms.PYMTRMID_New := '';
         GPPaymentTerms.Insert();
 
-        // BUG 362674
         GPPaymentTerms.Init();
         GPPaymentTerms.PYMTRMID := '2% 10TH - BUG';
         GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Next Month"; // 5
@@ -398,7 +342,6 @@ codeunit 139664 "GP Data Migration Tests"
         GPPaymentTerms.PYMTRMID_New := '';
         GPPaymentTerms.Insert();
 
-        // BUG 362674
         GPPaymentTerms.Init();
         GPPaymentTerms.PYMTRMID := '1.5% 10TH - BUG';
         GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days"; // 1
@@ -432,97 +375,6 @@ codeunit 139664 "GP Data Migration Tests"
         GPPaymentTerms.CalculateDateFromDays := 0;
         GPPaymentTerms.DueMonth := 0; // empty
         GPPaymentTerms.DiscountMonth := 0; // empty
-        GPPaymentTerms.PYMTRMID_New := '';
-        GPPaymentTerms.Insert();
-
-        GPPaymentTerms.Init();
-        GPPaymentTerms.PYMTRMID := '3% 15th/Net 30';
-        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days"; // 1
-        GPPaymentTerms.DUEDTDS := 30;
-        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::Date; // 2
-        GPPaymentTerms.DISCDTDS := 15;
-        GPPaymentTerms.DSCLCTYP := GPPaymentTerms.DSCLCTYP::Percent; // 1
-        GPPaymentTerms.DSCPCTAM := 300;
-        GPPaymentTerms.TAX := false;
-        GPPaymentTerms.CBUVATMD := false;
-        GPPaymentTerms.USEGRPER := false;
-        GPPaymentTerms.CalculateDateFrom := GPPaymentTerms.CalculateDateFrom::"Discount Date"; // 2
-        GPPaymentTerms.CalculateDateFromDays := 0;
-        GPPaymentTerms.DueMonth := 0; // empty
-        GPPaymentTerms.DiscountMonth := 0; // empty
-        GPPaymentTerms.PYMTRMID_New := '';
-        GPPaymentTerms.Insert();
-
-        // BUG 367155
-        GPPaymentTerms.Init();
-        GPPaymentTerms.PYMTRMID := 'Bug 367155';
-        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Month/Day"; // 7
-        GPPaymentTerms.DUEDTDS := 12;
-        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::Days; // 1
-        GPPaymentTerms.DISCDTDS := 0;
-        GPPaymentTerms.DSCLCTYP := GPPaymentTerms.DSCLCTYP::Percent; // 1
-        GPPaymentTerms.DSCPCTAM := 0;
-        GPPaymentTerms.TAX := false;
-        GPPaymentTerms.CBUVATMD := false;
-        GPPaymentTerms.USEGRPER := false;
-        GPPaymentTerms.CalculateDateFrom := GPPaymentTerms.CalculateDateFrom::"Transaction Date"; // 1
-        GPPaymentTerms.CalculateDateFromDays := 0;
-        GPPaymentTerms.DueMonth := 4; // April
-        GPPaymentTerms.DiscountMonth := 0; // empty
-        GPPaymentTerms.PYMTRMID_New := '';
-        GPPaymentTerms.Insert();
-
-        GPPaymentTerms.Init();
-        GPPaymentTerms.PYMTRMID := 'Test 1';
-        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days"; // 1
-        GPPaymentTerms.DUEDTDS := 0;
-        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::"Month/Day"; // 7
-        GPPaymentTerms.DISCDTDS := 2;
-        GPPaymentTerms.DSCLCTYP := GPPaymentTerms.DSCLCTYP::Percent; // 1
-        GPPaymentTerms.DSCPCTAM := 0;
-        GPPaymentTerms.TAX := false;
-        GPPaymentTerms.CBUVATMD := false;
-        GPPaymentTerms.USEGRPER := false;
-        GPPaymentTerms.CalculateDateFrom := GPPaymentTerms.CalculateDateFrom::"Transaction Date"; // 1
-        GPPaymentTerms.CalculateDateFromDays := 0;
-        GPPaymentTerms.DueMonth := 0; // empty
-        GPPaymentTerms.DiscountMonth := 6; // June
-        GPPaymentTerms.PYMTRMID_New := '';
-        GPPaymentTerms.Insert();
-
-        GPPaymentTerms.Init();
-        GPPaymentTerms.PYMTRMID := 'Test 2';
-        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days"; // 1
-        GPPaymentTerms.DUEDTDS := 0;
-        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::Months; // 6
-        GPPaymentTerms.DISCDTDS := 1;
-        GPPaymentTerms.DSCLCTYP := GPPaymentTerms.DSCLCTYP::Percent; // 1
-        GPPaymentTerms.DSCPCTAM := 0;
-        GPPaymentTerms.TAX := false;
-        GPPaymentTerms.CBUVATMD := false;
-        GPPaymentTerms.USEGRPER := false;
-        GPPaymentTerms.CalculateDateFrom := GPPaymentTerms.CalculateDateFrom::"Transaction Date"; // 1
-        GPPaymentTerms.CalculateDateFromDays := 2;
-        GPPaymentTerms.DueMonth := 0; // empty
-        GPPaymentTerms.DiscountMonth := 0; // empty
-        GPPaymentTerms.PYMTRMID_New := '';
-        GPPaymentTerms.Insert();
-
-        GPPaymentTerms.Init();
-        GPPaymentTerms.PYMTRMID := 'Test 3';
-        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::EOM; // 3
-        GPPaymentTerms.DUEDTDS := 0;
-        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::"Month/Day"; // 7
-        GPPaymentTerms.DISCDTDS := 1;
-        GPPaymentTerms.DSCLCTYP := GPPaymentTerms.DSCLCTYP::Percent; // 1
-        GPPaymentTerms.DSCPCTAM := 0;
-        GPPaymentTerms.TAX := false;
-        GPPaymentTerms.CBUVATMD := false;
-        GPPaymentTerms.USEGRPER := false;
-        GPPaymentTerms.CalculateDateFrom := GPPaymentTerms.CalculateDateFrom::"Discount Date"; // 2
-        GPPaymentTerms.CalculateDateFromDays := 0;
-        GPPaymentTerms.DueMonth := 0; // empty
-        GPPaymentTerms.DiscountMonth := 4; // April
         GPPaymentTerms.PYMTRMID_New := '';
         GPPaymentTerms.Insert();
     end;

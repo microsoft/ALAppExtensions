@@ -144,10 +144,10 @@ codeunit 3903 "Retention Policy Setup Impl."
         AllObj: record allObj;
         RetentionPolicyLog: codeunit "Retention Policy Log";
     begin
-        if not AllObj.Get(AllObj."Object Type"::Table, TableId) then begin
-            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(TableDoesNotExistLbl, TableId));
-            exit;
-        end;
+        if AllObj.Get(AllObj."Object Type"::Table, TableId) then
+            exit(true);
+
+        RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(TableDoesNotExistLbl, TableId));
     end;
 
     procedure DateFieldNoLookup(TableId: Integer; FieldNo: Integer): Integer

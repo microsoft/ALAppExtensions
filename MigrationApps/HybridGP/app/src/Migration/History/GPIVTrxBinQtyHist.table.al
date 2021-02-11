@@ -1,6 +1,8 @@
 table 4050 "GPIVTrxBinQtyHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; DOCNUMBR; text[22])

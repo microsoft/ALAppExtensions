@@ -4,6 +4,7 @@ table 4098 "GP Item Transaction"
     ObsoleteState = Removed;
     ObsoleteReason = 'This table is replaced by GP Item Transactions which includes additional field and modified primary key.';
     ObsoleteTag = '16.2';
+    Extensible = false;
 
     fields
     {
