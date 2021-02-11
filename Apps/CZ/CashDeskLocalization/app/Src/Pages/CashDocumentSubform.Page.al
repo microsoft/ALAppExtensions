@@ -262,6 +262,12 @@ page 31161 "Cash Document Subform CZP"
                     ToolTip = 'Specifies the ID to apply to the general ledger entry.';
                     Visible = false;
                 }
+                field("EET Transaction"; Rec."EET Transaction")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether row meet conditions for a recorded sale.';
+                    Visible = false;
+                }
                 field("Depreciation Book Code"; Rec."Depreciation Book Code")
                 {
                     ApplicationArea = FixedAssets;

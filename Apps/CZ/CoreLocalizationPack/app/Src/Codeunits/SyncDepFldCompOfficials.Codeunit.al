@@ -45,7 +45,7 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Officials", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Officials") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Official CZL");
         CompanyOfficialCZL.ChangeCompany(Rec.CurrentCompany);
@@ -74,7 +74,7 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
         CompanyOfficialCZL."No. Series" := Rec."No. Series";
         CompanyOfficialCZL."Employee No." := Rec."Employee No.";
         CompanyOfficialCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Official CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Official CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company Officials", 'OnBeforeDeleteEvent', '', false, false)]
@@ -87,13 +87,13 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Officials", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Officials") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Official CZL");
         CompanyOfficialCZL.ChangeCompany(Rec.CurrentCompany);
         if CompanyOfficialCZL.Get(Rec."No.") then
             CompanyOfficialCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Official CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Official CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company Official CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -136,7 +136,7 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Official CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Official CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Officials");
         CompanyOfficials.ChangeCompany(Rec.CurrentCompany);
@@ -165,7 +165,7 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
         CompanyOfficials."No. Series" := Rec."No. Series";
         CompanyOfficials."Employee No." := Rec."Employee No.";
         CompanyOfficials.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Officials", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Officials");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company Official CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -178,13 +178,13 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Official CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Company Official CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Company Officials");
         CompanyOfficials.ChangeCompany(Rec.CurrentCompany);
         if CompanyOfficials.Get(Rec."No.") then
             CompanyOfficials.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Officials", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Officials");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

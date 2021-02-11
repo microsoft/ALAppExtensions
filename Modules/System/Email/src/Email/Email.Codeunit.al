@@ -246,6 +246,16 @@ codeunit 8901 "Email"
     begin
     end;
 
+    /// <summary>
+    /// Integration event that notifies senders about whether their email was successfully sent in the background.
+    /// </summary>
+    /// <param name="MessageId">The ID of the email in the queue.</param>
+    /// <param name="Status">True if the message was successfully sent.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterSendEmail(MessageId: Guid; Status: Boolean)
+    begin
+    end;
+
     #endregion
 
     var

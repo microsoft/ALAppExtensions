@@ -3,6 +3,7 @@ table 4040 "GP Segment Name"
     DataClassification = SystemMetadata;
     DataPerCompany = false;
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

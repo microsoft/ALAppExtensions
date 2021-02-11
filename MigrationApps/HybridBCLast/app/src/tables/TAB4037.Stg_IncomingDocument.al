@@ -1,6 +1,7 @@
 table 4037 "Stg Incoming Document"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

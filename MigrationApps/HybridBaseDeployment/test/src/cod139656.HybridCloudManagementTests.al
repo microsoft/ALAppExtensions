@@ -34,13 +34,16 @@ codeunit 139656 "Hybrid Cloud Management Tests"
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        StringMatched: Boolean;
+        RedirectUrl: Text;
     begin
         // [SCENARIO] Verifies the redirect to SAAS wizard url is correct.
 
         // [GIVEN] The request to navigate to SAAS wizard is executed.
 
         // [THEN] The url to the SAAS wizard and filter are correct.
-        Assert.AreEqual('https://businesscentral.dynamics.com/?page=4000&filter=''Primary%20Key''%20IS%20''FROMONPREM''', HybridCloudManagement.GetSaasWizardRedirectUrl(IntelligentCloudSetup), 'Redirect Url is incorrect');
+        RedirectUrl := HybridCloudManagement.GetSaasWizardRedirectUrl(IntelligentCloudSetup);
+        Assert.IsTrue(RedirectUrl.Contains('?page=4000'), 'Redirect Url is incorrect: ' + RedirectUrl);
     end;
 
     [Test]
@@ -418,13 +421,20 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         IntelligentCloud: Record "Intelligent Cloud";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         Product: Text;
+        IntelligentCloudExists: Boolean;
     begin
         // [GIVEN] Migration is enabled
         Initialize();
         Product := CopyStr(CreateGuid(), 1, 10);
         LibraryHybridManagement.ResetSourceProduct(Product);
+
+        IntelligentCloudExists := IntelligentCloud.Get();
         IntelligentCloud.Enabled := true;
-        IntelligentCloud.Modify();
+        if IntelligentCloudExists then
+            IntelligentCloud.Modify()
+        else
+            IntelligentCloud.Insert();
+
         HybridReplicationSummary.DeleteAll();
 
         // [WHEN] A cleanup webhook notification arrives

@@ -1,5 +1,9 @@
 codeunit 11739 "Data Load MX"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '17.0';
+
     var
         CountryCodeTxt: Label 'MX', Locked = true;
 

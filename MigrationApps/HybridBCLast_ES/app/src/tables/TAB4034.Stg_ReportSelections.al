@@ -1,5 +1,8 @@
 table 4034 "Stg Report Selections"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '17.0';
     ReplicateData = false;
 
     fields

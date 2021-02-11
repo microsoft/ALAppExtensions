@@ -5,6 +5,7 @@ table 4010 "Intelligent Cloud Table Status"
     ObsoleteState = Removed;
     ObsoleteReason = 'With Text[>100] available, this table is obsolete in favor of Hybrid Replication Detail.';
     ObsoleteTag = '16.0';
+    Extensible = false;
 
     fields
     {

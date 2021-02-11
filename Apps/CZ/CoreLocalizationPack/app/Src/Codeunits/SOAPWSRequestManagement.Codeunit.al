@@ -1,96 +1,194 @@
 codeunit 31031 "SOAP WS Request Management CZL"
 {
     var
-        ResponseMessage: HttpResponseMessage;
+        ResponseHttpResponseMessage: HttpResponseMessage;
         ResponseContentXmlDocument: XmlDocument;
         GlobalBasicUsername, GlobalBasicPassword, GlobalSoapAction, GlobalContentType : Text;
         GlobalStreamEncoding: TextEncoding;
         GlobalTimeout: Integer;
         GlobalSkipCheckHttps: Boolean;
+        BodyPathTxt: Label '/soap:Envelope/soap:Body', Locked = true;
+        EnvelopePathTxt: Label '/soap:Envelope', Locked = true;
+        SchemaNamespaceTxt: Label 'http://www.w3.org/2001/XMLSchema', Locked = true;
+        SchemaInstanceNamespaceTxt: Label 'http://www.w3.org/2001/XMLSchema-instance', Locked = true;
+        SecurityUtilityNamespaceTxt: Label 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd', Locked = true;
+        SecurityExtensionNamespaceTxt: Label 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd', Locked = true;
+        SoapNamespaceTxt: Label 'http://schemas.xmlsoap.org/soap/envelope/', Locked = true;
+        UsernameTokenNamepsaceTxt: Label 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText', Locked = true;
 
     [TryFunction]
-    procedure SendRequestToWebService(ServiceUrl: Text; ContentXmlDocument: XmlDocument)
+    procedure SendRequestToWebService(ServiceUrl: Text; RequestContentInStream: InStream)
     var
+        RequestTempBlob: Codeunit "Temp Blob";
         WebRequestHelper: Codeunit "Web Request Helper";
-        Client: HttpClient;
-        Content: HttpContent;
-        ContentHeaders: HttpHeaders;
-        RequestHeaders: HttpHeaders;
-        RequestMessage: HttpRequestMessage;
-        SoapXml: Text;
-        SoapXmlDocument: XmlDocument;
+        WSHttpClient: HttpClient;
+        RequestHttpContent: HttpContent;
+        RequestContentHttpHeaders: HttpHeaders;
+        RequestHttpHeaders: HttpHeaders;
+        RequestHttpRequestMessage: HttpRequestMessage;
+        RequestInStream: InStream;
+        RequestOutStream: OutStream;
         ContentTypeTok: Label 'text/xml; charset=utf-8', Locked = true;
+        Xml: Text;
     begin
         ClearLastError();
-        Clear(ResponseMessage);
+        Clear(ResponseHttpResponseMessage);
         Clear(ResponseContentXmlDocument);
+        RequestTempBlob.CreateInStream(RequestInStream);
+        RequestTempBlob.CreateOutStream(RequestOutStream);
 
         if GlobalSkipCheckHttps then
             WebRequestHelper.IsValidUri(ServiceUrl)
         else
             WebRequestHelper.IsSecureHttpUrl(ServiceUrl);
 
-        RequestMessage.Method := 'POST';
-        RequestMessage.SetRequestUri := ServiceUrl;
-        RequestMessage.GetHeaders(RequestHeaders);
+        RequestHttpRequestMessage.Method := 'POST';
+        RequestHttpRequestMessage.SetRequestUri := ServiceUrl;
+        RequestHttpRequestMessage.GetHeaders(RequestHttpHeaders);
         if GlobalSoapAction <> '' then
-            RequestHeaders.Add('SOAPAction', GlobalSoapAction);
+            RequestHttpHeaders.Add('SOAPAction', GlobalSoapAction);
 
-        SoapXmlDocument := CreateSoapEnvelope(ContentXmlDocument);
-        SoapXmlDocument.WriteTo(SoapXml);
-        Content.WriteFrom(SoapXml);
-        Content.GetHeaders(ContentHeaders);
-        ContentHeaders.Remove('Content-Type');
+        CreateSoapRequest(RequestContentInStream, RequestOutStream, GlobalBasicUsername, GlobalBasicPassword);
+        RequestHttpContent.WriteFrom(RequestInStream);
+        RequestInStream.Read(Xml);
+        RequestHttpContent.GetHeaders(RequestContentHttpHeaders);
+        RequestContentHttpHeaders.Remove('Content-Type');
         if GlobalContentType = '' then
-            ContentHeaders.Add('Content-Type', ContentTypeTok)
+            RequestContentHttpHeaders.Add('Content-Type', ContentTypeTok)
         else
-            ContentHeaders.Add('Content-Type', GlobalContentType);
+            RequestContentHttpHeaders.Add('Content-Type', GlobalContentType);
 
-        RequestMessage.Content := Content;
+        RequestHttpRequestMessage.Content := RequestHttpContent;
         if GlobalTimeout = 0 then
-            Client.Timeout := 60000
+            WSHttpClient.Timeout := 60000
         else
-            Client.Timeout := GlobalTimeout;
-        Client.Send(RequestMessage, ResponseMessage);
-        ResponseContentXmlDocument := ExtractContentFromResponse(ResponseMessage);
+            WSHttpClient.Timeout := GlobalTimeout;
+        WSHttpClient.Send(RequestHttpRequestMessage, ResponseHttpResponseMessage);
+        ResponseContentXmlDocument := ExtractContentFromResponse(ResponseHttpResponseMessage);
     end;
 
-    local procedure CreateSoapEnvelope(ContentXmlDocument: XmlDocument): XmlDocument
+    [TryFunction]
+    procedure SendRequestToWebService(ServiceUrl: Text; RequestContentXmlDocument: XmlDocument)
     var
-        BodyXmlNode: XmlNode;
-        ContentRootXmlElement: XmlElement;
-        NamespaceManager: XmlNamespaceManager;
-        SoapXmlDocument: XmlDocument;
+        RequestContentTempBlob: Codeunit "Temp Blob";
+        RequestContentInStream: InStream;
+        RequestContentOutStream: OutStream;
     begin
-        ContentXmlDocument.GetRoot(ContentRootXmlElement);
+        RequestContentTempBlob.CreateInStream(RequestContentInStream);
+        RequestContentTempBlob.CreateOutStream(RequestContentOutStream);
 
-        XmlDocument.ReadFrom(GetSoapEnvelopeXml(), SoapXmlDocument);
-        SoapXmlDocument.SetDeclaration(XmlDeclaration.Create('1.0', 'utf-8', 'yes'));
-        NamespaceManager.NameTable(SoapXmlDocument.NameTable());
-        NamespaceManager.AddNamespace('soap', 'http://schemas.xmlsoap.org/soap/envelope/');
-        SoapXmlDocument.SelectSingleNode('//soap:Body', NamespaceManager, BodyXmlNode);
-        BodyXmlNode.AsXmlElement().Add(ContentRootXmlElement);
-        exit(SoapXmlDocument);
+        RequestContentXmlDocument.WriteTo(RequestContentOutStream);
+        SendRequestToWebService(ServiceUrl, RequestContentInStream);
     end;
 
-    local procedure GetSoapEnvelopeXml(): Text
+    local procedure CreateSoapRequest(RequestContentInStream: InStream; RequestOutStream: OutStream; Username: Text; Password: Text)
+    var
+        EnvelopeXmlDocument: XmlDocument;
+        EnvelopeBodyXmlNode: XmlNode;
     begin
-        exit(
-            '<soap:Envelope ' +
-                'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
-                'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
-                'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                '<soap:Body>' +
-                '</soap:Body>' +
-            '</soap:Envelope>'
-        );
+        if HasEnvelope(RequestContentInStream) then begin
+            CopyStreamWithoutWhitespace(RequestContentInStream, RequestOutStream);
+            exit;
+        end;
+
+        CreateEnvelope(EnvelopeXmlDocument, EnvelopeBodyXmlNode, Username, Password);
+        AddContentToEnvelope(EnvelopeBodyXmlNode, RequestContentInStream);
+        WriteXmlDocumentToStream(EnvelopeXmlDocument, RequestOutStream);
+    end;
+
+    local procedure CreateEnvelope(var EnvelopeXmlDocument: XmlDocument; var BodyXmlNode: XmlNode; Username: Text; Password: Text)
+    var
+        XMLDOMManagement: Codeunit "XML DOM Management";
+        BinarySecurityTokenXmlNode: XmlNode;
+        EnvelopeXmlNode: XmlNode;
+        HeaderXmlNode: XmlNode;
+        SecurityXmlNode: XmlNode;
+        UsernameTokenXmlNode: XmlNode;
+        UsernameXmlNode: XmlNode;
+        PasswordXmlNode: XmlNode;
+        NamespaceManager: XmlNamespaceManager;
+    begin
+        EnvelopeXmlDocument := XmlDocument.Create();
+        XMLDOMManagement.AddRootElementWithPrefix(EnvelopeXmlDocument, 'Envelope', 'soap', SoapNamespaceTxt, EnvelopeXmlNode);
+        XMLDOMManagement.AddElementWithPrefix(EnvelopeXmlNode, 'Header', '', 'soap', SoapNamespaceTxt, HeaderXmlNode);
+
+        if (Username <> '') or (Password <> '') then begin
+            XMLDOMManagement.AddElementWithPrefix(HeaderXmlNode, 'Security', '', 'wsse', SecurityExtensionNamespaceTxt, SecurityXmlNode);
+            XMLDOMManagement.AddNamespaceDeclaration(SecurityXmlNode, 'wsu', SecurityUtilityNamespaceTxt);
+            XMLDOMManagement.AddAttributeWithPrefix(SecurityXmlNode, 'mustUnderstand', 'soap', SoapNamespaceTxt, '1');
+
+            XMLDOMManagement.AddElementWithPrefix(SecurityXmlNode, 'UsernameToken', '', 'wsse', SecurityExtensionNamespaceTxt, UsernameTokenXmlNode);
+            XMLDOMManagement.AddAttributeWithPrefix(UsernameTokenXmlNode, 'Id', 'wsu', SecurityUtilityNamespaceTxt, CreateUUID());
+
+            XMLDOMManagement.AddElementWithPrefix(UsernameTokenXmlNode, 'Username', Username, 'wsse', SecurityExtensionNamespaceTxt, UsernameXmlNode);
+            XMLDOMManagement.AddElementWithPrefix(UsernameTokenXmlNode, 'Password', Password, 'wsse', SecurityExtensionNamespaceTxt, PasswordXmlNode);
+            XMLDOMManagement.AddAttribute(PasswordXmlNode, 'Type', UsernameTokenNamepsaceTxt);
+        end;
+
+        XMLDOMManagement.AddElementWithPrefix(EnvelopeXmlNode, 'Body', '', 'soap', SoapNamespaceTxt, BodyXmlNode);
+        XMLDOMManagement.AddNamespaceDeclaration(BodyXmlNode, 'xsi', SchemaInstanceNamespaceTxt);
+        XMLDOMManagement.AddNamespaceDeclaration(BodyXmlNode, 'xsd', SchemaNamespaceTxt);
+    end;
+
+    local procedure CreateUUID(): Text
+    begin
+        exit('uuid-' + DelChr(LowerCase(Format(CreateGuid())), '=', '{}'));
+    end;
+
+    local procedure AddContentToEnvelope(var BodyXmlNode: XmlNode; RequestContentInStream: Instream)
+    var
+        RequestContentXmlDocument: XmlDocument;
+        RequestContentXmlElement: XmlElement;
+    begin
+        XmlDocument.ReadFrom(RequestContentInStream, RequestContentXmlDocument);
+        RequestContentXmlDocument.GetRoot(RequestContentXmlElement);
+        BodyXmlNode.AsXmlElement().Add(RequestContentXmlElement);
+    end;
+
+    local procedure CopyStreamWithoutWhitespace(DataInStream: InStream; DataOutStream: OutStream)
+    var
+        DotNetXmlDocument: Codeunit DotNet_XmlDocument;
+    begin
+        DotNetXmlDocument.InitXmlDocument();
+        DotNetXmlDocument.Load(DataInStream);
+        DataOutStream.WriteText(DotNetXmlDocument.OuterXml());
+    end;
+
+    local procedure WriteXmlDocumentToStream(DataXmlDocument: XmlDocument; DataOutStream: OutStream)
+    var
+        XmlTempBlob: Codeunit "Temp Blob";
+        XmlInStream: InStream;
+        XmlOutStream: OutStream;
+    begin
+        XmlTempBlob.CreateInStream(XmlInStream);
+        XmlTempBlob.CreateOutStream(XmlOutStream);
+        DataXmlDocument.WriteTo(XmlOutStream);
+        CopyStreamWithoutWhitespace(XmlInStream, DataOutStream);
+    end;
+
+    local procedure HasEnvelope(ContentInStream: Instream): Boolean
+    var
+        ContentXmlDocument: XmlDocument;
+    begin
+        XmlDocument.ReadFrom(ContentInStream, ContentXmlDocument);
+        exit(HasEnvelope(ContentXmlDocument));
+    end;
+
+    local procedure HasEnvelope(ContentXmlDocument: XmlDocument): Boolean
+    var
+        XMLDOMManagement: Codeunit "XML DOM Management";
+        ContentXmlElement: XmlElement;
+        EnvelopeXmlNode: XmlNode;
+    begin
+        ContentXmlDocument.GetRoot(ContentXmlElement);
+        exit(XMLDOMManagement.FindNodeWithNamespace(ContentXmlElement.AsXmlNode(), EnvelopePathTxt, 'soap', SoapNamespaceTxt, EnvelopeXmlNode));
     end;
 
     procedure GetResponseAsText(): Text
     var
         ResponseText: Text;
     begin
-        ResponseMessage.Content().ReadAs(ResponseText);
+        ResponseHttpResponseMessage.Content().ReadAs(ResponseText);
         exit(ResponseText);
     end;
 
@@ -114,6 +212,7 @@ codeunit 31031 "SOAP WS Request Management CZL"
         ResponseContentXmlDocument.WriteTo(OutStr);
     end;
 
+    [Obsolete('This function is not needed and will be removed.', '18.0')]
     procedure GetResponseResultValue(): Text
     var
         ResultXmlNode: XmlNode;
@@ -124,7 +223,7 @@ codeunit 31031 "SOAP WS Request Management CZL"
         exit(ResultXmlNode.AsXmlElement().InnerXml());
     end;
 
-    local procedure ExtractContentFromResponse(ResponseMessage: HttpResponseMessage): XmlDocument
+    local procedure ExtractContentFromResponse(ResponseHttpResponseMessage: HttpResponseMessage): XmlDocument
     var
         BodyXmlNode: XmlNode;
         ContentXmlDocument: XmlDocument;
@@ -132,62 +231,53 @@ codeunit 31031 "SOAP WS Request Management CZL"
         ResponseContentText: Text;
         SoapXmlDocument: XmlDocument;
     begin
-        ResponseMessage.Content().ReadAs(ResponseContentText);
+        ResponseHttpResponseMessage.Content().ReadAs(ResponseContentText);
         XmlDocument.ReadFrom(ResponseContentText, SoapXmlDocument);
         NamespaceManager.NameTable(SoapXmlDocument.NameTable());
-        NamespaceManager.AddNamespace('soap', 'http://schemas.xmlsoap.org/soap/envelope/');
-        SoapXmlDocument.SelectSingleNode('//soap:Body', NamespaceManager, BodyXmlNode);
+        NamespaceManager.AddNamespace('soap', SoapNamespaceTxt);
+        SoapXmlDocument.SelectSingleNode(BodyPathTxt, NamespaceManager, BodyXmlNode);
         XmlDocument.ReadFrom(BodyXmlNode.AsXmlElement().InnerXml(), ContentXmlDocument);
         exit(ContentXmlDocument);
     end;
 
     procedure GetHttpStatusCode(): Integer
     begin
-        exit(ResponseMessage.HttpStatusCode());
+        exit(ResponseHttpResponseMessage.HttpStatusCode());
     end;
 
+    procedure HasResponseContentFault(): Boolean
+    begin
+        exit(GetResponseContentFault() <> '');
+    end;
+
+    [Obsolete('Replaced by HasResponseContentFault function.', '18.0')]
     procedure HasResponseFaultResult(): Boolean
     begin
-        exit(GetResponseFaultResultText() <> '');
+        exit(GetResponseContentFault() <> '');
     end;
 
     procedure ProcessFaultResponse()
     var
-        ResponseFaultResultText: Text;
+        ResponseContentFault: Text;
         ServiceStatusErr: Label 'Web service returned error message.\\Status Code: %1\Description: %2', Comment = '%1 = HTTP error status, %2 = HTTP error description';
-        ServiceFaultResultErr: Label 'Web service returned error message.\\%1', Comment = '%1 = ResponseFaultResultText';
+        ResponseContentFaultErr: Label 'Web service returned error message.\\%1', Comment = '%1 = fault from response content';
     begin
-        if not ResponseMessage.IsSuccessStatusCode() then
+        if not ResponseHttpResponseMessage.IsSuccessStatusCode() then
             Error(ServiceStatusErr, GetHttpStatusCode(), GetLastErrorText());
 
-        ResponseFaultResultText := GetResponseFaultResultText();
-        if ResponseFaultResultText <> '' then
-            Error(ServiceFaultResultErr, ResponseFaultResultText);
+        ResponseContentFault := GetResponseContentFault();
+        if ResponseContentFault <> '' then
+            Error(ResponseContentFaultErr, ResponseContentFault);
     end;
 
-    local procedure GetResponseFaultResultText(): Text
+    procedure GetResponseContentFault(): Text
     var
-        TypeHelper: Codeunit "Type Helper";
-        ResultXmlDocument: XmlDocument;
-        RootXmlElement: XmlElement;
-        StateXmlAttribute: XmlAttribute;
-        TextXmlNode: XmlNode;
-        ResultValueText: Text;
+        ErrorText: Text;
+        ResponseContent: Text;
     begin
-        ResultValueText := GetResponseResultValue();
-
-        if ResultValueText.StartsWith('ERROR:') then
-            exit(ResultValueText.Substring(8));
-
-        ResultValueText := TypeHelper.HtmlDecode(ResultValueText);
-        if XmlDocument.ReadFrom(ResultValueText, ResultXmlDocument) then
-            if ResultXmlDocument.GetRoot(RootXmlElement) then
-                if RootXmlElement.Attributes().Get('STATE', StateXmlAttribute) then
-                    if StateXmlAttribute.Value() = 'FAIL' then
-                        if RootXmlElement.SelectSingleNode('//TEXT', TextXmlNode) then
-                            exit(TextXmlNode.AsXmlElement().InnerXml().Substring(8));
-
-        exit('');
+        GetResponseContent(ResponseContent);
+        OnGetResponseContentFault(ResponseContent, ErrorText);
+        exit(ErrorText);
     end;
 
     procedure SetBasicCredentials(Username: Text; Password: Text)
@@ -219,5 +309,10 @@ codeunit 31031 "SOAP WS Request Management CZL"
     procedure DisableHttpsCheck()
     begin
         GlobalSkipCheckHttps := true;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetResponseContentFault(ResponseContent: Text; var ErrorText: Text)
+    begin
     end;
 }

@@ -204,6 +204,15 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Gets the content length of the current attachment.
+    /// </summary>
+    /// <returns>The content length of the current attachment.</returns>
+    procedure Attachments_GetLength(): Integer
+    begin
+        exit(EmailMessageImpl.Attachments_GetLength());
+    end;
+
+    /// <summary>
     /// Checks if the attachment is inline the message body.
     /// </summary>
     /// <returns>True if the attachment is inline the message body; otherwise - false.</returns>

@@ -11,13 +11,15 @@ codeunit 2610 "Feature Management Impl."
     Access = Internal;
 
     var
+        FeatureDataUpdate: interface "Feature Data Update";
+        ImplementedId: Text[50];
         SignInAgainMsg: Label 'You must sign out and then sign in again to make the changes take effect.', Comment = '"sign out" and "sign in" are the same terms as shown in the Business Central client.';
         SignInAgainNotificationGuidTok: Label '63b6f5ec-6db4-4e87-b103-c4bcb539f09e', Locked = true;
         PreviewFeatureParameterTxt: Label 'previewfeatures=%1', Comment = '%1 = the feature ID for the feature to be previewed', Locked = true;
         ErrorTraceTagMsg: Label 'Error on the feature data update task for feature %1 in company %2: %3', Comment = '%1- Feature id; %2 - CompanyName; %3 - error message', Locked = true;
-        ScheduledTraceTagMsg: Label 'The feature data update task is scheduled for feature %1 in company %2 to start on %3.', Comment = '%1- Feature id; %2 - CompanyName; %3 - datetime', Locked = true;
-        StartedTraceTagMsg: Label 'The feature data update task is started for feature %1 in company %2', Comment = '%1- Feature id; %2 - CompanyName', Locked = true;
-        FinishedTraceTagMsg: Label 'The feature data update task is successfully finished for feature %1 in company %2', Comment = '%1- Feature id; %2 - CompanyName', Locked = true;
+        ScheduledTraceTagMsg: Label 'The task for updating data for feature %1 in company %2 is scheduled to start at %3.', Comment = '%1- Feature id; %2 - CompanyName; %3 - datetime', Locked = true;
+        StartedTraceTagMsg: Label 'The task for updating data for feature %1 in company %2 is started.', Comment = '%1- Feature id; %2 - CompanyName', Locked = true;
+        FinishedTraceTagMsg: Label 'Data is updated for feature %1 in company %2.', Comment = '%1- Feature id; %2 - CompanyName', Locked = true;
         TagCategoryTxt: Label 'Feature Data Update', Locked = true;
 
     /// <summary>
@@ -149,6 +151,70 @@ codeunit 2610 "Feature Management Impl."
         if ScheduleFeatureDataUpdate.RunModal() = Action::OK then begin
             FeatureDataUpdateStatus.Find();
             Confirmed := FeatureDataUpdateStatus.Confirmed;
+        end;
+    end;
+
+    /// <summary>
+    /// Returns true if the feature has an interface implementation.
+    /// </summary>
+    procedure GetImplementation(FeatureDataUpdateStatus: Record "Feature Data Update Status") Implemented: Boolean;
+    var
+        FeatureManagementFacade: Codeunit "Feature Management Facade";
+    begin
+        if ImplementedId <> FeatureDataUpdateStatus."Feature Key" then
+            FeatureManagementFacade.OnGetImplementation(FeatureDataUpdateStatus, FeatureDataUpdate, ImplementedId);
+        Implemented := ImplementedId = FeatureDataUpdateStatus."Feature Key";
+    end;
+
+    /// <summary>
+    /// Retrurns the result of the interface's GetTaskDescription method.
+    /// </summary>
+    procedure GetTaskDescription(FeatureDataUpdateStatus: Record "Feature Data Update Status") TaskDescription: Text;
+    begin
+        if GetImplementation(FeatureDataUpdateStatus) then
+            TaskDescription := FeatureDataUpdate.GetTaskDescription();
+    end;
+
+    /// <summary>
+    /// Runs the interface's review data method.
+    /// </summary>
+    procedure ReviewData(FeatureDataUpdateStatus: Record "Feature Data Update Status"): Boolean;
+    begin
+        if GetImplementation(FeatureDataUpdateStatus) then
+            if FeatureDataUpdate.IsDataUpdateRequired() then begin
+                FeatureDataUpdate.ReviewData();
+                exit(true);
+            end;
+    end;
+
+    /// <summary>
+    /// Schedules or starts update depending on the options picked on the wizard page.
+    /// </summary>
+    /// <param name="FeatureDataUpdateStatus">The current status record</param>
+    /// <returns>true if user picked Update or Schedule and the task is scheduled or executed.</returns>
+    procedure Update(var FeatureDataUpdateStatus: Record "Feature Data Update Status"): Boolean;
+    begin
+        if not FeatureDataUpdateStatus."Data Update Required" then
+            exit(true);
+        if not ConfirmDataUpdate(FeatureDataUpdateStatus) then
+            exit(false);
+
+        if FeatureDataUpdateStatus."Background Task" then
+            exit(ScheduleTask(FeatureDataUpdateStatus));
+        Codeunit.Run(Codeunit::"Update Feature Data", FeatureDataUpdateStatus);
+        exit(true);
+    end;
+
+    /// <summary>
+    /// Runs the interface's data updata method and updates the feature status.
+    /// </summary>
+    procedure UpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    var
+        FeatureManagementFacade: Codeunit "Feature Management Facade";
+    begin
+        if GetImplementation(FeatureDataUpdateStatus) then begin
+            UpdateData(FeatureDataUpdateStatus, FeatureDataUpdate);
+            FeatureManagementFacade.OnAfterUpdateData(FeatureDataUpdateStatus);
         end;
     end;
 
@@ -309,7 +375,21 @@ codeunit 2610 "Feature Management Impl."
     /// Updates the status and properties related to scheduling and sends the trace tag.
     /// </summary>
     procedure ScheduleTask(var FeatureDataUpdateStatus: Record "Feature Data Update Status"): Boolean;
+    var
+        FeatureManagementFacade: Codeunit "Feature Management Facade";
+        DoNotScheduleTask: Boolean;
+        TaskID: Guid;
     begin
+        if not TaskScheduler.CanCreateTask() then
+            exit(false);
+
+        FeatureManagementFacade.OnBeforeScheduleTask(FeatureDataUpdateStatus, DoNotScheduleTask, TaskID);
+        if DoNotScheduleTask then
+            FeatureDataUpdateStatus."Task ID" := TaskID
+        else
+            FeatureDataUpdateStatus."Task ID" :=
+                CreateTask(FeatureDataUpdateStatus);
+
         if IsNullGuid(FeatureDataUpdateStatus."Task ID") then begin
             FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Pending;
             FeatureDataUpdateStatus."Start Date/Time" := 0DT;

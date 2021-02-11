@@ -45,7 +45,7 @@ codeunit 31157 "Sync.Dep.Fld-DocFooter CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Document Footer", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Document Footer") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Document Footer CZL");
         DocumentFooterCZL.ChangeCompany(Rec.CurrentCompany);
@@ -56,7 +56,7 @@ codeunit 31157 "Sync.Dep.Fld-DocFooter CZL"
         end;
         DocumentFooterCZL."Footer Text" := Rec."Footer Text";
         DocumentFooterCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Document Footer CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Document Footer CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Document Footer", 'OnBeforeDeleteEvent', '', false, false)]
@@ -69,13 +69,13 @@ codeunit 31157 "Sync.Dep.Fld-DocFooter CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Document Footer", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Document Footer") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Document Footer CZL");
         DocumentFooterCZL.ChangeCompany(Rec.CurrentCompany);
         if DocumentFooterCZL.Get(Rec."Language Code") then
             DocumentFooterCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Document Footer CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Document Footer CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Document Footer CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -118,7 +118,7 @@ codeunit 31157 "Sync.Dep.Fld-DocFooter CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Document Footer CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Document Footer CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Document Footer");
         DocumentFooter.ChangeCompany(Rec.CurrentCompany);
@@ -129,7 +129,7 @@ codeunit 31157 "Sync.Dep.Fld-DocFooter CZL"
         end;
         DocumentFooter."Footer Text" := CopyStr(Rec."Footer Text", 1, MaxStrLen(DocumentFooter."Footer Text"));
         DocumentFooter.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Document Footer", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Document Footer");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Document Footer CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -142,13 +142,13 @@ codeunit 31157 "Sync.Dep.Fld-DocFooter CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Document Footer CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Document Footer CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Document Footer");
         DocumentFooter.ChangeCompany(Rec.CurrentCompany);
         if DocumentFooter.Get(Rec."Language Code") then
             DocumentFooter.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Document Footer", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Document Footer");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

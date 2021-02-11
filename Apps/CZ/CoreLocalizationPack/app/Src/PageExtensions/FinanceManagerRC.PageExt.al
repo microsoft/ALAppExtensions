@@ -13,6 +13,25 @@ pageextension 11793 "Finance Manager RC CZL" extends "Finance Manager Role Cente
                 ToolTip = 'View a statement of posted VAT and calculate the duty liable to the customs authorities for the selected period.';
             }
         }
+        addafter("VAT- VIES Declaration Disk")
+        {
+            action("G/L VAT Reconciliation CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'G/L VAT Reconciliation';
+                RunObject = report "G/L VAT Reconciliation CZL";
+            }
+        }
+        addlast(Group6)
+        {
+            action(EETEntriesCZL)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'EET Entries';
+                RunObject = page "EET Entries CZL";
+                ToolTip = 'Open the list of EET entries.';
+            }
+        }
         addlast(Group7)
         {
             action("Accounting Sheets CZL")

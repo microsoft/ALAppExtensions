@@ -2,9 +2,9 @@
     "id":  "ad94bc69-99fa-4bf0-85b3-6dbc72bd1543",
     "name":  "Encoding",
     "publisher":  "Microsoft",
-    "brief":  "Provides encoding helper functions.",
-    "description":  "Provides helper functions for encoding",
-    "version":  "17.2.0.0",
+    "brief":  "Provides helper functions for encoding.",
+    "description":  "Provides helper functions for converting encoded text to another type of encoding.",
+    "version":  "17.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,7 +15,7 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "17.2.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "screenshots":  [
@@ -24,8 +24,8 @@
     "platform":  "17.0.0.0",
     "idRanges":  [
         {
-            "from":  1485,
-            "to":  1486
+            "from":  1486,
+            "to":  1487
         }
     ],
     "target":  "OnPrem",

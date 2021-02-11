@@ -17,20 +17,23 @@ codeunit 31078 "Item Journal Line Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterValidateEvent', 'Qty. (Phys. Inventory)', false, false)]
     local procedure UpdateInvtMovementTemplateOnAfterValidateQtyPhysInventory(var Rec: Record "Item Journal Line")
     var
+        InvtMovementTemplateName: Code[10];
+    begin
+        InvtMovementTemplateName := GetInvtMovementTemplateName(Rec);
+        if InvtMovementTemplateName <> '' then
+            Rec.Validate("Invt. Movement Template CZL", InvtMovementTemplateName);
+    end;
+
+    local procedure GetInvtMovementTemplateName(ItemJournalLine: Record "Item Journal Line"): Code[10]
+    var
         InventorySetup: Record "Inventory Setup";
     begin
         InventorySetup.Get();
-        Rec.Validate("Invt. Movement Template CZL", '');
-        if Rec."Qty. (Phys. Inventory)" > Rec."Qty. (Calculated)" then
-            if InventorySetup."Def.Tmpl. for Phys.Pos.Adj CZL" <> '' then begin
-                Rec.Validate("Invt. Movement Template CZL", InventorySetup."Def.Tmpl. for Phys.Pos.Adj CZL");
-                exit;
-            end;
-        if Rec."Qty. (Phys. Inventory)" < Rec."Qty. (Calculated)" then
-            if InventorySetup."Def.Tmpl. for Phys.Neg.Adj CZL" <> '' then begin
-                Rec.Validate("Invt. Movement Template CZL", InventorySetup."Def.Tmpl. for Phys.Neg.Adj CZL");
-                exit;
-            end;
+        if ItemJournalLine."Qty. (Phys. Inventory)" > ItemJournalLine."Qty. (Calculated)" then
+            exit(InventorySetup."Def.Tmpl. for Phys.Pos.Adj CZL");
+        if ItemJournalLine."Qty. (Phys. Inventory)" < ItemJournalLine."Qty. (Calculated)" then
+            exit(InventorySetup."Def.Tmpl. for Phys.Neg.Adj CZL");
+        exit('');
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterSetupNewLine', '', false, false)]

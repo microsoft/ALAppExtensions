@@ -50,6 +50,27 @@ codeunit 135092 "Upgrade Tag Test"
 
     [Test]
     [Scope('OnPrem')]
+    procedure TestHasUpgradeTagReturnsTrueWhenTagIsSetOnDatabase()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        Any: Codeunit Any;
+        Assert: Codeunit "Library Assert";
+        NewUpgradeTag: Code[250];
+    begin
+        // [Scenario] HasUpgradeTag should return true when upgrade tag is set by using SetDatabaseUpgradeTag function
+
+        // [Given] Any Upgrade tag
+        NewUpgradeTag := CopyStr(Any.AlphanumericText(MaxStrLen(NewUpgradeTag)), 1, MaxStrLen(NewUpgradeTag));
+
+        // [When] SetUpgradeTag is called
+        UpgradeTag.SetDatabaseUpgradeTag(NewUpgradeTag);
+
+        // [Then] HasUpgradeTag Should return true
+        Assert.IsTrue(UpgradeTag.HasUpgradeTag(NewUpgradeTag, ''), 'Tag should have been set, HasUpgradeTag must return true');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure TestRegisteringUpgradeTagsForNewCompany()
     var
         UpgradeTag: Codeunit "Upgrade Tag";
@@ -126,6 +147,49 @@ codeunit 135092 "Upgrade Tag Test"
         // [Then] No exception is thrown if we call validate. 
         UpgradeTagTags.VerifyAllCompaniesInitialized();
         UpgradeTagTags.VerifyCompanyInitialized('');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestHasUpgradeTagSkippedReturnsFalseWhenTagIsSet()
+    var
+        UpgradeTags: Record "Upgrade Tags";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        Any: Codeunit Any;
+        Assert: Codeunit "Library Assert";
+        NewUpgradeTag: Code[250];
+    begin
+        // [Scenario] HasUpgradeTagSkipped should return true when upgrade tag is skipped set by using SetSkippedUpgrade function
+
+        // [Given] Any Upgrade tag and insert into table
+        NewUpgradeTag := CopyStr(Any.AlphanumericText(MaxStrLen(NewUpgradeTag)), 1, MaxStrLen(NewUpgradeTag));
+        UpgradeTag.SetUpgradeTag(NewUpgradeTag);
+
+        // [Then] HasUpgradeTag Should return true
+        Assert.IsFalse(UpgradeTag.HasUpgradeTagSkipped(NewUpgradeTag, CopyStr(CompanyName(), 1, MaxStrLen(UpgradeTags.Company))), 'Skipped should not have been set, HasUpgradeTagSkipped must return false');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestHasUpgradeTagSkippedReturnsTrueWhenTagIsSet()
+    var
+        UpgradeTags: Record "Upgrade Tags";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        Any: Codeunit Any;
+        Assert: Codeunit "Library Assert";
+        NewUpgradeTag: Code[250];
+    begin
+        // [Scenario] HasUpgradeTagSkipped should return true when upgrade tag is skipped set by using SetSkippedUpgrade function
+
+        // [Given] Any Upgrade tag and insert into table
+        NewUpgradeTag := CopyStr(Any.AlphanumericText(MaxStrLen(NewUpgradeTag)), 1, MaxStrLen(NewUpgradeTag));
+        UpgradeTag.SetUpgradeTag(NewUpgradeTag);
+
+        // [When] SetSkippedUpgrade is called
+        UpgradeTag.SetSkippedUpgrade(NewUpgradeTag, true);
+
+        // [Then] HasUpgradeTag Should return true
+        Assert.IsTrue(UpgradeTag.HasUpgradeTagSkipped(NewUpgradeTag, CopyStr(CompanyName(), 1, MaxStrLen(UpgradeTags.Company))), 'Skipped should have been set, HasUpgradeTagSkipped must return true');
     end;
 
     local procedure SetupSetAllUpgradeTagsMock(var SetAllUpgradeTagsMock: Codeunit "SetAllUpgradeTags Mock"; var MockedPerCompanyUpgradeTags: List of [Code[250]]; var MockedPerDatabaseUpgradeTags: List of [Code[250]])

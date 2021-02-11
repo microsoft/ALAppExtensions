@@ -1,6 +1,8 @@
 table 4065 "GPRMHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; CUSTNMBR; text[16])

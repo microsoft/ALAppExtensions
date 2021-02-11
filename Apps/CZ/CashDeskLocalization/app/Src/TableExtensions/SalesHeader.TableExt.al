@@ -19,6 +19,7 @@ tableextension 11769 "Sales Header CZP" extends "Sales Header"
                     CashDeskCZP.Get("Cash Desk Code CZP");
                     CashDeskCZP.TestField(Blocked, false);
                     TestField("Currency Code", CashDeskCZP."Currency Code");
+                    CheckCashDocumentActionCZP();
                 end else
                     "Cash Document Action CZP" := "Cash Document Action CZP"::" ";
             end;
@@ -30,9 +31,18 @@ tableextension 11769 "Sales Header CZP" extends "Sales Header"
 
             trigger OnValidate()
             begin
-                if "Cash Document Action CZP" <> "Cash Document Action CZP"::" " then
+                if "Cash Document Action CZP" <> "Cash Document Action CZP"::" " then begin
                     TestField("Cash Desk Code CZP");
+                    CheckCashDocumentActionCZP();
+                end;
             end;
         }
     }
+
+    procedure CheckCashDocumentActionCZP()
+    var
+        EETManagementCZP: Codeunit "EET Management CZP";
+    begin
+        EETManagementCZP.CheckCashDocumentAction("Cash Desk Code CZP", "Cash Document Action CZP");
+    end;
 }

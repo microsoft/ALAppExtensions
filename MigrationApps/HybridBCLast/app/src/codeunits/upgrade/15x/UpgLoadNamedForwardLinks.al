@@ -1,5 +1,9 @@
 codeunit 4051 "Upg Mig Named Forward Links"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '17.0';
+
     trigger OnRun()
     begin
         // This code is based on standard app upgrade logic.

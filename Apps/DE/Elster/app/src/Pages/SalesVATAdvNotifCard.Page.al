@@ -45,7 +45,11 @@ page 11016 "Sales VAT Adv. Notif. Card"
                     var
                         FileMgt: Codeunit "File Management";
                     begin
+#if not CLEAN17
                         "XSL-Filename" := CopyStr(FileMgt.OpenFileDialog(CopyStr(Text1140000Lbl, 1, 50), "XSL-Filename", Text1140001Lbl), 1, MaxStrLen("XSL-Filename"));
+#else
+                        "XSL-Filename" := CopyStr(FileMgt.UploadFile(CopyStr(Text1140000Lbl, 1, 50), "XSL-Filename"), 1, MaxStrLen("XSL-Filename"));
+#endif
                     end;
                 }
                 field("XSL-Filename"; "XSL-Filename")

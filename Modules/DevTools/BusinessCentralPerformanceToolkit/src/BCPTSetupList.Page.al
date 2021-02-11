@@ -46,7 +46,7 @@ page 149000 "BCPT Setup List"
                     ToolTip = 'Specifies the duration of the BCPT.';
                     ApplicationArea = All;
                 }
-                field(Status; Status)
+                field(Status; Rec.Status)
                 {
                     Caption = 'Status';
                     ToolTip = 'Specifies the status of the BCPT.';

@@ -28,7 +28,7 @@ xmlport 11760 "Unreliable Payer List CZL"
 
                     trigger OnAfterAssignVariable()
                     begin
-                        if statusText <> 'OK' then
+                        if CopyStr(statusText, 1, 2) <> 'OK' then
                             Error(StatusErr, statusText);
                     end;
                 }

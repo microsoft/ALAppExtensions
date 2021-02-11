@@ -1,6 +1,7 @@
 table 4093 "GP Customer"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

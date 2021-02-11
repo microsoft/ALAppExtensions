@@ -321,9 +321,11 @@ table 11021 "Sales VAT Advance Notif."
 
         XmlDoc.GetRoot(XmlElem);
         if "XSL-Filename" <> '' then begin
+#if not CLEAN17
             if FileManagement.IsLocalFileSystemAccessible() then
                 if not FileManagement.ClientFileExists("XSL-Filename") then
                     Error(FilePathNotExistErr, "XSL-Filename");
+#endif
             XmlProcessInst := XmlProcessingInstruction.Create(
                 'xml-stylesheet', 'type="text/xsl" href="' + "XSL-Filename" + '"');
             XmlElem.AddBeforeSelf(XmlProcessInst);
@@ -346,6 +348,7 @@ table 11021 "Sales VAT Advance Notif."
         ExportXMLFile(FileName);
     end;
 
+#if not CLEAN17
     local procedure ExportXMLFile(SourceFile: Text)
     var
         FileManagement: Codeunit "File Management";
@@ -370,6 +373,18 @@ table 11021 "Sales VAT Advance Notif."
         end else
             Download(SourceFile, '', ElecVATDeclSetup."Sales VAT Adv. Notif. Path", XmlFilterTxt, FileName);
     end;
+#else
+    local procedure ExportXMLFile(SourceFile: Text)
+    var
+        FileName: Text;
+    begin
+        ElecVATDeclSetup.Get();
+
+        FileName := StrSubstNo('%1_%2.xml', ElecVATDeclSetup."XML File Default Name", Description);
+
+        Download(SourceFile, '', ElecVATDeclSetup."Sales VAT Adv. Notif. Path", XmlFilterTxt, FileName);
+    end;
+#endif
 
     procedure CheckDate(StartDate2: Date)
     begin

@@ -1,6 +1,7 @@
 table 4027 "GP Posting Accounts"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Looks up and selects registered users.",
     "description":  "Provides a page where you look up and select one or more registered users. For example, this is useful for assigning a person to things like documents, processes, or items.",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,7 +15,7 @@
                              "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "screenshots":  [

@@ -1,6 +1,7 @@
 table 4028 "GP Segments"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

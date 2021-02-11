@@ -1,6 +1,8 @@
 table 4066 "GPRMOpen"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; CUSTNMBR; text[16])

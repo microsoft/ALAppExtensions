@@ -139,6 +139,20 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
         end;
     end;
 
+    procedure GetVATBaseCZL(): Decimal
+    begin
+        if "Unrealized Base" <> 0 then
+            exit("Unrealized Base");
+        exit(Base);
+    end;
+
+    procedure GetVATAmountCZL(): Decimal
+    begin
+        if "Unrealized Amount" <> 0 then
+            exit("Unrealized Amount");
+        exit(Amount);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterSetVATStatementLineFiltersCZL(var VATEntry: Record "VAT Entry"; VATStatementLine: Record "VAT Statement Line")
     begin

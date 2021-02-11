@@ -29,6 +29,7 @@ codeunit 8888 "Email Dispatcher"
     var
         EmailMessage: Record "Email Message";
         SendEmail: Codeunit "Send Email";
+        ClientTypeMgt: Codeunit "Client Type Management";
         Dimensions: Dictionary of [Text, Text];
     begin
         Session.LogMessage('0000CTM', Format(Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl, 'EmailMessageID', Rec."Message Id");
@@ -69,6 +70,17 @@ codeunit 8888 "Email Dispatcher"
             UpdateOutboxError(FailedToFindEmailMessageErrorMsg, Rec);
             UpdateOutboxStatus(Rec, Rec.Status::Failed);
         end;
+
+        if (ClientTypeMgt.GetCurrentClientType() = ClientType::Background) then
+            if FireOnAfterSendEmail(Rec."Message Id", Success) then;
+    end;
+
+    [TryFunction]
+    local procedure FireOnAfterSendEmail(MessageID: Guid; Success: Boolean)
+    var
+        Email: Codeunit Email;
+    begin
+        Email.OnAfterSendEmail(MessageID, Success);
     end;
 
     local procedure InsertToSentEmail(EmailOutbox: Record "Email Outbox")

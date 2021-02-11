@@ -194,7 +194,7 @@ page 130451 "AL Test Tool"
                     PromotedCategory = Process;
                     PromotedIsBig = true;
                     PromotedOnly = true;
-                    ToolTip = 'Runs marked tests.';
+                    ToolTip = 'Runs tests.';
 
                     trigger OnAction()
                     var
@@ -305,70 +305,29 @@ page 130451 "AL Test Tool"
                         TestMethodLine: Record "Test Method Line";
                         TestSuiteMgt: Codeunit "Test Suite Mgt.";
                     begin
-                        if GuiAllowed() then begin
-                            if not Confirm(DeleteQuestion, false) then
+                        if GuiAllowed() then
+                            if not Confirm(DeleteQst, false) then
                                 exit;
-                        end;
 
                         CurrPage.SetSelectionFilter(TestMethodLine);
                         TestMethodLine.DeleteAll(true);
                         TestSuiteMgt.CalcTestResults(Rec, Success, Failure, Skipped, NotExecuted);
                     end;
                 }
-                action(InvertRunCheckLines)
+                action(InvertRun)
                 {
                     ApplicationArea = All;
-                    Caption = '&Invert Run Check';
+                    Caption = '&Invert Run Selection';
                     Image = Change;
                     Promoted = true;
                     PromotedCategory = Process;
                     PromotedIsBig = true;
                     PromotedOnly = true;
-                    ToolTip = 'Invert Run Check on selected lines.';
+                    ToolTip = 'Invert Run Selection on selected lines.';
 
                     trigger OnAction()
-                    var
-                        TestMethodLine: Record "Test Method Line";
-                        NewRunValue: Boolean;
-                        Counter: Integer;
-                        TotalCount: Integer;
-                        Window: Dialog;
-                        InvertQuestion: Text;
                     begin
-                        CurrPage.SetSelectionFilter(TestMethodLine);
-                        NewRunValue := not Rec.Run;
-
-                        if GuiAllowed() then begin
-                            if (NewRunValue = true) then
-                                InvertQuestion := InvertToCheckQuestion
-                            else
-                                InvertQuestion := InvertToUncheckQuestion;
-
-                            if TestMethodLine.Count() > 1 then
-                                if not Confirm(InvertQuestion, false) then
-                                    exit;
-
-                            Counter := 0;
-                            TotalCount := TestMethodLine.Count();
-                            Window.Open(DialogContentInvertingRunCheck);
-                        end;
-
-                        if TestMethodLine.FindSet(true, false) then
-                            repeat
-                                if GuiAllowed() then begin
-                                    Counter += 1;
-                                    Window.Update(1, format(TestMethodLine."Line Type") + '-' + format(TestMethodLine."Test Codeunit") + ' - ' + TestMethodLine.Name);
-                                    Window.Update(2, format(Counter) + ' / ' + format(TotalCount) + ' ... ' + format(round(Counter / TotalCount * 100, 1)) + ' %');
-                                end;
-
-                                if TestMethodLine.Run <> NewRunValue then begin
-                                    TestMethodLine.Validate(Run, NewRunValue);
-                                    TestMethodLine.Modify(true);
-                                end;
-                            until TestMethodLine.Next() = 0;
-
-                        if GuiAllowed() then
-                            Window.Close();
+                        InvertRunSelection();
                     end;
                 }
             }
@@ -431,10 +390,7 @@ page 130451 "AL Test Tool"
         RunDuration: Duration;
         TestRunnerDisplayName: Text;
         ErrorMessageWithStackTraceTxt: Text;
-        DeleteQuestion: Label 'Are you sure you want to Delete the Selected Lines?';
-        InvertToCheckQuestion: Label 'Are you sure you want to Check the Selected Lines?';
-        InvertToUncheckQuestion: Label 'Are you sure you want to Uncheck the Selected Lines?';
-        DialogContentInvertingRunCheck: Label '-- Inverting Run Check --\#1#\#2#';
+        DeleteQst: Label 'Are you sure you want to delete the selected lines?';
 
     local procedure ChangeTestSuite()
     var
@@ -492,5 +448,18 @@ page 130451 "AL Test Tool"
     begin
         RunDuration := "Finish Time" - "Start Time";
         ErrorMessageWithStackTraceTxt := TestSuiteMgt.GetErrorMessageWithStackTrace(Rec);
+    end;
+
+    local procedure  InvertRunSelection()
+    var
+        TestMethodLine: Record "Test Method Line";
+    begin
+        CurrPage.SetSelectionFilter(TestMethodLine);
+
+        if TestMethodLine.FindSet(true, false) then
+            repeat
+                TestMethodLine.Validate(Run, not TestMethodLine.Run);
+                TestMethodLine.Modify(true);
+            until TestMethodLine.Next() = 0;
     end;
 }

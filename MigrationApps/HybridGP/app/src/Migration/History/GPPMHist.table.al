@@ -1,6 +1,8 @@
 table 4053 "GPPMHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; VCHRNMBR; text[22])

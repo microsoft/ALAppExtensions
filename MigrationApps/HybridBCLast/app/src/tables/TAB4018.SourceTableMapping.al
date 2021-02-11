@@ -2,6 +2,7 @@ table 4018 "Source Table Mapping"
 {
     DataPerCompany = false;
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

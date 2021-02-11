@@ -11,6 +11,7 @@ codeunit 4001 "Hybrid Cloud Management"
         HelpLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2013440', Locked = true;
         TelemetryCategoryTxt: Label 'CloudMigration', Locked = true;
         MigrationDisabledTelemetryTxt: Label 'Migration disabled. Source Product=%1; Reason=%2', Comment = '%1 - source product, %2 - reason for disabling', Locked = true;
+        UserMustBeAbleToScheduleTasksMsg: Label 'You do not have the right permissions to schedule tasks, which is required for running the migration. Please check your permissions and license entitlements before you continue.';
 
     procedure CanHandleNotification(SubscriptionId: Text; ProductId: Text): Boolean
     var
@@ -72,6 +73,18 @@ codeunit 4001 "Hybrid Cloud Management"
         IntelligentCloudSetup.Modify();
     end;
 
+    procedure SendMissingScheduleTasksNotification();
+    var
+        UserIsNotAbleToScheduleTasks: Notification;
+    begin
+        UserIsNotAbleToScheduleTasks.Id := '90b26c2e-df8e-4672-a6d0-b39d4c3a5874';
+        UserIsNotAbleToScheduleTasks.Recall();
+        UserIsNotAbleToScheduleTasks.Message := UserMustBeAbleToScheduleTasksMsg;
+        UserIsNotAbleToScheduleTasks.Scope := NotificationScope::LocalScope;
+        UserIsNotAbleToScheduleTasks.Send();
+    end;
+
+    [Scope('OnPrem')]
     procedure DisableDataLakeMigration()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
@@ -85,6 +98,7 @@ codeunit 4001 "Hybrid Cloud Management"
         SendTraceTag('SmbMig-005', GetTelemetryCategory(), Verbosity::Normal, 'Finish disable Azure Data Lake migration.');
     end;
 
+    [Scope('OnPrem')]
     procedure DisableMigration(SourceProduct: Text; Reason: Text; NeedsCleanup: Boolean)
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
@@ -115,6 +129,7 @@ codeunit 4001 "Hybrid Cloud Management"
         OnAfterDisableMigration(SourceProduct);
     end;
 
+    [Scope('OnPrem')]
     procedure FinishDataLakeMigration(HybridReplicationSummary: Record "Hybrid Replication Summary")
     begin
         OnAfterDataLakeMigration(HybridReplicationSummary);
@@ -204,19 +219,8 @@ codeunit 4001 "Hybrid Cloud Management"
     end;
 
     procedure GetSaasWizardRedirectUrl(var IntelligentCloudSetup: Record "Intelligent Cloud Setup") RedirectUrl: Text
-    var
-        baseUrl: Text;
-        filterUrl: Text;
-        noDomainUrl: Text;
-        saasDomainFromatTxt: Label 'https://businesscentral.dynamics.com/%1', Comment = '%1 - the tenant id';
     begin
-        IntelligentCloudSetup.SetRange("Primary Key", GetRedirectFilter());
-
-        baseUrl := GetUrl(ClientType::Web);
-        filterUrl := GetUrl(CLIENTTYPE::Web, '', OBJECTTYPE::Page, Page::"Hybrid Cloud Setup Wizard", IntelligentCloudSetup, true);
-        noDomainUrl := DelChr(filterUrl, '<', baseUrl);
-
-        RedirectUrl := StrSubstNo(saasDomainFromatTxt, noDomainUrl);
+        RedirectUrl := GetUrl(CLIENTTYPE::Web, '', OBJECTTYPE::Page, Page::"Hybrid Cloud Setup Wizard", IntelligentCloudSetup, true);
     end;
 
     procedure GetRedirectFilter() RedirectFilter: Text
@@ -328,6 +332,7 @@ codeunit 4001 "Hybrid Cloud Management"
         end;
     end;
 
+    [Scope('OnPrem')]
     procedure RunAdlMigration(CloudMigrationAdlSetup: Record "Cloud Migration ADL Setup" temporary) RunId: Text
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
@@ -340,6 +345,7 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridReplicationSummary.CreateInProgressRecord(RunId, HybridReplicationSummary.ReplicationType::"Azure Data Lake");
     end;
 
+    [Scope('OnPrem')]
     procedure RunReplication(ReplicationType: Option) RunId: Text;
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
@@ -573,5 +579,22 @@ codeunit 4001 "Hybrid Cloud Management"
     procedure OpenWizardAction(OpenWizardNotification: Notification)
     begin
         Page.Run(PAGE::"Hybrid Cloud Setup Wizard");
+    end;
+
+    procedure CheckMigratedDataSize(HybridCompany: Record "Hybrid Company"): Boolean
+    var
+        DatabaseSizeTooLargeDialog: Page "Database Size Too Large Dialog";
+    begin
+        if HybridCompany.GetTotalMigrationSize() >= GetNoWarningSizeInGB() then
+            if DatabaseSizeTooLargeDialog.RunModal() = Action::No then
+                exit(false);
+
+        exit(true);
+    end;
+
+    procedure GetNoWarningSizeInGB(): Integer
+    begin
+        // We warn at 50 GB. The number is based on experience from current runs.
+        exit(50);
     end;
 }

@@ -46,6 +46,11 @@ table 8904 "Email Message Attachment"
         {
             DataClassification = SystemMetadata;
         }
+
+        field(8; Length; Integer)
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

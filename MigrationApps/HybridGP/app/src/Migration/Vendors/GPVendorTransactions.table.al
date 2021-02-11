@@ -1,6 +1,7 @@
 table 4097 "GP Vendor Transactions"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

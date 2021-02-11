@@ -45,7 +45,7 @@ codeunit 31179 "Sync.Dep.Fld-VatCtrlRepEnL CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl.Rep. - VAT Entry Link", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl.Rep. - VAT Entry Link") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Ctrl. Report Ent. Link CZL");
         VATCtrlReportEntLinkCZL.ChangeCompany(Rec.CurrentCompany);
@@ -56,7 +56,7 @@ codeunit 31179 "Sync.Dep.Fld-VatCtrlRepEnL CZL"
             VATCtrlReportEntLinkCZL."VAT Entry No." := Rec."VAT Entry No.";
             VATCtrlReportEntLinkCZL.Insert(false);
         end;
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Ent. Link CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Ent. Link CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Ctrl.Rep. - VAT Entry Link", 'OnBeforeDeleteEvent', '', false, false)]
@@ -69,13 +69,13 @@ codeunit 31179 "Sync.Dep.Fld-VatCtrlRepEnL CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl.Rep. - VAT Entry Link", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl.Rep. - VAT Entry Link") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Ctrl. Report Ent. Link CZL");
         VATCtrlReportEntLinkCZL.ChangeCompany(Rec.CurrentCompany);
         if VATCtrlReportEntLinkCZL.Get(Rec."Control Report No.", Rec."Line No.", Rec."VAT Entry No.") then
             VATCtrlReportEntLinkCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Ent. Link CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Ent. Link CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Ctrl. Report Ent. Link CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -118,7 +118,7 @@ codeunit 31179 "Sync.Dep.Fld-VatCtrlRepEnL CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Ent. Link CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Ent. Link CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Ctrl.Rep. - VAT Entry Link");
         VATCtrlRepVATEntryLink.ChangeCompany(Rec.CurrentCompany);
@@ -129,7 +129,7 @@ codeunit 31179 "Sync.Dep.Fld-VatCtrlRepEnL CZL"
             VATCtrlRepVATEntryLink."VAT Entry No." := Rec."VAT Entry No.";
             VATCtrlRepVATEntryLink.Insert(false);
         end;
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl.Rep. - VAT Entry Link", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl.Rep. - VAT Entry Link");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Ctrl. Report Ent. Link CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -142,13 +142,13 @@ codeunit 31179 "Sync.Dep.Fld-VatCtrlRepEnL CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Ent. Link CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Ctrl. Report Ent. Link CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Ctrl.Rep. - VAT Entry Link");
         VATCtrlRepVATEntryLink.ChangeCompany(Rec.CurrentCompany);
         if VATCtrlRepVATEntryLink.Get(Rec."VAT Ctrl. Report No.", Rec."Line No.", Rec."VAT Entry No.") then
             VATCtrlRepVATEntryLink.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl.Rep. - VAT Entry Link", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl.Rep. - VAT Entry Link");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

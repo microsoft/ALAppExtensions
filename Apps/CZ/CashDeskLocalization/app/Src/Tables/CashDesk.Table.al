@@ -561,6 +561,7 @@ table 11744 "Cash Desk CZP"
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDeskUserCZP: Record "Cash Desk User CZP";
         CashDeskEventCZP: Record "Cash Desk Event CZP";
+        EETCashRegisterCZL: Record "EET Cash Register CZL";
     begin
         TestZeroBalance();
         CheckOpenBankAccLedgerEntries();
@@ -582,6 +583,12 @@ table 11744 "Cash Desk CZP"
             BankAccount.TestField("Account Type CZP", BankAccount."Account Type CZP"::"Cash Desk");
             MoveEntries.MoveBankAccEntries(BankAccount);
             BankAccount.Delete(false);
+        end;
+
+        if EETCashRegisterCZL.FindByCashRegisterNo(EETCashRegisterCZL."Cash Register Type"::"Cash Desk", "No.") then begin
+            EETCashRegisterCZL.Validate("Cash Register Type", EETCashRegisterCZL."Cash Register Type"::Default);
+            EETCashRegisterCZL.Validate("Cash Register No.", '');
+            EETCashRegisterCZL.Modify();
         end;
     end;
 
@@ -810,6 +817,13 @@ table 11744 "Cash Desk CZP"
         CurrExchRate.SetRange("Starting Date", 0D, Date);
         if CurrExchRate.IsEmpty() then
             Error(CurrExchRateIsEmptyErr, CurrExchRate.GetFilters());
+    end;
+
+    procedure IsEETCashRegister(): Boolean
+    var
+        EETCashRegisterCZL: Record "EET Cash Register CZL";
+    begin
+        exit(EETCashRegisterCZL.FindByCashRegisterNo("EET Cash Register Type CZL"::"Cash Desk", "No."));
     end;
 
     [IntegrationEvent(false, false)]

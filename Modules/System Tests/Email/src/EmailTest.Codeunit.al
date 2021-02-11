@@ -7,6 +7,7 @@ codeunit 134685 "Email Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    EventSubscriberInstance = Manual;
 
     var
         Assert: Codeunit "Library Assert";
@@ -629,7 +630,7 @@ codeunit 134685 "Email Test"
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(Account);
 
-        // [When] Sending the email fails
+        // [When] The email is Sent
         Assert.IsTrue(Email.Send(EmailMessage, Account), 'Sending an email should have succeeded');
 
         // [Then] There is a Sent Mail recond and no Outbox record
@@ -656,6 +657,184 @@ codeunit 134685 "Email Test"
 
         asserterror EmailAttachment.Delete();
         Assert.ExpectedError(EmailMessageSentCannotDeleteAttachmentErr);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure SendEmailInBackgroundSuccessTest()
+    var
+        Account: Record "Email Account";
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        TestClientType: Codeunit "Test Client Type Subscriber";
+        EmailTest: Codeunit "Email Test";
+        Variable: Variant;
+        Status: Boolean;
+        MessageID: Guid;
+    begin
+        // [Scenario] When Sending the email in the background an event is fired to nothify for the status of the email
+        TestClientType.SetClientType(ClientType::Background);
+        BindSubscription(TestClientType);
+        BindSubscription(EmailTest);
+
+        // [Given] An email message and an email account
+        CreateEmail(EmailMessage);
+        Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
+
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(Account);
+
+        // [When] The email is Sent
+        Email.Send(EmailMessage, Account);
+
+        // [Then] An event is fired to notify for the status of the email
+        EmailTest.DequeueVariable(Variable);
+        MessageID := Variable;
+        EmailTest.DequeueVariable(Variable);
+        Status := Variable;
+        
+        // [Then] The event was fired once
+        EmailTest.AssertVariableStorageEmpty();
+        Assert.AreEqual(MessageID, EmailMessage.GetId(), 'A different Email was expected');
+        Assert.IsTrue(Status, 'The email should have been sent');
+
+        UnBindSubscription(EmailTest);
+        UnBindSubscription(TestClientType);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure SendEmailInBackgroundFailTest()
+    var
+        Account: Record "Email Account";
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        TestClientType: Codeunit "Test Client Type Subscriber";
+        EmailTest: Codeunit "Email Test";
+        Variable: Variant;
+        Status: Boolean;
+        MessageID: Guid;
+    begin
+        // [Scenario] When Sending the email in the background an event is fired to nothify for the status of the email
+        TestClientType.SetClientType(ClientType::Background);
+        BindSubscription(TestClientType);
+        BindSubscription(EmailTest);
+
+        // [Given] An email message and an email account
+        CreateEmail(EmailMessage);
+        Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
+
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(Account);
+        ConnectorMock.FailOnSend(true);
+
+        // [When] The email is Sent
+        Email.Send(EmailMessage, Account);
+
+        // [Then] An event is fired to notify for the status of the email
+        EmailTest.DequeueVariable(Variable);
+        MessageID := Variable;
+        EmailTest.DequeueVariable(Variable);
+        Status := Variable;
+        
+        // [Then] The event was fired once
+        EmailTest.AssertVariableStorageEmpty();
+        Assert.AreEqual(MessageID, EmailMessage.GetId(), 'A different Email was expected');
+        Assert.IsFalse(Status, 'The email should not have been sent');
+
+        UnBindSubscription(EmailTest);
+        UnBindSubscription(TestClientType);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure SendEmailInBackgroundFailSubscriberFailsTest()
+    var
+        Account: Record "Email Account";
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        TestClientType: Codeunit "Test Client Type Subscriber";
+        EmailTest: Codeunit "Email Test";
+        Variable: Variant;
+        Status: Boolean;
+        MessageID: Guid;
+    begin
+        // [Scenario] When an error occurs on the subscriber it does not propagate up the stack and the notification is sent only once
+        TestClientType.SetClientType(ClientType::Background);
+        BindSubscription(TestClientType);
+        BindSubscription(EmailTest);
+        EmailTest.ThrowErrorOnAfterSendEmail();
+
+        // [Given] An email message and an email account
+        CreateEmail(EmailMessage);
+
+        Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
+
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(Account);
+        ConnectorMock.FailOnSend(true);
+
+        // [When] The email is Sent
+        Email.Send(EmailMessage, Account);
+
+        // [Then] An event is fired to notify for the status of the email
+        EmailTest.DequeueVariable(Variable);
+        MessageID := Variable;
+        EmailTest.DequeueVariable(Variable);
+        Status := Variable;
+        
+        // [Then] The event was fired once
+        EmailTest.AssertVariableStorageEmpty();
+        Assert.AreEqual(MessageID, EmailMessage.GetId(), 'A different Email was expected');
+        Assert.IsFalse(Status, 'The email should not have been sent');
+
+        UnBindSubscription(EmailTest);
+        UnBindSubscription(TestClientType);
+    end;
+
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure SendEmailInBackgroundSuccessSubscriberFailsTest()
+    var
+        Account: Record "Email Account";
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        TestClientType: Codeunit "Test Client Type Subscriber";
+        EmailTest: Codeunit "Email Test";
+        Variable: Variant;
+        Status: Boolean;
+        MessageID: Guid;
+    begin
+        // [Scenario] When an error occurs on the subscriber it does not propagate up the stack and the notification is sent only once
+        TestClientType.SetClientType(ClientType::Background);
+        BindSubscription(TestClientType);
+        BindSubscription(EmailTest);
+        EmailTest.ThrowErrorOnAfterSendEmail();
+
+        // [Given] An email message and an email account
+        CreateEmail(EmailMessage);
+
+        Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
+
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(Account);
+
+        // [When] The email is Sent
+        Email.Send(EmailMessage, Account);
+
+        // [Then] An event is fired to notify for the status of the email
+        EmailTest.DequeueVariable(Variable);
+        MessageID := Variable;
+        EmailTest.DequeueVariable(Variable);
+        Status := Variable;
+        // [Then] The event was fired once
+        EmailTest.AssertVariableStorageEmpty();
+        Assert.AreEqual(MessageID, EmailMessage.GetId(), 'A different Email was expected');
+        Assert.IsTrue(Status, 'The email should have been sent');
+
+        UnBindSubscription(EmailTest);
+        UnBindSubscription(TestClientType);
     end;
 
     local procedure CreateEmail(var EmailMessage: Codeunit "Email Message")
@@ -719,9 +898,35 @@ codeunit 134685 "Email Test"
         Reply := true;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnAfterSendEmail', '', true, true)]
+    local procedure OnAfterSendEmailSubscriber(MessageId: Guid; Status: Boolean)
+    begin
+        VariableStorage.Enqueue(MessageId);
+        VariableStorage.Enqueue(Status);
+        if ThrowError then
+            Error('');
+    end;
+
+    procedure ThrowErrorOnAfterSendEmail()
+    begin
+        ThrowError := true;
+    end;
+
+    procedure DequeueVariable(var Variable: Variant)
+    begin
+        VariableStorage.Dequeue(Variable);
+    end;
+
+    procedure AssertVariableStorageEmpty()
+    begin
+        VariableStorage.AssertEmpty();
+    end;
+
     var
+        VariableStorage: Codeunit "Library - Variable Storage";
         InstructionTxt: Label 'The email has not been sent.';
         OptionsOnClosePageTxt: Label 'Keep as draft in Email Outbox,Discard email';
         DiscardEmailQst: Label 'Go ahead and discard?';
         OptionChoice: Integer;
+        ThrowError: Boolean;
 }

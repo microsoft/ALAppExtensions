@@ -2,7 +2,7 @@
     "id":  "b185fd4a-677b-48d3-a701-768de7563df0",
     "name":  "Regex",
     "publisher":  "Microsoft",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "brief":  "Provides access to the .NET regular expression engine",
     "description":  "Provides access to the .NET regular expression engine.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -15,7 +15,7 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "screenshots":  [

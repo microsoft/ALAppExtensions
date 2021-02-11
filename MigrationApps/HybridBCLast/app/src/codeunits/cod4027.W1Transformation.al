@@ -1,5 +1,9 @@
 codeunit 4027 "W1 Transformation"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '17.0';
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Company Handler", 'OnTransformPerCompanyTableDataForVersion', '', false, false)]
     local procedure TransformPerCompanyTableData_15x(CountryCode: Text; TargetVersion: Decimal)
     begin

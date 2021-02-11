@@ -19,6 +19,9 @@ codeunit 11747 "Manual Setup Handler CZL"
         RegisterCommodities(Sender);
         RegisterVATAttribudeCode(Sender);
         RegisterStockkeepingUnitTemplate(Sender);
+        RegisterEETServiceSetup(Sender);
+        RegisterEETBusinessPremises(Sender);
+        RegisterEETCashRegisters(Sender);
     end;
 
     local procedure RegisterInventoryMovementTemplate(var Sender: Codeunit "Manual Setup")
@@ -163,5 +166,41 @@ codeunit 11747 "Manual Setup Handler CZL"
         Sender.Insert(StockkeepingUnitTemplateNameTxt, StockkeepingUnitTemplateDescriptionTxt,
           StockkeepingUnitTemplateKeywordsTxt, Page::"Stockkeeping Unit Templ. CZL",
           Info.Id(), ManualSetupCategory::Inventory);
+    end;
+
+    local procedure RegisterEETServiceSetup(var Sender: Codeunit "Manual Setup")
+    var
+        EETServiceSetupNameTxt: Label 'EET Service Setup';
+        EETServiceSetupDescriptionTxt: Label 'Set up and enable the Electronic registration of sales (EET) service.';
+        EETServiceSetupKeywordsTxt: Label 'EET';
+    begin
+        NavApp.GetCurrentModuleInfo(Info);
+        Sender.Insert(EETServiceSetupNameTxt, EETServiceSetupDescriptionTxt,
+          EETServiceSetupKeywordsTxt, Page::"EET Service Setup CZL",
+          Info.Id(), ManualSetupCategory::Finance);
+    end;
+
+    local procedure RegisterEETBusinessPremises(var Sender: Codeunit "Manual Setup")
+    var
+        EETBusinessPremisesNameTxt: Label 'EET Business Premises';
+        EETBusinessPremisesDescriptionTxt: Label 'Set up the Business Premises of Electronic registration of sales (EET).';
+        EETBusinessPremisesKeywordsTxt: Label 'EET';
+    begin
+        NavApp.GetCurrentModuleInfo(Info);
+        Sender.Insert(EETBusinessPremisesNameTxt, EETBusinessPremisesDescriptionTxt,
+          EETBusinessPremisesKeywordsTxt, Page::"EET Business Premises CZL",
+          Info.Id(), ManualSetupCategory::Finance);
+    end;
+
+    local procedure RegisterEETCashRegisters(var Sender: Codeunit "Manual Setup")
+    var
+        EETCashRegisterNameTxt: Label 'EET Cash Registers';
+        EETCashRegisterDescriptionTxt: Label 'Set up the Cash Registers of Electronic registration of sales (EET).';
+        EETCashRegisterKeywordsTxt: Label 'EET';
+    begin
+        NavApp.GetCurrentModuleInfo(Info);
+        Sender.Insert(EETCashRegisterNameTxt, EETCashRegisterDescriptionTxt,
+          EETCashRegisterKeywordsTxt, Page::"EET Cash Registers CZL",
+          Info.Id(), ManualSetupCategory::Finance);
     end;
 }

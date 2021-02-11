@@ -45,7 +45,7 @@ codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statistic Indication", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statistic Indication") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statistic Indication CZL");
         StatisticIndicationCZL.ChangeCompany(Rec.CurrentCompany);
@@ -57,7 +57,7 @@ codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
         end;
         StatisticIndicationCZL.Description := Rec.Description;
         StatisticIndicationCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statistic Indication CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statistic Indication CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Statistic Indication", 'OnBeforeDeleteEvent', '', false, false)]
@@ -70,13 +70,13 @@ codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statistic Indication", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statistic Indication") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statistic Indication CZL");
         StatisticIndicationCZL.ChangeCompany(Rec.CurrentCompany);
         if StatisticIndicationCZL.Get(Rec."Tariff No.", Rec.Code) then
             StatisticIndicationCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statistic Indication CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statistic Indication CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Statistic Indication CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -119,7 +119,7 @@ codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statistic Indication CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statistic Indication CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statistic Indication");
         StatisticIndication.ChangeCompany(Rec.CurrentCompany);
@@ -131,7 +131,7 @@ codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
         end;
         StatisticIndication.Description := CopyStr(Rec.Description, 1, MaxStrLen(StatisticIndication.Description));
         StatisticIndication.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statistic Indication", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statistic Indication");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Statistic Indication CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -144,13 +144,13 @@ codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statistic Indication CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Statistic Indication CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Statistic Indication");
         StatisticIndication.ChangeCompany(Rec.CurrentCompany);
         if StatisticIndication.Get(Rec."Tariff No.", Rec.Code) then
             StatisticIndication.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statistic Indication", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statistic Indication");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

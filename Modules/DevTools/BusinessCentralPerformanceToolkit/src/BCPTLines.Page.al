@@ -64,7 +64,7 @@ page 149004 "BCPT Lines"
                     ToolTip = 'Specifies the description of the BCPT line.';
                     ApplicationArea = All;
                 }
-                field(Status; Status)
+                field(Status; Rec.Status)
                 {
                     ToolTip = 'Specifies the status of the BCPT.';
                     ApplicationArea = All;

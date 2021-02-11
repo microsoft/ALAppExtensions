@@ -1,6 +1,7 @@
 table 40102 "GP POPPOHeader"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

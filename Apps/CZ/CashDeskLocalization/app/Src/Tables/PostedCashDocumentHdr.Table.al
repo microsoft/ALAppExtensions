@@ -251,6 +251,12 @@ table 11737 "Posted Cash Document Hdr. CZP"
             Editable = false;
             DataClassification = CustomerContent;
         }
+        field(102; "EET Entry No."; Integer)
+        {
+            Caption = 'EET Entry No.';
+            TableRelation = "EET Entry CZL";
+            DataClassification = CustomerContent;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';

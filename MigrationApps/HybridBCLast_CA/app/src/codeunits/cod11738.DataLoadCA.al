@@ -1,5 +1,9 @@
 codeunit 11738 "Data Load CA"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '17.0';
+
     var
         CountryCodeTxt: Label 'CA', Locked = true;
 

@@ -1,6 +1,8 @@
 table 4079 "GPSOPUserDefinedWorkHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; SOPTYPE; Option)

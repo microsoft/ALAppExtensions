@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests the Web Service Management module.",
     "description":  "",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
     "help":  "",
@@ -15,19 +15,19 @@
                              "id":  "9bc20107-0927-405d-abec-ed877f67c2a3",
                              "publisher":  "Microsoft",
                              "name":  "Web Service Management",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "publisher":  "Microsoft",
                              "name":  "Library Assert",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
                              "name":  "Any",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "screenshots":  [

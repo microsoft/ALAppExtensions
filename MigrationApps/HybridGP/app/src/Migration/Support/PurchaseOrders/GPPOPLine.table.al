@@ -1,6 +1,7 @@
 table 40103 "GP POPPOLine"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

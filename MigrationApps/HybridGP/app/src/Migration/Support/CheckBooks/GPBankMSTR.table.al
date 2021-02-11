@@ -1,6 +1,7 @@
 table 40100 "GP Bank MSTR"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

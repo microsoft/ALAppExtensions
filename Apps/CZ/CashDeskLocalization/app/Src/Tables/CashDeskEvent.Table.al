@@ -182,6 +182,18 @@ table 11746 "Cash Desk Event CZP"
             OptionMembers = " ",Purchase,Sale;
             DataClassification = CustomerContent;
         }
+        field(101; "EET Transaction"; Boolean)
+        {
+            Caption = 'EET Transaction';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "EET Transaction" then
+                    if not ("Account Type" in ["Account Type"::"G/L Account", "Account Type"::Customer]) then
+                        FieldError("Account Type");
+            end;
+        }
         field(116; "VAT Bus. Posting Group"; Code[20])
         {
             Caption = 'VAT Bus. Posting Group';

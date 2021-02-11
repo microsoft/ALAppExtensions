@@ -334,7 +334,8 @@ codeunit 1458 "Yodlee API Strings"
         EXIT('//detailedMessage');
     end;
 
-    local procedure GetFullURL(PartialURL: Text): Text;
+    [Scope('OnPrem')]
+    procedure GetFullURL(PartialURL: Text): Text;
     begin
         MSYodleeBankServiceSetup.Get();
         exit(MSYodleeBankServiceSetup.GetServiceURL() + PartialURL);

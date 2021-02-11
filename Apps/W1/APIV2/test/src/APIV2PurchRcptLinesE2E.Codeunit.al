@@ -17,11 +17,6 @@ codeunit 139850 "APIV2 - Purch. Rcpt. Lines E2E"
         ReceiptServiceNameTxt: Label 'purchaseReceipts';
         ReceiptServiceLinesNameTxt: Label 'purchaseReceiptLines';
 
-    local procedure Initialize()
-    begin
-        WorkDate := Today();
-    end;
-
     [Test]
     procedure TestGetLineDirectly()
     var
@@ -35,7 +30,6 @@ codeunit 139850 "APIV2 - Purch. Rcpt. Lines E2E"
     begin
         // [SCENARIO] Call GET on the Line of a purchase receipt
         // [GIVEN] A receipt with a line.
-        Initialize();
         LibraryPurchase.CreatePurchaseOrder(PurchaseHeader);
         ReceiptNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
 
@@ -69,7 +63,6 @@ codeunit 139850 "APIV2 - Purch. Rcpt. Lines E2E"
     begin
         // [SCENARIO] Call GET on the Lines of a Purchase Receipt
         // [GIVEN] A purchase receipt with lines.
-        Initialize();
         CreatePurchaseOrderMultipleLines(PurchaseHeader);
         ReceiptNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
 
@@ -111,7 +104,6 @@ codeunit 139850 "APIV2 - Purch. Rcpt. Lines E2E"
     begin
         // [SCENARIO] Call GET on the Lines of a purchase receipt
         // [GIVEN] A purchase receipt with lines.
-        Initialize();
         CreatePurchaseOrderMultipleLines(PurchaseHeader);
         ReceiptNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
 
@@ -145,8 +137,6 @@ codeunit 139850 "APIV2 - Purch. Rcpt. Lines E2E"
     begin
         // [SCENARIO] Call GET on the Line of a purchase receipt and expand the dimension set lines
         // [GIVEN] A receipt with a line.
-        Initialize();
-
         PurchRcptHeader.FindFirst();
         PurchRcptLine.SetRange("Document No.", PurchRcptHeader."No.");
         PurchRcptLine.FindFirst();

@@ -1,6 +1,8 @@
 table 4072 "GPSOPPaymentWorkHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; SOPTYPE; Option)

@@ -5,13 +5,19 @@ page 4023 "Database Size Too Large Dialog"
     InsertAllowed = false;
     DeleteAllowed = false;
     SourceTable = "Hybrid Company";
-    InstructionalText = 'The maximum replicated data size of 30 GB has been exceeded. If you have selected multiple companies, deselect companies to reduce the size of the migrated company data. Once the migration process is complete for companies selected, you can select additional companies to migrate.';
 
     layout
     {
         area(Content)
         {
-            field(MigrationDocumentationTxt; MigrationDocumentationTxt)
+            label(Control2)
+            {
+                ApplicationArea = Basic, Suite;
+                CaptionClass = NotificationText;
+                MultiLine = true;
+                ShowCaption = false;
+            }
+            field(MigrationDocumentation; MigrationDocumentationTxt)
             {
                 ApplicationArea = Basic, Suite;
                 ShowCaption = false;
@@ -21,10 +27,12 @@ page 4023 "Database Size Too Large Dialog"
                 end;
             }
 
-            field(ConfirmMessage; ConfirmMsg)
+            label(ConfirmMessage)
             {
                 ApplicationArea = Basic, Suite;
                 ShowCaption = false;
+                CaptionClass = QuestionText;
+                MultiLine = true;
             }
         }
     }
@@ -33,8 +41,19 @@ page 4023 "Database Size Too Large Dialog"
     {
     }
 
+    trigger OnOpenPage()
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        NotificationText := StrSubstNo(LargeDatabaseWarningMsg);
+        QuestionText := ConfirmMsg;
+    end;
+
     var
         DocumentationURLTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2013440&clcid=0x409', Locked = true;
-        MigrationDocumentationTxt: Label 'Cloud Migration Documentation';
+        MigrationDocumentationTxt: Label 'Migrating On-Premises Data';
         ConfirmMsg: Label 'Do you want to continue?';
+        LargeDatabaseWarningMsg: Label 'You are migrating a large amount of data. If your Business Central online storage exceeds the limits, some administrative tasks are disabled. We recommend that you consider reducing the amount of data that you migrate. Find tips about how to manage the data that you migrate here:', Comment = '%1 is the size limit in GB';
+        NotificationText: Text;
+        QuestionText: Text;
 }

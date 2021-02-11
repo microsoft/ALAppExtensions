@@ -45,7 +45,7 @@ codeunit 31140 "Sync.Dep.Fld-VIESDeclHead CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Header", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Header") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Header CZL");
         VIESDeclarationHeaderCZL.ChangeCompany(Rec.CurrentCompany);
@@ -90,7 +90,7 @@ codeunit 31140 "Sync.Dep.Fld-VIESDeclHead CZL"
         VIESDeclarationHeaderCZL."Company Trade Name Appendix" := Rec."Company Trade Name Appendix";
         VIESDeclarationHeaderCZL."Tax Office Region Number" := Rec."Tax Office Region Number";
         VIESDeclarationHeaderCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Header CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Header CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VIES Declaration Header", 'OnBeforeDeleteEvent', '', false, false)]
@@ -103,13 +103,13 @@ codeunit 31140 "Sync.Dep.Fld-VIESDeclHead CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Header", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Header") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Header CZL");
         VIESDeclarationHeaderCZL.ChangeCompany(Rec.CurrentCompany);
         if VIESDeclarationHeaderCZL.Get(Rec."No.") then
             VIESDeclarationHeaderCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Header CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Header CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VIES Declaration Header CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -152,7 +152,7 @@ codeunit 31140 "Sync.Dep.Fld-VIESDeclHead CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Header CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Header CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Header");
         VIESDeclarationHeader.ChangeCompany(Rec.CurrentCompany);
@@ -197,7 +197,7 @@ codeunit 31140 "Sync.Dep.Fld-VIESDeclHead CZL"
         VIESDeclarationHeader."Company Trade Name Appendix" := Rec."Company Trade Name Appendix";
         VIESDeclarationHeader."Tax Office Region Number" := Rec."Tax Office Region Number";
         VIESDeclarationHeader.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Header", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Header");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VIES Declaration Header CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -210,13 +210,13 @@ codeunit 31140 "Sync.Dep.Fld-VIESDeclHead CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Header CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VIES Declaration Header CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VIES Declaration Header");
         VIESDeclarationHeader.ChangeCompany(Rec.CurrentCompany);
         if VIESDeclarationHeader.Get(Rec."No.") then
             VIESDeclarationHeader.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Header", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"VIES Declaration Header");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

@@ -45,7 +45,7 @@ codeunit 31195 "Sync.Dep.Fld-CommoditStp CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity Setup", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity Setup") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Commodity Setup CZL");
         CommoditySetupCZL.ChangeCompany(Rec.CurrentCompany);
@@ -58,7 +58,7 @@ codeunit 31195 "Sync.Dep.Fld-CommoditStp CZL"
         CommoditySetupCZL."Commodity Limit Amount LCY" := Rec."Commodity Limit Amount LCY";
         CommoditySetupCZL."Valid To" := Rec."Valid To";
         CommoditySetupCZL.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Commodity Setup CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Commodity Setup CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Commodity Setup", 'OnBeforeDeleteEvent', '', false, false)]
@@ -71,13 +71,13 @@ codeunit 31195 "Sync.Dep.Fld-CommoditStp CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity Setup", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity Setup") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Commodity Setup CZL");
         CommoditySetupCZL.ChangeCompany(Rec.CurrentCompany);
         if CommoditySetupCZL.Get(Rec."Commodity Code", Rec."Valid From") then
             CommoditySetupCZL.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Commodity Setup CZL", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Commodity Setup CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Commodity Setup CZL", 'OnBeforeRenameEvent', '', false, false)]
@@ -120,7 +120,7 @@ codeunit 31195 "Sync.Dep.Fld-CommoditStp CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity Setup CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity Setup CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Commodity Setup");
         CommoditySetup.ChangeCompany(Rec.CurrentCompany);
@@ -133,7 +133,7 @@ codeunit 31195 "Sync.Dep.Fld-CommoditStp CZL"
         CommoditySetup."Commodity Limit Amount LCY" := Rec."Commodity Limit Amount LCY";
         CommoditySetup."Valid To" := Rec."Valid To";
         CommoditySetup.Modify(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Commodity Setup", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Commodity Setup");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Commodity Setup CZL", 'OnBeforeDeleteEvent', '', false, false)]
@@ -146,13 +146,13 @@ codeunit 31195 "Sync.Dep.Fld-CommoditStp CZL"
             exit;
         if Rec.IsTemporary() then
             exit;
-        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity Setup CZL", 0) then
+        if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Commodity Setup CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Commodity Setup");
         CommoditySetup.ChangeCompany(Rec.CurrentCompany);
         if CommoditySetup.Get(Rec."Commodity Code", Rec."Valid From") then
             CommoditySetup.Delete(false);
-        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Commodity Setup", 0);
+        SyncLoopingHelper.RestoreFieldSynchronization(Database::"Commodity Setup");
     end;
 
     local procedure IsFieldSynchronizationDisabled(): Boolean

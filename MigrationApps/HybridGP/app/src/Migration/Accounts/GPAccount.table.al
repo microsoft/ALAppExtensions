@@ -1,6 +1,7 @@
 table 4090 "GP Account"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

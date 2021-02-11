@@ -33,6 +33,37 @@ codeunit 9996 "Upgrade Tag Impl."
         SetUpgradeTagForCompany(NewTag, CopyStr(CompanyName(), 1, MaxStrLen(ConstUpgradeTags.Company)));
     end;
 
+    procedure SetDatabaseUpgradeTag(NewTag: Code[250])
+    begin
+        SetUpgradeTagForCompany(NewTag, '');
+    end;
+
+    procedure SetSkippedUpgrade(ExistingTag: Code[250]; SkipUpgrade: Boolean)
+    var
+        UpgradeTags: Record "Upgrade Tags";
+    begin
+        SetSkippedUpgrade(ExistingTag, CopyStr(CompanyName(), 1, MaxStrLen(UpgradeTags.Company)), SkipUpgrade);
+    end;
+
+    procedure SetSkippedUpgrade(ExistingTag: Code[250]; TagCompanyName: Code[30]; SkipUpgrade: Boolean)
+    var
+        UpgradeTags: Record "Upgrade Tags";
+    begin
+        if UpgradeTags.Get(ExistingTag, TagCompanyName) then
+            if UpgradeTags."Skipped Upgrade" <> SkipUpgrade then begin
+                UpgradeTags."Skipped Upgrade" := SkipUpgrade;
+                UpgradeTags.Modify();
+            end;
+    end;
+
+    procedure HasUpgradeTagSkipped(ExistingTag: Code[250]; TagCompanyName: Code[30]): Boolean
+    var
+        UpgradeTags: Record "Upgrade Tags";
+    begin
+        if UpgradeTags.Get(ExistingTag, TagCompanyName) then
+            exit(UpgradeTags."Skipped Upgrade");
+    end;
+
     procedure SetAllUpgradeTags()
     var
         ConstUpgradeTags: Record "Upgrade Tags";
@@ -51,6 +82,25 @@ codeunit 9996 "Upgrade Tag Impl."
 
         UpgradeTag.OnGetPerCompanyUpgradeTags(PerCompanyUpgradeTags);
         EnsurePerCompanyUpgradeTagsExist(PerCompanyUpgradeTags, NewCompanyName);
+    end;
+
+    procedure CopyUpgradeTags(FromCompany: Code[30]; ToCompanyName: Code[30])
+    var
+        FromUpgradeTags: Record "Upgrade Tags";
+        ToUpgradeTags: Record "Upgrade Tags";
+    begin
+        FromUpgradeTags.SetRange(Company, FromCompany);
+
+        if FromUpgradeTags.FindSet() then
+            repeat
+                ToUpgradeTags.Copy(FromUpgradeTags);
+                ToUpgradeTags.Company := ToCompanyName;
+
+                if not ToUpgradeTags.Get(ToUpgradeTags.Tag, ToUpgradeTags.Company) then begin
+                    ToUpgradeTags.Insert();
+                    Session.LogMessage('0000EAY', StrSubstNo(CopyUpgradeTagLbl, FromUpgradeTags.Tag, FromUpgradeTags.Company, ToCompanyName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', CategoryLbl);
+                end;
+            until FromUpgradeTags.Next() = 0;
     end;
 
     local procedure EnsurePerCompanyUpgradeTagsExist(PerCompanyUpgradeTags: List of [Code[250]]; TagCompanyName: Code[30])
@@ -133,6 +183,7 @@ codeunit 9996 "Upgrade Tag Impl."
     var
         HasUpgradeTagLbl: Label 'Executing HasUpgradeTag: %1, Company Name: %2, ExecutionContext: %3, Value: %4', Comment = '%1 tag name, %2 company name, %3 ExecutionContext, %4 Value', Locked = true;
         SetUpgradeTagLbl: Label 'Executing SetUpgradeTag: %1, Company Name: %2, ExecutionContext: %3', Comment = '%1 tag name, %2 company name, %3 ExecutionContext', Locked = true;
+        CopyUpgradeTagLbl: Label 'Copying upgrade tag %1. From company: %2. To company: %3', Comment = '%1 tag name, %2 = origin company, % 3 destination company', Locked = true;
         CategoryLbl: Label 'ALUpgrade', Locked = true;
 }
 

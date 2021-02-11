@@ -1,6 +1,8 @@
 table 4035 "GPIVBinQtyTransferHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; DOCTYPE; Option)

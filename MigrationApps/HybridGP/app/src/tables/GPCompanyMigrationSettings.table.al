@@ -2,6 +2,7 @@ table 4044 "GP Company Migration Settings"
 {
     ReplicateData = false;
     DataPerCompany = false;
+    Extensible = false;
 
     fields
     {
@@ -14,7 +15,7 @@ table 4044 "GP Company Migration Settings"
         field(2; Replicate; Boolean)
         {
             FieldClass = FlowField;
-            CalcFormula = lookup ("Hybrid Company".Replicate where(Name = field(Name)));
+            CalcFormula = lookup("Hybrid Company".Replicate where(Name = field(Name)));
         }
 
         field(4; "Global Dimension 1"; Text[30])
@@ -76,7 +77,7 @@ table 4044 "GP Company Migration Settings"
         field(9; NumberOfSegments; Integer)
         {
             FieldClass = FlowField;
-            CalcFormula = count ("GP Segment Name" where("Company Name" = field("Name")));
+            CalcFormula = count("GP Segment Name" where("Company Name" = field("Name")));
         }
         field(10; ProcessesAreRunning; Boolean)
         {

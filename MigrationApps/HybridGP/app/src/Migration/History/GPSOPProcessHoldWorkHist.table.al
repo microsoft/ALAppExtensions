@@ -1,6 +1,8 @@
 table 4073 "GPSOPProcessHoldWorkHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; SOPTYPE; Option)

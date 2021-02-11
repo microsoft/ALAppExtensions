@@ -420,7 +420,7 @@ codeunit 3904 "Apply Retention Policy Impl."
 
         RecRef.FilterGroup := FilterGroup;
 
-        if ExpirationDate >= NullDateReplacementValue then
+        if (ExpirationDate >= NullDateReplacementValue) and (DateFieldNo in [RecRef.SystemCreatedAtNo, RecRef.SystemModifiedAtNo]) then
             FilterView := STRSUBSTNO(WhereOlderFilterExclWithNullTxt, DateFieldNo, '''''', CalcDate('<-1D>', ExpirationDate))
         else
             FilterView := STRSUBSTNO(WhereOlderFilterExclTxt, DateFieldNo, '''''', CalcDate('<-1D>', ExpirationDate));
@@ -437,7 +437,7 @@ codeunit 3904 "Apply Retention Policy Impl."
             RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(DateFieldNoMustHaveAValueErr, RecRef.Number, RecRef.Caption));
         RecRef.FilterGroup := FilterGroup;
 
-        if ExpirationDate <= NullDateReplacementValue then
+        if (ExpirationDate <= NullDateReplacementValue) and (DateFieldNo in [RecRef.SystemCreatedAtNo, RecRef.SystemModifiedAtNo]) then
             FilterView := STRSUBSTNO(WhereNewerFilterExclWithNullTxt, DateFieldNo, '''''', ExpirationDate)
         else
             FilterView := STRSUBSTNO(WhereNewerFilterExclTxt, DateFieldNo, '''''', ExpirationDate);

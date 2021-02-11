@@ -8,6 +8,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         SetupSuccessMsg: Label 'The setup test was successful. The settings are valid.';
         NotEnabledErr: Label 'The bank feed service is not enabled.\\In the Envestnet Yodlee Bank Feeds Service Setup window, select the Enabled check box.';
         GLBResponseInStream: InStream;
+        BankFeedTextList: List of [Text];
         GetCobrandTokenTxt: Label 'Get the Cobrand token.';
         GetConsumerTokenTxt: Label '"Get the Consumer token. "';
         GetFastlinkTokenTxt: Label 'Get the FastLink token.';
@@ -955,13 +956,28 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         ConsumerToken: Text;
         ErrorText: Text;
         AuthorizationHeaderValue: Text;
+        PaginationLink: Text;
     begin
         CheckServiceEnabled();
         Authenticate(CobrandToken, ConsumerToken);
         AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
 
-        ExecuteWebServiceRequest(
+        // empty the list of bank feed responses
+        // the call(s) below will populate it with new response(s)
+        if BankFeedTextList.Count() > 0 then
+            BankFeedTextList.RemoveRange(1, BankFeedTextList.Count());
+
+        PaginationLink := ExecuteWebServiceRequest(
             YodleeAPIStrings.GetTransactionSearchURL(OnlineBankAccountId, FromDate, ToDate),
+            YodleeAPIStrings.GetTransactionSearchRequestMethod(),
+            YodleeAPIStrings.GetTransactionSearchBody(CobrandToken, ConsumerToken, OnlineBankAccountId, FromDate, ToDate),
+            AuthorizationHeaderValue,
+            ErrorText);
+
+        // keep requesting more transactions until there is no more pagination link in the response header
+        while PaginationLink <> '' do
+            PaginationLink := ExecuteWebServiceRequest(
+            PaginationLink,
             YodleeAPIStrings.GetTransactionSearchRequestMethod(),
             YodleeAPIStrings.GetTransactionSearchBody(CobrandToken, ConsumerToken, OnlineBankAccountId, FromDate, ToDate),
             AuthorizationHeaderValue,
@@ -1485,7 +1501,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         EXIT(ErrorText = '');
     end;
 
-    local procedure ExecuteWebServiceRequest(URL: Text; Method: Text[6]; BodyText: Text; AuthorizationHeaderValue: Text; var ErrorText: Text);
+    local procedure ExecuteWebServiceRequest(URL: Text; Method: Text[6]; BodyText: Text; AuthorizationHeaderValue: Text; var ErrorText: Text) PaginationLink: Text
     var
         MSYodleeBankServiceSetup: Record 1450;
         DotNetExceptionHandler: Codeunit "DotNet Exception Handler";
@@ -1503,6 +1519,8 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         ApiVersion: Text;
         CobrandEnvironmentName: Text;
         UnsuccessfulRequestTelemetryTxt: Text;
+        PaginationLinks: array[1] of Text;
+        PaginationRelativeLink: Text;
     begin
         IF NOT TryCheckCredentials(ErrorText) THEN
             ERROR(ErrorText);
@@ -1560,6 +1578,21 @@ codeunit 1450 "MS - Yodlee Service Mgt."
 
         IF URL.ToLower().Contains('transactions') THEN BEGIN
             ResponseMessage.Content().ReadAs(BankFeedText);
+            if ResponseMessage.Headers.Contains('Link') then begin
+                ResponseMessage.Headers.GetValues('Link', PaginationLinks);
+                if PaginationLinks[1].Contains(';rel=next') then begin
+                    // use pagination link only up to rel=next, we are not interested in rel=count link
+                    PaginationRelativeLink := CopyStr(PaginationLinks[1], PaginationLinks[1].IndexOf('/'), PaginationLinks[1].IndexOf(';rel=next') - PaginationLinks[1].IndexOf('/'));
+                    // if the pagination link also contains rel=previous, cut that off as well, because we are only interesetd in rel=next link
+                    if PaginationRelativeLink.Contains(';rel=previous') then
+                        PaginationRelativeLink := CopyStr(PaginationRelativeLink, PaginationRelativeLink.LastIndexOf('/'));
+                    PaginationLink := YodleeAPIStrings.GetFullURL(PaginationRelativeLink);
+                end;
+            end;
+            // put the bank feed in the global list of bank feeds
+            // all the other Yodlee requests process the response from GLBResponseInStream
+            // after GetTransactions request, we processes them from BankFeedTextList, because it can come in multiple responses
+            BankFeedTextList.Add(BankFeedText);
             Session.LogMessage('000083Y', BankFeedText, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         END;
 
@@ -1568,7 +1601,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
             Session.LogMessage('0000BI7', LinkedBankAccountsText, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         END;
 
-        IF URL.ToLower().Contains('accounts?accountId') THEN BEGIN
+        IF URL.ToLower().Contains('accounts?accountid') THEN BEGIN
             ResponseMessage.Content().ReadAs(LinkedBankAccountText);
             Session.LogMessage('0000BLP', LinkedBankAccountText, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         END;
@@ -2014,8 +2047,11 @@ codeunit 1450 "MS - Yodlee Service Mgt."
 
     local procedure ReturnOnlyPostedTransactions(var TempBlobResponse: Codeunit "Temp Blob");
     var
-        ResponseWithPendingTransactions: Codeunit "Temp Blob";
+        BankFeedTempBlob: Codeunit "Temp Blob";
+        PendingTransactionsTempBlob: Codeunit "Temp Blob";
         GetJsonStructure: Codeunit "Get Json Structure";
+        BankFeedJSONInStream: InStream;
+        BankFeedJSONOutStream: OutStream;
         OutStreamWithAllTransactions: OutStream;
         OutStreamWithPostedTransactions: OutStream;
         InStreamWithAllTransactions: InStream;
@@ -2026,31 +2062,46 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         PostedTransactionsTxt: Text;
         TransactionResponseLine: Text;
         TransactionNodeTxt: Text;
+        BankFeedJSONTxt: Text;
         cr: Char;
     begin
         cr := 10;
-        ResponseWithPendingTransactions.CreateOutStream(OutStreamWithAllTransactions);
-        IF NOT GetJsonStructure.JsonToXMLCreateDefaultRoot(GLBResponseInStream, OutStreamWithAllTransactions) THEN
-            LogInternalError(InvalidResponseErr, DataClassification::SystemMetadata, Verbosity::Error);
-        ResponseWithPendingTransactions.CreateInStream(InStreamWithAllTransactions);
-        while not InStreamWithAllTransactions.EOS() do begin
-            InStreamWithAllTransactions.ReadText(TransactionResponseLine);
-            AllTransactionsTxt += (TransactionResponseLine + Format(cr));
-        end;
-        LoadXMLNodeFromtext(AllTransactionsTxt, AllTransactionsXml);
-        if AllTransactionsXml.SelectNodes('/root/root/transaction[status=''POSTED'']', PostedTransactionsNodeList) then begin
-            PostedTransactionsTxt += ('<root>' + Format(cr));
-            PostedTransactionsTxt += ('<root>' + Format(cr));
-            foreach TransactionNode in PostedTransactionsNodeList do begin
-                TransactionNode.WriteTo(TransactionNodeTxt);
-                PostedTransactionsTxt += TransactionNodeTxt;
-            end;
-            PostedTransactionsTxt += ('</root>' + Format(cr));
-            PostedTransactionsTxt += ('</root>' + Format(cr));
+        if BankFeedTextList.Count = 0 then
+            exit;
 
-            TempBlobResponse.CreateOutStream(OutStreamWithPostedTransactions);
-            OutStreamWithPostedTransactions.WriteText(PostedTransactionsTxt);
+        PostedTransactionsTxt += ('<root>' + Format(cr));
+        PostedTransactionsTxt += ('<root>' + Format(cr));
+
+        foreach BankFeedJSONTxt in BankFeedTextList do begin
+            Clear(BankFeedTempBlob);
+            Clear(PendingTransactionsTempBlob);
+            Clear(GetJsonStructure);
+            AllTransactionsTxt := '';
+            BankFeedTempBlob.CreateOutStream(BankFeedJSONOutStream);
+            BankFeedJSONOutStream.WriteText(BankFeedJSONTxt, StrLen(BankFeedJSONTxt));
+            BankFeedTempBlob.CreateInStream(BankFeedJSONInStream);
+            PendingTransactionsTempBlob.CreateOutStream(OutStreamWithAllTransactions);
+            IF NOT GetJsonStructure.JsonToXMLCreateDefaultRoot(BankFeedJSONInStream, OutStreamWithAllTransactions) THEN
+                LogInternalError(InvalidResponseErr, DataClassification::SystemMetadata, Verbosity::Error);
+            PendingTransactionsTempBlob.CreateInStream(InStreamWithAllTransactions);
+            while not InStreamWithAllTransactions.EOS() do begin
+                InStreamWithAllTransactions.ReadText(TransactionResponseLine);
+                AllTransactionsTxt += (TransactionResponseLine + Format(cr));
+            end;
+            LoadXMLNodeFromtext(AllTransactionsTxt, AllTransactionsXml);
+            if AllTransactionsXml.SelectNodes('/root/root/transaction[status=''POSTED'']', PostedTransactionsNodeList) then
+                foreach TransactionNode in PostedTransactionsNodeList do begin
+                    TransactionNode.WriteTo(TransactionNodeTxt);
+                    PostedTransactionsTxt += TransactionNodeTxt;
+                end;
         end;
+
+        PostedTransactionsTxt += ('</root>' + Format(cr));
+        PostedTransactionsTxt += ('</root>' + Format(cr));
+
+        TempBlobResponse.CreateOutStream(OutStreamWithPostedTransactions);
+        OutStreamWithPostedTransactions.WriteText(PostedTransactionsTxt);
+        BankFeedTextList.RemoveRange(1, BankFeedTextList.Count());
     end;
 
     [EventSubscriber(ObjectType::Table, 270, 'OnCheckLinkedToStatementProviderEvent', '', false, false)]

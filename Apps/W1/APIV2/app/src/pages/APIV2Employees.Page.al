@@ -183,8 +183,8 @@ page 30017 "APIV2 - Employees"
                 }
                 part(picture; "APIV2 - Pictures")
                 {
-                    //TODO - WaitingModernDevProperty, Caption = 'Picture';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
+                    Caption = 'Picture';
+                    Multiplicity = ZeroOrOne;
                     EntityName = 'picture';
                     EntitySetName = 'pictures';
                     SubPageLink = Id = Field(SystemId), "Parent Type" = const(4);

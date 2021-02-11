@@ -2,6 +2,7 @@ table 4022 "User Mapping Work"
 {
     DataPerCompany = false;
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {
@@ -12,7 +13,7 @@ table 4022 "User Mapping Work"
         }
         field(2; "Dest User ID"; Code[50])
         {
-            TableRelation = "User"."User Name" WHERE ("Authentication Email" = FILTER (<> ''));
+            TableRelation = "User"."User Name" WHERE("Authentication Email" = FILTER(<> ''));
             ValidateTableRelation = false;
             Description = 'Destination User ID';
             DataClassification = SystemMetadata;

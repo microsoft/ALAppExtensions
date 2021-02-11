@@ -175,6 +175,12 @@ page 31165 "Posted Cash Document CZP"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the number that the vendor uses on the invoice they sent to you or number of receipt.';
                 }
+                field("EET Entry No."; Rec."EET Entry No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Importance = Additional;
+                    ToolTip = 'Specifies the EET entry number.';
+                }
                 field("Created ID"; Rec."Created ID")
                 {
                     ApplicationArea = Basic, Suite;

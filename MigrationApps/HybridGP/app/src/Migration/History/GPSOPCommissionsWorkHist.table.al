@@ -1,6 +1,8 @@
 table 4068 "GPSOPCommissionsWorkHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; SOPTYPE; Option)

@@ -13,6 +13,7 @@ codeunit 3961 "Regex Impl."
         DotNetMatchCollection: DotNet MatchCollection;
         DotNetGroupCollection: DotNet GroupCollection;
         DotNetCaptureCollection: DotNet CaptureCollection;
+        TimeoutTooLowErr: Label 'The regular expression timeout should be at least 1000 ms';
 
     procedure GetCacheSize(): Integer
     begin
@@ -227,13 +228,16 @@ codeunit 3961 "Regex Impl."
     end;
 
     local procedure Regex(Pattern: Text)
+    var
+        RegexOptions: Record "Regex Options";
     begin
-        DotNetRegex := DotNetRegex.Regex(Pattern);
+        Regex(Pattern, RegexOptions);
     end;
 
     procedure Regex(Pattern: Text; var RegexOptions: Record "Regex Options")
     begin
         DotNetRegexOptions := RegexOptions.GetRegexOptions();
+        if RegexOptions.MatchTimeoutInMs < 1000 then Error(TimeoutTooLowErr);
         DotNetRegex := DotNetRegex.Regex(Pattern, DotNetRegexOptions, RegexOptions.MatchTimeoutInMs)
     end;
 

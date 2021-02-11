@@ -1,5 +1,9 @@
 codeunit 11605 "Copy Line Des. To G/L Entry AU"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '17.0';
+
     trigger OnRun()
     begin
         // This code is based on app upgrade logic for APAC.

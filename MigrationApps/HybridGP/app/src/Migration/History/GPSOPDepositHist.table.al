@@ -1,6 +1,8 @@
 table 4069 "GPSOPDepositHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; SOPTYPE; Option)

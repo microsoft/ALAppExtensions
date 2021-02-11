@@ -54,39 +54,16 @@ codeunit 11742 "VAT Date Handler CZL"
         VendorLedgerEntry."VAT Date CZL" := GenJournalLine."VAT Date CZL";
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostInvPostBuffer', '', false, false)]
-    local procedure UpdateVatDateOnBeforePostInvPostBufferSales(var GenJnlLine: Record "Gen. Journal Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer"; var SalesHeader: Record "Sales Header")
-    begin
-        GenJnlLine."VAT Date CZL" := InvoicePostBuffer."VAT Date CZL";
-        GenJnlLine."EU 3-Party Intermed. Role CZL" := SalesHeader."EU 3-Party Intermed. Role CZL";
-        GenJnlLine."Original Doc. VAT Date CZL" := InvoicePostBuffer."Original Doc. VAT Date CZL";
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterCheckSalesDoc', '', false, false)]
     local procedure CheckVatDateOnAfterCheckSalesDoc(var SalesHeader: Record "Sales Header")
     begin
         CheckVATDateCZL(SalesHeader);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostInvPostBuffer', '', false, false)]
-    local procedure UpdateVatDateOnBeforePostInvPostBufferPurch(var GenJnlLine: Record "Gen. Journal Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer"; var PurchHeader: Record "Purchase Header")
-    begin
-        GenJnlLine."VAT Date CZL" := InvoicePostBuffer."VAT Date CZL";
-        GenJnlLine."EU 3-Party Intermed. Role CZL" := PurchHeader."EU 3-Party Intermed. Role CZL";
-        GenJnlLine."Original Doc. VAT Date CZL" := InvoicePostBuffer."Original Doc. VAT Date CZL";
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterCheckPurchDoc', '', false, false)]
     local procedure CheckVatDateOnAfterCheckPurchDoc(var PurchHeader: Record "Purchase Header")
     begin
         CheckVATDateCZL(PurchHeader);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Serv-Posting Journals Mgt.", 'OnBeforePostInvoicePostBuffer', '', false, false)]
-    local procedure UpdateVatDateOnBeforePostInvPostBufferServ(var GenJournalLine: Record "Gen. Journal Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer")
-    begin
-        GenJournalLine."VAT Date CZL" := InvoicePostBuffer."VAT Date CZL";
-        GenJournalLine."Original Doc. VAT Date CZL" := InvoicePostBuffer."Original Doc. VAT Date CZL";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service-Post", 'OnBeforePostWithLines', '', false, false)]

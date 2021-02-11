@@ -42,18 +42,21 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         SalesCrMemoHeader2: Record "Sales Cr.Memo Header";
         RecordExportBuffer: Record "Record Export Buffer";
         ElectronicDocumentFormat: Record "Electronic Document Format";
-        RBMgt: Codeunit "File Management";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
+#if not CLEAN17
+        RBMgt: Codeunit "File Management";
         EnvironmentInfo: Codeunit "Environment Information";
+#endif
         FromFile: Text[1024];
         DocumentType: Option "Quote","Order","Invoice","Credit Memo","Blanket Order","Return Order","Finance Charge","Reminder";
     begin
         FromFile := CreateXML(SalesCrMemoHeader);
 
         SalesSetup.Get();
-
+#if not CLEAN17
         if RBMgt.IsLocalFileSystemAccessible() and not EnvironmentInfo.IsSaaS() then
             SalesSetup.VerifyAndSetOIOUBLSetupPath(DocumentType::"Credit Memo");
+#endif
 
         OIOUBLManagement.UpdateRecordExportBuffer(
             SalesCrMemoHeader.RecordId(),
@@ -246,6 +249,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
           SalesCrMemoHeader."Posting Date");
 
         // Credit Memo->AccountingSupplierParty
+        OnCreateXMLOnBeforeInsertAccountingSupplierParty(XMLCurrNode, SalesCrMemoHeader);
         OIOUBLXMLGenerator.InsertAccountingSupplierParty(XMLCurrNode, SalesCrMemoHeader."Salesperson Code");
 
         // Credit Memo->AccountingCustomerParty
@@ -367,6 +371,11 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(var XMLdocOut: XmlDocument; SalesCrMemoHeader: Record "Sales Cr.Memo Header"; DocNameSpace: Text[250]; DocNameSpace2: Text[250])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnBeforeInsertAccountingSupplierParty(var XMLCurrNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header")
     begin
     end;
 }

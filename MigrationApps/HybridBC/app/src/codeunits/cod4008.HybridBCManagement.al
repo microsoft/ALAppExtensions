@@ -2,17 +2,26 @@ codeunit 4008 "Hybrid BC Management"
 {
     var
         SqlCompatibilityErr: Label 'SQL database must be at comptibility level 130 or higher.';
-        DatabaseTooLargeErr: Label 'The maximum replicated data size of 30 GB has been exceeded.';
+        DatabaseTooLargeErr: Label '"The maximum allowed amount of data for migration has been exceeded. For more information on how to proceed, see https://go.microsoft.com/fwlink/?linkid=2013440.';
         TableNotExistsErr: Label 'The table does not exist in the local instance.';
         SchemaMismatchErr: Label 'The local table schema differs from the Business Central cloud table.';
         FailurePreparingDataErr: Label 'Failed to prepare data for the table.\\\\%1', Comment = '%1 - The inner error message.';
         FailureCopyingTableErr: Label 'Failed to copy the table.\\\\%1', Comment = '%1 - The inner error message.';
-        UnsupportedVersionErr: Label 'Business Central on-premises must be on the same major version as the online instance.';
+        UnsupportedVersionErr: Label 'Business Central on-premises must be on the same major version as the online instance. Check if the version was set correctly on the database. For more information, see the documentation - https://go.microsoft.com/fwlink/?linkid=2148701.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Message Management", 'OnResolveMessageCode', '', false, false)]
     local procedure GetBCMessageOnResolveMessageCode(MessageCode: Code[10]; InnerMessage: Text; var Message: Text)
+    var
+        InteligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridBCWizard: Codeunit "Hybrid BC Wizard";
     begin
         if Message <> '' then
+            exit;
+
+        if not InteligentCloudSetup.Get() then
+            exit;
+
+        if not (InteligentCloudSetup."Product ID" = HybridBCWizard.ProductId()) then
             exit;
 
         case MessageCode of

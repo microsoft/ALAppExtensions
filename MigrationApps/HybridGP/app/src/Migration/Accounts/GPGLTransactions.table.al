@@ -1,6 +1,7 @@
 table 4091 "GP GLTransactions"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

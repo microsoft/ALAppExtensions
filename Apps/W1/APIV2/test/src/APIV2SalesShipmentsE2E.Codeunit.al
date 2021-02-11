@@ -16,11 +16,6 @@ codeunit 139847 "APIV2 - Sales Shipments E2E"
         LibrarySales: Codeunit "Library - Sales";
         ShipmentServiceNameTxt: Label 'salesShipments';
 
-    local procedure Initialize()
-    begin
-        WorkDate := Today();
-    end;
-
     [Test]
     procedure TestGetSalesShipments()
     var
@@ -31,8 +26,8 @@ codeunit 139847 "APIV2 - Sales Shipments E2E"
         TargetURL: Text;
     begin
         // [SCENARIO] Create 2 sales shipments (post sales order) and use a GET method to retrieve them
+
         // [GIVEN] 2 posted sales shipments
-        Initialize();
         LibrarySales.CreateSalesOrder(SalesHeader);
         ShipmentNo[1] := LibrarySales.PostSalesDocument(SalesHeader, true, false);
         LibrarySales.CreateSalesOrder(SalesHeader);
@@ -62,9 +57,8 @@ codeunit 139847 "APIV2 - Sales Shipments E2E"
         DimensionSetValue: Text;
     begin
         // [SCENARIO] Call GET on a sales shipment and expand the dimension set lines
-        // [GIVEN] A sales shipment.
-        Initialize();
 
+        // [GIVEN] A sales shipment.
         SalesShipmentHeader.FindFirst();
         ShipmentIdTxt := LowerCase(Format(SalesShipmentHeader.SystemId));
 

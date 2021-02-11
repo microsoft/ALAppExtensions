@@ -155,7 +155,7 @@ codeunit 139650 "Hybrid Wizard Tests"
         hybridCompany.Init();
         hybridCompany."Display Name" := 'Company 1';
         hybridCompany.Name := 'COMPANY1';
-        hybridCompany."Estimated Size" := 12.4;
+        hybridCompany."Estimated Size" := 32.4;
         hybridCompany.Replicate := true;
         hybridCompany.Insert();
 

@@ -1,6 +1,8 @@
 table 4081 "GPIVLotAttributeHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; IVDOCTYP; Option)

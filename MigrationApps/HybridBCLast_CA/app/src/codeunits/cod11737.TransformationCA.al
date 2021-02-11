@@ -1,5 +1,9 @@
 codeunit 11737 "Transformation CA"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '17.0';
+
     var
         CountryCodeCATxt: Label 'CA', Locked = true;
         BaseAppExtensionIdTxt: Label '437dbf0e-84ff-417a-965d-ed2bb9650972', Locked = true;

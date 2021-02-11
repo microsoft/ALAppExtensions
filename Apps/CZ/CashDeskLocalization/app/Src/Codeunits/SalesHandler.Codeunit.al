@@ -20,7 +20,13 @@ codeunit 11736 "Sales Handler CZP"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnCheckAndUpdateOnAfterSetPostingFlags', '', false, false)]
-    local procedure CheckCashDocumentActionOnCheckAndUpdateOnAfterSetPostingFlags(var SalesHeader: Record "Sales Header")
+    local procedure CheckCashDeskOnCheckAndUpdateOnAfterSetPostingFlags(var SalesHeader: Record "Sales Header")
+    begin
+        SalesHeader.CheckCashDocumentActionCZP();
+        CheckCashDeskUserRights(SalesHeader);
+    end;
+
+    local procedure CheckCashDeskUserRights(var SalesHeader: Record "Sales Header")
     begin
         if SalesHeader."Cash Document Action CZP".AsInteger() > SalesHeader."Cash Document Action CZP"::" ".AsInteger() then
             CashDeskManagementCZP.CheckUserRights(SalesHeader."Cash Desk Code CZP", SalesHeader."Cash Document Action CZP"::Create);

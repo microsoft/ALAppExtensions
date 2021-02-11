@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Changes the language for Windows and applications, and converts language codes to IDs, and vice versa.",
     "description":  "Changes the language for Windows and applications, and converts language codes to language IDs, and vice versa. The Language table is a subset of Windows languages. You can add languages, and edit translations and descriptions in the list.",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,7 +15,7 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "screenshots":  [

@@ -17,11 +17,6 @@ codeunit 139848 "APIV2 - Sales Ship. Lines E2E"
         ShipmentServiceNameTxt: Label 'salesShipments';
         ShipmentServiceLinesNameTxt: Label 'salesShipmentLines';
 
-    local procedure Initialize()
-    begin
-        WorkDate := Today();
-    end;
-
     [Test]
     procedure TestGetLineDirectly()
     var
@@ -34,8 +29,8 @@ codeunit 139848 "APIV2 - Sales Ship. Lines E2E"
         SequenceValue: Text;
     begin
         // [SCENARIO] Call GET on the Line of a sales shipment
+
         // [GIVEN] A shipment with a line.
-        Initialize();
         LibrarySales.CreateSalesOrder(SalesHeader);
         ShipmentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
 
@@ -68,8 +63,8 @@ codeunit 139848 "APIV2 - Sales Ship. Lines E2E"
         LineNo2: Text;
     begin
         // [SCENARIO] Call GET on the Lines of Sales Shipment
+
         // [GIVEN] An sales shipment with lines.
-        Initialize();
         CreateSalesOrderMultipleLines(SalesHeader);
         ShipmentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
 
@@ -110,8 +105,8 @@ codeunit 139848 "APIV2 - Sales Ship. Lines E2E"
         LineNo2: Text;
     begin
         // [SCENARIO] Call GET on the Lines of a sales shipment
+
         // [GIVEN] An sales shipment with lines.
-        Initialize();
         CreateSalesOrderMultipleLines(SalesHeader);
         ShipmentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
 
@@ -144,9 +139,8 @@ codeunit 139848 "APIV2 - Sales Ship. Lines E2E"
         DimensionSetValue: Text;
     begin
         // [SCENARIO] Call GET on the Line of a sales shipment and expand the dimension set lines
-        // [GIVEN] A shipment with a line.
-        Initialize();
 
+        // [GIVEN] A shipment with a line.
         SalesShipmentHeader.FindFirst();
         SalesShipmentLine.SetRange("Document No.", SalesShipmentHeader."No.");
         SalesShipmentLine.FindFirst();

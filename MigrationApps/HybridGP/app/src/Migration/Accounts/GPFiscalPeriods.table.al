@@ -1,6 +1,7 @@
 table 4092 "GP Fiscal Periods"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

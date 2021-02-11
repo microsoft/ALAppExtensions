@@ -209,16 +209,16 @@ page 30008 "APIV2 - Items"
                 }
                 part(baseUnitOfMeasure; "APIV2 - Units of Measure")
                 {
-                    //TODO - WaitingModernDevProperty, Caption = 'Unit Of Measure';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
+                    Caption = 'Unit Of Measure';
+                    Multiplicity = ZeroOrOne;
                     EntityName = 'unitOfMeasure';
                     EntitySetName = 'unitsOfMeasure';
                     SubPageLink = SystemId = Field("Unit of Measure Id");
                 }
                 part(picture; "APIV2 - Pictures")
                 {
-                    //TODO - WaitingModernDevProperty, Caption = 'Picture';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
+                    Caption = 'Picture';
+                    Multiplicity = ZeroOrOne;
                     EntityName = 'picture';
                     EntitySetName = 'pictures';
                     SubPageLink = Id = Field(SystemId), "Parent Type" = const(2);

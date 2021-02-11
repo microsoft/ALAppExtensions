@@ -14,6 +14,8 @@ codeunit 4509 "Email - Outlook API Helper"
         SetupOutlookAPIQst: Label 'To connect to your email account you must create an App registration in Azure Active Directory and then enter information about the registration on the Email Application AAD Registration Page in Business Central. Do you want to do that now?';
         OnPremOnlyErr: Label 'Authentication using the Client ID and secret should only be used for Business Central on-premises.';
         AccountNotFoundErr: Label 'We could not find the account. Typically, this is because the account has been deleted.';
+        EmailBodyTooLargeErr: Label 'The email is too large to send. The size limit is 4 MB, not including attachments.', Locked = true;
+        AttachmentTooLargeErr: Label 'Cannot send the email because the attachments are too large. The size limit for attachments is 3 MB.', Locked = true;
 
     procedure GetAccounts(Connector: Enum "Email Connector"; var Accounts: Record "Email Account")
     var
@@ -49,6 +51,7 @@ codeunit 4509 "Email - Outlook API Helper"
         FromJson: JsonObject;
         MessageJson: JsonObject;
         EmailBody: JsonObject;
+        MessageText: Text;
     begin
         if EmailMessage.IsBodyHTMLFormatted() then
             EmailBody.Add('contentType', 'HTML')
@@ -69,10 +72,21 @@ codeunit 4509 "Email - Outlook API Helper"
         EmailMessageJson.Add('ccRecipients', GetEmailRecipients(EmailMessage, Enum::"Email Recipient Type"::Cc));
         EmailMessageJson.Add('bccRecipients', GetEmailRecipients(EmailMessage, Enum::"Email Recipient Type"::Bcc));
 
+        // If message json > max request size, then error as the email body is too large.
+        EmailMessageJson.WriteTo(MessageText);
+        if StrLen(MessageText) > MaximumRequestSizeInBytes() then
+            Error(EmailBodyTooLargeErr);
+
         AddEmailAttachments(EmailMessage, EmailMessageJson);
 
-        MessageJson.Add('message', EmailMessageJson);
-        MessageJson.Add('saveToSentItems', true);
+        // If message json <= max request size, wrap it in message object to send in a single request.
+        EmailMessageJson.WriteTo(MessageText);
+        if StrLen(MessageText) > MaximumRequestSizeInBytes() then
+            MessageJson := EmailMessageJson
+        else begin
+            MessageJson.Add('message', EmailMessageJson);
+            MessageJson.Add('saveToSentItems', true);
+        end;
 
         exit(MessageJson);
     end;
@@ -82,6 +96,7 @@ codeunit 4509 "Email - Outlook API Helper"
         EmailMessageJson: JsonObject;
         MessageJson: JsonObject;
         EmailBody: JsonObject;
+        MessageText: Text;
     begin
         if EmailMessage.IsBodyHTMLFormatted() then
             EmailBody.Add('contentType', 'HTML')
@@ -97,10 +112,21 @@ codeunit 4509 "Email - Outlook API Helper"
         EmailMessageJson.Add('ccRecipients', GetEmailRecipients(EmailMessage, Enum::"Email Recipient Type"::Cc));
         EmailMessageJson.Add('bccRecipients', GetEmailRecipients(EmailMessage, Enum::"Email Recipient Type"::Bcc));
 
+        // If message json > max request size, then error as the email body is too large.
+        MessageJson.WriteTo(MessageText);
+        if StrLen(MessageText) > MaximumRequestSizeInBytes() then
+            Error(EmailBodyTooLargeErr);
+
         AddEmailAttachments(EmailMessage, EmailMessageJson);
 
-        MessageJson.Add('message', EmailMessageJson);
-        MessageJson.Add('saveToSentItems', true);
+        // If message json <= max request size, wrap it in message object to send in a single request.
+        MessageJson.WriteTo(MessageText);
+        if StrLen(MessageText) > MaximumRequestSizeInBytes() then
+            MessageJson := EmailMessageJson
+        else begin
+            MessageJson.Add('message', EmailMessageJson);
+            MessageJson.Add('saveToSentItems', true);
+        end;
 
         exit(MessageJson);
     end;
@@ -109,17 +135,23 @@ codeunit 4509 "Email - Outlook API Helper"
     var
         AttachementJson: JsonObject;
         AttachementsArray: JsonArray;
+        IntTemp: Integer;
     begin
         if not EmailMessage.Attachments_First() then
             exit;
 
         repeat
+            IntTemp := EmailMessage.Attachments_GetLength();
+            If EmailMessage.Attachments_GetLength() >= MaximumAttachmentSizeInBytes() then
+                Error(AttachmentTooLargeErr);
+
             Clear(AttachementJson);
             AttachementJson.Add('@odata.type', '#microsoft.graph.fileAttachment');
             AttachementJson.Add('name', EmailMessage.Attachments_GetName());
             AttachementJson.Add('contentType', EmailMessage.Attachments_GetContentType());
             AttachementJson.Add('isInline', EmailMessage.Attachments_IsInline());
             AttachementJson.Add('contentBytes', EmailMessage.Attachments_GetContentBase64());
+            AttachementJson.Add('size', EmailMessage.Attachments_GetLength());
             AttachementsArray.Add(AttachementJson);
         until EmailMessage.Attachments_Next() = 0;
 
@@ -262,5 +294,15 @@ codeunit 4509 "Email - Outlook API Helper"
     begin
         OutlookAccounts.ChangeCompany(CompanyName);
         OutlookAccounts.DeleteAll();
+    end;
+
+    local procedure MaximumRequestSizeInBytes(): Integer
+    begin
+        exit(4194304); // 4 mb
+    end;
+
+    local procedure MaximumAttachmentSizeInBytes(): Integer
+    begin
+        exit(3145728); // 3 mb
     end;
 }

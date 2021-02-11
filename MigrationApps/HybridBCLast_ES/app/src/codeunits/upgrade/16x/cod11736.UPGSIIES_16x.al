@@ -1,5 +1,9 @@
 codeunit 11736 "UPG SII ES 16X"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '17.0';
+
     trigger OnRun()
     begin
     end;

@@ -1,6 +1,7 @@
 table 4026 "GP Payment Terms"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

@@ -1,6 +1,8 @@
 table 4067 "GPSOPBinQuantityWorkHist"
 {
     ReplicateData = false;
+    Extensible = false;
+
     fields
     {
         field(1; SOPNUMBE; text[22])

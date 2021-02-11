@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the Feature Key module",
     "description":  "Tests for the Feature Key module.",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,19 +15,19 @@
                              "id":  "ae59aed1-040c-453c-9585-fe9da2f8211e",
                              "name":  "Feature Key",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
                              "publisher":  "Microsoft",
                              "name":  "Library Variable Storage",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "screenshots":  [

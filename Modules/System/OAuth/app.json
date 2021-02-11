@@ -2,7 +2,7 @@
     "id":  "3f95f4c2-037f-44d4-b089-b56ffc01693f",
     "name":  "OAuth",
     "publisher":  "Microsoft",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "brief":  "Contains methods supporting authentication via OAuth 1.0 protocol.",
     "description":  "Contains helper methods for obtaining the authentication key and secret, or the authorization header in respect to the OAuth 1.0 authorization protocol.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,7 +15,7 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "publisher":  "Microsoft",
                              "name":  "DotNet Aliases",
-                             "version":  "17.3.0.0"
+                             "version":  "17.4.0.0"
                          }
                      ],
     "screenshots":  [

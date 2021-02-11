@@ -1,6 +1,7 @@
 table 4104 "GP Item Transactions"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

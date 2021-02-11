@@ -231,8 +231,10 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
         XMLdocOut.WriteTo(FileOutstream);
         OutputFile.Close();
 
+#if not CLEAN17
         if RBMgt.IsLocalFileSystemAccessible() AND NOT EnvironmentInfo.IsSaaS() then
             SalesSetup.VerifyAndSetOIOUBLSetupPath(DocumentType::"Finance Charge");
+#endif
 
         OIOUBLManagement.ExportXMLFile("No.", FromFile, SalesSetup."OIOUBL-Fin. Chrg. Memo Path");
 

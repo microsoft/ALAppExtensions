@@ -510,6 +510,23 @@ table 11732 "Cash Document Header CZP"
             Editable = false;
             DataClassification = CustomerContent;
         }
+        field(100; "EET Cash Register"; Boolean)
+        {
+            CalcFormula = Exist("EET Cash Register CZL" where("Cash Register Type" = const("Cash Desk"),
+                                                           "Cash Register No." = field("Cash Desk No.")));
+            Caption = 'EET Cash Register';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(101; "EET Transaction"; Boolean)
+        {
+            CalcFormula = Exist("Cash Document Line CZP" where("Cash Desk No." = field("Cash Desk No."),
+                                                            "Cash Document No." = field("No."),
+                                                            "EET Transaction" = const(true)));
+            Caption = 'EET Transaction';
+            Editable = false;
+            FieldClass = FlowField;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
@@ -1139,6 +1156,29 @@ table 11732 "Cash Document Header CZP"
     begin
         if CashDeskNo <> CashDeskCZP."No." then
             CashDeskCZP.Get(CashDeskNo);
+    end;
+
+    procedure FindEETCashRegister(var EETCashRegisterCZL: Record "EET Cash Register CZL"): Boolean
+    begin
+        exit(EETCashRegisterCZL.FindByCashRegisterNo("EET Cash Register Type CZL"::"Cash Desk", "Cash Desk No."));
+    end;
+
+    procedure IsEETCashRegister(): Boolean
+    begin
+        CalcFields("EET Cash Register");
+        exit("EET Cash Register");
+    end;
+
+    procedure TestNotEETCashRegister()
+    begin
+        if IsEETCashRegister() then
+            FieldError("EET Cash Register");
+    end;
+
+    procedure IsEETTransaction(): Boolean
+    begin
+        CalcFields("EET Transaction");
+        exit("EET Transaction");
     end;
 
     [IntegrationEvent(true, false)]

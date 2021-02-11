@@ -370,8 +370,6 @@ page 4003 "Intelligent Cloud Management"
     trigger OnOpenPage()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        IntelligentCloudStatus: Record "Intelligent Cloud Status";
-        HybridCompany: Record "Hybrid Company";
         PermissionManager: Codeunit "Permission Manager";
         UserPermissions: Codeunit "User Permissions";
         EnvironmentInfo: Codeunit "Environment Information";
@@ -382,21 +380,20 @@ page 4003 "Intelligent Cloud Management"
         if not IsSuper then
             SendUserIsNotSuperNotification();
 
-        IsOnPrem := NOT EnvironmentInfo.IsSaaS();
+        if not TaskScheduler.CanCreateTask() then
+            HybridCloudManagement.SendMissingScheduleTasksNotification();
 
-        IsSetupComplete := PermissionManager.IsIntelligentCloud() OR (IsOnPrem AND NOT IntelligentCloudStatus.IsEmpty());
+        IsOnPrem := NOT EnvironmentInfo.IsSaaS();
         if (not PermissionManager.IsIntelligentCloud()) and (not IsOnPrem) then
             SendSetupIntelligentCloudNotification();
 
-        IsMigratedCompany := HybridCompany.Get(CompanyName()) and HybridCompany.Replicate;
-        UpdateReplicationCompaniesEnabled := true;
-
+        UpdateEditablityOfControls();
         CanRunDiagnostic(DiagnosticRunsEnabled);
         CanShowSetupChecklist(SetupChecklistEnabled);
         CanShowMapUsers(MapUsersEnabled);
+        UpdateReplicationCompaniesEnabled := true;
         CanShowUpdateReplicationCompanies(UpdateReplicationCompaniesEnabled);
         CanMapCustomTables(CustomTablesEnabled);
-        AdlSetupEnabled := HybridCloudManagement.CanSetupAdlMigration();
 
         if IntelligentCloudSetup.Get() then begin
             HybridDeployment.Initialize(IntelligentCloudSetup."Product ID");
@@ -408,6 +405,28 @@ page 4003 "Intelligent Cloud Management"
 
         if not FindSet() then
             exit;
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        DetailsValue := GetDetails();
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        UpdateEditablityOfControls();
+    end;
+
+    local procedure UpdateEditablityOfControls()
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        HybridCompany: Record "Hybrid Company";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        PermissionManager: Codeunit "Permission Manager";
+    begin
+        IsSetupComplete := PermissionManager.IsIntelligentCloud() OR (IsOnPrem AND NOT IntelligentCloudStatus.IsEmpty());
+        IsMigratedCompany := HybridCompany.Get(CompanyName()) and HybridCompany.Replicate;
+        AdlSetupEnabled := HybridCloudManagement.CanSetupAdlMigration();
     end;
 
     procedure SendUserIsNotSuperNotification();
@@ -437,11 +456,6 @@ page 4003 "Intelligent Cloud Management"
 
         UserIsNotSuperNotification.AddAction(OpenPageMsg, Codeunit::"Hybrid Cloud Management", 'OpenWizardAction');
         UserIsNotSuperNotification.Send();
-    end;
-
-    trigger OnAfterGetRecord()
-    begin
-        DetailsValue := GetDetails();
     end;
 
     local procedure CanRefresh(): Boolean
@@ -589,6 +603,7 @@ page 4003 "Intelligent Cloud Management"
         OpenPageMsg: Label 'Open page';
 
         UserMustBeSuperMsg: Label 'You must have the SUPER permission set to run this wizard.';
+
         IntelligentCloudIsDisabledMsg: Label 'Cloud migration has been disabled. To start the migration again, you must complete the wizard.';
         IntelligentCloudNotSetupMsg: Label 'Cloud migration was not set up. To migrate data to the cloud, complete the wizard.';
 }

@@ -638,10 +638,9 @@ Codeunit 4037 "Helper Functions"
 
     local procedure CalculateDueDateFormula(GPPaymentTerms: Record "GP Payment Terms"; Use_Discount_Calc: Boolean; Discount_Calc: Text[32]): Text[50]
     var
-        working_number: Integer;
-        extra_month: Integer;
-        extra_year: Integer;
-        due_month: Integer;
+        working_number: integer;
+        extra_month: integer;
+        extra_year: integer;
         working_string: Text[20];
         working_discount_calc: Text[50];
         final_string: Text[50];
@@ -701,10 +700,8 @@ Codeunit 4037 "Helper Functions"
             working_string := '<' + format(extra_month) + 'M+' + format(working_number) + 'D>';
         end;
 
-        if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::"Month/Day" then begin
-            due_month := GPPaymentTerms.DueMonth;
-            working_string := '<M' + format(due_month) + '+D' + format(GPPaymentTerms.DUEDTDS) + '>';
-        end;
+        if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::"Month/Day" then
+            working_string := '<M' + format(GPPaymentTerms.DueMonth) + '+D' + format(GPPaymentTerms.DUEDTDS) + '>';
 
         if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::Annual then begin
             if GPPaymentTerms.DUEDTDS > 0 then
@@ -730,10 +727,9 @@ Codeunit 4037 "Helper Functions"
 
     local procedure CalculateDiscountDateFormula(GPPaymentTerms: Record "GP Payment Terms"): Text[50]
     var
-        working_number: Integer;
-        extra_month: Integer;
-        extra_year: Integer;
-        discount_month: Integer;
+        working_number: integer;
+        extra_month: integer;
+        extra_year: integer;
         working_string: Text[20];
     begin
         // Set date formula to a string '<1M>'
@@ -783,10 +779,8 @@ Codeunit 4037 "Helper Functions"
             working_string := '<' + format(extra_month) + 'M+' + format(working_number) + 'D>;'
         end;
 
-        if GPPaymentTerms.DISCTYPE = GPPaymentTerms.DISCTYPE::"Month/Day" then begin
-            discount_month := GPPaymentTerms.DiscountMonth;
-            working_string := '<M' + format(discount_month) + '+D' + format(GPPaymentTerms.DISCDTDS) + '>';
-        end;
+        if GPPaymentTerms.DISCTYPE = GPPaymentTerms.DISCTYPE::"Month/Day" then
+            working_string := '<M' + format(GPPaymentTerms.DiscountMonth) + '+D' + format(GPPaymentTerms.DISCDTDS) + '>';
 
         if GPPaymentTerms.DISCTYPE = GPPaymentTerms.DISCTYPE::Annual then begin
             if GPPaymentTerms.DISCDTDS > 0 then

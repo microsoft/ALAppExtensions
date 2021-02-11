@@ -1,8 +1,9 @@
 table 4061 "GPPOPReceiptHist"
 {
     ReplicateData = false;
-    fields
+    Extensible = false;
 
+    fields
     {
         field(1; POPRCTNM; text[18])
         {

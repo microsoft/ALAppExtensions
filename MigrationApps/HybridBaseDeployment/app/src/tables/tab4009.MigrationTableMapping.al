@@ -3,6 +3,7 @@ table 4009 "Migration Table Mapping"
     DataClassification = SystemMetadata;
     DataPerCompany = false;
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

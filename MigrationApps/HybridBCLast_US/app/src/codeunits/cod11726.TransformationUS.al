@@ -1,5 +1,9 @@
 codeunit 11726 "Transformation US"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '17.0';
+
     var
         CountryCodeUSTxt: Label 'US', Locked = true;
         BaseAppExtensionIdTxt: Label '437dbf0e-84ff-417a-965d-ed2bb9650972', Locked = true;

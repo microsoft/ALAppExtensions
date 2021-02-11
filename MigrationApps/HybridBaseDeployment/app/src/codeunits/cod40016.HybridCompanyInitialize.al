@@ -27,8 +27,11 @@ codeunit 40016 "Hybrid Company Initialize"
     procedure InitalizeCompany(var HybridCompany: Record "Hybrid Company")
     begin
         CheckTaskActive(HybridCompany);
-        HybridCompany."Company Initialization Task" := TaskScheduler.CreateTask(Codeunit::"Hybrid Company Initialize", Codeunit::"Handle Create Company Failure", true, HybridCompany.Name, 0DT, HybridCompany.RecordId);
-        HybridCompany.Modify();
+        if TaskScheduler.CanCreateTask() then begin
+            HybridCompany."Company Initialization Task" := TaskScheduler.CreateTask(Codeunit::"Hybrid Company Initialize", Codeunit::"Handle Create Company Failure", true, HybridCompany.Name, 0DT, HybridCompany.RecordId);
+            HybridCompany.Modify();
+        end else
+            Codeunit.Run(Codeunit::"Hybrid Company Initialize", HybridCompany);
     end;
 
     procedure OpenManageCompaniesPage(NonInitializedCompaniesNotification: Notification)

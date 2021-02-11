@@ -37,16 +37,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         CreditMemoStatusErr: Label 'The credit memo status is incorrect.';
         MailingJobErr: Label 'The mailing job is not created.', Locked = true;
 
-    local procedure Initialize()
-    begin
-        WORKDATE := TODAY();
-    end;
-
-    local procedure ResetWorkDate()
-    begin
-        WORKDATE := TODAY();
-    end;
-
     local procedure InitializeForSending()
     var
         EmailAccount: Record "Email Account";
@@ -59,8 +49,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         CreateSMTPMailSetup();
         DeleteJobQueueEntry(CODEUNIT::"Document-Mailing");
         DeleteJobQueueEntry(CODEUNIT::"APIV1 - Send Sales Document");
-
-        Initialize();
     end;
 
     [Test]
@@ -74,8 +62,8 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         TargetURL: Text;
     begin
         // [SCENARIO] Create posted and unposted sales credit memos and use a GET method to retrieve them
+
         // [GIVEN] 2 credit memos, one posted and one unposted
-        Initialize();
         CreateSalesCreditMemos(CreditMemoNo1, CreditMemoNo2);
         COMMIT();
 
@@ -107,14 +95,13 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         CreditMemoWithComplexJSON: Text;
     begin
         // [SCENARIO] Create posted and unposted Sales credit memos and use HTTP POST to delete them
-        // [GIVEN] 2 credit memos, one posted and one unposted
-        Initialize();
 
+        // [GIVEN] 2 credit memos, one posted and one unposted
         LibrarySales.CreateCustomerWithAddress(SellToCustomer);
         LibrarySales.CreateCustomerWithAddress(BillToCustomer);
         CustomerNo := SellToCustomer."No.";
-        CreditMemoDate := Today();
-        CreditMemoPostingDate := Today();
+        CreditMemoDate := WorkDate();
+        CreditMemoPostingDate := WorkDate();
 
         CreditMemoWithComplexJSON := CreateCreditMemoJSONWithAddress(SellToCustomer, BillToCustomer, CreditMemoDate, CreditMemoPostingDate);
         COMMIT();
@@ -153,7 +140,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         CurrencyCode: Code[10];
     begin
         // [SCENARIO] Create posted and unposted with specific currency set and use HTTP POST to create them
-        Initialize();
 
         // [GIVEN] an CreditMemo with a non-LCY currencyCode set
         LibrarySales.CreateCustomer(Customer);
@@ -218,7 +204,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         BillToAddressComplexTypeJSON: Text;
     begin
         // [SCENARIO] Create Sales CreditMemo, use a PATCH method to change it and then verify the changes
-        Initialize();
         LibrarySales.CreateCustomerWithAddress(SellToCustomer);
         LibrarySales.CreateCustomerWithAddress(BillToCustomer);
 
@@ -280,8 +265,8 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         CreditMemoID: Text;
     begin
         // [SCENARIO] Create unposted sales credit memo and use HTTP DELETE to delete it
+
         // [GIVEN] An unposted credit memo
-        Initialize();
         CreateDraftSalesCreditMemo(SalesHeader);
         CreditMemoNo := SalesHeader."No.";
         Commit();
@@ -305,7 +290,7 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         ApiSalesHeader: Record "Sales Header";
         SellToCustomer: Record "Customer";
         BillToCustomer: Record "Customer";
-        SalesCreditMemo: TestPage 44;
+        SalesCreditMemo: TestPage "Sales Credit Memo";
         CustomerNo: Text;
         CreditMemoDate: Date;
         CreditMemoPostingDate: Date;
@@ -313,14 +298,14 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
     begin
         // [SCENARIO] Create an credit memo both through the client UI and through the API
         // [SCENARIO] and compare them. They should be the same and have the same fields autocompleted wherever needed.
+
         // [GIVEN] An unposted credit memo
-        Initialize();
         LibraryGraphDocumentTools.InitializeUIPage();
 
         LibrarySales.CreateCustomer(SellToCustomer);
         CustomerNo := SellToCustomer."No.";
-        CreditMemoDate := TODAY();
-        CreditMemoPostingDate := TODAY();
+        CreditMemoDate := WorkDate();
+        CreditMemoPostingDate := WorkDate();
 
         // [GIVEN] a json describing our new credit memo
         CreditMemoWithComplexJSON := CreateCreditMemoJSONWithAddress(SellToCustomer, BillToCustomer, CreditMemoDate, CreditMemoPostingDate);
@@ -346,8 +331,8 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         DiscountPct: Decimal;
     begin
         // [SCENARIO] When an credit memo is created,the GET Method should update the credit memo and assign a total
+
         // [GIVEN] 2 credit memos, one posted and one unposted without totals assigned
-        Initialize();
         LibraryGraphDocumentTools.CreateDocumentWithDiscountPctPending(
           SalesHeader, DiscountPct, SalesHeader."Document Type"::"Credit Memo");
         SalesHeader.CALCFIELDS("Recalculate Invoice Disc.");
@@ -378,8 +363,8 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         DiscountAmt: Decimal;
     begin
         // [SCENARIO] When an credit memo is created, the GET Method should update the credit memo and assign a total
+
         // [GIVEN] 2 credit memos, one posted and one unposted with discount amount that should be redistributed
-        Initialize();
         LibraryGraphDocumentTools.CreateDocumentWithDiscountPctPending(
           SalesHeader, DiscountPct, SalesHeader."Document Type"::"Credit Memo");
         SalesHeader.CALCFIELDS(Amount);
@@ -417,7 +402,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         CreditMemoID: Text;
     begin
         // [SCENARIO 184721] Create Credit Memo, use a PATCH method to change it and then verify the changes
-        Initialize();
         LibrarySales.CreateCustomerWithAddress(Customer);
 
         // [GIVEN] an item with unit price and unit cost
@@ -464,7 +448,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         CreditMemoID: Text;
     begin
         // [SCENARIO 184721] Clearing manually set discount
-        Initialize();
 
         // [GIVEN] an item with unit price and unit cost
         LibraryInventory.CreateItemWithUnitPriceAndUnitCost(
@@ -520,7 +503,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         PostedCreditMemoEmailSubject: Text;
     begin
         // [SCENARIO] User can post a sales credit memo through the API.
-        Initialize();
 
         // [GIVEN] Draft sales credit memo exists
         CreateDraftSalesCreditMemo(SalesHeader);
@@ -606,7 +588,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         TargetURL: Text;
     begin
         // [SCENARIO] User can cancel a posted sales credit memo through API.
-        Initialize();
 
         // [GIVEN] Non-corrective sales credit memo exists
         CreatePostedSalesCreditMemo(SalesCrMemoHeader);
@@ -636,7 +617,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         TargetURL: Text;
     begin
         // [SCENARIO] User can cancel a posted sales credit memo through API.
-        Initialize();
 
         // [GIVEN] Corrective sales credit memo exists
         CreateCorrectiveSalesCreditMemo(SalesCrMemoHeader);
@@ -657,7 +637,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
 
         // [THEN] Credit memo is cancelled
         VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Canceled);
-        ResetWorkDate();
     end;
 
     [Test]
@@ -694,7 +673,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
 
         // [THEN] Mailing job is created
         CheckJobQueueEntry(CODEUNIT::"APIV1 - Send Sales Document");
-        ResetWorkDate();
     end;
 
     [Test]
@@ -796,14 +774,10 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         SalesHeader: Record "Sales Header";
         InvoiceCode: Code[20];
     begin
-        WorkDate := TODAY() - 2;
         LibrarySales.CreateSalesInvoice(SalesHeader);
         ModifySalesHeaderPostingDate(SalesHeader, WORKDATE());
         InvoiceCode := LibrarySales.PostSalesDocument(SalesHeader, false, true);
         SalesInvoiceHeader.Get(InvoiceCode);
-        WorkDate := TODAY() - 1;
-        SalesInvoiceHeader."Posting Date" := WorkDate();
-        SalesInvoiceHeader.Modify();
         Commit();
         CODEUNIT.Run(CODEUNIT::"Correct Posted Sales Invoice", SalesInvoiceHeader);
         SalesCrMemoHeader.SetRange("Applies-to Doc. No.", SalesInvoiceHeader."No.");
@@ -864,7 +838,7 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         EXIT(CreditMemoWithComplexJSON);
     end;
 
-    local procedure CreateCreditMemoThroughTestPage(var SalesCreditMemo: TestPage 44; Customer: Record "Customer"; DocumentDate: Date; PostingDate: Date)
+    local procedure CreateCreditMemoThroughTestPage(var SalesCreditMemo: TestPage "Sales Credit Memo"; Customer: Record "Customer"; DocumentDate: Date; PostingDate: Date)
     begin
         SalesCreditMemo.OPENNEW();
         SalesCreditMemo."Sell-to Customer No.".SETVALUE(Customer."No.");
@@ -966,6 +940,8 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO("No."), DATABASE::"Sales Header");
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO("Posting Description"), DATABASE::"Sales Header");
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO(Id), DATABASE::"Sales Header");
+        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO("Order Date"), DATABASE::"Sales Header");      // it is always set as Today() in API
+        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO("Shipment Date"), DATABASE::"Sales Header");   // it is always set as Today() in API
         // Special ignore case for ES
         RecordField.SETRANGE(TableNo, DATABASE::"Sales Header");
         RecordField.SETRANGE(FieldName, 'Due Date Modified');
@@ -973,11 +949,8 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
             LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, RecordField."No.", DATABASE::"Sales Header");
 
         // Time zone will impact how the date from the page vs WebService is saved. If removed this will fail in snap between 12:00 - 1 AM
-        IF TIME() < 020000T THEN BEGIN
-            LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO("Order Date"), DATABASE::"Sales Header");
-            LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO("Shipment Date"), DATABASE::"Sales Header");
+        IF TIME() < 020000T THEN
             LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO("Posting Date"), DATABASE::"Sales Header");
-        END;
 
         SalesHeader1RecordRef.GETTABLE(SalesHeader1);
         SalesHeader2RecordRef.GETTABLE(SalesHeader2);

@@ -94,7 +94,7 @@ codeunit 139651 "HybridBC Wizard Tests"
 
 
     [Test]
-    [HandlerFunctions('ProvidersBCPageHandler')]
+    [HandlerFunctions('ProvidersBCPageHandler,ConfirmNoHandler')]
     procedure TestAzureSqlScheduleFlow()
     var
         AssistedSetup: Codeunit "Assisted Setup";
@@ -226,7 +226,7 @@ codeunit 139651 "HybridBC Wizard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ProvidersBCPageHandler')]
+    [HandlerFunctions('ProvidersBCPageHandler,ConfirmNoHandler')]
     procedure TestExistingIntegrationRuntime()
     var
         AssistedSetup: Codeunit "Assisted Setup";
@@ -571,6 +571,13 @@ codeunit 139651 "HybridBC Wizard Tests"
     begin
         reply := true;
     end;
+
+    [ConfirmHandler]
+    procedure ConfirmNoHandler(question: Text[1024]; var reply: Boolean)
+    begin
+        reply := false;
+    end;
+
 
     [ModalPageHandler]
     procedure ProvidersBCPageHandler(var productPage: TestPage "Hybrid Product Types")

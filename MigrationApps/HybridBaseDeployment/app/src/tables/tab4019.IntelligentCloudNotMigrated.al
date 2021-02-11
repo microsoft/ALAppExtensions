@@ -2,6 +2,7 @@ table 4019 "Intelligent Cloud Not Migrated"
 {
     DataPerCompany = false;
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

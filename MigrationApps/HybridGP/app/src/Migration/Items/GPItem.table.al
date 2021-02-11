@@ -1,6 +1,7 @@
 table 4095 "GP Item"
 {
     ReplicateData = false;
+    Extensible = false;
 
     fields
     {

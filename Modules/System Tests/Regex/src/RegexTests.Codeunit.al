@@ -386,4 +386,23 @@ codeunit 135057 RegexTests
         // [Then] The double hyphens were replaced with parentheses 
         Assert.AreEqual('(decisively)', ResultingText, 'Did not replace correctly');
     end;
+
+    [Test]
+    procedure RegexMinTimeoutTest()
+    var
+        Matches: Record Matches;
+        RegexOptions: Record "Regex Options";
+        Pattern: Text;
+        Input: Text;
+    begin
+        // [Given] A pattern and an input 
+        Pattern := '^((ab)*)+$';
+        Input := 'abababababababababababab a';
+
+        // [When] Setting the match timeout to 100
+        RegexOptions.MatchTimeoutInMs := 100;
+
+        // [Then] We get an error, because the timeout should be minimum 1000 ms 
+        Asserterror Regex.Match(Input, Pattern, RegexOptions, Matches);
+    end;
 }

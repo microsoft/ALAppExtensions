@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Formats the appearance decimal data types.",
     "description":  "Formats the appearance of decimal data types in fields of a table, report, or page. For example, you can change how amounts that include decimals appear in a Cue on a Role Center.",
-    "version":  "17.3.0.0",
+    "version":  "17.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
