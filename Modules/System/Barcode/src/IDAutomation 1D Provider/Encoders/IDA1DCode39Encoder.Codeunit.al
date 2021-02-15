@@ -36,10 +36,17 @@ codeunit 9204 "IDA 1D Code39 Encoder" implements "Barcode Font Encoder"
     begin
         DotNetFontEncoder := DotNetFontEncoder.FontEncoder();
 
-        If BarcodeEncodeSettings."Enable Checksum" then
-            exit(DotNetFontEncoder.Code39Mod43(InputText));
+        if BarcodeEncodeSettings."Allow Extended Charset" then
+            if BarcodeEncodeSettings."Enable Checksum" then
+                exit(DotNetFontEncoder.Code39ExtMod43(InputText))
+            else
+                exit(DotNetFontEncoder.Code39Ext(InputText))
 
-        exit(DotNetFontEncoder.Code39(InputText));
+        else
+            if BarcodeEncodeSettings."Enable Checksum" then
+                exit(DotNetFontEncoder.Code39Mod43(InputText))
+            else
+                exit(DotNetFontEncoder.Code39(InputText));
     end;
 
     /// <summary> 
