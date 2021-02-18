@@ -83,6 +83,18 @@ codeunit 2504 "Extension Management"
     end;
 
     /// <summary>
+    /// Retrives the source of an extension, based on its PackageId.
+    /// </summary>
+    /// <param name="PackageId">The PackageId of the extension.</param>
+    /// <param name="TempBlob">TempBlob where the zip is stored.</param>
+    /// <param name="CleanFileName">A filename identifyning the extension</param>
+    /// <returns>True if the operation was successful; false otherwise.</returns>
+    procedure GetExtensionSource(PackageId: Guid; var TempBlob: Codeunit "Temp Blob"; var CleanFileName: Text): Boolean
+    begin
+        exit(ExtensionOperationImpl.GetExtensionSource(PackageId, TempBlob, CleanFileName));
+    end;
+
+    /// <summary>
     /// Checks whether an extension is installed, based on its PackageId.
     /// </summary>
     /// <param name="PackageId">The ID of the extension package.</param>
