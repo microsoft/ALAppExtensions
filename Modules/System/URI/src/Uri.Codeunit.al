@@ -129,6 +129,17 @@ codeunit 3060 Uri
     end;
 
     /// <summary>
+    /// Converts a uri string to its escaped representation.
+    /// </summary>
+    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.escapeuristring for more information.</remarks>
+    /// <param name="TextToEscape"></param>
+    /// <returns>A string that contains the escaped representation of <paramref name="TextToEscape:"/>.</returns>
+    procedure EscapeUriString(TextToEscape: Text): Text
+    begin
+        exit(Uri.EscapeUriString(TextToEscape));
+    end;
+
+    /// <summary>
     /// Checks if the provded string is a valid URI.
     /// </summary>
     /// <param name="UriString">The string to check.</param>
