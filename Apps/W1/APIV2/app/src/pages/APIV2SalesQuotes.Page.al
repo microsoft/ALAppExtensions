@@ -473,6 +473,13 @@ page 30037 "APIV2 - Sales Quotes"
                         RegisterFieldSet(FieldNo("Salesperson Code"));
                     end;
                 }
+                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
+                {
+                    Caption = 'Dimension Set Lines';
+                    EntityName = 'dimensionSetLine';
+                    EntitySetName = 'dimensionSetLines';
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(4);
+                }
                 part(salesQuoteLines; "APIV2 - Sales Quote Lines")
                 {
                     Caption = 'Lines';
@@ -585,13 +592,6 @@ page 30037 "APIV2 - Sales Quotes"
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const(3);
-                }
-                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
-                {
-                    Caption = 'Dimension Set Lines';
-                    EntityName = 'dimensionSetLine';
-                    EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(4);
                 }
             }
         }
