@@ -227,7 +227,7 @@ codeunit 4514 "SMTP Message"
     var
         Address: Text;
         Counter: Integer;
-        ConcateLbl: Label '; %2', Locked = true;
+        ConcateLbl: Label '; %1', Locked = true;
     begin
         if List.Count() = 0 then
             exit;
