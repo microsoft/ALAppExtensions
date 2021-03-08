@@ -391,6 +391,13 @@ page 30042 "APIV2 - Purchase Invoices"
                         RegisterFieldSet(FieldNo("Prices Including VAT"));
                     end;
                 }
+                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
+                {
+                    Caption = 'Dimension Set Lines';
+                    EntityName = 'dimensionSetLine';
+                    EntitySetName = 'dimensionSetLines';
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(10);
+                }
                 part(purchaseInvoiceLines; "APIV2 - Purchase Invoice Lines")
                 {
                     Caption = 'Lines';
@@ -460,13 +467,6 @@ page 30042 "APIV2 - Purchase Invoices"
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const(6);
-                }
-                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
-                {
-                    Caption = 'Dimension Set Lines';
-                    EntityName = 'dimensionSetLine';
-                    EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(10);
                 }
             }
         }

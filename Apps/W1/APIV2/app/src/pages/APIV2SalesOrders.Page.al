@@ -465,6 +465,13 @@ page 30028 "APIV2 - Sales Orders"
                         RegisterFieldSet(FieldNo("Requested Delivery Date"));
                     end;
                 }
+                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
+                {
+                    Caption = 'Dimension Set Lines';
+                    EntityName = 'dimensionSetLine';
+                    EntitySetName = 'dimensionSetLines';
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(2);
+                }
                 part(salesOrderLines; "APIV2 - Sales Order Lines")
                 {
                     Caption = 'Lines';
@@ -556,13 +563,6 @@ page 30028 "APIV2 - Sales Orders"
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const(2);
-                }
-                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
-                {
-                    Caption = 'Dimension Set Lines';
-                    EntityName = 'dimensionSetLine';
-                    EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(2);
                 }
             }
         }
