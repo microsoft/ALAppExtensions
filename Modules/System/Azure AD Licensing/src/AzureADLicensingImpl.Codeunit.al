@@ -49,7 +49,7 @@ codeunit 460 "Azure AD Licensing Impl."
             IsInitialized := true;
         end;
 
-        MembershipEntitlement.SetRange(Type, MembershipEntitlement.Type::"Azure AD Plan");
+        MembershipEntitlement.SetFilter(Type, '%1|%2', MembershipEntitlement.Type::"Azure AD Plan", MembershipEntitlement.type::"Azure AD Device Plan");
 
         TempSubscribedSku := SubscribedSku;
         TempServicePlanEnumerator := ServicePlanEnumerator;
