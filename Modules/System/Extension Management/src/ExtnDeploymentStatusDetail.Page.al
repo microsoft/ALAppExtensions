@@ -175,7 +175,7 @@ page 2509 "Extn Deployment Status Detail"
         }
     }
 
-    trigger OnOpenPage()
+    trigger OnAfterGetCurrRecord()
     var
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
     begin
@@ -219,7 +219,9 @@ page 2509 "Extn Deployment Status Detail"
         NavAppTenantOperationTable.CalcFields(Details);
         NavAppTenantOperationTable.Details.CreateInStream(DetailsStream, TEXTENCODING::UTF8);
         DeploymentDetails.Read(DetailsStream);
-        Insert();
+
+        if not Rec.Insert() then
+            Rec.Modify()
     end;
 
     local procedure SetEnvironmentVariables()
@@ -235,4 +237,3 @@ page 2509 "Extn Deployment Status Detail"
         ShowDetails := Status <> Status::InProgress;
     end;
 }
-

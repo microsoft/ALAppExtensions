@@ -15,6 +15,8 @@ page 2501 "Extension Details"
     SourceTable = "Published Application";
     SourceTableTemporary = true;
     ContextSensitiveHelpPage = 'ui-extensions';
+    Permissions = tabledata "Published Application" = r,
+                  tabledata "Windows Language" = r;
 
     layout
     {

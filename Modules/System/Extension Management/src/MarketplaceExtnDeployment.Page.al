@@ -97,6 +97,10 @@ page 2510 "Marketplace Extn Deployment"
         exit(InstallSelected);
     end;
 
+    internal procedure SetAppID(ID: Guid)
+    begin
+        AppID := ID;
+    end;
 
     trigger OnInit()
     var
@@ -107,9 +111,16 @@ page 2510 "Marketplace Extn Deployment"
         clear(InstallSelected);
     end;
 
+    trigger OnOpenPage()
+    var
+        DataOutOfGeoAppImpl: Codeunit "Data Out Of Geo. App Impl.";
+    begin
+        DataOutOfGeoAppImpl.CheckAndFireNotification(AppID);
+    end;
+
     var
         LanguageName: Text;
         LanguageID: Integer;
         InstallSelected: Boolean;
+        AppID: Guid;
 }
-

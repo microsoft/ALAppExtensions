@@ -7,6 +7,9 @@ codeunit 2503 "Extension Operation Impl"
 {
     Access = Internal;
     SingleInstance = false;
+    Permissions = tabledata "NAV App Setting" = rm,
+                  tabledata "NAV App Tenant Operation" = r,
+                  tabledata "Published Application" = r;
 
     var
         DotNetALNavAppOperationInvoker: DotNet ALNavAppOperationInvoker;
@@ -104,7 +107,7 @@ codeunit 2503 "Extension Operation Impl"
         DotNetNavAppALInstaller.ALUnpublishNavTenantApp(PackageID);
     end;
 
-    procedure GetExtensionSource(PackageId: Guid; var TempBlob: Codeunit "Temp Blob"; var CleanFileName: Text): Boolean
+    procedure GetExtensionSource(PackageId: Guid; var ExtensionSourceTempBlob: Codeunit "Temp Blob"; var CleanFileName: Text): Boolean
     var
         PublishedApplication: Record "Published Application";
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
@@ -123,13 +126,14 @@ codeunit 2503 "Extension Operation Impl"
         if not PublishedApplication.FindFirst() then
             exit(false);
 
-        TempBlob.CreateOutStream(NvOutStream);
-        VersionString :=
-          ExtensionInstallationImpl.GetVersionDisplayString(PublishedApplication);
+        ExtensionSourceTempBlob.CreateOutStream(NvOutStream);
+        VersionString := ExtensionInstallationImpl.GetVersionDisplayString(PublishedApplication);
 
         DotNetNavDesignerALFunctions.GenerateDesignerPackageZipStreamByVersion(NvOutStream, PublishedApplication.ID, VersionString);
+
         FileName := StrSubstNo(ExtensionFileNameTxt, PublishedApplication.Name, PublishedApplication.Publisher, VersionString);
         CleanFileName := DotNetNavDesignerALFunctions.SanitizeDesignerFileName(FileName, '_');
+
         exit(true);
     end;
 
@@ -145,7 +149,6 @@ codeunit 2503 "Extension Operation Impl"
         TempBlob.CreateInStream(NvInStream);
 
         exit(DownloadFromStream(NvInStream, DialogTitleTxt, '', '*.*', CleanFileName));
-
     end;
 
     procedure DownloadDeploymentStatusDetails(OperationId: Guid)

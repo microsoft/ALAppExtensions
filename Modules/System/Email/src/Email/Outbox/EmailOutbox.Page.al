@@ -131,6 +131,23 @@ page 8882 "Email Outbox"
                     Message(EmailImpl.FindLastErrorCallStack(Rec.Id));
                 end;
             }
+            action(ShowSourceRecord)
+            {
+                ApplicationArea = All;
+                Image = GetSourceDoc;
+                Caption = 'Show Source';
+                ToolTip = 'Open the page from where the email was sent.';
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+
+                trigger OnAction()
+                var
+                    EmailImpl: Codeunit "Email Impl";
+                begin
+                    EmailImpl.ShowSourceRecord(Rec."Message Id");
+                end;
+            }
         }
 
         area(Processing)
@@ -148,10 +165,17 @@ page 8882 "Email Outbox"
 
                 trigger OnAction()
                 var
+                    SelectedEmailOutbox: Record "Email Outbox";
                     EmailMessage: Codeunit "Email Message";
                 begin
-                    EmailMessage.Get(Rec."Message Id");
-                    EmailImpl.Enqueue(EmailMessage, Rec."Account Id", Rec.Connector);
+                    CurrPage.SetSelectionFilter(SelectedEmailOutbox);
+                    if not SelectedEmailOutbox.FindSet() then
+                        exit;
+
+                    repeat
+                        EmailMessage.Get(SelectedEmailOutbox."Message Id");
+                        EmailImpl.Enqueue(EmailMessage, SelectedEmailOutbox."Account Id", SelectedEmailOutbox.Connector);
+                    until SelectedEmailOutbox.Next() = 0;
 
                     LoadEmailOutboxForUser();
                     CurrPage.Update(false);

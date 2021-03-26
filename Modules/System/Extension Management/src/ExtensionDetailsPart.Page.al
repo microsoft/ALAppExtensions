@@ -22,6 +22,7 @@ page 2504 "Extension Details Part"
     SourceTableView = WHERE("Package Type" = FILTER(= Extension | Designer),
                     "Tenant Visible" = CONST(true));
     ContextSensitiveHelpPage = 'ui-extensions';
+    Permissions = tabledata "Published Application" = r;
 
     layout
     {

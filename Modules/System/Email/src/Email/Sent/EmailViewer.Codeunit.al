@@ -23,6 +23,8 @@ codeunit 8907 "Email Viewer"
         NewEmailMessageImpl, OldEmailMessageImpl : Codeunit "Email Message Impl.";
         NewEmailMessage: Codeunit "Email Message";
     begin
+        CheckPermissions(SentEmail);
+
         if not OldEmailMessageImpl.Get(SentEmail."Message Id") then
             Error(EmailMessageDoesNotExistMsg);
 
@@ -51,6 +53,8 @@ codeunit 8907 "Email Viewer"
         NewEmailMessageImpl, OldEmailMessageImpl : Codeunit "Email Message Impl.";
         NewEmailMessage: Codeunit "Email Message";
     begin
+        CheckPermissions(SentEmail);
+
         if not OldEmailMessageImpl.Get(SentEmail."Message Id") then
             Error(EmailMessageDoesNotExistMsg);
 

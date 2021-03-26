@@ -6,6 +6,7 @@
 codeunit 2889 "SmartList Designer Sub Impl."
 {
     Access = Internal;
+    Permissions = tabledata "Query Navigation" = r;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"SmartList Designer Triggers", 'GetEnabled', '', false, false)]
     local procedure DefaultGetEnabled(var Enabled: Boolean)

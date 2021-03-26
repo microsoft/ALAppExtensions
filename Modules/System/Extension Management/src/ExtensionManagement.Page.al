@@ -27,6 +27,7 @@ page 2500 "Extension Management"
                             "Tenant Visible" = CONST(true));
     UsageCategory = Administration;
     ContextSensitiveHelpPage = 'ui-extensions';
+    Permissions = tabledata "Published Application" = r;
 
     layout
     {
@@ -71,6 +72,12 @@ page 2500 "Extension Management"
                     ApplicationArea = All;
                     Caption = 'Version';
                     ToolTip = 'Specifies the version of the extension.';
+                }
+                field("Published as"; "Published As")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Published as';
+                    ToolTip = 'Specifies whether the extension is published as a per-tenant, development, or a global extension.';
                 }
             }
         }
@@ -124,14 +131,13 @@ page 2500 "Extension Management"
                 {
                     ApplicationArea = All;
                     Caption = 'Unpublish';
-                    Enabled = ActionsEnabled;
+                    Enabled = ActionsEnabled AND IsTenantExtension AND (not IsInstalled);
                     Image = RemoveLine;
                     Promoted = true;
                     PromotedOnly = true;
                     PromotedCategory = Category5;
                     Scope = Repeater;
                     ToolTip = 'Unpublish the extension from the tenant.';
-                    Visible = IsTenantExtension;
 
                     trigger OnAction()
                     begin
@@ -349,12 +355,8 @@ page 2500 "Extension Management"
     begin
         // Determining Record and Styling Configurations
         IsInstalled := ExtensionInstallationImpl.IsInstalledByPackageId("Package ID");
-        InstalledStatus := ExtensionInstallationImpl.GetExtensionInstalledDisplayString("Package ID");
-        // Currently using the "Tenant ID" field to identify development extensions
-        if "Published As" = "Published As"::Global then
-            IsTenantExtension := false
-        else
-            IsTenantExtension := true;
+        InstalledStatus := ExtensionInstallationImpl.GetExtensionInstalledDisplayString(IsInstalled);
+        IsTenantExtension := "Published As" <> "Published As"::Global;
     end;
 
     local procedure GetVersionDisplayText(): Text

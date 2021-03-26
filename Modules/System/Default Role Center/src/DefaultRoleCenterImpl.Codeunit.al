@@ -6,6 +6,8 @@
 codeunit 9171 "Default Role Center Impl."
 {
     Access = Internal;
+    Permissions = tabledata "All Profile" = rm,
+                  tabledata AllObjWithCaption = r;
 
     // <summary>
     // Gets the default Role Center ID for the current user.
@@ -22,6 +24,8 @@ codeunit 9171 "Default Role Center Impl."
         DefaultRoleCenter.OnBeforeGetDefaultRoleCenter(RoleCenterId, Handled);
 
         if not IsValidRoleCenterId(RoleCenterId) then begin
+            Session.LogMessage('0000DUH', StrSubstNo(InvalidRoleCenterIDTelemetryMsg, RoleCenterId), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
+
             AllProfile.Get(AllProfile.Scope::Tenant, '63ca2fa4-4f03-4f2b-a480-172fef340d3f', 'BLANK');
             if not AllProfile.Enabled then begin
                 AllProfile.Enabled := true;
@@ -36,7 +40,9 @@ codeunit 9171 "Default Role Center Impl."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetDefaultRoleCenterID', '', false, false)]
     local procedure OnGetDefaultRoleCenterId(var ID: Integer)
     begin
+        Session.LogMessage('0000DUF', StartingGetDefaultRoleCenterMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
         ID := GetDefaultRoleCenterId();
+        Session.LogMessage('0000DUI', StrSubstNo(EndGetDefaultRoleCenterMsg, ID), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
     end;
 
     local procedure IsValidRoleCenterId(RoleCenterId: Integer): Boolean
@@ -52,5 +58,11 @@ codeunit 9171 "Default Role Center Impl."
 
         exit(not AllObjWithCaption.IsEmpty());
     end;
+
+    var
+        InvalidRoleCenterIDTelemetryMsg: Label 'Invalid Role Center ID %1, setting blank profile.', Locked = true;
+        StartingGetDefaultRoleCenterMsg: Label 'Getting default role center', Locked = true;
+        EndGetDefaultRoleCenterMsg: Label 'Found default role center: %1.', Locked = true;
+        TelemetryCategoryTxt: Label 'AL Default RC', Locked = true;
 }
 

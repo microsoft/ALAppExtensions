@@ -6,6 +6,7 @@
 codeunit 1443 "Satisfaction Survey Viewer"
 {
     Access = Internal;
+    Permissions = tabledata "Add-in" = ri;
 
     var
         NameTxt: Label 'Microsoft.Dynamics.Nav.Client.SatisfactionSurvey', Locked = true;

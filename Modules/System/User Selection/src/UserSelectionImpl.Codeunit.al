@@ -6,6 +6,7 @@
 codeunit 9844 "User Selection Impl."
 {
     Access = Internal;
+    Permissions = tabledata User = r;
 
     var
         UserNameDoesNotExistErr: Label 'The user name %1 does not exist.', Comment = '%1 username';

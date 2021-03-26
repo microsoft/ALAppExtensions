@@ -5,6 +5,8 @@
 codeunit 4691 "Recurrence Schedule Impl."
 {
     Access = Internal;
+    Permissions = tabledata Date = r,
+                  tabledata "Recurrence Schedule" = r;
 
     var
         MinDateTime: DateTime;

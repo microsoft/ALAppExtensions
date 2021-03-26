@@ -159,6 +159,24 @@ page 12 "Email Viewer"
                     EmailViewer.EditAndSend(Rec)
                 end;
             }
+
+            action(ShowSourceRecord)
+            {
+                ApplicationArea = All;
+                Image = GetSourceDoc;
+                Caption = 'Show Source';
+                ToolTip = 'Open the page from where the email was sent.';
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+
+                trigger OnAction()
+                var
+                    EmailImpl: Codeunit "Email Impl";
+                begin
+                    EmailImpl.ShowSourceRecord(Rec."Message Id");
+                end;
+            }
         }
     }
 

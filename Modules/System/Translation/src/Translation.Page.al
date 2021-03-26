@@ -11,6 +11,7 @@ page 3712 Translation
     PageType = List;
     SourceTable = Translation;
     ContextSensitiveHelpPage = 'ui-get-ready-business';
+    Permissions = tabledata Translation = rimd;
 
     layout
     {

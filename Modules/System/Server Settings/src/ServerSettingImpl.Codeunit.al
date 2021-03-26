@@ -75,5 +75,17 @@ codeunit 3703 "Server Setting Impl."
         Enabled := ALConfigSettings.TestAutomationEnabled();
         exit(Enabled);
     end;
+
+    procedure GetUsePermissionSetsFromExtensions(): Boolean
+    begin
+        InitializeConfigSettings();
+        exit(ALConfigSettings.UsePermissionsFromExtensions());
+    end;
+
+    procedure GetEnableMembershipEntitlement(): Boolean
+    begin
+        InitializeConfigSettings();
+        exit(ALConfigSettings.IsSaaS());
+    end;
 }
 

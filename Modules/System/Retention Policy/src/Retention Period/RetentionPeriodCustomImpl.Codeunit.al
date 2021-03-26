@@ -20,38 +20,38 @@ codeunit 3901 "Retention Period Custom Impl." implements "Retention Period"
         Exit('');
     end;
 
-    procedure RetentionPeriodDateFormula(RetentionPolicy: Record "Retention Period"): Text;
+    procedure RetentionPeriodDateFormula(RetentionPeriod: Record "Retention Period"): Text;
     begin
-        Exit(RetentionPeriodDateFormula(RetentionPolicy, false))
+        Exit(RetentionPeriodDateFormula(RetentionPeriod, false))
     end;
 
-    procedure RetentionPeriodDateFormula(RetentionPolicy: Record "Retention Period"; Translated: Boolean) DateFormulaText: Text;
+    procedure RetentionPeriodDateFormula(RetentionPeriod: Record "Retention Period"; Translated: Boolean) DateFormulaText: Text;
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
     begin
-        DateFormulaText := RetentionPeriodDateFormula(RetentionPolicy."Retention Period");
+        DateFormulaText := RetentionPeriodDateFormula(RetentionPeriod."Retention Period");
         if DateFormulaText <> '' then
-            RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(WrongInterfaceImplementationErr, RetentionPolicy."Retention Period"));
+            RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(WrongInterfaceImplementationErr, RetentionPeriod."Retention Period"));
 
         if Translated then
-            Exit(Format(RetentionPolicy."Ret. Period Calculation", 0, 1))
+            Exit(Format(RetentionPeriod."Ret. Period Calculation", 0, 1))
         else
-            Exit(Format(RetentionPolicy."Ret. Period Calculation", 0, 2))
+            Exit(Format(RetentionPeriod."Ret. Period Calculation", 0, 2))
     end;
 
-    procedure CalculateExpirationDate(RetentionPolicy: Record "Retention Period"): Date
+    procedure CalculateExpirationDate(RetentionPeriod: Record "Retention Period"): Date
     begin
-        Exit(CalcDate(RetentionPeriodDateFormula(RetentionPolicy), Today()))
+        Exit(CalcDate(RetentionPeriodDateFormula(RetentionPeriod), Today()))
     end;
 
-    procedure CalculateExpirationDate(RetentionPolicy: Record "Retention Period"; UseDate: Date): Date
+    procedure CalculateExpirationDate(RetentionPeriod: Record "Retention Period"; UseDate: Date): Date
     begin
-        Exit(CalcDate(RetentionPeriodDateFormula(RetentionPolicy), UseDate))
+        Exit(CalcDate(RetentionPeriodDateFormula(RetentionPeriod), UseDate))
     end;
 
-    procedure CalculateExpirationDate(RetentionPolicy: Record "Retention Period"; UseDateTime: DateTime): DateTime
+    procedure CalculateExpirationDate(RetentionPeriod: Record "Retention Period"; UseDateTime: DateTime): DateTime
     begin
-        Exit(CreateDateTime(CalcDate(RetentionPeriodDateFormula(RetentionPolicy), DT2Date(UseDateTime)), DT2Time(UseDateTime)))
+        Exit(CreateDateTime(CalcDate(RetentionPeriodDateFormula(RetentionPeriod), DT2Date(UseDateTime)), DT2Time(UseDateTime)))
     end;
 
     local procedure LogCategory(): Enum "Retention Policy Log Category"

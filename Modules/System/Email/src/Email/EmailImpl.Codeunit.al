@@ -8,6 +8,7 @@ codeunit 8900 "Email Impl"
     Access = Internal;
     Permissions = tabledata "Sent Email" = rimd,
                   tabledata "Email Outbox" = rimd,
+                  tabledata "Email Related Record" = rid,
                   tabledata "Email Message" = r,
                   tabledata "Email Error" = r,
                   tabledata "Email Recipient" = r;
@@ -15,8 +16,11 @@ codeunit 8900 "Email Impl"
     var
         EmailMessageDoesNotExistMsg: Label 'The email message has been deleted by another user.';
         EmailMessageCannotBeEditedErr: Label 'The email message has already been sent and cannot be edited.';
+        EmailMessageQueuedErr: Label 'The email has already been queued.';
+        EmailMessageSentErr: Label 'The email has already been sent.';
         InvalidEmailAccountErr: Label 'The provided email account does not exist.';
         InsufficientPermisionsErr: Label 'You do not have the permissions required to send emails. Ask your administrator to grant you the Read, Insert, Modify and Delete permissions for the Sent Email and Email Outbox tables.';
+        SourceRecordErr: Label 'Could not find the source for this email.';
 
     #region API
 
@@ -102,7 +106,7 @@ codeunit 8900 "Email Impl"
         if not EmailMessageImpl.Get(EmailMessage.GetId()) then
             Error(EmailMessageDoesNotExistMsg);
 
-        if EmailMessageImpl.IsReadOnly() then
+        if EmailMessageImpl.IsRead() then
             Error(EmailMessageCannotBeEditedErr);
 
         IsNew := not GetEmailOutbox(EmailMessageImpl.GetId(), EmailOutbox);
@@ -111,10 +115,11 @@ codeunit 8900 "Email Impl"
         if not IsEnqueued then begin
             // Modify the outbox only if it hasn't been enqueued yet
             CreateOrUpdateEmailOutbox(EmailMessageImpl, EmailAccountId, EmailConnector, Enum::"Email Status"::Draft, '', EmailOutbox);
-            Commit(); // Commit the changes in case the messageis to be open modally
+            Commit(); // Commit the changes in case the message is to be open modally
         end;
 
-        if IsNew then
+        // Set the record as new so that there is a save prompt and no arrows
+        if not IsEnqueued then
             EmailEditor.SetAsNew();
 
         exit(EmailEditor.Open(EmailOutbox, IsModal));
@@ -131,6 +136,14 @@ codeunit 8900 "Email Impl"
         exit((EmailOutbox.Status in [Enum::"Email Status"::Queued, Enum::"Email Status"::Processing]));
     end;
 
+    local procedure EmailMessageSent(EmailMessageId: Guid): Boolean
+    var
+        SentEmail: Record "Sent Email";
+    begin
+        SentEmail.SetRange("Message Id", EmailMessageId);
+        exit(not SentEmail.IsEmpty());
+    end;
+
     local procedure Send(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"; InBackground: Boolean; var EmailOutbox: Record "Email Outbox"): Boolean
     var
         Accounts: Record "Email Account";
@@ -144,7 +157,10 @@ codeunit 8900 "Email Impl"
             Error(EmailMessageDoesNotExistMsg);
 
         if GetEmailOutbox(EmailMessage.GetId(), EmailOutbox) and IsOutboxEnqueued(EmailOutbox) then
-            exit;
+            Error(EmailMessageQueuedErr);
+
+        if EmailMessageSent(EmailMessage.GetId()) then
+            Error(EmailMessageSentErr);
 
         EmailMessageImpl.ValidateRecipients(Enum::"Email Recipient Type"::"To");
         EmailMessageImpl.ValidateRecipients(Enum::"Email Recipient Type"::Cc);
@@ -221,13 +237,52 @@ codeunit 8900 "Email Impl"
             EmailOutbox.SetRange("Account Id", EmailAccountId);
 
         if EmailStatus.AsInteger() <> 0 then
-            EmailOutboxForUser.SetRange(Status, EmailStatus);
+            EmailOutbox.SetRange(Status, EmailStatus);
 
         if EmailOutbox.FindSet() then
             repeat
                 EmailOutboxForUser.TransferFields(EmailOutbox);
                 EmailOutboxForUser.Insert();
             until EmailOutbox.Next() = 0;
+    end;
+
+    procedure ShowSourceRecord(EmailMessageId: Guid);
+    var
+        EmailRelatedRecord: Record "Email Related Record";
+        Email: Codeunit Email;
+        IsHandled: Boolean;
+    begin
+        EmailRelatedRecord.SetRange("Email Message Id", EmailMessageId);
+        EmailRelatedRecord.SetRange("Relation Type", Enum::"Email Relation Type"::"Primary Source");
+
+        if not EmailRelatedRecord.FindFirst() then
+            Error(SourceRecordErr);
+
+        Email.OnShowSource(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", IsHandled);
+
+        if not IsHandled then
+            Error(SourceRecordErr);
+    end;
+
+    procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid) ResultSentEmails: Record "Sent Email" temporary;
+    var
+        SentEmails: Record "Sent Email";
+        EmailRelatedRecord: Record "Email Related Record";
+    begin
+        EmailRelatedRecord.SetRange("Table Id", TableId);
+        EmailRelatedRecord.SetRange("System Id", SystemId);
+
+        if not EmailRelatedRecord.FindSet() then
+            exit;
+
+        repeat
+            SentEmails.SetCurrentKey("Message Id");
+            SentEmails.SetRange("Message Id", EmailRelatedRecord."Email Message Id");
+            if SentEmails.FindFirst() then begin
+                ResultSentEmails := SentEmails;
+                ResultSentEmails.Insert();
+            end;
+        until EmailRelatedRecord.Next() = 0;
     end;
 
     internal procedure CountEmailsInOutbox(EmailStatus: Enum "Email Status"; IsAdmin: Boolean): Integer
@@ -250,6 +305,20 @@ codeunit 8900 "Email Impl"
 
         SentEmails.SetRange("Date Time Sent", NewerThan, System.CurrentDateTime());
         exit(SentEmails.Count());
+    end;
+
+    procedure AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type")
+    var
+        EmailRelation: Record "Email Related Record";
+    begin
+        if EmailRelation.Get(TableId, SystemId, EmailMessage.GetId()) then
+            exit;
+
+        EmailRelation."Email Message Id" := EmailMessage.GetId();
+        EmailRelation."Table Id" := TableId;
+        EmailRelation."System Id" := SystemId;
+        EmailRelation."Relation Type" := RelationType;
+        EmailRelation.Insert();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sandbox Cleanup", 'OnClearCompanyConfiguration', '', false, false)]

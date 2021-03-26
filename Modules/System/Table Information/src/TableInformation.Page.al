@@ -20,6 +20,7 @@ page 8700 "Table Information"
     InsertAllowed = false;
     ModifyAllowed = false;
     DeleteAllowed = false;
+    Permissions = tabledata "Table Information" = r;
 
     layout
     {

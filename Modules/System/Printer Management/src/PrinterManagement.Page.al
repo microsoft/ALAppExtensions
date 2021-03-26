@@ -14,9 +14,13 @@ page 2616 "Printer Management"
     UsageCategory = Administration;
     ApplicationArea = All;
     Editable = false;
-    Extensible = false;
+    Extensible = true;
     InsertAllowed = false;
+    DeleteAllowed = false;
+    ModifyAllowed = false;
     RefreshOnActivate = true;
+    PromotedActionCategories = 'New,Process,Report,Manage';
+    Permissions = tabledata Printer = r;
 
     layout
     {
@@ -64,6 +68,24 @@ page 2616 "Printer Management"
     {
         area(processing)
         {
+            action(OpenPrinterSelections)
+            {
+                ApplicationArea = All;
+                Caption = 'Printer Selections';
+                Image = Open;
+                ToolTip = 'Open the Printer Selections page.';
+                Visible = IsPrinterSelectionsPageAvailable;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                PromotedCategory = Category4;
+                trigger OnAction()
+                var
+                begin
+                    if IsPrinterSelectionsPageAvailable then
+                        Page.Run(PrinterSelectionPageId);
+                end;
+            }
             action(EditPrinterSettings)
             {
                 ApplicationArea = All;
@@ -74,7 +96,8 @@ page 2616 "Printer Management"
                 ToolTip = 'View or edit the settings of the selected printer.';
                 Promoted = true;
                 PromotedIsBig = true;
-                PromotedCategory = Process;
+                PromotedOnly = true;
+                PromotedCategory = Category4;
                 trigger OnAction()
                 begin
                     PrinterSetupImpl.OpenPrinterSettings(ID);
@@ -87,12 +110,12 @@ page 2616 "Printer Management"
                 Caption = 'Set as my default printer';
                 Image = PrintReport;
                 Scope = Repeater;
+                ToolTip = 'Create a Printer Selection entry with your user name in User ID field and the printer name in the Printer Name field, leaving the Report ID field blank.';
+                Visible = IsPrinterSelectionsPageAvailable;
                 Promoted = true;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                PromotedCategory = Process;
-                ToolTip = 'Create a Printer Selection entry with your user name in User ID field and the printer name in the Printer Name field, leaving the Report ID field blank.';
-                Visible = IsPrinterSelectionsPageAvailable;
+                PromotedCategory = Category4;
                 trigger OnAction()
                 begin
                     PrinterSetupImpl.SetDefaultPrinterForCurrentUser(ID);
@@ -103,30 +126,16 @@ page 2616 "Printer Management"
                 ApplicationArea = All;
                 Caption = 'Set as default printer for all users';
                 Image = PrintReport;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                PromotedCategory = Category4;
                 Scope = Repeater;
                 ToolTip = 'Create a Printer Selection entry with the printer name in the Printer Name field, leaving the User ID and Report ID fields blank.';
                 Visible = IsPrinterSelectionsPageAvailable;
                 trigger OnAction()
                 begin
                     PrinterSetupImpl.SetDefaultPrinterForAllUsers(ID);
-                end;
-            }
-            action(OpenPrinterSelections)
-            {
-                ApplicationArea = All;
-                Caption = 'Printer Selections';
-                Image = Open;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
-                ToolTip = 'Open the Printer Selections page.';
-                Visible = IsPrinterSelectionsPageAvailable;
-                trigger OnAction()
-                var
-                begin
-                    if IsPrinterSelectionsPageAvailable then
-                        Page.Run(PrinterSelectionPageId);
                 end;
             }
         }

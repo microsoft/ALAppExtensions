@@ -6,7 +6,11 @@
 codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
 {
     Access = Internal;
-    Permissions = tabledata "Retention Policy Allowed Table" = rimd;
+    Permissions = tabledata AllObj = r,
+                  tabledata AllObjWithCaption = r,
+                  tabledata Field = r,
+                  tabledata "Published Application" = r,
+                  tabledata "Retention Policy Allowed Table" = rimd;
     EventSubscriberInstance = Manual;
 
     var
@@ -82,7 +86,7 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
         AllObj: Record AllObj;
         PublishedApplication: Record "Published Application";
         RetentionPolicyLog: Codeunit "Retention Policy Log";
-        TenantInfo: Codeunit "Tenant Information";
+        TenantInformation: Codeunit "Tenant Information";
     begin
         if not AllObj.Get(AllObj."Object Type"::Table, TableId) then begin
             RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(TableDoesNotExistLbl, TableId));
@@ -94,7 +98,7 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
         PublishedApplication.SetRange("Version Minor", CallerModuleInfo.AppVersion.Minor);
         PublishedApplication.SetRange("Version Build", CallerModuleInfo.AppVersion.Build);
         PublishedApplication.SetRange("Version Revision", CallerModuleInfo.AppVersion.Revision);
-        PublishedApplication.SetFilter("Tenant ID", '%1|%2', '', TenantInfo.GetTenantId());
+        PublishedApplication.SetFilter("Tenant ID", '%1|%2', '', TenantInformation.GetTenantId());
         if not PublishedApplication.FindFirst() then begin
             RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(ModuleDoesNotExistLbl, TableId, AllObj."Object Name", CallerModuleInfo.Id));
             exit(false);
@@ -346,10 +350,8 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
     /// The manual subscriber AllowAddtoAllowedList is bound just before the Insert() in procedure AddToAllowedTables.
     /// These elements combined are to ensure that only procedure AddToAllowedTables can insert into the table.
     /// </Summary>
-    # pragma warning disable AA0150 // Parameter 'InsertAllowed' is declared by reference but never changed in method 'OnVerifyAddtoAllowedList'.
     [InternalEvent(false)]
     internal procedure OnVerifyAddtoAllowedList(TableId: Integer; var InsertAllowed: Boolean)
-    # pragma warning restore AA0150
     begin
     end;
 
@@ -377,10 +379,8 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
     /// The manual subscriber AllowModifyAllowedList is bound just before the Modify() in procedure AddToAllowedTables.
     /// These elements combined are to ensure that only procedure AddToAllowedTables can modify the table.
     /// </Summary>
-    # pragma warning disable AA0150 // Parameter 'ModifyAllowed' is declared by reference but never changed in method 'OnVerifyModifyAllowedList'.
     [InternalEvent(false)]
     internal procedure OnVerifyModifyAllowedList(TableId: Integer; var ModifyAllowed: Boolean)
-    # pragma warning restore AA0150
     begin
     end;
 

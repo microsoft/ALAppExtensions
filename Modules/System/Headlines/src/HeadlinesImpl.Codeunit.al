@@ -6,6 +6,7 @@
 codeunit 1470 "Headlines Impl."
 {
     Access = Internal;
+    Permissions = tabledata User = r;
 
     var
         MorningGreetingWithUsernameTxt: Label 'Good morning, %1!', Comment = 'Displayed between 00:00 and 10:59. %1 is the user name.';

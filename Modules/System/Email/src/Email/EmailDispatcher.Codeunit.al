@@ -34,6 +34,11 @@ codeunit 8888 "Email Dispatcher"
     begin
         Session.LogMessage('0000CTM', Format(Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl, 'EmailMessageID', Rec."Message Id");
         Session.LogMessage('0000D0X', StrSubstNo(ProcessingEmailMsg, Rec."Message Id", Rec.Connector, Rec."Account Id"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+
+        // -----------
+        // NB: Avoid adding events here as any error would cause a roll-back and possibly an inconsistent state of the Email Outbox.
+        // -----------
+
         UpdateOutboxStatus(Rec, Rec.Status::Processing);
 
         if EmailMessageImpl.Get(Rec."Message Id") then begin
@@ -55,7 +60,7 @@ codeunit 8888 "Email Dispatcher"
                 InsertToSentEmail(Rec);
 
                 Rec.Delete();
-                EmailMessageImpl.MarkAsReadOnly();
+                EmailMessageImpl.MarkAsRead();
             end
             else begin
                 Session.LogMessage('0000CTP', FailedToSendEmailMsg, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);

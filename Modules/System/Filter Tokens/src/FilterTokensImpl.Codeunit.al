@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -444,31 +444,31 @@ codeunit 58 "Filter Tokens Impl."
             Position := Position + 1;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000007, 'MakeDateTimeFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeDateTimeFilter', '', false, false)]
     local procedure DoMakeDateTimeFilter(var DateTimeFilterText: Text)
     begin
         MakeDateTimeFilter(DateTimeFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000007, 'MakeDateFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeDateFilter', '', false, false)]
     local procedure DoMakeDateFilter(var DateFilterText: Text)
     begin
         MakeDateFilter(DateFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000007, 'MakeTextFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeTextFilter', '', false, false)]
     local procedure DoMakeTextFilter(var TextFilterText: Text)
     begin
         MakeTextFilter(TextFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000007, 'MakeCodeFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeCodeFilter', '', false, false)]
     local procedure DoMakeCodeFilter(var TextFilterText: Text)
     begin
         MakeTextFilter(TextFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000007, 'MakeTimeFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeTimeFilter', '', false, false)]
     local procedure DoMakeTimeFilter(var TimeFilterText: Text)
     begin
         MakeTimeFilter(TimeFilterText);

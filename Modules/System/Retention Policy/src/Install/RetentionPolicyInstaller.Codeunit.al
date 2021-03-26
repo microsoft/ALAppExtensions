@@ -9,7 +9,9 @@ codeunit 3907 "Retention Policy Installer"
 {
     Subtype = Install;
     Access = Internal;
-    Permissions = tabledata "Retention Period" = ri, tabledata "Retention Policy Setup" = ri;
+    Permissions = tabledata "Retention Period" = ri,
+                  tabledata "Retention Policy Setup" = ri,
+                  tabledata Company = r;
 
     var
         SixMonthsTok: Label 'Six Months', MaxLength = 20;
