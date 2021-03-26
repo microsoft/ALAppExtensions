@@ -176,21 +176,21 @@ report 11722 "General Journal - Test CZL"
                         trigger OnAfterGetRecord()
                         begin
                             if Number = 1 then begin
-                                if not DimSetEntry.FindSet() then
+                                if not DimensionSetEntry.FindSet() then
                                     CurrReport.Break();
                             end else
                                 if not Continue then
                                     CurrReport.Break();
 
-                            DimText := GetDimensionText(DimSetEntry);
+                            DimText := GetDimensionText(DimensionSetEntry);
                         end;
 
                         trigger OnPreDataItem()
                         begin
                             if not ShouldShowDim then
                                 CurrReport.Break();
-                            DimSetEntry.Reset();
-                            DimSetEntry.SetRange("Dimension Set ID", "Gen. Journal Line"."Dimension Set ID")
+                            DimensionSetEntry.Reset();
+                            DimensionSetEntry.SetRange("Dimension Set ID", "Gen. Journal Line"."Dimension Set ID")
                         end;
                     }
                     dataitem("Gen. Jnl. Allocation"; "Gen. Jnl. Allocation")
@@ -236,7 +236,7 @@ report 11722 "General Journal - Test CZL"
                         column(AmountCaption_GenJnlAllocation; FieldCaption(Amount))
                         {
                         }
-                        column(Recurring_GenJnlTemplate; GenJnlTemplate.Recurring)
+                        column(Recurring_GenJnlTemplate; GenJournalTemplate.Recurring)
                         {
                         }
                         dataitem(DimensionLoopAllocations; "Integer")
@@ -254,21 +254,21 @@ report 11722 "General Journal - Test CZL"
                             trigger OnAfterGetRecord()
                             begin
                                 if Number = 1 then begin
-                                    if not DimSetEntry.FindFirst() then
+                                    if not DimensionSetEntry.FindFirst() then
                                         CurrReport.Break();
                                 end else
                                     if not Continue then
                                         CurrReport.Break();
 
-                                AllocationDimText := GetDimensionText(DimSetEntry);
+                                AllocationDimText := GetDimensionText(DimensionSetEntry);
                             end;
 
                             trigger OnPreDataItem()
                             begin
                                 if not ShouldShowDim then
                                     CurrReport.Break();
-                                DimSetEntry.Reset();
-                                DimSetEntry.SetRange("Dimension Set ID", "Gen. Jnl. Allocation"."Dimension Set ID")
+                                DimensionSetEntry.Reset();
+                                DimensionSetEntry.SetRange("Dimension Set ID", "Gen. Jnl. Allocation"."Dimension Set ID")
                             end;
                         }
                     }
@@ -296,7 +296,7 @@ report 11722 "General Journal - Test CZL"
                         PaymentTerms: Record "Payment Terms";
                         UserSetupManagement: Codeunit "User Setup Management";
                     begin
-                        OnBeforeGenJournalLineOnAfterGetRecord("Gen. Journal Line", "Gen. Journal Batch", GenJnlTemplate);
+                        OnBeforeGenJournalLineOnAfterGetRecord("Gen. Journal Line", "Gen. Journal Batch", GenJournalTemplate);
 
                         if "Currency Code" = '' then
                             "Amount (LCY)" := Amount;
@@ -521,7 +521,7 @@ report 11722 "General Journal - Test CZL"
                             if ("Account No." <> '') and
                                not "System-Created Entry" and
                                (Amount = 0) and
-                               not GenJnlTemplate.Recurring and
+                               not GenJournalTemplate.Recurring and
                                not "Allow Zero-Amount Posting" and
                                ("Account Type" <> "Account Type"::"Fixed Asset")
                             then
@@ -616,7 +616,7 @@ report 11722 "General Journal - Test CZL"
                             if ("Account Type" <> "Account Type"::"Bank Account") and
                                ("Bal. Account Type" <> "Bal. Account Type"::"Bank Account")
                             then
-                                if GenJnlLine2."Bank Payment Type" <> GenJnlLine2."Bank Payment Type"::" " then
+                                if GenJournalLine."Bank Payment Type" <> GenJournalLine."Bank Payment Type"::" " then
                                     AddError(StrSubstNo(CannotBeSpecifiedErr, FieldCaption("Bank Payment Type")));
 
                             if ("Account No." <> '') and ("Bal. Account No." <> '') then begin
@@ -646,8 +646,8 @@ report 11722 "General Journal - Test CZL"
                         CopyFilter("Journal Batch Name", "Gen. Journal Batch".Name);
                         GenJnlLineFilter := GetFilters();
 
-                        GenJnlTemplate.Get("Gen. Journal Batch"."Journal Template Name");
-                        if GenJnlTemplate.Recurring then begin
+                        GenJournalTemplate.Get("Gen. Journal Batch"."Journal Template Name");
+                        if GenJournalTemplate.Recurring then begin
                             if GetFilter("Posting Date") <> '' then
                                 AddError(
                                   StrSubstNo(
@@ -663,7 +663,7 @@ report 11722 "General Journal - Test CZL"
                         end;
 
                         // If simple view is used then order gen. journal lines by doc no. and line no.
-                        if not GenJnlTemplate.Recurring then
+                        if not GenJournalTemplate.Recurring then
                             if GenJnlManagement.GetJournalSimplePageModePreference(PAGE::"General Journal") then
                                 SetCurrentKey("Document No.", "Line No.");
 
@@ -674,29 +674,29 @@ report 11722 "General Journal - Test CZL"
                             LastEntrdDate := 0D;
                         end;
 
-                        TempGenJournalLineCustVendIC.Reset();
-                        TempGenJournalLineCustVendIC.DeleteAll();
+                        TempCustVendICGenJournalLine.Reset();
+                        TempCustVendICGenJournalLine.DeleteAll();
                         VATEntryCreated := false;
 
-                        GenJnlLine2.Reset();
-                        GenJnlLine2.CopyFilters("Gen. Journal Line");
+                        GenJournalLine.Reset();
+                        GenJournalLine.CopyFilters("Gen. Journal Line");
 
-                        TempGLAccNetChange.DeleteAll();
+                        TempGLAccountNetChange.DeleteAll();
                     end;
                 }
                 dataitem(ReconcileLoop; "Integer")
                 {
                     DataItemTableView = sorting(Number);
-                    column(GLAccNetChangeNo; TempGLAccNetChange."No.")
+                    column(GLAccNetChangeNo; TempGLAccountNetChange."No.")
                     {
                     }
-                    column(GLAccNetChangeName; TempGLAccNetChange.Name)
+                    column(GLAccNetChangeName; TempGLAccountNetChange.Name)
                     {
                     }
-                    column(GLAccNetChangeNetChangeJnl; TempGLAccNetChange."Net Change in Jnl.")
+                    column(GLAccNetChangeNetChangeJnl; TempGLAccountNetChange."Net Change in Jnl.")
                     {
                     }
-                    column(GLAccNetChangeBalafterPost; TempGLAccNetChange."Balance after Posting")
+                    column(GLAccNetChangeBalafterPost; TempGLAccountNetChange."Balance after Posting")
                     {
                     }
                     column(ReconciliationCaption; ReconciliationLbl)
@@ -717,27 +717,27 @@ report 11722 "General Journal - Test CZL"
                     trigger OnAfterGetRecord()
                     begin
                         if Number = 1 then
-                            TempGLAccNetChange.Find('-')
+                            TempGLAccountNetChange.Find('-')
                         else
-                            TempGLAccNetChange.Next();
+                            TempGLAccountNetChange.Next();
                     end;
 
                     trigger OnPostDataItem()
                     begin
-                        TempGLAccNetChange.DeleteAll();
+                        TempGLAccountNetChange.DeleteAll();
                     end;
 
                     trigger OnPreDataItem()
                     begin
-                        SetRange(Number, 1, TempGLAccNetChange.Count);
+                        SetRange(Number, 1, TempGLAccountNetChange.Count);
                     end;
                 }
             }
             trigger OnPreDataItem()
             begin
-                GLSetup.Get();
-                SalesSetup.Get();
-                PurchSetup.Get();
+                GeneralLedgerSetup.Get();
+                SalesReceivablesSetup.Get();
+                PurchasesPayablesSetup.Get();
                 AmountLCY := 0;
                 BalanceLCY := 0;
 
@@ -767,34 +767,37 @@ report 11722 "General Journal - Test CZL"
             }
         }
     }
+
     var
-        GLSetup: Record "General Ledger Setup";
-        SalesSetup: Record "Sales & Receivables Setup";
-        PurchSetup: Record "Purchases & Payables Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         UserSetup: Record "User Setup";
         AccountingPeriod: Record "Accounting Period";
-        GLAcc: Record "G/L Account";
+        GLAccount: Record "G/L Account";
         Currency: Record Currency;
-        Cust: Record Customer;
-        Vend: Record Vendor;
-        BankAccPostingGr: Record "Bank Account Posting Group";
-        BankAcc: Record "Bank Account";
-        GenJnlTemplate: Record "Gen. Journal Template";
-        GenJnlLine2: Record "Gen. Journal Line";
-        TempGenJnlLine: Record "Gen. Journal Line" temporary;
-        TempGenJournalLineCustVendIC: Record "Gen. Journal Line" temporary;
-        GenJnlAlloc: Record "Gen. Jnl. Allocation";
-        OldCustLedgEntry: Record "Cust. Ledger Entry";
-        OldVendLedgEntry: Record "Vendor Ledger Entry";
+        Customer: Record Customer;
+        Vendor: Record Vendor;
+        BankAccountPostingGroup: Record "Bank Account Posting Group";
+        BankAccount: Record "Bank Account";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalLine: Record "Gen. Journal Line";
+        TempGenJournalLine: Record "Gen. Journal Line" temporary;
+        TempCustVendICGenJournalLine: Record "Gen. Journal Line" temporary;
+        GenJnlAllocation: Record "Gen. Jnl. Allocation";
+        OldCustLedgerEntry: Record "Cust. Ledger Entry";
+        OldVendorLedgerEntry: Record "Vendor Ledger Entry";
         VATPostingSetup: Record "VAT Posting Setup";
         NoSeries: Record "No. Series";
-        FA: Record "Fixed Asset";
+        FixedAsset: Record "Fixed Asset";
         ICPartner: Record "IC Partner";
-        DeprBook: Record "Depreciation Book";
-        FADeprBook: Record "FA Depreciation Book";
+        DepreciationBook: Record "Depreciation Book";
+        FADepreciationBook: Record "FA Depreciation Book";
         FASetup: Record "FA Setup";
-        TempGLAccNetChange: Record "G/L Account Net Change" temporary;
-        DimSetEntry: Record "Dimension Set Entry";
+#pragma warning disable AL0432
+        TempGLAccountNetChange: Record "G/L Account Net Change" temporary;
+#pragma warning restore AL0432
+        DimensionSetEntry: Record "Dimension Set Entry";
         Employee: Record Employee;
         GenJnlManagement: Codeunit GenJnlManagement;
         CannotBeFilteredWhenRecurringErr: Label '%1 cannot be filtered when you post recurring journals.', Comment = '%1 = Filtered Field Caption';
@@ -920,159 +923,158 @@ report 11722 "General Journal - Test CZL"
         DimCodeValueTextTok: Label '%1 - %2', Comment = '%1 = Dimension Code ; %2 = Dimension Value Code', Locked = true;
         TwoTextsWithSpaceTok: Label '%1 %2', Comment = '%1 = First Text ; %2 = Second Text', Locked = true;
 
-    local procedure CheckRecurringLine(GenJnlLine2: Record "Gen. Journal Line")
+    local procedure CheckRecurringLine(GenJournalLine: Record "Gen. Journal Line")
     begin
-        if GenJnlTemplate.Recurring then begin
-            if GenJnlLine2."Recurring Method" = "Gen. Journal Recurring Method"::" " then
-                AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJnlLine2.FieldCaption(GenJnlLine2."Recurring Method")));
-            if Format(GenJnlLine2."Recurring Frequency") = '' then
-                AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJnlLine2.FieldCaption(GenJnlLine2."Recurring Frequency")));
-            if GenJnlLine2."Bal. Account No." <> '' then
+        if GenJournalTemplate.Recurring then begin
+            if GenJournalLine."Recurring Method" = "Gen. Journal Recurring Method"::" " then
+                AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJournalLine.FieldCaption(GenJournalLine."Recurring Method")));
+            if Format(GenJournalLine."Recurring Frequency") = '' then
+                AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJournalLine.FieldCaption(GenJournalLine."Recurring Frequency")));
+            if GenJournalLine."Bal. Account No." <> '' then
                 AddError(
                   StrSubstNo(
                     CannotBeSpecifiedWhenRecurringErr,
-                    GenJnlLine2.FieldCaption(GenJnlLine2."Bal. Account No.")));
-            case GenJnlLine2."Recurring Method" of
-                GenJnlLine2."Recurring Method"::"V  Variable", GenJnlLine2."Recurring Method"::"RV Reversing Variable",
-              GenJnlLine2."Recurring Method"::"F  Fixed", GenJnlLine2."Recurring Method"::"RF Reversing Fixed":
+                    GenJournalLine.FieldCaption(GenJournalLine."Bal. Account No.")));
+            case GenJournalLine."Recurring Method" of
+                GenJournalLine."Recurring Method"::"V  Variable", GenJournalLine."Recurring Method"::"RV Reversing Variable",
+              GenJournalLine."Recurring Method"::"F  Fixed", GenJournalLine."Recurring Method"::"RF Reversing Fixed":
                     WarningIfZeroAmt("Gen. Journal Line");
-                GenJnlLine2."Recurring Method"::"B  Balance", GenJnlLine2."Recurring Method"::"RB Reversing Balance":
+                GenJournalLine."Recurring Method"::"B  Balance", GenJournalLine."Recurring Method"::"RB Reversing Balance":
                     WarningIfNonZeroAmt("Gen. Journal Line");
             end;
-            if GenJnlLine2."Recurring Method".AsInteger() > GenJnlLine2."Recurring Method"::"V  Variable".AsInteger() then begin
-                if GenJnlLine2."Account Type" = GenJnlLine2."Account Type"::"Fixed Asset" then
+            if GenJournalLine."Recurring Method".AsInteger() > GenJournalLine."Recurring Method"::"V  Variable".AsInteger() then begin
+                if GenJournalLine."Account Type" = GenJournalLine."Account Type"::"Fixed Asset" then
                     AddError(
                       StrSubstNo(
                         MustNotBeWhenErr,
-                        GenJnlLine2.FieldCaption(GenJnlLine2."Recurring Method"), GenJnlLine2."Recurring Method",
-                        GenJnlLine2.FieldCaption(GenJnlLine2."Account Type"), GenJnlLine2."Account Type"));
-                if GenJnlLine2."Bal. Account Type" = GenJnlLine2."Bal. Account Type"::"Fixed Asset" then
+                        GenJournalLine.FieldCaption(GenJournalLine."Recurring Method"), GenJournalLine."Recurring Method",
+                        GenJournalLine.FieldCaption(GenJournalLine."Account Type"), GenJournalLine."Account Type"));
+                if GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::"Fixed Asset" then
                     AddError(
                       StrSubstNo(
                         MustNotBeWhenErr,
-                        GenJnlLine2.FieldCaption(GenJnlLine2."Recurring Method"), GenJnlLine2."Recurring Method",
-                        GenJnlLine2.FieldCaption(GenJnlLine2."Bal. Account Type"), GenJnlLine2."Bal. Account Type"));
+                        GenJournalLine.FieldCaption(GenJournalLine."Recurring Method"), GenJournalLine."Recurring Method",
+                        GenJournalLine.FieldCaption(GenJournalLine."Bal. Account Type"), GenJournalLine."Bal. Account Type"));
             end;
         end else begin
-            if GenJnlLine2."Recurring Method" <> "Gen. Journal Recurring Method"::" " then
-                AddError(StrSubstNo(CannotBeSpecifiedErr, GenJnlLine2.FieldCaption(GenJnlLine2."Recurring Method")));
-            if Format(GenJnlLine2."Recurring Frequency") <> '' then
-                AddError(StrSubstNo(CannotBeSpecifiedErr, GenJnlLine2.FieldCaption(GenJnlLine2."Recurring Frequency")));
+            if GenJournalLine."Recurring Method" <> "Gen. Journal Recurring Method"::" " then
+                AddError(StrSubstNo(CannotBeSpecifiedErr, GenJournalLine.FieldCaption(GenJournalLine."Recurring Method")));
+            if Format(GenJournalLine."Recurring Frequency") <> '' then
+                AddError(StrSubstNo(CannotBeSpecifiedErr, GenJournalLine.FieldCaption(GenJournalLine."Recurring Frequency")));
         end;
     end;
 
-    local procedure CheckAllocations(GenJnlLine2: Record "Gen. Journal Line")
+    local procedure CheckAllocations(GenJournalLine: Record "Gen. Journal Line")
     begin
-        if GenJnlLine2."Recurring Method" in [GenJnlLine2."Recurring Method"::"B  Balance", GenJnlLine2."Recurring Method"::"RB Reversing Balance"] then begin
-            GenJnlAlloc.Reset();
-            GenJnlAlloc.SetRange("Journal Template Name", GenJnlLine2."Journal Template Name");
-            GenJnlAlloc.SetRange("Journal Batch Name", GenJnlLine2."Journal Batch Name");
-            GenJnlAlloc.SetRange("Journal Line No.", GenJnlLine2."Line No.");
-            if not GenJnlAlloc.FindFirst() then
+        if GenJournalLine."Recurring Method" in [GenJournalLine."Recurring Method"::"B  Balance", GenJournalLine."Recurring Method"::"RB Reversing Balance"] then begin
+            GenJnlAllocation.Reset();
+            GenJnlAllocation.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
+            GenJnlAllocation.SetRange("Journal Batch Name", GenJournalLine."Journal Batch Name");
+            GenJnlAllocation.SetRange("Journal Line No.", GenJournalLine."Line No.");
+            if not GenJnlAllocation.FindFirst() then
                 AddError(BalanceMethodsOnlyWithAllocErr);
         end;
 
-        GenJnlAlloc.Reset();
-        GenJnlAlloc.SetRange("Journal Template Name", GenJnlLine2."Journal Template Name");
-        GenJnlAlloc.SetRange("Journal Batch Name", GenJnlLine2."Journal Batch Name");
-        GenJnlAlloc.SetRange("Journal Line No.", GenJnlLine2."Line No.");
-        GenJnlAlloc.SetFilter(Amount, '<>0');
-        if GenJnlAlloc.FindFirst() then
-            if not GenJnlTemplate.Recurring then
+        GenJnlAllocation.Reset();
+        GenJnlAllocation.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
+        GenJnlAllocation.SetRange("Journal Batch Name", GenJournalLine."Journal Batch Name");
+        GenJnlAllocation.SetRange("Journal Line No.", GenJournalLine."Line No.");
+        GenJnlAllocation.SetFilter(Amount, '<>0');
+        if GenJnlAllocation.FindFirst() then
+            if not GenJournalTemplate.Recurring then
                 AddError(AllocationWithRecurringOnlyErr)
             else begin
-                GenJnlAlloc.SetRange("Account No.", '');
-                if GenJnlAlloc.FindFirst() then
+                GenJnlAllocation.SetRange("Account No.", '');
+                if GenJnlAllocation.FindFirst() then
                     AddError(
                       StrSubstNo(
                         SpecifyInAllocationLinesErr,
-                        GenJnlAlloc.FieldCaption("Account No."), GenJnlAlloc.Count()));
+                        GenJnlAllocation.FieldCaption("Account No."), GenJnlAllocation.Count()));
             end;
 
     end;
 
-    local procedure MakeRecurringTexts(var GenJnlLine2: Record "Gen. Journal Line")
+    local procedure MakeRecurringTexts(var GenJournalLine: Record "Gen. Journal Line")
     begin
-        if (GenJnlLine2."Posting Date" <> 0D) and (GenJnlLine2."Account No." <> '') and (GenJnlLine2."Recurring Method" <> "Gen. Journal Recurring Method"::" ") then begin
-            Day := Date2DMY(GenJnlLine2."Posting Date", 1);
-            Week := Date2DWY(GenJnlLine2."Posting Date", 2);
-            Month := Date2DMY(GenJnlLine2."Posting Date", 2);
-            MonthText := Format(GenJnlLine2."Posting Date", 0, MonthTextTok);
-            AccountingPeriod.SetRange("Starting Date", 0D, GenJnlLine2."Posting Date");
+        if (GenJournalLine."Posting Date" <> 0D) and (GenJournalLine."Account No." <> '') and (GenJournalLine."Recurring Method" <> "Gen. Journal Recurring Method"::" ") then begin
+            Day := Date2DMY(GenJournalLine."Posting Date", 1);
+            Week := Date2DWY(GenJournalLine."Posting Date", 2);
+            Month := Date2DMY(GenJournalLine."Posting Date", 2);
+            MonthText := Format(GenJournalLine."Posting Date", 0, MonthTextTok);
+            AccountingPeriod.SetRange("Starting Date", 0D, GenJournalLine."Posting Date");
             if not AccountingPeriod.FindLast() then
                 AccountingPeriod.Name := '';
-            GenJnlLine2."Document No." :=
+            GenJournalLine."Document No." :=
                 CopyStr(
                     DelChr(
                         PadStr(
-                        StrSubstNo(GenJnlLine2."Document No.", Day, Week, Month, MonthText, AccountingPeriod.Name),
-                        MaxStrLen(GenJnlLine2."Document No.")),
+                        StrSubstNo(GenJournalLine."Document No.", Day, Week, Month, MonthText, AccountingPeriod.Name),
+                        MaxStrLen(GenJournalLine."Document No.")),
                         '>'),
-                    1, MaxStrLen(GenJnlLine2."Document No."));
-            GenJnlLine2.Description :=
+                    1, MaxStrLen(GenJournalLine."Document No."));
+            GenJournalLine.Description :=
                 CopyStr(
                     DelChr(
                         PadStr(
-                        StrSubstNo(GenJnlLine2.Description, Day, Week, Month, MonthText, AccountingPeriod.Name),
-                        MaxStrLen(GenJnlLine2.Description)),
+                        StrSubstNo(GenJournalLine.Description, Day, Week, Month, MonthText, AccountingPeriod.Name),
+                        MaxStrLen(GenJournalLine.Description)),
                         '>'),
-                    1, MaxStrLen(GenJnlLine2.Description));
+                    1, MaxStrLen(GenJournalLine.Description));
         end;
     end;
 
     local procedure CheckBalance()
     var
-        GenJnlLine: Record "Gen. Journal Line";
-        NextGenJnlLine: Record "Gen. Journal Line";
+        BalanceGenJournalLine: Record "Gen. Journal Line";
+        NextGenJournalLine: Record "Gen. Journal Line";
         DocBalance: Decimal;
         DateBalance: Decimal;
         TotalBalance: Decimal;
     begin
-        GenJnlLine.Copy("Gen. Journal Line");
+        BalanceGenJournalLine.Copy("Gen. Journal Line");
         LastLineNo := "Gen. Journal Line"."Line No.";
-        NextGenJnlLine.Copy("Gen. Journal Line");
-        NextGenJnlLine.SetRange("Journal Template Name", GenJnlLine."Journal Template Name");
-        NextGenJnlLine.SetRange("Journal Batch Name", GenJnlLine."Journal Batch Name");
-        if NextGenJnlLine.Next() = 0 then;
-        MakeRecurringTexts(NextGenJnlLine);
-        if not GenJnlLine.EmptyLine() then begin
-            DocBalance := CalculateDocBalance(GenJnlLine);
-            DateBalance := CalculateDateBalance(GenJnlLine);
-            TotalBalance := CalculateTotalBalance(GenJnlLine);
-            if GenJnlLine."Recurring Method".AsInteger() >= GenJnlLine."Recurring Method"::"RF Reversing Fixed".AsInteger() then begin
-                DocBalanceReverse := DocBalanceReverse + GenJnlLine."Balance (LCY)";
-                DateBalanceReverse := DateBalanceReverse + GenJnlLine."Balance (LCY)";
-                TotalBalanceReverse := TotalBalanceReverse + GenJnlLine."Balance (LCY)";
+        NextGenJournalLine.Copy("Gen. Journal Line");
+        NextGenJournalLine.SetRange("Journal Template Name", BalanceGenJournalLine."Journal Template Name");
+        NextGenJournalLine.SetRange("Journal Batch Name", BalanceGenJournalLine."Journal Batch Name");
+        if NextGenJournalLine.Next() = 0 then;
+        MakeRecurringTexts(NextGenJournalLine);
+        if not BalanceGenJournalLine.EmptyLine() then begin
+            DocBalance := CalculateDocBalance(BalanceGenJournalLine);
+            DateBalance := CalculateDateBalance(BalanceGenJournalLine);
+            TotalBalance := CalculateTotalBalance(BalanceGenJournalLine);
+            if BalanceGenJournalLine."Recurring Method".AsInteger() >= BalanceGenJournalLine."Recurring Method"::"RF Reversing Fixed".AsInteger() then begin
+                DocBalanceReverse := DocBalanceReverse + BalanceGenJournalLine."Balance (LCY)";
+                DateBalanceReverse := DateBalanceReverse + BalanceGenJournalLine."Balance (LCY)";
+                TotalBalanceReverse := TotalBalanceReverse + BalanceGenJournalLine."Balance (LCY)";
             end;
-            LastDocType := GenJnlLine."Document Type";
-            LastDocNo := GenJnlLine."Document No.";
-            LastDate := GenJnlLine."Posting Date";
+            LastDocType := BalanceGenJournalLine."Document Type";
+            LastDocNo := BalanceGenJournalLine."Document No.";
+            LastDate := BalanceGenJournalLine."Posting Date";
             if TotalBalance = 0 then
                 VATEntryCreated := false;
-            if GenJnlTemplate."Force Doc. Balance" then begin
+            if GenJournalTemplate."Force Doc. Balance" then begin
                 VATEntryCreated :=
                   VATEntryCreated or
-                  ((GenJnlLine."Account Type" = GenJnlLine."Account Type"::"G/L Account") and (GenJnlLine."Account No." <> '') and
-                   (GenJnlLine."Gen. Posting Type" in [GenJnlLine."Gen. Posting Type"::Purchase, GenJnlLine."Gen. Posting Type"::Sale])) or
-                  ((GenJnlLine."Bal. Account Type" = GenJnlLine."Bal. Account Type"::"G/L Account") and (GenJnlLine."Bal. Account No." <> '') and
-                   (GenJnlLine."Bal. Gen. Posting Type" in [GenJnlLine."Bal. Gen. Posting Type"::Purchase, GenJnlLine."Bal. Gen. Posting Type"::Sale]));
-                TempGenJournalLineCustVendIC.IsCustVendICAdded(GenJnlLine);
-                if (TempGenJournalLineCustVendIC.Count > 1) and VATEntryCreated then
+                  ((BalanceGenJournalLine."Account Type" = BalanceGenJournalLine."Account Type"::"G/L Account") and (BalanceGenJournalLine."Account No." <> '') and
+                   (BalanceGenJournalLine."Gen. Posting Type" in [BalanceGenJournalLine."Gen. Posting Type"::Purchase, BalanceGenJournalLine."Gen. Posting Type"::Sale])) or
+                  ((BalanceGenJournalLine."Bal. Account Type" = BalanceGenJournalLine."Bal. Account Type"::"G/L Account") and (BalanceGenJournalLine."Bal. Account No." <> '') and
+                   (BalanceGenJournalLine."Bal. Gen. Posting Type" in [BalanceGenJournalLine."Bal. Gen. Posting Type"::Purchase, BalanceGenJournalLine."Bal. Gen. Posting Type"::Sale]));
+                TempCustVendICGenJournalLine.IsCustVendICAdded(BalanceGenJournalLine);
+                if (TempCustVendICGenJournalLine.Count > 1) and VATEntryCreated then
                     AddError(
                       StrSubstNo(
                         MustBeSeparatedByEmptyLineErr,
-                        GenJnlLine."Document Type", GenJnlLine."Document No.", GenJnlLine."Posting Date"));
+                        BalanceGenJournalLine."Document Type", BalanceGenJournalLine."Document No.", BalanceGenJournalLine."Posting Date"));
             end;
         end;
 
         if (LastDate <> 0D) and (LastDocNo <> '') and
-            ((NextGenJnlLine."Posting Date" <> LastDate) or
-            // ("Document Type" <> LastDocType) OR
-            ((NextGenJnlLine."Document Type" <> LastDocType) and (not GenJnlTemplate."Not Check Doc. Type")) or
-            (NextGenJnlLine."Document No." <> LastDocNo) or
-            (NextGenJnlLine."Line No." = LastLineNo))
+            ((NextGenJournalLine."Posting Date" <> LastDate) or
+            ((NextGenJournalLine."Document Type" <> LastDocType) and (not GenJournalTemplate."Not Check Doc. Type CZL")) or
+            (NextGenJournalLine."Document No." <> LastDocNo) or
+            (NextGenJournalLine."Line No." = LastLineNo))
         then begin
-            if GenJnlTemplate."Force Doc. Balance" then begin
+            if GenJournalTemplate."Force Doc. Balance" then begin
                 case true of
                     DocBalance <> 0:
                         AddError(
@@ -1087,11 +1089,11 @@ report 11722 "General Journal - Test CZL"
                 end;
                 DocBalanceReverse := 0;
             end;
-            if (NextGenJnlLine."Posting Date" <> LastDate) or
-               (NextGenJnlLine."Document Type" <> LastDocType) or (NextGenJnlLine."Document No." <> LastDocNo)
+            if (NextGenJournalLine."Posting Date" <> LastDate) or
+               (NextGenJournalLine."Document Type" <> LastDocType) or (NextGenJournalLine."Document No." <> LastDocNo)
             then begin
-                TempGenJournalLineCustVendIC.Reset();
-                TempGenJournalLineCustVendIC.DeleteAll();
+                TempCustVendICGenJournalLine.Reset();
+                TempCustVendICGenJournalLine.DeleteAll();
                 VATEntryCreated := false;
                 CustPosting := false;
                 VendPosting := false;
@@ -1100,7 +1102,7 @@ report 11722 "General Journal - Test CZL"
             end;
         end;
 
-        if (LastDate <> 0D) and ((NextGenJnlLine."Posting Date" <> LastDate) or (NextGenJnlLine."Line No." = LastLineNo)) then begin
+        if (LastDate <> 0D) and ((NextGenJournalLine."Posting Date" <> LastDate) or (NextGenJournalLine."Line No." = LastLineNo)) then begin
             case true of
                 DateBalance <> 0:
                     AddError(
@@ -1117,7 +1119,7 @@ report 11722 "General Journal - Test CZL"
             DateBalanceReverse := 0;
         end;
 
-        if NextGenJnlLine."Line No." = LastLineNo then begin
+        if NextGenJournalLine."Line No." = LastLineNo then begin
             case true of
                 TotalBalance <> 0:
                     AddError(
@@ -1142,16 +1144,16 @@ report 11722 "General Journal - Test CZL"
 
     local procedure CheckDimensions(GenJournalLine: Record "Gen. Journal Line")
     var
-        DimMgt: Codeunit DimensionManagement;
+        DimensionManagement: Codeunit DimensionManagement;
         TableID: array[10] of Integer;
         No: array[10] of Code[20];
     begin
-        if not DimMgt.CheckDimIDComb(GenJournalLine."Dimension Set ID") then
-            AddError(DimMgt.GetDimCombErr());
+        if not DimensionManagement.CheckDimIDComb(GenJournalLine."Dimension Set ID") then
+            AddError(DimensionManagement.GetDimCombErr());
 
-        TableID[1] := DimMgt.TypeToTableID1(GenJournalLine."Account Type".AsInteger());
+        TableID[1] := DimensionManagement.TypeToTableID1(GenJournalLine."Account Type".AsInteger());
         No[1] := GenJournalLine."Account No.";
-        TableID[2] := DimMgt.TypeToTableID1(GenJournalLine."Bal. Account Type".AsInteger());
+        TableID[2] := DimensionManagement.TypeToTableID1(GenJournalLine."Bal. Account Type".AsInteger());
         No[2] := GenJournalLine."Bal. Account No.";
         TableID[3] := Database::Job;
         No[3] := GenJournalLine."Job No.";
@@ -1161,41 +1163,41 @@ report 11722 "General Journal - Test CZL"
         No[5] := GenJournalLine."Campaign No.";
         OnAfterAssignDimTableID(GenJournalLine, TableID, No);
 
-        if not DimMgt.CheckDimValuePosting(TableID, No, GenJournalLine."Dimension Set ID") then
-            AddError(DimMgt.GetDimValuePostingErr());
+        if not DimensionManagement.CheckDimValuePosting(TableID, No, GenJournalLine."Dimension Set ID") then
+            AddError(DimensionManagement.GetDimValuePostingErr());
     end;
 
     local procedure CalculateDocBalance(GenJournalLine: Record "Gen. Journal Line"): Decimal
     var
-        GenJournalLine2: Record "Gen. Journal Line";
+        DocBalanceGenJournalLine: Record "Gen. Journal Line";
     begin
-        GenJournalLine2.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
-        GenJournalLine2.SetRange("Journal Batch Name", GenJournalLine."Journal Batch Name");
-        GenJournalLine2.SetRange("Document Type", GenJournalLine."Document Type");
-        GenJournalLine2.SetRange("Document No.", GenJournalLine."Document No.");
-        GenJournalLine2.CalcSums("Balance (LCY)");
-        exit(GenJournalLine2."Balance (LCY)");
+        DocBalanceGenJournalLine.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
+        DocBalanceGenJournalLine.SetRange("Journal Batch Name", GenJournalLine."Journal Batch Name");
+        DocBalanceGenJournalLine.SetRange("Document Type", GenJournalLine."Document Type");
+        DocBalanceGenJournalLine.SetRange("Document No.", GenJournalLine."Document No.");
+        DocBalanceGenJournalLine.CalcSums("Balance (LCY)");
+        exit(DocBalanceGenJournalLine."Balance (LCY)");
     end;
 
     local procedure CalculateDateBalance(GenJournalLine: Record "Gen. Journal Line"): Decimal
     var
-        GenJournalLine2: Record "Gen. Journal Line";
+        DateBalanceGenJournalLine: Record "Gen. Journal Line";
     begin
-        GenJournalLine2.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
-        GenJournalLine2.SetRange("Journal Batch Name", GenJournalLine."Journal Batch Name");
-        GenJournalLine2.SetRange("Posting Date", GenJournalLine."Posting Date");
-        GenJournalLine2.CalcSums("Balance (LCY)");
-        exit(GenJournalLine2."Balance (LCY)");
+        DateBalanceGenJournalLine.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
+        DateBalanceGenJournalLine.SetRange("Journal Batch Name", GenJournalLine."Journal Batch Name");
+        DateBalanceGenJournalLine.SetRange("Posting Date", GenJournalLine."Posting Date");
+        DateBalanceGenJournalLine.CalcSums("Balance (LCY)");
+        exit(DateBalanceGenJournalLine."Balance (LCY)");
     end;
 
     local procedure CalculateTotalBalance(GenJournalLine: Record "Gen. Journal Line"): Decimal
     var
-        GenJournalLine2: Record "Gen. Journal Line";
+        TotalBalanceGenJournalLine: Record "Gen. Journal Line";
     begin
-        GenJournalLine2.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
-        GenJournalLine2.SetRange("Journal Batch Name", GenJournalLine."Journal Batch Name");
-        GenJournalLine2.CalcSums("Balance (LCY)");
-        exit(GenJournalLine2."Balance (LCY)");
+        TotalBalanceGenJournalLine.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
+        TotalBalanceGenJournalLine.SetRange("Journal Batch Name", GenJournalLine."Journal Batch Name");
+        TotalBalanceGenJournalLine.CalcSums("Balance (LCY)");
+        exit(TotalBalanceGenJournalLine."Balance (LCY)");
     end;
 
     procedure AddError(Text: Text[250])
@@ -1206,265 +1208,265 @@ report 11722 "General Journal - Test CZL"
 
     local procedure ReconcileGLAccNo(GLAccNo: Code[20]; ReconcileAmount: Decimal)
     begin
-        if not TempGLAccNetChange.Get(GLAccNo) then begin
-            GLAcc.Get(GLAccNo);
-            GLAcc.CalcFields("Balance at Date");
-            TempGLAccNetChange.Init();
-            TempGLAccNetChange."No." := GLAcc."No.";
-            TempGLAccNetChange.Name := GLAcc.Name;
-            TempGLAccNetChange."Balance after Posting" := GLAcc."Balance at Date";
-            TempGLAccNetChange.Insert();
+        if not TempGLAccountNetChange.Get(GLAccNo) then begin
+            GLAccount.Get(GLAccNo);
+            GLAccount.CalcFields("Balance at Date");
+            TempGLAccountNetChange.Init();
+            TempGLAccountNetChange."No." := GLAccount."No.";
+            TempGLAccountNetChange.Name := GLAccount.Name;
+            TempGLAccountNetChange."Balance after Posting" := GLAccount."Balance at Date";
+            TempGLAccountNetChange.Insert();
         end;
-        TempGLAccNetChange."Net Change in Jnl." := TempGLAccNetChange."Net Change in Jnl." + ReconcileAmount;
-        TempGLAccNetChange."Balance after Posting" := TempGLAccNetChange."Balance after Posting" + ReconcileAmount;
-        TempGLAccNetChange.Modify();
+        TempGLAccountNetChange."Net Change in Jnl." := TempGLAccountNetChange."Net Change in Jnl." + ReconcileAmount;
+        TempGLAccountNetChange."Balance after Posting" := TempGLAccountNetChange."Balance after Posting" + ReconcileAmount;
+        TempGLAccountNetChange.Modify();
     end;
 
-    local procedure CheckGLAcc(var GenJnlLine: Record "Gen. Journal Line"; var AccName: Text[100])
+    local procedure CheckGLAcc(var GenJournalLine: Record "Gen. Journal Line"; var AccName: Text[100])
     begin
-        if not GLAcc.Get(GenJnlLine."Account No.") then
+        if not GLAccount.Get(GenJournalLine."Account No.") then
             AddError(
               StrSubstNo(
                 MasterRecDoesNotExistErr,
-                GLAcc.TableCaption, GenJnlLine."Account No."))
+                GLAccount.TableCaption, GenJournalLine."Account No."))
         else begin
-            AccName := GLAcc.Name;
+            AccName := GLAccount.Name;
 
-            if GLAcc.Blocked then
+            if GLAccount.Blocked then
                 AddError(
                   StrSubstNo(
                     MustBeForErr,
-                    GLAcc.FieldCaption(Blocked), false, GLAcc.TableCaption, GenJnlLine."Account No."));
-            if GLAcc."Account Type" <> GLAcc."Account Type"::Posting then begin
-                GLAcc."Account Type" := GLAcc."Account Type"::Posting;
+                    GLAccount.FieldCaption(Blocked), false, GLAccount.TableCaption, GenJournalLine."Account No."));
+            if GLAccount."Account Type" <> GLAccount."Account Type"::Posting then begin
+                GLAccount."Account Type" := GLAccount."Account Type"::Posting;
                 AddError(
                   StrSubstNo(
                     MustBeForErr,
-                    GLAcc.FieldCaption("Account Type"), GLAcc."Account Type", GLAcc.TableCaption, GenJnlLine."Account No."));
+                    GLAccount.FieldCaption("Account Type"), GLAccount."Account Type", GLAccount.TableCaption, GenJournalLine."Account No."));
             end;
-            if not GenJnlLine."System-Created Entry" then
-                if GenJnlLine."Posting Date" = NormalDate(GenJnlLine."Posting Date") then
-                    if not GLAcc."Direct Posting" then
+            if not GenJournalLine."System-Created Entry" then
+                if GenJournalLine."Posting Date" = NormalDate(GenJournalLine."Posting Date") then
+                    if not GLAccount."Direct Posting" then
                         AddError(
                           StrSubstNo(
                             MustBeForErr,
-                            GLAcc.FieldCaption("Direct Posting"), true, GLAcc.TableCaption, GenJnlLine."Account No."));
+                            GLAccount.FieldCaption("Direct Posting"), true, GLAccount.TableCaption, GenJournalLine."Account No."));
 
-            if GenJnlLine."Gen. Posting Type" <> GenJnlLine."Gen. Posting Type"::" " then begin
-                case GenJnlLine."Gen. Posting Type" of
-                    GenJnlLine."Gen. Posting Type"::Sale:
+            if GenJournalLine."Gen. Posting Type" <> GenJournalLine."Gen. Posting Type"::" " then begin
+                case GenJournalLine."Gen. Posting Type" of
+                    GenJournalLine."Gen. Posting Type"::Sale:
                         SalesPostingType := true;
-                    GenJnlLine."Gen. Posting Type"::Purchase:
+                    GenJournalLine."Gen. Posting Type"::Purchase:
                         PurchPostingType := true;
                 end;
                 TestPostingType();
 
-                if not VATPostingSetup.Get(GenJnlLine."VAT Bus. Posting Group", GenJnlLine."VAT Prod. Posting Group") then
+                if not VATPostingSetup.Get(GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group") then
                     AddError(
                       StrSubstNo(
                         RecordDoesNotExistErr,
-                        VATPostingSetup.TableCaption, GenJnlLine."VAT Bus. Posting Group", GenJnlLine."VAT Prod. Posting Group"))
+                        VATPostingSetup.TableCaption, GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group"))
                 else
-                    if GenJnlLine."VAT Calculation Type" <> VATPostingSetup."VAT Calculation Type" then
+                    if GenJournalLine."VAT Calculation Type" <> VATPostingSetup."VAT Calculation Type" then
                         AddError(
                           StrSubstNo(
                             MustBeErr,
-                            GenJnlLine.FieldCaption(GenJnlLine."VAT Calculation Type"), VATPostingSetup."VAT Calculation Type"))
+                            GenJournalLine.FieldCaption(GenJournalLine."VAT Calculation Type"), VATPostingSetup."VAT Calculation Type"))
             end;
 
-            if GLAcc."Reconciliation Account" then
-                ReconcileGLAccNo(GenJnlLine."Account No.", Round(GenJnlLine."Amount (LCY)" / (1 + GenJnlLine."VAT %" / 100)));
+            if GLAccount."Reconciliation Account" then
+                ReconcileGLAccNo(GenJournalLine."Account No.", Round(GenJournalLine."Amount (LCY)" / (1 + GenJournalLine."VAT %" / 100)));
 
-            OnAfterCheckGLAcc(GenJnlLine, GLAcc, ErrorCounter, ErrorText);
+            OnAfterCheckGLAcc(GenJournalLine, GLAccount, ErrorCounter, ErrorText);
         end;
     end;
 
-    local procedure CheckCust(var GenJnlLine: Record "Gen. Journal Line"; var AccName: Text[100])
+    local procedure CheckCust(var GenJournalLine: Record "Gen. Journal Line"; var AccName: Text[100])
     begin
-        if not Cust.Get(GenJnlLine."Account No.") then
+        if not Customer.Get(GenJournalLine."Account No.") then
             AddError(
               StrSubstNo(
                 MasterRecDoesNotExistErr,
-                Cust.TableCaption, GenJnlLine."Account No."))
+                Customer.TableCaption, GenJournalLine."Account No."))
         else begin
-            AccName := Cust.Name;
-            if Cust."Privacy Blocked" then
-                AddError(Cust.GetPrivacyBlockedGenericErrorText(Cust));
-            if ((Cust.Blocked = Cust.Blocked::All) or
-                ((Cust.Blocked = Cust.Blocked::Invoice) and
-                 (GenJnlLine."Document Type" in [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::" "]))
+            AccName := Customer.Name;
+            if Customer."Privacy Blocked" then
+                AddError(Customer.GetPrivacyBlockedGenericErrorText(Customer));
+            if ((Customer.Blocked = Customer.Blocked::All) or
+                ((Customer.Blocked = Customer.Blocked::Invoice) and
+                 (GenJournalLine."Document Type" in [GenJournalLine."Document Type"::Invoice, GenJournalLine."Document Type"::" "]))
                 )
             then
                 AddError(
                   StrSubstNo(
                     MustNotBeBlockedTypeErr,
-                    GenJnlLine."Account Type", Cust.Blocked, GenJnlLine.FieldCaption(GenJnlLine."Document Type"), GenJnlLine."Document Type"));
-            if GenJnlLine."Currency Code" <> '' then
-                if not Currency.Get(GenJnlLine."Currency Code") then
+                    GenJournalLine."Account Type", Customer.Blocked, GenJournalLine.FieldCaption(GenJournalLine."Document Type"), GenJournalLine."Document Type"));
+            if GenJournalLine."Currency Code" <> '' then
+                if not Currency.Get(GenJournalLine."Currency Code") then
                     AddError(
                       StrSubstNo(
                         CurrencyNotFoundErr,
-                        GenJnlLine."Currency Code"));
-            if (Cust."IC Partner Code" <> '') and (GenJnlTemplate.Type = GenJnlTemplate.Type::Intercompany) then
-                if ICPartner.Get(Cust."IC Partner Code") then begin
+                        GenJournalLine."Currency Code"));
+            if (Customer."IC Partner Code" <> '') and (GenJournalTemplate.Type = GenJournalTemplate.Type::Intercompany) then
+                if ICPartner.Get(Customer."IC Partner Code") then begin
                     if ICPartner.Blocked then
                         AddError(
                           StrSubstNo(
                             TwoTextsWithSpaceTok,
                             StrSubstNo(
                               IsLinkedToErr,
-                              Cust.TableCaption, GenJnlLine."Account No.", ICPartner.TableCaption, GenJnlLine."IC Partner Code"),
+                              Customer.TableCaption, GenJournalLine."Account No.", ICPartner.TableCaption, GenJournalLine."IC Partner Code"),
                             StrSubstNo(
                               MustBeForErr,
-                              ICPartner.FieldCaption(Blocked), false, ICPartner.TableCaption, Cust."IC Partner Code")));
+                              ICPartner.FieldCaption(Blocked), false, ICPartner.TableCaption, Customer."IC Partner Code")));
                 end else
                     AddError(
                       StrSubstNo(
                         TwoTextsWithSpaceTok,
                         StrSubstNo(
                           IsLinkedToErr,
-                          Cust.TableCaption, GenJnlLine."Account No.", ICPartner.TableCaption, Cust."IC Partner Code"),
+                          Customer.TableCaption, GenJournalLine."Account No.", ICPartner.TableCaption, Customer."IC Partner Code"),
                         StrSubstNo(
                           MasterRecDoesNotExistErr,
-                          ICPartner.TableCaption, Cust."IC Partner Code")));
+                          ICPartner.TableCaption, Customer."IC Partner Code")));
             CustPosting := true;
             TestPostingType();
 
-            if GenJnlLine."Recurring Method" = "Gen. Journal Recurring Method"::" " then
-                if GenJnlLine."Document Type" in
-                   [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::"Credit Memo",
-                    GenJnlLine."Document Type"::"Finance Charge Memo", GenJnlLine."Document Type"::Reminder]
+            if GenJournalLine."Recurring Method" = "Gen. Journal Recurring Method"::" " then
+                if GenJournalLine."Document Type" in
+                   [GenJournalLine."Document Type"::Invoice, GenJournalLine."Document Type"::"Credit Memo",
+                    GenJournalLine."Document Type"::"Finance Charge Memo", GenJournalLine."Document Type"::Reminder]
                 then begin
-                    OldCustLedgEntry.Reset();
-                    OldCustLedgEntry.SetCurrentKey("Document No.");
-                    OldCustLedgEntry.SetRange("Document Type", GenJnlLine."Document Type");
-                    OldCustLedgEntry.SetRange("Document No.", GenJnlLine."Document No.");
-                    if OldCustLedgEntry.FindFirst() then
+                    OldCustLedgerEntry.Reset();
+                    OldCustLedgerEntry.SetCurrentKey("Document No.");
+                    OldCustLedgerEntry.SetRange("Document Type", GenJournalLine."Document Type");
+                    OldCustLedgerEntry.SetRange("Document No.", GenJournalLine."Document No.");
+                    if OldCustLedgerEntry.FindFirst() then
                         AddError(
                           StrSubstNo(
-                            SalesDocAlreadyExistsErr, GenJnlLine."Document Type", GenJnlLine."Document No."));
+                            SalesDocAlreadyExistsErr, GenJournalLine."Document Type", GenJournalLine."Document No."));
 
-                    if SalesSetup."Ext. Doc. No. Mandatory" or
-                       (GenJnlLine."External Document No." <> '')
+                    if SalesReceivablesSetup."Ext. Doc. No. Mandatory" or
+                       (GenJournalLine."External Document No." <> '')
                     then begin
-                        if GenJnlLine."External Document No." = '' then
+                        if GenJournalLine."External Document No." = '' then
                             AddError(
                               StrSubstNo(
-                                MustBeEnteredErr, GenJnlLine.FieldCaption(GenJnlLine."External Document No.")));
+                                MustBeEnteredErr, GenJournalLine.FieldCaption(GenJournalLine."External Document No.")));
 
-                        OldCustLedgEntry.Reset();
-                        OldCustLedgEntry.SetCurrentKey("External Document No.");
-                        OldCustLedgEntry.SetRange("Document Type", GenJnlLine."Document Type");
-                        OldCustLedgEntry.SetRange("Customer No.", GenJnlLine."Account No.");
-                        OldCustLedgEntry.SetRange("External Document No.", GenJnlLine."External Document No.");
-                        if OldCustLedgEntry.FindFirst() then
+                        OldCustLedgerEntry.Reset();
+                        OldCustLedgerEntry.SetCurrentKey("External Document No.");
+                        OldCustLedgerEntry.SetRange("Document Type", GenJournalLine."Document Type");
+                        OldCustLedgerEntry.SetRange("Customer No.", GenJournalLine."Account No.");
+                        OldCustLedgerEntry.SetRange("External Document No.", GenJournalLine."External Document No.");
+                        if OldCustLedgerEntry.FindFirst() then
                             AddError(
                               StrSubstNo(
                                 SalesDocAlreadyExistsErr,
-                                GenJnlLine."Document Type", GenJnlLine."External Document No."));
+                                GenJournalLine."Document Type", GenJournalLine."External Document No."));
                         CheckAgainstPrevLines("Gen. Journal Line");
                     end;
                 end;
         end;
     end;
 
-    local procedure CheckVend(var GenJnlLine: Record "Gen. Journal Line"; var AccName: Text[100])
+    local procedure CheckVend(var GenJournalLine: Record "Gen. Journal Line"; var AccName: Text[100])
     var
         VendorMgt: Codeunit "Vendor Mgt.";
     begin
-        if not Vend.Get(GenJnlLine."Account No.") then
+        if not Vendor.Get(GenJournalLine."Account No.") then
             AddError(
               StrSubstNo(
                 MasterRecDoesNotExistErr,
-                Vend.TableCaption, GenJnlLine."Account No."))
+                Vendor.TableCaption, GenJournalLine."Account No."))
         else begin
-            AccName := Vend.Name;
-            if Vend."Privacy Blocked" then
-                AddError(Vend.GetPrivacyBlockedGenericErrorText(Vend));
-            if ((Vend.Blocked = Vend.Blocked::All) or
-                ((Vend.Blocked = Vend.Blocked::Payment) and (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Payment))
+            AccName := Vendor.Name;
+            if Vendor."Privacy Blocked" then
+                AddError(Vendor.GetPrivacyBlockedGenericErrorText(Vendor));
+            if ((Vendor.Blocked = Vendor.Blocked::All) or
+                ((Vendor.Blocked = Vendor.Blocked::Payment) and (GenJournalLine."Document Type" = GenJournalLine."Document Type"::Payment))
                 )
             then
                 AddError(
                   StrSubstNo(
                     MustNotBeBlockedTypeErr,
-                    GenJnlLine."Account Type", Vend.Blocked, GenJnlLine.FieldCaption(GenJnlLine."Document Type"), GenJnlLine."Document Type"));
-            if GenJnlLine."Currency Code" <> '' then
-                if not Currency.Get(GenJnlLine."Currency Code") then
+                    GenJournalLine."Account Type", Vendor.Blocked, GenJournalLine.FieldCaption(GenJournalLine."Document Type"), GenJournalLine."Document Type"));
+            if GenJournalLine."Currency Code" <> '' then
+                if not Currency.Get(GenJournalLine."Currency Code") then
                     AddError(
                       StrSubstNo(
                         CurrencyNotFoundErr,
-                        GenJnlLine."Currency Code"));
+                        GenJournalLine."Currency Code"));
 
-            if (Vend."IC Partner Code" <> '') and (GenJnlTemplate.Type = GenJnlTemplate.Type::Intercompany) then
-                if ICPartner.Get(Vend."IC Partner Code") then begin
+            if (Vendor."IC Partner Code" <> '') and (GenJournalTemplate.Type = GenJournalTemplate.Type::Intercompany) then
+                if ICPartner.Get(Vendor."IC Partner Code") then begin
                     if ICPartner.Blocked then
                         AddError(
                           StrSubstNo(
                             TwoTextsWithSpaceTok,
                             StrSubstNo(
                               IsLinkedToErr,
-                              Vend.TableCaption, GenJnlLine."Account No.", ICPartner.TableCaption, Vend."IC Partner Code"),
+                              Vendor.TableCaption, GenJournalLine."Account No.", ICPartner.TableCaption, Vendor."IC Partner Code"),
                             StrSubstNo(
                               MustBeForErr,
-                              ICPartner.FieldCaption(Blocked), false, ICPartner.TableCaption, Vend."IC Partner Code")));
+                              ICPartner.FieldCaption(Blocked), false, ICPartner.TableCaption, Vendor."IC Partner Code")));
                 end else
                     AddError(
                       StrSubstNo(
                         TwoTextsWithSpaceTok,
                         StrSubstNo(
                           IsLinkedToErr,
-                          Vend.TableCaption, GenJnlLine."Account No.", ICPartner.TableCaption, GenJnlLine."IC Partner Code"),
+                          Vendor.TableCaption, GenJournalLine."Account No.", ICPartner.TableCaption, GenJournalLine."IC Partner Code"),
                         StrSubstNo(
                           MasterRecDoesNotExistErr,
-                          ICPartner.TableCaption, Vend."IC Partner Code")));
+                          ICPartner.TableCaption, Vendor."IC Partner Code")));
             VendPosting := true;
             TestPostingType();
 
-            if GenJnlLine."Recurring Method" = "Gen. Journal Recurring Method"::" " then
-                if GenJnlLine."Document Type" in
-                   [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::"Credit Memo",
-                    GenJnlLine."Document Type"::"Finance Charge Memo", GenJnlLine."Document Type"::Reminder]
+            if GenJournalLine."Recurring Method" = "Gen. Journal Recurring Method"::" " then
+                if GenJournalLine."Document Type" in
+                   [GenJournalLine."Document Type"::Invoice, GenJournalLine."Document Type"::"Credit Memo",
+                    GenJournalLine."Document Type"::"Finance Charge Memo", GenJournalLine."Document Type"::Reminder]
                 then begin
-                    OldVendLedgEntry.Reset();
-                    OldVendLedgEntry.SetCurrentKey("Document No.");
-                    OldVendLedgEntry.SetRange("Document Type", GenJnlLine."Document Type");
-                    OldVendLedgEntry.SetRange("Document No.", GenJnlLine."Document No.");
-                    if OldVendLedgEntry.FindFirst() then
+                    OldVendorLedgerEntry.Reset();
+                    OldVendorLedgerEntry.SetCurrentKey("Document No.");
+                    OldVendorLedgerEntry.SetRange("Document Type", GenJournalLine."Document Type");
+                    OldVendorLedgerEntry.SetRange("Document No.", GenJournalLine."Document No.");
+                    if OldVendorLedgerEntry.FindFirst() then
                         AddError(
                           StrSubstNo(
                             PurchaseDocAlreadyExistsErr,
-                            GenJnlLine."Document Type", GenJnlLine."Document No."));
+                            GenJournalLine."Document Type", GenJournalLine."Document No."));
 
-                    if PurchSetup."Ext. Doc. No. Mandatory" or
-                       (GenJnlLine."External Document No." <> '')
+                    if PurchasesPayablesSetup."Ext. Doc. No. Mandatory" or
+                       (GenJournalLine."External Document No." <> '')
                     then begin
-                        if GenJnlLine."External Document No." = '' then
+                        if GenJournalLine."External Document No." = '' then
                             AddError(
                               StrSubstNo(
-                                MustBeEnteredErr, GenJnlLine.FieldCaption(GenJnlLine."External Document No.")));
+                                MustBeEnteredErr, GenJournalLine.FieldCaption(GenJournalLine."External Document No.")));
 
-                        OldVendLedgEntry.Reset();
-                        OldVendLedgEntry.SetCurrentKey("External Document No.");
+                        OldVendorLedgerEntry.Reset();
+                        OldVendorLedgerEntry.SetCurrentKey("External Document No.");
                         VendorMgt.SetFilterForExternalDocNo(
-                          OldVendLedgEntry, GenJnlLine."Document Type", GenJnlLine."External Document No.", GenJnlLine."Account No.", GenJnlLine."Document Date");
-                        if OldVendLedgEntry.FindFirst() then
+                          OldVendorLedgerEntry, GenJournalLine."Document Type", GenJournalLine."External Document No.", GenJournalLine."Account No.", GenJournalLine."Document Date");
+                        if OldVendorLedgerEntry.FindFirst() then
                             AddError(
                               StrSubstNo(
                                 PurchaseDocAlreadyExistsErr,
-                                GenJnlLine."Document Type", GenJnlLine."External Document No."))
+                                GenJournalLine."Document Type", GenJournalLine."External Document No."))
                         else
-                            CheckExtDocNoInPostedPurchDoc(GenJnlLine);
+                            CheckExtDocNoInPostedPurchDoc(GenJournalLine);
                         CheckAgainstPrevLines("Gen. Journal Line");
                     end;
                 end;
         end;
     end;
 
-    local procedure CheckEmployee(var GenJnlLine: Record "Gen. Journal Line"; var AccName: Text[100])
+    local procedure CheckEmployee(var GenJournalLine: Record "Gen. Journal Line"; var AccName: Text[100])
     begin
-        if not Employee.Get(GenJnlLine."Account No.") then
-            AddError(StrSubstNo(MasterRecDoesNotExistErr, Employee.TableCaption, GenJnlLine."Account No."))
+        if not Employee.Get(GenJournalLine."Account No.") then
+            AddError(StrSubstNo(MasterRecDoesNotExistErr, Employee.TableCaption, GenJournalLine."Account No."))
         else begin
             AccName := Employee."No.";
             if Employee."Privacy Blocked" then
@@ -1472,236 +1474,236 @@ report 11722 "General Journal - Test CZL"
         end;
     end;
 
-    local procedure CheckBankAcc(var GenJnlLine: Record "Gen. Journal Line"; var AccName: Text[100])
+    local procedure CheckBankAcc(var GenJournalLine: Record "Gen. Journal Line"; var AccName: Text[100])
     begin
-        if not BankAcc.Get(GenJnlLine."Account No.") then
+        if not BankAccount.Get(GenJournalLine."Account No.") then
             AddError(
               StrSubstNo(
                 MasterRecDoesNotExistErr,
-                BankAcc.TableCaption, GenJnlLine."Account No."))
+                BankAccount.TableCaption, GenJournalLine."Account No."))
         else begin
-            AccName := BankAcc.Name;
+            AccName := BankAccount.Name;
 
-            if BankAcc.Blocked then
+            if BankAccount.Blocked then
                 AddError(
                   StrSubstNo(
                     MustBeForErr,
-                    BankAcc.FieldCaption(Blocked), false, BankAcc.TableCaption, GenJnlLine."Account No."));
-            if (GenJnlLine."Currency Code" <> BankAcc."Currency Code") and (BankAcc."Currency Code" <> '') then
+                    BankAccount.FieldCaption(Blocked), false, BankAccount.TableCaption, GenJournalLine."Account No."));
+            if (GenJournalLine."Currency Code" <> BankAccount."Currency Code") and (BankAccount."Currency Code" <> '') then
                 AddError(
                   StrSubstNo(
                     MustBeErr,
-                    GenJnlLine.FieldCaption(GenJnlLine."Currency Code"), BankAcc."Currency Code"));
+                    GenJournalLine.FieldCaption(GenJournalLine."Currency Code"), BankAccount."Currency Code"));
 
-            if GenJnlLine."Currency Code" <> '' then
-                if not Currency.Get(GenJnlLine."Currency Code") then
+            if GenJournalLine."Currency Code" <> '' then
+                if not Currency.Get(GenJournalLine."Currency Code") then
                     AddError(
                       StrSubstNo(
                         CurrencyNotFoundErr,
-                        GenJnlLine."Currency Code"));
+                        GenJournalLine."Currency Code"));
 
-            if GenJnlLine."Bank Payment Type" <> GenJnlLine."Bank Payment Type"::" " then
-                if (GenJnlLine."Bank Payment Type" = GenJnlLine."Bank Payment Type"::"Computer Check") and (GenJnlLine.Amount < 0) then
-                    if BankAcc."Currency Code" <> GenJnlLine."Currency Code" then
+            if GenJournalLine."Bank Payment Type" <> GenJournalLine."Bank Payment Type"::" " then
+                if (GenJournalLine."Bank Payment Type" = GenJournalLine."Bank Payment Type"::"Computer Check") and (GenJournalLine.Amount < 0) then
+                    if BankAccount."Currency Code" <> GenJournalLine."Currency Code" then
                         AddError(
                           StrSubstNo(
                             MustNotBeFilledWhenErr,
-                            GenJnlLine.FieldCaption(GenJnlLine."Bank Payment Type"), GenJnlLine.FieldCaption(GenJnlLine."Currency Code"),
-                            GenJnlLine.TableCaption, BankAcc.TableCaption));
+                            GenJournalLine.FieldCaption(GenJournalLine."Bank Payment Type"), GenJournalLine.FieldCaption(GenJournalLine."Currency Code"),
+                            GenJournalLine.TableCaption, BankAccount.TableCaption));
 
-            if BankAccPostingGr.Get(BankAcc."Bank Acc. Posting Group") then
-                if BankAccPostingGr."G/L Account No." <> '' then
+            if BankAccountPostingGroup.Get(BankAccount."Bank Acc. Posting Group") then
+                if BankAccountPostingGroup."G/L Account No." <> '' then
                     ReconcileGLAccNo(
-                      BankAccPostingGr."G/L Account No.",
-                      Round(GenJnlLine."Amount (LCY)" / (1 + GenJnlLine."VAT %" / 100)));
+                      BankAccountPostingGroup."G/L Account No.",
+                      Round(GenJournalLine."Amount (LCY)" / (1 + GenJournalLine."VAT %" / 100)));
         end;
     end;
 
-    local procedure CheckFixedAsset(var GenJnlLine: Record "Gen. Journal Line"; var AccName: Text[100])
+    local procedure CheckFixedAsset(var GenJournalLine: Record "Gen. Journal Line"; var AccName: Text[100])
     begin
-        if not FA.Get(GenJnlLine."Account No.") then
+        if not FixedAsset.Get(GenJournalLine."Account No.") then
             AddError(
               StrSubstNo(
                 MasterRecDoesNotExistErr,
-                FA.TableCaption, GenJnlLine."Account No."))
+                FixedAsset.TableCaption, GenJournalLine."Account No."))
         else begin
-            AccName := FA.Description;
-            if FA.Blocked then
+            AccName := FixedAsset.Description;
+            if FixedAsset.Blocked then
                 AddError(
                   StrSubstNo(
                     MustBeForErr,
-                    FA.FieldCaption(Blocked), false, FA.TableCaption, GenJnlLine."Account No."));
-            if FA.Inactive then
+                    FixedAsset.FieldCaption(Blocked), false, FixedAsset.TableCaption, GenJournalLine."Account No."));
+            if FixedAsset.Inactive then
                 AddError(
                   StrSubstNo(
                     MustBeForErr,
-                    FA.FieldCaption(Inactive), false, FA.TableCaption, GenJnlLine."Account No."));
-            if FA."Budgeted Asset" then
+                    FixedAsset.FieldCaption(Inactive), false, FixedAsset.TableCaption, GenJournalLine."Account No."));
+            if FixedAsset."Budgeted Asset" then
                 AddError(
                   StrSubstNo(
                     MustNotHaveEqualErr,
-                    FA.TableCaption, GenJnlLine."Account No.", FA.FieldCaption("Budgeted Asset"), true));
-            if DeprBook.Get(GenJnlLine."Depreciation Book Code") then
-                CheckFAIntegration(GenJnlLine)
+                    FixedAsset.TableCaption, GenJournalLine."Account No.", FixedAsset.FieldCaption("Budgeted Asset"), true));
+            if DepreciationBook.Get(GenJournalLine."Depreciation Book Code") then
+                CheckFAIntegration(GenJournalLine)
             else
                 AddError(
                   StrSubstNo(
                     MasterRecDoesNotExistErr,
-                    DeprBook.TableCaption, GenJnlLine."Depreciation Book Code"));
-            if not FADeprBook.Get(FA."No.", GenJnlLine."Depreciation Book Code") then
+                    DepreciationBook.TableCaption, GenJournalLine."Depreciation Book Code"));
+            if not FADepreciationBook.Get(FixedAsset."No.", GenJournalLine."Depreciation Book Code") then
                 AddError(
                   StrSubstNo(
                     RecordDoesNotExistErr,
-                    FADeprBook.TableCaption, FA."No.", GenJnlLine."Depreciation Book Code"));
+                    FADepreciationBook.TableCaption, FixedAsset."No.", GenJournalLine."Depreciation Book Code"));
         end;
     end;
 
-    local procedure CheckICPartner(var GenJnlLine: Record "Gen. Journal Line"; var AccName: Text[100])
+    local procedure CheckICPartner(var GenJournalLine: Record "Gen. Journal Line"; var AccName: Text[100])
     begin
-        if not ICPartner.Get(GenJnlLine."Account No.") then
+        if not ICPartner.Get(GenJournalLine."Account No.") then
             AddError(
               StrSubstNo(
                 MasterRecDoesNotExistErr,
-                ICPartner.TableCaption, GenJnlLine."Account No."))
+                ICPartner.TableCaption, GenJournalLine."Account No."))
         else begin
             AccName := ICPartner.Name;
             if ICPartner.Blocked then
                 AddError(
                   StrSubstNo(
                     MustBeForErr,
-                    ICPartner.FieldCaption(Blocked), false, ICPartner.TableCaption, GenJnlLine."Account No."));
+                    ICPartner.FieldCaption(Blocked), false, ICPartner.TableCaption, GenJournalLine."Account No."));
         end;
     end;
 
-    local procedure TestFixedAsset(var GenJnlLine: Record "Gen. Journal Line")
+    local procedure TestFixedAsset(var GenJournalLine: Record "Gen. Journal Line")
     begin
         FASetup.Get();
-        if GenJnlLine."Job No." <> '' then
+        if GenJournalLine."Job No." <> '' then
             AddError(
               StrSubstNo(
-                MustNotBeSpecifiedInFAJnlErr, GenJnlLine.FieldCaption(GenJnlLine."Job No.")));
-        if GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::" " then
+                MustNotBeSpecifiedInFAJnlErr, GenJournalLine.FieldCaption(GenJournalLine."Job No.")));
+        if GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::" " then
             AddError(
               StrSubstNo(
-                MustBeSpecifiedInFAJnlErr, GenJnlLine.FieldCaption(GenJnlLine."FA Posting Type")));
-        if GenJnlLine."Depreciation Book Code" = '' then
+                MustBeSpecifiedInFAJnlErr, GenJournalLine.FieldCaption(GenJournalLine."FA Posting Type")));
+        if GenJournalLine."Depreciation Book Code" = '' then
             AddError(
               StrSubstNo(
-                MustBeSpecifiedInFAJnlErr, GenJnlLine.FieldCaption(GenJnlLine."Depreciation Book Code")));
-        if GenJnlLine."Depreciation Book Code" = GenJnlLine."Duplicate in Depreciation Book" then
+                MustBeSpecifiedInFAJnlErr, GenJournalLine.FieldCaption(GenJournalLine."Depreciation Book Code")));
+        if GenJournalLine."Depreciation Book Code" = GenJournalLine."Duplicate in Depreciation Book" then
             AddError(
               StrSubstNo(
                 MustBeDifferentThanErr,
-                GenJnlLine.FieldCaption(GenJnlLine."Depreciation Book Code"), GenJnlLine.FieldCaption(GenJnlLine."Duplicate in Depreciation Book")));
-        CheckFADocNo(GenJnlLine);
-        if GenJnlLine."Account Type" = GenJnlLine."Bal. Account Type" then
+                GenJournalLine.FieldCaption(GenJournalLine."Depreciation Book Code"), GenJournalLine.FieldCaption(GenJournalLine."Duplicate in Depreciation Book")));
+        CheckFADocNo(GenJournalLine);
+        if GenJournalLine."Account Type" = GenJournalLine."Bal. Account Type" then
             AddError(
               StrSubstNo(
                 MustNotBothBeErr,
-                GenJnlLine.FieldCaption(GenJnlLine."Account Type"), GenJnlLine.FieldCaption(GenJnlLine."Bal. Account Type"), GenJnlLine."Account Type"));
-        if GenJnlLine."Account Type" = GenJnlLine."Account Type"::"Fixed Asset" then
-            if (GenJnlLine."FA Posting Type" in
-                [GenJnlLine."FA Posting Type"::"Acquisition Cost", GenJnlLine."FA Posting Type"::Disposal, GenJnlLine."FA Posting Type"::Maintenance]) or
-               (FASetup."FA Acquisition As Custom 2" and (GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::"Custom 2"))
+                GenJournalLine.FieldCaption(GenJournalLine."Account Type"), GenJournalLine.FieldCaption(GenJournalLine."Bal. Account Type"), GenJournalLine."Account Type"));
+        if GenJournalLine."Account Type" = GenJournalLine."Account Type"::"Fixed Asset" then
+            if (GenJournalLine."FA Posting Type" in
+                [GenJournalLine."FA Posting Type"::"Acquisition Cost", GenJournalLine."FA Posting Type"::Disposal, GenJournalLine."FA Posting Type"::Maintenance]) or
+               (FASetup.IsFAAcquisitionAsCustom2CZL() and (GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::"Custom 2"))
             then begin
-                if (GenJnlLine."Gen. Bus. Posting Group" <> '') or (GenJnlLine."Gen. Prod. Posting Group" <> '') then
-                    if GenJnlLine."Gen. Posting Type" = GenJnlLine."Gen. Posting Type"::" " then
-                        AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJnlLine.FieldCaption(GenJnlLine."Gen. Posting Type")));
+                if (GenJournalLine."Gen. Bus. Posting Group" <> '') or (GenJournalLine."Gen. Prod. Posting Group" <> '') then
+                    if GenJournalLine."Gen. Posting Type" = GenJournalLine."Gen. Posting Type"::" " then
+                        AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJournalLine.FieldCaption(GenJournalLine."Gen. Posting Type")));
             end else begin
-                if GenJnlLine."Gen. Posting Type" <> GenJnlLine."Gen. Posting Type"::" " then
+                if GenJournalLine."Gen. Posting Type" <> GenJournalLine."Gen. Posting Type"::" " then
                     AddError(
                       StrSubstNo(
                         MustNotBeSpecifiedWhenErr,
-                        GenJnlLine.FieldCaption(GenJnlLine."Gen. Posting Type"), GenJnlLine.FieldCaption(GenJnlLine."FA Posting Type"), GenJnlLine."FA Posting Type"));
-                if GenJnlLine."Gen. Bus. Posting Group" <> '' then
+                        GenJournalLine.FieldCaption(GenJournalLine."Gen. Posting Type"), GenJournalLine.FieldCaption(GenJournalLine."FA Posting Type"), GenJournalLine."FA Posting Type"));
+                if GenJournalLine."Gen. Bus. Posting Group" <> '' then
                     AddError(
                       StrSubstNo(
                         MustNotBeSpecifiedWhenErr,
-                        GenJnlLine.FieldCaption(GenJnlLine."Gen. Bus. Posting Group"), GenJnlLine.FieldCaption(GenJnlLine."FA Posting Type"), GenJnlLine."FA Posting Type"));
-                if GenJnlLine."Gen. Prod. Posting Group" <> '' then
+                        GenJournalLine.FieldCaption(GenJournalLine."Gen. Bus. Posting Group"), GenJournalLine.FieldCaption(GenJournalLine."FA Posting Type"), GenJournalLine."FA Posting Type"));
+                if GenJournalLine."Gen. Prod. Posting Group" <> '' then
                     AddError(
                       StrSubstNo(
                         MustNotBeSpecifiedWhenErr,
-                        GenJnlLine.FieldCaption(GenJnlLine."Gen. Prod. Posting Group"), GenJnlLine.FieldCaption(GenJnlLine."FA Posting Type"), GenJnlLine."FA Posting Type"));
+                        GenJournalLine.FieldCaption(GenJournalLine."Gen. Prod. Posting Group"), GenJournalLine.FieldCaption(GenJournalLine."FA Posting Type"), GenJournalLine."FA Posting Type"));
             end;
-        if GenJnlLine."Bal. Account Type" = GenJnlLine."Bal. Account Type"::"Fixed Asset" then
-            if (GenJnlLine."FA Posting Type" in
-                [GenJnlLine."FA Posting Type"::"Acquisition Cost", GenJnlLine."FA Posting Type"::Disposal, GenJnlLine."FA Posting Type"::Maintenance]) or
-               (FASetup."FA Acquisition As Custom 2" and (GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::"Custom 2"))
+        if GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::"Fixed Asset" then
+            if (GenJournalLine."FA Posting Type" in
+                [GenJournalLine."FA Posting Type"::"Acquisition Cost", GenJournalLine."FA Posting Type"::Disposal, GenJournalLine."FA Posting Type"::Maintenance]) or
+               (FASetup.IsFAAcquisitionAsCustom2CZL() and (GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::"Custom 2"))
             then begin
-                if (GenJnlLine."Bal. Gen. Bus. Posting Group" <> '') or (GenJnlLine."Bal. Gen. Prod. Posting Group" <> '') then
-                    if GenJnlLine."Bal. Gen. Posting Type" = GenJnlLine."Bal. Gen. Posting Type"::" " then
-                        AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJnlLine.FieldCaption(GenJnlLine."Bal. Gen. Posting Type")));
+                if (GenJournalLine."Bal. Gen. Bus. Posting Group" <> '') or (GenJournalLine."Bal. Gen. Prod. Posting Group" <> '') then
+                    if GenJournalLine."Bal. Gen. Posting Type" = GenJournalLine."Bal. Gen. Posting Type"::" " then
+                        AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJournalLine.FieldCaption(GenJournalLine."Bal. Gen. Posting Type")));
             end else begin
-                if GenJnlLine."Bal. Gen. Posting Type" <> GenJnlLine."Bal. Gen. Posting Type"::" " then
+                if GenJournalLine."Bal. Gen. Posting Type" <> GenJournalLine."Bal. Gen. Posting Type"::" " then
                     AddError(
                       StrSubstNo(
                         MustNotBeSpecifiedWhenErr,
-                        GenJnlLine.FieldCaption(GenJnlLine."Bal. Gen. Posting Type"), GenJnlLine.FieldCaption(GenJnlLine."FA Posting Type"), GenJnlLine."FA Posting Type"));
-                if GenJnlLine."Bal. Gen. Bus. Posting Group" <> '' then
+                        GenJournalLine.FieldCaption(GenJournalLine."Bal. Gen. Posting Type"), GenJournalLine.FieldCaption(GenJournalLine."FA Posting Type"), GenJournalLine."FA Posting Type"));
+                if GenJournalLine."Bal. Gen. Bus. Posting Group" <> '' then
                     AddError(
                       StrSubstNo(
                         MustNotBeSpecifiedWhenErr,
-                        GenJnlLine.FieldCaption(GenJnlLine."Bal. Gen. Bus. Posting Group"), GenJnlLine.FieldCaption(GenJnlLine."FA Posting Type"), GenJnlLine."FA Posting Type"));
-                if GenJnlLine."Bal. Gen. Prod. Posting Group" <> '' then
+                        GenJournalLine.FieldCaption(GenJournalLine."Bal. Gen. Bus. Posting Group"), GenJournalLine.FieldCaption(GenJournalLine."FA Posting Type"), GenJournalLine."FA Posting Type"));
+                if GenJournalLine."Bal. Gen. Prod. Posting Group" <> '' then
                     AddError(
                       StrSubstNo(
                         MustNotBeSpecifiedWhenErr,
-                        GenJnlLine.FieldCaption(GenJnlLine."Bal. Gen. Prod. Posting Group"), GenJnlLine.FieldCaption(GenJnlLine."FA Posting Type"), GenJnlLine."FA Posting Type"));
+                        GenJournalLine.FieldCaption(GenJournalLine."Bal. Gen. Prod. Posting Group"), GenJournalLine.FieldCaption(GenJournalLine."FA Posting Type"), GenJournalLine."FA Posting Type"));
             end;
         TempErrorText :=
           '%1 ' +
           StrSubstNo(
             MustNotBeSpecifiedTogetherErr,
-            GenJnlLine.FieldCaption(GenJnlLine."FA Posting Type"), GenJnlLine."FA Posting Type");
-        if GenJnlLine."FA Posting Type" <> GenJnlLine."FA Posting Type"::"Acquisition Cost" then begin
-            if GenJnlLine."Depr. Acquisition Cost" then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Depr. Acquisition Cost")));
-            if GenJnlLine."Salvage Value" <> 0 then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Salvage Value")));
-            if GenJnlLine."FA Posting Type" <> GenJnlLine."FA Posting Type"::Maintenance then
-                if GenJnlLine.Quantity <> 0 then
-                    AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine.Quantity)));
-            if GenJnlLine."Insurance No." <> '' then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Insurance No.")));
+            GenJournalLine.FieldCaption(GenJournalLine."FA Posting Type"), GenJournalLine."FA Posting Type");
+        if GenJournalLine."FA Posting Type" <> GenJournalLine."FA Posting Type"::"Acquisition Cost" then begin
+            if GenJournalLine."Depr. Acquisition Cost" then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Depr. Acquisition Cost")));
+            if GenJournalLine."Salvage Value" <> 0 then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Salvage Value")));
+            if GenJournalLine."FA Posting Type" <> GenJournalLine."FA Posting Type"::Maintenance then
+                if GenJournalLine.Quantity <> 0 then
+                    AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine.Quantity)));
+            if GenJournalLine."Insurance No." <> '' then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Insurance No.")));
         end;
-        if (GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::Maintenance) and GenJnlLine."Depr. until FA Posting Date" then
-            AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Depr. until FA Posting Date")));
-        if (GenJnlLine."FA Posting Type" <> GenJnlLine."FA Posting Type"::Maintenance) and (GenJnlLine."Maintenance Code" <> '') then
-            AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Maintenance Code")));
+        if (GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::Maintenance) and GenJournalLine."Depr. until FA Posting Date" then
+            AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Depr. until FA Posting Date")));
+        if (GenJournalLine."FA Posting Type" <> GenJournalLine."FA Posting Type"::Maintenance) and (GenJournalLine."Maintenance Code" <> '') then
+            AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Maintenance Code")));
 
-        if (GenJnlLine."FA Posting Type" <> GenJnlLine."FA Posting Type"::Depreciation) and
-           (GenJnlLine."FA Posting Type" <> GenJnlLine."FA Posting Type"::"Custom 1") and
-           (GenJnlLine."No. of Depreciation Days" <> 0)
+        if (GenJournalLine."FA Posting Type" <> GenJournalLine."FA Posting Type"::Depreciation) and
+           (GenJournalLine."FA Posting Type" <> GenJournalLine."FA Posting Type"::"Custom 1") and
+           (GenJournalLine."No. of Depreciation Days" <> 0)
         then
-            AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."No. of Depreciation Days")));
+            AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."No. of Depreciation Days")));
 
-        if (GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::Disposal) and GenJnlLine."FA Reclassification Entry" then
-            AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."FA Reclassification Entry")));
+        if (GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::Disposal) and GenJournalLine."FA Reclassification Entry" then
+            AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."FA Reclassification Entry")));
 
-        if (GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::Disposal) and (GenJnlLine."Budgeted FA No." <> '') then
-            AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Budgeted FA No.")));
+        if (GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::Disposal) and (GenJournalLine."Budgeted FA No." <> '') then
+            AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Budgeted FA No.")));
 
-        if GenJnlLine."FA Posting Date" = 0D then
-            GenJnlLine."FA Posting Date" := GenJnlLine."Posting Date";
-        if DeprBook.Get(GenJnlLine."Depreciation Book Code") then
-            if DeprBook."Use Same FA+G/L Posting Dates" and (GenJnlLine."Posting Date" <> GenJnlLine."FA Posting Date") then
-                if not GenJnlLine."FA Reclassification Entry" then
+        if GenJournalLine."FA Posting Date" = 0D then
+            GenJournalLine."FA Posting Date" := GenJournalLine."Posting Date";
+        if DepreciationBook.Get(GenJournalLine."Depreciation Book Code") then
+            if DepreciationBook."Use Same FA+G/L Posting Dates" and (GenJournalLine."Posting Date" <> GenJournalLine."FA Posting Date") then
+                if not GenJournalLine."FA Reclassification Entry" then
                     AddError(
                       StrSubstNo(
                         MustBeIdenticalErr,
-                        GenJnlLine.FieldCaption(GenJnlLine."Posting Date"), GenJnlLine.FieldCaption(GenJnlLine."FA Posting Date")));
-        if GenJnlLine."FA Posting Date" <> 0D then begin
-            if GenJnlLine."FA Posting Date" <> NormalDate(GenJnlLine."FA Posting Date") then
+                        GenJournalLine.FieldCaption(GenJournalLine."Posting Date"), GenJournalLine.FieldCaption(GenJournalLine."FA Posting Date")));
+        if GenJournalLine."FA Posting Date" <> 0D then begin
+            if GenJournalLine."FA Posting Date" <> NormalDate(GenJournalLine."FA Posting Date") then
                 AddError(
                   StrSubstNo(
                     CannotBeClosingDateErr,
-                    GenJnlLine.FieldCaption(GenJnlLine."FA Posting Date")));
-            if not (GenJnlLine."FA Posting Date" in [DMY2Date(1, 1, 2) .. DMY2Date(31, 12, 9998)]) then
+                    GenJournalLine.FieldCaption(GenJournalLine."FA Posting Date")));
+            if not (GenJournalLine."FA Posting Date" in [DMY2Date(1, 1, 2) .. DMY2Date(31, 12, 9998)]) then
                 AddError(
                   StrSubstNo(
                     PostingDateNotInRangeErr,
-                    GenJnlLine.FieldCaption(GenJnlLine."FA Posting Date")));
+                    GenJournalLine.FieldCaption(GenJournalLine."FA Posting Date")));
             if (AllowFAPostingFrom = 0D) and (AllowFAPostingTo = 0D) then begin
                 if UserId <> '' then
                     if UserSetup.Get(UserId) then begin
@@ -1716,101 +1718,101 @@ report 11722 "General Journal - Test CZL"
                 if AllowFAPostingTo = 0D then
                     AllowFAPostingTo := DMY2Date(31, 12, 9998);
             end;
-            if (GenJnlLine."FA Posting Date" < AllowFAPostingFrom) or
-               (GenJnlLine."FA Posting Date" > AllowFAPostingTo)
+            if (GenJournalLine."FA Posting Date" < AllowFAPostingFrom) or
+               (GenJournalLine."FA Posting Date" > AllowFAPostingTo)
             then
                 AddError(
                   StrSubstNo(
                     PostingDateNotInRangeErr,
-                    GenJnlLine.FieldCaption(GenJnlLine."FA Posting Date")));
+                    GenJournalLine.FieldCaption(GenJournalLine."FA Posting Date")));
         end;
         FASetup.Get();
-        if (GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::"Acquisition Cost") and
-           (GenJnlLine."Insurance No." <> '') and (GenJnlLine."Depreciation Book Code" <> FASetup."Insurance Depr. Book")
+        if (GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::"Acquisition Cost") and
+           (GenJournalLine."Insurance No." <> '') and (GenJournalLine."Depreciation Book Code" <> FASetup."Insurance Depr. Book")
         then
             AddError(
               StrSubstNo(
                 InsuranceIntegrationNotActiveErr,
-                GenJnlLine.FieldCaption(GenJnlLine."Depreciation Book Code"), GenJnlLine."Depreciation Book Code"));
+                GenJournalLine.FieldCaption(GenJournalLine."Depreciation Book Code"), GenJournalLine."Depreciation Book Code"));
 
-        if GenJnlLine."FA Error Entry No." > 0 then begin
+        if GenJournalLine."FA Error Entry No." > 0 then begin
             TempErrorText :=
               '%1 ' +
               StrSubstNo(
                 MustNotBeSpecifiedWhen2Err,
-                GenJnlLine.FieldCaption(GenJnlLine."FA Error Entry No."));
-            if GenJnlLine."Depr. until FA Posting Date" then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Depr. until FA Posting Date")));
-            if GenJnlLine."Depr. Acquisition Cost" then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Depr. Acquisition Cost")));
-            if GenJnlLine."Duplicate in Depreciation Book" <> '' then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Duplicate in Depreciation Book")));
-            if GenJnlLine."Use Duplication List" then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Use Duplication List")));
-            if GenJnlLine."Salvage Value" <> 0 then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Salvage Value")));
-            if GenJnlLine."Insurance No." <> '' then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Insurance No.")));
-            if GenJnlLine."Budgeted FA No." <> '' then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Budgeted FA No.")));
-            if GenJnlLine."Recurring Method" <> "Gen. Journal Recurring Method"::" " then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine.FieldCaption(GenJnlLine."Recurring Method")));
-            if GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::Maintenance then
-                AddError(StrSubstNo(TempErrorText, GenJnlLine."FA Posting Type"));
+                GenJournalLine.FieldCaption(GenJournalLine."FA Error Entry No."));
+            if GenJournalLine."Depr. until FA Posting Date" then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Depr. until FA Posting Date")));
+            if GenJournalLine."Depr. Acquisition Cost" then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Depr. Acquisition Cost")));
+            if GenJournalLine."Duplicate in Depreciation Book" <> '' then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Duplicate in Depreciation Book")));
+            if GenJournalLine."Use Duplication List" then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Use Duplication List")));
+            if GenJournalLine."Salvage Value" <> 0 then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Salvage Value")));
+            if GenJournalLine."Insurance No." <> '' then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Insurance No.")));
+            if GenJournalLine."Budgeted FA No." <> '' then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Budgeted FA No.")));
+            if GenJournalLine."Recurring Method" <> "Gen. Journal Recurring Method"::" " then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine.FieldCaption(GenJournalLine."Recurring Method")));
+            if GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::Maintenance then
+                AddError(StrSubstNo(TempErrorText, GenJournalLine."FA Posting Type"));
         end;
 
     end;
 
-    local procedure CheckFAIntegration(var GenJnlLine: Record "Gen. Journal Line")
+    local procedure CheckFAIntegration(var GenJournalLine: Record "Gen. Journal Line")
     var
         GLIntegration: Boolean;
     begin
-        if GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::" " then
+        if GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::" " then
             exit;
-        case GenJnlLine."FA Posting Type" of
-            GenJnlLine."FA Posting Type"::"Acquisition Cost":
-                GLIntegration := DeprBook."G/L Integration - Acq. Cost";
-            GenJnlLine."FA Posting Type"::Depreciation:
-                GLIntegration := DeprBook."G/L Integration - Depreciation";
-            GenJnlLine."FA Posting Type"::"Write-Down":
-                GLIntegration := DeprBook."G/L Integration - Write-Down";
-            GenJnlLine."FA Posting Type"::Appreciation:
-                GLIntegration := DeprBook."G/L Integration - Appreciation";
-            GenJnlLine."FA Posting Type"::"Custom 1":
-                GLIntegration := DeprBook."G/L Integration - Custom 1";
-            GenJnlLine."FA Posting Type"::"Custom 2":
-                GLIntegration := DeprBook."G/L Integration - Custom 2";
-            GenJnlLine."FA Posting Type"::Disposal:
-                GLIntegration := DeprBook."G/L Integration - Disposal";
-            GenJnlLine."FA Posting Type"::Maintenance:
-                GLIntegration := DeprBook."G/L Integration - Maintenance";
+        case GenJournalLine."FA Posting Type" of
+            GenJournalLine."FA Posting Type"::"Acquisition Cost":
+                GLIntegration := DepreciationBook."G/L Integration - Acq. Cost";
+            GenJournalLine."FA Posting Type"::Depreciation:
+                GLIntegration := DepreciationBook."G/L Integration - Depreciation";
+            GenJournalLine."FA Posting Type"::"Write-Down":
+                GLIntegration := DepreciationBook."G/L Integration - Write-Down";
+            GenJournalLine."FA Posting Type"::Appreciation:
+                GLIntegration := DepreciationBook."G/L Integration - Appreciation";
+            GenJournalLine."FA Posting Type"::"Custom 1":
+                GLIntegration := DepreciationBook."G/L Integration - Custom 1";
+            GenJournalLine."FA Posting Type"::"Custom 2":
+                GLIntegration := DepreciationBook."G/L Integration - Custom 2";
+            GenJournalLine."FA Posting Type"::Disposal:
+                GLIntegration := DepreciationBook."G/L Integration - Disposal";
+            GenJournalLine."FA Posting Type"::Maintenance:
+                GLIntegration := DepreciationBook."G/L Integration - Maintenance";
         end;
         if not GLIntegration then
             AddError(
               StrSubstNo(
                 MustNotBePostedWhenGLIntegrationErr,
-                GenJnlLine."FA Posting Type"));
+                GenJournalLine."FA Posting Type"));
 
-        if not DeprBook."G/L Integration - Depreciation" then begin
-            if GenJnlLine."Depr. until FA Posting Date" then
+        if not DepreciationBook."G/L Integration - Depreciation" then begin
+            if GenJournalLine."Depr. until FA Posting Date" then
                 AddError(
                   StrSubstNo(
                     MustNotBeSpecWhenGLIntegrationErr,
-                    GenJnlLine.FieldCaption(GenJnlLine."Depr. until FA Posting Date")));
-            if GenJnlLine."Depr. Acquisition Cost" then
+                    GenJournalLine.FieldCaption(GenJournalLine."Depr. until FA Posting Date")));
+            if GenJournalLine."Depr. Acquisition Cost" then
                 AddError(
                   StrSubstNo(
                     MustNotBeSpecWhenGLIntegrationErr,
-                    GenJnlLine.FieldCaption(GenJnlLine."Depr. Acquisition Cost")));
+                    GenJournalLine.FieldCaption(GenJournalLine."Depr. Acquisition Cost")));
         end;
     end;
 
-    local procedure TestFixedAssetFields(var GenJnlLine: Record "Gen. Journal Line")
+    local procedure TestFixedAssetFields(var GenJournalLine: Record "Gen. Journal Line")
     begin
-        if GenJnlLine."FA Posting Type" <> GenJnlLine."FA Posting Type"::" " then
-            AddError(StrSubstNo(MustNotBeSpecifiedErr, GenJnlLine.FieldCaption(GenJnlLine."FA Posting Type")));
-        if GenJnlLine."Depreciation Book Code" <> '' then
-            AddError(StrSubstNo(MustNotBeSpecifiedErr, GenJnlLine.FieldCaption(GenJnlLine."Depreciation Book Code")));
+        if GenJournalLine."FA Posting Type" <> GenJournalLine."FA Posting Type"::" " then
+            AddError(StrSubstNo(MustNotBeSpecifiedErr, GenJournalLine.FieldCaption(GenJournalLine."FA Posting Type")));
+        if GenJournalLine."Depreciation Book Code" <> '' then
+            AddError(StrSubstNo(MustNotBeSpecifiedErr, GenJournalLine.FieldCaption(GenJournalLine."Depreciation Book Code")));
     end;
 
     procedure TestPostingType()
@@ -1823,121 +1825,121 @@ report 11722 "General Journal - Test CZL"
         end;
     end;
 
-    local procedure WarningIfNegativeAmt(GenJnlLine: Record "Gen. Journal Line")
+    local procedure WarningIfNegativeAmt(GenJournalLine: Record "Gen. Journal Line")
     var
         IsHandled: Boolean;
     begin
         IsHandled := false;
-        OnBeforeWarningIfNegativeAmt(GenJnlLine, IsHandled);
+        OnBeforeWarningIfNegativeAmt(GenJournalLine, IsHandled);
         if IsHandled then
             exit;
 
-        if (GenJnlLine.Amount < 0) and not AmountError then begin
+        if (GenJournalLine.Amount < 0) and not AmountError then begin
             AmountError := true;
-            AddError(StrSubstNo(MustBePositiveErr, GenJnlLine.FieldCaption(Amount)));
+            AddError(StrSubstNo(MustBePositiveErr, GenJournalLine.FieldCaption(Amount)));
         end;
     end;
 
-    local procedure WarningIfPositiveAmt(GenJnlLine: Record "Gen. Journal Line")
+    local procedure WarningIfPositiveAmt(GenJournalLine: Record "Gen. Journal Line")
     var
         IsHandled: Boolean;
     begin
         IsHandled := false;
-        OnBeforeWarningIfPositiveAmt(GenJnlLine, IsHandled);
+        OnBeforeWarningIfPositiveAmt(GenJournalLine, IsHandled);
         if IsHandled then
             exit;
 
-        if (GenJnlLine.Amount > 0) and not AmountError then begin
+        if (GenJournalLine.Amount > 0) and not AmountError then begin
             AmountError := true;
-            AddError(StrSubstNo(MustBeNegativeErr, GenJnlLine.FieldCaption(Amount)));
+            AddError(StrSubstNo(MustBeNegativeErr, GenJournalLine.FieldCaption(Amount)));
         end;
     end;
 
-    local procedure WarningIfZeroAmt(GenJnlLine: Record "Gen. Journal Line")
+    local procedure WarningIfZeroAmt(GenJournalLine: Record "Gen. Journal Line")
     begin
-        if (GenJnlLine.Amount = 0) and not AmountError then begin
+        if (GenJournalLine.Amount = 0) and not AmountError then begin
             AmountError := true;
-            AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJnlLine.FieldCaption(Amount)));
+            AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJournalLine.FieldCaption(Amount)));
         end;
     end;
 
-    local procedure WarningIfNonZeroAmt(GenJnlLine: Record "Gen. Journal Line")
+    local procedure WarningIfNonZeroAmt(GenJournalLine: Record "Gen. Journal Line")
     begin
-        if (GenJnlLine.Amount <> 0) and not AmountError then begin
+        if (GenJournalLine.Amount <> 0) and not AmountError then begin
             AmountError := true;
-            AddError(StrSubstNo(MustNotBeZeroErr, GenJnlLine.FieldCaption(Amount)));
+            AddError(StrSubstNo(MustNotBeZeroErr, GenJournalLine.FieldCaption(Amount)));
         end;
     end;
 
-    local procedure CheckAgainstPrevLines(GenJnlLine: Record "Gen. Journal Line")
+    local procedure CheckAgainstPrevLines(GenJournalLine: Record "Gen. Journal Line")
     var
         i: Integer;
         AccType: Enum "Gen. Journal Account Type";
         AccNo: Code[20];
         ErrorFound: Boolean;
     begin
-        if (GenJnlLine."External Document No." = '') or
-           not (GenJnlLine."Account Type" in
-                [GenJnlLine."Account Type"::Customer, GenJnlLine."Account Type"::Vendor]) and
-           not (GenJnlLine."Bal. Account Type" in
-                [GenJnlLine."Bal. Account Type"::Customer, GenJnlLine."Bal. Account Type"::Vendor])
+        if (GenJournalLine."External Document No." = '') or
+           not (GenJournalLine."Account Type" in
+                [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor]) and
+           not (GenJournalLine."Bal. Account Type" in
+                [GenJournalLine."Bal. Account Type"::Customer, GenJournalLine."Bal. Account Type"::Vendor])
         then
             exit;
 
-        if GenJnlLine."Account Type" in [GenJnlLine."Account Type"::Customer, GenJnlLine."Account Type"::Vendor] then begin
-            AccType := GenJnlLine."Account Type";
-            AccNo := GenJnlLine."Account No.";
+        if GenJournalLine."Account Type" in [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor] then begin
+            AccType := GenJournalLine."Account Type";
+            AccNo := GenJournalLine."Account No.";
         end else begin
-            AccType := GenJnlLine."Bal. Account Type";
-            AccNo := GenJnlLine."Bal. Account No.";
+            AccType := GenJournalLine."Bal. Account Type";
+            AccNo := GenJournalLine."Bal. Account No.";
         end;
 
-        TempGenJnlLine.Reset();
-        TempGenJnlLine.SetRange("External Document No.", GenJnlLine."External Document No.");
+        TempGenJournalLine.Reset();
+        TempGenJournalLine.SetRange("External Document No.", GenJournalLine."External Document No.");
 
         i := 0;
         while (i < 2) and not ErrorFound do begin
             i := i + 1;
             if i = 1 then begin
-                TempGenJnlLine.SetRange("Account Type", AccType);
-                TempGenJnlLine.SetRange("Account No.", AccNo);
-                TempGenJnlLine.SetRange("Bal. Account Type");
-                TempGenJnlLine.SetRange("Bal. Account No.");
+                TempGenJournalLine.SetRange("Account Type", AccType);
+                TempGenJournalLine.SetRange("Account No.", AccNo);
+                TempGenJournalLine.SetRange("Bal. Account Type");
+                TempGenJournalLine.SetRange("Bal. Account No.");
             end else begin
-                TempGenJnlLine.SetRange("Account Type");
-                TempGenJnlLine.SetRange("Account No.");
-                TempGenJnlLine.SetRange("Bal. Account Type", AccType);
-                TempGenJnlLine.SetRange("Bal. Account No.", AccNo);
+                TempGenJournalLine.SetRange("Account Type");
+                TempGenJournalLine.SetRange("Account No.");
+                TempGenJournalLine.SetRange("Bal. Account Type", AccType);
+                TempGenJournalLine.SetRange("Bal. Account No.", AccNo);
             end;
-            if TempGenJnlLine.FindFirst() then begin
+            if TempGenJournalLine.FindFirst() then begin
                 ErrorFound := true;
                 AddError(
                   StrSubstNo(
-                    AlreadyUsedInLineErr, GenJnlLine.FieldCaption("External Document No."), GenJnlLine."External Document No.",
-                    TempGenJnlLine."Line No.", GenJnlLine.FieldCaption("Document No."), TempGenJnlLine."Document No."));
+                    AlreadyUsedInLineErr, GenJournalLine.FieldCaption("External Document No."), GenJournalLine."External Document No.",
+                    TempGenJournalLine."Line No.", GenJournalLine.FieldCaption("Document No."), TempGenJournalLine."Document No."));
             end;
         end;
 
-        TempGenJnlLine.Reset();
-        TempGenJnlLine := GenJnlLine;
-        TempGenJnlLine.Insert();
+        TempGenJournalLine.Reset();
+        TempGenJournalLine := GenJournalLine;
+        TempGenJournalLine.Insert();
     end;
 
     local procedure CheckICDocument()
     var
-        GenJnlLine4: Record "Gen. Journal Line";
+        ICGenJournalLine: Record "Gen. Journal Line";
         ICGLAccount: Record "IC G/L Account";
     begin
-        if GenJnlTemplate.Type = GenJnlTemplate.Type::Intercompany then begin
+        if GenJournalTemplate.Type = GenJournalTemplate.Type::Intercompany then begin
             if ("Gen. Journal Line"."Posting Date" <> LastDate) or ("Gen. Journal Line"."Document Type" <> LastDocType) or ("Gen. Journal Line"."Document No." <> LastDocNo) then begin
-                GenJnlLine4.SetCurrentKey("Journal Template Name", "Journal Batch Name", "Posting Date", "Document No.");
-                GenJnlLine4.SetRange("Journal Template Name", "Gen. Journal Line"."Journal Template Name");
-                GenJnlLine4.SetRange("Journal Batch Name", "Gen. Journal Line"."Journal Batch Name");
-                GenJnlLine4.SetRange("Posting Date", "Gen. Journal Line"."Posting Date");
-                GenJnlLine4.SetRange("Document No.", "Gen. Journal Line"."Document No.");
-                GenJnlLine4.SetFilter("IC Partner Code", '<>%1', '');
-                if GenJnlLine4.FindFirst() then
-                    CurrentICPartner := GenJnlLine4."IC Partner Code"
+                ICGenJournalLine.SetCurrentKey("Journal Template Name", "Journal Batch Name", "Posting Date", "Document No.");
+                ICGenJournalLine.SetRange("Journal Template Name", "Gen. Journal Line"."Journal Template Name");
+                ICGenJournalLine.SetRange("Journal Batch Name", "Gen. Journal Line"."Journal Batch Name");
+                ICGenJournalLine.SetRange("Posting Date", "Gen. Journal Line"."Posting Date");
+                ICGenJournalLine.SetRange("Document No.", "Gen. Journal Line"."Document No.");
+                ICGenJournalLine.SetFilter("IC Partner Code", '<>%1', '');
+                if ICGenJournalLine.FindFirst() then
+                    CurrentICPartner := ICGenJournalLine."IC Partner Code"
                 else
                     CurrentICPartner := '';
             end;
@@ -1987,84 +1989,83 @@ report 11722 "General Journal - Test CZL"
         end;
     end;
 
-    local procedure TestJobFields(var GenJnlLine: Record "Gen. Journal Line")
+    local procedure TestJobFields(var GenJournalLine: Record "Gen. Journal Line")
     var
         Job: Record Job;
-        JT: Record "Job Task";
+        JobTask: Record "Job Task";
         IsHandled: Boolean;
     begin
         IsHandled := false;
-        OnBeforeTestJobFields(GenJnlLine, ErrorCounter, ErrorText, IsHandled);
+        OnBeforeTestJobFields(GenJournalLine, ErrorCounter, ErrorText, IsHandled);
         if IsHandled then
             exit;
 
-        if (GenJnlLine."Job No." = '') or (GenJnlLine."Account Type" <> GenJnlLine."Account Type"::"G/L Account") then
+        if (GenJournalLine."Job No." = '') or (GenJournalLine."Account Type" <> GenJournalLine."Account Type"::"G/L Account") then
             exit;
-        if not Job.Get(GenJnlLine."Job No.") then
-            AddError(StrSubstNo(MasterRecDoesNotExistErr, Job.TableCaption, GenJnlLine."Job No."))
+        if not Job.Get(GenJournalLine."Job No.") then
+            AddError(StrSubstNo(MasterRecDoesNotExistErr, Job.TableCaption, GenJournalLine."Job No."))
         else
             if Job.Blocked <> Job.Blocked::" " then
                 AddError(
                   StrSubstNo(
-                    MustNotBeFor4Err, Job.FieldCaption(Blocked), Job.Blocked, Job.TableCaption, GenJnlLine."Job No."));
+                    MustNotBeFor4Err, Job.FieldCaption(Blocked), Job.Blocked, Job.TableCaption, GenJournalLine."Job No."));
 
-        if GenJnlLine."Job Task No." = '' then
-            AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJnlLine.FieldCaption(GenJnlLine."Job Task No.")))
+        if GenJournalLine."Job Task No." = '' then
+            AddError(StrSubstNo(FieldMustBeSpecifiedErr, GenJournalLine.FieldCaption(GenJournalLine."Job Task No.")))
         else
-            if not JT.Get(GenJnlLine."Job No.", GenJnlLine."Job Task No.") then
-                AddError(StrSubstNo(MasterRecDoesNotExistErr, JT.TableCaption, GenJnlLine."Job Task No."));
+            if not JobTask.Get(GenJournalLine."Job No.", GenJournalLine."Job Task No.") then
+                AddError(StrSubstNo(MasterRecDoesNotExistErr, JobTask.TableCaption, GenJournalLine."Job Task No."));
 
-        OnAfterTestJobFields(GenJnlLine, ErrorCounter, ErrorText);
+        OnAfterTestJobFields(GenJournalLine, ErrorCounter, ErrorText);
     end;
 
-    local procedure CheckFADocNo(GenJnlLine: Record "Gen. Journal Line")
+    local procedure CheckFADocNo(GenJournalLine: Record "Gen. Journal Line")
     var
-        DeprBookLocal: Record "Depreciation Book";
-        FAJnlLine: Record "FA Journal Line";
-        OldFALedgEntry: Record "FA Ledger Entry";
-        OldMaintenanceLedgEntry: Record "Maintenance Ledger Entry";
+        FAJournalLine: Record "FA Journal Line";
+        OldFALedgerEntry: Record "FA Ledger Entry";
+        OldMaintenanceLedgerEntry: Record "Maintenance Ledger Entry";
         FANo: Code[20];
     begin
-        if GenJnlLine."Account Type" = GenJnlLine."Account Type"::"Fixed Asset" then
-            FANo := GenJnlLine."Account No.";
-        if GenJnlLine."Bal. Account Type" = GenJnlLine."Bal. Account Type"::"Fixed Asset" then
-            FANo := GenJnlLine."Bal. Account No.";
+        if GenJournalLine."Account Type" = GenJournalLine."Account Type"::"Fixed Asset" then
+            FANo := GenJournalLine."Account No.";
+        if GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::"Fixed Asset" then
+            FANo := GenJournalLine."Bal. Account No.";
         if (FANo = '') or
-           (GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::" ") or
-           (GenJnlLine."Depreciation Book Code" = '') or
-           (GenJnlLine."Document No." = '')
+           (GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::" ") or
+           (GenJournalLine."Depreciation Book Code" = '') or
+           (GenJournalLine."Document No." = '')
         then
             exit;
-        if not DeprBookLocal.Get(GenJnlLine."Depreciation Book Code") then
+        if not DepreciationBook.Get(GenJournalLine."Depreciation Book Code") then
             exit;
-        if DeprBookLocal."Allow Identical Document No." then
+        if DepreciationBook."Allow Identical Document No." then
             exit;
 
-        FAJnlLine."FA Posting Type" := "FA Journal Line FA Posting Type".FromInteger(GenJnlLine."FA Posting Type".AsInteger() - 1);
-        if GenJnlLine."FA Posting Type" <> GenJnlLine."FA Posting Type"::Maintenance then begin
-            OldFALedgEntry.SetCurrentKey(
+        FAJournalLine."FA Posting Type" := "FA Journal Line FA Posting Type".FromInteger(GenJournalLine."FA Posting Type".AsInteger() - 1);
+        if GenJournalLine."FA Posting Type" <> GenJournalLine."FA Posting Type"::Maintenance then begin
+            OldFALedgerEntry.SetCurrentKey(
               "FA No.", "Depreciation Book Code", "FA Posting Category", "FA Posting Type", "Document No.");
-            OldFALedgEntry.SetRange("FA No.", FANo);
-            OldFALedgEntry.SetRange("Depreciation Book Code", GenJnlLine."Depreciation Book Code");
-            OldFALedgEntry.SetRange("FA Posting Category", OldFALedgEntry."FA Posting Category"::" ");
-            OldFALedgEntry.SetRange("FA Posting Type", FAJnlLine.ConvertToLedgEntry(FAJnlLine));
-            OldFALedgEntry.SetRange("Document No.", GenJnlLine."Document No.");
-            if not OldFALedgEntry.IsEmpty() then
+            OldFALedgerEntry.SetRange("FA No.", FANo);
+            OldFALedgerEntry.SetRange("Depreciation Book Code", GenJournalLine."Depreciation Book Code");
+            OldFALedgerEntry.SetRange("FA Posting Category", OldFALedgerEntry."FA Posting Category"::" ");
+            OldFALedgerEntry.SetRange("FA Posting Type", FAJournalLine.ConvertToLedgEntry(FAJournalLine));
+            OldFALedgerEntry.SetRange("Document No.", GenJournalLine."Document No.");
+            if not OldFALedgerEntry.IsEmpty() then
                 AddError(
                   StrSubstNo(
                     AlreadyExistsErr,
-                    GenJnlLine.FieldCaption(GenJnlLine."Document No."), GenJnlLine."Document No."));
+                    GenJournalLine.FieldCaption(GenJournalLine."Document No."), GenJournalLine."Document No."));
         end else begin
-            OldMaintenanceLedgEntry.SetCurrentKey(
+            OldMaintenanceLedgerEntry.SetCurrentKey(
               "FA No.", "Depreciation Book Code", "Document No.");
-            OldMaintenanceLedgEntry.SetRange("FA No.", FANo);
-            OldMaintenanceLedgEntry.SetRange("Depreciation Book Code", GenJnlLine."Depreciation Book Code");
-            OldMaintenanceLedgEntry.SetRange("Document No.", GenJnlLine."Document No.");
-            if not OldMaintenanceLedgEntry.IsEmpty() then
+            OldMaintenanceLedgerEntry.SetRange("FA No.", FANo);
+            OldMaintenanceLedgerEntry.SetRange("Depreciation Book Code", GenJournalLine."Depreciation Book Code");
+            OldMaintenanceLedgerEntry.SetRange("Document No.", GenJournalLine."Document No.");
+            if not OldMaintenanceLedgerEntry.IsEmpty() then
                 AddError(
                   StrSubstNo(
                     AlreadyExistsErr,
-                    GenJnlLine.FieldCaption(GenJnlLine."Document No."), GenJnlLine."Document No."));
+                    GenJournalLine.FieldCaption(GenJournalLine."Document No."), GenJournalLine."Document No."));
         end;
     end;
 
@@ -2091,7 +2092,7 @@ report 11722 "General Journal - Test CZL"
             end;
             DimensionText := CopyStr(DimensionText + Separator + DimValue, 1, MaxStrLen(DimensionText));
             Separator := '; ';
-        until DimSetEntry.Next() = 0;
+        until DimensionSetEntry.Next() = 0;
         exit(DimensionText);
     end;
 
@@ -2117,57 +2118,57 @@ report 11722 "General Journal - Test CZL"
 
     local procedure GetLastEnteredDocumentNo(var FromGenJournalLine: Record "Gen. Journal Line"): Code[20]
     var
-        GenJournalLine: Record "Gen. Journal Line";
+        LastGenJournalLine: Record "Gen. Journal Line";
     begin
-        GenJournalLine.CopyFilters(FromGenJournalLine);
-        GenJournalLine.SetCurrentKey("Document No.");
-        if GenJournalLine.FindLast() then;
-        exit(GenJournalLine."Document No.");
+        LastGenJournalLine.CopyFilters(FromGenJournalLine);
+        LastGenJournalLine.SetCurrentKey("Document No.");
+        if LastGenJournalLine.FindLast() then;
+        exit(LastGenJournalLine."Document No.");
     end;
 
     local procedure IsGapInNosForDocNo(var FromGenJournalLine: Record "Gen. Journal Line"): Boolean
     var
-        GenJournalLine: Record "Gen. Journal Line";
+        EmptyGenJournalLine: Record "Gen. Journal Line";
     begin
         if LastEnteredDocNo = '' then
             exit(false);
         if FromGenJournalLine."Document No." = LastEnteredDocNo then
             exit(false);
 
-        GenJournalLine.CopyFilters(FromGenJournalLine);
-        GenJournalLine.SetRange("Document No.", IncStr(FromGenJournalLine."Document No."));
-        exit(GenJournalLine.IsEmpty);
+        EmptyGenJournalLine.CopyFilters(FromGenJournalLine);
+        EmptyGenJournalLine.SetRange("Document No.", IncStr(FromGenJournalLine."Document No."));
+        exit(EmptyGenJournalLine.IsEmpty());
     end;
 
-    local procedure CheckExtDocNoInPostedPurchDoc(GenJnlLine: Record "Gen. Journal Line")
+    local procedure CheckExtDocNoInPostedPurchDoc(GenJournalLine: Record "Gen. Journal Line")
     var
         PurchInvHeader: Record "Purch. Inv. Header";
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
     begin
-        case GenJnlLine."Document Type" of
-            GenJnlLine."Document Type"::Invoice:
+        case GenJournalLine."Document Type" of
+            GenJournalLine."Document Type"::Invoice:
                 begin
                     PurchInvHeader.Reset();
                     PurchInvHeader.SetCurrentKey("Vendor Invoice No.");
-                    PurchInvHeader.SetRange("Vendor Invoice No.", GenJnlLine."External Document No.");
-                    PurchInvHeader.SetRange("Pay-to Vendor No.", GenJnlLine."Account No.");
+                    PurchInvHeader.SetRange("Vendor Invoice No.", GenJournalLine."External Document No.");
+                    PurchInvHeader.SetRange("Pay-to Vendor No.", GenJournalLine."Account No.");
                     if not PurchInvHeader.IsEmpty then
                         AddError(
                           StrSubstNo(
                             PurchaseDocAlreadyExistsErr,
-                            GenJnlLine."Document Type", GenJnlLine."External Document No."));
+                            GenJournalLine."Document Type", GenJournalLine."External Document No."));
                 end;
-            GenJnlLine."Document Type"::"Credit Memo":
+            GenJournalLine."Document Type"::"Credit Memo":
                 begin
                     PurchCrMemoHdr.Reset();
                     PurchCrMemoHdr.SetCurrentKey("Vendor Cr. Memo No.");
-                    PurchCrMemoHdr.SetRange("Vendor Cr. Memo No.", GenJnlLine."External Document No.");
-                    PurchCrMemoHdr.SetRange("Pay-to Vendor No.", GenJnlLine."Account No.");
+                    PurchCrMemoHdr.SetRange("Vendor Cr. Memo No.", GenJournalLine."External Document No.");
+                    PurchCrMemoHdr.SetRange("Pay-to Vendor No.", GenJournalLine."Account No.");
                     if not PurchCrMemoHdr.IsEmpty then
                         AddError(
                           StrSubstNo(
                             PurchaseDocAlreadyExistsErr,
-                            GenJnlLine."Document Type", GenJnlLine."External Document No."));
+                            GenJournalLine."Document Type", GenJournalLine."External Document No."));
                 end;
         end;
     end;

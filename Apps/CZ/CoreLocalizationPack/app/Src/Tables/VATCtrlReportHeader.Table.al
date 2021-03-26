@@ -213,9 +213,9 @@ table 31106 "VAT Ctrl. Report Header CZL"
         "Created Date" := WorkDate();
     end;
 
-    procedure AssistEdit(VATCtrlReportHeaderOld: Record "VAT Ctrl. Report Header CZL"): Boolean
+    procedure AssistEdit(OldVATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL"): Boolean
     begin
-        if NoSeriesManagement.SelectSeries(GetNoSeriesCode(), VATCtrlReportHeaderOld."No. Series", "No. Series") then begin
+        if NoSeriesManagement.SelectSeries(GetNoSeriesCode(), OldVATCtrlReportHeaderCZL."No. Series", "No. Series") then begin
             NoSeriesManagement.SetSeries("No.");
             exit(true);
         end;
@@ -276,6 +276,36 @@ table 31106 "VAT Ctrl. Report Header CZL"
         VATCtrlReportHeaderCZL := Rec;
         VATCtrlReportHeaderCZL.SetRecFilter();
         Report.Run(Report::"VAT Ctrl. Report - Test CZL", true, false, VATCtrlReportHeaderCZL);
+    end;
+
+    procedure PrintToDocumentAttachment()
+    var
+        VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL";
+        DocumentAttachment: Record "Document Attachment";
+        DocumentAttachmentMgmt: Codeunit "Document Attachment Mgmt";
+        TempBlob: Codeunit "Temp Blob";
+        RecordRef: RecordRef;
+        ReportOutStream: OutStream;
+        DocumentInStream: InStream;
+        FileName: Text[250];
+        DocumentAttachmentFileNameLbl: Label 'Test VAT Control Report %1', Comment = '%1 = VAT Control Report No.';
+    begin
+        VATCtrlReportHeaderCZL := Rec;
+        VATCtrlReportHeaderCZL.SetRecFilter();
+        RecordRef.GetTable(VATCtrlReportHeaderCZL);
+        if not RecordRef.FindFirst() then
+            exit;
+
+        TempBlob.CreateOutStream(ReportOutStream);
+        Report.SaveAs(Report::"VAT Ctrl. Report - Test CZL", '',
+                      ReportFormat::Pdf, ReportOutStream, RecordRef);
+
+        DocumentAttachment.InitFieldsFromRecRef(RecordRef);
+        FileName := DocumentAttachment.FindUniqueFileName(
+                    StrSubstNo(DocumentAttachmentFileNameLbl, VATCtrlReportHeaderCZL."No."), 'pdf');
+        TempBlob.CreateInStream(DocumentInStream);
+        DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, FileName);
+        DocumentAttachmentMgmt.ShowNotification(RecordRef, 1, true);
     end;
 
     procedure CloseLines()

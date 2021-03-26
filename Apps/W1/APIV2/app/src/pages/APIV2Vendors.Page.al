@@ -265,6 +265,13 @@ page 30010 "APIV2 - Vendors"
                     EntitySetName = 'agedAccountsPayables';
                     SubPageLink = AccountId = Field(SystemId);
                 }
+                part(contactsInformation; "APIV2 - Contacts Information")
+                {
+                    Caption = 'Contacts Information';
+                    EntityName = 'contactInformation';
+                    EntitySetName = 'contactsInformation';
+                    SubPageLink = "Related Id" = field(SystemId), "Related Type" = const(2);
+                }
             }
         }
     }

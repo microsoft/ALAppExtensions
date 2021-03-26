@@ -9,15 +9,18 @@ table 31129 "EET Entry Status Log CZL"
         field(1; "Entry No."; Integer)
         {
             Caption = 'Entry No.';
+            DataClassification = CustomerContent;
         }
         field(5; "EET Entry No."; Integer)
         {
             Caption = 'EET Entry No.';
             TableRelation = "EET Entry CZL";
+            DataClassification = CustomerContent;
         }
         field(10; Description; Text[250])
         {
             Caption = 'Description';
+            DataClassification = CustomerContent;
 
             trigger OnLookup()
             begin
@@ -27,10 +30,12 @@ table 31129 "EET Entry Status Log CZL"
         field(20; Status; Enum "EET Status CZL")
         {
             Caption = 'Status';
+            DataClassification = CustomerContent;
         }
         field(25; "Changed At"; DateTime)
         {
             Caption = 'Changed At';
+            DataClassification = CustomerContent;
         }
     }
 
@@ -55,6 +60,7 @@ table 31129 "EET Entry Status Log CZL"
     begin
         ClearErrorMessages();
     end;
+
     procedure GetLastEntryNo(): Integer;
     var
         FindRecordManagement: Codeunit "Find Record Management";

@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 page 31164 "Cash Document Statistics CZP"
 {
     Caption = 'Cash Document Statistics';
@@ -99,7 +98,7 @@ page 31164 "Cash Document Statistics CZP"
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         Currency: Record Currency;
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-        VATLinesForm: Page "VAT Amount Lines";
+        VATAmountLines: Page "VAT Amount Lines";
         AllowVATDifference: Boolean;
         AmountExclVAT: Decimal;
         VATAmount: Decimal;
@@ -155,7 +154,6 @@ page 31164 "Cash Document Statistics CZP"
                     VATAmountLine."VAT %" := CashDocumentLineCZP."VAT %";
                     VATAmountLine.Modified := true;
                     VATAmountLine.Positive := CashDocumentLineCZP.Amount >= 0;
-                    VATAmountLine."Currency Code" := CashDocumentLineCZP."Currency Code";
                     VATAmountLine.Insert();
                 end;
 
@@ -164,10 +162,8 @@ page 31164 "Cash Document Statistics CZP"
                 VATAmountLine."VAT Amount" += CashDocumentLineCZP."Amount Including VAT" - CashDocumentLineCZP."VAT Base Amount";
                 VATAmountLine."Amount Including VAT" += CashDocumentLineCZP."Amount Including VAT";
                 VATAmountLine."VAT Difference" += CashDocumentLineCZP."VAT Difference";
-                VATAmountLine."VAT Base (LCY)" += CashDocumentLineCZP."VAT Base Amount (LCY)";
-                VATAmountLine."VAT Amount (LCY)" += CashDocumentLineCZP."Amount Including VAT (LCY)" - CashDocumentLineCZP."VAT Base Amount (LCY)";
-                VATAmountLine."Amount Including VAT (LCY)" += CashDocumentLineCZP."Amount Including VAT (LCY)";
-                VATAmountLine."VAT Difference (LCY)" += CashDocumentLineCZP."VAT Difference (LCY)";
+                VATAmountLine."VAT Base (LCY) CZL" += CashDocumentLineCZP."VAT Base Amount (LCY)";
+                VATAmountLine."VAT Amount (LCY) CZL" += CashDocumentLineCZP."Amount Including VAT (LCY)" - CashDocumentLineCZP."VAT Base Amount (LCY)";
                 VATAmountLine.Modify();
             until CashDocumentLineCZP.Next() = 0;
         CashDocumentLineCZP.SetRange(CashDocumentLineCZP."Account Type");
@@ -179,15 +175,15 @@ page 31164 "Cash Document Statistics CZP"
             until VATAmountLine.Next() = 0;
     end;
 
-    procedure VATLinesDrillDown(var VATLinesToDrillDown: Record "VAT Amount Line"; ThisTabAllowsVATEditing: Boolean)
+    procedure VATLinesDrillDown(var DrillDownVATAmountLine: Record "VAT Amount Line"; ThisTabAllowsVATEditing: Boolean)
     begin
         AllowVATDifference := false;
-        Clear(VATLinesForm);
-        VATLinesForm.SetTempVATAmountLine(VATLinesToDrillDown);
-        VATLinesForm.InitGlobals(
+        Clear(VATAmountLines);
+        VATAmountLines.SetTempVATAmountLine(DrillDownVATAmountLine);
+        VATAmountLines.InitGlobals(
           Rec."Currency Code", AllowVATDifference, AllowVATDifference and ThisTabAllowsVATEditing,
           CashDocumentHeaderCZP."Amounts Including VAT", false, 0);
-        VATLinesForm.RunModal();
-        VATLinesForm.GetTempVATAmountLine(VATLinesToDrillDown);
+        VATAmountLines.RunModal();
+        VATAmountLines.GetTempVATAmountLine(DrillDownVATAmountLine);
     end;
 }

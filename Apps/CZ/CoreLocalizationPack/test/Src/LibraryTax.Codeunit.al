@@ -182,7 +182,7 @@ Codeunit 148003 "Library - Tax CZL"
         TempBlob: Codeunit "Temp Blob";
         FileManagement: Codeunit "File Management";
         VIESDeclarationCZL: XMLport "VIES Declaration CZL";
-        OutStream: OutStream;
+        BlobOutStream: OutStream;
     begin
         TempVIESDeclarationLineCZL.DeleteAll();
         TempVIESDeclarationLineCZL.Reset();
@@ -193,10 +193,10 @@ Codeunit 148003 "Library - Tax CZL"
                 TempVIESDeclarationLineCZL.Insert();
             until VIESDeclarationLineCZL.Next() = 0;
 
-        TempBlob.CreateOutStream(OutStream);
+        TempBlob.CreateOutStream(BlobOutStream);
         VIESDeclarationCZL.SetHeader(VIESDeclarationHeaderCZL);
         VIESDeclarationCZL.SetLines(TempVIESDeclarationLineCZL);
-        VIESDeclarationCZL.SetDestination(OutStream);
+        VIESDeclarationCZL.SetDestination(BlobOutStream);
         VIESDeclarationCZL.Export();
 
         exit(FileManagement.BLOBExport(TempBlob, 'Default.xml', false));

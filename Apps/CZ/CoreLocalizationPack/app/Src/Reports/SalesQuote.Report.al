@@ -56,7 +56,7 @@ report 31186 "Sales Quote CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Sales Header"; "Sales Header")
@@ -125,22 +125,22 @@ report 31186 "Sales Quote CZL"
             column(RegistrationNo_SalesHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_SalesHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_SalesHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_SalesHeader; "Bank Account No.")
+            column(BankAccountNo_SalesHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_SalesHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_SalesHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_SalesHeader; IBAN)
+            column(IBAN_SalesHeader; "IBAN CZL")
             {
             }
-            column(BIC_SalesHeaderCaption; FieldCaption("SWIFT Code"))
+            column(BIC_SalesHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(BIC_SalesHeader; "SWIFT Code")
+            column(BIC_SalesHeader; "SWIFT Code CZL")
             {
             }
             column(OrderDate_SalesHeaderCaption; FieldCaption("Order Date"))
@@ -320,7 +320,7 @@ report 31186 "Sales Quote CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -361,16 +361,16 @@ report 31186 "Sales Quote CZL"
 
                 if not IsReportInPreviewMode() then begin
                     if ArchiveDocument then
-                        ArchiveMgt.StoreSalesDocument("Sales Header", LogInteraction);
+                        ArchiveManagement.StoreSalesDocument("Sales Header", LogInteraction);
                     if LogInteraction then begin
                         CalcFields("No. of Archived Versions");
                         if "Bill-to Contact No." <> '' then
-                            SegMgt.LogDocument(
+                            SegManagement.LogDocument(
                               1, "No.", "Doc. No. Occurrence",
                               "No. of Archived Versions", Database::Contact, "Bill-to Contact No.",
                               "Salesperson Code", "Campaign No.", "Posting Description", "Opportunity No.")
                         else
-                            SegMgt.LogDocument(
+                            SegManagement.LogDocument(
                               1, "No.", "Doc. No. Occurrence",
                               "No. of Archived Versions", Database::Customer, "Bill-to Customer No.",
                               "Salesperson Code", "Campaign No.", "Posting Description", "Opportunity No.");
@@ -431,10 +431,10 @@ report 31186 "Sales Quote CZL"
 
         trigger OnOpenPage()
         begin
-            case SalesSetup."Archive Quotes" of
-                SalesSetup."Archive Quotes"::Never:
+            case SalesReceivablesSetup."Archive Quotes" of
+                SalesReceivablesSetup."Archive Quotes"::Never:
                     ArchiveDocument := false;
-                SalesSetup."Archive Quotes"::Always:
+                SalesReceivablesSetup."Archive Quotes"::Always:
                     ArchiveDocument := true;
             end;
             InitLogInteraction();
@@ -444,7 +444,7 @@ report 31186 "Sales Quote CZL"
     trigger OnInitReport()
     begin
         "Sales & Receivables Setup".Get();
-        SalesSetup.Get();
+        SalesReceivablesSetup.Get();
     end;
 
     trigger OnPreReport()
@@ -457,13 +457,13 @@ report 31186 "Sales Quote CZL"
         PaymentTerms: Record "Payment Terms";
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
-        SalesSetup: Record "Sales & Receivables Setup";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        SegMgt: Codeunit SegManagement;
-        ArchiveMgt: Codeunit ArchiveManagement;
+        SegManagement: Codeunit SegManagement;
+        ArchiveManagement: Codeunit ArchiveManagement;
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];
@@ -501,7 +501,7 @@ report 31186 "Sales Quote CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegMgt.FindInteractTmplCode(1) <> '';
+        LogInteraction := SegManagement.FindInteractTmplCode(1) <> '';
     end;
 
     local procedure FormatDocumentFields(SalesHeader: Record "Sales Header")
@@ -514,8 +514,8 @@ report 31186 "Sales Quote CZL"
 
     local procedure FormatAddressFields(SalesHeader: Record "Sales Header")
     begin
-        FormatAddr.SalesHeaderBillTo(CustAddr, SalesHeader);
-        FormatAddr.SalesHeaderShipTo(ShipToAddr, CustAddr, SalesHeader);
+        FormatAddress.SalesHeaderBillTo(CustAddr, SalesHeader);
+        FormatAddress.SalesHeaderShipTo(ShipToAddr, CustAddr, SalesHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 pageextension 11748 "Service Order CZL" extends "Service Order"
 {
     layout
@@ -40,7 +39,7 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL")
                     else
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", WorkDate());
-                    if ChangeExchangeRate.RunModal() = ACTION::OK then begin
+                    if ChangeExchangeRate.RunModal() = Action::OK then begin
                         Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
                         CurrPage.Update();
                     end;
@@ -53,6 +52,13 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
                     CurrPage.SaveRecord();
                 end;
             }
+            field(IntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Transaction';
+                Editable = false;
+                ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+            }
         }
         addafter("Area")
         {
@@ -61,13 +67,83 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies when the service header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
+            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
+            }
+        }
+        addafter(" Foreign Trade")
+        {
+            group(PaymentsCZL)
+            {
+                Caption = 'Payment Details';
+                field("Variable Symbol CZL"; Rec."Variable Symbol CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the detail information for payment.';
+                    Importance = Promoted;
+                }
+                field("Constant Symbol CZL"; Rec."Constant Symbol CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the additional symbol of bank payments.';
+                    Importance = Additional;
+                }
+                field("Specific Symbol CZL"; Rec."Specific Symbol CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the additional symbol of bank payments.';
+                    Importance = Additional;
+                }
+                field("Bank Account Code CZL"; Rec."Bank Account Code CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies a code to idenfity bank account of company.';
+                }
+                field("Bank Name CZL"; Rec."Bank Name CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the name of the bank.';
+                }
+                field("Bank Account No. CZL"; Rec."Bank Account No. CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the number used by the bank for the bank account.';
+                    Importance = Promoted;
+                }
+                field("IBAN CZL"; Rec."IBAN CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the bank account''s international bank account number.';
+                    Importance = Promoted;
+                }
+                field("SWIFT Code CZL"; Rec."SWIFT Code CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the international bank identifier code (SWIFT) of the bank where you have the account.';
+                }
+                field("Transit No. CZL"; Rec."Transit No. CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies a bank identification number of your own choice.';
+                    Importance = Additional;
+                }
+                field("Bank Branch No. CZL"; Rec."Bank Branch No. CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the number of the bank branch.';
+                    Importance = Additional;
+                }
+            }
         }
     }
+
     var
         ChangeExchangeRate: Page "Change Exchange Rate";
 
     local procedure CurrencyCodeOnAfterValidate()
     begin
-        CurrPage.ServItemLines.PAGE.Update(true);
+        CurrPage.ServItemLines.Page.Update(true);
     end;
 }

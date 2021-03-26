@@ -279,8 +279,6 @@ codeunit 139802 "APIV2 - Customers E2E"
     end;
 
     local procedure CreateSimpleCustomer(var Customer: Record "Customer")
-    var
-        GraphMgtCustomer: Codeunit "Graph Mgt - Customer";
     begin
         Customer.Init();
         Customer."No." := NextCustomerNo();

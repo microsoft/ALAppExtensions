@@ -13,8 +13,6 @@ codeunit 139755 "Library - Outlook Rest API"
         AttachemntContentTypeTxt: Label 'application/text', Locked = true;
         Attachment1Tok: Label 'Attachment1', Locked = true;
         Attachment2Tok: Label 'Attachment2', Locked = true;
-        TestName: Text[250];
-        TestEmail: Text[250];
         ToList: List of [Text];
         CCList: List of [Text];
         BCCList: List of [Text];
@@ -119,8 +117,6 @@ codeunit 139755 "Library - Outlook Rest API"
     end;
 
     procedure Initialize()
-    var
-        OutlookAPIClientMock: Codeunit "Outlook API Client Mock";
     begin
         if IsInitialized then
             exit;

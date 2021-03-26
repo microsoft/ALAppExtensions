@@ -56,26 +56,26 @@ codeunit 11713 "Cash Document Approv. Mgt. CZP"
     procedure SetStatusToApproved(var Variant: Variant)
     var
         ApprovalEntry: Record "Approval Entry";
-        CashDocumentHeaderCZP1: Record "Cash Document Header CZP";
-        TargetRecRef: RecordRef;
-        RecRef: RecordRef;
+        ApprovedCashDocumentHeaderCZP: Record "Cash Document Header CZP";
+        TargetRecordRef: RecordRef;
+        SourceRecordRef: RecordRef;
     begin
-        RecRef.GetTable(Variant);
+        SourceRecordRef.GetTable(Variant);
 
-        case RecRef.Number of
+        case SourceRecordRef.Number of
             Database::"Approval Entry":
                 begin
                     ApprovalEntry := Variant;
-                    TargetRecRef.Get(ApprovalEntry."Record ID to Approve");
-                    Variant := TargetRecRef;
+                    TargetRecordRef.Get(ApprovalEntry."Record ID to Approve");
+                    Variant := TargetRecordRef;
                     SetStatusToApproved(Variant);
                 end;
             Database::"Cash Document Header CZP":
                 begin
-                    RecRef.SetTable(CashDocumentHeaderCZP1);
-                    CashDocumentHeaderCZP1.Validate(Status, CashDocumentHeaderCZP1.Status::Approved);
-                    CashDocumentHeaderCZP1.Modify();
-                    Variant := CashDocumentHeaderCZP1;
+                    SourceRecordRef.SetTable(ApprovedCashDocumentHeaderCZP);
+                    ApprovedCashDocumentHeaderCZP.Validate(Status, ApprovedCashDocumentHeaderCZP.Status::Approved);
+                    ApprovedCashDocumentHeaderCZP.Modify();
+                    Variant := ApprovedCashDocumentHeaderCZP;
                 end;
         end;
     end;
@@ -83,11 +83,11 @@ codeunit 11713 "Cash Document Approv. Mgt. CZP"
     procedure DeleteApprovalEntryForRecord(Variant: Variant)
     var
         ApprovalsMgmt: Codeunit "Approvals Mgmt.";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
-        RecRef.GetTable(Variant);
-        ApprovalsMgmt.DeleteApprovalEntries(RecRef.RecordId);
-        ApprovalsMgmt.DeleteApprovalCommentLines(RecRef.RecordId);
+        RecordRef.GetTable(Variant);
+        ApprovalsMgmt.DeleteApprovalEntries(RecordRef.RecordId);
+        ApprovalsMgmt.DeleteApprovalCommentLines(RecordRef.RecordId);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Approvals Mgmt.", 'OnPopulateApprovalEntryArgument', '', false, false)]
@@ -115,13 +115,13 @@ codeunit 11713 "Cash Document Approv. Mgt. CZP"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Approvals Mgmt.", 'OnSetStatusToPendingApproval', '', false, false)]
     local procedure ApprovalsMgmtOnSetStatusToPendingApproval(RecRef: RecordRef; var Variant: Variant; var IsHandled: Boolean)
     var
-        CashDocumenHeaderCZP: Record "Cash Document Header CZP";
+        ApprovedCashDocumentHeaderCZP: Record "Cash Document Header CZP";
     begin
         if RecRef.Number = Database::"Cash Document Header CZP" then begin
-            RecRef.SetTable(CashDocumenHeaderCZP);
-            CashDocumenHeaderCZP.Validate(Status, CashDocumenHeaderCZP.Status::"Pending Approval");
-            CashDocumenHeaderCZP.Modify(true);
-            Variant := CashDocumenHeaderCZP;
+            RecRef.SetTable(ApprovedCashDocumentHeaderCZP);
+            ApprovedCashDocumentHeaderCZP.Validate(Status, ApprovedCashDocumentHeaderCZP.Status::"Pending Approval");
+            ApprovedCashDocumentHeaderCZP.Modify(true);
+            Variant := ApprovedCashDocumentHeaderCZP;
         end;
     end;
 

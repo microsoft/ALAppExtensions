@@ -55,11 +55,11 @@ table 11750 "Excel Template CZL"
             Clustered = true;
         }
     }
+
     var
         TempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit "File Management";
+        FileManagement: Codeunit "File Management";
         FileName: Text;
-        ImportQst: Label 'Do you want import template?';
         DeleteQst: Label 'Do you want delete %1?', Comment = '%1 = File Name';
         ExcelExtensionTok: Label '.xlsx', Locked = true;
 
@@ -71,9 +71,9 @@ table 11750 "Excel Template CZL"
             TempBlob.FromRecord(Rec, FieldNo(Template));
             if ExportToFile = '' then begin
                 FileName := Rec.Code + ExcelExtensionTok;
-                ExportToFile := FileMgt.BLOBExport(TempBlob, FileName, true);
+                ExportToFile := FileManagement.BLOBExport(TempBlob, FileName, true);
             end else
-                ExportToFile := FileMgt.BLOBExport(TempBlob, ExportToFile, false);
+                ExportToFile := FileManagement.BLOBExport(TempBlob, ExportToFile, false);
             exit(true);
         end;
     end;
@@ -83,7 +83,7 @@ table 11750 "Excel Template CZL"
         RecordRef: RecordRef;
     begin
         Rec.TestField(Code);
-        FileName := FileMgt.BLOBImport(TempBlob, ExcelExtensionTok);
+        FileName := FileManagement.BLOBImport(TempBlob, ExcelExtensionTok);
         if FileName = '' then
             exit(false);
 

@@ -12,7 +12,6 @@ report 11720 "Turnover Rpt. by Gl. Dim. CZL"
         dataitem("G/L Account"; "G/L Account")
         {
             DataItemTableView = sorting("No.") WHERE("Account Type" = FILTER(Posting));
-            PrintOnlyIfDetail = true;
             RequestFilterFields = "No.", "Date Filter", "Global Dimension 1 Filter", "Global Dimension 2 Filter";
             column(COMPANYNAME; COMPANYPROPERTY.DisplayName())
             {
@@ -155,16 +154,16 @@ report 11720 "Turnover Rpt. by Gl. Dim. CZL"
                 trigger OnAfterGetRecord()
                 begin
                     if Number = 1 then
-                        DimValue.FindSet()
+                        DimensionValue.FindSet()
                     else
-                        DimValue.Next();
+                        DimensionValue.Next();
 
                     if (Number < DimCount) or (not PrintEmptyDim) then begin
                         if Detail = Detail::GlDim1 then
-                            "G/L Account".SetFilter("Global Dimension 1 Filter", DimValue.Code);
+                            "G/L Account".SetFilter("Global Dimension 1 Filter", DimensionValue.Code);
                         if Detail = Detail::GlDim2 then
-                            "G/L Account".SetFilter("Global Dimension 2 Filter", DimValue.Code);
-                        DimCodeText := DimValue.Code;
+                            "G/L Account".SetFilter("Global Dimension 2 Filter", DimensionValue.Code);
+                        DimCodeText := DimensionValue.Code;
                     end else begin
                         if Detail = Detail::GlDim1 then
                             "G/L Account".SetFilter("Global Dimension 1 Filter", '''''');
@@ -192,22 +191,22 @@ report 11720 "Turnover Rpt. by Gl. Dim. CZL"
                     case Detail of
                         Detail::GlDim1:
                             begin
-                                DimValue.SetRange("Dimension Code", GLSetup."Global Dimension 1 Code");
+                                DimensionValue.SetRange("Dimension Code", GeneralLedgerSetup."Global Dimension 1 Code");
                                 if Dim1Filter <> '' then
-                                    DimValue.SetFilter(Code, Dim1Filter);
+                                    DimensionValue.SetFilter(Code, Dim1Filter);
                             end;
                         Detail::GlDim2:
                             begin
-                                DimValue.SetRange("Dimension Code", GLSetup."Global Dimension 2 Code");
+                                DimensionValue.SetRange("Dimension Code", GeneralLedgerSetup."Global Dimension 2 Code");
                                 if Dim2Filter <> '' then
-                                    DimValue.SetFilter(Code, Dim2Filter);
+                                    DimensionValue.SetFilter(Code, Dim2Filter);
                             end;
                     end;
 
                     PrintEmptyDim := not (((Dim1Filter <> '') and (Detail = Detail::GlDim1)) or
                                           ((Dim2Filter <> '') and (Detail = Detail::GlDim2)));
 
-                    DimCount := DimValue.Count();
+                    DimCount := DimensionValue.Count();
                     if PrintEmptyDim then
                         DimCount += 1;
 
@@ -247,20 +246,20 @@ report 11720 "Turnover Rpt. by Gl. Dim. CZL"
                     GLEntry.FindLast();
                 end;
 
-                GLSetup.Get();
+                GeneralLedgerSetup.Get();
                 case Detail of
                     Detail::GlDim1:
                         begin
-                            Dim.Get(GLSetup."Global Dimension 1 Code");
-                            if DimTransln.Get(GLSetup."Global Dimension 1 Code", CurrReport.Language) then
+                            Dim.Get(GeneralLedgerSetup."Global Dimension 1 Code");
+                            if DimTransln.Get(GeneralLedgerSetup."Global Dimension 1 Code", CurrReport.Language) then
                                 DimCaption := DimTransln."Code Caption"
                             else
                                 DimCaption := Dim."Code Caption";
                         end;
                     Detail::GlDim2:
                         begin
-                            Dim.Get(GLSetup."Global Dimension 2 Code");
-                            if DimTransln.Get(GLSetup."Global Dimension 2 Code", CurrReport.Language) then
+                            Dim.Get(GeneralLedgerSetup."Global Dimension 2 Code");
+                            if DimTransln.Get(GeneralLedgerSetup."Global Dimension 2 Code", CurrReport.Language) then
                                 DimCaption := DimTransln."Code Caption"
                             else
                                 DimCaption := Dim."Code Caption";
@@ -326,9 +325,9 @@ report 11720 "Turnover Rpt. by Gl. Dim. CZL"
     end;
 
     var
-        GLSetup: Record "General Ledger Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         GLEntry: Record "G/L Entry";
-        DimValue: Record "Dimension Value";
+        DimensionValue: Record "Dimension Value";
         AccountingPeriodMgt: Codeunit "Accounting Period Mgt.";
         Synthesis: Code[3];
         Group: Code[2];

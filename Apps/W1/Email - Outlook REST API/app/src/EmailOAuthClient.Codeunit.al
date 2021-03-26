@@ -66,7 +66,6 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         User: Record User;
         TokenCache: Text;
         NewTokenCache: Text;
-        AADUserID: Text;
     begin
         if not User.Get(UserSecurityId()) then begin
             Session.LogMessage('AL00001', StrSubstNo(NoUserErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
@@ -190,7 +189,6 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         IsInitialized: Boolean;
         OAuthAuthorityUrlTxt: Label 'https://login.microsoftonline.com/common/oauth2', Locked = true;
         GraphResourceURLTxt: Label 'https://graph.microsoft.com/', Locked = true;
-        ChooseYourOrganizationEmailAccountTxt: Label 'Please, choose your email account associated with your organization in the account selection window.';
         TokenCacheTok: Label 'TokenCache', Locked = true;
         CouldNotGetAccessTokenErr: Label 'Could not get access token. Please, try to log out and log in again.';
         EmailCategoryLbl: Label 'EmailOAuth', Locked = true;
@@ -201,7 +199,6 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         CouldNotDeleteTokenCacheTxt: Label 'Failed to delete the token cache from isolated starage for user security ID: %1.', Locked = true;
         NoUserErr: Label 'Could not find user with security ID: %1.', Locked = true;
         CouldNotAcquireAccessTokenFromCacheErr: Label 'Could not acquire a new access token by token cache for user: %1.', Locked = true;
-        EmptyAccessTokenFromCacheErr: Label 'The access token for the user %1 is empty.', Locked = true;
         EmptyTokenCacheErr: Label 'The acquired token cache is empty. User: %1.', Locked = true;
         CouldNotAcquireOnBehalfOfAccessTokenErr: Label 'Failed to acquire an on-belaf-of access token for user security ID: %1', Locked = true;
 }

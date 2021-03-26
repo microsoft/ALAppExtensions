@@ -20,9 +20,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         LibrarySales: Codeunit "Library - Sales";
         LibraryERM: Codeunit "Library - ERM";
         CreditMemoServiceNameTxt: Label 'salesCreditMemos';
-        CustomerIdFieldTxt: Label 'customerId';
-        CustomerNameFieldTxt: Label 'customerName';
-        CustomerNumberFieldTxt: Label 'customerNumber';
         DiscountAmountFieldTxt: Label 'discountAmount';
         ActionPostTxt: Label 'Microsoft.NAV.post', Locked = true;
         ActionPostAndSendTxt: Label 'Microsoft.NAV.postAndSend', Locked = true;

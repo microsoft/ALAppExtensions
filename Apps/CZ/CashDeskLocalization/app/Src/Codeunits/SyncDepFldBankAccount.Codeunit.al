@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432,AL0603
 codeunit 31123 "Sync.Dep.Fld-BankAccount CZP"
 {
@@ -125,6 +126,7 @@ codeunit 31123 "Sync.Dep.Fld-BankAccount CZP"
         BankAccount."Cash Withdrawal Limit" := Rec."Cash Withdrawal Limit";
         BankAccount."Exclude from Exch. Rate Adj." := Rec."Exclude from Exch. Rate Adj.";
         BankAccount."Cashier No." := Rec."Cashier No.";
+        BankAccount.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Bank Account");
     end;
 
@@ -154,3 +156,4 @@ codeunit 31123 "Sync.Dep.Fld-BankAccount CZP"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

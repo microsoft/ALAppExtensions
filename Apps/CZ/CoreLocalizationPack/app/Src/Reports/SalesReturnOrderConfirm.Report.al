@@ -56,7 +56,7 @@ report 31188 "Sales Return Order Confirm CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Sales Header"; "Sales Header")
@@ -125,22 +125,22 @@ report 31188 "Sales Return Order Confirm CZL"
             column(RegistrationNo_SalesHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_SalesHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_SalesHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_SalesHeader; "Bank Account No.")
+            column(BankAccountNo_SalesHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_SalesHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_SalesHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_SalesHeader; IBAN)
+            column(IBAN_SalesHeader; "IBAN CZL")
             {
             }
-            column(BIC_SalesHeaderCaption; FieldCaption("SWIFT Code"))
+            column(BIC_SalesHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(BIC_SalesHeader; "SWIFT Code")
+            column(BIC_SalesHeader; "SWIFT Code CZL")
             {
             }
             column(OrderDate_SalesHeaderCaption; FieldCaption("Order Date"))
@@ -331,7 +331,7 @@ report 31188 "Sales Return Order Confirm CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -382,11 +382,11 @@ report 31188 "Sales Return Order Confirm CZL"
 
                 if LogInteraction and not IsReportInPreviewMode() then
                     if "Bill-to Contact No." <> '' then
-                        SegMgt.LogDocument(
+                        SegManagement.LogDocument(
                           18, "No.", 0, 0, Database::Contact, "Bill-to Contact No.", "Salesperson Code",
                           "Campaign No.", "Posting Description", "Opportunity No.")
                     else
-                        SegMgt.LogDocument(
+                        SegManagement.LogDocument(
                           18, "No.", 0, 0, Database::Customer, "Bill-to Customer No.", "Salesperson Code",
                           "Campaign No.", "Posting Description", "Opportunity No.");
 
@@ -444,10 +444,10 @@ report 31188 "Sales Return Order Confirm CZL"
         ShipmentMethod: Record "Shipment Method";
         TempSalesLine: Record "Sales Line" temporary;
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        SegMgt: Codeunit SegManagement;
+        SegManagement: Codeunit SegManagement;
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];
@@ -476,7 +476,7 @@ report 31188 "Sales Return Order Confirm CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegMgt.FindInteractTmplCode(18) <> '';
+        LogInteraction := SegManagement.FindInteractTmplCode(18) <> '';
     end;
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; LogInteractionFrom: Boolean)
@@ -495,8 +495,8 @@ report 31188 "Sales Return Order Confirm CZL"
 
     local procedure FormatAddressFields(SalesHeader: Record "Sales Header")
     begin
-        FormatAddr.SalesHeaderBillTo(CustAddr, SalesHeader);
-        FormatAddr.SalesHeaderShipTo(ShipToAddr, CustAddr, SalesHeader);
+        FormatAddress.SalesHeaderBillTo(CustAddr, SalesHeader);
+        FormatAddress.SalesHeaderShipTo(ShipToAddr, CustAddr, SalesHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

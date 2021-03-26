@@ -5,7 +5,8 @@
 
 codeunit 9702 "Cues And KPIs Impl."
 {
-    Permissions = TableData "Cue Setup" = r;
+    Permissions = tabledata Field = r,
+                  tabledata "Cue Setup" = rimd;
     Access = Internal;
 
     var
@@ -249,7 +250,7 @@ codeunit 9702 "Cues And KPIs Impl."
         exit(CueSetup.Insert());
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000004, 'GetCueStyle', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"UI Helper Triggers", 'GetCueStyle', '', false, false)]
     local procedure GetCueStyle(TableId: Integer; FieldNo: Integer; CueValue: Decimal; var StyleText: Text)
     var
         Style: Enum "Cues And KPIs Style";

@@ -18,7 +18,7 @@ report 11756 "VAT Documents List CZL"
             var
                 VATEntry: Record "VAT Entry";
             begin
-                VATEntry.Copy(VATFilter);
+                VATEntry.Copy(FilterVATEntry);
 
                 TempVATEntry.SetCurrentKey("Document No.", "Posting Date");
                 if VATEntry.FindSet() then
@@ -125,33 +125,33 @@ report 11756 "VAT Documents List CZL"
                         VATPostingSetup."VAT Identifier" := NoneTxt;
                     end;
 
-                    TempVATAmountLineDoc.Init();
-                    TempVATAmountLineDoc."VAT Identifier" := VATPostingSetup."VAT Identifier";
-                    TempVATAmountLineDoc."VAT Calculation Type" := "VAT Calculation Type";
-                    TempVATAmountLineDoc."Tax Group Code" := "Tax Group Code";
-                    TempVATAmountLineDoc."VAT %" := VATPostingSetup."VAT %";
+                    TempDocVATAmountLine.Init();
+                    TempDocVATAmountLine."VAT Identifier" := VATPostingSetup."VAT Identifier";
+                    TempDocVATAmountLine."VAT Calculation Type" := "VAT Calculation Type";
+                    TempDocVATAmountLine."Tax Group Code" := "Tax Group Code";
+                    TempDocVATAmountLine."VAT %" := VATPostingSetup."VAT %";
                     if "VAT Entry"."Advance Base" <> 0 then begin
-                        TempVATAmountLineDoc."VAT Base" := "Advance Base";
-                        TempVATAmountLineDoc."Amount Including VAT" := Amount + "Advance Base";
+                        TempDocVATAmountLine."VAT Base" := "Advance Base";
+                        TempDocVATAmountLine."Amount Including VAT" := Amount + "Advance Base";
                     end else begin
-                        TempVATAmountLineDoc."VAT Base" := Base;
-                        TempVATAmountLineDoc."Amount Including VAT" := Amount + Base;
+                        TempDocVATAmountLine."VAT Base" := Base;
+                        TempDocVATAmountLine."Amount Including VAT" := Amount + Base;
                     end;
-                    TempVATAmountLineDoc.InsertLine();
+                    TempDocVATAmountLine.InsertLine();
 
-                    TempVATAmountLineTot.Init();
-                    TempVATAmountLineTot."VAT Identifier" := VATPostingSetup."VAT Identifier";
-                    TempVATAmountLineTot."VAT Calculation Type" := "VAT Calculation Type";
-                    TempVATAmountLineTot."Tax Group Code" := "Tax Group Code";
-                    TempVATAmountLineTot."VAT %" := VATPostingSetup."VAT %";
+                    TempTotVATAmountLine.Init();
+                    TempTotVATAmountLine."VAT Identifier" := VATPostingSetup."VAT Identifier";
+                    TempTotVATAmountLine."VAT Calculation Type" := "VAT Calculation Type";
+                    TempTotVATAmountLine."Tax Group Code" := "Tax Group Code";
+                    TempTotVATAmountLine."VAT %" := VATPostingSetup."VAT %";
                     if "VAT Entry"."Advance Base" <> 0 then begin
-                        TempVATAmountLineTot."VAT Base" := "Advance Base";
-                        TempVATAmountLineTot."Amount Including VAT" := Amount + "Advance Base";
+                        TempTotVATAmountLine."VAT Base" := "Advance Base";
+                        TempTotVATAmountLine."Amount Including VAT" := Amount + "Advance Base";
                     end else begin
-                        TempVATAmountLineTot."VAT Base" := Base;
-                        TempVATAmountLineTot."Amount Including VAT" := Amount + Base;
+                        TempTotVATAmountLine."VAT Base" := Base;
+                        TempTotVATAmountLine."Amount Including VAT" := Amount + Base;
                     end;
-                    TempVATAmountLineTot.InsertLine();
+                    TempTotVATAmountLine.InsertLine();
 
                     Advance := "Advance Letter No." <> '';
                     if "Advance Base" <> 0 then
@@ -167,11 +167,11 @@ report 11756 "VAT Documents List CZL"
 
                 trigger OnPreDataItem()
                 begin
-                    Clear(TempVATAmountLineDoc);
-                    TempVATAmountLineDoc.Reset();
-                    TempVATAmountLineDoc.DeleteAll();
+                    Clear(TempDocVATAmountLine);
+                    TempDocVATAmountLine.Reset();
+                    TempDocVATAmountLine.DeleteAll();
 
-                    CopyFilters(VATFilter);
+                    CopyFilters(FilterVATEntry);
                     SetRange("Document No.", TempVATEntry."Document No.");
                     SetRange("VAT Date CZL", TempVATEntry."VAT Date CZL");
                 end;
@@ -179,16 +179,16 @@ report 11756 "VAT Documents List CZL"
             dataitem(DocSummary; "Integer")
             {
                 DataItemTableView = sorting(Number) where(Number = filter(1 ..));
-                column(DocSummary_VAT_Base; TempVATAmountLineDoc."VAT Base")
+                column(DocSummary_VAT_Base; TempDocVATAmountLine."VAT Base")
                 {
                 }
-                column(DocSummary_VAT_Amount; TempVATAmountLineDoc."VAT Amount")
+                column(DocSummary_VAT_Amount; TempDocVATAmountLine."VAT Amount")
                 {
                 }
-                column(DocSummary_TaxRate; StrSubstNo(TaxRateTxt, Format(TempVATAmountLineDoc."VAT Identifier")))
+                column(DocSummary_TaxRate; StrSubstNo(TaxRateTxt, Format(TempDocVATAmountLine."VAT Identifier")))
                 {
                 }
-                column(DocSummary_VAT_Calculation_Type; Format(TempVATAmountLineDoc."VAT Calculation Type"))
+                column(DocSummary_VAT_Calculation_Type; Format(TempDocVATAmountLine."VAT Calculation Type"))
                 {
                 }
                 column(DocSummary_Number; Number)
@@ -197,47 +197,47 @@ report 11756 "VAT Documents List CZL"
                 trigger OnAfterGetRecord()
                 begin
                     if Number = 1 then
-                        TempVATAmountLineDoc.FindSet()
+                        TempDocVATAmountLine.FindSet()
                     else
-                        TempVATAmountLineDoc.Next();
+                        TempDocVATAmountLine.Next();
                 end;
 
                 trigger OnPreDataItem()
                 var
                     TempVATAmountLine1: Record "VAT Amount Line" temporary;
                 begin
-                    TempVATAmountLineDoc.Reset();
-                    if TempVATAmountLineDoc.FindSet() then begin
+                    TempDocVATAmountLine.Reset();
+                    if TempDocVATAmountLine.FindSet() then begin
                         repeat
-                            TempVATAmountLine1.SetRange("VAT Identifier", TempVATAmountLineDoc."VAT Identifier");
-                            TempVATAmountLine1.SetRange("VAT Calculation Type", TempVATAmountLineDoc."VAT Calculation Type");
-                            TempVATAmountLine1.SetRange("Tax Group Code", TempVATAmountLineDoc."Tax Group Code");
-                            TempVATAmountLine1.SetRange("Use Tax", TempVATAmountLineDoc."Use Tax");
+                            TempVATAmountLine1.SetRange("VAT Identifier", TempDocVATAmountLine."VAT Identifier");
+                            TempVATAmountLine1.SetRange("VAT Calculation Type", TempDocVATAmountLine."VAT Calculation Type");
+                            TempVATAmountLine1.SetRange("Tax Group Code", TempDocVATAmountLine."Tax Group Code");
+                            TempVATAmountLine1.SetRange("Use Tax", TempDocVATAmountLine."Use Tax");
                             if TempVATAmountLine1.FindFirst() then begin
-                                TempVATAmountLine1."VAT Base" += TempVATAmountLineDoc."VAT Base";
-                                TempVATAmountLine1."VAT Amount" += TempVATAmountLineDoc."VAT Amount";
+                                TempVATAmountLine1."VAT Base" += TempDocVATAmountLine."VAT Base";
+                                TempVATAmountLine1."VAT Amount" += TempDocVATAmountLine."VAT Amount";
                                 TempVATAmountLine1.Modify();
                             end;
-                            TempVATAmountLine1 := TempVATAmountLineDoc;
+                            TempVATAmountLine1 := TempDocVATAmountLine;
                             TempVATAmountLine1.Insert();
-                        until TempVATAmountLineDoc.Next() = 0;
+                        until TempDocVATAmountLine.Next() = 0;
 
-                        TempVATAmountLineDoc.Reset();
-                        TempVATAmountLineDoc.DeleteAll();
+                        TempDocVATAmountLine.Reset();
+                        TempDocVATAmountLine.DeleteAll();
 
                         TempVATAmountLine1.Reset();
                         if TempVATAmountLine1.FindSet() then
                             repeat
-                                TempVATAmountLineDoc := TempVATAmountLine1;
-                                TempVATAmountLineDoc.Insert();
+                                TempDocVATAmountLine := TempVATAmountLine1;
+                                TempDocVATAmountLine.Insert();
                             until TempVATAmountLine1.Next() = 0;
 
                         TempVATAmountLine1.Reset();
                         TempVATAmountLine1.DeleteAll();
                     end;
 
-                    TempVATAmountLineDoc.Reset();
-                    SetRange(Number, 1, TempVATAmountLineDoc.Count());
+                    TempDocVATAmountLine.Reset();
+                    SetRange(Number, 1, TempDocVATAmountLine.Count());
                 end;
             }
             trigger OnAfterGetRecord()
@@ -258,16 +258,16 @@ report 11756 "VAT Documents List CZL"
         dataitem(Total; "Integer")
         {
             DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-            column(Total_VAT_Calculation_Type; Format(TempVATAmountLineTot."VAT Calculation Type"))
+            column(Total_VAT_Calculation_Type; Format(TempTotVATAmountLine."VAT Calculation Type"))
             {
             }
-            column(Total_TaxRate; StrSubstNo(TaxRateTxt, Format(TempVATAmountLineTot."VAT Identifier")))
+            column(Total_TaxRate; StrSubstNo(TaxRateTxt, Format(TempTotVATAmountLine."VAT Identifier")))
             {
             }
-            column(Total_VAT_Base; TempVATAmountLineTot."VAT Base")
+            column(Total_VAT_Base; TempTotVATAmountLine."VAT Base")
             {
             }
-            column(Total_VAT_Amount; TempVATAmountLineTot."VAT Amount")
+            column(Total_VAT_Amount; TempTotVATAmountLine."VAT Amount")
             {
             }
             column(Total_Number; Number)
@@ -279,51 +279,51 @@ report 11756 "VAT Documents List CZL"
             trigger OnAfterGetRecord()
             begin
                 if Number = 1 then
-                    TempVATAmountLineTot.FindSet()
+                    TempTotVATAmountLine.FindSet()
                 else
-                    TempVATAmountLineTot.Next();
+                    TempTotVATAmountLine.Next();
 
-                if TempVATAmountLineTot."VAT Calculation Type" = TempVATAmountLineTot."VAT Calculation Type"::"Reverse Charge VAT" then
-                    TempVATAmountLineTot."VAT Amount" := 0;
+                if TempTotVATAmountLine."VAT Calculation Type" = TempTotVATAmountLine."VAT Calculation Type"::"Reverse Charge VAT" then
+                    TempTotVATAmountLine."VAT Amount" := 0;
             end;
 
             trigger OnPreDataItem()
             var
                 TempVATAmountLine1: Record "VAT Amount Line" temporary;
             begin
-                TempVATAmountLineTot.Reset();
+                TempTotVATAmountLine.Reset();
 
-                if TempVATAmountLineTot.FindSet() then begin
+                if TempTotVATAmountLine.FindSet() then begin
                     repeat
-                        TempVATAmountLine1.SetRange("VAT Identifier", TempVATAmountLineTot."VAT Identifier");
-                        TempVATAmountLine1.SetRange("VAT Calculation Type", TempVATAmountLineTot."VAT Calculation Type");
-                        TempVATAmountLine1.SetRange("Tax Group Code", TempVATAmountLineTot."Tax Group Code");
-                        TempVATAmountLine1.SetRange("Use Tax", TempVATAmountLineTot."Use Tax");
+                        TempVATAmountLine1.SetRange("VAT Identifier", TempTotVATAmountLine."VAT Identifier");
+                        TempVATAmountLine1.SetRange("VAT Calculation Type", TempTotVATAmountLine."VAT Calculation Type");
+                        TempVATAmountLine1.SetRange("Tax Group Code", TempTotVATAmountLine."Tax Group Code");
+                        TempVATAmountLine1.SetRange("Use Tax", TempTotVATAmountLine."Use Tax");
                         if TempVATAmountLine1.FindSet() then begin
-                            TempVATAmountLine1."VAT Base" += TempVATAmountLineTot."VAT Base";
-                            TempVATAmountLine1."VAT Amount" += TempVATAmountLineTot."VAT Amount";
+                            TempVATAmountLine1."VAT Base" += TempTotVATAmountLine."VAT Base";
+                            TempVATAmountLine1."VAT Amount" += TempTotVATAmountLine."VAT Amount";
                             TempVATAmountLine1.Modify();
                         end;
-                        TempVATAmountLine1 := TempVATAmountLineTot;
+                        TempVATAmountLine1 := TempTotVATAmountLine;
                         TempVATAmountLine1.Insert();
-                    until TempVATAmountLineTot.Next() = 0;
+                    until TempTotVATAmountLine.Next() = 0;
 
-                    TempVATAmountLineTot.Reset();
-                    TempVATAmountLineTot.DeleteAll();
+                    TempTotVATAmountLine.Reset();
+                    TempTotVATAmountLine.DeleteAll();
 
                     TempVATAmountLine1.Reset();
                     if TempVATAmountLine1.FindSet() then
                         repeat
-                            TempVATAmountLineTot := TempVATAmountLine1;
-                            TempVATAmountLineTot.Insert();
+                            TempTotVATAmountLine := TempVATAmountLine1;
+                            TempTotVATAmountLine.Insert();
                         until TempVATAmountLine1.Next() = 0;
 
                     TempVATAmountLine1.Reset();
                     TempVATAmountLine1.DeleteAll();
                 end;
 
-                TempVATAmountLineTot.Reset();
-                SetRange(Number, 1, TempVATAmountLineTot.Count());
+                TempTotVATAmountLine.Reset();
+                SetRange(Number, 1, TempTotVATAmountLine.Count());
             end;
         }
     }
@@ -403,14 +403,14 @@ report 11756 "VAT Documents List CZL"
         if Request.GetFilters() <> '' then
             VATEntryFilters += '; ' + Request.TableCaption() + ': ' + Request.GetFilters();
 
-        VATFilter.Copy(Request);
+        FilterVATEntry.Copy(Request);
     end;
 
     var
         TempVATEntry: Record "VAT Entry" temporary;
-        VATFilter: Record "VAT Entry";
-        TempVATAmountLineDoc: Record "VAT Amount Line" temporary;
-        TempVATAmountLineTot: Record "VAT Amount Line" temporary;
+        FilterVATEntry: Record "VAT Entry";
+        TempDocVATAmountLine: Record "VAT Amount Line" temporary;
+        TempTotVATAmountLine: Record "VAT Amount Line" temporary;
         VATPostingSetup: Record "VAT Posting Setup";
         EntryTypeFilter: Option Purchase,Sale,All;
         PrintDetail: Boolean;

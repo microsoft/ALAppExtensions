@@ -18,6 +18,7 @@ codeunit 134685 "Email Test"
         EmailMessageCannotBeEditedErr: Label 'The email message has already been sent and cannot be edited.';
         EmailMessageQueuedCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has been queued to be sent.';
         EmailMessageSentCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has already been sent.';
+        SourceRecordErr: Label 'Could not find the source for this email.';
         AccountNameLbl: Label '%1 (%2)', Locked = true;
 
     [Test]
@@ -661,6 +662,161 @@ codeunit 134685 "Email Test"
 
     [Test]
     [Scope('OnPrem')]
+    procedure ShowSourceRecordInOutbox()
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailMessage: Codeunit "Email Message";
+        Any: Codeunit Any;
+        EmailTest: Codeunit "Email Test";
+        EmailOutboxPage: Page "Email Outbox";
+        EmailOutboxTestPage: TestPage "Email Outbox";
+        TableId: Integer;
+        SystemId: Guid;
+    begin
+        BindSubscription(EmailTest);
+
+        // [Scenario] Emails with source document, will see the Source Document button 
+        // [Given] An Email with table id and source system id
+        TableId := Any.IntegerInRange(1, 10000);
+        SystemId := Any.GuidValue();
+
+        // [When] The email is created and saved as draft
+        CreateEmailWithSource(EmailMessage, TableId, SystemId);
+
+        // [When] The email is created and saved as draft
+        Email.SaveAsDraft(EmailMessage, EmailOutbox);
+
+        // [And] The Show Source Document button is visible 
+        EmailOutboxTestPage.Trap();
+        EmailOutboxPage.SetRecord(EmailOutbox);
+        EmailOutboxPage.Run();
+
+        Assert.IsTrue(EmailOutboxTestPage.ShowSourceRecord.Visible(), 'Show Source Record action should be visible');
+
+        // [When] Show Source Document button is clicked
+        ClearLastError();
+        EmailOutboxTestPage.ShowSourceRecord.Invoke();
+
+        // [Then] No error appears
+        Assert.AreEqual('', GetLastErrorText, 'An error occured');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure EmailWithoutSourceInOutbox()
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailMessage: Codeunit "Email Message";
+        EmailTest: Codeunit "Email Test";
+        EmailOutboxPage: Page "Email Outbox";
+        EmailOutboxTestPage: TestPage "Email Outbox";
+    begin
+        BindSubscription(EmailTest);
+
+        // [Scenario] Emails with source document, will see the Source Document button 
+        // [Given] An Email with table id and source system id
+
+        // [When] The email is created and saved as draft
+        CreateEmail(EmailMessage);
+        Email.SaveAsDraft(EmailMessage, EmailOutbox);
+
+        // [And] The Show Source Document button is visible 
+        EmailOutboxTestPage.Trap();
+        EmailOutboxPage.SetRecord(EmailOutbox);
+        EmailOutboxPage.Run();
+
+        Assert.IsTrue(EmailOutboxTestPage.ShowSourceRecord.Visible(), 'Show Source Record action should be visible');
+
+        // [When] Show Source Document button is clicked
+        Asserterror EmailOutboxTestPage.ShowSourceRecord.Invoke();
+
+        // [Then] No error appears
+        Assert.AreEqual(SourceRecordErr, GetLastErrorText, 'An error occured');
+    end;
+
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure EmailWithSourceNoSubscriber()
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailMessage: Codeunit "Email Message";
+        Any: Codeunit Any;
+        EmailOutboxPage: Page "Email Outbox";
+        EmailOutboxTestPage: TestPage "Email Outbox";
+        TableId: Integer;
+        SystemId: Guid;
+    begin
+        // [Scenario] Emails with source document, will see the Source Document button 
+        // [Given] An Email with table id and source system id
+        TableId := Any.IntegerInRange(1, 10000);
+        SystemId := Any.GuidValue();
+
+        // [When] The email is created and saved as draft
+        CreateEmailWithSource(EmailMessage, TableId, SystemId);
+
+        // [When] The email is created and saved as draft
+        CreateEmail(EmailMessage);
+        Email.SaveAsDraft(EmailMessage, EmailOutbox);
+
+        // [And] The Show Source Document button is visible 
+        EmailOutboxTestPage.Trap();
+        EmailOutboxPage.SetRecord(EmailOutbox);
+        EmailOutboxPage.Run();
+
+        Assert.IsTrue(EmailOutboxTestPage.ShowSourceRecord.Visible(), 'Show Source Record action should be visible');
+
+        // [When] Show Source Document button is clicked
+        Asserterror EmailOutboxTestPage.ShowSourceRecord.Invoke();
+
+        // [Then] No error appears
+        Assert.AreEqual(SourceRecordErr, GetLastErrorText, 'An error occured');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure SendEmailMessageWithSourceTest()
+    var
+        SentEmail: Record "Sent Email";
+        Account: Record "Email Account";
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        Any: Codeunit Any;
+        SystemId: Guid;
+        TableId, NumberOfEmails, i : Integer;
+        MessageIds: List of [Guid];
+    begin
+        // [Scenario] When successfuly sending an email with source, a record is added to the email source document table and sent emails table. 
+
+        // [Given] An email with source and an email account
+        TableId := Any.IntegerInRange(1, 10000);
+        SystemId := Any.GuidValue();
+
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(Account);
+
+        NumberOfEmails := Any.IntegerInRange(2, 5);
+
+        for i := 1 to NumberOfEmails do begin
+            CreateEmailWithSource(EmailMessage, TableId, SystemId);
+            Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
+            MessageIds.Add(EmailMessage.GetId());
+
+            // [When] The email is Sent
+            Assert.IsTrue(Email.Send(EmailMessage, Account), 'Sending an email should have succeeded');
+        end;
+
+        SentEmail := Email.GetSentEmailsForRecord(TableId, SystemId);
+
+        for i := 1 to NumberOfEmails do begin
+            SentEmail.SetCurrentKey("Message Id");
+            SentEmail.SetRange("Message Id", MessageIds.Get(i));
+            Assert.RecordCount(SentEmail, 1); // Did not find the email in Sent Emails 
+        end;
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure SendEmailInBackgroundSuccessTest()
     var
         Account: Record "Email Account";
@@ -692,7 +848,7 @@ codeunit 134685 "Email Test"
         MessageID := Variable;
         EmailTest.DequeueVariable(Variable);
         Status := Variable;
-        
+
         // [Then] The event was fired once
         EmailTest.AssertVariableStorageEmpty();
         Assert.AreEqual(MessageID, EmailMessage.GetId(), 'A different Email was expected');
@@ -736,7 +892,7 @@ codeunit 134685 "Email Test"
         MessageID := Variable;
         EmailTest.DequeueVariable(Variable);
         Status := Variable;
-        
+
         // [Then] The event was fired once
         EmailTest.AssertVariableStorageEmpty();
         Assert.AreEqual(MessageID, EmailMessage.GetId(), 'A different Email was expected');
@@ -782,7 +938,7 @@ codeunit 134685 "Email Test"
         MessageID := Variable;
         EmailTest.DequeueVariable(Variable);
         Status := Variable;
-        
+
         // [Then] The event was fired once
         EmailTest.AssertVariableStorageEmpty();
         Assert.AreEqual(MessageID, EmailMessage.GetId(), 'A different Email was expected');
@@ -837,11 +993,40 @@ codeunit 134685 "Email Test"
         UnBindSubscription(TestClientType);
     end;
 
+    [Test]
+    procedure ResendSentEmailFromAnotherUserTest()
+    var
+        SentEmail: Record "Sent Email";
+        Any: Codeunit Any;
+        EmailViewer: Codeunit "Email Viewer";
+    begin
+        // Create a sent email
+        SentEmail.Init();
+        SentEmail.Description := CopyStr(Any.UnicodeText(50), 1, MaxStrLen(SentEmail.Description));
+        SentEmail."Date Time Sent" := CurrentDateTime();
+        SentEmail."User Security Id" := CreateGuid(); // Created by another user
+        SentEmail.Insert();
+
+        asserterror EmailViewer.Resend(SentEmail);
+        Assert.ExpectedError(EmailMessageOpenPermissionErr);
+
+        asserterror EmailViewer.EditAndSend(SentEmail);
+        Assert.ExpectedError(EmailMessageOpenPermissionErr);
+    end;
+
     local procedure CreateEmail(var EmailMessage: Codeunit "Email Message")
     var
         Any: Codeunit Any;
     begin
         EmailMessage.Create(Any.Email(), Any.UnicodeText(50), Any.UnicodeText(250), true);
+    end;
+
+    local procedure CreateEmailWithSource(var EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid)
+    var
+        Any: Codeunit Any;
+    begin
+        EmailMessage.Create(Any.Email(), Any.UnicodeText(50), Any.UnicodeText(250), true);
+        Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source");
     end;
 
     [StrMenuHandler]
@@ -864,14 +1049,14 @@ codeunit 134685 "Email Test"
     [ModalPageHandler]
     procedure EmailEditorHandler(var EmailEditor: TestPage "Email Editor")
     begin
-        Assert.IsTrue(EmailEditor.Account.Enabled(), 'Account field was enabled');
-        Assert.IsTrue(EmailEditor.ToField.Editable(), 'To field was editable');
-        Assert.IsTrue(EmailEditor.CcField.Editable(), 'Cc field was editable');
-        Assert.IsTrue(EmailEditor.BccField.Editable(), 'Bcc field was editable');
-        Assert.IsTrue(EmailEditor.SubjectField.Editable(), 'Subject field was editable');
-        Assert.IsTrue(EmailEditor.BodyField.Editable(), 'Body field was editable');
-        Assert.IsTrue(EmailEditor.Upload.Enabled(), 'Upload Action was not disabled.');
-        Assert.IsTrue(EmailEditor.Send.Enabled(), 'Send Action was not disabled.');
+        Assert.IsTrue(EmailEditor.Account.Enabled(), 'Account field was not enabled');
+        Assert.IsTrue(EmailEditor.ToField.Editable(), 'To field was not editable');
+        Assert.IsTrue(EmailEditor.CcField.Editable(), 'Cc field was not editable');
+        Assert.IsTrue(EmailEditor.BccField.Editable(), 'Bcc field was not editable');
+        Assert.IsTrue(EmailEditor.SubjectField.Editable(), 'Subject field was not editable');
+        Assert.IsTrue(EmailEditor.BodyField.Editable(), 'Body field was not editable');
+        Assert.IsTrue(EmailEditor.Upload.Enabled(), 'Upload Action was not enabled.');
+        Assert.IsTrue(EmailEditor.Send.Enabled(), 'Send Action was not enabled.');
     end;
 
     [ModalPageHandler]
@@ -905,6 +1090,12 @@ codeunit 134685 "Email Test"
         VariableStorage.Enqueue(Status);
         if ThrowError then
             Error('');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnShowSource', '', true, true)]
+    local procedure OnShowSourceSubscriber(SourceTableId: Integer; SourceSystemId: Guid; var IsHandled: Boolean)
+    begin
+        IsHandled := true;
     end;
 
     procedure ThrowErrorOnAfterSendEmail()

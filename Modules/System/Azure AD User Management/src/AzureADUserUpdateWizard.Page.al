@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Administrators can use this page to synchronize information about users from Office 365 to Business Central.
+/// Administrators can use this page to synchronize information about users from Microsoft 365 to Business Central.
 /// </summary>
 page 9515 "Azure AD User Update Wizard"
 {
-    Caption = 'Update users from Office 365';
+    Caption = 'Update users from Microsoft 365';
     PageType = NavigatePage;
     ApplicationArea = All;
     DeleteAllowed = false;
@@ -30,19 +30,19 @@ page 9515 "Azure AD User Update Wizard"
                 {
                     ShowCaption = false;
                     Caption = 'Description';
-                    InstructionalText = 'Bring changes to user information from your Office 365 organization to Business Central. Update license assignments, name changes, email addresses, preferred languages, and user access.';
+                    InstructionalText = 'Bring changes to user information from your Microsoft 365 organization to Business Central. Update license assignments, name changes, email addresses, preferred languages, and user access.';
                 }
                 group(NoteGroup)
                 {
                     Caption = 'Note:';
-                    InstructionalText = 'It can take up to 72 hours for a change in Office 365 to become available to Business Central.';
+                    InstructionalText = 'It can take up to 72 hours for a change in Microsoft 365 to become available to Business Central.';
                 }
             }
             group("No Updates")
             {
                 Visible = NoAvailableUpdatesVisible;
                 Caption = 'No updates';
-                InstructionalText = 'There are no updates from Office 365. You can exit this guide.';
+                InstructionalText = 'There are no updates from Microsoft 365. You can exit this guide.';
                 ShowCaption = false;
             }
             group("Total Updates To Confirm")
@@ -295,12 +295,15 @@ page 9515 "Azure AD User Update Wizard"
                 trigger OnAction()
                 var
                     AzureADUserMgtImpl: Codeunit "Azure AD User Mgmt. Impl.";
+                    GuidedExperience: Codeunit "Guided Experience";
                     SuccessCount: Integer;
                 begin
                     Reset();
                     SuccessCount := AzureADUserMgtImpl.ApplyUpdatesFromAzureGraph(Rec);
                     NumberOfUpdatesApplied := StrSubstNo(NumberOfUpdatesAppliedTxt, SuccessCount, Count());
                     DeleteAll();
+
+                    GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Azure AD User Update Wizard");
 
                     MakeAllGroupsInvisible();
                     FinishedVisible := true;
@@ -377,7 +380,7 @@ page 9515 "Azure AD User Update Wizard"
         TotalUpdatesReadyToApplyVisible: Boolean;
         TotalUpdatesReadyToApplyTxt: Label 'Number of updates ready to be applied: %1. These can be name, email address, preferred language, and user access changes. Choose View changes to see the list.', Comment = '%1 = An integer count of total updates ready to apply';
 
-        CannotUpdateUsersFromOfficeErr: Label 'You do not have sufficient previleges to update users from Office 365';
+        CannotUpdateUsersFromOfficeErr: Label 'Your user account does not give you permission to fetch users from Microsoft 365. Please contact your administrator.';
 
     trigger OnOpenPage()
     var

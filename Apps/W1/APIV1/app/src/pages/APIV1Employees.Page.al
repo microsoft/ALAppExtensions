@@ -132,21 +132,21 @@ page 20017 "APIV1 - Employees"
                 {
                     Caption = 'lastModifiedDateTime', Locked = true;
                 }
-                part(picture; 5468)
+                part(picture; "APIV1 - Pictures")
                 {
                     Caption = 'picture';
                     EntityName = 'picture';
                     EntitySetName = 'picture';
                     SubPageLink = Id = FIELD(SystemId);
                 }
-                part(defaultDimensions; 5509)
+                part(defaultDimensions; "APIV1 - Default Dimensions")
                 {
                     Caption = 'Default Dimensions', Locked = true;
                     EntityName = 'defaultDimensions';
                     EntitySetName = 'defaultDimensions';
                     SubPageLink = ParentId = FIELD(SystemId);
                 }
-                part(timeRegistrationEntries; 20041)
+                part(timeRegistrationEntries; "APIV1 - Time Registr. Entries")
                 {
                     Caption = 'timeRegistrationEntries', Locked = true;
                     EntityName = 'timeRegistrationEntry';

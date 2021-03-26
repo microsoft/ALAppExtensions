@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31130 "Sync.Dep.Fld-UserSetup CZP"
 {
@@ -36,3 +37,4 @@ codeunit 31130 "Sync.Dep.Fld-UserSetup CZP"
         SyncDepFldUtilities.SyncFields(Rec."Unlimited Cash Desk Approval", Rec."Unlimited Cash Desk Appr. CZP", PreviousRecord."Unlimited Cash Desk Approval", PreviousRecord."Unlimited Cash Desk Appr. CZP");
     end;
 }
+#endif

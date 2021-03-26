@@ -161,8 +161,8 @@ codeunit 20038 "APIV1 - Send Sales Document"
         RecordVariant := SalesCrMemoHeader;
         EmailAddress := GetSendToEmailAddress(SalesCrMemoHeader);
         EmailBodyTxt := GetCreditMemoEmailBody(SalesCrMemoHeader);
-        ReportSelections.GetEmailBodyCustomText(
-        ServerEmailBodyFilePath, 2, RecordVariant, SalesCrMemoHeader."Bill-to Customer No.", EmailAddress, EmailBodyTxt);
+        ReportSelections.GetEmailBodyTextForCust(
+            ServerEmailBodyFilePath, 2, RecordVariant, SalesCrMemoHeader."Bill-to Customer No.", EmailAddress, EmailBodyTxt);
         DocumentMailing.EmailFileWithSubjectAndReportUsage(
          '', '', ServerEmailBodyFilePath, StrSubstNo(CancelationEmailSubjectTxt, TempSalesHeader."Document Type"::"Credit Memo"),
          SalesCrMemoHeader."No.", EmailAddress, Format(TempSalesHeader."Document Type"::"Credit Memo"), true, 2);

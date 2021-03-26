@@ -23,6 +23,11 @@ table 31074 "Statistic Indication CZL"
             Caption = 'Description';
             DataClassification = CustomerContent;
         }
+        field(10; "Description EN"; Text[100])
+        {
+            Caption = 'Description EN';
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {

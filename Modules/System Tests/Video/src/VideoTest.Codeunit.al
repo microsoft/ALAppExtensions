@@ -59,7 +59,6 @@ codeunit 135038 "Video Test"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::Video, 'OnRegisterVideo', '', false, false)]
-    [Scope('OnPrem')]
     local procedure HandleOnRegisterManualSetup(var Sender: Codeunit Video)
     var
         MyVideoSource: Record "My Video Source";
@@ -75,7 +74,6 @@ codeunit 135038 "Video Test"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::Video, 'OnVideoPlayed', '', false, false)]
-    [Scope('OnPrem')]
     local procedure HandleOnVideoPlayed(TableNum: Integer; SystemID: Guid)
     begin
         Assert.AreEqual(SourceVideoTableNum, TableNum, 'Table num for the played video does not match.');

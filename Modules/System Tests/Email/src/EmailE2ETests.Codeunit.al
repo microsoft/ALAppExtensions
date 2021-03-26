@@ -11,6 +11,8 @@ codeunit 134692 "Email E2E Tests"
         Assert: Codeunit "Library Assert";
         Email: Codeunit Email;
         EmailMessageOpenPermissionErr: Label 'You can only open your own email messages.';
+        EmailWasQueuedForSendingMsg: Label 'The message was queued for sending.';
+        FromDisplayNameLbl: Label '%1 (%2)', Comment = '%1 - Account Name, %2 - Email address', Locked = true;
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -363,22 +365,27 @@ codeunit 134692 "Email E2E Tests"
     end;
 
     [Test]
-    procedure OpenSentEmailTest()
+    [HandlerFunctions('MessageQueued')]
+    procedure OpenAndResendSentEmailTest()
     var
         TempAccount: Record "Email Account" temporary;
         SentEmail: Record "Sent Email";
+        Any: Codeunit Any;
         EmailMessage: Codeunit "Email Message";
         Base64Convert: Codeunit "Base64 Convert";
         ConnectorMock: Codeunit "Connector Mock";
         EmailViewer: TestPage "Email Viewer";
         SentEmails: TestPage "Sent Emails";
-        Recipients: List of [Text];
+        Recipient, Subject, Body : Text;
     begin
         // Initialize
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
-        Recipients.Add('recipient@test.com');
-        EmailMessage.Create(Recipients, 'Test subject', 'Test body', true);
+        Recipient := Any.Email();
+        Subject := Any.UnicodeText(50);
+        Body := Any.UnicodeText(1024);
+
+        EmailMessage.Create(Recipient, Subject, Body, true);
         EmailMessage.AddAttachment('Attachment1', 'text/plain', Base64Convert.ToBase64('Content'));
         EmailMessage.AddAttachment('Attachment1', 'text/plain', Base64Convert.ToBase64('Content'));
 
@@ -399,15 +406,59 @@ codeunit 134692 "Email E2E Tests"
         SentEmails.Desc.Drilldown();
 
         // Verify
-        Assert.IsFalse(EmailViewer.Account.Editable(), 'Account field was editable');
-        Assert.IsFalse(EmailViewer.ToField.Editable(), 'To field was editable');
-        Assert.IsFalse(EmailViewer.CcField.Editable(), 'Cc field was editable');
-        Assert.IsFalse(EmailViewer.BccField.Editable(), 'Bcc field was editable');
-        Assert.IsFalse(EmailViewer.SubjectField.Editable(), 'Subject field was editable');
-        Assert.IsFalse(EmailViewer.BodyField.Editable(), 'Body field was editable');
+        Assert.IsFalse(EmailViewer.Account.Editable(), 'Account field is editable');
+        Assert.AreEqual(StrSubstNo(FromDisplayNameLbl, TempAccount.Name, TempAccount."Email Address"), EmailViewer.Account.Value(), 'Account value is incorrect');
 
-        Assert.IsFalse(EmailViewer.Attachments.Delete.Visible(), 'Delete attachment was visible');
-        Assert.IsFalse(EmailViewer.Attachments.Upload.Visible(), 'Visible attachment was visible');
+        Assert.IsFalse(EmailViewer.ToField.Editable(), 'To field is editable');
+        Assert.AreEqual(Recipient, EmailViewer.ToField.Value(), 'To field value is incorrect');
+
+        Assert.IsFalse(EmailViewer.CcField.Editable(), 'Cc field is editable');
+        Assert.AreEqual('', EmailViewer.CcField.Value(), 'Cc field value is incorrect');
+
+        Assert.IsFalse(EmailViewer.BccField.Editable(), 'Bcc field is editable');
+        Assert.AreEqual('', EmailViewer.BccField.Value(), 'Bcc field value is incorrect');
+
+        Assert.IsFalse(EmailViewer.SubjectField.Editable(), 'Subject field is editable');
+        Assert.AreEqual(Subject, EmailViewer.SubjectField.Value(), 'Subject field value is incorrect');
+
+        Assert.IsFalse(EmailViewer.BodyField.Editable(), 'Body field is editable');
+        Assert.AreEqual(Body, EmailViewer.BodyField.Value(), 'Body field value is incorrect');
+
+        Assert.IsFalse(EmailViewer.Attachments.Delete.Visible(), 'Delete attachment is visible');
+        Assert.IsFalse(EmailViewer.Attachments.Upload.Visible(), 'Visible attachment is visible');
+
+        Assert.IsTrue(EmailViewer.Resend.Visible(), 'Resend action should be visible');
+        Assert.IsTrue(EmailViewer.Resend.Enabled(), 'Resend action should be enabled');
+
+        // Resend the send email
+        EmailViewer.Resend.Invoke();
+
+        // Message appears (see MessageQueued handler)
+    end;
+
+    [Test]
+    procedure OpenSentEmailFromAnotherUserTest()
+    var
+        SentEmail: Record "Sent Email";
+        Any: Codeunit Any;
+        SentEmails: TestPage "Sent Emails";
+    begin
+        // Create a sent email
+        SentEmail.Init();
+        SentEmail.Description := CopyStr(Any.UnicodeText(50), 1, MaxStrLen(SentEmail.Description));
+        SentEmail."Date Time Sent" := CurrentDateTime();
+        SentEmail."User Security Id" := CreateGuid(); // Created by another user
+        SentEmail.Insert();
+
+        // Exercise
+        SentEmails.Trap();
+        Page.Run(Page::"Sent Emails");
+
+        Assert.IsTrue(SentEmails.GoToRecord(SentEmail), 'The sent email record should be present on the Sent Emails page');
+
+        // An error appears when a user tries to open an email sent from another user
+        asserterror SentEmails.Desc.Drilldown();
+        Assert.ExpectedError(EmailMessageOpenPermissionErr);
     end;
 
     [Test]
@@ -496,7 +547,11 @@ codeunit 134692 "Email E2E Tests"
         Email.SaveAsDraft(EmailMessage, EmailOutbox);
     end;
 
-
+    [MessageHandler]
+    procedure MessageQueued(Message: Text[1024])
+    begin
+        Assert.AreEqual(EmailWasQueuedForSendingMsg, Message, 'Wrong message when resending an email');
+    end;
 
     [ModalPageHandler]
     [Scope('OnPrem')]

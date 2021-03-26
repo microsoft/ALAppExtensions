@@ -34,6 +34,7 @@ codeunit 11726 "Cash Document-ReleasePrint CZP"
 
     procedure GetReport(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
+        CashDocumentHeaderCZP.Reset();
         CashDocumentHeaderCZP.SetRecFilter();
         CashDocumentHeaderCZP.PrintRecords(false);
     end;

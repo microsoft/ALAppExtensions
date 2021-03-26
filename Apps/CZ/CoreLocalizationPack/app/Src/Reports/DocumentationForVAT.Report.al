@@ -58,30 +58,6 @@ report 11757 "Documentation for VAT CZL"
             column(VATAmountReverseChargeVAT; VATAmountReverseChargeVATTotal[1])
             {
             }
-            column(VATBase2; VATBaseTotal[2])
-            {
-            }
-            column(VATAmount2; VATAmountTotal[2])
-            {
-            }
-            column(VATBaseSale2; VATBaseSaleTotal[2])
-            {
-            }
-            column(VATAmountSale2; VATAmountSaleTotal[2])
-            {
-            }
-            column(VATBasePurch2; VATBasePurchTotal[2])
-            {
-            }
-            column(VATAmountPurch2; VATAmountPurchTotal[2])
-            {
-            }
-            column(VATBaseReverseChargeVAT2; VATBaseReverseChargeVATTotal[2])
-            {
-            }
-            column(VATAmountReverseChargeVAT2; VATAmountReverseChargeVATTotal[2])
-            {
-            }
             column(Selection; Selection)
             {
             }
@@ -115,12 +91,6 @@ report 11757 "Documentation for VAT CZL"
                     column(Type_VATEntry; Type)
                     {
                         IncludeCaption = true;
-                    }
-                    column(Base_VATEntry; VATBase)
-                    {
-                    }
-                    column(Amount_VATEntry; VATAmount)
-                    {
                     }
                     column(CalculatedVATBase; CalculatedVATBase)
                     {
@@ -176,12 +146,6 @@ report 11757 "Documentation for VAT CZL"
                         column(CountrySubAmount; CountrySubTotalAmt[2])
                         {
                         }
-                        column(CountrySubUnrealBase; CountrySubTotalAmt[3])
-                        {
-                        }
-                        column(CountrySubUnrealAmount; CountrySubTotalAmt[4])
-                        {
-                        }
                         column(CountrySubTotalPrint; PrintCountrySubTotal)
                         {
                         }
@@ -235,8 +199,6 @@ report 11757 "Documentation for VAT CZL"
                         VATEntrySubtotalAmt[2] += CalculatedVATAmount;
                         VATEntrySubtotalAmt[3] += "Additional-Currency Base";
                         VATEntrySubtotalAmt[4] += "Additional-Currency Amount";
-                        VATEntrySubtotalAmt[5] += VATBase;
-                        VATEntrySubtotalAmt[6] += VATAmount;
 
                         VATEntry.SetFilter("VAT Calculation Type", '<>%1', VATEntry."VAT Calculation Type"::"Reverse Charge VAT");
                         VATEntry.CalcSums(Base, Amount, "Additional-Currency Base", "Additional-Currency Amount", "Advance Base");
@@ -284,12 +246,6 @@ report 11757 "Documentation for VAT CZL"
                     {
                     }
                     column(VATEntrySumAddCurrAmount; VATEntrySubtotalAmt[4])
-                    {
-                    }
-                    column(VATEntrySumBase; VATEntrySubtotalAmt[5])
-                    {
-                    }
-                    column(VATEntrySumAmount; VATEntrySubtotalAmt[6])
                     {
                     }
                 }
@@ -377,12 +333,12 @@ report 11757 "Documentation for VAT CZL"
                 ClosedVATEntriesTxt: Label 'Closed VAT Entries';
                 AllVATEntriesTxt: Label 'Open and Closed VAT Entries';
             begin
-                GLSetup.Get();
+                GeneralLedgerSetup.Get();
                 if UseAmtsInAddCurr then
-                    HeaderText := StrSubstNo(CurrencyTxt, GLSetup."Additional Reporting Currency")
+                    HeaderText := StrSubstNo(CurrencyTxt, GeneralLedgerSetup."Additional Reporting Currency")
                 else begin
-                    GLSetup.TestField("LCY Code");
-                    HeaderText := StrSubstNo(CurrencyTxt, GLSetup."LCY Code");
+                    GeneralLedgerSetup.TestField("LCY Code");
+                    HeaderText := StrSubstNo(CurrencyTxt, GeneralLedgerSetup."LCY Code");
                 end;
                 case Selection of
                     Selection::Open:
@@ -457,19 +413,19 @@ report 11757 "Documentation for VAT CZL"
             }
         }
     }
+
     labels
     {
         ReportCaptionLbl = 'Documentation for VAT';
         PageLbl = 'Page';
         BaseLbl = 'Base';
         AmountLbl = 'Amount';
-        ModifiedBaseCoefLbl = 'Modified Base (coef.)';
-        ModifiedAmountCoefLbl = 'Modified Amount (coef.)';
         TotalLbl = 'Total';
         TotalSalesLbl = 'Total Sales VAT';
         TotalPurchLbl = 'Total Purchase VAT';
         TotalPurchRevChargeLbl = 'Total Purchase (Reverse Charge VAT)';
     }
+
     trigger OnPreReport()
     begin
         if "VAT Posting Setup".GetFilters() <> '' then
@@ -483,35 +439,16 @@ report 11757 "Documentation for VAT CZL"
 
     var
         VATEntry: Record "VAT Entry";
-        GLSetup: Record "General Ledger Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         VATPeriodCZL: Record "VAT Period CZL";
-        StartDateReq: Date;
-        EndDateReq: Date;
         Selection: Enum "VAT Statement Report Selection";
-        PrintVATEntries: Boolean;
-        VATType: Integer;
-        VATBaseTotal: array[2] of Decimal;
-        VATAmountTotal: array[2] of Decimal;
-        VATBaseSaleTotal: array[2] of Decimal;
-        VATAmountSaleTotal: array[2] of Decimal;
-        VATBasePurchTotal: array[2] of Decimal;
-        VATAmountPurchTotal: array[2] of Decimal;
-        VATBaseReverseChargeVATTotal: array[2] of Decimal;
-        VATAmountReverseChargeVATTotal: array[2] of Decimal;
-        CalculatedVATBase: Decimal;
-        CalculatedVATAmount: Decimal;
-        VATBase: Decimal;
-        VATAmount: Decimal;
-        FindFirstEntry: Boolean;
-        VATPostingSetupFilter: Text;
-        VATDateFilter: Text;
-        Heading: Text;
-        UseAmtsInAddCurr: Boolean;
-        HeaderText: Text[30];
-        PrintCountrySubTotal: Integer;
-        CountrySubTotalAmt: array[4] of Decimal;
-        SettlementNoFilter: Text;
-        VATEntrySubtotalAmt: array[10] of Decimal;
+        StartDateReq, EndDateReq : Date;
+        PrintVATEntries, FindFirstEntry, UseAmtsInAddCurr : Boolean;
+        VATType, PrintCountrySubTotal : Integer;
+        VATBaseTotal, VATAmountTotal, VATBaseSaleTotal, VATAmountSaleTotal, VATBasePurchTotal, VATAmountPurchTotal, VATBaseReverseChargeVATTotal, VATAmountReverseChargeVATTotal : array[2] of Decimal;
+        CalculatedVATBase, CalculatedVATAmount, VATBase, VATAmount : Decimal;
+        VATPostingSetupFilter, VATDateFilter, Heading, HeaderText, SettlementNoFilter : Text;
+        CountrySubTotalAmt, VATEntrySubtotalAmt : array[4] of Decimal;
         PeriodTxt: Label 'Period: %1', Comment = '%1 = Period';
         CurrencyTxt: Label 'All amounts are in %1', Comment = '%1 = Currency Code';
         TotalPerTxt: Label 'Total for %1 %2 %3', Comment = '%1 = VAT Bus. Posting Group; %2 = VAT Prod. Posting Group; %3 = Type';

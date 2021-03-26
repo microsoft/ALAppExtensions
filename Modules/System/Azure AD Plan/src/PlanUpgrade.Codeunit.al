@@ -9,6 +9,7 @@
 codeunit 9057 "Plan Upgrade"
 {
     Subtype = Upgrade;
+    Permissions = tabledata Plan = rimd;
 
     var
         SubscriptionPlanMsg: Label 'Subscription Plan %1 was added', Comment = '%1 - Plan Id', Locked = true;

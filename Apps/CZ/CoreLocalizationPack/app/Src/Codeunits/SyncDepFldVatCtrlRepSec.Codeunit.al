@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31172 "Sync.Dep.Fld-VatCtrlRepSec CZL"
 {
@@ -162,3 +163,4 @@ codeunit 31172 "Sync.Dep.Fld-VatCtrlRepSec CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

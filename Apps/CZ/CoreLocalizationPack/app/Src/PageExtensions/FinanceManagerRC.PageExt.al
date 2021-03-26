@@ -34,22 +34,6 @@ pageextension 11793 "Finance Manager RC CZL" extends "Finance Manager Role Cente
         }
         addlast(Group7)
         {
-            action("Accounting Sheets CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Accounting Sheets';
-                Image = Report;
-                RunObject = Report "Accounting Sheets CZL";
-                ToolTip = 'View, print, or send a report that shows how a general ledger document was posted on G/L Accounts. You can use this report to document your general ledger transactions with signatures of responsibility persons.';
-            }
-            action("General Journal CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'General Journal';
-                Image = Report;
-                RunObject = Report "General Journal CZL";
-                ToolTip = 'View, print, or send a report that shows a list of general ledger entries sorted by date of posting. You can use this report at the close of an accounting period or fiscal year and to document your general ledger transactions according law requirements.';
-            }
             action("General Ledger Document CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -106,6 +90,15 @@ pageextension 11793 "Finance Manager RC CZL" extends "Finance Manager Role Cente
                 Image = Report;
                 RunObject = Report "Joining G/L Account Adj. CZL";
                 ToolTip = 'Verify that selected G/L account balance is cleared for selected document number.';
+            }
+        }
+        addlast(Group53)
+        {
+            action("Inventory - G/L Reconciliation CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Inventory - G/L Reconciliation Enhanced';
+                RunObject = page "Inv. G/L Reconciliation CZL";
             }
         }
         addafter("Reconcile Cust. and Vend. Accs")

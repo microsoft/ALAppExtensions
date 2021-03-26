@@ -93,21 +93,21 @@ codeunit 11700 "Acc. Schedule Management CZL"
         IsHandled := true;
     end;
 
-    procedure CalcCorrectionCell(var AccSchedLine: Record "Acc. Schedule Line"; var ColumnLayout: Record "Column Layout"; CalcAddCurr: Boolean): Decimal
+    procedure CalcCorrectionCell(var AccScheduleLine: Record "Acc. Schedule Line"; var ColumnLayout: Record "Column Layout"; CalcAddCurr: Boolean): Decimal
     var
-        AccSchedLine2: Record "Acc. Schedule Line";
+        LocalAccScheduleLine: Record "Acc. Schedule Line";
         AccSchedManagement: Codeunit AccSchedManagement;
     begin
-        AccSchedLine2.SetRange("Schedule Name", AccSchedLine."Schedule Name");
-        AccSchedLine2.SetRange("Row Correction CZL", AccSchedLine."Row No.");
-        if AccSchedLine2.FindFirst() then begin
-            AccSchedLine2.CopyFilters(AccSchedLine);
-            exit(AccSchedManagement.CalcCell(AccSchedLine2, ColumnLayout, CalcAddCurr));
+        LocalAccScheduleLine.SetRange("Schedule Name", AccScheduleLine."Schedule Name");
+        LocalAccScheduleLine.SetRange("Row Correction CZL", AccScheduleLine."Row No.");
+        if LocalAccScheduleLine.FindFirst() then begin
+            LocalAccScheduleLine.CopyFilters(AccScheduleLine);
+            exit(AccSchedManagement.CalcCell(LocalAccScheduleLine, ColumnLayout, CalcAddCurr));
         end;
         exit(0);
     end;
 
-    procedure EmptyLine(var AccSchedLine: Record "Acc. Schedule Line"; ColumnLayoutName: Code[10]; CalcAddCurr: Boolean): Boolean
+    procedure EmptyLine(var AccScheduleLine: Record "Acc. Schedule Line"; ColumnLayoutName: Code[10]; CalcAddCurr: Boolean): Boolean
     var
         ColumnLayout: Record "Column Layout";
         AccSchedManagement: Codeunit AccSchedManagement;
@@ -116,7 +116,7 @@ codeunit 11700 "Acc. Schedule Management CZL"
         ColumnLayout.SetRange("Column Layout Name", ColumnLayoutName);
         if ColumnLayout.FindSet(false, false) then
             repeat
-                NonZero := AccSchedManagement.CalcCell(AccSchedLine, ColumnLayout, CalcAddCurr) <> 0;
+                NonZero := AccSchedManagement.CalcCell(AccScheduleLine, ColumnLayout, CalcAddCurr) <> 0;
             until (ColumnLayout.Next() = 0) or NonZero;
         exit(not NonZero);
     end;

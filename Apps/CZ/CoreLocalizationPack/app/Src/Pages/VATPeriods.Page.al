@@ -52,22 +52,6 @@ page 11769 "VAT Periods CZL"
     }
     actions
     {
-        area(Processing)
-        {
-            action("Calc. and Post VAT Settlement")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Calculate and Post VAT Settlement';
-                Image = CalculateSalesTax;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
-                RunObject = Report "Calc. and Post VAT Settl. CZL";
-                ToolTip = 'This batch closes open VAT entries and transfers purchase and sales VAT amounts to the VAT settlement account.';
-                Ellipsis = true;
-                ShortcutKey = F9;
-            }
-        }
         area(Navigation)
         {
             action("VAT Statement")

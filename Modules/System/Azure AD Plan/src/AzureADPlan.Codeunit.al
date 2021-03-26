@@ -311,6 +311,17 @@ codeunit 9016 "Azure AD Plan"
     end;
 
     /// <summary>
+    /// Checks whether a given service plan is a Business Central service Plan
+    /// </summary>
+    /// <param name="ServicePlanId">The plan to check.</param>
+    /// <returns>True, if the service plan is a Business Central Plan, false otherwise.</returns>
+    [NonDebuggable]
+    procedure IsBCServicePlan(ServicePlanId: Guid): Boolean
+    begin
+        exit(AzureAdPlanImpl.IsBCServicePlan(ServicePlanId));
+    end;
+
+    /// <summary>
     /// Sets this codeunit in test mode (for running unit tests).
     /// </summary>
     /// <param name="EnableTestability">True to enable the test mode.</param>

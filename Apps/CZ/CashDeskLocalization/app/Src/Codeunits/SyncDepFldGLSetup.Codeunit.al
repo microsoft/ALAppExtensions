@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31124 "Sync.Dep.Fld-GLSetup CZP"
 {
@@ -35,3 +36,4 @@ codeunit 31124 "Sync.Dep.Fld-GLSetup CZP"
         SyncDepFldUtilities.SyncFields(Rec."Cash Payment Limit (LCY)", Rec."Cash Payment Limit (LCY) CZP", PreviousRecord."Cash Payment Limit (LCY)", PreviousRecord."Cash Payment Limit (LCY) CZP");
     end;
 }
+#endif

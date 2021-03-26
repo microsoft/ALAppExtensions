@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31183 "Sync.Dep.Fld-GLAccount CZL"
 {
@@ -34,3 +35,4 @@ codeunit 31183 "Sync.Dep.Fld-GLAccount CZL"
         evaluate(Rec."G/L Account Group CZL", format(NewFieldInt));
     end;
 }
+#endif

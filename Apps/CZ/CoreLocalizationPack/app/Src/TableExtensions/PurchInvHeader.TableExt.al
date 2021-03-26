@@ -2,6 +2,71 @@ tableextension 11730 "Purch. Inv. Header CZL" extends "Purch. Inv. Header"
 {
     fields
     {
+        field(11717; "Specific Symbol CZL"; Code[10])
+        {
+            Caption = 'Specific Symbol';
+            CharAllowed = '09';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11718; "Variable Symbol CZL"; Code[10])
+        {
+            Caption = 'Variable Symbol';
+            CharAllowed = '09';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11719; "Constant Symbol CZL"; Code[10])
+        {
+            Caption = 'Constant Symbol';
+            CharAllowed = '09';
+            TableRelation = "Constant Symbol CZL";
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11720; "Bank Account Code CZL"; Code[20])
+        {
+            Caption = 'Bank Account Code';
+            TableRelation = "Vendor Bank Account".Code where("Vendor No." = field("Pay-to Vendor No."));
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11721; "Bank Account No. CZL"; Text[30])
+        {
+            Caption = 'Bank Account No.';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11722; "Bank Branch No. CZL"; Text[20])
+        {
+            Caption = 'Bank Branch No.';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11723; "Bank Name CZL"; Text[100])
+        {
+            Caption = 'Bank Name';
+            DataClassification = CustomerContent;
+        }
+        field(11724; "Transit No. CZL"; Text[20])
+        {
+            Caption = 'Transit No.';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11725; "IBAN CZL"; Code[50])
+        {
+            Caption = 'IBAN';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11726; "SWIFT Code CZL"; Code[20])
+        {
+            Caption = 'SWIFT Code';
+            Editable = false;
+            TableRelation = "SWIFT Code";
+            DataClassification = CustomerContent;
+        }
         field(11774; "VAT Currency Factor CZL"; Decimal)
         {
             Caption = 'VAT Currency Factor';
@@ -32,6 +97,16 @@ tableextension 11730 "Purch. Inv. Header CZL" extends "Purch. Inv. Header"
             Caption = 'Tax Registration No.';
             DataClassification = CustomerContent;
         }
+        field(31068; "Physical Transfer CZL"; Boolean)
+        {
+            Caption = 'Physical Transfer';
+            DataClassification = CustomerContent;
+        }
+        field(31069; "Intrastat Exclude CZL"; Boolean)
+        {
+            Caption = 'Intrastat Exclude';
+            DataClassification = CustomerContent;
+        }
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
         {
             Caption = 'EU 3-Party Intermediate Role';
@@ -49,4 +124,31 @@ tableextension 11730 "Purch. Inv. Header CZL" extends "Purch. Inv. Header"
             DataClassification = CustomerContent;
         }
     }
+
+    var
+        PopUpVATLCYCorrection: Boolean;
+
+    procedure SetPopUpVATLCYCorrectionCZL(NewPopUpVATLCYCorrection: Boolean)
+    begin
+        PopUpVATLCYCorrection := NewPopUpVATLCYCorrection;
+    end;
+
+    procedure GetPopUpVATLCYCorrectionCZL(): Boolean
+    begin
+        exit(PopUpVATLCYCorrection);
+    end;
+
+    procedure MakeVATLCYCorrectionCZL()
+    var
+        VATLCYCorrectionCZL: Page "VAT LCY Correction CZL";
+    begin
+        VATLCYCorrectionCZL.InitGlobals(Rec);
+        VATLCYCorrectionCZL.Run();
+    end;
+
+    procedure IsVATLCYCorrectionAllowedCZL(): Boolean
+    begin
+        Rec.CalcFields("Amount Including VAT", "Amount");
+        exit((Rec."Currency Code" <> '') and ((Rec."Amount Including VAT" - Rec."Amount") <> 0));
+    end;
 }

@@ -52,8 +52,8 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
     }
 
     var
-        MSPayPalStandardAccount: Record 1070;
-        MSPayPalStandardManagement: Codeunit 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        MSPayPalStandardManagement: Codeunit "MS - PayPal Standard Mgt.";
         PaypalAccountId: Text[250];
         PaypalTermsOfServiceLink: Text[250];
         IsPaypalEnabledAndDefault: Boolean;
@@ -65,8 +65,8 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
     trigger OnOpenPage();
     var
         TempPaymentServiceSetup: Record 1060 temporary;
-        MSPayPalStandardTemplate: Record 1071;
-        MSPayPalStandardMgt: Codeunit 1070;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
         UserHasPermissions := CheckUserPermissions();
 
@@ -104,8 +104,8 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
 
     local procedure CheckUserPermissions(): Boolean
     var
-        DummyMSPayPalStandardAccount: Record 1070;
-        AzureADUserManagement: Codeunit 9010;
+        DummyMSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        AzureADUserManagement: Codeunit "Azure AD User Management";
         EnvironmentInfo: Codeunit "Environment Information";
     begin
         if not EnvironmentInfo.IsSaaS() then

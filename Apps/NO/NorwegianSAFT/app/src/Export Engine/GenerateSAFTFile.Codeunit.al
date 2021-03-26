@@ -35,8 +35,14 @@ codeunit 10673 "Generate SAF-T File"
     end;
 
     var
+        GlobalSAFTSetup: Record "SAF-T Setup";
+        GlobalCustomer: Record Customer;
+        GlobalVendor: Record Vendor;
+        GlobalCustomerPostingGroup: Record "Customer Posting Group";
+        GlobalVendorPostingGroup: Record "Vendor Posting Group";
         SAFTXMLHelper: Codeunit "SAF-T XML Helper";
         Window: Dialog;
+        SAFTSetupGot: Boolean;
         GeneratingHeaderTxt: Label 'Generating header...';
         ExportingGLAccountsTxt: Label 'Exporting g/l Accounts...';
         ExportingCustomersTxt: Label 'Exporting customers...';
@@ -123,6 +129,10 @@ codeunit 10673 "Generate SAF-T File"
         SAFTXMLHelper.AddNewXMLNode('Address', '');
         SAFTXMLHelper.AppendXMLNode('StreetName', StreetName);
         SAFTXMLHelper.AppendXMLNode('City', City);
+        If PostalCode = '' then begin
+            GetSAFTSetup();
+            PostalCode := GlobalSAFTSetup."Default Post Code";
+        end;
         SAFTXMLHelper.AppendXMLNode('PostalCode', PostalCode);
         SAFTXMLHelper.AppendXMLNode('Country', Country);
         SAFTXMLHelper.AppendXMLNode('AddressType', AddressType);
@@ -648,13 +658,28 @@ codeunit 10673 "Generate SAF-T File"
             CopyDimeSetIDToDimIDBuffer(TempDimIDBuffer, GLEntry."Dimension Set ID");
             ExportAnalysisInfo(TempDimIDBuffer);
             SAFTXMLHelper.AppendXMLNode('SourceDocumentID', GLEntry."Document No.");
-            if GLEntry."Gen. Posting Type" <> 0 then
-                case GLEntry."Source Type" of
-                    GLEntry."Source Type"::Customer:
-                        SAFTXMLHelper.AppendXMLNode('CustomerID', GLEntry."Source No.");
-                    GLEntry."Source Type"::Vendor:
-                        SAFTXMLHelper.AppendXMLNode('SupplierID', GLEntry."Source No.");
-                end;
+            case GLEntry."Source Type" of
+                GLEntry."Source Type"::Customer:
+                    begin
+                        if GLEntry."Source No." <> GlobalCustomer."No." then begin
+                            GlobalCustomerPostingGroup.Init();
+                            if GlobalCustomer.Get(GLEntry."Source No.") then
+                                if GlobalCustomerPostingGroup.Get(GlobalCustomer."Customer Posting Group") then;
+                        end;
+                        if GLEntry."G/L Account No." = GlobalCustomerPostingGroup."Receivables Account" then
+                            SAFTXMLHelper.AppendXMLNode('CustomerID', GLEntry."Source No.");
+                    end;
+                GLEntry."Source Type"::Vendor:
+                    begin
+                        if GLEntry."Source No." <> GlobalVendor."No." then begin
+                            GlobalVendorPostingGroup.init();
+                            if GlobalVendor.Get(GLEntry."Source No.") then
+                                if GlobalVendorPostingGroup.Get(GlobalVendor."Vendor Posting Group") then;
+                        end;
+                        if GLEntry."G/L Account No." = GlobalVendorPostingGroup."Payables Account" then
+                            SAFTXMLHelper.AppendXMLNode('SupplierID', GLEntry."Source No.");
+                    end;
+            end;
             if GLEntry.Description = '' then
                 GLEntry.Description := GLEntry."G/L Account No.";
             SAFTXMLHelper.AppendXMLNode('Description', GLEntry.Description);
@@ -955,6 +980,14 @@ codeunit 10673 "Generate SAF-T File"
     begin
         // SAF-T definition. Simple type. Type SAFmiddle2textType
         exit(CopyStr(InputText, 1, 70));
+    end;
+
+    local procedure GetSAFTSetup()
+    begin
+        if SAFTSetupGot then
+            exit;
+        GlobalSAFTSetup.Get();
+        SAFTSetupGot := true;
     end;
 
     [IntegrationEvent(false, false)]

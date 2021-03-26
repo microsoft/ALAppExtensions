@@ -90,14 +90,13 @@ report 11776 "Acc. Schedule Export File CZL"
                     AnalysisView.Get("Analysis View Name")
                 else begin
                     AnalysisView.Init();
-                    AnalysisView."Dimension 1 Code" := GLSetup."Global Dimension 1 Code";
-                    AnalysisView."Dimension 2 Code" := GLSetup."Global Dimension 2 Code";
+                    AnalysisView."Dimension 1 Code" := GeneralLedgerSetup."Global Dimension 1 Code";
+                    AnalysisView."Dimension 2 Code" := GeneralLedgerSetup."Global Dimension 2 Code";
                 end;
             end;
 
             trigger OnPostDataItem()
             var
-                InStr: InStream;
                 OutStr: OutStream;
                 ToFileName: Text;
             begin
@@ -146,8 +145,8 @@ report 11776 "Acc. Schedule Export File CZL"
                                 AnalysisView.Get(AccScheduleName."Analysis View Name")
                             else begin
                                 Clear(AnalysisView);
-                                AnalysisView."Dimension 1 Code" := GLSetup."Global Dimension 1 Code";
-                                AnalysisView."Dimension 2 Code" := GLSetup."Global Dimension 2 Code";
+                                AnalysisView."Dimension 1 Code" := GeneralLedgerSetup."Global Dimension 1 Code";
+                                AnalysisView."Dimension 2 Code" := GeneralLedgerSetup."Global Dimension 2 Code";
                             end;
                         end;
                     }
@@ -256,7 +255,7 @@ report 11776 "Acc. Schedule Export File CZL"
 
                         trigger OnLookup(var Text: Text): Boolean
                         begin
-                            exit(DimValue.LookUpDimFilter(AnalysisView."Dimension 1 Code", Text));
+                            exit(DimensionValue.LookUpDimFilter(AnalysisView."Dimension 1 Code", Text));
                         end;
                     }
                     field(Dim2FilterCZL; Dim2Filter)
@@ -269,7 +268,7 @@ report 11776 "Acc. Schedule Export File CZL"
 
                         trigger OnLookup(var Text: Text): Boolean
                         begin
-                            exit(DimValue.LookUpDimFilter(AnalysisView."Dimension 2 Code", Text));
+                            exit(DimensionValue.LookUpDimFilter(AnalysisView."Dimension 2 Code", Text));
                         end;
                     }
                     field(Dim3FilterCZL; Dim3Filter)
@@ -282,7 +281,7 @@ report 11776 "Acc. Schedule Export File CZL"
 
                         trigger OnLookup(var Text: Text): Boolean
                         begin
-                            exit(DimValue.LookUpDimFilter(AnalysisView."Dimension 3 Code", Text));
+                            exit(DimensionValue.LookUpDimFilter(AnalysisView."Dimension 3 Code", Text));
                         end;
                     }
                     field(Dim4FilterCZL; Dim4Filter)
@@ -295,7 +294,7 @@ report 11776 "Acc. Schedule Export File CZL"
 
                         trigger OnLookup(var Text: Text): Boolean
                         begin
-                            exit(DimValue.LookUpDimFilter(AnalysisView."Dimension 4 Code", Text));
+                            exit(DimensionValue.LookUpDimFilter(AnalysisView."Dimension 4 Code", Text));
                         end;
                     }
                 }
@@ -313,7 +312,7 @@ report 11776 "Acc. Schedule Export File CZL"
         }
         trigger OnOpenPage()
         begin
-            GLSetup.Get();
+            GeneralLedgerSetup.Get();
             if AccSchedNameHidden <> '' then
                 AccSchedName := AccSchedNameHidden;
             if ColumnLayoutNameHidden <> '' then
@@ -327,8 +326,8 @@ report 11776 "Acc. Schedule Export File CZL"
             if AccScheduleName."Analysis View Name" <> '' then
                 AnalysisView.Get(AccScheduleName."Analysis View Name")
             else begin
-                AnalysisView."Dimension 1 Code" := GLSetup."Global Dimension 1 Code";
-                AnalysisView."Dimension 2 Code" := GLSetup."Global Dimension 2 Code";
+                AnalysisView."Dimension 1 Code" := GeneralLedgerSetup."Global Dimension 1 Code";
+                AnalysisView."Dimension 2 Code" := GeneralLedgerSetup."Global Dimension 2 Code";
             end;
 
             UpdateEnabledControls();
@@ -337,24 +336,8 @@ report 11776 "Acc. Schedule Export File CZL"
 
     trigger OnPreReport()
     begin
-        GLSetup.Get();
+        GeneralLedgerSetup.Get();
         TempExcelBuffer.DeleteAll();
-        /*
-        if ExcelTemplateCode <> '' then begin
-            ExcelTemplateCZL.Get(ExcelTemplateCode);
-            ServerFileName := ExcelTemplateCZL.ExportToServerFile();
-            SheetName := ExcelTemplateCZL.Sheet;
-        end else
-            if DoUpdateExistingWorksheet then begin
-                ServerFileName := FileMgt.UploadFile(UpdateWorkbookTxt, ExcelExtensionTok);
-                if ServerFileName = '' then
-                    exit;
-                SheetName := TempExcelBuffer.SelectSheetsName(ServerFileName);
-                if SheetName = '' then
-                    exit;
-            end;
-        */
-
         InitAccSched();
     end;
 
@@ -362,11 +345,11 @@ report 11776 "Acc. Schedule Export File CZL"
         AccScheduleName: Record "Acc. Schedule Name";
         TempColumnLayout: Record "Column Layout" temporary;
         AnalysisView: Record "Analysis View";
-        GLSetup: Record "General Ledger Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         TempExcelBuffer: Record "Excel Buffer" temporary;
         AccScheduleFileMappingCZL: Record "Acc. Schedule File Mapping CZL";
         ExcelTemplateCZL: Record "Excel Template CZL";
-        DimValue: Record "Dimension Value";
+        DimensionValue: Record "Dimension Value";
         AccSchedManagement: Codeunit AccSchedManagement;
         FileManagement: Codeunit "File Management";
         TempBlob: Codeunit "Temp Blob";
@@ -402,7 +385,6 @@ report 11776 "Acc. Schedule Export File CZL"
         NotAvailableTxt: Label 'Not Available';
         MappingEmptyErr: Label 'XLS mapping is empty.';
         ExcelExtensionTok: Label '.xlsx', Locked = true;
-        UpdateWorkbookTxt: Label 'Update Workbook';
         SelectWorksheetErr: Label 'Select Worksheet to update';
         SelectSheetErr: Label 'Select Sheet to update';
         [InDataSet]

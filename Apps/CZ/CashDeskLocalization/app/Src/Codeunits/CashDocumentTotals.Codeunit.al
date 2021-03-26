@@ -27,12 +27,12 @@ codeunit 11714 "Cash Document Totals CZP"
 
     local procedure GetCaptionWithCurrencyCode(CaptionWithoutCurrencyCode: Text; CurrencyCode: Code[10]): Text
     var
-        GLSetup: Record "General Ledger Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         CurrencySuffixTok: Label ' (%1)', Comment = '%1 = Currency Code', Locked = true;
     begin
         if CurrencyCode = '' then begin
-            GLSetup.Get();
-            CurrencyCode := GLSetup.GetCurrencyCode(CurrencyCode);
+            GeneralLedgerSetup.Get();
+            CurrencyCode := GeneralLedgerSetup.GetCurrencyCode(CurrencyCode);
         end;
 
         if CurrencyCode <> '' then

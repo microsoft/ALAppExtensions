@@ -27,6 +27,21 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
         }
         addlast(Invoicing)
         {
+            field("Transaction Type CZL"; Rec."Transaction Type CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the default Transaction type for Intrastat reporting purposes.';
+            }
+            field("Transaction Specification CZL"; Rec."Transaction Specification CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the default Transaction specification for Intrastat reporting purposes.';
+            }
+            field("Transport Method CZL"; Rec."Transport Method CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the default Transport Method for Intrastat reporting purposes.';
+            }
             field("Last Unreliab. Check Date CZL"; Rec."Last Unreliab. Check Date CZL")
             {
                 ApplicationArea = Basic, Suite;

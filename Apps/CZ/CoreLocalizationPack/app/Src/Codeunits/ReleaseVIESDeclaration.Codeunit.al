@@ -1,11 +1,10 @@
-#pragma implicitwith disable
 codeunit 31059 "Release VIES Declaration CZL"
 {
     TableNo = "VIES Declaration Header CZL";
 
     trigger OnRun()
     var
-        VIESDeclarationLine: Record "VIES Declaration Line CZL";
+        VIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
     begin
         if Rec.Status = Rec.Status::Released then
             exit;
@@ -20,26 +19,26 @@ codeunit 31059 "Release VIES Declaration CZL"
         if Rec."Declaration Type" <> Rec."Declaration Type"::Normal then
             Rec.TestField("Corrected Declaration No.");
 
-        VIESDeclarationLine.SetRange("VIES Declaration No.", Rec."No.");
-        if VIESDeclarationLine.IsEmpty() then
+        VIESDeclarationLineCZL.SetRange("VIES Declaration No.", Rec."No.");
+        if VIESDeclarationLineCZL.IsEmpty() then
             Error(NothingToReleaseErr, Rec."No.");
-        VIESDeclarationLine.FindSet();
+        VIESDeclarationLineCZL.FindSet();
         PageNo := 1;
         LineNo := 0;
         repeat
-            VIESDeclarationLine.TestField("Country/Region Code");
-            VIESDeclarationLine.TestField("VAT Registration No.");
+            VIESDeclarationLineCZL.TestField("Country/Region Code");
+            VIESDeclarationLineCZL.TestField("VAT Registration No.");
             if Rec."Declaration Type" <> Rec."Declaration Type"::Normal then
-                VIESDeclarationLine.TestField("Amount (LCY)");
+                VIESDeclarationLineCZL.TestField("Amount (LCY)");
             LineNo += 1;
             if LineNo = StatutoryReportingSetupCZL."VIES Number of Lines" + 1 then begin
                 LineNo := 1;
                 PageNo += 1;
             end;
-            VIESDeclarationLine."Report Page Number" := PageNo;
-            VIESDeclarationLine."Report Line Number" := LineNo;
-            VIESDeclarationLine.Modify();
-        until VIESDeclarationLine.Next() = 0;
+            VIESDeclarationLineCZL."Report Page Number" := PageNo;
+            VIESDeclarationLineCZL."Report Line Number" := LineNo;
+            VIESDeclarationLineCZL.Modify();
+        until VIESDeclarationLineCZL.Next() = 0;
 
         Rec.Status := Rec.Status::Released;
         Rec.Modify(true);

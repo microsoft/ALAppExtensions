@@ -278,7 +278,7 @@ codeunit 139729 "APIV1 - Purchase Invoices E2E"
         RecordField: Record Field;
         ApiRecordRef: RecordRef;
         PageRecordRef: RecordRef;
-        PurchaseInvoice: TestPage 51;
+        PurchaseInvoice: TestPage "Purchase Invoice";
         VendorNo: Text;
         InvoiceDate: Date;
         ResponseText: Text;
@@ -427,7 +427,7 @@ codeunit 139729 "APIV1 - Purchase Invoices E2E"
         EXIT(InvoiceWithComplexJSON);
     end;
 
-    local procedure CreateInvoiceThroughTestPage(var PurchaseInvoice: TestPage 51; Vendor: Record "Vendor"; DocumentDate: Date; PostingDate: Date)
+    local procedure CreateInvoiceThroughTestPage(var PurchaseInvoice: TestPage "Purchase Invoice"; Vendor: Record "Vendor"; DocumentDate: Date; PostingDate: Date)
     begin
         PurchaseInvoice.OPENNEW();
         PurchaseInvoice."Buy-from Vendor No.".SETVALUE(Vendor."No.");

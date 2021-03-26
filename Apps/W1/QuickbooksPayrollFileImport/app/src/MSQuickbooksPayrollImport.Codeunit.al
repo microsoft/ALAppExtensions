@@ -32,8 +32,8 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
         TrnsGeneralJournalTxt: Label 'TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1Savings', Locked = true;
         SplitGeneralJournalTxt: Label 'SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Labor%1%1 -650%1%1Construction:Labor', Locked = true;
 
-    [EventSubscriber(ObjectType::Codeunit, 1660, 'OnRegisterPayrollService', '', false, false)]
-    local procedure OnRegisterPayrollService(var TempServiceConnection: Record 1400 temporary);
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Payroll Management", 'OnRegisterPayrollService', '', false, false)]
+    local procedure OnRegisterPayrollService(var TempServiceConnection: Record "Service Connection" temporary);
     begin
         TempServiceConnection.INIT();
         TempServiceConnection."No." := FORMAT(GetAppID());
@@ -42,10 +42,10 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
         TempServiceConnection.INSERT();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1660, 'OnImportPayroll', '', false, false)]
-    local procedure OnImportPayroll(var TempServiceConnection: Record 1400 temporary; GenJournalLine: Record 81);
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Payroll Management", 'OnImportPayroll', '', false, false)]
+    local procedure OnImportPayroll(var TempServiceConnection: Record "Service Connection" temporary; GenJournalLine: Record 81);
     var
-        PayrollImportTransactions: Page 1661;
+        PayrollImportTransactions: Page "Payroll Import Transactions";
     begin
         IF NOT (TempServiceConnection."No." = FORMAT(GetAppID())) THEN
             EXIT;
@@ -53,8 +53,8 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
         PayrollImportTransactions.RUNMODAL();
     end;
 
-    [EventSubscriber(ObjectType::Page, 1661, 'OnImportPayrollTransactions', '', false, false)]
-    local procedure OnImportPayrollTransactions(var TempServiceConnection: Record 1400; var TempImportGLTransaction: Record 1661 temporary);
+    [EventSubscriber(ObjectType::Page, Page::"Payroll Import Transactions", 'OnImportPayrollTransactions', '', false, false)]
+    local procedure OnImportPayrollTransactions(var TempServiceConnection: Record "Service Connection"; var TempImportGLTransaction: Record 1661 temporary);
     begin
         IF NOT (TempServiceConnection."No." = FORMAT(GetAppID())) THEN
             EXIT;
@@ -62,11 +62,11 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
         ImportGLTransactionsFromIIFFile(TempImportGLTransaction);
     end;
 
-    [EventSubscriber(ObjectType::Page, 1661, 'OnCreateSampleFile', '', false, false)]
-    local procedure OnCreateSampleFile(TempServiceConnection: Record 1400);
+    [EventSubscriber(ObjectType::Page, Page::"Payroll Import Transactions", 'OnCreateSampleFile', '', false, false)]
+    local procedure OnCreateSampleFile(TempServiceConnection: Record "Service Connection");
     var
         TempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit 419;
+        FileMgt: Codeunit "File Management";
         OutStream: OutStream;
         Tab: Char;
     begin
@@ -98,7 +98,7 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
 
     local procedure ImportGLTransactionsFromIIFFile(var TempImportGLTransaction: Record 1661 temporary): Boolean;
     var
-        FileManagement: Codeunit 419;
+        FileManagement: Codeunit "File Management";
         ServerFile: Text[250];
     begin
         OnUploadFile(ServerFile);

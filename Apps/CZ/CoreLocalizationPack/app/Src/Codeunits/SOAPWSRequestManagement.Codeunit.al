@@ -99,14 +99,12 @@ codeunit 31031 "SOAP WS Request Management CZL"
     local procedure CreateEnvelope(var EnvelopeXmlDocument: XmlDocument; var BodyXmlNode: XmlNode; Username: Text; Password: Text)
     var
         XMLDOMManagement: Codeunit "XML DOM Management";
-        BinarySecurityTokenXmlNode: XmlNode;
         EnvelopeXmlNode: XmlNode;
         HeaderXmlNode: XmlNode;
         SecurityXmlNode: XmlNode;
         UsernameTokenXmlNode: XmlNode;
         UsernameXmlNode: XmlNode;
         PasswordXmlNode: XmlNode;
-        NamespaceManager: XmlNamespaceManager;
     begin
         EnvelopeXmlDocument := XmlDocument.Create();
         XMLDOMManagement.AddRootElementWithPrefix(EnvelopeXmlDocument, 'Envelope', 'soap', SoapNamespaceTxt, EnvelopeXmlNode);
@@ -203,13 +201,13 @@ codeunit 31031 "SOAP WS Request Management CZL"
         ResponseContentXmlDocument.WriteTo(ResponseContentText);
     end;
 
-    procedure GetResponseContent(var TempBlobResponseContent: Codeunit "Temp Blob")
+    procedure GetResponseContent(var ResponseContentTempBlob: Codeunit "Temp Blob")
     var
-        OutStr: OutStream;
+        ResponseOutStream: OutStream;
     begin
-        Clear(TempBlobResponseContent);
-        TempBlobResponseContent.CreateOutStream(OutStr, GlobalStreamEncoding);
-        ResponseContentXmlDocument.WriteTo(OutStr);
+        Clear(ResponseContentTempBlob);
+        ResponseContentTempBlob.CreateOutStream(ResponseOutStream, GlobalStreamEncoding);
+        ResponseContentXmlDocument.WriteTo(ResponseOutStream);
     end;
 
     [Obsolete('This function is not needed and will be removed.', '18.0')]

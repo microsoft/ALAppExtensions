@@ -23,6 +23,10 @@ page 1751 "Data Classification Worksheet"
     UsageCategory = Administration;
     AdditionalSearchTerms = 'GDPR,Data Privacy,Privacy,Personal Data';
     ContextSensitiveHelpPage = 'admin-classifying-data-sensitivity';
+    Permissions = tabledata Company = r,
+                  tabledata "Data Sensitivity" = rm,
+                  tabledata Field = r,
+                  tabledata User = r;
 
     layout
     {

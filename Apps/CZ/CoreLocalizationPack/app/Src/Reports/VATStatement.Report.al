@@ -42,16 +42,16 @@ report 11769 "VAT Statement CZL"
                 column(HeaderText; HeaderText)
                 {
                 }
-                column(GlSetupLCYCode; GLSetup."LCY Code")
+                column(GlSetupLCYCode; GeneralLedgerSetup."LCY Code")
                 {
                 }
                 column(Allamountsarein; AllamountsareinLbl)
                 {
                 }
-                column(TxtGLSetupAddnalReportCur; StrSubstNo(AmountsCurrencyLbl, GLSetup."Additional Reporting Currency"))
+                column(TxtGLSetupAddnalReportCur; StrSubstNo(AmountsCurrencyLbl, GeneralLedgerSetup."Additional Reporting Currency"))
                 {
                 }
-                column(GLSetupAddRepCurrency; GLSetup."Additional Reporting Currency")
+                column(GLSetupAddRepCurrency; GeneralLedgerSetup."Additional Reporting Currency")
                 {
                 }
                 column(VatStmLineTableCaptFilter; TableCaption() + ': ' + VATStmtLineFilter)
@@ -140,7 +140,7 @@ report 11769 "VAT Statement CZL"
             }
             trigger OnPreDataItem()
             begin
-                GLSetup.Get();
+                GeneralLedgerSetup.Get();
             end;
         }
     }
@@ -251,8 +251,8 @@ report 11769 "VAT Statement CZL"
     var
         GLAccount: Record "G/L Account";
         VATEntry: Record "VAT Entry";
-        GLSetup: Record "General Ledger Setup";
-        VATEntry2: Record "VAT Entry";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        SecondVATEntry: Record "VAT Entry";
         VATStatementLine: Record "VAT Statement Line";
         VATStatementReportSelection: Enum "VAT Statement Report Selection";
         VATStatementReportPeriodSelection: Enum "VAT Statement Report Period Selection";
@@ -296,45 +296,45 @@ report 11769 "VAT Statement CZL"
         [InDataSet]
         RoundingDirectionCtrlVisible: Boolean;
 
-    procedure CalcLineTotal(VATStmtLine2: Record "VAT Statement Line"; var TotalAmount: Decimal; Level: Integer): Boolean
+    procedure CalcLineTotal(VATStatementLine: Record "VAT Statement Line"; var TotalAmount: Decimal; Level: Integer): Boolean
     var
         IsHandled: Boolean;
     begin
         if Level = 0 then
             TotalAmount := 0;
-        case VATStmtLine2.Type of
-            VATStmtLine2.Type::"Account Totaling":
+        case VATStatementLine.Type of
+            VATStatementLine.Type::"Account Totaling":
                 begin
-                    GLAccount.SetFilter("No.", VATStmtLine2."Account Totaling");
+                    GLAccount.SetFilter("No.", VATStatementLine."Account Totaling");
                     if EndDateReq = 0D then
                         EndDate := DMY2Date(31, 12, 9999)
                     else
                         EndDate := EndDateReq;
                     GLAccount.SetRange("Date Filter", StartDate, EndDate);
                     Amount := 0;
-                    if GLAccount.FindSet() and (VATStmtLine2."Account Totaling" <> '') then
+                    if GLAccount.FindSet() and (VATStatementLine."Account Totaling" <> '') then
                         repeat
-                            case VATStmtLine2."G/L Amount Type CZL" of
-                                VATStmtLine2."G/L Amount Type CZL"::"Net Change":
+                            case VATStatementLine."G/L Amount Type CZL" of
+                                VATStatementLine."G/L Amount Type CZL"::"Net Change":
                                     begin
-                                        GLAccount.CalcFields("Net Change (VAT Date) CZL", "Net Change ACY (VAT Date)");
-                                        Amount := ConditionalAdd(Amount, GLAccount."Net Change (VAT Date) CZL", GLAccount."Net Change ACY (VAT Date)");
+                                        GLAccount.CalcFields("Net Change (VAT Date) CZL", "Net Change ACY (VAT Date) CZL");
+                                        Amount := ConditionalAdd(Amount, GLAccount."Net Change (VAT Date) CZL", GLAccount."Net Change ACY (VAT Date) CZL");
                                     end;
-                                VATStmtLine2."G/L Amount Type CZL"::Debit:
+                                VATStatementLine."G/L Amount Type CZL"::Debit:
                                     begin
-                                        GLAccount.CalcFields("Debit Amount (VAT Date) CZL", "Debit Amount ACY (VAT Date)");
-                                        Amount := ConditionalAdd(Amount, GLAccount."Debit Amount (VAT Date) CZL", GLAccount."Debit Amount ACY (VAT Date)");
+                                        GLAccount.CalcFields("Debit Amount (VAT Date) CZL", "Debit Amt. ACY (VAT Date) CZL");
+                                        Amount := ConditionalAdd(Amount, GLAccount."Debit Amount (VAT Date) CZL", GLAccount."Debit Amt. ACY (VAT Date) CZL");
                                     end;
-                                VATStmtLine2."G/L Amount Type CZL"::Credit:
+                                VATStatementLine."G/L Amount Type CZL"::Credit:
                                     begin
-                                        GLAccount.CalcFields("Credit Amount (VAT Date) CZL", "Credit Amount ACY (VAT Date)");
-                                        Amount := ConditionalAdd(Amount, GLAccount."Credit Amount (VAT Date) CZL", GLAccount."Credit Amount ACY (VAT Date)");
+                                        GLAccount.CalcFields("Credit Amount (VAT Date) CZL", "Credit Amt. ACY (VAT Date) CZL");
+                                        Amount := ConditionalAdd(Amount, GLAccount."Credit Amount (VAT Date) CZL", GLAccount."Credit Amt. ACY (VAT Date) CZL");
                                     end;
                             end;
                         until GLAccount.Next() = 0;
-                    CalcTotalAmount(VATStmtLine2, TotalAmount);
+                    CalcTotalAmount(VATStatementLine, TotalAmount);
                 end;
-            VATStmtLine2.Type::"VAT Entry Totaling":
+            VATStatementLine.Type::"VAT Entry Totaling":
                 begin
                     VATEntry.Reset();
 
@@ -346,113 +346,115 @@ report 11769 "VAT Statement CZL"
                         VATEntry.SetCurrentKey(
                           Type, Closed, "Tax Jurisdiction Code", "Use Tax", "Posting Date");
 
-                    VATEntry.SetVATStatementLineFiltersCZL(VATStmtLine2);
-                    GLSetup.Get();
-                    VATEntry.SetPeriodFilterCZL(VATStatementReportPeriodSelection, StartDate, EndDate, GLSetup."Use VAT Date CZL");
+                    VATEntry.SetVATStatementLineFiltersCZL(VATStatementLine);
+                    GeneralLedgerSetup.Get();
+                    VATEntry.SetPeriodFilterCZL(VATStatementReportPeriodSelection, StartDate, EndDate, GeneralLedgerSetup."Use VAT Date CZL");
                     if SettlementNoFilter <> '' then
                         VATEntry.SetFilter("VAT Settlement No. CZL", SettlementNoFilter);
                     VATEntry.SetClosedFilterCZL(VATStatementReportSelection);
 
-                    case VATStmtLine2."Prepayment Type" of
-                        VATStmtLine2."Prepayment Type"::"Not Prepayment":
+                    case VATStatementLine."Prepayment Type" of
+                        VATStatementLine."Prepayment Type"::"Not Prepayment":
                             VATEntry.SetRange("Prepayment Type", VATEntry."Prepayment Type"::" ");
-                        VATStmtLine2."Prepayment Type"::Prepayment:
+                        VATStatementLine."Prepayment Type"::Prepayment:
                             VATEntry.SetRange("Prepayment Type", VATEntry."Prepayment Type"::Prepayment);
-                        VATStmtLine2."Prepayment Type"::Advance:
+                        VATStatementLine."Prepayment Type"::Advance:
                             VATEntry.SetRange("Prepayment Type", VATEntry."Prepayment Type"::Advance);
                         else
                             VATEntry.SetRange("Prepayment Type");
                     end;
 
-                    VATEntry2.Reset();
-                    VATEntry2.CopyFilters(VATEntry);
+                    SecondVATEntry.Reset();
+                    SecondVATEntry.CopyFilters(VATEntry);
                     Amount := 0;
-                    case VATStmtLine2."Amount Type" of
-                        VATStmtLine2."Amount Type"::Amount:
+                    case VATStatementLine."Amount Type" of
+                        VATStatementLine."Amount Type"::Amount:
                             begin
                                 VATEntry.CalcSums(Amount, "Additional-Currency Amount");
                                 Amount := ConditionalAdd(0, VATEntry.Amount, VATEntry."Additional-Currency Amount");
                             end;
-                        VATStmtLine2."Amount Type"::Base:
+                        VATStatementLine."Amount Type"::Base:
                             begin
                                 VATEntry.CalcSums(Base, "Additional-Currency Base");
                                 Amount := ConditionalAdd(0, VATEntry.Base, VATEntry."Additional-Currency Base");
                             end;
 #pragma warning disable AL0432
-                        VATStmtLine2."Amount Type"::"Adv. Base": // This value is discontinued and should no longer be used.
+                        VATStatementLine."Amount Type"::"Adv. Base": // This value is discontinued and should no longer be used.
 #pragma warning restore
                             begin
                                 VATEntry.CalcSums("Advance Base", "Additional-Currency Base");
                                 Amount := ConditionalAdd(0, VATEntry."Advance Base", VATEntry."Additional-Currency Base");
                             end;
-                        VATStmtLine2."Amount Type"::"Unrealized Amount":
+                        VATStatementLine."Amount Type"::"Unrealized Amount":
                             begin
                                 VATEntry.CalcSums("Remaining Unrealized Amount", "Add.-Curr. Rem. Unreal. Amount");
                                 Amount := ConditionalAdd(0, VATEntry."Remaining Unrealized Amount", VATEntry."Add.-Curr. Rem. Unreal. Amount");
                             end;
-                        VATStmtLine2."Amount Type"::"Unrealized Base":
+                        VATStatementLine."Amount Type"::"Unrealized Base":
                             begin
                                 VATEntry.CalcSums("Remaining Unrealized Base", "Add.-Curr. Rem. Unreal. Base");
                                 Amount := ConditionalAdd(0, VATEntry."Remaining Unrealized Base", VATEntry."Add.-Curr. Rem. Unreal. Base");
                             end;
                     end;
-                    OnCalcLineTotalOnBeforeCalcTotalAmountVATEntryTotaling(VATStmtLine2, VATEntry, Amount, UseAmtsInAddCurr);
-                    CalcTotalAmount(VATStmtLine2, TotalAmount);
+                    OnCalcLineTotalOnBeforeCalcTotalAmountVATEntryTotaling(VATStatementLine, VATEntry, Amount, UseAmtsInAddCurr);
+                    CalcTotalAmount(VATStatementLine, TotalAmount);
                 end;
-            VATStmtLine2.Type::"Row Totaling":
+            VATStatementLine.Type::"Row Totaling":
                 begin
                     if Level >= ArrayLen(RowNo) then
                         exit(false);
                     Level := Level + 1;
-                    RowNo[Level] := VATStmtLine2."Row No.";
+                    RowNo[Level] := VATStatementLine."Row No.";
 
-                    if VATStmtLine2."Row Totaling" = '' then
+                    if VATStatementLine."Row Totaling" = '' then
                         exit(true);
-                    VATStmtLine2.SetRange("Statement Template Name", VATStmtLine2."Statement Template Name");
-                    VATStmtLine2.SetRange("Statement Name", VATStmtLine2."Statement Name");
-                    VATStmtLine2.SetFilter("Row No.", VATStmtLine2."Row Totaling");
-                    if VATStmtLine2.FindSet() then
+                    VATStatementLine.SetRange("Statement Template Name", VATStatementLine."Statement Template Name");
+                    VATStatementLine.SetRange("Statement Name", VATStatementLine."Statement Name");
+                    VATStatementLine.SetFilter("Row No.", VATStatementLine."Row Totaling");
+                    if VATStatementLine.FindSet() then
                         repeat
-                            if not CalcLineTotal(VATStmtLine2, TotalAmount, Level) then begin
+                            if not CalcLineTotal(VATStatementLine, TotalAmount, Level) then begin
                                 if Level > 1 then
                                     exit(false);
                                 for index := 1 to ArrayLen(RowNo) do
                                     ErrorText := ErrorText + RowNo[index] + ' => ';
                                 ErrorText := CopyStr((ErrorText + '...'), 1, MaxStrLen(ErrorText));
-                                VATStmtLine2.FieldError("Row No.", ErrorText);
+                                VATStatementLine.FieldError("Row No.", ErrorText);
                             end;
-                        until VATStmtLine2.Next() = 0;
+                        until VATStatementLine.Next() = 0;
                 end;
+#if not CLEAN17
 #pragma warning disable AL0432
-            VATStmtLine2.Type::"Formula", // This value is discontinued and should no longer be used.
+            VATStatementLine.Type::"Formula", // This value is discontinued and should no longer be used.
 #pragma warning restore
-            VATStmtLine2.Type::"Formula CZL":
+#endif
+            VATStatementLine.Type::"Formula CZL":
                 begin
-                    Amount := EvaluateExpression(true, VATStmtLine2."Row Totaling", VATStmtLine2, true);
-                    CalcTotalAmount(VATStmtLine2, TotalAmount);
+                    Amount := EvaluateExpression(true, VATStatementLine."Row Totaling", VATStatementLine, true);
+                    CalcTotalAmount(VATStatementLine, TotalAmount);
                 end;
             else begin
                     IsHandled := false;
                     Amount := 0;
-                    OnCalcLineTotalVATStatementLineTypeCase(VATStmtLine2, Amount, IsHandled);
+                    OnCalcLineTotalVATStatementLineTypeCase(VATStatementLine, Amount, IsHandled);
                 end;
         end;
 
         exit(true);
     end;
 
-    local procedure CalcTotalAmount(VATStmtLine2: Record "VAT Statement Line"; var TotalAmount: Decimal)
+    local procedure CalcTotalAmount(VATStatementLine: Record "VAT Statement Line"; var TotalAmount: Decimal)
     begin
-        if VATStmtLine2."Calculate with" = VATStmtLine2."Calculate with"::"Opposite Sign" then
+        if VATStatementLine."Calculate with" = VATStatementLine."Calculate with"::"Opposite Sign" then
             Amount := -Amount;
-        if PrintInIntegers and VATStmtLine2.Print then
+        if PrintInIntegers and VATStatementLine.Print then
             Amount := RoundAmount(Amount);
         TotalAmount := TotalAmount + Amount;
     end;
 
-    procedure InitializeRequest(var NewVATStmtName: Record "VAT Statement Name"; var NewVATStatementLine: Record "VAT Statement Line"; NewSelection: Enum "VAT Statement Report Selection"; NewPeriodSelection: Enum "VAT Statement Report Period Selection"; NewPrintInIntegers: Boolean; NewUseAmtsInAddCurr: Boolean; SettlementNoFilter2: Text[50])
+    procedure InitializeRequest(var NewVATStatementName: Record "VAT Statement Name"; var NewVATStatementLine: Record "VAT Statement Line"; NewSelection: Enum "VAT Statement Report Selection"; NewPeriodSelection: Enum "VAT Statement Report Period Selection"; NewPrintInIntegers: Boolean; NewUseAmtsInAddCurr: Boolean; SettlementNoFilter2: Text[50])
     begin
-        "VAT Statement Name".Copy(NewVATStmtName);
+        "VAT Statement Name".Copy(NewVATStatementName);
         "VAT Statement Line".Copy(NewVATStatementLine);
         VATStatementReportSelection := NewSelection;
         VATStatementReportPeriodSelection := NewPeriodSelection;
@@ -481,7 +483,7 @@ report 11769 "VAT Statement CZL"
     local procedure GetCurrency(): Code[10]
     begin
         if UseAmtsInAddCurr then
-            exit(GLSetup."Additional Reporting Currency");
+            exit(GeneralLedgerSetup."Additional Reporting Currency");
 
         exit('');
     end;
@@ -507,7 +509,7 @@ report 11769 "VAT Statement CZL"
     end;
 
 
-    local procedure EvaluateExpression(IsVATStmtLineExpression: Boolean; Expression: Text; VATStmtLine: Record "VAT Statement Line"; CalcAddCurr: Boolean): Decimal
+    local procedure EvaluateExpression(IsVATStmtLineExpression: Boolean; Expression: Text; VATStatementLine: Record "VAT Statement Line"; CalcAddCurr: Boolean): Decimal
     var
         Result: Decimal;
         Parantheses: Integer;
@@ -564,10 +566,10 @@ report 11769 "VAT Statement CZL"
                 Operator := Expression[i];
                 LeftResult :=
                   EvaluateExpression(
-                    IsVATStmtLineExpression, LeftOperand, VATStmtLine, CalcAddCurr);
+                    IsVATStmtLineExpression, LeftOperand, VATStatementLine, CalcAddCurr);
                 RightResult :=
                   EvaluateExpression(
-                    IsVATStmtLineExpression, RightOperand, VATStmtLine, CalcAddCurr);
+                    IsVATStmtLineExpression, RightOperand, VATStatementLine, CalcAddCurr);
                 case Operator of
                     '^':
                         Result := Power(LeftResult, RightResult);
@@ -591,7 +593,7 @@ report 11769 "VAT Statement CZL"
                     Result :=
                       EvaluateExpression(
                         IsVATStmtLineExpression, CopyStr(Expression, 2, StrLen(Expression) - 2),
-                        VATStmtLine, CalcAddCurr)
+                        VATStatementLine, CalcAddCurr)
                 else begin
                     IsFilter :=
                       (StrPos(Expression, '..') +
@@ -604,18 +606,18 @@ report 11769 "VAT Statement CZL"
                         Evaluate(Result, Expression)
                     else
                         if IsVATStmtLineExpression then begin
-                            VATStmtLine.SetRange("Statement Template Name", VATStmtLine."Statement Template Name");
-                            VATStmtLine.SetRange("Statement Name", VATStmtLine."Statement Name");
-                            VATStmtLine.SetFilter("Row No.", Expression);
+                            VATStatementLine.SetRange("Statement Template Name", VATStatementLine."Statement Template Name");
+                            VATStatementLine.SetRange("Statement Name", VATStatementLine."Statement Name");
+                            VATStatementLine.SetFilter("Row No.", Expression);
 
-                            VATStmtLineID := VATStmtLine."Line No.";
-                            if VATStmtLine.Find('-') then
+                            VATStmtLineID := VATStatementLine."Line No.";
+                            if VATStatementLine.Find('-') then
                                 repeat
-                                    if VATStmtLine."Line No." <> VATStmtLineID then begin
-                                        CalcLineTotal(VATStmtLine, LineTotalAmount, 0);
+                                    if VATStatementLine."Line No." <> VATStmtLineID then begin
+                                        CalcLineTotal(VATStatementLine, LineTotalAmount, 0);
                                         Result := Result + LineTotalAmount;
                                     end
-                                until VATStmtLine.Next() = 0
+                                until VATStatementLine.Next() = 0
                             else
                                 if IsFilter or (not Evaluate(Result, Expression)) then
                                     Error(InvalidValueErr);

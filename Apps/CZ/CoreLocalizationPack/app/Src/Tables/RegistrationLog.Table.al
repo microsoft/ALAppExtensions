@@ -91,12 +91,12 @@ table 11756 "Registration Log CZL"
             Clustered = true;
         }
     }
-    procedure InitRegLog(var RegistrationLog: Record "Registration Log CZL"; AcountType: Option; AccountNo: Code[20]; RegNo: Text[20])
+    procedure InitRegLog(var RegistrationLogCZL: Record "Registration Log CZL"; AcountType: Option; AccountNo: Code[20]; RegNo: Text[20])
     begin
-        RegistrationLog.Init();
-        RegistrationLog."Account Type" := AcountType;
-        RegistrationLog."Account No." := AccountNo;
-        RegistrationLog."Registration No." := RegNo;
+        RegistrationLogCZL.Init();
+        RegistrationLogCZL."Account Type" := AcountType;
+        RegistrationLogCZL."Account No." := AccountNo;
+        RegistrationLogCZL."Registration No." := RegNo;
     end;
 
     procedure UpdateCard()

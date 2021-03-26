@@ -6,6 +6,7 @@
 codeunit 1758 "Data Privacy Entities Mgt."
 {
     Access = Internal;
+    Permissions = tabledata "Data Privacy Entities" = r;
 
     var
         SimilarFieldsLbl: Label 'Classify Similar Fields for %1', Comment = '%1=Table Caption';

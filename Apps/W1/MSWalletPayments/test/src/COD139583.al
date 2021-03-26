@@ -10,10 +10,10 @@ codeunit 139583 "MS - Wallet Mock Events"
 
     var
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
-        LibraryUtility: Codeunit 131000;
+        LibraryUtility: Codeunit "Library - Utility";
         PaymentTok: Label 'payment', Locked = true;
 
-    [EventSubscriber(ObjectType::Codeunit, 1083, 'OnAfterPostWalletPayment', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"MS - Wallet Webhook Management", 'OnAfterPostWalletPayment', '', false, false)]
     procedure HandleOnAfterPostWalletPayment(var TempPaymentRegistrationBuffer: Record 981 temporary; AmountReceived: Decimal);
     begin
         LibraryVariableStorage.Enqueue(PaymentTok);
@@ -21,7 +21,7 @@ codeunit 139583 "MS - Wallet Mock Events"
         LibraryVariableStorage.Enqueue(AmountReceived);
     end;
 
-    [EventSubscriber(ObjectType::Table, 1060, 'OnRegisterPaymentServiceProviders', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnRegisterPaymentServiceProviders', '', false, false)]
     procedure RegisteDummyPaymentServiceProvider(var PaymentServiceSetup: Record 1060);
     begin
         CLEAR(PaymentServiceSetup);

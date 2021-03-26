@@ -4,6 +4,7 @@ page 31138 "VIES Declaration CZL"
     PageType = Document;
     RefreshOnActivate = true;
     SourceTable = "VIES Declaration Header CZL";
+    PromotedActionCategories = 'New,Process,Report,Related';
 
     layout
     {
@@ -227,6 +228,15 @@ page 31138 "VIES Declaration CZL"
                 }
             }
         }
+        area(FactBoxes)
+        {
+            part("Attached Documents"; "Document Attachment Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Attachments';
+                SubPageLink = "Table ID" = const(31075), "No." = field("No.");
+            }
+        }
     }
     actions
     {
@@ -366,8 +376,44 @@ page 31138 "VIES Declaration CZL"
                     Rec.Print();
                 end;
             }
+            action(PrintToAttachment)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Attach as PDF';
+                Image = PrintAttachment;
+                Promoted = true;
+                PromotedCategory = "Report";
+                PromotedOnly = true;
+                ToolTip = 'Create a PDF file and attach it to the document.';
+
+                trigger OnAction()
+                begin
+                    Rec.PrintToDocumentAttachment();
+                end;
+            }
+        }
+        area(Navigation)
+        {
+            action(DocAttach)
+            {
+                ApplicationArea = All;
+                Caption = 'Attachments';
+                Image = Attach;
+                ToolTip = 'Add a file as an attachment. You can attach images as well as documents.';
+
+                trigger OnAction()
+                var
+                    DocumentAttachmentDetails: Page "Document Attachment Details";
+                    RecRef: RecordRef;
+                begin
+                    RecRef.GetTable(Rec);
+                    DocumentAttachmentDetails.OpenForRecRef(RecRef);
+                    DocumentAttachmentDetails.RunModal();
+                end;
+            }
         }
     }
+
     trigger OnAfterGetRecord()
     begin
         SetNoFieldVisible();
@@ -453,10 +499,10 @@ page 31138 "VIES Declaration CZL"
     local procedure DetermineVIESDeclarationCZLSeriesNo(): Code[20]
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-        VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL";
+        VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL";
     begin
         StatutoryReportingSetupCZL.Get();
-        DocumentNoVisibility.CheckNumberSeries(VATCtrlReportHeaderCZL, StatutoryReportingSetupCZL."VIES Declaration Nos.", VATCtrlReportHeaderCZL.FieldNo("No."));
+        DocumentNoVisibility.CheckNumberSeries(VIESDeclarationHeaderCZL, StatutoryReportingSetupCZL."VIES Declaration Nos.", VIESDeclarationHeaderCZL.FieldNo("No."));
         exit(StatutoryReportingSetupCZL."VIES Declaration Nos.");
     end;
 }

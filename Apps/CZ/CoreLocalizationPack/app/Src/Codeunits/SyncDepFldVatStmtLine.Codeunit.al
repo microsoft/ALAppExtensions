@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31174 "Sync.Dep.Fld-VatStmtLine CZL"
 {
@@ -71,3 +72,4 @@ codeunit 31174 "Sync.Dep.Fld-VatStmtLine CZL"
         SyncDepFldUtilities.SyncFields(Rec."Ignore Simpl. Tax Doc. Limit", Rec."Ignore Simpl. Doc. Limit CZL", PreviousRecord."Ignore Simpl. Tax Doc. Limit", PreviousRecord."Ignore Simpl. Doc. Limit CZL");
     end;
 }
+#endif

@@ -789,18 +789,14 @@ codeunit 135150 "Data Classification Mgt. Tests"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Classification Mgt.", 'OnGetDataPrivacyEntities', '', false, false)]
-    [Scope('OnPrem')]
-    procedure OnGetDataPrivacyEntitiesSubscriber(var DataPrivacyEntities: Record "Data Privacy Entities" temporary)
+    local procedure OnGetDataPrivacyEntitiesSubscriber(var DataPrivacyEntities: Record "Data Privacy Entities" temporary)
     var
-        FieldContentBuffer: Record "Field Content Buffer";
+        FieldsSyncStatus: Record "Fields Sync Status";
     begin
-        if FieldContentBuffer.IsEmpty() then begin
-            FieldContentBuffer.Init();
-            FieldContentBuffer.Value := 'value';
-            FieldContentBuffer.Insert();
-        end;
+        if FieldsSyncStatus.IsEmpty() then
+            FieldsSyncStatus.Insert();
 
-        DataClassificationMgt.InsertDataPrivacyEntity(DataPrivacyEntities, Database::"Field Content Buffer",
+        DataClassificationMgt.InsertDataPrivacyEntity(DataPrivacyEntities, Database::"Fields Sync Status",
           Page::"Field Content Buffer", 1, '', 1);
     end;
 }

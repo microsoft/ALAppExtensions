@@ -236,21 +236,21 @@ page 20008 "APIV1 - Items"
                     Caption = 'lastModifiedDateTime', Locked = true;
                     Editable = false;
                 }
-                part(picture; 5468)
+                part(picture; "APIV1 - Pictures")
                 {
                     Caption = 'picture';
                     EntityName = 'picture';
                     EntitySetName = 'picture';
                     SubPageLink = Id = FIELD(SystemId);
                 }
-                part(defaultDimensions; 5509)
+                part(defaultDimensions; "APIV1 - Default Dimensions")
                 {
                     Caption = 'Default Dimensions', Locked = true;
                     EntityName = 'defaultDimensions';
                     EntitySetName = 'defaultDimensions';
                     SubPageLink = ParentId = FIELD(SystemId);
                 }
-                part(itemVariants; 20052)
+                part(itemVariants; "APIV1 - Item Variants")
                 {
                     Caption = 'Variants', Locked = true;
                     EntityName = 'itemVariant';

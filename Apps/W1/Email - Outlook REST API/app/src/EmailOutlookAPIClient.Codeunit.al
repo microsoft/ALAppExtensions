@@ -12,6 +12,8 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         EmailSentTxt: Label 'Email sent.', Locked = true;
         DraftEmailCreatedTxt: Label 'Draft email created.', Locked = true;
         AttachmentAddedTxt: Label 'Attachment added.', Locked = true;
+        RestAPINotSupportedErr: Label 'REST API is not yet supported for this mailbox', Locked = true;
+        TheMailboxIsNotValidErr: Label 'The mailbox is not valid.\\A likely cause of this error is that the user does not have a valid license for Office 365. To read about other potential causes, visit https://docs.microsoft.com/exchange/troubleshoot/user-and-shared-mailboxes/rest-api-is-not-yet-supported-for-this-mailbox-error.';
 
     [NonDebuggable]
     procedure GetAccountInformation(AccessToken: Text; var Email: Text[250]; var Name: Text[250]): Boolean
@@ -111,9 +113,16 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         if MailHttpResponseMessage.HttpStatusCode <> 202 then begin
             HttpErrorMessage := GetHttpErrorMessageAsText(MailHttpResponseMessage);
             Session.LogMessage('0000D1Q', HttpErrorMessage, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', OutlookCateogryLbl);
-            Error(HttpErrorMessage);
+            ProcessErrorMessageResponse(HttpErrorMessage);
         end else
             Session.LogMessage('0000D1R', EmailSentTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCateogryLbl);
+    end;
+
+    local procedure ProcessErrorMessageResponse(ErrorMessage: Text)
+    begin
+        if ErrorMessage.Contains(RestAPINotSupportedErr) then
+            ErrorMessage := TheMailboxIsNotValidErr;
+        Error(ErrorMessage);
     end;
 
     [NonDebuggable]

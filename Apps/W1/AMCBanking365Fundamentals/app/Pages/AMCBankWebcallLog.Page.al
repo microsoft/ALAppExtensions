@@ -126,7 +126,7 @@ page 20107 "AMC Bank Webcall Log"
     end;
 
     var
-        SubActivityLog: Record 710;
+        SubActivityLog: Record "Activity Log";
         HasDetailedInfo: Boolean;
         HintText: Text;
         SupportURL: Text;

@@ -1,0 +1,78 @@
+pageextension 18255 "Accountant Role Center GST" extends "Accountant Role Center"
+{
+    Actions
+    {
+        addafter("Common Setup")
+        {
+            group("Goods and Services Tax")
+            {
+                group("Auto Configuration GST")
+                {
+                    Caption = 'Auto Configuration';
+                    action("GST Group")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'GST Group';
+                        Promoted = false;
+                        Image = EditList;
+                        RunObject = page "GST Group";
+                        ToolTip = 'Specifies an unique identifier for the GST group code used to calculate and post GST';
+                    }
+                    action("HSN/SAC")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'HSN/SAC';
+                        Promoted = false;
+                        Image = EditList;
+                        RunObject = page "HSN/SAC";
+                        ToolTip = 'Specifies an unique identifier for the type of HSN or SAC that is used to calculate and post GST.';
+                    }
+                }
+                group("User Configuration GST")
+                {
+                    Caption = 'User Configuration';
+                    action("GST Registration Nos.")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'GST Registration Nos.';
+                        Promoted = false;
+                        Image = EditList;
+                        RunObject = page "GST Registration Nos.";
+                        ToolTip = 'Specifies the goods and services tax registration number of the location.';
+                    }
+                    action("GST Posting Setup")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'GST Posting Setup';
+                        Promoted = false;
+                        Image = EditList;
+                        RunObject = page "GST Posting Setup";
+                        ToolTip = 'Specifies the general ledger accounts in combination of state code and GST component code, which will be used for the posting of calculated GST.';
+                    }
+                    action("GST Rates")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'GST Rates';
+                        Promoted = false;
+                        Image = EditList;
+                        RunObject = page "Tax Rates";
+                        RunPageLink = "Tax Type" = const('GST');
+                        RunPageMode = Edit;
+                        ToolTip = 'Specifies the rates for the defined components, which will be used to calculate GST.';
+                    }
+                }
+            }
+        }
+        addlast("User Configuration")
+        {
+            action("Bank Charge Deemed Value Setup")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Bank Charge Deemed Value Setup';
+                Promoted = false;
+                Image = EditList;
+                RunObject = page "Bank Charge Deemed Value Setup";
+            }
+        }
+    }
+}

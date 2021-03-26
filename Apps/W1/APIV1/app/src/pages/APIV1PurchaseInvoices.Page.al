@@ -274,14 +274,14 @@ page 20042 "APIV1 - Purchase Invoices"
                         RegisterFieldSet(FIELDNO("Prices Including VAT"));
                     end;
                 }
-                part(purchaseInvoiceLines; 20047)
+                part(purchaseInvoiceLines; "APIV1 - Purchase Invoice Lines")
                 {
                     Caption = 'Lines', Locked = true;
                     EntityName = 'purchaseInvoiceLine';
                     EntitySetName = 'purchaseInvoiceLines';
                     SubPageLink = "Document Id" = FIELD(Id);
                 }
-                part(pdfDocument; 5529)
+                part(pdfDocument; "APIV1 - PDF Document")
                 {
                     Caption = 'PDF Document', Locked = true;
                     EntityName = 'pdfDocument';

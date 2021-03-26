@@ -131,7 +131,6 @@ page 11738 "Company Official Picture CZL"
         CameraAvailable: Boolean;
         OverrideImageQst: Label 'The existing picture will be replaced. Do you want to continue?';
         DeleteImageQst: Label 'Are you sure you want to delete the picture?';
-        SelectPictureTxt: Label 'Select a picture to upload';
         DeleteExportEnabled: Boolean;
         ImageExtensionTok: Label '.png', Locked = true;
 

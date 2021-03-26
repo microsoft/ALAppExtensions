@@ -7,10 +7,10 @@ codeunit 9018 "Azure AD Plan Impl."
 {
     Access = Internal;
 
-    Permissions = TableData Plan = rimd,
+    Permissions = TableData Company = r,
+                  TableData Plan = rimd,
                   TableData "User Plan" = rimd,
-                  TableData User = rimd,
-                  TableData "Membership Entitlement" = rimd;
+                  TableData User = r;
 
     var
         UserLoginTimeTracker: Codeunit "User Login Time Tracker";
@@ -30,6 +30,10 @@ codeunit 9018 "Azure AD Plan Impl."
         UserGotPlanTxt: Label 'The Graph User with the authentication email %1 has a plan with ID %2 named %3.', Comment = '%1 = Authentication email (email); %2 = subscription plan ID (guid); %3 = Plan name (tex1t)', Locked = true;
         PlansDifferentCheckTxt: Label 'Checking if plans different for graph user with authentication email %1 and BC user with security ID %2.', Comment = '%1 = Authentication email (email); %2 = user security ID (guid)', Locked = true;
         PlanCountDifferentTxt: Label 'The count of plans in BC is %1 and count of plans in Graph is %2.', Locked = true;
+        UserNotInUserTableTxt: Label 'The user is not present in the User table. Security ID: %1.', Locked = true;
+        AzureGraphUserNotFoundTxt: Label 'Could not retrieve an Azure Graph user for User Security ID: %1.', Locked = true;
+        AzurePlanRoleCenterFoundTxt: Label 'Found role center %1 for user %2 from Azure Plan.', Locked = true;
+        NoPlanHasRoleCenterTxt: Label 'There is no plan for the user with a valid Role Center ID.', Locked = true;
         GraphUserHasExtraPlanTxt: Label 'Graph user has plan with ID %1 and named %2 that BC user does not have.', Locked = true, Comment = '%1 = Plan ID (guid); %2 = Plan name';
         MixedPlansExistTxt: Label 'Check for mixed plans. Basic plan exists: %1, Essentials plan exists: %2; Premium plan exists: %3.', Locked = true;
         UserDoesNotExistTxt: Label 'User with user SID %1 does not exist or does not have an authentication object ID', Locked = true;
@@ -241,7 +245,6 @@ codeunit 9018 "Azure AD Plan Impl."
     begin
         if not EnvironmentInfo.IsSaaS() then
             exit;
-
 
         if not GuiAllowed() then
             exit;
@@ -497,20 +500,12 @@ codeunit 9018 "Azure AD Plan Impl."
     [NonDebuggable]
     local procedure GetDevicesPlanInfo(var PlanId: Guid; var PlanName: Text)
     var
-        MembershipEntitlement: Record "Membership Entitlement";
+        Plan: Record Plan;
         PlanIds: Codeunit "Plan Ids";
     begin
-        if IsTest then begin
-            PlanId := PlanIds.GetDevicePlanId();
-            exit;
-        end;
-
-        MembershipEntitlement.SetRange(Type, MembershipEntitlement.Type::"Azure AD Device Plan");
-        if MembershipEntitlement.FindFirst() then begin
-            Evaluate(PlanId, MembershipEntitlement.Id);
-            PlanName := MembershipEntitlement.Name;
-        end;
-
+        PlanId := PlanIds.GetDevicePlanId();
+        Plan.Get(PlanIds.GetDevicePlanId());
+        PlanName := Plan.Name;
     end;
 
     [NonDebuggable]
@@ -535,14 +530,14 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
-    local procedure IsBCServicePlan(ServicePlanId: Guid): Boolean
+    procedure IsBCServicePlan(ServicePlanId: Guid): Boolean
     var
         Plan: Record "Plan";
     begin
         if IsNullGuid(ServicePlanId) then
             exit(false);
 
-        exit(Plan.GET(ServicePlanId));
+        exit(Plan.Get(ServicePlanId));
     end;
 
     [NonDebuggable]
@@ -552,18 +547,27 @@ codeunit 9018 "Azure AD Plan Impl."
         User: Record User;
         GraphUser: DotNet UserInfo;
     begin
-        if not User.GET(UserSecurityID) then
+        if not User.Get(UserSecurityID) then begin
+            Session.LogMessage('0000DUD', StrSubstNo(UserNotInUserTableTxt, UserSecurityID()), Verbosity::Warning, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             exit(0);
+        end;
 
-        if not AzureADGraphUser.GetGraphUser(UserSecurityID, GraphUser) then
+        if not AzureADGraphUser.GetGraphUser(UserSecurityID, GraphUser) then begin
+            Session.LogMessage('0000DUE', StrSubstNo(AzureGraphUserNotFoundTxt, UserSecurityID()), Verbosity::Warning, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             exit(0);
+        end;
 
         GetGraphUserPlans(TempPlan, GraphUser);
 
         TempPlan.SetFilter("Role Center ID", '<>0');
 
-        if not TempPlan.FindFirst() then
+        if not TempPlan.FindFirst() then begin
+            Session.LogMessage('0000DUG', NoPlanHasRoleCenterTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             exit(0);
+        end;
+
+        Session.LogMessage('0000DUC', StrSubstNo(AzurePlanRoleCenterFoundTxt, TempPlan."Role Center ID", UserSecurityID()), Verbosity::Normal,
+            DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
         exit(TempPlan."Role Center ID");
     end;

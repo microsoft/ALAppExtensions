@@ -51,6 +51,12 @@ pageextension 11755 "VAT Entries CZL" extends "VAT Entries"
                 ApplicationArea = VAT;
                 ToolTip = 'Specifies the number of line in the VAT control report.';
             }
+            field("VAT Identifier CZL"; Rec."VAT Identifier CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies a code to group various VAT posting setups with similar attributes, for example VAT percentage.';
+                Visible = false;
+            }
         }
     }
 }

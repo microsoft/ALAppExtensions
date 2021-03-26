@@ -1,7 +1,7 @@
 page 1665 "MS - Ceridian Payroll Setup"
 {
     PageType = Card;
-    SourceTable = 1665;
+    SourceTable = "MS Ceridian Payroll Setup";
 
     layout
     {

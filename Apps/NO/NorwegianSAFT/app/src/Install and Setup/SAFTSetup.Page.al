@@ -33,6 +33,11 @@ page 10690 "SAF-T Setup"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if you want to be notified about fields that have not been set up correctly for SAF-T on specific bank accounts.';
                 }
+                field(DefaultPostCode; "Default Post Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the post code to use when no values specified in the customer or vendor card.';
+                }
             }
         }
     }

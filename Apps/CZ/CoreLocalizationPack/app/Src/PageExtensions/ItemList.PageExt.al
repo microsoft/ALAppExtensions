@@ -1,5 +1,23 @@
 pageextension 11769 "Item List CZL" extends "Item List"
 {
+    layout
+    {
+        addafter("Tariff No.")
+        {
+            field("Statistic Indication CZL"; Rec."Statistic Indication CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Statistic indication for Intrastat reporting purposes.';
+                Visible = false;
+            }
+            field("Specific Movement CZL"; Rec."Specific Movement CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Specific Movement for Intrastat reporting purposes.';
+                Visible = false;
+            }
+        }
+    }
     actions
     {
         addafter("Inventory - Sales Back Orders")
@@ -21,24 +39,15 @@ pageextension 11769 "Item List CZL" extends "Item List"
                 ToolTip = 'Verify that all purchase receipts are fully invoiced. Report shows a list of purchase receipt lines which are not fully invoiced.';
             }
         }
-        addfirst(Functions)
+        addlast(Inventory)
         {
-            action("Create Stockkeeping Unit CZL")
+            action("Test Tariff Numbers CZL")
             {
-                AccessByPermission = TableData "Stockkeeping Unit" = R;
-                ApplicationArea = Warehouse;
-                Caption = '&Create Stockkeeping Unit with Templates';
-                Image = CreateSKU;
-                Ellipsis = true;
-                ToolTip = 'Create an instance of the item at each location that is set up. It is possible to use data templates as part of the Stockkeeping Unit creation process.';
-
-                trigger OnAction()
-                var
-                    Item: Record Item;
-                begin
-                    Item.SetRange("No.", Rec."No.");
-                    Report.RunModal(Report::"Create Stockkeeping Unit CZL", true, true, Item);
-                end;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Test Tariff Numbers';
+                Image = TestReport;
+                ToolTip = 'Run a test of item tariff numbers.';
+                RunObject = Report "Test Tariff Numbers CZL";
             }
         }
     }

@@ -42,14 +42,14 @@ page 20004 "APIV1 - Aut. Users"
                 {
                     Caption = 'expiryDate', Locked = true;
                 }
-                part(userGroupMember; 5442)
+                part(userGroupMember; "APIV1 - Aut. User Group Member")
                 {
                     Caption = 'userGroupMember', Locked = true;
                     EntityName = 'userGroupMember';
                     EntitySetName = 'userGroupMembers';
                     SubPageLink = "User Security ID" = FIELD("User Security ID");
                 }
-                part(userPermission; 5446)
+                part(userPermission; "APIV1 - Aut. User Permission")
                 {
                     Caption = 'userPermission', Locked = true;
                     EntityName = 'userPermission';
@@ -66,7 +66,7 @@ page 20004 "APIV1 - Aut. Users"
 
     trigger OnOpenPage()
     var
-        EnvironmentInfo: Codeunit 457;
+        EnvironmentInfo: Codeunit "Environment Information";
     begin
         BINDSUBSCRIPTION(AutomationAPIManagement);
         IF EnvironmentInfo.IsSaaS() THEN

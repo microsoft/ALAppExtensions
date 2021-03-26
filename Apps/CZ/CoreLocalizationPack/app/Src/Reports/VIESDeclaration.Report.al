@@ -110,8 +110,14 @@ report 31058 "VIES Declaration CZL"
                     {
                         IncludeCaption = true;
                     }
+
                     trigger OnAfterGetRecord()
                     begin
+                        Clear(TotalValueItemSaleSupplies);
+                        Clear(TotalValueEU3rdPartyItemSale);
+                        Clear(TotalValueServiceSalSupplies);
+                        Clear(TotalValueofItemPurchSupplies);
+
                         case "Trade Type" of
                             "Trade Type"::Purchase:
                                 TotalValueofItemPurchSupplies := "Amount (LCY)";
@@ -125,20 +131,13 @@ report 31058 "VIES Declaration CZL"
                                         TotalValueItemSaleSupplies := "Amount (LCY)";
                         end;
                     end;
-
-                    trigger OnPreDataItem()
-                    begin
-                        Clear(TotalValueItemSaleSupplies);
-                        Clear(TotalValueEU3rdPartyItemSale);
-                        Clear(TotalValueServiceSalSupplies);
-                        Clear(TotalValueofItemPurchSupplies);
-                    end;
                 }
+
                 trigger OnAfterGetRecord()
                 begin
                     TestField("Authorized Employee No.");
                     CompanyOfficialCZL.Get("Authorized Employee No.");
-                    FormatAddr.FormatAddr(ViesDeclAddr, Name, "Name 2", '', Street, CopyStr(DelChr("House No.", '<>', ' ') +
+                    FormatAddress.FormatAddr(ViesDeclAddr, Name, "Name 2", '', Street, CopyStr(DelChr("House No.", '<>', ' ') +
                         DelChr("Apartment No.", '<>', ' '), 1, 50), City, "Post Code", County, CompanyInfo."Country/Region Code");
                 end;
             }
@@ -160,9 +159,10 @@ report 31058 "VIES Declaration CZL"
         SectionBLbl = 'SECTION B';
         SectionCLbl = 'SECTION C';
     }
+
     var
         CompanyOfficialCZL: Record "Company Official CZL";
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         ViesDeclAddr: array[8] of Text[100];
         TotalValueServiceSalSupplies: Decimal;
         TotalValueItemSaleSupplies: Decimal;

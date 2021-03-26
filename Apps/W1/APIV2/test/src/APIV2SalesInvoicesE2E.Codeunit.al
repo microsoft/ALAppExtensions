@@ -89,6 +89,48 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
     end;
 
     [Test]
+    procedure TestGetInvoiceFromPostedOrderCorrectOrderIdAndNo()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        OrderId: Guid;
+        OrderNo: Code[20];
+        InvoiceId: Guid;
+        InvoiceNo: Code[20];
+        TargetURL: Text;
+        ResponseText: Text;
+        OrderIdValue: Text;
+        OrderNoValue: Text;
+    begin
+        // [SCENARIO] Create a Sales Invoice from a Sales Order and use GET method to retrieve them and check the orderId and orderNumber
+        // [GIVEN] A sales invoice created by posting a sales order
+        LibrarySales.CreateSalesOrder(SalesHeader);
+        OrderId := SalesHeader.SystemId;
+        OrderNo := SalesHeader."No.";
+        InvoiceNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        Commit();
+
+        SalesInvoiceHeader.SetRange("No.", InvoiceNo);
+        SalesInvoiceHeader.FindFirst();
+        InvoiceId := SalesInvoiceHeader.SystemId;
+
+        // [WHEN] we get the invoice from the web service
+        TargetURL := LibraryGraphMgt.CreateTargetURL(InvoiceId, Page::"APIV2 - Sales Invoices", InvoiceServiceNameTxt);
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] the orderId field exists in the response
+        Assert.AreNotEqual('', ResponseText, 'Response JSON should not be blank');
+        LibraryGraphMgt.VerifyIDFieldInJson(ResponseText, 'orderId');
+
+        // [THEN] The orderId and orderNumber fields correspond to the id and number of the sales order
+        LibraryGraphMgt.GetPropertyValueFromJSON(ResponseText, 'orderId', OrderIdValue);
+        Assert.AreEqual(OrderIdValue, Format(Lowercase(LibraryGraphMgt.StripBrackets(OrderId))), 'The order id value is wrong.');
+
+        LibraryGraphMgt.GetPropertyValueFromJSON(ResponseText, 'orderNumber', OrderNoValue);
+        Assert.AreEqual(OrderNoValue, Format(OrderNo), 'The order number value is wrong.');
+    end;
+
+    [Test]
     procedure TestPostInvoices()
     var
         SalesHeader: Record "Sales Header";

@@ -46,7 +46,7 @@ page 31157 "Cash Desk Events CZP"
                 field("EET Transaction"; Rec."EET Transaction")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies whether rows that meet conditions for a recorded sale will be automatically populated.';
+                    ToolTip = 'Specifies that the value of Yes will automatically be filled when the row meets the conditions for a recorded sale.';
                 }
             }
         }

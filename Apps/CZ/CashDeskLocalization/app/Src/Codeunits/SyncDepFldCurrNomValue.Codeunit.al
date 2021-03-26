@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31127 "Sync.Dep.Fld-CurrNomValue CZP"
 {
@@ -156,3 +157,4 @@ codeunit 31127 "Sync.Dep.Fld-CurrNomValue CZP"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

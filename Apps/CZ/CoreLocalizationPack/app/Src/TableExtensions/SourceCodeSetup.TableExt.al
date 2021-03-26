@@ -14,5 +14,11 @@ tableextension 11752 "Source Code Setup CZL" extends "Source Code Setup"
             DataClassification = CustomerContent;
             TableRelation = "Source Code";
         }
+        field(11772; "VAT LCY Correction CZL"; Code[10])
+        {
+            Caption = 'VAT LCY Correction';
+            DataClassification = CustomerContent;
+            TableRelation = "Source Code";
+        }
     }
 }

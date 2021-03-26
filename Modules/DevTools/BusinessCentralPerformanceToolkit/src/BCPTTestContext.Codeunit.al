@@ -118,6 +118,8 @@ codeunit 149003 "BCPT Test Context"
         BCPTLineCU.ParameterStringToDictionary(BCPTLine.Parameters, dict);
         if dict.Count = 0 then
             exit('');
+        if not dict.ContainsKey(ParameterName) then
+            exit('');
         exit(dict.Get(ParameterName));
     end;
 

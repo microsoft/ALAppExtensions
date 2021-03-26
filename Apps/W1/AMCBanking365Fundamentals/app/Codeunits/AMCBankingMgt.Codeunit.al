@@ -154,7 +154,7 @@ codeunit 20105 "AMC Banking Mgt."
         exit(StrSubstNo(DataPathTxt, ResponseNode));
     end;
 
-    [EventSubscriber(ObjectType::Table, 1400, 'OnRegisterServiceConnection', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
     procedure HandleBankDataConvRegisterServiceConnection(var ServiceConnection: Record "Service Connection")
     var
         AMCBankServiceSetup: Record "AMC Banking Setup";
@@ -186,7 +186,7 @@ codeunit 20105 "AMC Banking Mgt."
     end;
 
     // To substitute code in Codeunit 2 "Company-Initialize"
-    [EventSubscriber(ObjectType::Codeunit, 2, 'OnCompanyInitialize', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure AMCBankOnCompanyInitialize();
     var
     begin
@@ -228,7 +228,7 @@ codeunit 20105 "AMC Banking Mgt."
         InsertPaymentMethod(AMCBankingPmtTypeCode6Tok, BNKDOMACC_Txt);
     end;
 
-    local procedure InsertPaymentMethod(AMCBankingPmtType: Text[50]; PaymentCode: Code[10]) Exists: Boolean;
+    local procedure InsertPaymentMethod(AMCBankingPmtType: Text[50]; PaymentCode: Code[10]): Boolean;
     var
         AMCBankPmtType: Record "AMC Bank Pmt. Type";
         PaymentMethod: Record "Payment Method";

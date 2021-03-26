@@ -275,12 +275,7 @@ codeunit 31116 "EET Service Management CZL"
     local procedure SendSoapRequest(RequestContentXmlDocument: XmlDocument; var ResponseXmlDocument: XmlDocument; var ResponseContentXmlDocument: XmlDocument)
     var
         EETServiceSetupCZL: Record "EET Service Setup CZL";
-        RequestContentTempBlob: Codeunit "Temp Blob";
         SOAPWSRequestManagementCZL: Codeunit "SOAP WS Request Management CZL";
-        RequestContentOutStream: OutStream;
-        RequestContentInStream: InStream;
-        ResponseContentInStream: InStream;
-        ResponseInStream: InStream;
     begin
         EETServiceSetupCZL.Get();
         SOAPWSRequestManagementCZL.SetTimeout(EETServiceSetupCZL."Limit Response Time");

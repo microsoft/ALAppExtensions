@@ -296,14 +296,10 @@ page 30008 "APIV2 - Items"
 
     var
         TempFieldSet: Record 2000000041 temporary;
-        ValidateUnitOfMeasure: Record "Unit of Measure";
         ItemCategory: Record "Item Category";
         TaxGroup: Record "Tax Group";
         GraphCollectionMgtItem: Codeunit "Graph Collection Mgt - Item";
-        BaseUnitOfMeasureCode: Code[10];
         InventoryValue: Decimal;
-        UnitOfMeasureValuesDontMatchErr: Label 'The unit of measure values do not match to a specific Unit of Measure.';
-        UnitOfMeasureIdDoesNotMatchAUnitOfMeasureErr: Label 'The "unitOfMeasureId" does not match to a Unit of Measure.', Comment = 'unitOfMeasureId is a field name and should not be translated.';
         BlankGUID: Guid;
         TaxGroupValuesDontMatchErr: Label 'The tax group values do not match to a specific Tax Group.';
         TaxGroupIdDoesNotMatchATaxGroupErr: Label 'The "taxGroupId" does not match to a Tax Group.', Comment = 'taxGroupId is a field name and should not be translated.';
@@ -314,8 +310,6 @@ page 30008 "APIV2 - Items"
         InventoryCannotBeChangedInAPostRequestErr: Label 'Inventory cannot be changed during on insert.';
 
     local procedure SetCalculatedFields()
-    var
-        UnitOfMeasure: Record "Unit of Measure";
     begin
         // Inventory
         InventoryValue := Inventory;

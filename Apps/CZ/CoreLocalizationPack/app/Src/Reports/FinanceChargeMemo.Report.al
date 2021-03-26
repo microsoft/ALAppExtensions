@@ -62,7 +62,7 @@ report 31183 "Finance Charge Memo CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Issued Fin. Charge Memo Header"; "Issued Fin. Charge Memo Header")
@@ -120,22 +120,22 @@ report 31183 "Finance Charge Memo CZL"
             column(RegistrationNo_IssuedFinChargeMemoHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_IssuedFinChargeMemoHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_IssuedFinChargeMemoHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_IssuedFinChargeMemoHeader; "Bank Account No.")
+            column(BankAccountNo_IssuedFinChargeMemoHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_IssuedFinChargeMemoHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_IssuedFinChargeMemoHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_IssuedFinChargeMemoHeader; IBAN)
+            column(IBAN_IssuedFinChargeMemoHeader; "IBAN CZL")
             {
             }
-            column(SWIFTCode_IssuedFinChargeMemoHeaderCaption; FieldCaption("SWIFT Code"))
+            column(SWIFTCode_IssuedFinChargeMemoHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(SWIFTCode_IssuedFinChargeMemoHeader; "SWIFT Code")
+            column(SWIFTCode_IssuedFinChargeMemoHeader; "SWIFT Code CZL")
             {
             }
             column(CustomerNo_IssuedFinChargeMemoHeaderCaption; FieldCaption("Customer No."))
@@ -335,12 +335,12 @@ report 31183 "Finance Charge Memo CZL"
                         AutoFormatExpression = "Issued Fin. Charge Memo Header"."Currency Code";
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATBaseLCY; TempVATAmountLine."VAT Base (LCY)")
+                    column(VATAmtLineVATBaseLCY; TempVATAmountLine."VAT Base (LCY) CZL")
                     {
                         AutoFormatExpression = "Issued Fin. Charge Memo Line".GetCurrencyCode();
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATAmtLCY; TempVATAmountLine."VAT Amount (LCY)")
+                    column(VATAmtLineVATAmtLCY; TempVATAmountLine."VAT Amount (LCY) CZL")
                     {
                         AutoFormatExpression = "Issued Fin. Charge Memo Header"."Currency Code";
                         AutoFormatType = 1;
@@ -352,6 +352,7 @@ report 31183 "Finance Charge Memo CZL"
 
                     trigger OnPreDataItem()
                     begin
+                        TempVATAmountLine.UpdateVATEntryLCYAmountsCZL("Issued Fin. Charge Memo Header");
                         SetRange(Number, 1, TempVATAmountLine.Count);
                     end;
                 }
@@ -362,7 +363,7 @@ report 31183 "Finance Charge Memo CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -394,12 +395,12 @@ report 31183 "Finance Charge Memo CZL"
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
-                FormatAddr.IssuedFinanceChargeMemo(CustAddr, "Issued Fin. Charge Memo Header");
+                FormatAddress.IssuedFinanceChargeMemo(CustAddr, "Issued Fin. Charge Memo Header");
                 DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
                 TotalInclVATText := StrSubstNo(TotalInclVATLbl, "Currency Code");
 
                 if LogInteraction and not IsReportInPreviewMode() then
-                    SegMgt.LogDocument(
+                    SegManagement.LogDocument(
                       19, "No.", 0, 0, Database::Customer, "Customer No.", '', '', "Posting Description", '');
 
                 if "Currency Code" = '' then
@@ -458,9 +459,9 @@ report 31183 "Finance Charge Memo CZL"
     var
         TempVATAmountLine: Record "VAT Amount Line" temporary;
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        SegMgt: Codeunit SegManagement;
+        SegManagement: Codeunit SegManagement;
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         DocFooterText: Text[1000];
@@ -493,7 +494,7 @@ report 31183 "Finance Charge Memo CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegMgt.FindInteractTmplCode(19) <> '';
+        LogInteraction := SegManagement.FindInteractTmplCode(19) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

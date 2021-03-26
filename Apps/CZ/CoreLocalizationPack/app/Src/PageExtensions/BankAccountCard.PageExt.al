@@ -1,5 +1,16 @@
 pageextension 11763 "Bank Account Card CZL" extends "Bank Account Card"
 {
+    layout
+    {
+        addlast(Posting)
+        {
+            field("Excl. from Exch. Rate Adj. CZL"; Rec."Excl. from Exch. Rate Adj. CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies whether entries will be excluded from exchange rates adjustment.';
+            }
+        }
+    }
     actions
     {
         addafter("Check Details")

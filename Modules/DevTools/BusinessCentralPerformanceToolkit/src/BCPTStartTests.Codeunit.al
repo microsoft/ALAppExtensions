@@ -114,7 +114,6 @@ codeunit 149000 "BCPT Start Tests"
                     BCPTLine."No. of Iterations" := 0;
                     BCPTLine."No. of Running Sessions" := 0;
                     BCPTLine."No. of SQL Statements" := 0;
-                    //BCPTLine.Version := BCPTHeader.Version;
                     BCPTLine.SetRange("Version Filter", BCPTHeader.Version);
                     BCPTLine.Modify(true);
                 until BCPTLine.Next() = 0;
@@ -140,14 +139,15 @@ codeunit 149000 "BCPT Start Tests"
                 BCPTLine.Modify();
                 Commit();
                 BCPTLine.SetRange("Line No.", BCPTLine."Line No.");
+                BCPTLine.SetRange(Status);
                 Codeunit.Run(Codeunit::"BCPT Role Wrapper", BCPTLine);
 
                 BCPTLine.LockTable();
-                if BCPTLine.Get(BCPTLine."BCPT Code", BCPTLine."Line No.") then;
-                if BCPTLine."No. of Running Sessions" = BCPTLine."No. of Sessions" then begin
-                    BCPTLine.Status := BCPTLine.Status::Completed;
-                    BCPTLine.Modify();
-                end;
+                if BCPTLine.Get(BCPTLine."BCPT Code", BCPTLine."Line No.") then
+                    if BCPTLine."No. of Running Sessions" = BCPTLine."No. of Sessions" then begin
+                        BCPTLine.Status := BCPTLine.Status::Completed;
+                        BCPTLine.Modify();
+                    end;
             end;
             Commit();
         end else

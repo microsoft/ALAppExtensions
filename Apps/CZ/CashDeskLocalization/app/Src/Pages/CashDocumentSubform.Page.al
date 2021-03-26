@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 page 31161 "Cash Document Subform CZP"
 {
     AutoSplitKey = true;
@@ -265,7 +264,7 @@ page 31161 "Cash Document Subform CZP"
                 field("EET Transaction"; Rec."EET Transaction")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies whether row meet conditions for a recorded sale.';
+                    ToolTip = 'Specifies that the value of Yes will automatically be filled when the row meets the conditions for a recorded sale.';
                     Visible = false;
                 }
                 field("Depreciation Book Code"; Rec."Depreciation Book Code")

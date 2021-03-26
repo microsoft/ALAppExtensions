@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
 {
@@ -156,3 +157,4 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

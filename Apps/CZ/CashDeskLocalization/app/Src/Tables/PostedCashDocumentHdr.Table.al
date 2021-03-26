@@ -301,11 +301,11 @@ table 11737 "Posted Cash Document Hdr. CZP"
     end;
 
     var
-        PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
         DimensionManagement: Codeunit DimensionManagement;
 
     procedure PrintRecords(ShowRequestForm: Boolean)
     var
+        PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
         CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP";
     begin
         TestField("Document Type");
@@ -323,13 +323,60 @@ table 11737 "Posted Cash Document Hdr. CZP"
         until CashDeskRepSelectionsCZP.Next() = 0;
     end;
 
+    procedure PrintToDocumentAttachment()
+    var
+        PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
+        CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP";
+        DocumentAttachment: Record "Document Attachment";
+        DocumentAttachmentMgmt: Codeunit "Document Attachment Mgmt";
+        TempBlob: Codeunit "Temp Blob";
+        RecordRef: RecordRef;
+        DummyInStream: InStream;
+        ReportOutStream: OutStream;
+        DocumentInStream: InStream;
+        FileName: Text[250];
+        DocumentAttachmentFileNameLbl: Label '%1 %2', Comment = '%1 = Usage, %2 = Cash Document No.';
+    begin
+        PostedCashDocumentHdrCZP := Rec;
+        PostedCashDocumentHdrCZP.SetRecFilter();
+        RecordRef.GetTable(PostedCashDocumentHdrCZP);
+        if not RecordRef.FindFirst() then
+            exit;
+
+        case PostedCashDocumentHdrCZP."Document Type" of
+            PostedCashDocumentHdrCZP."Document Type"::Receipt:
+                CashDeskRepSelectionsCZP.SetRange(Usage, CashDeskRepSelectionsCZP.Usage::"Posted Cash Receipt");
+            PostedCashDocumentHdrCZP."Document Type"::Withdrawal:
+                CashDeskRepSelectionsCZP.SetRange(Usage, CashDeskRepSelectionsCZP.Usage::"Posted Cash Withdrawal");
+        end;
+        CashDeskRepSelectionsCZP.SetFilter("Report ID", '<>0');
+        CashDeskRepSelectionsCZP.FindSet();
+        repeat
+            if not Report.RdlcLayout(CashDeskRepSelectionsCZP."Report ID", DummyInStream) then
+                exit;
+
+            Clear(TempBlob);
+            TempBlob.CreateOutStream(ReportOutStream);
+            Report.SaveAs(CashDeskRepSelectionsCZP."Report ID", '',
+                        ReportFormat::Pdf, ReportOutStream, RecordRef);
+
+            Clear(DocumentAttachment);
+            DocumentAttachment.InitFieldsFromRecRef(RecordRef);
+            FileName := DocumentAttachment.FindUniqueFileName(
+                        StrSubstNo(DocumentAttachmentFileNameLbl, CashDeskRepSelectionsCZP.Usage, PostedCashDocumentHdrCZP."No."), 'pdf');
+            TempBlob.CreateInStream(DocumentInStream);
+            DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, FileName);
+        until CashDeskRepSelectionsCZP.Next() = 0;
+        DocumentAttachmentMgmt.ShowNotification(RecordRef, CashDeskRepSelectionsCZP.Count(), true);
+    end;
+
     procedure Navigate()
     var
-        NavigatePage: Page Navigate;
+        PageNavigate: Page Navigate;
     begin
-        NavigatePage.SetDoc("Posting Date", "No.");
-        NavigatePage.SetRec(Rec);
-        NavigatePage.Run();
+        PageNavigate.SetDoc("Posting Date", "No.");
+        PageNavigate.SetRec(Rec);
+        PageNavigate.Run();
     end;
 
     procedure ShowDimensions()
@@ -337,5 +384,14 @@ table 11737 "Posted Cash Document Hdr. CZP"
         TwoPlaceholdersTok: Label '%1 %2', Locked = true;
     begin
         DimensionManagement.ShowDimensionSet("Dimension Set ID", StrSubstNo(TwoPlaceholdersTok, TableCaption, "No."));
+    end;
+
+    procedure HasPostedDocumentAttachment(): Boolean
+    var
+        DocumentAttachment: Record "Document Attachment";
+    begin
+        DocumentAttachment.SetRange("Table ID", Database::"Posted Cash Document Hdr. CZP");
+        DocumentAttachment.SetRange("No.", Rec."No.");
+        exit(not DocumentAttachment.IsEmpty());
     end;
 }

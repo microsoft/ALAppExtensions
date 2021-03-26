@@ -26,7 +26,12 @@ page 31078 "Statistic Indications CZL"
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the description for statistic indications.';
+                    ToolTip = 'Specifies the description for statistic indication.';
+                }
+                field("Description EN"; Rec."Description EN")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the english description for statistic indication.';
                 }
             }
         }

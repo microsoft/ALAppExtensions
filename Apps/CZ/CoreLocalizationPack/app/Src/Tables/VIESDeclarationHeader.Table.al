@@ -441,7 +441,7 @@ table 31075 "VIES Declaration Header CZL"
                 if "Company Type" = xRec."Company Type" then
                     exit;
 
-                CompanyInfo.Get();
+                CompanyInformation.Get();
                 StatutoryReportingSetupCZL.Get();
 
                 case "Company Type" of
@@ -509,6 +509,7 @@ table 31075 "VIES Declaration Header CZL"
         {
         }
     }
+
     trigger OnDelete()
     var
         VIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
@@ -520,10 +521,10 @@ table 31075 "VIES Declaration Header CZL"
 
     trigger OnInsert()
     var
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeriesManagement: Codeunit NoSeriesManagement;
     begin
         if "No." = '' then
-            NoSeriesMgt.InitSeries(GetNoSeriesCode(), xRec."No. Series", WorkDate(), "No.", "No. Series");
+            NoSeriesManagement.InitSeries(GetNoSeriesCode(), xRec."No. Series", WorkDate(), "No.", "No. Series");
 
         InitRecord();
     end;
@@ -537,30 +538,31 @@ table 31075 "VIES Declaration Header CZL"
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
         PostCode: Record "Post Code";
         CountryRegion: Record "Country/Region";
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
+        FileManagement: Codeunit "File Management";
         PeriodExistsErr: Label 'Period from %1 till %2 already exists on %3 %4.', Comment = '%1 = start date; %2 = end date; %3 = VIES declaration tablecaption; %4 = VIES declaration number';
         EarlierDateErr: Label '%1 should be earlier than %2.', Comment = '%1 = starting date fieldcaption; %2 = end date fieldcaption';
-        RenameErr: Label 'You cannot rename a %1.', Comment = '%1 = tableecaption';
+        RenameErr: Label 'You cannot rename a %1.', Comment = '%1 = tablecaption';
         LineExistErr: Label 'You cannot change %1 because you already have declaration lines.', Comment = '%1 = fieldcaption';
         PeriodNumberErr: Label 'The permitted values for %1 are from 1 to %2.', Comment = '%1 = period number fieldcaption; %2 = max periodnumber';
 
     procedure InitRecord()
     begin
-        CompanyInfo.Get();
+        CompanyInformation.Get();
         StatutoryReportingSetupCZL.Get();
-        "VAT Registration No." := CompanyInfo."VAT Registration No.";
+        "VAT Registration No." := CompanyInformation."VAT Registration No.";
         "Document Date" := WorkDate();
         Name := StatutoryReportingSetupCZL."Company Trade Name";
         "Name 2" := '';
-        if CountryRegion.Get(CompanyInfo."Country/Region Code") then
+        if CountryRegion.Get(CompanyInformation."Country/Region Code") then
             "Country/Region Name" := CountryRegion.Name;
-        County := CompanyInfo.County;
-        City := CompanyInfo.City;
+        County := CompanyInformation.County;
+        City := CompanyInformation.City;
         Street := StatutoryReportingSetupCZL.Street;
         "House No." := StatutoryReportingSetupCZL."House No.";
         "Apartment No." := StatutoryReportingSetupCZL."Apartment No.";
         "Municipality No." := StatutoryReportingSetupCZL."Municipality No.";
-        "Post Code" := CompanyInfo."Post Code";
+        "Post Code" := CompanyInformation."Post Code";
         "Tax Office Number" := StatutoryReportingSetupCZL."Tax Office Number";
         "Tax Office Region Number" := StatutoryReportingSetupCZL."Tax Office Region Number";
         "Company Type" := StatutoryReportingSetupCZL."Company Type";
@@ -570,12 +572,12 @@ table 31075 "VIES Declaration Header CZL"
         "Filled by Employee No." := StatutoryReportingSetupCZL."VIES Decl. Filled Employee No.";
     end;
 
-    procedure AssistEdit(VIESDeclarationHeaderold: Record "VIES Declaration Header CZL"): Boolean
+    procedure AssistEdit(OldVIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL"): Boolean
     var
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeriesManagement: Codeunit NoSeriesManagement;
     begin
-        if NoSeriesMgt.SelectSeries(GetNoSeriesCode(), VIESDeclarationHeaderold."No. Series", "No. Series") then begin
-            NoSeriesMgt.SetSeries("No.");
+        if NoSeriesManagement.SelectSeries(GetNoSeriesCode(), OldVIESDeclarationHeaderCZL."No. Series", "No. Series") then begin
+            NoSeriesManagement.SetSeries("No.");
             exit(true);
         end;
     end;
@@ -642,12 +644,12 @@ table 31075 "VIES Declaration Header CZL"
 
     procedure GetVATRegNo(): Code[20]
     var
-        VIESDeclarationLine: Record "VIES Declaration Line CZL";
+        VIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
     begin
-        CompanyInfo.Get();
-        VIESDeclarationLine."VAT Registration No." := "VAT Registration No.";
-        VIESDeclarationLine."Country/Region Code" := CompanyInfo."Country/Region Code";
-        exit(VIESDeclarationLine.GetVATRegNo());
+        CompanyInformation.Get();
+        VIESDeclarationLineCZL."VAT Registration No." := "VAT Registration No.";
+        VIESDeclarationLineCZL."Country/Region Code" := CompanyInformation."Country/Region Code";
+        exit(VIESDeclarationLineCZL.GetVATRegNo());
     end;
 
     procedure PrintTestReport()
@@ -678,9 +680,8 @@ table 31075 "VIES Declaration Header CZL"
         VIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
         TempVIESDeclarationLineCZL: Record "VIES Declaration Line CZL" temporary;
         TempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit "File Management";
         VIESDeclarationCZL: XmlPort "VIES Declaration CZL";
-        OutStr: OutStream;
+        OutStream: OutStream;
         FileNameTok: Label '%1.xml', Locked = true;
     begin
         Testfield(Status, Status::Released);
@@ -698,12 +699,48 @@ table 31075 "VIES Declaration Header CZL"
                 TempVIESDeclarationLineCZL.Insert();
             until VIESDeclarationLineCZL.Next() = 0;
 
-        TempBlob.CreateOutStream(OutStr);
+        TempBlob.CreateOutStream(OutStream);
         VIESDeclarationCZL.SetHeader(VIESDeclarationHeaderCZL);
         VIESDeclarationCZL.SetLines(TempVIESDeclarationLineCZL);
-        VIESDeclarationCZL.SetDestination(OutStr);
+        VIESDeclarationCZL.SetDestination(OutStream);
         VIESDeclarationCZL.Export();
-        FileMgt.BLOBExport(TempBlob, StrSubstNo(FileNameTok, "No."), true);
+        FileManagement.BLOBExport(TempBlob, StrSubstNo(FileNameTok, "No."), true);
+    end;
+
+    procedure PrintToDocumentAttachment()
+    var
+        VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL";
+        DocumentAttachment: Record "Document Attachment";
+        DocumentAttachmentMgmt: Codeunit "Document Attachment Mgmt";
+        TempBlob: Codeunit "Temp Blob";
+        RecordRef: RecordRef;
+        DummyInStream: InStream;
+        ReportOutStream: OutStream;
+        DocumentInStream: InStream;
+        FileName: Text[250];
+        DocumentAttachmentFileNameLbl: Label 'VIES Declaration %1', Comment = '%1 = VIES Declaration No.';
+    begin
+        VIESDeclarationHeaderCZL := Rec;
+        VIESDeclarationHeaderCZL.SetRecFilter();
+        RecordRef.GetTable(VIESDeclarationHeaderCZL);
+        if not RecordRef.FindFirst() then
+            exit;
+
+        StatutoryReportingSetupCZL.Get();
+        StatutoryReportingSetupCZL.Testfield("VIES Declaration Report No.");
+        if not Report.RdlcLayout(StatutoryReportingSetupCZL."VIES Declaration Report No.", DummyInStream) then
+            exit;
+
+        TempBlob.CreateOutStream(ReportOutStream);
+        Report.SaveAs(StatutoryReportingSetupCZL."VIES Declaration Report No.", '',
+                      ReportFormat::Pdf, ReportOutStream, RecordRef);
+
+        DocumentAttachment.InitFieldsFromRecRef(RecordRef);
+        FileName := DocumentAttachment.FindUniqueFileName(
+                    StrSubstNo(DocumentAttachmentFileNameLbl, VIESDeclarationHeaderCZL."No."), 'pdf');
+        TempBlob.CreateInStream(DocumentInStream);
+        DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, FileName);
+        DocumentAttachmentMgmt.ShowNotification(RecordRef, 1, true);
     end;
 
     local procedure LineExists(): Boolean
@@ -716,18 +753,18 @@ table 31075 "VIES Declaration Header CZL"
 
     local procedure CopyCorrDeclaration()
     var
-        VIESDeclarationHeaderCZLSaved: Record "VIES Declaration Header CZL";
+        SavedVIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL";
         VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL";
     begin
         Testfield("Corrected Declaration No.");
         VIESDeclarationHeaderCZL.Get("Corrected Declaration No.");
-        VIESDeclarationHeaderCZLSaved.TransferFields(Rec);
+        SavedVIESDeclarationHeaderCZL.TransferFields(Rec);
         TransferFields(VIESDeclarationHeaderCZL);
         Modify();
-        "No." := VIESDeclarationHeaderCZLSaved."No.";
-        Status := VIESDeclarationHeaderCZLSaved.Status::Open;
-        "Document Date" := VIESDeclarationHeaderCZLSaved."Document Date";
-        "Declaration Type" := VIESDeclarationHeaderCZLSaved."Declaration Type";
-        "Corrected Declaration No." := VIESDeclarationHeaderCZLSaved."Corrected Declaration No.";
+        "No." := SavedVIESDeclarationHeaderCZL."No.";
+        Status := SavedVIESDeclarationHeaderCZL.Status::Open;
+        "Document Date" := SavedVIESDeclarationHeaderCZL."Document Date";
+        "Declaration Type" := SavedVIESDeclarationHeaderCZL."Declaration Type";
+        "Corrected Declaration No." := SavedVIESDeclarationHeaderCZL."Corrected Declaration No.";
     end;
 }

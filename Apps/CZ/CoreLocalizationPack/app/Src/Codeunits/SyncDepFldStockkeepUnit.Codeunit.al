@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31142 "Sync.Dep.Fld-StockkeepUnit CZL"
 {
@@ -34,3 +35,4 @@ codeunit 31142 "Sync.Dep.Fld-StockkeepUnit CZL"
         Rec."Gen. Prod. Posting Group CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Gen. Prod. Posting Group CZL"));
     end;
 }
+#endif

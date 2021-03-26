@@ -66,7 +66,7 @@ table 11753 "Unreliable Payer Entry CZL"
         field(61; "Bank Account No. Type"; Option)
         {
             Caption = 'Bank Account No. Type';
-            OptionCaption = 'Standard,Not Standard';
+            OptionCaption = 'Standard,Nonstandard';
             OptionMembers = Standard,"Not Standard";
             DataClassification = CustomerContent;
         }

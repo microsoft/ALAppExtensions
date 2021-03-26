@@ -9,6 +9,9 @@
 query 774 "Users in Plans"
 {
     Caption = 'Users in Plans';
+    Permissions = tabledata Plan = r,
+                  tabledata User = r,
+                  tabledata "User Plan" = r;
 
     elements
     {

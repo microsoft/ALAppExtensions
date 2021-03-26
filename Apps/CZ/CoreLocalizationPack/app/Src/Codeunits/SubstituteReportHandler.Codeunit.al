@@ -1,6 +1,8 @@
 #pragma warning disable AL0432
 codeunit 31097 "Substitute Report Handler CZL"
 {
+    Permissions = TableData "NAV App Installed App" = r;
+
     var
         InstructionMgt: Codeunit "Instruction Mgt.";
 
@@ -21,8 +23,12 @@ codeunit 31097 "Substitute Report Handler CZL"
                 Report::"Balance Sheet CZL":
                     NewReportId := Report::"Balance Sheet";
 #endif
+                Report::"Adjust Exchange Rates CZL":
+                    NewReportId := Report::"Adjust Exchange Rates";
                 Report::"Calc. and Post VAT Settl. CZL":
                     NewReportId := Report::"Calc. and Post VAT Settlement";
+                Report::"Cash Flow Date List CZL":
+                    NewReportId := Report::"Cash Flow Date List";
                 Report::"Close Income Statement CZL":
                     NewReportId := Report::"Close Income Statement";
                 Report::"Create Stockkeeping Unit CZL":
@@ -67,8 +73,12 @@ codeunit 31097 "Substitute Report Handler CZL"
                 Report::"Balance Sheet":
                     NewReportId := Report::"Balance Sheet CZL";
 #endif
+                Report::"Adjust Exchange Rates":
+                    NewReportId := Report::"Adjust Exchange Rates CZL";
                 Report::"Calc. and Post VAT Settlement":
                     NewReportId := Report::"Calc. and Post VAT Settl. CZL";
+                Report::"Cash Flow Date List":
+                    NewReportId := Report::"Cash Flow Date List CZL";
                 Report::"Close Income Statement":
                     NewReportId := Report::"Close Income Statement CZL";
                 Report::"Create Stockkeeping Unit":
@@ -106,9 +116,9 @@ codeunit 31097 "Substitute Report Handler CZL"
 
     local procedure IsTestingEnvironment(): Boolean
     var
-        ExtensionManagement: Codeunit "Extension Management";
+        NAVAppInstalledApp: Record "NAV App Installed App";
     begin
-        exit(ExtensionManagement.IsInstalledByAppId('fa3e2564-a39e-417f-9be6-c0dbe3d94069')); // application "Tests-ERM"
+        exit(NAVAppInstalledApp.Get('fa3e2564-a39e-417f-9be6-c0dbe3d94069')); // application "Tests-ERM"
     end;
 
     local procedure GetSubstituteGeneralReportsNotificationId(): Guid

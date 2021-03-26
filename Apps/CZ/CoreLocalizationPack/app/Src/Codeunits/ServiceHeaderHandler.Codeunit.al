@@ -1,18 +1,18 @@
 codeunit 11745 "Service Header Handler CZL"
 {
     var
-        ServiceSetup: Record "Service Mgt. Setup";
+        ServiceMgtSetup: Record "Service Mgt. Setup";
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterInitRecord', '', false, false)]
     local procedure UpdateVatDateOnAfterInitRecord(var ServiceHeader: Record "Service Header")
     begin
-        ServiceSetup.Get();
-        case ServiceSetup."Default VAT Date CZL" of
-            ServiceSetup."Default VAT Date CZL"::"Posting Date":
+        ServiceMgtSetup.Get();
+        case ServiceMgtSetup."Default VAT Date CZL" of
+            ServiceMgtSetup."Default VAT Date CZL"::"Posting Date":
                 ServiceHeader."VAT Date CZL" := ServiceHeader."Posting Date";
-            ServiceSetup."Default VAT Date CZL"::"Document Date":
+            ServiceMgtSetup."Default VAT Date CZL"::"Document Date":
                 ServiceHeader."VAT Date CZL" := ServiceHeader."Document Date";
-            ServiceSetup."Default VAT Date CZL"::Blank:
+            ServiceMgtSetup."Default VAT Date CZL"::Blank:
                 ServiceHeader."VAT Date CZL" := 0D;
         end;
 
@@ -24,16 +24,16 @@ codeunit 11745 "Service Header Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeValidateEvent', 'Posting Date', false, false)]
     local procedure UpdateVatDateOnBeforePostingDateValidate(var Rec: Record "Service Header")
     begin
-        ServiceSetup.Get();
-        if ServiceSetup."Default VAT Date CZL" = ServiceSetup."Default VAT Date CZL"::"Posting Date" then
+        ServiceMgtSetup.Get();
+        if ServiceMgtSetup."Default VAT Date CZL" = ServiceMgtSetup."Default VAT Date CZL"::"Posting Date" then
             Rec.Validate("VAT Date CZL", Rec."Posting Date");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeValidateEvent', 'Document Date', false, false)]
     local procedure UpdateVatDateOnBeforeDocumentDateValidate(var Rec: Record "Service Header")
     begin
-        ServiceSetup.Get();
-        if ServiceSetup."Default VAT Date CZL" = ServiceSetup."Default VAT Date CZL"::"Document Date" then
+        ServiceMgtSetup.Get();
+        if ServiceMgtSetup."Default VAT Date CZL" = ServiceMgtSetup."Default VAT Date CZL"::"Document Date" then
             Rec.Validate("VAT Date CZL", Rec."Document Date");
     end;
 
@@ -45,8 +45,21 @@ codeunit 11745 "Service Header Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyBillToCustomerFields', '', false, false)]
-    local procedure UpdateRegNoOnAfterCopyBillToCustomerFields(var ServiceHeader: Record "Service Header"; Customer: Record Customer)
+    local procedure UpdateUpdateBankInfoAndRegNosOnAfterCopyBillToCustomerFields(var ServiceHeader: Record "Service Header"; Customer: Record Customer)
+    var
+        CompanyInformation: Record "Company Information";
+        ResponsibilityCenter: Record "Responsibility Center";
     begin
+        if ServiceHeader."Document Type" <> ServiceHeader."Document Type"::"Credit Memo" then begin
+            if ServiceHeader."Responsibility Center" = '' then begin
+                CompanyInformation.Get();
+                ServiceHeader.Validate("Bank Account Code CZL", CompanyInformation."Default Bank Account Code CZL");
+            end else begin
+                ResponsibilityCenter.Get(ServiceHeader."Responsibility Center");
+                ServiceHeader.Validate("Bank Account Code CZL", ResponsibilityCenter."Default Bank Account Code CZL");
+            end;
+        end else
+            ServiceHeader.Validate("Bank Account Code CZL", Customer."Preferred Bank Account Code");
         ServiceHeader."Registration No. CZL" := Customer."Registration No. CZL";
         ServiceHeader."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
     end;
@@ -78,5 +91,26 @@ codeunit 11745 "Service Header Handler CZL"
     local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Service Header")
     begin
         Rec.UpdateVATCurrencyFactorCZL();
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeValidateEvent', 'Customer Posting Group', false, false)]
+    local procedure CheckPostingGroupChangeOnBeforeCustomerPostingGroupValidate(var Rec: Record "Service Header"; var xRec: Record "Service Header"; CurrFieldNo: Integer)
+    var
+        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
+    begin
+        if CurrFieldNo = Rec.FieldNo("Customer Posting Group") then
+            PostingGroupManagementCZL.CheckPostingGroupChange(Rec."Customer Posting Group", xRec."Customer Posting Group", Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnUpdateServLineByChangedFieldName', '', false, false)]
+    local procedure UpdateServLineByChangedFieldName(ServiceHeader: Record "Service Header"; var ServiceLine: Record "Service Line"; ChangedFieldName: Text[100])
+    begin
+        case ChangedFieldName of
+            ServiceHeader.FieldCaption("Physical Transfer CZL"):
+                if (ServiceLine.Type = ServiceLine.Type::Item) and (ServiceLine."No." <> '') then begin
+                    ServiceLine."Physical Transfer CZL" := ServiceHeader."Physical Transfer CZL";
+                    ServiceLine.Modify(true);
+                end;
+        end;
     end;
 }

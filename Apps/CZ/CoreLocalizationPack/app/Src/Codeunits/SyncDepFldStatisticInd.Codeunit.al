@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
 {
@@ -56,6 +57,7 @@ codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
             StatisticIndicationCZL.Insert(false);
         end;
         StatisticIndicationCZL.Description := Rec.Description;
+        StatisticIndicationCZL."Description EN" := CopyStr(Rec."Full Name ENG", 1, MaxStrLen(StatisticIndicationCZL."Description EN"));
         StatisticIndicationCZL.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statistic Indication CZL");
     end;
@@ -130,6 +132,7 @@ codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
             StatisticIndication.Insert(false);
         end;
         StatisticIndication.Description := CopyStr(Rec.Description, 1, MaxStrLen(StatisticIndication.Description));
+        StatisticIndication."Full Name ENG" := Rec."Description EN";
         StatisticIndication.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statistic Indication");
     end;
@@ -160,3 +163,4 @@ codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

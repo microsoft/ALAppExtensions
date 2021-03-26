@@ -116,9 +116,6 @@ report 31079 "Posted Inventory Document CZL"
                       CopyStr(Item.Description + ' ' + Item."Description 2", 1, MaxStrLen(DescriptionText));
                 end;
 
-                if "Item Register"."User ID" = '' then
-                    "Item Register"."User ID" := "User ID";
-
                 if PrintQtyInUoM = PrintQtyInUoM::"Base UoM" then begin
                     if Item."No." <> "Item No." then
                         Item.Get("Item No.");

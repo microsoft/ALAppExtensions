@@ -41,7 +41,7 @@ codeunit 139730 "APIV1 - GLEntries E2E"
     procedure TestGetGLEntries()
     var
         GLEntry: Record "G/L Entry";
-        GeneralJournal: TestPage 39;
+        GeneralJournal: TestPage "General Journal";
         LastGLEntryNo: Integer;
         TargetURL: Text;
         ResponseText: Text;
@@ -76,7 +76,7 @@ codeunit 139730 "APIV1 - GLEntries E2E"
     end;
 
     [HandlerFunctions('ConfirmHandlerTrue,MessageHandler,GeneralJournalTemplateHandler')]
-    local procedure CreateAndPostGeneralJournalLineByPage(var GeneralJournal: TestPage 39)
+    local procedure CreateAndPostGeneralJournalLineByPage(var GeneralJournal: TestPage "General Journal")
     var
         GenJournalBatch: Record "Gen. Journal Batch";
         GenJournalLine: Record "Gen. Journal Line";
@@ -116,7 +116,7 @@ codeunit 139730 "APIV1 - GLEntries E2E"
         GenJournalBatch.MODIFY(TRUE);
     end;
 
-    local procedure UpdateAmountOnGenJournalLine(GenJournalBatch: Record "Gen. Journal Batch"; var GeneralJournal: TestPage 39)
+    local procedure UpdateAmountOnGenJournalLine(GenJournalBatch: Record "Gen. Journal Batch"; var GeneralJournal: TestPage "General Journal")
     begin
         LibraryVariableStorage.Enqueue(GenJournalBatch."Journal Template Name");
         LibraryERM.UpdateAmountOnGenJournalLine(GenJournalBatch, GeneralJournal);

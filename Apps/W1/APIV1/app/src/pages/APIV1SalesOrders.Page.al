@@ -376,7 +376,7 @@ page 20028 "APIV1 - Sales Orders"
                         RegisterFieldSet(FIELDNO("Requested Delivery Date"));
                     end;
                 }
-                part(salesOrderLines; 20044)
+                part(salesOrderLines; "APIV1 - Sales Order Lines")
                 {
                     Caption = 'Lines', Locked = true;
                     EntityName = 'salesOrderLine';

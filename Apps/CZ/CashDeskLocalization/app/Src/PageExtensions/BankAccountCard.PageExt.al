@@ -1,4 +1,4 @@
-pageextension 31159 "Bank Account Card" extends "Bank Account Card"
+pageextension 31159 "Bank Account Card CZP" extends "Bank Account Card"
 {
     trigger OnOpenPage()
     begin

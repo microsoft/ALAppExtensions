@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432,AL0603
 codeunit 31188 "Sync.Dep.Fld-AccSchedName CZL"
 {
@@ -34,3 +35,4 @@ codeunit 31188 "Sync.Dep.Fld-AccSchedName CZL"
         Rec."Acc. Schedule Type CZL" := NewFieldInt;
     end;
 }
+#endif

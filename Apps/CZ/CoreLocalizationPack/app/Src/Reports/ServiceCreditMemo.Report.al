@@ -56,7 +56,7 @@ report 31198 "Service Credit Memo CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Service Cr.Memo Header"; "Service Cr.Memo Header")
@@ -136,22 +136,22 @@ report 31198 "Service Credit Memo CZL"
             column(RegistrationNo_ServiceCrMemoHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_ServiceCrMemoHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_ServiceCrMemoHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_ServiceCrMemoHeader; "Bank Account No.")
+            column(BankAccountNo_ServiceCrMemoHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_ServiceCrMemoHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_ServiceCrMemoHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_ServiceCrMemoHeader; IBAN)
+            column(IBAN_ServiceCrMemoHeader; "IBAN CZL")
             {
             }
-            column(BIC_ServiceCrMemoHeaderCaption; FieldCaption("SWIFT Code"))
+            column(BIC_ServiceCrMemoHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(BIC_ServiceCrMemoHeader; "SWIFT Code")
+            column(BIC_ServiceCrMemoHeader; "SWIFT Code CZL")
             {
             }
             column(PostingDate_ServiceCrMemoHeaderCaption; FieldCaption("Posting Date"))
@@ -372,12 +372,12 @@ report 31198 "Service Credit Memo CZL"
                         AutoFormatExpression = "Service Cr.Memo Header"."Currency Code";
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATBaseLCY; -TempVATAmountLine."VAT Base (LCY)")
+                    column(VATAmtLineVATBaseLCY; -TempVATAmountLine."VAT Base (LCY) CZL")
                     {
                         AutoFormatExpression = "Service Cr.Memo Line".GetCurrencyCode();
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATAmtLCY; -TempVATAmountLine."VAT Amount (LCY)")
+                    column(VATAmtLineVATAmtLCY; -TempVATAmountLine."VAT Amount (LCY) CZL")
                     {
                         AutoFormatExpression = "Service Cr.Memo Header"."Currency Code";
                         AutoFormatType = 1;
@@ -424,7 +424,7 @@ report 31198 "Service Credit Memo CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -445,7 +445,7 @@ report 31198 "Service Credit Memo CZL"
 
                 trigger OnPreDataItem()
                 begin
-                    NoOfLoops := Abs(NoOfCopies) + Cust."Invoice Copies" + 1;
+                    NoOfLoops := Abs(NoOfCopies) + Customer."Invoice Copies" + 1;
                     if NoOfLoops <= 0 then
                         NoOfLoops := 1;
 
@@ -461,8 +461,8 @@ report 31198 "Service Credit Memo CZL"
 
                 FormatAddressFields("Service Cr.Memo Header");
                 FormatDocumentFields("Service Cr.Memo Header");
-                if not Cust.Get("Bill-to Customer No.") then
-                    Clear(Cust);
+                if not Customer.Get("Bill-to Customer No.") then
+                    Clear(Customer);
 
                 case "Credit Memo Type CZL" of
                     "Credit Memo Type CZL"::"Corrective Tax Document":
@@ -480,12 +480,13 @@ report 31198 "Service Credit Memo CZL"
                 end;
 
                 ServiceCrMemoLine.CalcVATAmountLines("Service Cr.Memo Header", TempVATAmountLine);
+                TempVATAmountLine.UpdateVATEntryLCYAmountsCZL("Service Cr.Memo Header");
                 if ("Currency Factor" <> 0) and ("Currency Factor" <> 1) then begin
-                    CurrExchRate.FindCurrency("Posting Date", "Currency Code", 1);
-                    CalculatedExchRate := Round(1 / "Currency Factor" * CurrExchRate."Exchange Rate Amount", 0.00001);
+                    CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
+                    CalculatedExchRate := Round(1 / "Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
                     ExchRateText :=
                       StrSubstNo(ExchRateLbl, CalculatedExchRate, "General Ledger Setup"."LCY Code",
-                        CurrExchRate."Exchange Rate Amount", "Currency Code");
+                        CurrencyExchangeRate."Exchange Rate Amount", "Currency Code");
                 end else
                     CalculatedExchRate := 1;
 
@@ -517,14 +518,14 @@ report 31198 "Service Credit Memo CZL"
     }
     var
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-        Cust: Record Customer;
+        Customer: Record Customer;
         PaymentTerms: Record "Payment Terms";
         PaymentMethod: Record "Payment Method";
         ReasonCode: Record "Reason Code";
-        CurrExchRate: Record "Currency Exchange Rate";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
         VATClause: Record "VAT Clause";
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         ExchRateText: Text[50];
@@ -572,16 +573,16 @@ report 31198 "Service Credit Memo CZL"
             ReasonCode.Get(ServiceCrMemoHeader."Reason Code");
         FormatDocumentMgtCZL.SetPaymentSymbols(
           PaymentSymbol, PaymentSymbolLabel,
-          ServiceCrMemoHeader."Variable Symbol", ServiceCrMemoHeader.FieldCaption(ServiceCrMemoHeader."Variable Symbol"),
-          ServiceCrMemoHeader."Constant Symbol", ServiceCrMemoHeader.FieldCaption(ServiceCrMemoHeader."Constant Symbol"),
-          ServiceCrMemoHeader."Specific Symbol", ServiceCrMemoHeader.FieldCaption(ServiceCrMemoHeader."Specific Symbol"));
+          ServiceCrMemoHeader."Variable Symbol CZL", ServiceCrMemoHeader.FieldCaption(ServiceCrMemoHeader."Variable Symbol CZL"),
+          ServiceCrMemoHeader."Constant Symbol CZL", ServiceCrMemoHeader.FieldCaption(ServiceCrMemoHeader."Constant Symbol CZL"),
+          ServiceCrMemoHeader."Specific Symbol CZL", ServiceCrMemoHeader.FieldCaption(ServiceCrMemoHeader."Specific Symbol CZL"));
         DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText(ServiceCrMemoHeader."Language Code");
     end;
 
     local procedure FormatAddressFields(ServiceCrMemoHeader: Record "Service Cr.Memo Header")
     begin
-        FormatAddr.ServiceCrMemoBillTo(CustAddr, ServiceCrMemoHeader);
-        FormatAddr.ServiceCrMemoShipTo(ShipToAddr, CustAddr, ServiceCrMemoHeader);
+        FormatAddress.ServiceCrMemoBillTo(CustAddr, ServiceCrMemoHeader);
+        FormatAddress.ServiceCrMemoShipTo(ShipToAddr, CustAddr, ServiceCrMemoHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

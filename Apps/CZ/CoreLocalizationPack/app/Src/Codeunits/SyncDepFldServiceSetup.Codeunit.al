@@ -3,7 +3,7 @@ codeunit 31165 "Sync.Dep.Fld-ServiceSetup CZL"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '17.0';
+    ObsoleteTag = '18.0';
 
     [EventSubscriber(ObjectType::Table, Database::"Service Mgt. Setup", 'OnBeforeInsertEvent', '', false, false)]
     local procedure SyncOnBeforeInsertServiceSetup(var Rec: Record "Service Mgt. Setup")
@@ -32,5 +32,6 @@ codeunit 31165 "Sync.Dep.Fld-ServiceSetup CZL"
         SyncDepFldUtilities.SyncFields(DepFieldInt, NewFieldInt, PreviousRecord."Default VAT Date", PreviousRecord."Default VAT Date CZL".AsInteger());
         Rec."Default VAT Date" := DepFieldInt;
         Rec."Default VAT Date CZL" := NewFieldInt;
+        SyncDepFldUtilities.SyncFields(Rec."Allow Alter Cust. Post. Groups", Rec."Allow Alter Posting Groups CZL", PreviousRecord."Allow Alter Cust. Post. Groups", PreviousRecord."Allow Alter Posting Groups CZL");
     end;
 }

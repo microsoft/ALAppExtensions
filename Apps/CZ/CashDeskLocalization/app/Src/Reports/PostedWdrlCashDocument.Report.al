@@ -58,7 +58,7 @@ report 11737 "Posted Wdrl. Cash Document CZP"
 
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
 
             trigger OnPreDataItem()
@@ -161,9 +161,8 @@ report 11737 "Posted Wdrl. Cash Document CZP"
                         TempVATAmountLine."VAT Base" := "VAT Base Amount";
                         TempVATAmountLine."VAT Amount" := "VAT Amount";
                         TempVATAmountLine."Amount Including VAT" := "Amount Including VAT";
-                        TempVATAmountLine."VAT Base (LCY)" := "VAT Base Amount (LCY)";
-                        TempVATAmountLine."VAT Amount (LCY)" := "VAT Amount (LCY)";
-                        TempVATAmountLine."Amount Including VAT (LCY)" := "Amount Including VAT (LCY)";
+                        TempVATAmountLine."VAT Base (LCY) CZL" := "VAT Base Amount (LCY)";
+                        TempVATAmountLine."VAT Amount (LCY) CZL" := "VAT Amount (LCY)";
                         TempVATAmountLine.InsertLine();
                     end;
                 }
@@ -188,12 +187,12 @@ report 11737 "Posted Wdrl. Cash Document CZP"
                         AutoFormatExpression = PostedCashDocumentHdrCZP."Currency Code";
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATBaseLCY; TempVATAmountLine."VAT Base (LCY)")
+                    column(VATAmtLineVATBaseLCY; TempVATAmountLine."VAT Base (LCY) CZL")
                     {
                         AutoFormatExpression = PostedCashDocumentHdrCZP."Currency Code";
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATAmtLCY; TempVATAmountLine."VAT Amount (LCY)")
+                    column(VATAmtLineVATAmtLCY; TempVATAmountLine."VAT Amount (LCY) CZL")
                     {
                         AutoFormatExpression = PostedCashDocumentHdrCZP."Currency Code";
                         AutoFormatType = 1;
@@ -288,7 +287,7 @@ report 11737 "Posted Wdrl. Cash Document CZP"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; Employee.FullName())
                         {
@@ -318,12 +317,12 @@ report 11737 "Posted Wdrl. Cash Document CZP"
                     "Currency Code" := "General Ledger Setup"."LCY Code"
                 else
                     if ("Currency Factor" <> 0) and ("Currency Factor" <> 1) then begin
-                        CurrExchRate.FindCurrency("Posting Date", "Currency Code", 1);
-                        CalculatedExchRate := Round(1 / "Currency Factor" * CurrExchRate."Exchange Rate Amount", 0.00001);
+                        CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
+                        CalculatedExchRate := Round(1 / "Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
                         ExchRateText :=
                           StrSubstNo(
                             ExchangeRateTxt, CalculatedExchRate, "General Ledger Setup"."LCY Code",
-                            CurrExchRate."Exchange Rate Amount", "Currency Code");
+                            CurrencyExchangeRate."Exchange Rate Amount", "Currency Code");
                     end else
                         CalculatedExchRate := 1;
             end;
@@ -387,8 +386,8 @@ report 11737 "Posted Wdrl. Cash Document CZP"
 
     var
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-        CurrExchRate: Record "Currency Exchange Rate";
-        FormatAddr: Codeunit "Format Address";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+        FormatAddress: Codeunit "Format Address";
         ExchRateText: Text[50];
         CompanyAddr: array[8] of Text[100];
         CalculatedExchRate: Decimal;

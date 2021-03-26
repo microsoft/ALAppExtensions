@@ -669,7 +669,7 @@ codeunit 139087 "Azure AD Graph Test"
         MockGraphQuery.AddDirectorySubscribedSku(SubscribedSku);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 9012, 'OnInitialize', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Graph", 'OnInitialize', '', false, false)]
     local procedure OnInitialize(var GraphQuery: DotNet GraphQuery)
     begin
         GraphQuery := GraphQuery.GraphQuery(MockGraphQuery);

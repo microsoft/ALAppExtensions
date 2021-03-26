@@ -45,9 +45,9 @@ codeunit 11729 "Cash Document-Post CZP"
             if GLEntry.FindLast() then;
         end;
 
-        Window.Open(DialogMsg);
+        WindowDialog.Open(DialogMsg);
         // Insert posted cash document header
-        Window.Update(1, StrSubstNo(ThreePlaceholdersTok, CashDocumentHeaderCZP."Cash Desk No.", CashDocumentHeaderCZP."Document Type", CashDocumentHeaderCZP."No."));
+        WindowDialog.Update(1, StrSubstNo(ThreePlaceholdersTok, CashDocumentHeaderCZP."Cash Desk No.", CashDocumentHeaderCZP."Document Type", CashDocumentHeaderCZP."No."));
 
         PostedCashDocumentHdrCZP.Init();
         PostedCashDocumentHdrCZP.TransferFields(CashDocumentHeaderCZP);
@@ -71,7 +71,7 @@ codeunit 11729 "Cash Document-Post CZP"
     var
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
-        TempGenJnlLine: Record "Gen. Journal Line" temporary;
+        TempGenJournalLine: Record "Gen. Journal Line" temporary;
         PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
         SourceCodeSetup: Record "Source Code Setup";
@@ -81,7 +81,7 @@ codeunit 11729 "Cash Document-Post CZP"
         DimensionManagement: Codeunit DimensionManagement;
         CashDocumentReleaseCZP: Codeunit "Cash Document-Release CZP";
         GenJnlPostPreview: Codeunit "Gen. Jnl.-Post Preview";
-        Window: Dialog;
+        WindowDialog: Dialog;
         DialogMsg: Label 'Posting Document #1#################################\\Posting Lines #2######\', Comment = '%1 = Cash Desk No. & "Cash Document Type & No., %2 = Line Count';
         PostingDateOutRangeErr: Label 'is not within your range of allowed posting dates';
         IsNotEqualErr: Label '%1 is not equal %2.', Comment = '%1 = Amount Including VAT FieldCaption, %2 = Released Amount FieldCaption)';
@@ -95,34 +95,34 @@ codeunit 11729 "Cash Document-Post CZP"
         Sign := CashDocumentHeaderCZP.SignAmount();
         CashDocumentHeaderCZP.CalcFields("Amount Including VAT", "Amount Including VAT (LCY)");
 
-        TempGenJnlLine.Init();
-        TempGenJnlLine."Document No." := CashDocumentHeaderCZP."No.";
-        TempGenJnlLine."External Document No." := CashDocumentHeaderCZP."External Document No.";
-        TempGenJnlLine.Description := CashDocumentHeaderCZP."Payment Purpose";
-        TempGenJnlLine."Posting Date" := CashDocumentHeaderCZP."Posting Date";
-        TempGenJnlLine."Document Date" := CashDocumentHeaderCZP."Document Date";
-        TempGenJnlLine."VAT Date CZL" := CashDocumentHeaderCZP."VAT Date";
-        TempGenJnlLine."Original Doc. VAT Date CZL" := CashDocumentHeaderCZP."VAT Date";
-        TempGenJnlLine."Account Type" := TempGenJnlLine."Account Type"::"Bank Account";
-        TempGenJnlLine."Account No." := CashDocumentHeaderCZP."Cash Desk No.";
-        TempGenJnlLine."Currency Code" := CashDocumentHeaderCZP."Currency Code";
-        TempGenJnlLine.Amount := CashDocumentHeaderCZP."Amount Including VAT" * -Sign;
-        TempGenJnlLine."Amount (LCY)" := CashDocumentHeaderCZP."Amount Including VAT (LCY)" * -Sign;
-        TempGenJnlLine."Salespers./Purch. Code" := CashDocumentHeaderCZP."Salespers./Purch. Code";
-        TempGenJnlLine."Source Currency Code" := TempGenJnlLine."Currency Code";
-        TempGenJnlLine."Source Currency Amount" := TempGenJnlLine.Amount;
-        TempGenJnlLine."Source Curr. VAT Base Amount" := TempGenJnlLine."VAT Base Amount";
-        TempGenJnlLine."Source Curr. VAT Amount" := TempGenJnlLine."VAT Amount";
-        TempGenJnlLine."System-Created Entry" := true;
-        TempGenJnlLine."Shortcut Dimension 1 Code" := CashDocumentHeaderCZP."Shortcut Dimension 1 Code";
-        TempGenJnlLine."Shortcut Dimension 2 Code" := CashDocumentHeaderCZP."Shortcut Dimension 2 Code";
-        TempGenJnlLine."Dimension Set ID" := CashDocumentHeaderCZP."Dimension Set ID";
-        TempGenJnlLine."Source Code" := SourceCodeSetup."Cash Desk CZP";
-        TempGenJnlLine."Reason Code" := CashDocumentHeaderCZP."Reason Code";
-        TempGenJnlLine."VAT Registration No." := CashDocumentHeaderCZP."VAT Registration No.";
+        TempGenJournalLine.Init();
+        TempGenJournalLine."Document No." := CashDocumentHeaderCZP."No.";
+        TempGenJournalLine."External Document No." := CashDocumentHeaderCZP."External Document No.";
+        TempGenJournalLine.Description := CashDocumentHeaderCZP."Payment Purpose";
+        TempGenJournalLine."Posting Date" := CashDocumentHeaderCZP."Posting Date";
+        TempGenJournalLine."Document Date" := CashDocumentHeaderCZP."Document Date";
+        TempGenJournalLine."VAT Date CZL" := CashDocumentHeaderCZP."VAT Date";
+        TempGenJournalLine."Original Doc. VAT Date CZL" := CashDocumentHeaderCZP."VAT Date";
+        TempGenJournalLine."Account Type" := TempGenJournalLine."Account Type"::"Bank Account";
+        TempGenJournalLine."Account No." := CashDocumentHeaderCZP."Cash Desk No.";
+        TempGenJournalLine."Currency Code" := CashDocumentHeaderCZP."Currency Code";
+        TempGenJournalLine.Amount := CashDocumentHeaderCZP."Amount Including VAT" * -Sign;
+        TempGenJournalLine."Amount (LCY)" := CashDocumentHeaderCZP."Amount Including VAT (LCY)" * -Sign;
+        TempGenJournalLine."Salespers./Purch. Code" := CashDocumentHeaderCZP."Salespers./Purch. Code";
+        TempGenJournalLine."Source Currency Code" := TempGenJournalLine."Currency Code";
+        TempGenJournalLine."Source Currency Amount" := TempGenJournalLine.Amount;
+        TempGenJournalLine."Source Curr. VAT Base Amount" := TempGenJournalLine."VAT Base Amount";
+        TempGenJournalLine."Source Curr. VAT Amount" := TempGenJournalLine."VAT Amount";
+        TempGenJournalLine."System-Created Entry" := true;
+        TempGenJournalLine."Shortcut Dimension 1 Code" := CashDocumentHeaderCZP."Shortcut Dimension 1 Code";
+        TempGenJournalLine."Shortcut Dimension 2 Code" := CashDocumentHeaderCZP."Shortcut Dimension 2 Code";
+        TempGenJournalLine."Dimension Set ID" := CashDocumentHeaderCZP."Dimension Set ID";
+        TempGenJournalLine."Source Code" := SourceCodeSetup."Cash Desk CZP";
+        TempGenJournalLine."Reason Code" := CashDocumentHeaderCZP."Reason Code";
+        TempGenJournalLine."VAT Registration No." := CashDocumentHeaderCZP."VAT Registration No.";
 
-        OnBeforePostCashDocHeader(TempGenJnlLine, CashDocumentHeaderCZP, GenJnlPostLine);
-        GenJnlPostLine.RunWithCheck(TempGenJnlLine);
+        OnBeforePostCashDocHeader(TempGenJournalLine, CashDocumentHeaderCZP, GenJnlPostLine);
+        GenJnlPostLine.RunWithCheck(TempGenJournalLine);
     end;
 
     local procedure PostLines()
@@ -139,16 +139,16 @@ codeunit 11729 "Cash Document-Post CZP"
         if CashDocumentLineCZP.FindSet() then
             repeat
                 LineCount += 1;
-                Window.Update(2, LineCount);
+                WindowDialog.Update(2, LineCount);
 
-                // Insert posted cash order line
+                // Insert posted cash document line
                 PostedCashDocumentLineCZP.Init();
                 PostedCashDocumentLineCZP.TransferFields(CashDocumentLineCZP);
                 OnBeforePostedCashDocLineInsert(PostedCashDocumentLineCZP, PostedCashDocumentHdrCZP, CashDocumentLineCZP);
                 PostedCashDocumentLineCZP.Insert();
                 OnAfterPostedCashDocLineInsert(PostedCashDocumentLineCZP, PostedCashDocumentHdrCZP, CashDocumentLineCZP);
 
-                // Post cash order lines
+                // Post cash document lines
                 if CashDocumentLineCZP.Amount <> 0 then begin
                     CashDocumentLineCZP.TestField("Account Type");
                     CashDocumentLineCZP.TestField("Account No.");
@@ -185,111 +185,111 @@ codeunit 11729 "Cash Document-Post CZP"
                               DimensionManagement.GetDimValuePostingErr());
                         Error(DimensionManagement.GetDimValuePostingErr());
                     end;
-                    OnBeforePostCashDocLine(TempGenJnlLine, CashDocumentLineCZP, GenJnlPostLine);
-                    GenJnlPostLine.RunWithCheck(TempGenJnlLine);
+                    OnBeforePostCashDocLine(TempGenJournalLine, CashDocumentLineCZP, GenJnlPostLine);
+                    GenJnlPostLine.RunWithCheck(TempGenJournalLine);
                 end;
             until CashDocumentLineCZP.Next() = 0;
     end;
 
-    procedure InitGenJnlLine(CashDocumentHeaderCZP2: Record "Cash Document Header CZP"; CashDocumentLineCZP2: Record "Cash Document Line CZP")
+    procedure InitGenJnlLine(InitCashDocumentHeaderCZP: Record "Cash Document Header CZP"; InitCashDocumentLineCZP: Record "Cash Document Line CZP")
     var
         Sign: Integer;
     begin
-        TempGenJnlLine.Init();
-        case CashDocumentLineCZP2."Gen. Document Type" of
-            CashDocumentLineCZP2."Gen. Document Type"::Payment:
-                TempGenJnlLine."Document Type" := TempGenJnlLine."Document Type"::Payment;
-            CashDocumentLineCZP2."Gen. Document Type"::Refund:
-                TempGenJnlLine."Document Type" := TempGenJnlLine."Document Type"::Refund;
+        TempGenJournalLine.Init();
+        case InitCashDocumentLineCZP."Gen. Document Type" of
+            InitCashDocumentLineCZP."Gen. Document Type"::Payment:
+                TempGenJournalLine."Document Type" := TempGenJournalLine."Document Type"::Payment;
+            InitCashDocumentLineCZP."Gen. Document Type"::Refund:
+                TempGenJournalLine."Document Type" := TempGenJournalLine."Document Type"::Refund;
         end;
-        TempGenJnlLine."Document No." := CashDocumentHeaderCZP2."No.";
-        TempGenJnlLine."External Document No." := CashDocumentLineCZP2."External Document No.";
-        TempGenJnlLine."Posting Date" := CashDocumentHeaderCZP2."Posting Date";
-        TempGenJnlLine.Validate("VAT Date CZL", CashDocumentHeaderCZP2."VAT Date");
-        TempGenJnlLine.Validate("Original Doc. VAT Date CZL", CashDocumentHeaderCZP2."VAT Date");
-        TempGenJnlLine."Posting Group" := CashDocumentLineCZP2."Posting Group";
-        TempGenJnlLine.Description := CashDocumentLineCZP2.Description;
-        case CashDocumentLineCZP2."Account Type" of
-            CashDocumentLineCZP2."Account Type"::"G/L Account":
-                TempGenJnlLine."Account Type" := TempGenJnlLine."Account Type"::"G/L Account";
-            CashDocumentLineCZP2."Account Type"::Customer:
+        TempGenJournalLine."Document No." := InitCashDocumentHeaderCZP."No.";
+        TempGenJournalLine."External Document No." := InitCashDocumentLineCZP."External Document No.";
+        TempGenJournalLine."Posting Date" := InitCashDocumentHeaderCZP."Posting Date";
+        TempGenJournalLine.Validate("VAT Date CZL", InitCashDocumentHeaderCZP."VAT Date");
+        TempGenJournalLine.Validate("Original Doc. VAT Date CZL", InitCashDocumentHeaderCZP."VAT Date");
+        TempGenJournalLine."Posting Group" := InitCashDocumentLineCZP."Posting Group";
+        TempGenJournalLine.Description := InitCashDocumentLineCZP.Description;
+        case InitCashDocumentLineCZP."Account Type" of
+            InitCashDocumentLineCZP."Account Type"::"G/L Account":
+                TempGenJournalLine."Account Type" := TempGenJournalLine."Account Type"::"G/L Account";
+            InitCashDocumentLineCZP."Account Type"::Customer:
                 begin
-                    TempGenJnlLine."Account Type" := TempGenJnlLine."Account Type"::Customer;
-                    TempGenJnlLine.Validate(TempGenJnlLine."Bill-to/Pay-to No.", CashDocumentLineCZP2."Account No.");
-                    TempGenJnlLine.Validate(TempGenJnlLine."Sell-to/Buy-from No.", CashDocumentLineCZP2."Account No.");
+                    TempGenJournalLine."Account Type" := TempGenJournalLine."Account Type"::Customer;
+                    TempGenJournalLine.Validate(TempGenJournalLine."Bill-to/Pay-to No.", InitCashDocumentLineCZP."Account No.");
+                    TempGenJournalLine.Validate(TempGenJournalLine."Sell-to/Buy-from No.", InitCashDocumentLineCZP."Account No.");
                 end;
-            CashDocumentLineCZP2."Account Type"::Vendor:
+            InitCashDocumentLineCZP."Account Type"::Vendor:
                 begin
-                    TempGenJnlLine."Account Type" := TempGenJnlLine."Account Type"::Vendor;
-                    TempGenJnlLine.Validate(TempGenJnlLine."Bill-to/Pay-to No.", CashDocumentLineCZP2."Account No.");
-                    TempGenJnlLine.Validate(TempGenJnlLine."Sell-to/Buy-from No.", CashDocumentLineCZP2."Account No.");
+                    TempGenJournalLine."Account Type" := TempGenJournalLine."Account Type"::Vendor;
+                    TempGenJournalLine.Validate(TempGenJournalLine."Bill-to/Pay-to No.", InitCashDocumentLineCZP."Account No.");
+                    TempGenJournalLine.Validate(TempGenJournalLine."Sell-to/Buy-from No.", InitCashDocumentLineCZP."Account No.");
                 end;
-            CashDocumentLineCZP2."Account Type"::"Bank Account":
-                TempGenJnlLine."Account Type" := TempGenJnlLine."Account Type"::"Bank Account";
-            CashDocumentLineCZP2."Account Type"::"Fixed Asset":
-                TempGenJnlLine."Account Type" := TempGenJnlLine."Account Type"::"Fixed Asset";
-            CashDocumentLineCZP2."Account Type"::Employee:
-                TempGenJnlLine."Account Type" := TempGenJnlLine."Account Type"::Employee;
+            InitCashDocumentLineCZP."Account Type"::"Bank Account":
+                TempGenJournalLine."Account Type" := TempGenJournalLine."Account Type"::"Bank Account";
+            InitCashDocumentLineCZP."Account Type"::"Fixed Asset":
+                TempGenJournalLine."Account Type" := TempGenJournalLine."Account Type"::"Fixed Asset";
+            InitCashDocumentLineCZP."Account Type"::Employee:
+                TempGenJournalLine."Account Type" := TempGenJournalLine."Account Type"::Employee;
         end;
-        TempGenJnlLine."Account No." := CashDocumentLineCZP2."Account No.";
+        TempGenJournalLine."Account No." := InitCashDocumentLineCZP."Account No.";
 
-        Sign := CashDocumentLineCZP2.SignAmount();
+        Sign := InitCashDocumentLineCZP.SignAmount();
 
-        TempGenJnlLine."VAT Bus. Posting Group" := CashDocumentLineCZP2."VAT Bus. Posting Group";
-        TempGenJnlLine."VAT Prod. Posting Group" := CashDocumentLineCZP2."VAT Prod. Posting Group";
-        TempGenJnlLine."VAT Calculation Type" := CashDocumentLineCZP2."VAT Calculation Type";
-        TempGenJnlLine."VAT Base Amount" := CashDocumentLineCZP2."VAT Base Amount" * Sign;
-        TempGenJnlLine."VAT Base Amount (LCY)" := CashDocumentLineCZP2."VAT Base Amount (LCY)" * Sign;
-        TempGenJnlLine."VAT Amount" := CashDocumentLineCZP2."VAT Amount" * Sign;
-        TempGenJnlLine."VAT Amount (LCY)" := CashDocumentLineCZP2."VAT Amount (LCY)" * Sign;
-        TempGenJnlLine.Amount := CashDocumentLineCZP2."Amount Including VAT" * Sign;
-        TempGenJnlLine."Amount (LCY)" := CashDocumentLineCZP2."Amount Including VAT (LCY)" * Sign;
-        TempGenJnlLine."VAT Difference" := CashDocumentLineCZP2."VAT Difference" * Sign;
-        TempGenJnlLine."Gen. Posting Type" := CashDocumentLineCZP2."Gen. Posting Type";
-        TempGenJnlLine."Applies-to Doc. Type" := CashDocumentLineCZP2."Applies-To Doc. Type";
-        TempGenJnlLine."Applies-to Doc. No." := CashDocumentLineCZP2."Applies-To Doc. No.";
-        TempGenJnlLine."Applies-to ID" := CashDocumentLineCZP2."Applies-to ID";
-        TempGenJnlLine."Currency Code" := CashDocumentHeaderCZP2."Currency Code";
-        TempGenJnlLine."Currency Factor" := CashDocumentHeaderCZP2."Currency Factor";
-        if TempGenJnlLine."Account Type" = TempGenJnlLine."Account Type"::"Fixed Asset" then begin
-            TempGenJnlLine.Validate(TempGenJnlLine."Depreciation Book Code", CashDocumentLineCZP2."Depreciation Book Code");
-            TempGenJnlLine.Validate(TempGenJnlLine."FA Posting Type", CashDocumentLineCZP2."FA Posting Type");
-            TempGenJnlLine.Validate(TempGenJnlLine."Maintenance Code", CashDocumentLineCZP2."Maintenance Code");
-            TempGenJnlLine.Validate(TempGenJnlLine."Duplicate in Depreciation Book", CashDocumentLineCZP2."Duplicate in Depreciation Book");
-            TempGenJnlLine.Validate(TempGenJnlLine."Use Duplication List", CashDocumentLineCZP2."Use Duplication List");
+        TempGenJournalLine."VAT Bus. Posting Group" := InitCashDocumentLineCZP."VAT Bus. Posting Group";
+        TempGenJournalLine."VAT Prod. Posting Group" := InitCashDocumentLineCZP."VAT Prod. Posting Group";
+        TempGenJournalLine."VAT Calculation Type" := InitCashDocumentLineCZP."VAT Calculation Type";
+        TempGenJournalLine."VAT Base Amount" := InitCashDocumentLineCZP."VAT Base Amount" * Sign;
+        TempGenJournalLine."VAT Base Amount (LCY)" := InitCashDocumentLineCZP."VAT Base Amount (LCY)" * Sign;
+        TempGenJournalLine."VAT Amount" := InitCashDocumentLineCZP."VAT Amount" * Sign;
+        TempGenJournalLine."VAT Amount (LCY)" := InitCashDocumentLineCZP."VAT Amount (LCY)" * Sign;
+        TempGenJournalLine.Amount := InitCashDocumentLineCZP."Amount Including VAT" * Sign;
+        TempGenJournalLine."Amount (LCY)" := InitCashDocumentLineCZP."Amount Including VAT (LCY)" * Sign;
+        TempGenJournalLine."VAT Difference" := InitCashDocumentLineCZP."VAT Difference" * Sign;
+        TempGenJournalLine."Gen. Posting Type" := InitCashDocumentLineCZP."Gen. Posting Type";
+        TempGenJournalLine."Applies-to Doc. Type" := InitCashDocumentLineCZP."Applies-To Doc. Type";
+        TempGenJournalLine."Applies-to Doc. No." := InitCashDocumentLineCZP."Applies-To Doc. No.";
+        TempGenJournalLine."Applies-to ID" := InitCashDocumentLineCZP."Applies-to ID";
+        TempGenJournalLine."Currency Code" := InitCashDocumentHeaderCZP."Currency Code";
+        TempGenJournalLine."Currency Factor" := InitCashDocumentHeaderCZP."Currency Factor";
+        if TempGenJournalLine."Account Type" = TempGenJournalLine."Account Type"::"Fixed Asset" then begin
+            TempGenJournalLine.Validate(TempGenJournalLine."Depreciation Book Code", InitCashDocumentLineCZP."Depreciation Book Code");
+            TempGenJournalLine.Validate(TempGenJournalLine."FA Posting Type", InitCashDocumentLineCZP."FA Posting Type");
+            TempGenJournalLine.Validate(TempGenJournalLine."Maintenance Code", InitCashDocumentLineCZP."Maintenance Code");
+            TempGenJournalLine.Validate(TempGenJournalLine."Duplicate in Depreciation Book", InitCashDocumentLineCZP."Duplicate in Depreciation Book");
+            TempGenJournalLine.Validate(TempGenJournalLine."Use Duplication List", InitCashDocumentLineCZP."Use Duplication List");
         end;
-        TempGenJnlLine."Source Currency Code" := TempGenJnlLine."Currency Code";
-        TempGenJnlLine."Source Currency Amount" := TempGenJnlLine.Amount;
-        TempGenJnlLine."Source Curr. VAT Base Amount" := TempGenJnlLine."VAT Base Amount";
-        TempGenJnlLine."Source Curr. VAT Amount" := TempGenJnlLine."VAT Amount";
-        TempGenJnlLine."System-Created Entry" := true;
-        TempGenJnlLine."Shortcut Dimension 1 Code" := CashDocumentLineCZP2."Shortcut Dimension 1 Code";
-        TempGenJnlLine."Shortcut Dimension 2 Code" := CashDocumentLineCZP2."Shortcut Dimension 2 Code";
-        TempGenJnlLine."Dimension Set ID" := CashDocumentLineCZP2."Dimension Set ID";
-        TempGenJnlLine."Source Code" := SourceCodeSetup."Cash Desk CZP";
-        TempGenJnlLine."Reason Code" := CashDocumentLineCZP2."Reason Code";
+        TempGenJournalLine."Source Currency Code" := TempGenJournalLine."Currency Code";
+        TempGenJournalLine."Source Currency Amount" := TempGenJournalLine.Amount;
+        TempGenJournalLine."Source Curr. VAT Base Amount" := TempGenJournalLine."VAT Base Amount";
+        TempGenJournalLine."Source Curr. VAT Amount" := TempGenJournalLine."VAT Amount";
+        TempGenJournalLine."System-Created Entry" := true;
+        TempGenJournalLine."Shortcut Dimension 1 Code" := InitCashDocumentLineCZP."Shortcut Dimension 1 Code";
+        TempGenJournalLine."Shortcut Dimension 2 Code" := InitCashDocumentLineCZP."Shortcut Dimension 2 Code";
+        TempGenJournalLine."Dimension Set ID" := InitCashDocumentLineCZP."Dimension Set ID";
+        TempGenJournalLine."Source Code" := SourceCodeSetup."Cash Desk CZP";
+        TempGenJournalLine."Reason Code" := InitCashDocumentLineCZP."Reason Code";
 #if not CLEAN18
-        TempGenJnlLine.Validate(Prepayment, CashDocumentLineCZP2."Advance Letter Link Code" <> '');
-        TempGenJnlLine."Advance Letter Link Code" := CashDocumentLineCZP2."Advance Letter Link Code";
+        TempGenJournalLine.Validate(Prepayment, InitCashDocumentLineCZP."Advance Letter Link Code" <> '');
+        TempGenJournalLine."Advance Letter Link Code" := InitCashDocumentLineCZP."Advance Letter Link Code";
 #endif
-        TempGenJnlLine."VAT Registration No." := CashDocumentHeaderCZP2."VAT Registration No.";
-        OnAfterInitGenJnlLine(TempGenJnlLine, CashDocumentHeaderCZP2, CashDocumentLineCZP2);
+        TempGenJournalLine."VAT Registration No." := InitCashDocumentHeaderCZP."VAT Registration No.";
+        OnAfterInitGenJnlLine(TempGenJournalLine, InitCashDocumentHeaderCZP, InitCashDocumentLineCZP);
     end;
 
-    procedure GetGenJnlLine(var TempNewGenJnlLine: Record "Gen. Journal Line" temporary)
+    procedure GetGenJnlLine(var TempNewGenJournalLine: Record "Gen. Journal Line" temporary)
     begin
-        TempNewGenJnlLine := TempGenJnlLine;
+        TempNewGenJournalLine := TempGenJournalLine;
     end;
 
     local procedure FinalizePosting(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
         if PreviewMode then begin
-            Window.Close();
+            WindowDialog.Close();
             OnAfterFinalizePostingPreview(CashDocumentHeaderCZP, PostedCashDocumentHdrCZP, GenJnlPostLine);
             GenJnlPostPreview.ThrowError();
         end;
         DeleteAfterPosting(CashDocumentHeaderCZP);
-        Window.Close();
+        WindowDialog.Close();
         OnAfterFinalizePosting(CashDocumentHeaderCZP, PostedCashDocumentHdrCZP, GenJnlPostLine);
     end;
 
@@ -344,9 +344,9 @@ codeunit 11729 "Cash Document-Post CZP"
         PreviewMode := NewPreviewMode;
     end;
 
-    procedure SetGenJnlPostLine(var GenJnlPostLineNew: Codeunit "Gen. Jnl.-Post Line")
+    procedure SetGenJnlPostLine(var NewGenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     begin
-        GenJnlPostLine := GenJnlPostLineNew;
+        GenJnlPostLine := NewGenJnlPostLine;
     end;
 
 #if not CLEAN18
@@ -416,7 +416,7 @@ codeunit 11729 "Cash Document-Post CZP"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterInitGenJnlLine(var GenJnlLine: Record "Gen. Journal Line"; CashDocumentHeaderCZP: Record "Cash Document Header CZP"; CashDocumentLineCZP: Record "Cash Document Line CZP")
+    local procedure OnAfterInitGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; CashDocumentHeaderCZP: Record "Cash Document Header CZP"; CashDocumentLineCZP: Record "Cash Document Line CZP")
     begin
     end;
 
@@ -431,12 +431,12 @@ codeunit 11729 "Cash Document-Post CZP"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforePostCashDocHeader(var GenJnlLine: Record "Gen. Journal Line"; var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    local procedure OnBeforePostCashDocHeader(var GenJournalLine: Record "Gen. Journal Line"; var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforePostCashDocLine(var GenJnlLine: Record "Gen. Journal Line"; var CashDocumentLineCZP: Record "Cash Document Line CZP"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    local procedure OnBeforePostCashDocLine(var GenJournalLine: Record "Gen. Journal Line"; var CashDocumentLineCZP: Record "Cash Document Line CZP"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     begin
     end;
 

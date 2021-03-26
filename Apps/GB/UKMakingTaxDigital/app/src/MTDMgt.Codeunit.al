@@ -521,7 +521,7 @@ codeunit 10530 "MTD Mgt."
         exit('MS-332065-GB-MTD-DailyLimit-20200304');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 9999, 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         PerCompanyUpgradeTags.Add(GetVATReportSetupUpgradeTag());

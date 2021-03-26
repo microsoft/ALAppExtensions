@@ -70,8 +70,14 @@ page 31167 "Posted Cash Document List CZP"
                 }
             }
         }
-        area(factboxes)
+        area(FactBoxes)
         {
+            part("Attached Documents"; "Document Attachment Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Attachments';
+                SubPageLink = "Table ID" = const(11737), "No." = field("No.");
+            }
             systempart(Links; Links)
             {
                 ApplicationArea = RecordLinks;
@@ -84,7 +90,6 @@ page 31167 "Posted Cash Document List CZP"
             }
         }
     }
-
     actions
     {
         area(navigation)
@@ -99,6 +104,23 @@ page 31167 "Posted Cash Document List CZP"
                 trigger OnAction()
                 begin
                     Rec.ShowDimensions();
+                end;
+            }
+            action(DocAttach)
+            {
+                ApplicationArea = All;
+                Caption = 'Attachments';
+                Image = Attach;
+                ToolTip = 'Add a file as an attachment. You can attach images as well as documents.';
+
+                trigger OnAction()
+                var
+                    DocumentAttachmentDetails: Page "Document Attachment Details";
+                    RecRef: RecordRef;
+                begin
+                    RecRef.GetTable(Rec);
+                    DocumentAttachmentDetails.OpenForRecRef(RecRef);
+                    DocumentAttachmentDetails.RunModal();
                 end;
             }
         }
@@ -121,13 +143,29 @@ page 31167 "Posted Cash Document List CZP"
                     PostedCashDocumentHdrCZP.PrintRecords(true);
                 end;
             }
+            action(PrintToAttachment)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Attach as PDF';
+                Image = PrintAttachment;
+                Promoted = true;
+                PromotedCategory = "Report";
+                PromotedOnly = true;
+                ToolTip = 'Create a PDF file and attach it to the document.';
+
+                trigger OnAction()
+                begin
+                    Rec.PrintToDocumentAttachment();
+                end;
+            }
         }
         area(processing)
         {
             action("&Navigate")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = '&Navigate';
+                Caption = 'Find Entries';
+                Ellipsis = true;
                 Image = Navigate;
                 Promoted = true;
                 PromotedCategory = Process;

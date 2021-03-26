@@ -12,131 +12,74 @@ report 11704 "All Payments on Hold CZL"
         {
             PrintOnlyIfDetail = true;
             RequestFilterFields = "No.", Name;
-            column(USERID; UserId)
-            {
-            }
+
             column(COMPANYNAME; COMPANYPROPERTY.DisplayName())
             {
             }
-            column(FORMAT_TODAY_0_4_; Format(Today, 0, 4))
+            column(Vendor_Filters; VendorFilters)
             {
             }
-            column(Vendor_TABLECAPTION__________VendLedgEntryFilter; TableCaption + ': ' + VendLedgEntryFilter)
+            column(Vendor_No; "No.")
             {
-            }
-            column(Vendor__No__; "No.")
-            {
+                IncludeCaption = true;
             }
             column(Vendor_Name; Name)
             {
+                IncludeCaption = true;
             }
-            column(CurrReport_PAGENOCaption; CurrReport_PAGENOCaptionLbl)
-            {
-            }
-            column(Payments_on_HoldCaption; Payments_on_HoldCaptionLbl)
-            {
-            }
-            column(Vendor__No__Caption; FieldCaption("No."))
-            {
-            }
-            column(Vendor_NameCaption; FieldCaption(Name))
-            {
-            }
-            column(Vendor_Ledger_Entry__On_Hold_Caption; "Vendor Ledger Entry".FieldCaption("On Hold"))
-            {
-            }
-            column(Vendor_Ledger_Entry__Remaining_Amt___LCY__Caption; "Vendor Ledger Entry".FieldCaption("Remaining Amt. (LCY)"))
-            {
-            }
-            column(Vendor_Ledger_Entry__Remaining_Amount_Caption; "Vendor Ledger Entry".FieldCaption("Remaining Amount"))
-            {
-            }
-            column(Vendor_Ledger_Entry_DescriptionCaption; "Vendor Ledger Entry".FieldCaption(Description))
-            {
-            }
-            column(Vendor_Ledger_Entry__Document_No__Caption; "Vendor Ledger Entry".FieldCaption("Document No."))
-            {
-            }
-            column(Vendor_Ledger_Entry__Document_Type_Caption; Vendor_Ledger_Entry__Document_Type_CaptionLbl)
-            {
-            }
-            column(Vendor_Ledger_Entry__Posting_Date_Caption; "Vendor Ledger Entry".FieldCaption("Posting Date"))
-            {
-            }
-            column(Vendor_Ledger_Entry__Due_Date_Caption; Vendor_Ledger_Entry__Due_Date_CaptionLbl)
-            {
-            }
-            dataitem("Vendor Ledger Entry"; "Vendor Ledger Entry")
+            dataitem(VendorLedgerEntry; "Vendor Ledger Entry")
             {
                 DataItemLink = "Vendor No." = field("No.");
                 DataItemTableView = sorting("Vendor No.", Open, Positive, "Due Date") WHERE(Open = CONST(true), "On Hold" = FILTER(<> ''));
-                column(Vendor_Ledger_Entry__Due_Date_; "Due Date")
+
+                column(VendorLedgerEntry_DueDate; "Due Date")
+                {
+                    IncludeCaption = true;
+                }
+                column(VendorLedgerEntry_PostingDate; "Posting Date")
+                {
+                    IncludeCaption = true;
+                }
+                column(VendorLedgerEntry_DocumentType; "Document Type")
+                {
+                    IncludeCaption = true;
+                }
+                column(VendorLedgerEntry_DocumentNo; "Document No.")
+                {
+                    IncludeCaption = true;
+                }
+                column(VendorLedgerEntry_Description; Description)
+                {
+                    IncludeCaption = true;
+                }
+                column(VendorLedgerEntry_CurrencyCode; "Currency Code")
                 {
                 }
-                column(Vendor_Ledger_Entry__Posting_Date_; "Posting Date")
+                column(VendorLedgerEntry_OnHold; "On Hold")
                 {
+                    IncludeCaption = true;
                 }
-                column(Vendor_Ledger_Entry__Document_Type_; "Document Type")
+                column(VendorLedgerEntry_RemainingAmount; "Remaining Amount")
                 {
+                    IncludeCaption = true;
+                    AutoCalcField = true;
                 }
-                column(Vendor_Ledger_Entry__Document_No__; "Document No.")
+                column(VendorLedgerEntry_RemainingAmtLCY; "Remaining Amt. (LCY)")
                 {
+                    IncludeCaption = true;
+                    AutoCalcField = true;
                 }
-                column(Vendor_Ledger_Entry_Description; Description)
+                column(VendorLedgerEntry_EntryNo; "Entry No.")
                 {
+                    IncludeCaption = true;
                 }
-                column(Vendor_Ledger_Entry__Remaining_Amount_; "Remaining Amount")
-                {
-                }
-                column(Vendor_Ledger_Entry__Currency_Code_; "Currency Code")
-                {
-                }
-                column(Vendor_Ledger_Entry__On_Hold_; "On Hold")
-                {
-                }
-                column(Vendor_Ledger_Entry__Remaining_Amt___LCY__; "Remaining Amt. (LCY)")
-                {
-                }
-                column(Vendor_Ledger_Entry_Entry_No_; "Entry No.")
-                {
-                }
-                column(Vendor_Ledger_Entry_Vendor_No_; "Vendor No.")
-                {
-                }
-                trigger OnAfterGetRecord()
-                begin
-                    CalcFields("Remaining Amt. (LCY)");
-                    VendorTotal += "Remaining Amt. (LCY)";
-                end;
 
                 trigger OnPreDataItem()
                 begin
-                    if DueDate <> 0D then
-                        SetFilter("Due Date", '..%1', DueDate);
+                    if LastDueDate <> 0D then
+                        SetFilter("Due Date", '..%1', LastDueDate);
                 end;
             }
-            dataitem("Integer"; "Integer")
-            {
-                DataItemTableView = sorting(Number) WHERE(Number = CONST(1));
-                column(gdeVendorTotal; VendorTotal)
-                {
-                }
-                column(gdeVendorTotalCaption; VendorTotalCaptionLbl)
-                {
-                }
-                column(Integer_Number; Number)
-                {
-                }
-                trigger OnPreDataItem()
-                begin
-                    if VendorTotal = 0 then
-                        CurrReport.Break();
-                end;
-            }
-            trigger OnAfterGetRecord()
-            begin
-                VendorTotal := 0;
-            end;
         }
     }
     requestpage
@@ -149,7 +92,7 @@ report 11704 "All Payments on Hold CZL"
                 group(Options)
                 {
                     Caption = 'Options';
-                    field(DueDateField; DueDate)
+                    field(LastDueDateField; LastDueDate)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Last Due Date';
@@ -159,18 +102,24 @@ report 11704 "All Payments on Hold CZL"
             }
         }
     }
+
+    labels
+    {
+        PageLbl = 'Page';
+        ReportNameLbl = 'Payments on Hold';
+        TotalLCYbl = 'Total (LCY)';
+        CurrencyCodeLbl = 'Curr. Code';
+    }
+
     trigger OnPreReport()
+    var
+        VendorFiltersTok: Label '%1: %2', Locked = true;
     begin
-        VendLedgEntryFilter := Vendor.GetFilters;
+        if Vendor.GetFilters() <> '' then
+            VendorFilters := StrSubstNo(VendorFiltersTok, Vendor.TableCaption(), Vendor.GetFilters());
     end;
 
     var
-        VendLedgEntryFilter: Text;
-        VendorTotal: Decimal;
-        DueDate: Date;
-        CurrReport_PAGENOCaptionLbl: Label 'Page';
-        Payments_on_HoldCaptionLbl: Label 'Payments on Hold';
-        Vendor_Ledger_Entry__Document_Type_CaptionLbl: Label 'Document Type';
-        Vendor_Ledger_Entry__Due_Date_CaptionLbl: Label 'Due Date';
-        VendorTotalCaptionLbl: Label 'Total (LCY)';
+        VendorFilters: Text;
+        LastDueDate: Date;
 }

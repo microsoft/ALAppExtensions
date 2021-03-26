@@ -87,7 +87,6 @@ page 30056 "APIV2 - PDF Document"
     end;
 
     var
-        GraphMgtAttachmentBuffer: Codeunit "Graph Mgt - Attachment Buffer";
         PdfGenerated: Boolean;
         ConflictingIdsErr: Label 'You have specified conflicting identifiers: %1 and %2.', Comment = '%1 - a GUID, %2 - a GUID';
         MissingParentIdErr: Label 'You must specify a parentId in the request body.', Comment = 'parentId is a field name and should not be translated.';

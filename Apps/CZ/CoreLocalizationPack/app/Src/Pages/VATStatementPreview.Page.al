@@ -25,9 +25,9 @@ page 31135 "VAT Statement Preview CZL"
                     trigger OnValidate()
                     begin
                         if VATPeriodStartDate <> 0D then begin
-                            VATPeriod.Get(VATPeriodStartDate);
-                            if VATPeriod.Next() > 0 then
-                                VATPeriodEndDate := CalcDate('<-1D>', VATPeriod."Starting Date");
+                            VATPeriodCZL.Get(VATPeriodStartDate);
+                            if VATPeriodCZL.Next() > 0 then
+                                VATPeriodEndDate := CalcDate('<-1D>', VATPeriodCZL."Starting Date");
                         end;
                         Rec.SetRange("Date Filter", VATPeriodStartDate, VATPeriodEndDate);
                         DateFilter := Rec.GetFilter("Date Filter");
@@ -159,7 +159,7 @@ page 31135 "VAT Statement Preview CZL"
     end;
 
     protected var
-        VATPeriod: Record "VAT Period CZL";
+        VATPeriodCZL: Record "VAT Period CZL";
         VATStatementReportSelection: Enum "VAT Statement Report Selection";
         VATStatementReportPeriodSelection: Enum "VAT Statement Report Period Selection";
         UseAmtsInAddCurr: Boolean;

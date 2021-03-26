@@ -1,6 +1,6 @@
 page 1070 "MS - PayPal Standard Setup"
 {
-    SourceTable = 1070;
+    SourceTable = "MS - PayPal Standard Account";
     Caption = 'PayPal Payments Standard Setup';
     DataCaptionExpression = '';
     InsertAllowed = false;
@@ -38,7 +38,7 @@ page 1070 "MS - PayPal Standard Setup"
 
                         trigger OnValidate();
                         var
-                            EnvironmentInfo: Codeunit 457;
+                            EnvironmentInfo: Codeunit "Environment Information";
                             SetupNotification: Notification;
                             NotificationAllowed: Boolean;
                         begin
@@ -81,7 +81,7 @@ page 1070 "MS - PayPal Standard Setup"
 
                     trigger OnValidate();
                     var
-                        MSPayPalStandardMgt: Codeunit 1070;
+                        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
                     begin
                         MSPayPalStandardMgt.ValidateChangeTargetURL();
                         SetTargetURL(InvoiceTargetURL);
@@ -120,7 +120,7 @@ page 1070 "MS - PayPal Standard Setup"
                 //PromotedCategory = Process;
                 //The property 'PromotedIsBig' can only be set if the property 'Promoted' is set to 'true'
                 //PromotedIsBig = true;
-                RunObject = Page 1071;
+                RunObject = Page "MS - PayPal Standard Template";
                 RunPageOnRec = false;
                 ToolTip = 'Opens Template Setup for all PayPal accounts.';
             }
@@ -133,9 +133,9 @@ page 1070 "MS - PayPal Standard Setup"
 
                 trigger OnAction();
                 var
-                    MSPayPalStandardTemplate: Record 1071;
-                    ActivityLog: Record 710;
-                    MSPayPalStandardMgt: Codeunit 1070;
+                    MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+                    ActivityLog: Record "Activity Log";
+                    MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
                 begin
                     MSPayPalStandardMgt.GetTemplate(MSPayPalStandardTemplate);
                     ActivityLog.ShowEntries(MSPayPalStandardTemplate);
@@ -151,7 +151,7 @@ page 1070 "MS - PayPal Standard Setup"
 
     trigger OnOpenPage();
     var
-        MSPayPalStandardMgt: Codeunit 1070;
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
         MSPayPalStandardMgt.GetTemplate(MSPayPalStandardTemplate);
         MSPayPalStandardTemplate.RefreshLogoIfNeeded();
@@ -171,7 +171,7 @@ page 1070 "MS - PayPal Standard Setup"
     end;
 
     var
-        MSPayPalStandardTemplate: Record 1071;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
         InvoiceTargetURL: Text;
         TermsOfServiceEditable: Boolean;
         EnableServiceQst: Label 'The %1 is not enabled. Are you sure you want to exit?', Comment = '%1 = pagecaption (OCR Service Setup)';

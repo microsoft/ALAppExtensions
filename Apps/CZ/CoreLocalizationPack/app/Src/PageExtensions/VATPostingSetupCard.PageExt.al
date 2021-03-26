@@ -45,6 +45,14 @@ pageextension 11757 "VAT Posting Setup Card CZL" extends "VAT Posting Setup Card
                 ToolTip = 'Specifies the G/L account for clearing purchase VAT due to the different exchange rate for VAT';
             }
         }
+        addafter("EU Service")
+        {
+            field("Intrastat Service CZL"; Rec."Intrastat Service CZL")
+            {
+                ApplicationArea = VAT;
+                ToolTip = 'Specifies if this combination of VAT business posting group and VAT product posting group is used to the intrastat journal.';
+            }
+        }
         addlast(General)
         {
             field("Reverse Charge Check CZL"; Rec."Reverse Charge Check CZL")
@@ -67,6 +75,11 @@ pageextension 11757 "VAT Posting Setup Card CZL" extends "VAT Posting Setup Card
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the option to include this posting setup in the purchase VIES declarations.';
+            }
+            field("VAT LCY Corr. Rounding Acc.CZL"; Rec."VAT LCY Corr. Rounding Acc.CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the account to which the VAT correction in LCY will be posted on documents in foreign currency, eg use an account for document rounding';
             }
         }
     }

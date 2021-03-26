@@ -24,7 +24,6 @@ codeunit 139832 "APIV2 - Default Dimensions E2E"
         ItemServiceNameTxt: Label 'items';
         DefaultDimensionsServiceNameTxt: Label 'defaultDimensions';
         EmptyResponseErr: Label 'Response should not be empty.';
-        BadRequestErr: Label 'BadRequest', Locked = true;
         DimensionIdMismatchErr: Label 'The "dimensionId" and "dimensionValueId" match to different Dimension records.', Locked = true;
         BlockedDimensionErr: Label '%1 %2 is blocked.', Comment = '%1 - Dimension table caption, %2 - Dimension code';
         DimValueBlockedErr: Label '%1 %2 - %3 is blocked.', Comment = '%1 = Dimension Value table caption, %2 = Dim Code, %3 = Dim Value';

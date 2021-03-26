@@ -116,30 +116,30 @@ report 31073 "Phys. Inventory Document CZL"
                         if not Location.Get("Location Code") then
                             Clear(Location);
 
-                    ItemLedgEntry.Reset();
-                    ItemLedgEntry.SetCurrentKey("Item No.");
-                    ItemLedgEntry.SetRange("Document No.", "Document No.");
-                    ItemLedgEntry.SetRange("Posting Date", "Posting Date");
-                    ItemLedgEntry.SetRange("Item No.", "Item No.");
-                    ItemLedgEntry.SetRange("Variant Code", "Variant Code");
-                    ItemLedgEntry.SetRange("Location Code", "Location Code");
-                    ItemLedgEntry.SetRange("Entry Type", "Entry Type");
-                    case ItemLedgEntry.Count() of
+                    ItemLedgerEntry.Reset();
+                    ItemLedgerEntry.SetCurrentKey("Item No.");
+                    ItemLedgerEntry.SetRange("Document No.", "Document No.");
+                    ItemLedgerEntry.SetRange("Posting Date", "Posting Date");
+                    ItemLedgerEntry.SetRange("Item No.", "Item No.");
+                    ItemLedgerEntry.SetRange("Variant Code", "Variant Code");
+                    ItemLedgerEntry.SetRange("Location Code", "Location Code");
+                    ItemLedgerEntry.SetRange("Entry Type", "Entry Type");
+                    case ItemLedgerEntry.Count() of
                         0:
                             ChangeCost := 0;
                         1:
                             begin
-                                ItemLedgEntry.FindFirst();
-                                ItemLedgEntry.CalcFields("Cost Amount (Actual)");
-                                ChangeCost := ItemLedgEntry."Cost Amount (Actual)";
+                                ItemLedgerEntry.FindFirst();
+                                ItemLedgerEntry.CalcFields("Cost Amount (Actual)");
+                                ChangeCost := ItemLedgerEntry."Cost Amount (Actual)";
                             end;
                         else begin
-                                ItemLedgEntry.FindSet();
+                                ItemLedgerEntry.FindSet();
                                 repeat
-                                    ItemLedgEntry.CalcFields("Cost Amount (Actual)");
-                                    ChangeCost := ChangeCost + ItemLedgEntry."Cost Amount (Actual)";
-                                    ChangeQty := ChangeQty + ItemLedgEntry.Quantity;
-                                until ItemLedgEntry.Next() = 0;
+                                    ItemLedgerEntry.CalcFields("Cost Amount (Actual)");
+                                    ChangeCost := ChangeCost + ItemLedgerEntry."Cost Amount (Actual)";
+                                    ChangeQty := ChangeQty + ItemLedgerEntry.Quantity;
+                                until ItemLedgerEntry.Next() = 0;
                                 ChangeCost := Round(ChangeCost / ChangeQty * ("Qty. (Phys. Inventory)" - "Qty. (Calculated)"), 0.01);
                             end;
                     end;
@@ -236,9 +236,10 @@ report 31073 "Phys. Inventory Document CZL"
         TotalStatementLbl = 'Total statement (Quantity, Amount)';
         ConfirmedLbl = 'Confirmed by manager';
     }
+
     trigger OnPreReport()
     var
-        PhysInventoryLedgerEntry1: Record "Phys. Inventory Ledger Entry";
+        PhysInventoryLedgerEntry: Record "Phys. Inventory Ledger Entry";
     begin
         if PhysInvLedgEntry.GetRangeMin("Document No.") <> PhysInvLedgEntry.GetRangeMax("Document No.") then
             Error(SelectOnlyOneErr, PhysInvLedgEntry.FieldCaption("Document No."));
@@ -247,10 +248,10 @@ report 31073 "Phys. Inventory Document CZL"
             Error(SelectOnlyOneErr, PhysInvLedgEntry.FieldCaption("Posting Date"));
         PostingDate := PhysInvLedgEntry.GetRangeMax("Posting Date");
 
-        PhysInventoryLedgerEntry1.CopyFilters(PhysInvLedgEntry);
-        PhysInventoryLedgerEntry1.SetRange("Document No.");
-        PhysInventoryLedgerEntry1.SetRange("Posting Date");
-        ReportFilter := PhysInventoryLedgerEntry1.GetFilters();
+        PhysInventoryLedgerEntry.CopyFilters(PhysInvLedgEntry);
+        PhysInventoryLedgerEntry.SetRange("Document No.");
+        PhysInventoryLedgerEntry.SetRange("Posting Date");
+        ReportFilter := PhysInventoryLedgerEntry.GetFilters();
 
         if Member[1] <> '' then
             Members += Member[1];
@@ -275,7 +276,7 @@ report 31073 "Phys. Inventory Document CZL"
         CompanyOfficialCZL: Record "Company Official CZL";
         Item: Record Item;
         Location: Record Location;
-        ItemLedgEntry: Record "Item Ledger Entry";
+        ItemLedgerEntry: Record "Item Ledger Entry";
         Member: array[4] of Text[100];
         Reason: Text;
         DocumentNo: Code[20];

@@ -4,6 +4,12 @@ pageextension 11786 "Purch. Invoice Subform CZL" extends "Purch. Invoice Subform
     {
         addafter("Inv. Discount Amount")
         {
+            field("Country/Reg. of Orig. Code CZL"; Rec."Country/Reg. of Orig. Code CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the origin country/region code.';
+                Visible = false;
+            }
             field("Tariff No. CZL"; Rec."Tariff No. CZL")
             {
                 ApplicationArea = Basic, Suite;

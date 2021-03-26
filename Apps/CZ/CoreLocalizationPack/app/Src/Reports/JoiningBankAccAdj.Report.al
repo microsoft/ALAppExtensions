@@ -8,304 +8,215 @@ report 11713 "Joining Bank. Acc. Adj. CZL"
 
     dataset
     {
-        dataitem("Bank Account Ledger Entry"; "Bank Account Ledger Entry")
+        dataitem(BankAccountLedgerEntryFilter; "Bank Account Ledger Entry")
         {
             DataItemTableView = sorting("Bank Account No.", "Posting Date");
             RequestFilterFields = "Bank Account No.", "Document No.", "External Document No.";
 
+            column(COMPANYNAME; COMPANYPROPERTY.DisplayName())
+            {
+            }
+            column(BankAccountLedgerEntry_Filters; BankAccountLedgerEntryFilters)
+            {
+            }
+
             trigger OnAfterGetRecord()
             var
-                lcoDocNo: Code[20];
+                DocumentNo: Code[20];
             begin
                 j := j + 1;
-                Window.Update(1, Round((9999 / i) * j, 1));
-                case SortingType of
-                    0:
-                        lcoDocNo := "Document No.";
-                    1:
-                        lcoDocNo := CopyStr("External Document No.", 1, MaxStrLen(lcoDocNo));
-                    2:
-                        if "External Document No." <> '' then
-                            lcoDocNo := CopyStr("External Document No.", 1, MaxStrLen(lcoDocNo))
-                        else
-                            lcoDocNo := "Document No.";
-                end;
-                if TempBuffer.Get(lcoDocNo) then begin
-                    if TempBuffer.Valid and (TempBuffer."Currency Code" = "Currency Code") then begin
-                        TempBuffer.Amount := TempBuffer.Amount + "Bank Account Ledger Entry".Amount;
-                        TempBuffer."Debit Amount" := TempBuffer."Debit Amount" + "Debit Amount";
-                        TempBuffer."Credit Amount" := TempBuffer."Credit Amount" + "Credit Amount";
-                    end
-                    else begin
-                        TempBuffer.Amount := 0;
-                        TempBuffer."Debit Amount" := 0;
-                        TempBuffer."Credit Amount" := 0;
-                        TempBuffer.Valid := false;
+                WindowDialog.Update(1, Round((9999 / i) * j, 1));
+
+                DocumentNo := GetDocumentNoBySortingType(BankAccountLedgerEntryFilter);
+                if TempBankAccAdjustmentBuffer.Get(DocumentNo) then begin
+                    if TempBankAccAdjustmentBuffer.Valid and (TempBankAccAdjustmentBuffer."Currency Code" = BankAccountLedgerEntryFilter."Currency Code") then begin
+                        TempBankAccAdjustmentBuffer.Amount += BankAccountLedgerEntryFilter.Amount;
+                        TempBankAccAdjustmentBuffer."Debit Amount" += BankAccountLedgerEntryFilter."Debit Amount";
+                        TempBankAccAdjustmentBuffer."Credit Amount" += BankAccountLedgerEntryFilter."Credit Amount";
+                    end else begin
+                        TempBankAccAdjustmentBuffer.Amount := 0;
+                        TempBankAccAdjustmentBuffer."Debit Amount" := 0;
+                        TempBankAccAdjustmentBuffer."Credit Amount" := 0;
+                        TempBankAccAdjustmentBuffer.Valid := false;
                     end;
-                    TempBuffer."Amount (LCY)" := TempBuffer."Amount (LCY)" + "Amount (LCY)";
-                    if ShowPostingDate and (TempBuffer."Posting Date" = 0D) and ("Posting Date" <> 0D) then
-                        TempBuffer."Posting Date" := "Posting Date";
-                    if ShowDescription and (TempBuffer.Description = '') and (Description <> '') then
-                        TempBuffer.Description := Description;
-                    TempBuffer.Modify();
+                    TempBankAccAdjustmentBuffer."Amount (LCY)" += BankAccountLedgerEntryFilter."Amount (LCY)";
+                    if ShowPostingDate and (TempBankAccAdjustmentBuffer."Posting Date" = 0D) and (BankAccountLedgerEntryFilter."Posting Date" <> 0D) then
+                        TempBankAccAdjustmentBuffer."Posting Date" := BankAccountLedgerEntryFilter."Posting Date";
+                    if ShowDescription and (TempBankAccAdjustmentBuffer.Description = '') and (BankAccountLedgerEntryFilter.Description <> '') then
+                        TempBankAccAdjustmentBuffer.Description := BankAccountLedgerEntryFilter.Description;
+                    TempBankAccAdjustmentBuffer.Modify();
                 end else begin
-                    TempBuffer.Init();
-                    TempBuffer."Document No." := lcoDocNo;
-                    TempBuffer.Amount := "Bank Account Ledger Entry".Amount;
-                    TempBuffer."Debit Amount" := "Debit Amount";
-                    TempBuffer."Credit Amount" := "Credit Amount";
-                    TempBuffer."Amount (LCY)" := "Amount (LCY)";
-                    TempBuffer."Currency Code" := "Currency Code";
+                    TempBankAccAdjustmentBuffer.Init();
+                    TempBankAccAdjustmentBuffer."Document No." := DocumentNo;
+                    TempBankAccAdjustmentBuffer.Amount := BankAccountLedgerEntryFilter.Amount;
+                    TempBankAccAdjustmentBuffer."Debit Amount" := BankAccountLedgerEntryFilter."Debit Amount";
+                    TempBankAccAdjustmentBuffer."Credit Amount" := BankAccountLedgerEntryFilter."Credit Amount";
+                    TempBankAccAdjustmentBuffer."Amount (LCY)" := BankAccountLedgerEntryFilter."Amount (LCY)";
+                    TempBankAccAdjustmentBuffer."Currency Code" := BankAccountLedgerEntryFilter."Currency Code";
                     if ShowPostingDate then
-                        TempBuffer."Posting Date" := "Posting Date";
+                        TempBankAccAdjustmentBuffer."Posting Date" := BankAccountLedgerEntryFilter."Posting Date";
                     if ShowDescription then
-                        TempBuffer.Description := Description;
-                    TempBuffer.Valid := true;
-                    TempBuffer.Insert();
+                        TempBankAccAdjustmentBuffer.Description := BankAccountLedgerEntryFilter.Description;
+                    TempBankAccAdjustmentBuffer.Valid := true;
+                    TempBankAccAdjustmentBuffer.Insert();
                 end;
 
-                if TempCurrBuffer.Get("Currency Code") then begin
-                    TempCurrBuffer."Total Amount" += Amount;
-                    TempCurrBuffer."Total Amount (LCY)" += "Amount (LCY)";
-                    TempCurrBuffer."Total Credit Amount" += "Credit Amount";
-                    TempCurrBuffer."Total Debit Amount" += "Debit Amount";
-                    TempCurrBuffer.Counter += 1;
-                    TempCurrBuffer.Modify();
+                if TempEnhancedCurrencyBuffer.Get(BankAccountLedgerEntryFilter."Currency Code") then begin
+                    TempEnhancedCurrencyBuffer."Total Amount" += BankAccountLedgerEntryFilter.Amount;
+                    TempEnhancedCurrencyBuffer."Total Amount (LCY)" += BankAccountLedgerEntryFilter."Amount (LCY)";
+                    TempEnhancedCurrencyBuffer."Total Credit Amount" += BankAccountLedgerEntryFilter."Credit Amount";
+                    TempEnhancedCurrencyBuffer."Total Debit Amount" += BankAccountLedgerEntryFilter."Debit Amount";
+                    TempEnhancedCurrencyBuffer.Counter += 1;
+                    TempEnhancedCurrencyBuffer.Modify();
                 end else begin
-                    TempCurrBuffer.Init();
-                    TempCurrBuffer."Currency Code" := "Currency Code";
-                    TempCurrBuffer."Total Amount" := Amount;
-                    TempCurrBuffer."Total Amount (LCY)" := "Amount (LCY)";
-                    TempCurrBuffer."Total Credit Amount" := "Credit Amount";
-                    TempCurrBuffer."Total Debit Amount" := "Debit Amount";
-                    TempCurrBuffer.Counter := 1;
-                    TempCurrBuffer.Insert();
+                    TempEnhancedCurrencyBuffer.Init();
+                    TempEnhancedCurrencyBuffer."Currency Code" := BankAccountLedgerEntryFilter."Currency Code";
+                    TempEnhancedCurrencyBuffer."Total Amount" := BankAccountLedgerEntryFilter.Amount;
+                    TempEnhancedCurrencyBuffer."Total Amount (LCY)" := BankAccountLedgerEntryFilter."Amount (LCY)";
+                    TempEnhancedCurrencyBuffer."Total Credit Amount" := BankAccountLedgerEntryFilter."Credit Amount";
+                    TempEnhancedCurrencyBuffer."Total Debit Amount" := BankAccountLedgerEntryFilter."Debit Amount";
+                    TempEnhancedCurrencyBuffer.Counter := 1;
+                    TempEnhancedCurrencyBuffer.Insert();
                 end;
             end;
 
             trigger OnPreDataItem()
             begin
-                Filter := CopyStr("Bank Account Ledger Entry".GetFilters, 1, MaxStrLen(Filter));
-
-                if GetFilter("Bank Account No.") = '' then
-                    Error(EnterBankAccountNoFilterErr);
-
-                i := Count;
+                i := BankAccountLedgerEntryFilter.Count;
                 j := 0;
-                Window.Open(ProcessingEntriesMsg);
+                WindowDialog.Open(ProcessingEntriesMsg);
             end;
         }
-        dataitem("Integer"; "Integer")
+        dataitem(EntryBuffer; "Integer")
         {
             DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-            column(COMPANYNAME; COMPANYPROPERTY.DisplayName())
+            column(EntryBuffer_DocumentNo; TempBankAccAdjustmentBuffer."Document No.")
             {
             }
-            column(Joining_Bank_Account_AdjustmentCaption; Joining_Bank_Account_AdjustmentCaptionLbl)
+            column(EntryBuffer_Amount; TempBankAccAdjustmentBuffer.Amount)
             {
             }
-            column(CurrReport_PAGENOCaption; CurrReport_PAGENOCaptionLbl)
+            column(EntryBuffer_AmountLCY; TempBankAccAdjustmentBuffer."Amount (LCY)")
             {
             }
-            column(gteFilter; Filter)
+            column(EntryBuffer_DebitAmount; TempBankAccAdjustmentBuffer."Debit Amount")
             {
             }
-            column(greTBuffer__Document_No__; TempBuffer."Document No.")
+            column(EntryBuffer_CreditAmount; TempBankAccAdjustmentBuffer."Credit Amount")
             {
             }
-            column(greTBuffer_Amount; TempBuffer.Amount)
+            column(EntryBuffer_Description; TempBankAccAdjustmentBuffer.Description)
             {
             }
-            column(greTBuffer__Debit_Amount_; TempBuffer."Debit Amount")
+            column(EntryBuffer_PostingDate; TempBankAccAdjustmentBuffer."Posting Date")
             {
             }
-            column(greTBuffer__Credit_Amount_; TempBuffer."Credit Amount")
+            column(EntryBuffer_CurrencyCode; TempBankAccAdjustmentBuffer."Currency Code")
             {
             }
-            column(greTBuffer_Description; TempBuffer.Description)
+            column(EntryBuffer_Number; Number)
             {
             }
-            column(greTBuffer__Posting_Date_; TempBuffer."Posting Date")
-            {
-            }
-            column(greTBuffer__Currency_Code_; TempBuffer."Currency Code")
-            {
-            }
-            column(greTBuffer__Amount__LCY__; TempBuffer."Amount (LCY)")
-            {
-            }
-            column(greTBuffer__Document_No__Caption; TBuffer__Document_No__CaptionLbl)
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2_AmountCaption; "Bank Account Ledger Entry 2".FieldCaption(Amount))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Debit_Amount_Caption; "Bank Account Ledger Entry 2".FieldCaption("Debit Amount"))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Credit_Amount_Caption; "Bank Account Ledger Entry 2".FieldCaption("Credit Amount"))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2_DescriptionCaption; "Bank Account Ledger Entry 2".FieldCaption(Description))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Posting_Date_Caption; "Bank Account Ledger Entry 2".FieldCaption("Posting Date"))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Entry_No__Caption; "Bank Account Ledger Entry 2".FieldCaption("Entry No."))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Amount__LCY__Caption; "Bank Account Ledger Entry 2".FieldCaption("Amount (LCY)"))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Currency_Code_Caption; "Bank Account Ledger Entry 2".FieldCaption("Currency Code"))
-            {
-            }
-            column(CurrReport_PAGENO_Control25Caption; CurrReport_PAGENO_Control25CaptionLbl)
-            {
-            }
-            column(Joining_Bank_Account_AdjustmentCaption_Control33; Joining_Bank_Account_AdjustmentCaption_Control33Lbl)
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2_DescriptionCaption_Control34; "Bank Account Ledger Entry 2".FieldCaption(Description))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Credit_Amount_Caption_Control35; "Bank Account Ledger Entry 2".FieldCaption("Credit Amount"))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Debit_Amount_Caption_Control36; "Bank Account Ledger Entry 2".FieldCaption("Debit Amount"))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2_AmountCaption_Control37; "Bank Account Ledger Entry 2".FieldCaption(Amount))
-            {
-            }
-            column(greTBuffer__Document_No__Caption_Control38; TBuffer__Document_No__Caption_Control38Lbl)
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Posting_Date_Caption_Control40; "Bank Account Ledger Entry 2".FieldCaption("Posting Date"))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Currency_Code_Caption_Control1100162003; "Bank Account Ledger Entry 2".FieldCaption("Currency Code"))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Amount__LCY__Caption_Control1100162004; "Bank Account Ledger Entry 2".FieldCaption("Amount (LCY)"))
-            {
-            }
-            column(Bank_Account_Ledger_Entry_2__Entry_No__Caption_Control1100162005; "Bank Account Ledger Entry 2".FieldCaption("Entry No."))
-            {
-            }
-            column(Integer_Number; Number)
-            {
-            }
-            dataitem("Bank Account Ledger Entry 2"; "Bank Account Ledger Entry")
+            dataitem(BankAccountLedgerEntry; "Bank Account Ledger Entry")
             {
                 DataItemTableView = sorting("Entry No.");
-                column(Bank_Account_Ledger_Entry_2_Amount; Amount)
+                column(BankAccountLedgerEntry_Amount; Amount)
                 {
+                    IncludeCaption = true;
                 }
-                column(Bank_Account_Ledger_Entry_2__Debit_Amount_; "Debit Amount")
+                column(BankAccountLedgerEntry_AmountLCY; "Amount (LCY)")
                 {
+                    IncludeCaption = true;
                 }
-                column(Bank_Account_Ledger_Entry_2__Credit_Amount_; "Credit Amount")
+                column(BankAccountLedgerEntry_DebitAmount; "Debit Amount")
                 {
+                    IncludeCaption = true;
                 }
-                column(Bank_Account_Ledger_Entry_2_Description; Description)
+                column(BankAccountLedgerEntry_CreditAmount; "Credit Amount")
                 {
+                    IncludeCaption = true;
                 }
-                column(Bank_Account_Ledger_Entry_2__Posting_Date_; "Posting Date")
+                column(BankAccountLedgerEntry_Description; Description)
                 {
+                    IncludeCaption = true;
                 }
-                column(Bank_Account_Ledger_Entry_2__Entry_No__; "Entry No.")
+                column(BankAccountLedgerEntry_PostingDate; "Posting Date")
                 {
+                    IncludeCaption = true;
                 }
-                column(Bank_Account_Ledger_Entry_2__Currency_Code_; "Currency Code")
+                column(BankAccountLedgerEntry_EntryNo; "Entry No.")
                 {
+                    IncludeCaption = true;
                 }
-                column(Bank_Account_Ledger_Entry_2__Amount__LCY__; "Amount (LCY)")
+                column(BankAccountLedgerEntry_CurrencyCode; "Currency Code")
                 {
+                    IncludeCaption = true;
                 }
                 trigger OnPreDataItem()
                 begin
                     if not ShowDetail then
                         CurrReport.Break();
 
-                    CopyFilters("Bank Account Ledger Entry");
-                    if SortingType = 0 then begin
-                        SetCurrentKey("Document No.");
-                        SetRange("Document No.", TempBuffer."Document No.");
+                    BankAccountLedgerEntry.CopyFilters(BankAccountLedgerEntryFilter);
+                    if SortingType = SortingType::"Document No." then begin
+                        BankAccountLedgerEntry.SetCurrentKey("Document No.");
+                        BankAccountLedgerEntry.SetRange("Document No.", TempBankAccAdjustmentBuffer."Document No.");
                     end else
-                        SetRange("External Document No.", TempBuffer."Document No.");
+                        BankAccountLedgerEntry.SetRange("External Document No.", TempBankAccAdjustmentBuffer."Document No.");
                 end;
             }
             trigger OnAfterGetRecord()
             begin
-                if Number <> 1 then
-                    if TempBuffer.Next() = 0 then
+                if EntryBuffer.Number <> 1 then
+                    if TempBankAccAdjustmentBuffer.Next() = 0 then
                         CurrReport.Break();
 
-                if TempBuffer."Amount (LCY)" = 0 then
+                if TempBankAccAdjustmentBuffer."Amount (LCY)" = 0 then
                     CurrReport.Skip();
             end;
 
             trigger OnPreDataItem()
             begin
-                if not TempBuffer.FindSet() then
+                if not TempBankAccAdjustmentBuffer.FindSet() then
                     CurrReport.Quit();
             end;
         }
-        dataitem("Currency Summary"; "Integer")
+        dataitem(CurrencyBuffer; "Integer")
         {
             DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-            column(greTCurrBuffer__Total_Amount__LCY__; TempCurrBuffer."Total Amount (LCY)")
+            column(CurrencyBuffer_TotalAmount; TempEnhancedCurrencyBuffer."Total Amount")
             {
             }
-            column(greTCurrBuffer__Currency_Code_; TempCurrBuffer."Currency Code")
+            column(CurrencyBuffer_TotalAmountLCY; TempEnhancedCurrencyBuffer."Total Amount (LCY)")
             {
             }
-            column(greTCurrBuffer__Total_Credit_Amount_; TempCurrBuffer."Total Credit Amount")
+            column(CurrencyBuffer_CurrencyCode; TempEnhancedCurrencyBuffer."Currency Code")
             {
             }
-            column(greTCurrBuffer__Total_Debit_Amount_; TempCurrBuffer."Total Debit Amount")
+            column(CurrencyBuffer_TotalCreditAmount; TempEnhancedCurrencyBuffer."Total Credit Amount")
             {
             }
-            column(greTCurrBuffer__Total_Amount_; TempCurrBuffer."Total Amount")
+            column(CurrencyBuffer_TotalDebitAmount; TempEnhancedCurrencyBuffer."Total Debit Amount")
             {
             }
-            column(greTCurrBuffer__Total_Amount_Caption; TCurrBuffer__Total_Amount_CaptionLbl)
-            {
-            }
-            column(TotalCaption; TotalCaptionLbl)
-            {
-            }
-            column(greTCurrBuffer__Currency_Code_Caption; TCurrBuffer__Currency_Code_CaptionLbl)
-            {
-            }
-            column(greTCurrBuffer__Total_Amount__LCY__Caption; TCurrBuffer__Total_Amount__LCY__CaptionLbl)
-            {
-            }
-            column(greTCurrBuffer__Total_Debit_Amount_Caption; TCurrBuffer__Total_Debit_Amount_CaptionLbl)
-            {
-            }
-            column(greTCurrBuffer__Total_Credit_Amount_Caption; TCurrBuffer__Total_Credit_Amount_CaptionLbl)
-            {
-            }
-            column(Currency_Summary_Number; Number)
+            column(CurrencyBuffer_Number; Number)
             {
             }
             trigger OnAfterGetRecord()
             begin
-                if Number = 1 then
-                    TempCurrBuffer.FindSet()
+                if CurrencyBuffer.Number = 1 then
+                    TempEnhancedCurrencyBuffer.FindSet()
                 else
-                    TempCurrBuffer.Next();
+                    TempEnhancedCurrencyBuffer.Next();
             end;
 
             trigger OnPreDataItem()
             begin
-                SetRange(Number, 1, TempCurrBuffer.Count);
+                CurrencyBuffer.SetRange(Number, 1, TempEnhancedCurrencyBuffer.Count);
             end;
         }
     }
+
     requestpage
     {
         SaveValues = true;
@@ -346,29 +257,50 @@ report 11713 "Joining Bank. Acc. Adj. CZL"
             }
         }
     }
+
+    labels
+    {
+        ReportNameLbl = 'Joining Bank Account Adjustment';
+        PageLbl = 'Page';
+        DocumentNoLbl = 'Document No.';
+        TotalLbl = 'Total';
+    }
+
+    trigger OnPreReport()
+    begin
+        if BankAccountLedgerEntryFilter.GetFilter("Bank Account No.") = '' then
+            Error(EnterBankAccountNoFilterErr);
+        if BankAccountLedgerEntryFilter.GetFilters() <> '' then
+            BankAccountLedgerEntryFilters := BankAccountLedgerEntryFilter.GetFilters();
+    end;
+
     var
-        TempBuffer: Record "Bank Acc. Adjustment Buffer" temporary;
-        TempCurrBuffer: Record "Enhanced Currency Buffer" temporary;
-        "Filter": Text[250];
-        Window: Dialog;
+        TempBankAccAdjustmentBuffer: Record "Bank Acc. Adjustment Buffer" temporary;
+        TempEnhancedCurrencyBuffer: Record "Enhanced Currency Buffer" temporary;
+        BankAccountLedgerEntryFilters: Text;
+        WindowDialog: Dialog;
         i: Integer;
         j: Integer;
         SortingType: Option "Document No.","External Document No.",Combination;
         ShowDetail: Boolean;
         ShowDescription: Boolean;
         ShowPostingDate: Boolean;
-        CurrReport_PAGENOCaptionLbl: Label 'Page';
-        Joining_Bank_Account_AdjustmentCaptionLbl: Label 'Joining Bank Account Adjustment';
-        TBuffer__Document_No__CaptionLbl: Label 'Document No.';
-        CurrReport_PAGENO_Control25CaptionLbl: Label 'Page';
-        Joining_Bank_Account_AdjustmentCaption_Control33Lbl: Label 'Joining Bank Account Adjustment';
-        TBuffer__Document_No__Caption_Control38Lbl: Label 'Document No.';
-        TCurrBuffer__Total_Amount_CaptionLbl: Label 'Amount';
-        TotalCaptionLbl: Label 'Total';
-        TCurrBuffer__Currency_Code_CaptionLbl: Label 'Currency Code';
-        TCurrBuffer__Total_Amount__LCY__CaptionLbl: Label 'Amount (LCY)';
-        TCurrBuffer__Total_Debit_Amount_CaptionLbl: Label 'Debit Amount';
-        TCurrBuffer__Total_Credit_Amount_CaptionLbl: Label 'Credit Amount';
         ProcessingEntriesMsg: Label 'Processing Entries @1@@@@@@@@@@@@';
         EnterBankAccountNoFilterErr: Label 'Please enter a Filter to Bank Account No..';
+
+    local procedure GetDocumentNoBySortingType(BankAccountLedgerEntry: Record "Bank Account Ledger Entry"): Code[20]
+    begin
+        case SortingType of
+            SortingType::"Document No.":
+                exit(BankAccountLedgerEntry."Document No.");
+            SortingType::"External Document No.":
+                exit(CopyStr(BankAccountLedgerEntry."External Document No.", 1, MaxStrLen(BankAccountLedgerEntry."Document No.")));
+            SortingType::Combination:
+                begin
+                    if BankAccountLedgerEntry."External Document No." <> '' then
+                        exit(CopyStr(BankAccountLedgerEntry."External Document No.", 1, MaxStrLen(BankAccountLedgerEntry."Document No.")));
+                    exit(BankAccountLedgerEntry."Document No.");
+                end;
+        end;
+    end;
 }

@@ -20,10 +20,10 @@ tableextension 11708 "Vendor Bank Account CZL" extends "Vendor Bank Account"
 
     procedure IsForeignBankAccountCZL(): Boolean
     var
-        CompInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
     begin
-        CompInfo.Get();
-        exit(("Country/Region Code" <> '') and ("Country/Region Code" <> CompInfo."Country/Region Code"));
+        CompanyInformation.Get();
+        exit(("Country/Region Code" <> '') and ("Country/Region Code" <> CompanyInformation."Country/Region Code"));
     end;
 
     procedure IsStandardFormatBankAccountCZL(): Boolean

@@ -56,7 +56,7 @@ report 31190 "Sales Credit Memo CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Sales Cr.Memo Header"; "Sales Cr.Memo Header")
@@ -148,22 +148,22 @@ report 31190 "Sales Credit Memo CZL"
             column(RegistrationNo_SalesCrMemoHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_SalesCrMemoHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_SalesCrMemoHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_SalesCrMemoHeader; "Bank Account No.")
+            column(BankAccountNo_SalesCrMemoHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_SalesCrMemoHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_SalesCrMemoHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_SalesCrMemoHeader; IBAN)
+            column(IBAN_SalesCrMemoHeader; "IBAN CZL")
             {
             }
-            column(BIC_SalesCrMemoHeaderCaption; FieldCaption("SWIFT Code"))
+            column(BIC_SalesCrMemoHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(BIC_SalesCrMemoHeader; "SWIFT Code")
+            column(BIC_SalesCrMemoHeader; "SWIFT Code CZL")
             {
             }
             column(PostingDate_SalesCrMemoHeaderCaption; FieldCaption("Posting Date"))
@@ -384,12 +384,12 @@ report 31190 "Sales Credit Memo CZL"
                         AutoFormatExpression = "Sales Cr.Memo Header"."Currency Code";
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATBaseLCY; -TempVATAmountLine."VAT Base (LCY)")
+                    column(VATAmtLineVATBaseLCY; -TempVATAmountLine."VAT Base (LCY) CZL")
                     {
                         AutoFormatExpression = "Sales Cr.Memo Line".GetCurrencyCode();
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATAmtLCY; -TempVATAmountLine."VAT Amount (LCY)")
+                    column(VATAmtLineVATAmtLCY; -TempVATAmountLine."VAT Amount (LCY) CZL")
                     {
                         AutoFormatExpression = "Sales Cr.Memo Header"."Currency Code";
                         AutoFormatType = 1;
@@ -436,7 +436,7 @@ report 31190 "Sales Credit Memo CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -457,7 +457,7 @@ report 31190 "Sales Credit Memo CZL"
 
                 trigger OnPreDataItem()
                 begin
-                    NoOfLoops := Abs(NoOfCopies) + Cust."Invoice Copies" + 1;
+                    NoOfLoops := Abs(NoOfCopies) + Customer."Invoice Copies" + 1;
                     if NoOfLoops <= 0 then
                         NoOfLoops := 1;
 
@@ -473,8 +473,8 @@ report 31190 "Sales Credit Memo CZL"
 
                 FormatAddressFields("Sales Cr.Memo Header");
                 FormatDocumentFields("Sales Cr.Memo Header");
-                if not Cust.Get("Bill-to Customer No.") then
-                    Clear(Cust);
+                if not Customer.Get("Bill-to Customer No.") then
+                    Clear(Customer);
 
                 case "Credit Memo Type CZL" of
                     "Credit Memo Type CZL"::"Corrective Tax Document":
@@ -492,21 +492,22 @@ report 31190 "Sales Credit Memo CZL"
                 end;
 
                 SalesCrMemoLine.CalcVATAmountLines("Sales Cr.Memo Header", TempVATAmountLine);
+                TempVATAmountLine.UpdateVATEntryLCYAmountsCZL("Sales Cr.Memo Header");
                 if ("Currency Factor" <> 0) and ("Currency Factor" <> 1) then begin
-                    CurrExchRate.FindCurrency("Posting Date", "Currency Code", 1);
-                    CalculatedExchRate := Round(1 / "Currency Factor" * CurrExchRate."Exchange Rate Amount", 0.00001);
+                    CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
+                    CalculatedExchRate := Round(1 / "Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
                     ExchRateText := StrSubstNo(ExchRateLbl, CalculatedExchRate, "General Ledger Setup"."LCY Code",
-                                        CurrExchRate."Exchange Rate Amount", "Currency Code");
+                                        CurrencyExchangeRate."Exchange Rate Amount", "Currency Code");
                 end else
                     CalculatedExchRate := 1;
 
                 if LogInteraction and not IsReportInPreviewMode() then
                     if "Bill-to Contact No." <> '' then
-                        SegMgt.LogDocument(
+                        SegManagement.LogDocument(
                           6, "No.", 0, 0, Database::Contact, "Bill-to Contact No.", "Salesperson Code",
                           "Campaign No.", "Posting Description", '')
                     else
-                        SegMgt.LogDocument(
+                        SegManagement.LogDocument(
                           6, "No.", 0, 0, Database::Customer, "Sell-to Customer No.", "Salesperson Code",
                           "Campaign No.", "Posting Description", '');
 
@@ -561,18 +562,18 @@ report 31190 "Sales Credit Memo CZL"
 
     var
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-        Cust: Record Customer;
+        Customer: Record Customer;
         PaymentTerms: Record "Payment Terms";
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
         ReasonCode: Record "Reason Code";
-        CurrExchRate: Record "Currency Exchange Rate";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
         VATClause: Record "VAT Clause";
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        SegMgt: Codeunit SegManagement;
+        SegManagement: Codeunit SegManagement;
         ExchRateText: Text[50];
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
@@ -616,7 +617,7 @@ report 31190 "Sales Credit Memo CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegMgt.FindInteractTmplCode(6) <> '';
+        LogInteraction := SegManagement.FindInteractTmplCode(6) <> '';
     end;
 
     local procedure FormatDocumentFields(SalesCrMemoHeader: Record "Sales Cr.Memo Header")
@@ -630,16 +631,16 @@ report 31190 "Sales Credit Memo CZL"
             ReasonCode.Get(SalesCrMemoHeader."Reason Code");
         FormatDocumentMgtCZL.SetPaymentSymbols(
           PaymentSymbol, PaymentSymbolLabel,
-          SalesCrMemoHeader."Variable Symbol", SalesCrMemoHeader.FieldCaption(SalesCrMemoHeader."Variable Symbol"),
-          SalesCrMemoHeader."Constant Symbol", SalesCrMemoHeader.FieldCaption(SalesCrMemoHeader."Constant Symbol"),
-          SalesCrMemoHeader."Specific Symbol", SalesCrMemoHeader.FieldCaption(SalesCrMemoHeader."Specific Symbol"));
+          SalesCrMemoHeader."Variable Symbol CZL", SalesCrMemoHeader.FieldCaption(SalesCrMemoHeader."Variable Symbol CZL"),
+          SalesCrMemoHeader."Constant Symbol CZL", SalesCrMemoHeader.FieldCaption(SalesCrMemoHeader."Constant Symbol CZL"),
+          SalesCrMemoHeader."Specific Symbol CZL", SalesCrMemoHeader.FieldCaption(SalesCrMemoHeader."Specific Symbol CZL"));
         DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText(SalesCrMemoHeader."Language Code");
     end;
 
     local procedure FormatAddressFields(SalesCrMemoHeader: Record "Sales Cr.Memo Header")
     begin
-        FormatAddr.SalesCrMemoBillTo(CustAddr, SalesCrMemoHeader);
-        FormatAddr.SalesCrMemoShipTo(ShipToAddr, CustAddr, SalesCrMemoHeader);
+        FormatAddress.SalesCrMemoBillTo(CustAddr, SalesCrMemoHeader);
+        FormatAddress.SalesCrMemoShipTo(ShipToAddr, CustAddr, SalesCrMemoHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

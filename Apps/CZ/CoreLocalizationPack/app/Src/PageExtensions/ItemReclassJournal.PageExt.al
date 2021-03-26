@@ -11,11 +11,11 @@ pageextension 11713 "Item Reclass. Journal CZL" extends "Item Reclass. Journal"
 
                 trigger OnLookup(var Text: Text): Boolean
                 var
-                    InvtMovementTemplate: Record "Invt. Movement Template CZL";
+                    InvtMovementTemplateCZL: Record "Invt. Movement Template CZL";
                 begin
-                    InvtMovementTemplate.SetRange("Entry Type", Rec."Entry Type"::Transfer);
-                    if Page.RunModal(0, InvtMovementTemplate) = Action::LookupOK then
-                        Rec.Validate("Invt. Movement Template CZL", InvtMovementTemplate.Name);
+                    InvtMovementTemplateCZL.SetRange("Entry Type", Rec."Entry Type"::Transfer);
+                    if Page.RunModal(0, InvtMovementTemplateCZL) = Action::LookupOK then
+                        Rec.Validate("Invt. Movement Template CZL", InvtMovementTemplateCZL.Name);
                 end;
             }
         }

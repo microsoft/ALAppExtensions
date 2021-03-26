@@ -136,7 +136,7 @@ page 31136 "VAT Statement Preview Line CZL"
                                           Type, Closed, "Tax Jurisdiction Code", "Use Tax", "Posting Date");
                                     VATEntry.SetVATStatementLineFiltersCZL(Rec);
                                     if Rec.GetFilter("Date Filter") <> '' then
-                                        VATEntry.SetPeriodFilterCZL(VATStatementReportPeriodSelection, Rec.GetRangeMin("Date Filter"), Rec.GetRangeMax("Date Filter"), GLSetup."Use VAT Date CZL");
+                                        VATEntry.SetPeriodFilterCZL(VATStatementReportPeriodSelection, Rec.GetRangeMin("Date Filter"), Rec.GetRangeMax("Date Filter"), GeneralLedgerSetup."Use VAT Date CZL");
                                     if SettlementNoFilter <> '' then
                                         VATEntry.SetRange("VAT Settlement No. CZL", SettlementNoFilter);
                                     VATEntry.SetClosedFilterCZL(VATStatementReportSelection);
@@ -157,8 +157,8 @@ page 31136 "VAT Statement Preview Line CZL"
     }
     trigger OnOpenPage()
     begin
-        if not GLSetup.Get() then
-            GLSetup.Init();
+        if not GeneralLedgerSetup.Get() then
+            GeneralLedgerSetup.Init();
         Clear(Currency);
         Currency.InitRoundingPrecision();
     end;
@@ -173,11 +173,11 @@ page 31136 "VAT Statement Preview Line CZL"
     end;
 
     var
-        GLSetup: Record "General Ledger Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         Currency: Record Currency;
         GLEntry: Record "G/L Entry";
         VATEntry: Record "VAT Entry";
-        VATStatement: Report "VAT Statement CZL";
+        VATStatementCZL: Report "VAT Statement CZL";
         UseAmtsInAddCurr: Boolean;
         ColumnValue: Decimal;
         VATStatementReportPeriodSelection: Enum "VAT Statement Report Period Selection";
@@ -196,7 +196,7 @@ page 31136 "VAT Statement Preview Line CZL"
 
         if VATStatementLine.Type = VATStatementLine.Type::"VAT Entry Totaling" then
             VATStatementLine.TestField("Amount Type");
-        VATStatement.CalcLineTotal(VATStatementLine, ColumnValue, Level);
+        VATStatementCZL.CalcLineTotal(VATStatementLine, ColumnValue, Level);
         case VATStatementLine."Show CZL" of
             VATStatementLine."Show CZL"::"Zero If Negative":
                 if ColumnValue < 0 then
@@ -207,17 +207,17 @@ page 31136 "VAT Statement Preview Line CZL"
         end;
     end;
 
-    procedure UpdateForm(var VATStmtName: Record "VAT Statement Name"; NewSelection: Enum "VAT Statement Report Selection"; NewPeriodSelection: Enum "VAT Statement Report Period Selection"; NewUseAmtsInAddCurr: Boolean; SettlementNoFilter2: Text[50])
+    procedure UpdateForm(var VATStatementName: Record "VAT Statement Name"; NewSelection: Enum "VAT Statement Report Selection"; NewPeriodSelection: Enum "VAT Statement Report Period Selection"; NewUseAmtsInAddCurr: Boolean; SettlementNoFilter2: Text[50])
     begin
-        Rec.SetRange("Statement Template Name", VATStmtName."Statement Template Name");
-        Rec.SetRange("Statement Name", VATStmtName.Name);
-        VATStmtName.CopyFilter("Date Filter", Rec."Date Filter");
+        Rec.SetRange("Statement Template Name", VATStatementName."Statement Template Name");
+        Rec.SetRange("Statement Name", VATStatementName.Name);
+        VATStatementName.CopyFilter("Date Filter", Rec."Date Filter");
         VATStatementReportSelection := NewSelection;
         VATStatementReportPeriodSelection := NewPeriodSelection;
         UseAmtsInAddCurr := NewUseAmtsInAddCurr;
-        VATStatement.InitializeRequest(VATStmtName, Rec, VATStatementReportSelection, VATStatementReportPeriodSelection, false, UseAmtsInAddCurr, SettlementNoFilter2);
+        VATStatementCZL.InitializeRequest(VATStatementName, Rec, VATStatementReportSelection, VATStatementReportPeriodSelection, false, UseAmtsInAddCurr, SettlementNoFilter2);
         SettlementNoFilter := SettlementNoFilter2;
-        OnUpdateFormOnBeforePageUpdate(VATStmtName, Rec, VATStatementReportSelection, VATStatementReportPeriodSelection, false, UseAmtsInAddCurr, SettlementNoFilter2);
+        OnUpdateFormOnBeforePageUpdate(VATStatementName, Rec, VATStatementReportSelection, VATStatementReportPeriodSelection, false, UseAmtsInAddCurr, SettlementNoFilter2);
         CurrPage.Update();
     end;
 
@@ -232,7 +232,7 @@ page 31136 "VAT Statement Preview Line CZL"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnUpdateFormOnBeforePageUpdate(var NewVATStmtName: Record "VAT Statement Name"; var NewVATStatementLine: Record "VAT Statement Line"; NewSelection: Enum "VAT Statement Report Selection"; NewPeriodSelection: Enum "VAT Statement Report Period Selection"; NewPrintInIntegers: Boolean; NewUseAmtsInAddCurr: Boolean; SettlementNoFilter2: Text[50])
+    local procedure OnUpdateFormOnBeforePageUpdate(var NewVATStatementName: Record "VAT Statement Name"; var NewVATStatementLine: Record "VAT Statement Line"; NewSelection: Enum "VAT Statement Report Selection"; NewPeriodSelection: Enum "VAT Statement Report Period Selection"; NewPrintInIntegers: Boolean; NewUseAmtsInAddCurr: Boolean; SettlementNoFilter2: Text[50])
     begin
     end;
 

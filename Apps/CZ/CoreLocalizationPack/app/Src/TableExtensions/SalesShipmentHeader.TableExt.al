@@ -12,6 +12,16 @@ tableextension 11724 "Sales Shipment Header CZL" extends "Sales Shipment Header"
             Caption = 'Tax Registration No.';
             DataClassification = CustomerContent;
         }
+        field(31068; "Physical Transfer CZL"; Boolean)
+        {
+            Caption = 'Physical Transfer';
+            DataClassification = CustomerContent;
+        }
+        field(31069; "Intrastat Exclude CZL"; Boolean)
+        {
+            Caption = 'Intrastat Exclude';
+            DataClassification = CustomerContent;
+        }
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
         {
             Caption = 'EU 3-Party Intermediate Role';

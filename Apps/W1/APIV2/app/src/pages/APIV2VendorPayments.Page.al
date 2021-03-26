@@ -179,6 +179,13 @@ page 30060 "APIV2 - Vendor Payments"
                     EntitySetName = 'dimensionSetLines';
                     SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(1);
                 }
+                part(applyVendorEntries; "APIV2 - Apply Vendor Entries")
+                {
+                    Caption = 'Apply Vendor Entries';
+                    EntityName = 'applyVendorEntry';
+                    EntitySetName = 'applyVendorEntries';
+                    SubPageLink = "Vendor Id" = field("Vendor Id"), "Gen. Journal Line Id" = field(SystemId);
+                }
             }
         }
     }
@@ -187,6 +194,35 @@ page 30060 "APIV2 - Vendor Payments"
     {
 
     }
+
+    trigger OnFindRecord(Which: Text): Boolean
+    var
+        NextRecNotFound: Boolean;
+    begin
+        if not Find(Which) then
+            exit(false);
+
+        if ShowRecord() then
+            exit(true);
+
+        repeat
+            NextRecNotFound := Next() <= 0;
+            if ShowRecord() then
+                exit(true);
+        until NextRecNotFound;
+
+        exit(false);
+    end;
+
+    trigger OnNextRecord(Steps: Integer): Integer
+    var
+        ResultSteps: Integer;
+    begin
+        repeat
+            ResultSteps := Next(Steps);
+        until (ResultSteps = 0) or ShowRecord();
+        exit(ResultSteps);
+    end;
 
     trigger OnAfterGetCurrRecord()
     begin
@@ -324,5 +360,10 @@ page 30060 "APIV2 - Vendor Payments"
            (GetFilter(SystemId) = '')
         then
             Error(FiltersNotSpecifiedErr);
+    end;
+
+    local procedure ShowRecord(): Boolean
+    begin
+        exit(("Applies-to Doc. Type" = "Applies-to Doc. Type"::Invoice) or ("Applies-to ID" <> ''));
     end;
 }

@@ -27,6 +27,7 @@ table 31128 "EET Entry CZL"
             Caption = 'Business Premises Code';
             NotBlank = true;
             TableRelation = "EET Business Premises CZL";
+            DataClassification = OrganizationIdentifiableInformation;
         }
         field(25; "Cash Register Code"; Code[10])
         {

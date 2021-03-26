@@ -21,6 +21,12 @@ report 11726 "Cash Desk Inventory CZP"
             column(ReportFilter; StrSubstNo(ReportFilterTxt, CashDeskCZP.Name, PrintCurrCode, Format(InventoryDate)))
             {
             }
+            column(Balance; CashDeskBalance)
+            {
+            }
+            column(ShowBalance; ShowBalance)
+            {
+            }
             dataitem(CurrencyNominalValueCZP; "Currency Nominal Value CZP")
             {
                 DataItemTableView = sorting("Currency Code", "Nominal Value") order(Descending);
@@ -34,12 +40,6 @@ report 11726 "Cash Desk Inventory CZP"
                 {
                 }
                 column(Total; Total)
-                {
-                }
-                column(Balance; Balance)
-                {
-                }
-                column(ShowBalance; ShowBalance)
                 {
                 }
                 trigger OnAfterGetRecord()
@@ -70,7 +70,7 @@ report 11726 "Cash Desk Inventory CZP"
                     PrintCurrCode := "Currency Code";
                 if ShowBalance then begin
                     SetFilter("Date Filter", '..%1', InventoryDate);
-                    Balance := CalcBalance();
+                    CashDeskBalance := CalcBalance();
                 end;
             end;
         }
@@ -471,7 +471,7 @@ report 11726 "Cash Desk Inventory CZP"
         Qty: Integer;
         PrintCurrCode: Code[10];
         ShowBalance: Boolean;
-        Balance: Decimal;
+        CashDeskBalance: Decimal;
         CashDeskNo: Code[20];
         [InDataSet]
         FieldsNo: Integer;
@@ -482,7 +482,7 @@ report 11726 "Cash Desk Inventory CZP"
     procedure RefreshNominalValues()
     var
         CurrencyNominalValueCZP: Record "Currency Nominal Value CZP";
-        CashDeskCZP2: Record "Cash Desk CZP";
+        CurrencyCashDeskCZP: Record "Cash Desk CZP";
     begin
         Clear(NominalValue);
         Clear(NominalValueQty);
@@ -490,9 +490,9 @@ report 11726 "Cash Desk Inventory CZP"
             exit;
 
         FieldsNo := 1;
-        CashDeskCZP2.Get(CashDeskNo);
+        CurrencyCashDeskCZP.Get(CashDeskNo);
         CurrencyNominalValueCZP.Ascending(false);
-        CurrencyNominalValueCZP.SetRange("Currency Code", CashDeskCZP2."Currency Code");
+        CurrencyNominalValueCZP.SetRange("Currency Code", CurrencyCashDeskCZP."Currency Code");
         CurrencyNominalValueCZP.FindSet();
         repeat
             NominalValue[FieldsNo] := CurrencyNominalValueCZP."Nominal Value";

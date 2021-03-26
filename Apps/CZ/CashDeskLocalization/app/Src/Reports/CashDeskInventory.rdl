@@ -1953,6 +1953,15 @@ End Function
         <Field Name="ReportFilter">
           <DataField>ReportFilter</DataField>
         </Field>
+        <Field Name="Balance">
+          <DataField>Balance</DataField>
+        </Field>
+        <Field Name="BalanceFormat">
+          <DataField>BalanceFormat</DataField>
+        </Field>
+        <Field Name="ShowBalance">
+          <DataField>ShowBalance</DataField>
+        </Field>
         <Field Name="NominalValue">
           <DataField>NominalValue</DataField>
         </Field>
@@ -1967,15 +1976,6 @@ End Function
         </Field>
         <Field Name="TotalFormat">
           <DataField>TotalFormat</DataField>
-        </Field>
-        <Field Name="Balance">
-          <DataField>Balance</DataField>
-        </Field>
-        <Field Name="BalanceFormat">
-          <DataField>BalanceFormat</DataField>
-        </Field>
-        <Field Name="ShowBalance">
-          <DataField>ShowBalance</DataField>
         </Field>
       </Fields>
       <Query>

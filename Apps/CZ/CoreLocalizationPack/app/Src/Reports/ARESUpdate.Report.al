@@ -110,70 +110,71 @@ report 11799 "ARES Update CZL"
             }
         }
     }
+
     trigger OnPreReport()
     begin
-        PopulateFieldsFromRegLog(RecordRefGlobal, RecordVariantGlobal, RegistrationLogCZLGlobal);
+        PopulateFieldsFromRegLog(GlobalRecordRef, GlobalRecordVariant, GlobalRegistrationLogCZL);
     end;
 
     var
-        RegistrationLogCZLGlobal: Record "Registration Log CZL";
+        GlobalRegistrationLogCZL: Record "Registration Log CZL";
         DataTypeManagement: Codeunit "Data Type Management";
-        RecordRefGlobal: RecordRef;
-        RecordVariantGlobal: Variant;
+        GlobalRecordRef: RecordRef;
+        GlobalRecordVariant: Variant;
         FieldUpdateMask: array[10] of Boolean;
         FieldType: Option ,Name,Address,City,PostCode,VATRegNo,All;
         AccountType: Option Customer,Vendor,Contact;
         AccountNo: Code[20];
         RegistrationNo: Text[20];
 
-    procedure InitializeReport(RecordVariant: Variant; RegistrationLog: Record "Registration Log CZL")
+    procedure InitializeReport(RecordVariant: Variant; RegistrationLogCZL: Record "Registration Log CZL")
     begin
-        RecordVariantGlobal := RecordVariant;
-        RegistrationLogCZLGlobal := RegistrationLog;
+        GlobalRecordVariant := RecordVariant;
+        GlobalRegistrationLogCZL := RegistrationLogCZL;
 
-        DataTypeManagement.GetRecordRef(RecordVariantGlobal, RecordRefGlobal);
+        DataTypeManagement.GetRecordRef(GlobalRecordVariant, GlobalRecordRef);
 
-        AccountType := RegistrationLogCZLGlobal."Account Type";
-        AccountNo := RegistrationLogCZLGlobal."Account No.";
-        RegistrationNo := RegistrationLogCZLGlobal."Registration No.";
+        AccountType := RegistrationLogCZL."Account Type";
+        AccountNo := RegistrationLogCZL."Account No.";
+        RegistrationNo := RegistrationLogCZL."Registration No.";
     end;
 
     procedure GetRecord(var RecordRef: RecordRef)
     begin
-        RecordRef := RecordRefGlobal;
+        RecordRef := GlobalRecordRef;
     end;
 
-    local procedure PopulateFieldsFromRegLog(var RecordRef: RecordRef; RecordVariant: Variant; RegistrationLog: Record "Registration Log CZL")
+    local procedure PopulateFieldsFromRegLog(var RecordRef: RecordRef; RecordVariant: Variant; RegistrationLogCZL: Record "Registration Log CZL")
     var
         Contact: Record Contact;
         FieldRef: FieldRef;
-        FieldRef2: FieldRef;
+        SecondFieldRef: FieldRef;
     begin
         DataTypeManagement.GetRecordRef(RecordVariant, RecordRef);
 
         if FieldUpdateMask[FieldType::Name] then
             if DataTypeManagement.FindFieldByName(RecordRef, FieldRef, Contact.FieldName(Name)) then
-                FieldRef.Validate(CopyStr(RegistrationLog."Verified Name", 1, FieldRef.Length));
+                FieldRef.Validate(CopyStr(RegistrationLogCZL."Verified Name", 1, FieldRef.Length));
 
         if FieldUpdateMask[FieldType::Address] then
             if DataTypeManagement.FindFieldByName(RecordRef, FieldRef, Contact.FieldName(Address)) then begin
-                FieldRef.Value(CopyStr(RegistrationLog."Verified Address", 1, FieldRef.Length));
-                if StrLen(RegistrationLog."Verified Address") > FieldRef.Length then
-                    if DataTypeManagement.FindFieldByName(RecordRef, FieldRef2, Contact.FieldName("Address 2")) then
-                        FieldRef2.Value(CopyStr(RegistrationLog."Verified Address", FieldRef2.Length + 1, FieldRef2.Length));
+                FieldRef.Value(CopyStr(RegistrationLogCZL."Verified Address", 1, FieldRef.Length));
+                if StrLen(RegistrationLogCZL."Verified Address") > FieldRef.Length then
+                    if DataTypeManagement.FindFieldByName(RecordRef, SecondFieldRef, Contact.FieldName("Address 2")) then
+                        SecondFieldRef.Value(CopyStr(RegistrationLogCZL."Verified Address", SecondFieldRef.Length + 1, SecondFieldRef.Length));
             end;
 
         if FieldUpdateMask[FieldType::City] then
             if DataTypeManagement.FindFieldByName(RecordRef, FieldRef, Contact.FieldName(City)) then
-                FieldRef.Value(CopyStr(RegistrationLog."Verified City", 1, FieldRef.Length));
+                FieldRef.Value(CopyStr(RegistrationLogCZL."Verified City", 1, FieldRef.Length));
 
         if FieldUpdateMask[FieldType::PostCode] then
             if DataTypeManagement.FindFieldByName(RecordRef, FieldRef, Contact.FieldName("Post Code")) then
-                FieldRef.Value(CopyStr(RegistrationLog."Verified Post Code", 1, FieldRef.Length));
+                FieldRef.Value(CopyStr(RegistrationLogCZL."Verified Post Code", 1, FieldRef.Length));
 
         if FieldUpdateMask[FieldType::VATRegNo] then
             if DataTypeManagement.FindFieldByName(RecordRef, FieldRef, Contact.FieldName("VAT Registration No.")) then
-                FieldRef.Validate(CopyStr(RegistrationLog."Verified VAT Registration No.", 1, FieldRef.Length));
+                FieldRef.Validate(CopyStr(RegistrationLogCZL."Verified VAT Registration No.", 1, FieldRef.Length));
     end;
 
     local procedure ValidateUpdateField(CalledFieldType: Option)

@@ -4,7 +4,6 @@ codeunit 148002 "Library - Cash Document CZP"
         LibraryUtility: Codeunit "Library - Utility";
         LibraryERM: Codeunit "Library - ERM";
         LibraryFixedAsset: Codeunit "Library - Fixed Asset";
-        LibraryRandom: Codeunit "Library - Random";
         LibraryCashDeskCZP: Codeunit "Library - Cash Desk CZP";
 
     procedure GetNewGLAccountNo(WithVATPostingSetup: Boolean): Code[20]
@@ -100,8 +99,7 @@ codeunit 148002 "Library - Cash Document CZP"
         AccountType: Enum "Cash Document Account Type CZP";
     begin
         CreateCashDocumentHeaderCZP(CashDocumentHeaderCZP, CashDocType, CashDeskNo);
-        CreateCashDocumentLineCZP(CashDocumentLineCZP, CashDocumentHeaderCZP, AccountType::"G/L Account",
-                                    GetNewGLAccountNo(true), GetLineAmount(CashDocType, CashDocumentLineCZP));
+        CreateCashDocumentLineCZP(CashDocumentLineCZP, CashDocumentHeaderCZP, AccountType::"G/L Account", GetNewGLAccountNo(true), 0);
         CashDocumentLineCZP.Validate(Amount, GetLineAmount(CashDocType, CashDocumentLineCZP));
         CashDocumentLineCZP.Modify();
     end;
@@ -132,7 +130,6 @@ codeunit 148002 "Library - Cash Document CZP"
     var
         CashDeskCZP: Record "Cash Desk CZP";
         CashLimit: Decimal;
-        RangeAmount: Decimal;
     begin
         CashDeskCZP.Get(CashDocumentLineCZP."Cash Desk No.");
         case CashDocType of

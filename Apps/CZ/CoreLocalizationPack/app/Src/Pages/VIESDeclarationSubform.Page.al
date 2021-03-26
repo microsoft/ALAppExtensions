@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 page 31139 "VIES Declaration Subform CZL"
 {
     AutoSplitKey = true;

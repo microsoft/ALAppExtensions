@@ -357,7 +357,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         TempIgnoredFieldsForComparison: Record 2000000041 temporary;
         PageRecordRef: RecordRef;
         ApiRecordRef: RecordRef;
-        SalesOrder: TestPage 42;
+        SalesOrder: TestPage "Sales Order";
         ResponseText: Text;
         TargetURL: Text;
         OrderLineJSON: Text;
@@ -1070,7 +1070,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         exit(LineJsonText);
     end;
 
-    local procedure CreateOrderAndLinesThroughPage(var SalesOrder: TestPage 42; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
+    local procedure CreateOrderAndLinesThroughPage(var SalesOrder: TestPage "Sales Order"; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
     var
         SalesLine: Record "Sales Line";
     begin

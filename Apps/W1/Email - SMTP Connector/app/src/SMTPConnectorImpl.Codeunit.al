@@ -194,7 +194,7 @@ codeunit 4513 "SMTP Connector Impl."
     begin
         // This might be changed by the Microsoft Office 365 team.
         // Current source: http://technet.microsoft.com/library/dn554323.aspx
-        SMTPAccountConfig.Server := 'smtp.office365.com';
+        SMTPAccountConfig.Server := CopyStr(GetO365SmtpServer(), 1, MaxStrLen(SMTPAccountConfig.Server));
         SMTPAccountConfig."Server Port" := 587;
         SMTPAccountConfig.Authentication := SMTPAccountConfig.Authentication::Basic;
         SMTPAccountConfig."Secure Connection" := true;
@@ -203,10 +203,7 @@ codeunit 4513 "SMTP Connector Impl."
     /// <summary>
     /// Transfers the addresses from InternetAddressList to into a List of [Text]
     /// </summary>
-    procedure InternetAddressListToList(IAList: DotNet InternetAddressList;
-
-    var
-        Addresses: List of [Text])
+    procedure InternetAddressListToList(IAList: DotNet InternetAddressList; var Addresses: List of [Text])
     var
         Mailbox: DotNet MimeMailboxAddress;
     begin
@@ -412,7 +409,6 @@ codeunit 4513 "SMTP Connector Impl."
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"My Notifications", 'OnInitializingNotificationWithDefaultState', '', false, false)]
-    [Scope('OnPrem')]
     local procedure OnInitializingNotificationWithDefaultState()
     var
         MyNotifications: Record "My Notifications";
@@ -456,5 +452,10 @@ codeunit 4513 "SMTP Connector Impl."
     internal procedure OpenSmtpMailSetup(Notification: Notification)
     begin
         Page.Run(Page::"SMTP Mail Setup");
+    end;
+
+    internal procedure GetO365SmtpServer(): Text
+    begin
+        exit('smtp.office365.com');
     end;
 }

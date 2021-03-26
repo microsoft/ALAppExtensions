@@ -1,15 +1,15 @@
 codeunit 11785 "Service Line Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnAfterAssignItemValues', '', false, false)]
-    local procedure TariffNoOnAfterAssignItemValues(var ServiceLine: Record "Service Line"; Item: Record Item)
+    local procedure CopyFieldsOnAfterAssignItemValues(var ServiceLine: Record "Service Line"; Item: Record Item)
+    var
+        ServiceHeader: Record "Service Header";
     begin
         ServiceLine."Tariff No. CZL" := Item."Tariff No.";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnAfterAssignItemValues', '', false, false)]
-    local procedure StatisticIndicationOnAfterAssignItemValues(var ServiceLine: Record "Service Line"; Item: Record Item)
-    begin
         ServiceLine."Statistic Indication CZL" := Item."Statistic Indication CZL";
+        ServiceLine."Country/Reg. of Orig. Code CZL" := Item."Country/Region of Origin Code";
+        if ServiceHeader.Get(ServiceLine."Document Type", ServiceLine."Document No.") then
+            ServiceLine."Physical Transfer CZL" := ServiceHeader."Physical Transfer CZL";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnAfterAssignResourceValues', '', false, false)]

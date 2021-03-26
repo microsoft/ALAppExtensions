@@ -35,8 +35,10 @@ table 20101 "AMC Banking Setup"
             var
                 WebRequestHelper: Codeunit "Web Request Helper";
             begin
-                if "Service URL" <> '' then
+                if "Service URL" <> '' then begin
                     WebRequestHelper.IsSecureHttpUrl("Service URL");
+                    ClearCredentials();
+                end;
             end;
         }
         field(20105; "Support URL"; Text[250])
@@ -128,7 +130,7 @@ table 20101 "AMC Banking Setup"
         if ("User Name" = GetDemoUserName()) then
             exit(GetDemoPass());
 
-        IsolatedStorage.Get(CopyStr("Password Key", 1, 200), Datascope::Company, Value);
+        if not IsolatedStorage.Get(CopyStr("Password Key", 1, 200), Datascope::Company, Value) then;
         exit(Value);
     end;
 
@@ -168,6 +170,18 @@ table 20101 "AMC Banking Setup"
     var
     begin
         exit(DemoPasswordTxt);
+    end;
+
+    local procedure ClearCredentials()
+    begin
+        if xRec."Service URL" = '' then
+            exit;
+
+        if xRec."Service URL" = Rec."Service URL" then
+            exit;
+
+        Clear(Rec."User Name");
+        DeletePassword();
     end;
 
     [IntegrationEvent(false, false)]

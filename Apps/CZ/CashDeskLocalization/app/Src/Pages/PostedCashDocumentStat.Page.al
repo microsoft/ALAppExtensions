@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 page 31168 "Posted Cash Document Stat. CZP"
 {
     Caption = 'Posted Cash Document Statistics';
@@ -72,7 +71,7 @@ page 31168 "Posted Cash Document Stat. CZP"
                     Editable = false;
                     ToolTip = 'Specifies cash document amount. The amount is including VAT in the local currency.';
                 }
-                field(NoOfVATLines_Document; TempVATAmountLine1.Count)
+                field(NoOfVATLines_Document; Temp1VATAmountLine.Count)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'No. of VAT Lines';
@@ -81,7 +80,7 @@ page 31168 "Posted Cash Document Stat. CZP"
 
                     trigger OnDrillDown()
                     begin
-                        VATLinesDrillDown(TempVATAmountLine1, false);
+                        VATLinesDrillDown(Temp1VATAmountLine, false);
                         UpdateHeaderInfo(1);
                     end;
                 }
@@ -154,7 +153,7 @@ page 31168 "Posted Cash Document Stat. CZP"
                     Editable = false;
                     ToolTip = 'Specifies cash document amount. The amount is including VAT in the local currency.';
                 }
-                field(NoOfVATLines_External; TempVATAmountLine2.Count)
+                field(NoOfVATLines_External; Temp2VATAmountLine.Count)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'No. of VAT Lines';
@@ -163,7 +162,7 @@ page 31168 "Posted Cash Document Stat. CZP"
 
                     trigger OnDrillDown()
                     begin
-                        VATLinesDrillDown(TempVATAmountLine2, false);
+                        VATLinesDrillDown(Temp2VATAmountLine, false);
                         UpdateHeaderInfo(2);
                     end;
                 }
@@ -174,8 +173,8 @@ page 31168 "Posted Cash Document Stat. CZP"
     trigger OnAfterGetRecord()
     begin
         PostedCashDocumentHdrCZP.Get(Rec."Cash Desk No.", Rec."Cash Document No.");
-        UpdateLine(1, TempVATAmountLine1);
-        UpdateLine(2, TempVATAmountLine2);
+        UpdateLine(1, Temp1VATAmountLine);
+        UpdateLine(2, Temp2VATAmountLine);
         UpdateHeaderInfo(1);
         UpdateHeaderInfo(2);
     end;
@@ -183,9 +182,9 @@ page 31168 "Posted Cash Document Stat. CZP"
     var
         PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
         Currency: Record Currency;
-        TempVATAmountLine1: Record "VAT Amount Line" temporary;
-        TempVATAmountLine2: Record "VAT Amount Line" temporary;
-        VATLinesForm: Page "VAT Amount Lines";
+        Temp1VATAmountLine: Record "VAT Amount Line" temporary;
+        Temp2VATAmountLine: Record "VAT Amount Line" temporary;
+        VATAmountLines: Page "VAT Amount Lines";
         AllowVATDifference: Boolean;
         AmountExclVAT: array[2] of Decimal;
         VATAmount: array[2] of Decimal;
@@ -244,7 +243,6 @@ page 31168 "Posted Cash Document Stat. CZP"
                     VATAmountLine."VAT Identifier" := PostedCashDocumentLineCZP."VAT Identifier";
                     VATAmountLine."VAT Calculation Type" := PostedCashDocumentLineCZP."VAT Calculation Type";
                     VATAmountLine.Positive := PostedCashDocumentLineCZP.Amount >= 0;
-                    VATAmountLine."Currency Code" := PostedCashDocumentLineCZP."Currency Code";
                     VATAmountLine."VAT %" := PostedCashDocumentLineCZP."VAT %";
                     VATAmountLine.Modified := true;
                     VATAmountLine.Insert();
@@ -254,11 +252,10 @@ page 31168 "Posted Cash Document Stat. CZP"
                 VATAmountLine."Amount Including VAT" += PostedCashDocumentLineCZP."Amount Including VAT";
                 VATAmountLine."VAT Base" += PostedCashDocumentLineCZP."VAT Base Amount";
                 VATAmountLine."VAT Amount" += PostedCashDocumentLineCZP."Amount Including VAT" - PostedCashDocumentLineCZP."VAT Base Amount";
+                VATAmountLine."Amount Including VAT" += PostedCashDocumentLineCZP."Amount Including VAT";
                 VATAmountLine."VAT Difference" += PostedCashDocumentLineCZP."VAT Difference";
-                VATAmountLine."Amount Including VAT (LCY)" += PostedCashDocumentLineCZP."Amount Including VAT (LCY)";
-                VATAmountLine."VAT Base (LCY)" += PostedCashDocumentLineCZP."VAT Base Amount (LCY)";
-                VATAmountLine."VAT Amount (LCY)" += PostedCashDocumentLineCZP."Amount Including VAT (LCY)" - PostedCashDocumentLineCZP."VAT Base Amount (LCY)";
-                VATAmountLine."VAT Difference (LCY)" += PostedCashDocumentLineCZP."VAT Difference (LCY)";
+                VATAmountLine."VAT Base (LCY) CZL" += PostedCashDocumentLineCZP."VAT Base Amount (LCY)";
+                VATAmountLine."VAT Amount (LCY) CZL" += PostedCashDocumentLineCZP."Amount Including VAT (LCY)" - PostedCashDocumentLineCZP."VAT Base Amount (LCY)";
                 VATAmountLine.Modify();
             until PostedCashDocumentLineCZP.Next() = 0;
         PostedCashDocumentLineCZP.SetRange(PostedCashDocumentLineCZP."Account Type");
@@ -270,15 +267,15 @@ page 31168 "Posted Cash Document Stat. CZP"
             until VATAmountLine.Next() = 0;
     end;
 
-    procedure VATLinesDrillDown(var VATLinesToDrillDown: Record "VAT Amount Line"; ThisTabAllowsVATEditing: Boolean)
+    procedure VATLinesDrillDown(var DrillDownVATAmountLine: Record "VAT Amount Line"; ThisTabAllowsVATEditing: Boolean)
     begin
         AllowVATDifference := false;
-        Clear(VATLinesForm);
-        VATLinesForm.SetTempVATAmountLine(VATLinesToDrillDown);
-        VATLinesForm.InitGlobals(
+        Clear(VATAmountLines);
+        VATAmountLines.SetTempVATAmountLine(DrillDownVATAmountLine);
+        VATAmountLines.InitGlobals(
           Rec."Currency Code", AllowVATDifference, AllowVATDifference and ThisTabAllowsVATEditing,
           PostedCashDocumentHdrCZP."Amounts Including VAT", false, 0);
-        VATLinesForm.RunModal();
-        VATLinesForm.GetTempVATAmountLine(VATLinesToDrillDown);
+        VATAmountLines.RunModal();
+        VATAmountLines.GetTempVATAmountLine(DrillDownVATAmountLine);
     end;
 }

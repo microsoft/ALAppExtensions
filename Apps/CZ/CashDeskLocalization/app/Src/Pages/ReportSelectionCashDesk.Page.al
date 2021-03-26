@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 page 31169 "Report Selection Cash Desk CZP"
 {
     ApplicationArea = Basic, Suite;

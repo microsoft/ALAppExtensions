@@ -9,10 +9,10 @@ codeunit 11791 "Navigate Handler CZP"
                                                 PostingDateFilter: Text; Sender: Page Navigate)
     begin
         FindPostedCashDocumentHdr(DocumentEntry, DocNoFilter, PostingDateFilter, Sender);
-        FindCashDeskLedgerEntries(DocumentEntry, DocNoFilter, PostingDateFilter, Sender);
+        FindCashDeskLedgerEntries(DocumentEntry, DocNoFilter, PostingDateFilter);
     end;
 
-    local procedure FindPostedCashDocumentHdr(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; Sender: Page Navigate)
+    local procedure FindPostedCashDocumentHdr(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; Navigate: Page Navigate)
     var
         PostedCashDocumentTxt: Label 'Posted Cash Document';
     begin
@@ -20,12 +20,12 @@ codeunit 11791 "Navigate Handler CZP"
             PostedCashDocumentHdrCZP.Reset();
             PostedCashDocumentHdrCZP.SetFilter("No.", DocNoFilter);
             PostedCashDocumentHdrCZP.SetFilter("Posting Date", PostingDateFilter);
-            Sender.InsertIntoDocEntry(DocumentEntry, Database::"Posted Cash Document Hdr. CZP", 0,
+            Navigate.InsertIntoDocEntry(DocumentEntry, Database::"Posted Cash Document Hdr. CZP", "Document Entry Document Type"::Quote,
                 PostedCashDocumentTxt, PostedCashDocumentHdrCZP.Count());
         end;
     end;
 
-    local procedure FindCashDeskLedgerEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; Sender: Page Navigate)
+    local procedure FindCashDeskLedgerEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text)
     var
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         BankAccount: Record "Bank Account";

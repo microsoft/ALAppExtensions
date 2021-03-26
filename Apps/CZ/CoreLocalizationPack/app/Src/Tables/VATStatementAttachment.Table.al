@@ -75,16 +75,16 @@ table 11776 "VAT Statement Attachment CZL"
     procedure Import(): Boolean
     var
         TempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit "File Management";
+        FileManagement: Codeunit "File Management";
         ConfirmManagement: Codeunit "Confirm Management";
         RecordRef: RecordRef;
         FullFileName: Text;
     begin
-        FullFileName := FileMgt.BLOBImport(TempBlob, Rec.TableCaption());
+        FullFileName := FileManagement.BLOBImport(TempBlob, Rec.TableCaption());
         if FullFileName = '' then
             exit(false);
 
-        "File Name" := CopyStr(FileMgt.GetFileName(FullFileName), 1, MaxStrLen("File Name"));
+        "File Name" := CopyStr(FileManagement.GetFileName(FullFileName), 1, MaxStrLen("File Name"));
         CheckFileNameDuplicates();
         CheckSizeRestriction(TempBlob.Length());
 

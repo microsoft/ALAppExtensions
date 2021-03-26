@@ -2,7 +2,7 @@ codeunit 11762 "CNB Curr. Exch. Rate Mgt. CZL"
 {
     var
         DummyDataExchColumnDef: Record "Data Exch. Column Def";
-        DummyCurrExchRate: Record "Currency Exchange Rate";
+        DummyCurrencyExchangeRate: Record "Currency Exchange Rate";
         CNB_EXCH_RATESTxt: Label 'CNB-EXCHANGE-RATES', Comment = 'Czech National Bank Currency Exchange Rate Code', Locked = true;
         CNB_EXCH_RATESDescTxt: Label 'Czech National Bank Currency Exchange Rates Setup';
         CNB_URLTok: Label 'http://www.cnb.cz/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.xml', Locked = true;
@@ -32,7 +32,6 @@ codeunit 11762 "CNB Curr. Exch. Rate Mgt. CZL"
         CurrExchRateUpdateSetup: Record "Curr. Exch. Rate Update Setup";
         DataExchLineDef: Record "Data Exch. Line Def";
         SuggestColDefinitionXML: Codeunit "Suggest Col. Definition - XML";
-        XMLBufferWriter: Codeunit "XML Buffer Writer";
     begin
         if CurrExchRateUpdateSetup.Get(CNB_EXCH_RATESTxt) then
             exit;
@@ -165,22 +164,22 @@ codeunit 11762 "CNB Curr. Exch. Rate Mgt. CZL"
 
     local procedure GetCurrencyCodeFieldNo(): Integer
     begin
-        exit(DummyCurrExchRate.FieldNo("Currency Code"));
+        exit(DummyCurrencyExchangeRate.FieldNo("Currency Code"));
     end;
 
     local procedure GetRelationalExchRateFieldNo(): Integer
     begin
-        exit(DummyCurrExchRate.FieldNo("Relational Exch. Rate Amount"));
+        exit(DummyCurrencyExchangeRate.FieldNo("Relational Exch. Rate Amount"));
     end;
 
     local procedure GetExchRateAmtFieldNo(): Integer
     begin
-        exit(DummyCurrExchRate.FieldNo("Exchange Rate Amount"));
+        exit(DummyCurrencyExchangeRate.FieldNo("Exchange Rate Amount"));
     end;
 
     local procedure GetStartingDateFieldNo(): Integer
     begin
-        exit(DummyCurrExchRate.FieldNo("Starting Date"));
+        exit(DummyCurrencyExchangeRate.FieldNo("Starting Date"));
     end;
 
     procedure GetCNB_URI(): Text

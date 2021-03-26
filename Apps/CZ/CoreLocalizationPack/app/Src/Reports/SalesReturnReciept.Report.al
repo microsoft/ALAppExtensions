@@ -56,7 +56,7 @@ report 31192 "Sales Return Reciept CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Return Receipt Header"; "Return Receipt Header")
@@ -122,24 +122,6 @@ report 31192 "Sales Return Reciept CZL"
             {
             }
             column(RegistrationNo_ReturnReceiptHeader; "Registration No. CZL")
-            {
-            }
-            column(BankAccountNo_ReturnReceiptHeaderCaption; FieldCaption("Bank Account No."))
-            {
-            }
-            column(BankAccountNo_ReturnReceiptHeader; "Bank Account No.")
-            {
-            }
-            column(IBAN_ReturnReceiptHeaderCaption; FieldCaption(IBAN))
-            {
-            }
-            column(IBAN_ReturnReceiptHeader; IBAN)
-            {
-            }
-            column(BIC_ReturnReceiptHeaderCaption; FieldCaption("SWIFT Code"))
-            {
-            }
-            column(BIC_ReturnReceiptHeader; "SWIFT Code")
             {
             }
             column(DocumentDate_ReturnReceiptHeaderCaption; FieldCaption("Document Date"))
@@ -269,7 +251,7 @@ report 31192 "Sales Return Reciept CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -301,13 +283,13 @@ report 31192 "Sales Return Reciept CZL"
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
-                FormatAddr.SalesRcptShipTo(ShipToAddr, "Return Receipt Header");
-                FormatAddr.SalesRcptBillTo(CustAddr, ShipToAddr, "Return Receipt Header");
+                FormatAddress.SalesRcptShipTo(ShipToAddr, "Return Receipt Header");
+                FormatAddress.SalesRcptBillTo(CustAddr, ShipToAddr, "Return Receipt Header");
                 FormatDocument.SetShipmentMethod(ShipmentMethod, "Shipment Method Code", "Language Code");
                 DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
 
                 if LogInteraction and not IsReportInPreviewMode() then
-                    SegMgt.LogDocument(
+                    SegManagement.LogDocument(
                       20, "No.", 0, 0, Database::Customer, "Bill-to Customer No.", "Salesperson Code",
                       "Campaign No.", "Posting Description", '');
 
@@ -369,10 +351,10 @@ report 31192 "Sales Return Reciept CZL"
     var
         ShipmentMethod: Record "Shipment Method";
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        SegMgt: Codeunit SegManagement;
+        SegManagement: Codeunit SegManagement;
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];
@@ -402,7 +384,7 @@ report 31192 "Sales Return Reciept CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegMgt.FindInteractTmplCode(20) <> '';
+        LogInteraction := SegManagement.FindInteractTmplCode(20) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

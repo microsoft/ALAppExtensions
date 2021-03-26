@@ -10,15 +10,18 @@ table 31127 "EET Cash Register CZL"
             Caption = 'Business Premises Code';
             NotBlank = true;
             TableRelation = "EET Business Premises CZL";
+            DataClassification = OrganizationIdentifiableInformation;
         }
         field(2; "Code"; Code[10])
         {
             Caption = 'Code';
             NotBlank = true;
+            DataClassification = CustomerContent;
         }
         field(10; "Cash Register Type"; Enum "EET Cash Register Type CZL")
         {
             Caption = 'Cash Register Type';
+            DataClassification = CustomerContent;
 
             trigger OnValidate()
             begin
@@ -33,6 +36,7 @@ table 31127 "EET Cash Register CZL"
         field(12; "Cash Register No."; Code[20])
         {
             Caption = 'Cash Register No.';
+            DataClassification = CustomerContent;
 
             trigger OnValidate()
             begin
@@ -54,16 +58,19 @@ table 31127 "EET Cash Register CZL"
         field(15; "Cash Register Name"; Text[100])
         {
             Caption = 'Cash Register Name';
+            DataClassification = CustomerContent;
         }
         field(17; "Certificate Code"; Code[10])
         {
             Caption = 'Certificate Code';
             TableRelation = "Certificate Code CZL";
+            DataClassification = CustomerContent;
         }
         field(20; "Receipt Serial Nos."; Code[20])
         {
             Caption = 'Receipt Serial Nos.';
             TableRelation = "No. Series";
+            DataClassification = CustomerContent;
         }
     }
 

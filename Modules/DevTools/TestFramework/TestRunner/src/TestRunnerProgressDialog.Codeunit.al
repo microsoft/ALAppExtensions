@@ -32,7 +32,7 @@ codeunit 130455 "Test Runner - Progress Dialog"
         WindowNoOfFunction: Integer;
         CurrentCodeunitNumber: Integer;
 
-    [EventSubscriber(ObjectType::Codeunit, 130454, 'OnRunTestSuite', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Test Runner - Mgt", 'OnRunTestSuite', '', false, false)]
     local procedure OpenWindow(var TestMethodLine: Record "Test Method Line")
     var
         CopyTestMethodLine: Record "Test Method Line";
@@ -60,7 +60,7 @@ codeunit 130455 "Test Runner - Progress Dialog"
           SkipMsg);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 130454, 'OnAfterRunTestSuite', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Test Runner - Mgt", 'OnAfterRunTestSuite', '', false, false)]
     local procedure CloseWindow(var TestMethodLine: Record "Test Method Line")
     begin
         if not GuiAllowed() then
@@ -69,7 +69,7 @@ codeunit 130455 "Test Runner - Progress Dialog"
         Window.Close();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 130454, 'OnAfterTestMethodRun', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Test Runner - Mgt", 'OnAfterTestMethodRun', '', false, false)]
     local procedure UpDateWindow(var CurrentTestMethodLine: Record "Test Method Line"; CodeunitID: Integer; CodeunitName: Text[30]; FunctionName: Text[128]; FunctionTestPermissions: TestPermissions; IsSuccess: Boolean)
     begin
         if not GuiAllowed() then

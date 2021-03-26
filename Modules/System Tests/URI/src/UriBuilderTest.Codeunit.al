@@ -47,8 +47,6 @@ codeunit 135071 "Uri Builder Test"
     [Test]
     [Scope('OnPrem')]
     procedure SetIncorrectSchemeTest()
-    var
-        Uri: Codeunit Uri;
     begin
         // [Given] A Url
         UriBuilder.Init('http://microsoft.com');
@@ -104,8 +102,7 @@ codeunit 135071 "Uri Builder Test"
     [Scope('OnPrem')]
     procedure SetIncorrectPortTest()
     var
-        Uri: Codeunit Uri;
-        expectedErr: Label 'A call to System.UriBuilder.Port failed with this message: Specified argument was out of the range of valid values.\Parameter name: value', Locked = true;
+        ExpectedErr: Label 'A call to System.UriBuilder.Port failed with this message: Specified argument was out of the range of valid values.\Parameter name: value', Locked = true;
     begin
         // [Given] A Url
         UriBuilder.Init('http://microsoft.com');
@@ -114,13 +111,13 @@ codeunit 135071 "Uri Builder Test"
         asserterror UriBuilder.SetPort(-2);
 
         // [Then] An error occurs
-        Assert.ExpectedError(expectedErr);
+        Assert.ExpectedError(ExpectedErr);
 
         // [When] Setting the port number too high
         asserterror UriBuilder.SetPort(65536);
 
         // [Then] An error occurs
-        Assert.ExpectedError(expectedErr);
+        Assert.ExpectedError(ExpectedErr);
     end;
 
     [Test]

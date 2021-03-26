@@ -1,3 +1,4 @@
+#pragma warning disable AA0210
 codeunit 11737 "Purchase Handler CZP"
 {
     var
@@ -17,6 +18,54 @@ codeunit 11737 "Purchase Handler CZP"
             Rec.Validate("Cash Desk Code CZP", PaymentMethod."Cash Desk Code CZP");
             Rec.Validate("Cash Document Action CZP", PaymentMethod."Cash Document Action CZP");
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", 'OnAfterShowDoc', '', false, false)]
+    local procedure ShowPostedCashDocumentOnAfterShowDoc(var VendorLedgerEntry: Record "Vendor Ledger Entry")
+    var
+        PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
+    begin
+        if GetPostedCashDocumentHdrCZP(VendorLedgerEntry, PostedCashDocumentHdrCZP) then
+            Page.Run(Page::"Posted Cash Document CZP", PostedCashDocumentHdrCZP);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", 'OnAfterShowPostedDocAttachment', '', false, false)]
+    local procedure ShowPostedCashDocAttachmentOnAfterShowPostedDocAttachment(var VendorLedgerEntry: Record "Vendor Ledger Entry")
+    var
+        PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
+        DocumentAttachmentDetails: Page "Document Attachment Details";
+        RecordRef: RecordRef;
+    begin
+        if GetPostedCashDocumentHdrCZP(VendorLedgerEntry, PostedCashDocumentHdrCZP) then begin
+            RecordRef.GetTable(PostedCashDocumentHdrCZP);
+            DocumentAttachmentDetails.OpenForRecRef(RecordRef);
+            DocumentAttachmentDetails.RunModal();
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", 'OnAfterHasPostedDocAttachment', '', false, false)]
+    local procedure HasPostedCashDocAttachmentOnAfterHasPostedDocAttachment(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var HasPostedDocumentAttachment: Boolean)
+    var
+        PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
+    begin
+        if GetPostedCashDocumentHdrCZP(VendorLedgerEntry, PostedCashDocumentHdrCZP) then
+            HasPostedDocumentAttachment := PostedCashDocumentHdrCZP.HasPostedDocumentAttachment();
+    end;
+
+    local procedure GetPostedCashDocumentHdrCZP(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP"): Boolean
+    var
+        PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
+    begin
+        if not (VendorLedgerEntry."Document Type" in [VendorLedgerEntry."Document Type"::Payment, VendorLedgerEntry."Document Type"::Refund]) then
+            exit(false);
+        PostedCashDocumentLineCZP.SetRange("Cash Document No.", VendorLedgerEntry."Document No.");
+        PostedCashDocumentLineCZP.SetRange("Gen. Document Type", VendorLedgerEntry."Document Type".AsInteger());
+        PostedCashDocumentLineCZP.SetRange("Account Type", PostedCashDocumentLineCZP."Account Type"::Vendor);
+        PostedCashDocumentLineCZP.SetRange("Account No.", VendorLedgerEntry."Vendor No.");
+        if not PostedCashDocumentLineCZP.FindFirst() then
+            exit(false);
+        if PostedCashDocumentHdrCZP.Get(PostedCashDocumentLineCZP."Cash Desk No.", PostedCashDocumentLineCZP."Cash Document No.") then
+            exit(true);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnCheckAndUpdateOnAfterSetPostingFlags', '', false, false)]

@@ -280,21 +280,21 @@ xmlport 31061 "VIES Declaration CZL"
             }
         }
     }
-    procedure SetHeader(NewVIESHeaderCZL: Record "VIES Declaration Header CZL")
+    procedure SetHeader(NewVIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL")
     begin
-        Header := NewVIESHeaderCZL;
+        Header := NewVIESDeclarationHeaderCZL;
         Header.Insert();
     end;
 
-    procedure SetLines(var TempVIESLineCZL: Record "VIES Declaration Line CZL")
+    procedure SetLines(var TempVIESDeclarationLineCZL: Record "VIES Declaration Line CZL")
     begin
         DeleteVIESLines(Line);
-        TempVIESLineCZL.SetFilter("Trade Type", '<>%1', TempVIESLineCZL."Trade Type"::" ");
-        Line.Copy(TempVIESLineCZL, true);
+        TempVIESDeclarationLineCZL.SetFilter("Trade Type", '<>%1', TempVIESDeclarationLineCZL."Trade Type"::" ");
+        Line.Copy(TempVIESDeclarationLineCZL, true);
 
         DeleteVIESLines(CallOfStockLine);
-        TempVIESLineCZL.SetRange("Trade Type", TempVIESLineCZL."Trade Type"::" ");
-        CallOfStockLine.Copy(TempVIESLineCZL, true);
+        TempVIESDeclarationLineCZL.SetRange("Trade Type", TempVIESDeclarationLineCZL."Trade Type"::" ");
+        CallOfStockLine.Copy(TempVIESDeclarationLineCZL, true);
     end;
 
     procedure GetOfficialData(CompanyOfficialCode: Code[20]; var OfficialLastName: Text[30]; var OfficialFirstName: Text[30]; var OfficialJobTitle: Text[30]; var OfficialPhoneNo: Text[30])

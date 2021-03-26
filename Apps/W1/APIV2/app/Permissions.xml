@@ -491,5 +491,15 @@
       <ExecutePermission>Yes</ExecutePermission>
       <SecurityFilter />
     </Permission>
+    <Permission>
+      <ObjectType>8</ObjectType>
+      <ObjectID>30071</ObjectID>
+      <ReadPermission>YES</ReadPermission>
+      <InsertPermission>YES</InsertPermission>
+      <ModifyPermission>YES</ModifyPermission>
+      <DeletePermission>YES</DeletePermission>
+      <ExecutePermission>YES</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
   </PermissionSet>
 </PermissionSets>

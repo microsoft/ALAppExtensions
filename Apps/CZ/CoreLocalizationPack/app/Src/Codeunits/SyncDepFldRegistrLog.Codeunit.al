@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
 {
@@ -84,3 +85,4 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

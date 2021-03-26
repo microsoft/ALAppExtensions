@@ -6,7 +6,7 @@ page 1073 "MS - PayPal Standard Accounts"
     InsertAllowed = false;
     UsageCategory = Administration;
     PageType = List;
-    SourceTable = 1070;
+    SourceTable = "MS - PayPal Standard Account";
     ApplicationArea = Basic, Suite;
 
     layout
@@ -62,7 +62,7 @@ page 1073 "MS - PayPal Standard Accounts"
                 trigger OnAction();
                 var
                     TempPaymentServiceSetup: Record 1060 temporary;
-                    MSPayPalStandardMgt: Codeunit 1070;
+                    MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
                 begin
                     MSPayPalStandardMgt.RegisterPayPalStandardTemplate(TempPaymentServiceSetup);
                     TempPaymentServiceSetup.OnCreatePaymentService(TempPaymentServiceSetup);

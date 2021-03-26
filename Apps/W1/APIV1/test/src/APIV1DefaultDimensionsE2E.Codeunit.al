@@ -1012,8 +1012,8 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
                 EXIT(PAGE::"APIV1 - Vendors");
             DATABASE::Item:
                 EXIT(PAGE::"APIV1 - Items");
-        //DATABASE::Employee:           TODO - Remove if Employees Page is added to the extension
-        //    EXIT(PAGE::"APIV1 - Employees");
+            DATABASE::Employee:
+                EXIT(PAGE::"APIV1 - Employees");
         END;
         EXIT(-1);
     end;

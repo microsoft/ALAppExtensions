@@ -2,10 +2,9 @@ codeunit 11757 "Unreliable Payer WS CZL"
 {
     var
         NamespaceTok: Label 'http://adis.mfcr.cz/rozhraniCRPDPH/', Locked = true;
-        ServiceUrl: Text;
 
     [TryFunction]
-    procedure GetStatus(var VATRegNoList: List of [Code[20]]; var TempBlobResponse: Codeunit "Temp Blob")
+    procedure GetStatus(var VATRegNoList: List of [Code[20]]; var ResponseTempBlob: Codeunit "Temp Blob")
     var
         RequestXmlDocument: XmlDocument;
         RootXmlNode: XmlElement;
@@ -20,11 +19,11 @@ codeunit 11757 "Unreliable Payer WS CZL"
             ChildXmlNode := XmlElement.Create('dic', NamespaceTok, FormatVATRegNo(VATRegNo));
             RootXmlNode.Add(ChildXmlNode);
         end;
-        SendHttpRequest(RequestXmlDocument, TempBlobResponse);
+        SendHttpRequest(RequestXmlDocument, ResponseTempBlob);
     end;
 
     [TryFunction]
-    procedure GetStatusExtended(var VATRegNoList: List of [Code[20]]; var TempBlobResponse: Codeunit "Temp Blob")
+    procedure GetStatusExtended(var VATRegNoList: List of [Code[20]]; var ResponseTempBlob: Codeunit "Temp Blob")
     var
         RequestXmlDocument: XmlDocument;
         RootXmlNode: XmlElement;
@@ -39,11 +38,11 @@ codeunit 11757 "Unreliable Payer WS CZL"
             ChildXmlNode := XmlElement.Create('dic', NamespaceTok, FormatVATRegNo(VATRegNo));
             RootXmlNode.Add(ChildXmlNode);
         end;
-        SendHttpRequest(RequestXmlDocument, TempBlobResponse);
+        SendHttpRequest(RequestXmlDocument, ResponseTempBlob);
     end;
 
     [TryFunction]
-    procedure GetList(var TempBlobResponse: Codeunit "Temp Blob")
+    procedure GetList(var ResponseTempBlob: Codeunit "Temp Blob")
     var
         RequestXmlDocument: XmlDocument;
         RootXmlNode: XmlElement;
@@ -51,7 +50,7 @@ codeunit 11757 "Unreliable Payer WS CZL"
         RequestXmlDocument := XmlDocument.Create();
         RootXmlNode := XmlElement.Create('SeznamNespolehlivyPlatceRequest', NamespaceTok);
         RequestXmlDocument.Add(RootXmlNode);
-        SendHttpRequest(RequestXmlDocument, TempBlobResponse);
+        SendHttpRequest(RequestXmlDocument, ResponseTempBlob);
     end;
 
     procedure GetInputRecordLimit(): Integer
@@ -84,9 +83,8 @@ codeunit 11757 "Unreliable Payer WS CZL"
 
     local procedure FormatVATRegNo(VATRegNo: Text): Text
     var
-        DotNetRegex: Codeunit DotNet_Regex;
+        Regex: Codeunit Regex;
     begin
-        DotNetRegex.Regex('[A-Z]');
-        exit(DotNetRegex.Replace(UpperCase(VATRegNo), ''));
+        exit(Regex.Replace(UpperCase(VATRegNo), '[A-Z]', ''));
     end;
 }

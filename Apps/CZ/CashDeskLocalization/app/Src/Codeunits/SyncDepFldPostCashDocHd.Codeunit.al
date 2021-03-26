@@ -1,9 +1,10 @@
+#if not CLEAN17
 #pragma warning disable AL0432,AL0603
 codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '18.0';
+    ObsoleteTag = '17.5';
 
     [EventSubscriber(ObjectType::Table, Database::"Posted Cash Document Header", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenamePostedCashDocumentHeader(var Rec: Record "Posted Cash Document Header"; var xRec: Record "Posted Cash Document Header")
@@ -226,3 +227,4 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

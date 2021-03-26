@@ -220,10 +220,10 @@ table 31107 "VAT Ctrl. Report Line CZL"
 
     procedure Navigate()
     var
-        NavigateForm: Page Navigate;
+        PageNavigate: Page Navigate;
     begin
-        NavigateForm.SetDoc("Posting Date", "Document No.");
-        NavigateForm.Run();
+        PageNavigate.SetDoc("Posting Date", "Document No.");
+        PageNavigate.Run();
     end;
 
     procedure ChangeVATControlRepSection()
@@ -241,9 +241,9 @@ table 31107 "VAT Ctrl. Report Line CZL"
 
     procedure ChangeVATControlRepSectionCode(VATCtrlRptSectionCode: Code[20])
     var
-        VATCtrlRerortLineCZL: Record "VAT Ctrl. Report Line CZL";
+        VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL";
     begin
-        VATCtrlRerortLineCZL.Copy(Rec);
-        VATCtrlRerortLineCZL.ModifyAll("VAT Ctrl. Report Section Code", VATCtrlRptSectionCode);
+        VATCtrlReportLineCZL.Copy(Rec);
+        VATCtrlReportLineCZL.ModifyAll("VAT Ctrl. Report Section Code", VATCtrlRptSectionCode);
     end;
 }

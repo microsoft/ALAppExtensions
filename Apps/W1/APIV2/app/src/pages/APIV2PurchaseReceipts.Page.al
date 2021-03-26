@@ -161,7 +161,7 @@ page 30064 "APIV2 - Purchase Receipts"
                     Caption = 'Lines';
                     EntityName = 'purchaseReceiptLine';
                     EntitySetName = 'purchaseReceiptLines';
-                    SubPageLink = "Document No." = Field("No.");
+                    SubPageLink = "Document Id" = Field(SystemId);
                 }
                 field(lastModifiedDateTime; SystemModifiedAt)
                 {

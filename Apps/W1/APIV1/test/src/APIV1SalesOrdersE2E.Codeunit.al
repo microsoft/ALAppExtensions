@@ -20,9 +20,6 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         LibrarySales: Codeunit "Library - Sales";
         LibraryERM: Codeunit "Library - ERM";
         OrderServiceNameTxt: Label 'salesOrders', Locked = true;
-        CustomerIdFieldTxt: Label 'customerId', Locked = true;
-        CustomerNameFieldTxt: Label 'customerName', Locked = true;
-        CustomerNumberFieldTxt: Label 'customerNumber', Locked = true;
         DiscountAmountFieldTxt: Label 'discountAmount', Locked = true;
         ActionShipAndInvoiceTxt: Label 'Microsoft.NAV.shipAndInvoice', Locked = true;
         NotEmptyResponseErr: Label 'Response body should be empty.', Locked = true;
@@ -561,7 +558,7 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         VerifyPostedInvoiceCreated(OrderNo, OrderNoSeries);
 
         // [THEN] Record was deleted from Sales Oreder Entity Buffer
-        VerifySalesOrderEntityBufferDeletedAfterPosting(OrderNo);        
+        VerifySalesOrderEntityBufferDeletedAfterPosting(OrderNo);
     end;
 
     local procedure CreateOrderWithLines(var SalesHeader: Record "Sales Header")

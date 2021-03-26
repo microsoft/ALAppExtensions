@@ -1,9 +1,10 @@
+#if not CLEAN17
 #pragma warning disable AL0432,AL0603
 codeunit 31131 "Sync.Dep.Fld-CashDeskEvent CZP"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '18.0';
+    ObsoleteTag = '17.5';
 
     [EventSubscriber(ObjectType::Table, Database::"Cash Desk Event", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenameCashDeskEvent(var Rec: Record "Cash Desk Event"; var xRec: Record "Cash Desk Event")
@@ -180,3 +181,4 @@ codeunit 31131 "Sync.Dep.Fld-CashDeskEvent CZP"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

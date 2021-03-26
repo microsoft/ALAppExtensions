@@ -2,6 +2,24 @@ pageextension 11716 "Inventory Setup CZL" extends "Inventory Setup"
 {
     layout
     {
+        addlast(General)
+        {
+            field("Post Exp.Cost Conv.As Corr.CZL"; Rec."Post Exp.Cost Conv.As Corr.CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies to post expected cost conversions as corrections.';
+            }
+            field("Post Neg.Transf. As Corr.CZL"; Rec."Post Neg.Transf. As Corr.CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies to post negative transfers as corrections.';
+            }
+            field("Date Order Invt. Change CZL"; Rec."Date Order Invt. Change CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies to check inventory movements in chronological order.';
+            }
+        }
         addafter(Numbering)
         {
             group("Physical Inventory CZL")

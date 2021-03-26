@@ -2,6 +2,14 @@ pageextension 11756 "VAT Posting Setup CZL" extends "VAT Posting Setup"
 {
     layout
     {
+        addafter("EU Service")
+        {
+            field("Intrastat Service CZL"; Rec."Intrastat Service CZL")
+            {
+                ApplicationArea = VAT;
+                ToolTip = 'Specifies if this combination of VAT business posting group and VAT product posting group is used to the intrastat journal.';
+            }
+        }
         addlast(Control1)
         {
             field("Sales VAT Curr. Exch. Acc CZL"; Rec."Sales VAT Curr. Exch. Acc CZL")
@@ -20,6 +28,12 @@ pageextension 11756 "VAT Posting Setup CZL" extends "VAT Posting Setup"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the option to include this posting setup in the purchase VIES declarations.';
+                Visible = false;
+            }
+            field("VAT LCY Corr. Rounding Acc.CZL"; Rec."VAT LCY Corr. Rounding Acc.CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the account to which the VAT correction in LCY will be posted on documents in foreign currency, eg use an account for document rounding';
                 Visible = false;
             }
             field("VIES Sales CZL"; Rec."VIES Sales CZL")

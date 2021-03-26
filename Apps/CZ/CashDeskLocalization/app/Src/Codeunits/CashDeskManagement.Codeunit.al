@@ -409,7 +409,7 @@ codeunit 11724 "Cash Desk Management CZP"
     procedure CheckUserRights(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP")
     var
         CashDeskUserCZP: Record "Cash Desk User CZP";
-        CashDocHeaderCZP: Record "Cash Document Header CZP";
+        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDeskCZP: Record "Cash Desk CZP";
         EETManagementCZL: Codeunit "EET Management CZL";
     begin
@@ -430,7 +430,7 @@ codeunit 11724 "Cash Desk Management CZP"
                 begin
                     CashDeskUserCZP.SetRange(Issue, true);
                     if (CashDeskCZP."Responsibility ID (Release)" <> '') and (CashDeskCZP."Responsibility ID (Release)" <> UserId) then
-                        Error(NotPermToIssueErr, CashDocHeaderCZP.TableCaption);
+                        Error(NotPermToIssueErr, CashDocumentHeaderCZP.TableCaption);
                 end;
             ActionType::Post, ActionType::"Post and Print":
                 begin
@@ -441,17 +441,17 @@ codeunit 11724 "Cash Desk Management CZP"
                             CashDeskUserCZP.SetRange("Post EET Only", true);
                         end;
                     if (CashDeskCZP."Responsibility ID (Post)" <> '') and (CashDeskCZP."Responsibility ID (Post)" <> UserId) then
-                        Error(NotPermToPostErr, CashDocHeaderCZP.TableCaption);
+                        Error(NotPermToPostErr, CashDocumentHeaderCZP.TableCaption);
                 end;
         end;
         if CashDeskUserCZP.IsEmpty() then
             case ActionType of
                 ActionType::Create:
-                    Error(NotPermToCreateErr, CashDocHeaderCZP.TableCaption);
+                    Error(NotPermToCreateErr, CashDocumentHeaderCZP.TableCaption);
                 ActionType::Release, ActionType::"Release and Print":
-                    Error(NotPermToIssueErr, CashDocHeaderCZP.TableCaption);
+                    Error(NotPermToIssueErr, CashDocumentHeaderCZP.TableCaption);
                 ActionType::Post, ActionType::"Post and Print":
-                    Error(NotPermToPostErr, CashDocHeaderCZP.TableCaption);
+                    Error(NotPermToPostErr, CashDocumentHeaderCZP.TableCaption);
             end;
     end;
 
@@ -522,14 +522,14 @@ codeunit 11724 "Cash Desk Management CZP"
 
     procedure GetUserCashResponsibilityFilter(UserCode: Code[50]): Code[10]
     var
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         UserSetup: Record "User Setup";
         CashUserRespCenter: Code[10];
         HasGotCashUserSetup: Boolean;
     begin
         if not HasGotCashUserSetup then begin
-            CompanyInfo.Get();
-            CashUserRespCenter := CompanyInfo."Responsibility Center";
+            CompanyInformation.Get();
+            CashUserRespCenter := CompanyInformation."Responsibility Center";
             if UserSetup.Get(UserCode) and (UserCode <> '') then
                 if UserSetup."Cash Resp. Ctr. Filter CZP" <> '' then
                     CashUserRespCenter := UserSetup."Cash Resp. Ctr. Filter CZP";
@@ -608,5 +608,28 @@ codeunit 11724 "Cash Desk Management CZP"
                     exit(Employee.Status = Employee.Status::Terminated);
         end;
         exit(false);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Posting Group Management CZL", 'OnCheckPostingGroupChange', '', false, false)]
+    local procedure OnCheckPostingGroupChange(NewPostingGroup: Code[20]; OldPostingGroup: Code[20]; SourceRecordRef: RecordRef; var CheckedPostingGroup: Option "None",Customer,CustomerInService,Vendor; var CustomerVendorNo: Code[20])
+    var
+        CashDocumentLineCZP: Record "Cash Document Line CZP";
+    begin
+        if not (SourceRecordRef.Number = Database::"Cash Document Line CZP") then
+            exit;
+
+        SourceRecordRef.SetTable(CashDocumentLineCZP);
+        case CashDocumentLineCZP."Account Type" of
+            CashDocumentLineCZP."Account Type"::Customer:
+                begin
+                    CheckedPostingGroup := CheckedPostingGroup::Customer;
+                    CustomerVendorNo := CashDocumentLineCZP."Account No.";
+                end;
+            CashDocumentLineCZP."Account Type"::Vendor:
+                begin
+                    CheckedPostingGroup := CheckedPostingGroup::Vendor;
+                    CustomerVendorNo := CashDocumentLineCZP."Account No.";
+                end;
+        end;
     end;
 }

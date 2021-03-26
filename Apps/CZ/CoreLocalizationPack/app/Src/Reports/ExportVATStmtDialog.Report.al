@@ -62,7 +62,7 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Month';
-                        ToolTip = 'Specifies the number of monat for VAT statement reporting.';
+                        ToolTip = 'Specifies the month number for VAT statement reporting.';
 
                         trigger OnValidate()
                         begin
@@ -75,7 +75,7 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Quarter';
-                        ToolTip = 'Specifies vat statement quarter';
+                        ToolTip = 'Specifies the quarter number for VAT statement reporting.';
 
                         trigger OnValidate()
                         begin
@@ -144,6 +144,7 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                         Caption = 'Filled By Employee No.';
                         TableRelation = "Company Official CZL";
                         ToolTip = 'Specifies the number of employee, who filled VAT statement.';
+                        ShowMandatory = true;
                     }
                 }
                 group(Additional)
@@ -198,6 +199,7 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                 }
             }
         }
+
         trigger OnOpenPage()
         begin
             GetStatementNameRec();
@@ -206,8 +208,9 @@ report 31003 "Export VAT Stmt. Dialog CZL"
             UpdateDateParameters();
         end;
     }
+
     var
-        VATStatementNameRec: Record "VAT Statement Name";
+        RecordVATStatementName: Record "VAT Statement Name";
         VATStatementTemplate: Record "VAT Statement Template";
         NoTax: Boolean;
         PrintInIntegers: Boolean;
@@ -240,13 +243,13 @@ report 31003 "Export VAT Stmt. Dialog CZL"
 
     local procedure GetStatementNameRec()
     begin
-        VATStatementNameRec.Get(VATStatementTemplateName, VATStatementName);
+        RecordVATStatementName.Get(VATStatementTemplateName, VATStatementName);
         VATStatementTemplate.Get(VATStatementTemplateName);
         XMLFormat := VATStatementTemplate."XML Format CZL";
 
-        VATStatementNameRec.CalcFields("Comments CZL", "Attachments CZL");
-        Comments := VATStatementNameRec."Comments CZL";
-        Attachments := VATStatementNameRec."Attachments CZL";
+        RecordVATStatementName.CalcFields("Comments CZL", "Attachments CZL");
+        Comments := RecordVATStatementName."Comments CZL";
+        Attachments := RecordVATStatementName."Attachments CZL";
     end;
 
     local procedure UpdateControls()
@@ -257,7 +260,7 @@ report 31003 "Export VAT Stmt. Dialog CZL"
 
     local procedure UpdateDateParameters()
     var
-        DateRec: Record Date;
+        RecordDate: Record Date;
     begin
         if (StartDate <> 0D) and (EndDate <> 0D) then begin
             if EndDate < StartDate then
@@ -268,10 +271,10 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                 Quarter := 0
             else begin
                 Month := 0;
-                DateRec.SetRange("Period Type", DateRec."Period Type"::Quarter);
-                DateRec.SetFilter("Period Start", '..%1', StartDate);
-                if DateRec.FindLast() then
-                    Quarter := DateRec."Period No.";
+                RecordDate.SetRange("Period Type", RecordDate."Period Type"::Quarter);
+                RecordDate.SetFilter("Period Start", '..%1', StartDate);
+                if RecordDate.FindLast() then
+                    Quarter := RecordDate."Period No.";
             end;
         end;
     end;

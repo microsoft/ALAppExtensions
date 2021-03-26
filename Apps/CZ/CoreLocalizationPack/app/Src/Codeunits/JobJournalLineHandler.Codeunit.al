@@ -19,4 +19,22 @@ codeunit 31077 "Job Journal Line Handler CZL"
     begin
         JobJournalLine.Validate("Invt. Movement Template CZL", LastJobJournalLine."Invt. Movement Template CZL");
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Job Journal Line", 'OnAfterAssignItemValues', '', false, false)]
+    local procedure CopyFromItemOnAfterAssignItemValues(var JobJournalLine: Record "Job Journal Line"; Item: Record Item)
+    begin
+        JobJournalLine."Tariff No. CZL" := Item."Tariff No.";
+        JobJournalLine."Statistic Indication CZL" := Item."Statistic Indication CZL";
+        JobJournalLine."Net Weight CZL" := Item."Net Weight";
+        JobJournalLine."Country/Reg. of Orig. Code CZL" := Item."Country/Region of Origin Code";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Job Journal Line", 'OnCheckJobJournalTemplateUserRestrictions', '', false, false)]
+    local procedure CheckJobJournalTemplateUserRestrictions(JournalTemplateName: Code[10])
+    var
+        DummyUserSetupLineCZL: Record "User Setup Line CZL";
+        UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+    begin
+        UserSetupAdvManagementCZL.CheckJournalTemplate(DummyUserSetupLineCZL.Type::"Job Journal", JournalTemplateName);
+    end;
 }

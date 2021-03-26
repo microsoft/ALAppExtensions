@@ -412,49 +412,49 @@ report 31103 "VAT Ctrl. Report - Test CZL"
         ErrorText[ErrorCounter] := Text;
     end;
 
-    local procedure CopyBufferToLine(var TempVATCtrlReportBufferCZL2: Record "VAT Ctrl. Report Buffer CZL" temporary; var VATCtrlReportLineCZL2: Record "VAT Ctrl. Report Line CZL")
+    local procedure CopyBufferToLine(var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary; var VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL")
     begin
-        VATCtrlReportMgtCZL.CopyBufferToLine(TempVATCtrlReportBufferCZL2, VATCtrlReportLineCZL2);
+        VATCtrlReportMgtCZL.CopyBufferToLine(TempVATCtrlReportBufferCZL, VATCtrlReportLineCZL);
 
-        if (TempVATCtrlReportBufferCZL2."Base 1" <> 0) or (TempVATCtrlReportBufferCZL2."Amount 1" <> 0) then begin
-            VATCtrlReportLineCZL2."VAT Rate" := TempVATCtrlReportBufferCZL2."VAT Rate"::Base;
-            VATCtrlReportLineCZL2.Base := TempVATCtrlReportBufferCZL2."Base 1";
-            VATCtrlReportLineCZL2.Amount := TempVATCtrlReportBufferCZL2."Amount 1";
+        if (TempVATCtrlReportBufferCZL."Base 1" <> 0) or (TempVATCtrlReportBufferCZL."Amount 1" <> 0) then begin
+            VATCtrlReportLineCZL."VAT Rate" := TempVATCtrlReportBufferCZL."VAT Rate"::Base;
+            VATCtrlReportLineCZL.Base := TempVATCtrlReportBufferCZL."Base 1";
+            VATCtrlReportLineCZL.Amount := TempVATCtrlReportBufferCZL."Amount 1";
         end;
-        if (TempVATCtrlReportBufferCZL2."Base 2" <> 0) or (TempVATCtrlReportBufferCZL2."Amount 2" <> 0) then begin
-            VATCtrlReportLineCZL2."VAT Rate" := TempVATCtrlReportBufferCZL2."VAT Rate"::Reduced;
-            VATCtrlReportLineCZL2.Base := TempVATCtrlReportBufferCZL2."Base 2";
-            VATCtrlReportLineCZL2.Amount := TempVATCtrlReportBufferCZL2."Amount 2";
+        if (TempVATCtrlReportBufferCZL."Base 2" <> 0) or (TempVATCtrlReportBufferCZL."Amount 2" <> 0) then begin
+            VATCtrlReportLineCZL."VAT Rate" := TempVATCtrlReportBufferCZL."VAT Rate"::Reduced;
+            VATCtrlReportLineCZL.Base := TempVATCtrlReportBufferCZL."Base 2";
+            VATCtrlReportLineCZL.Amount := TempVATCtrlReportBufferCZL."Amount 2";
         end;
-        if (TempVATCtrlReportBufferCZL2."Base 3" <> 0) or (TempVATCtrlReportBufferCZL2."Amount 3" <> 0) then begin
-            VATCtrlReportLineCZL2."VAT Rate" := TempVATCtrlReportBufferCZL2."VAT Rate"::"Reduced 2";
-            VATCtrlReportLineCZL2.Base := TempVATCtrlReportBufferCZL2."Base 3";
-            VATCtrlReportLineCZL2.Amount := TempVATCtrlReportBufferCZL2."Amount 3";
+        if (TempVATCtrlReportBufferCZL."Base 3" <> 0) or (TempVATCtrlReportBufferCZL."Amount 3" <> 0) then begin
+            VATCtrlReportLineCZL."VAT Rate" := TempVATCtrlReportBufferCZL."VAT Rate"::"Reduced 2";
+            VATCtrlReportLineCZL.Base := TempVATCtrlReportBufferCZL."Base 3";
+            VATCtrlReportLineCZL.Amount := TempVATCtrlReportBufferCZL."Amount 3";
         end;
-        VATCtrlReportLineCZL2.Name := TempVATCtrlReportBufferCZL2.Name;
-        VATCtrlReportLineCZL2."Birth Date" := TempVATCtrlReportBufferCZL2."Birth Date";
-        VATCtrlReportLineCZL2."Place of Stay" := TempVATCtrlReportBufferCZL2."Place of Stay";
+        VATCtrlReportLineCZL.Name := TempVATCtrlReportBufferCZL.Name;
+        VATCtrlReportLineCZL."Birth Date" := TempVATCtrlReportBufferCZL."Birth Date";
+        VATCtrlReportLineCZL."Place of Stay" := TempVATCtrlReportBufferCZL."Place of Stay";
     end;
 
-    local procedure CopyLineToBuffer(var VATCtrlReportLine2: Record "VAT Ctrl. Report Line CZL"; var TempVATCtrlReportBuffer2: Record "VAT Ctrl. Report Buffer CZL" temporary)
+    local procedure CopyLineToBuffer(var VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL"; var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
     begin
-        VATCtrlReportMgtCZL.CopyLineToBuffer(VATCtrlReportLine2, TempVATCtrlReportBuffer2);
+        VATCtrlReportMgtCZL.CopyLineToBuffer(VATCtrlReportLineCZL, TempVATCtrlReportBufferCZL);
 
-        case TempVATCtrlReportBuffer2."VAT Rate" of
-            TempVATCtrlReportBuffer2."VAT Rate"::Base:
+        case TempVATCtrlReportBufferCZL."VAT Rate" of
+            TempVATCtrlReportBufferCZL."VAT Rate"::Base:
                 begin
-                    TempVATCtrlReportBuffer2."Base 1" := VATCtrlReportLine2.Base;
-                    TempVATCtrlReportBuffer2."Amount 1" := VATCtrlReportLine2.Amount;
+                    TempVATCtrlReportBufferCZL."Base 1" := VATCtrlReportLineCZL.Base;
+                    TempVATCtrlReportBufferCZL."Amount 1" := VATCtrlReportLineCZL.Amount;
                 end;
-            TempVATCtrlReportBuffer2."VAT Rate"::Reduced:
+            TempVATCtrlReportBufferCZL."VAT Rate"::Reduced:
                 begin
-                    TempVATCtrlReportBuffer2."Base 2" := VATCtrlReportLine2.Base;
-                    TempVATCtrlReportBuffer2."Amount 2" := VATCtrlReportLine2.Amount;
+                    TempVATCtrlReportBufferCZL."Base 2" := VATCtrlReportLineCZL.Base;
+                    TempVATCtrlReportBufferCZL."Amount 2" := VATCtrlReportLineCZL.Amount;
                 end;
-            TempVATCtrlReportBuffer2."VAT Rate"::"Reduced 2":
+            TempVATCtrlReportBufferCZL."VAT Rate"::"Reduced 2":
                 begin
-                    TempVATCtrlReportBuffer2."Base 3" := VATCtrlReportLine2.Base;
-                    TempVATCtrlReportBuffer2."Amount 3" := VATCtrlReportLine2.Amount;
+                    TempVATCtrlReportBufferCZL."Base 3" := VATCtrlReportLineCZL.Base;
+                    TempVATCtrlReportBufferCZL."Amount 3" := VATCtrlReportLineCZL.Amount;
                 end;
         end;
     end;

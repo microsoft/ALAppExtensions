@@ -15,7 +15,6 @@ codeunit 139840 "APIV2 - Customer Payments E2E"
         Assert: Codeunit Assert;
         GraphMgtCustomerPayments: Codeunit "Graph Mgt - Customer Payments";
         LibraryGraphJournalLines: Codeunit "Library - Graph Journal Lines";
-        LibraryGraphDocumentTools: Codeunit "Library - Graph Document Tools";
         GraphMgtJournal: Codeunit "Graph Mgt - Journal";
         ServiceNameTxt: Label 'customerPaymentJournals';
         ServiceSubpageNameTxt: Label 'customerPayments';

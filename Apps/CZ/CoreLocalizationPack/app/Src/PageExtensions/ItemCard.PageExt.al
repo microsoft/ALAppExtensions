@@ -1,25 +1,18 @@
 pageextension 31008 "Item Card CZL" extends "Item Card"
 {
-    actions
+    layout
     {
-        addfirst(Functions)
+        addafter("Country/Region of Origin Code")
         {
-            action("Create Stockkeeping Unit CZL")
+            field("Statistic Indication CZL"; Rec."Statistic Indication CZL")
             {
-                AccessByPermission = TableData "Stockkeeping Unit" = R;
-                ApplicationArea = Warehouse;
-                Caption = '&Create Stockkeeping Unit with Templates';
-                Image = CreateSKU;
-                Ellipsis = true;
-                ToolTip = 'Create an instance of the item at each location that is set up. It is possible to use data templates as part of the Stockkeeping Unit creation process.';
-
-                trigger OnAction()
-                var
-                    Item: Record Item;
-                begin
-                    Item.SetRange("No.", Rec."No.");
-                    Report.RunModal(Report::"Create Stockkeeping Unit CZL", true, true, Item);
-                end;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Statistic indication for Intrastat reporting purposes.';
+            }
+            field("Specific Movement CZL"; Rec."Specific Movement CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Specific Movement for Intrastat reporting purposes.';
             }
         }
     }

@@ -121,9 +121,15 @@ page 149002 "BCPT CommandLine Card"
     var
         BCPTStartTests: Codeunit "BCPT Start Tests";
     begin
-        CurrentBCPTHeader.CurrentRunType := CurrentBCPTHeader.CurrentRunType::BCPT;
-        CurrentBCPTHeader.Modify();
+        if CurrentBCPTHeader.CurrentRunType <> CurrentBCPTHeader.CurrentRunType::BCPT then begin
+            CurrentBCPTHeader.LockTable();
+            CurrentBCPTHeader.Find();
+            CurrentBCPTHeader.CurrentRunType := CurrentBCPTHeader.CurrentRunType::BCPT;
+            CurrentBCPTHeader.Modify();
+            Commit();
+        end;
         BCPTStartTests.StartNextBenchmarkTests(CurrentBCPTHeader);
+        CurrentBCPTHeader.Find();
     end;
 
     local procedure StartNextBCPTAsPRT()

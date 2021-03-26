@@ -332,14 +332,14 @@ page 20038 "APIV1 - Sales Credit Memos"
                         RegisterFieldSet(FIELDNO("Prices Including VAT"));
                     end;
                 }
-                part(salesCreditMemoLines; 20046)
+                part(salesCreditMemoLines; "APIV1 - Sales Credit Mem Lines")
                 {
                     Caption = 'Lines', Locked = true;
                     EntityName = 'salesCreditMemoLine';
                     EntitySetName = 'salesCreditMemoLines';
                     SubPageLink = "Document Id" = FIELD(Id);
                 }
-                part(pdfDocument; 5529)
+                part(pdfDocument; "APIV1 - PDF Document")
                 {
                     Caption = 'PDF Document', Locked = true;
                     EntityName = 'pdfDocument';

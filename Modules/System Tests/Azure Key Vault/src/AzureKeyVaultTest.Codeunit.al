@@ -17,6 +17,7 @@ codeunit 135212 "Azure Key Vault Test"
         Assert: Codeunit "Library Assert";
         SecretNotFoundErr: Label '%1 is not an application secret.', Comment = '%1 = Secret Name.';
         SecretNotInitializedTxt: Label 'Initialization of allowed secret names failed';
+        KeyVaultNotInitializedTxt: Label 'Azure key vault has not been set up';
         AllowedApplicationSecretsSecretNameTxt: Label 'AllowedApplicationSecrets', Locked = true;
 
     [Test]
@@ -133,5 +134,116 @@ codeunit 135212 "Azure Key Vault Test"
         // [THEN] The secret is no longer accessible and an error is thrown
         asserterror AzureKeyVault.GetAzureKeyVaultSecret('somesecret', Secret);
         Assert.ExpectedError(SecretNotInitializedTxt);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure GetAzureKeyVaultCertificateTest()
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
+        MockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
+        Certificate: Text;
+    begin
+        // [SCENARIO] When the key vault is called, the correct value is retrieved
+
+        // [GIVEN] A configured Azure Key Vault
+        MockAzureKeyvaultSecretProvider := MockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
+        MockAzureKeyvaultSecretProvider.AddCertificateMapping('some-certificate', 'CertificateFromKeyVault');
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(MockAzureKeyvaultSecretProvider);
+
+        // [WHEN] The key vault is called
+        AzureKeyVault.GetAzureKeyVaultCertificate('some-certificate', Certificate);
+
+        // [THEN] The value is retrieved
+        Assert.AreEqual('CertificateFromKeyVault', Certificate, 'The returned certificate does not match.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure GetAzureKeyVaultCertificateChangeProviderTest()
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
+        FirstMockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
+        SecondMockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
+        Certificate: Text;
+    begin
+        // [SCENARIO] When the key vault secret provider is changed, the cache is cleared and the new value is retrieved
+
+        // [GIVEN] A configured Azure Key Vault
+        FirstMockAzureKeyvaultSecretProvider := FirstMockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
+        FirstMockAzureKeyvaultSecretProvider.AddCertificateMapping('some-certificate', 'AnotherCertificateFromTheKeyVault');
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(FirstMockAzureKeyvaultSecretProvider);
+
+        // [WHEN] The key vault is called
+        AzureKeyVault.GetAzureKeyVaultCertificate('some-certificate', Certificate);
+
+        // [THEN] The value is retrieved
+        Assert.AreEqual('AnotherCertificateFromTheKeyVault', Certificate, 'The returned certificate does not match.');
+
+        // [WHEN] The Key Vault Secret Provider is changed
+        SecondMockAzureKeyvaultSecretProvider := SecondMockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
+        SecondMockAzureKeyvaultSecretProvider.AddCertificateMapping('some-certificate', 'CertificateFromKeyVault');
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(SecondMockAzureKeyvaultSecretProvider);
+        AzureKeyVault.GetAzureKeyVaultCertificate('some-certificate', Certificate);
+
+        // [THEN] The cache is cleared and the value is retrieved
+        Assert.AreEqual('CertificateFromKeyVault', Certificate, 'The returned certificate was incorrect.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure GetAzureKeyVaultCertificateMissingCertificateTest()
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
+        MockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
+        Certificate: Text;
+    begin
+        // [SCENARIO] When an unknown key is provided, then retrieval of the certificate fails
+
+        // [GIVEN] A configured Azure Key Vault
+        MockAzureKeyvaultSecretProvider := MockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
+        MockAzureKeyvaultSecretProvider.AddCertificateMapping('somecertificate', 'AnotherCertificateFromTheKeyVault');
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(MockAzureKeyvaultSecretProvider);
+
+        // [WHEN] The key vault is called with an unknown key
+        AzureKeyVault.GetAzureKeyVaultCertificate('somecertificatethatdoesnotexist', Certificate);
+
+        // [THEN] Certificate is not retrieved
+        Assert.AreEqual('', Certificate, 'Certificate must be empty');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure ClearCertificatesTest()
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
+        MockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
+        Certificate: Text;
+    begin
+        // [SCENARIO] When the certificates are cleared from the key vault, they can no longer be retrieved.
+
+        // [GIVEN] A configured Azure Key Vault
+        MockAzureKeyvaultSecretProvider := MockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
+        MockAzureKeyvaultSecretProvider.AddCertificateMapping('somecertificate', 'CertificateFromTheKeyVault');
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(MockAzureKeyvaultSecretProvider);
+
+        // [WHEN] Get a certificate from the key vault
+        AzureKeyVault.GetAzureKeyVaultCertificate('somecertificate', Certificate);
+
+        // [THEN] The right certificate is retreived
+        Assert.AreEqual('CertificateFromTheKeyVault', Certificate, 'The returned certificate does not match.');
+
+        // [WHEN] The key vault cache is cleared and the same certificate is retrieved
+        AzureKeyVaultTestLibrary.ClearSecrets();
+
+        // [THEN] The certificate is no longer accessible and an error is thrown
+        asserterror AzureKeyVault.GetAzureKeyVaultCertificate('somecertificate', Certificate);
+        Assert.ExpectedError(KeyVaultNotInitializedTxt);
     end;
 }

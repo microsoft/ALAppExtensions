@@ -113,7 +113,6 @@ page 30039 "APIV2 - Attachments"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
-        TypeHelper: Codeunit "Type Helper";
         FileManagement: Codeunit "File Management";
         AttachmentEntityBufferDocType: Enum "Attachment Entity Buffer Document Type";
         DocumentIdFilter: Text;

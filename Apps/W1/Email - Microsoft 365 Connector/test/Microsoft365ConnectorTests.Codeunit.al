@@ -129,7 +129,6 @@ codeunit 139751 "Microsoft 365 Connector Tests"
     var
         EmailOutlookAPISetup: Record "Email - Outlook API Setup";
         EmailAccount: Record "Email Account";
-        OutlookMockInitSubscribers: Codeunit "Outlook Mock Init. Subscribers";
         Microsoft365Connector: Codeunit "Microsoft 365 Connector";
     begin
         // [SCENARIO] The first time an Outlook API based account is added, the Azure App Registration shows up.
