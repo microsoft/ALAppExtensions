@@ -6,7 +6,7 @@
 codeunit 9013 "User Login Time Tracker Impl."
 {
     Access = Internal;
-    Permissions = TableData "User Login" = rimd;
+    Permissions = TableData "User Login" = rim;
 
     trigger OnRun()
     begin

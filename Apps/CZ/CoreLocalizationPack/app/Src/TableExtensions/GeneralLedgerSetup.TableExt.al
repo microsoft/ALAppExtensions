@@ -68,11 +68,34 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
             Caption = 'Do Not Check Dimensions';
             DataClassification = CustomerContent;
         }
+        field(11782; "Check Posting Debit/Credit CZL"; Boolean)
+        {
+            Caption = 'Check Posting Debit/Credit';
+            DataClassification = CustomerContent;
+        }
+        field(11783; "Mark Neg. Qty as Correct. CZL"; Boolean)
+        {
+            Caption = 'Mark Neg. Qty as Correction';
+            DataClassification = CustomerContent;
+        }
+        field(11784; "Closed Per. Entry Pos.Date CZL"; Date)
+        {
+            Caption = 'Closed Period Entry Pos.Date';
+            DataClassification = CustomerContent;
+        }
+        field(11785; "Rounding Date CZL"; Date)
+        {
+            Caption = 'Rounding Date';
+            DataClassification = CustomerContent;
+        }
+        field(11786; "User Checks Allowed CZL"; Boolean)
+        {
+            Caption = 'User Checks Allowed';
+            DataClassification = CustomerContent;
+        }
     }
 
     procedure InitVATDateCZL()
-    var
-        TableNo: Integer;
     begin
         InitVATDateFromRecordCZL(Database::"G/L Entry");
         InitVATDateFromRecordCZL(Database::"Gen. Journal Line");
@@ -97,20 +120,20 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
     procedure InitVATDateFromRecordCZL(TableNo: Integer)
     var
         DataTypeManagement: Codeunit "Data Type Management";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         PostingDateFieldRef: FieldRef;
         VATDateFieldRef: FieldRef;
     begin
-        RecRef.Open(TableNo);
-        DataTypeManagement.FindFieldByName(RecRef, VATDateFieldRef, 'VAT Date');
-        DataTypeManagement.FindFieldByName(RecRef, PostingDateFieldRef, 'Posting Date');
+        RecordRef.Open(TableNo);
+        DataTypeManagement.FindFieldByName(RecordRef, VATDateFieldRef, 'VAT Date');
+        DataTypeManagement.FindFieldByName(RecordRef, PostingDateFieldRef, 'Posting Date');
         VATDateFieldRef.SetRange(0D);
         PostingDateFieldRef.SetFilter('<>%1', 0D);
-        if RecRef.FindSet(true) then
+        if RecordRef.FindSet(true) then
             repeat
                 VATDateFieldRef.Value := PostingDateFieldRef.Value;
-                RecRef.Modify();
-            until RecRef.Next() = 0;
+                RecordRef.Modify();
+            until RecordRef.Next() = 0;
     end;
 
     [IntegrationEvent(false, false)]

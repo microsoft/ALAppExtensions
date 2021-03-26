@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31184 "Sync.Dep.Fld-VatStmtTempl CZL"
 {
@@ -27,7 +28,6 @@ codeunit 31184 "Sync.Dep.Fld-VatStmtTempl CZL"
             PreviousRecordRef.SetTable(PreviousRecord);
 
         SyncDepFldUtilities.SyncFields(Rec."Allow Comments/Attachments", Rec."Allow Comments/Attachments CZL", PreviousRecord."Allow Comments/Attachments", PreviousRecord."Allow Comments/Attachments CZL");
-        Rec."XML Format" := Rec."XML Format"::DPHDP3;
-        Rec."XML Format CZL" := Rec."XML Format CZL"::DPHDP3;
     end;
 }
+#endif

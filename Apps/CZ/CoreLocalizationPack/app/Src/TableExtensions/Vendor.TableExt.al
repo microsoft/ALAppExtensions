@@ -59,7 +59,32 @@ tableextension 11702 "Vendor CZL" extends Vendor
             Caption = 'Disable Unreliability Check';
             DataClassification = CustomerContent;
         }
+        field(31070; "Transaction Type CZL"; Code[10])
+        {
+            Caption = 'Transaction Type';
+            TableRelation = "Transaction Type";
+            DataClassification = CustomerContent;            
+        }
+        field(31071; "Transaction Specification CZL"; Code[10])
+        {
+            Caption = 'Transaction Specification';
+            TableRelation = "Transaction Specification";
+            DataClassification = CustomerContent;            
+        }
+        field(31072; "Transport Method CZL"; Code[10])
+        {
+            Caption = 'Transport Method';
+            TableRelation = "Transport Method";
+            DataClassification = CustomerContent;            
+        }
     }
+    keys
+    {
+        key(Key11700; "Registration No. CZL")
+        {
+        }
+    }
+
     var
         UnrelPayerServiceSetupCZL: Record "Unrel. Payer Service Setup CZL";
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
@@ -72,8 +97,6 @@ tableextension 11702 "Vendor CZL" extends Vendor
     end;
 
     procedure IsUnreliablePayerCheckPossibleCZL(): Boolean
-    var
-        CheckPossible: Boolean;
     begin
         if "Disable Unreliab. Check CZL" then
             exit(false);
@@ -126,17 +149,17 @@ tableextension 11702 "Vendor CZL" extends Vendor
 
     procedure GetLinkedCustomerCZL(): Code[20]
     var
-        ContBusRel: Record "Contact Business Relation";
+        ContactBusinessRelation: Record "Contact Business Relation";
     begin
-        ContBusRel.SetCurrentKey("Link to Table", "No.");
-        ContBusRel.SetRange("Link to Table", ContBusRel."Link to Table"::Vendor);
-        ContBusRel.SetRange("No.", "No.");
-        if ContBusRel.FindFirst() then begin
-            ContBusRel.SetRange("Contact No.", ContBusRel."Contact No.");
-            ContBusRel.SetRange("Link to Table", ContBusRel."Link to Table"::Customer);
-            ContBusRel.SetRange("No.");
-            if ContBusRel.FindFirst() then
-                exit(ContBusRel."No.");
+        ContactBusinessRelation.SetCurrentKey("Link to Table", "No.");
+        ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Vendor);
+        ContactBusinessRelation.SetRange("No.", "No.");
+        if ContactBusinessRelation.FindFirst() then begin
+            ContactBusinessRelation.SetRange("Contact No.", ContactBusinessRelation."Contact No.");
+            ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Customer);
+            ContactBusinessRelation.SetRange("No.");
+            if ContactBusinessRelation.FindFirst() then
+                exit(ContactBusinessRelation."No.");
         end;
     end;
 }

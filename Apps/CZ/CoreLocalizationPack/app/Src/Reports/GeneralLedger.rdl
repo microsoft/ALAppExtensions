@@ -42,48 +42,21 @@
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>0.6cm</Height>
+                  <Height>0.45cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="gcoAccountFilter">
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!gcoAccountFilter.Value</Value>
-                                  <Style>
-                                    <FontSize>7pt</FontSize>
-                                    <FontWeight>Bold</FontWeight>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <Style>
-                            <VerticalAlign>Bottom</VerticalAlign>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>0.15cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="gteGLAccDescr">
+                        <Textbox Name="Textbox2">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!gteGLAccDescr.Value</Value>
+                                  <Value>=Parameters!AccountNoLbl.Value</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -91,12 +64,54 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
                             <VerticalAlign>Bottom</VerticalAlign>
-                            <PaddingLeft>0.15cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox20">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!AccountNameLbl.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox20</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                         <ColSpan>2</ColSpan>
@@ -105,15 +120,434 @@
                     <TablixCell />
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="STRSUBSTNO_gtcStartBalance__FORMAT_gdaStartDate__">
+                        <Textbox Name="Textbox5">
+                          <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!STRSUBSTNO_gtcStartBalance__FORMAT_gdaStartDate__.Value</Value>
+                                  <Value>=Parameters!GLEntry_DescriptionCaption.Value</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox6">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!GLEntry_DebitAmountCaption.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox6</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox7">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!GLEntry_CreditAmountCaption.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox7</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox10">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!BalanceLbl.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox10</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.45cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox11">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!AccountNoLbl.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox11</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox12">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!GLEntry_PostingDateCaption.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox12</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox13">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!GLEntry_DocumentNoCaption.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox13</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox14">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!GLEntry_DescriptionCaption.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox14</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox17">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!GLEntry_DebitAmountCaption.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox18">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!GLEntry_CreditAmountCaption.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox18</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox19">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!BalanceLbl.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox19</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                              <Width>0.5pt</Width>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.45cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="GLAccountNo">
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!GLAccountNo.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -122,28 +556,87 @@
                             </Paragraph>
                           </Paragraphs>
                           <Style>
-                            <VerticalAlign>Bottom</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.75cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="gdeStartDebit">
+                        <Textbox Name="GLAccountName">
+                          <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeStartDebit.Value)</Value>
+                                  <Value>=Fields!GLAccountName.Value</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!gdeStartDebitFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                        <ColSpan>2</ColSpan>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell />
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="StartBalanceFilter">
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!StartBalanceLbl.Value &amp; " " &amp; Fields!StartDate.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="StartDebit">
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Code.BlankZero(Fields!StartDebit.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!StartDebitFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -153,8 +646,36 @@
                             </Paragraph>
                           </Paragraphs>
                           <Style>
-                            <VerticalAlign>Bottom</VerticalAlign>
-                            <PaddingLeft>0.75cm</PaddingLeft>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="StartCredit">
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Code.BlankZero(Fields!StartCredit.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!StartCreditFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
                             <PaddingBottom>2pt</PaddingBottom>
@@ -164,17 +685,18 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="gdeStartCredit">
+                        <Textbox Name="GLAccount_StartBalance">
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeStartCredit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!StartDebit.Value - Fields!StartCredit.Value)</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!gdeStartCreditFormat.Value</Format>
+                                    <Format>=Fields!StartDebitFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -184,38 +706,9 @@
                             </Paragraph>
                           </Paragraphs>
                           <Style>
-                            <VerticalAlign>Bottom</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="gdeStartDebit___gdeStartCredit">
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeStartDebit___gdeStartCredit.Value)</Value>
-                                  <Style>
-                                    <FontSize>7pt</FontSize>
-                                    <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!gdeStartDebit___gdeStartCreditFormat.Value</Format>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <TextAlign>Right</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <Style>
-                            <VerticalAlign>Bottom</VerticalAlign>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -227,19 +720,20 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.42301cm</Height>
+                  <Height>0.45cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="G_L_Entry__G_L_Account_No__">
+                        <Textbox Name="GLEntry_GLAccountNo">
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!G_L_Entry__G_L_Account_No__.Value</Value>
+                                  <Value>=Fields!GLEntry_GLAccountNo.Value</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -249,181 +743,178 @@
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>0.15cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="G_L_Entry__Posting_Date_">
+                        <Textbox Name="GLEntry_PostingDate">
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!G_L_Entry__Posting_Date_.Value</Value>
+                                  <Value>=Fields!GLEntry_PostingDate.Value</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <Format>d</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <Style>
-                            <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.15cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="G_L_Entry__Document_No__">
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!G_L_Entry__Document_No__.Value</Value>
-                                  <Style>
-                                    <FontSize>7pt</FontSize>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <Style>
-                            <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.75cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="G_L_Entry_Description">
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!G_L_Entry_Description.Value</Value>
-                                  <Style>
-                                    <FontSize>7pt</FontSize>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <Style>
-                            <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.75cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="G_L_Entry__Debit_Amount_">
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Code.BlankZero(Fields!G_L_Entry__Debit_Amount_.Value)</Value>
-                                  <Style>
-                                    <FontSize>7pt</FontSize>
-                                    <Format>=Fields!G_L_Entry__Debit_Amount_Format.Value</Format>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
                               <Style>
-                                <TextAlign>Right</TextAlign>
+                                <TextAlign>Left</TextAlign>
                               </Style>
                             </Paragraph>
                           </Paragraphs>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="G_L_Entry__Credit_Amount_">
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Code.BlankZero(Fields!G_L_Entry__Credit_Amount_.Value)</Value>
-                                  <Style>
-                                    <FontSize>7pt</FontSize>
-                                    <Format>=Fields!G_L_Entry__Credit_Amount_Format.Value</Format>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <TextAlign>Right</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <Style>
-                            <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="G_L_Entry_Amount">
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Code.BlankZero(Fields!G_L_Entry_Amount.Value)</Value>
-                                  <Style>
-                                    <FontSize>7pt</FontSize>
-                                    <Format>=Fields!G_L_Entry_AmountFormat.Value</Format>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <TextAlign>Right</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <Style>
-                            <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="GLEntry_DocumentNo">
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!GLEntry_DocumentNo.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="GLEntry_Description">
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!GLEntry_Description.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="GLEntry_DebitAmount">
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Code.BlankZero(Fields!GLEntry_DebitAmount.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Format>=Fields!GLEntry_DebitAmountFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="GLEntry_CreditAmount">
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Code.BlankZero(Fields!GLEntry_CreditAmount.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Format>=Fields!GLEntry_CreditAmountFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="GLEntry_Amount">
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Code.BlankZero(Fields!GLEntry_Amount.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Format>=Fields!GLEntry_AmountFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
@@ -431,7 +922,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.42301cm</Height>
+                  <Height>0.45cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -455,26 +946,25 @@
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>0.15cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox2">
+                        <Textbox Name="GLAccountName2">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!gteGLAccDescr_Control1100162001.Value</Value>
+                                  <Value>=Fields!GLAccountName.Value</Value>
                                   <Style>
                                     <FontStyle>Italic</FontStyle>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -484,10 +974,8 @@
                           <rd:DefaultName>Textbox2</rd:DefaultName>
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.15cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                         <ColSpan>2</ColSpan>
@@ -496,17 +984,18 @@
                     <TablixCell />
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox4">
+                        <Textbox Name="NetChangePeriodFilter">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!STRSUBSTNO_gtcNetChange_gdaStartPeriod_gdaEndPeriod_.Value</Value>
+                                  <Value>=Parameters!NetChangePeriodLbl.Value &amp; " " &amp; Fields!StartDate.Value &amp; ".." &amp; " " &amp; Fields!EndDate.Value</Value>
                                   <Style>
                                     <FontStyle>Italic</FontStyle>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -515,31 +1004,32 @@
                               </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox4</rd:DefaultName>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.75cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox5">
+                        <Textbox Name="TotalPeriod_NetChangePeriodDebit">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeNetChangePerDebit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalPeriod_NetChangePeriodDebit.Value)</Value>
                                   <Style>
                                     <FontStyle>Italic</FontStyle>
-                                    <FontSize>7pt</FontSize>
-                                    <Format>=Fields!gdeNetChangePerDebitFormat.Value</Format>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Format>=Fields!TotalPeriod_NetChangePeriodDebitFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -552,28 +1042,27 @@
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox6">
+                        <Textbox Name="TotalPeriod_NetChangePeriodCredit">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeNetChangePerCredit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalPeriod_NetChangePeriodCredit.Value)</Value>
                                   <Style>
                                     <FontStyle>Italic</FontStyle>
-                                    <FontSize>7pt</FontSize>
-                                    <Format>=Fields!gdeNetChangePerCreditFormat.Value</Format>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Format>=Fields!TotalPeriod_NetChangePeriodCreditFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -586,28 +1075,27 @@
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox7">
+                        <Textbox Name="PeriodBalance">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeNetChangePerDebit___gdeNetChangePerCredit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalPeriod_NetChangePeriodDebit.Value - Fields!TotalPeriod_NetChangePeriodCredit.Value)</Value>
                                   <Style>
                                     <FontStyle>Italic</FontStyle>
-                                    <FontSize>7pt</FontSize>
-                                    <Format>=Fields!gdeNetChangePerDebit___gdeNetChangePerCreditFormat.Value</Format>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Format>=Fields!TotalPeriod_NetChangePeriodDebitFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -616,14 +1104,11 @@
                               </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox7</rd:DefaultName>
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
@@ -631,7 +1116,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.42301cm</Height>
+                  <Height>0.45cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -655,9 +1140,7 @@
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>0.15cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
@@ -684,10 +1167,8 @@
                           <rd:DefaultName>Textbox9</rd:DefaultName>
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.15cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                         <ColSpan>2</ColSpan>
@@ -696,48 +1177,50 @@
                     <TablixCell />
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox11">
+                        <Textbox Name="EndPeriodBalanceFilter">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!STRSUBSTNO_gtcEndBalance_gdaEndPeriod_.Value</Value>
+                                  <Value>=Parameters!EndBalanceLbl.Value &amp; " " &amp; Fields!EndPeriod.Value</Value>
                                   <Style>
                                     <FontStyle>Italic</FontStyle>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox11</rd:DefaultName>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.75cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox12">
+                        <Textbox Name="TotalPeriod_EndPeriodDebit">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeEndPerDebit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalPeriod_EndPeriodDebit.Value)</Value>
                                   <Style>
                                     <FontStyle>Italic</FontStyle>
-                                    <FontSize>7pt</FontSize>
-                                    <Format>=Fields!gdeEndPerDebitFormat.Value</Format>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Format>=Fields!TotalPeriod_EndPeriodDebitFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -750,28 +1233,27 @@
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox13">
+                        <Textbox Name="TotalPeriod_EndPeriodCredit">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeEndPerCredit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalPeriod_EndPeriodCredit.Value)</Value>
                                   <Style>
                                     <FontStyle>Italic</FontStyle>
-                                    <FontSize>7pt</FontSize>
-                                    <Format>=Fields!gdeEndPerCreditFormat.Value</Format>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Format>=Fields!TotalPeriod_EndPeriodCreditFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -784,28 +1266,27 @@
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox14">
+                        <Textbox Name="EndPeriodBalance">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeEndPerDebit___gdeEndPerCredit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalPeriod_EndPeriodDebit.Value - Fields!TotalPeriod_EndPeriodCredit.Value)</Value>
                                   <Style>
                                     <FontStyle>Italic</FontStyle>
-                                    <FontSize>7pt</FontSize>
-                                    <Format>=Fields!gdeEndPerDebit___gdeEndPerCreditFormat.Value</Format>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Format>=Fields!TotalPeriod_EndPeriodDebitFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -814,14 +1295,11 @@
                               </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox14</rd:DefaultName>
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
@@ -829,7 +1307,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.42301cm</Height>
+                  <Height>0.45cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -853,25 +1331,24 @@
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>0.15cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox23">
+                        <Textbox Name="GLAccountName3">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!gteGLAccDescr_Control1100162002.Value</Value>
+                                  <Value>=Fields!GLAccountName.Value</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -882,10 +1359,8 @@
                           <rd:DefaultName>Textbox23</rd:DefaultName>
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.15cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                         <ColSpan>2</ColSpan>
@@ -894,16 +1369,17 @@
                     <TablixCell />
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox25">
+                        <Textbox Name="EndNetChangePeriodFilter">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!STRSUBSTNO_gtcNetChange_gdaStartDate_gdaEndDate_.Value</Value>
+                                  <Value>=Parameters!NetChangePeriodLbl.Value &amp; " " &amp; Fields!StartDate.Value &amp; ".." &amp; " " &amp; Fields!EndDate.Value</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -911,31 +1387,32 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox25</rd:DefaultName>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.75cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox26">
+                        <Textbox Name="TotalAccount_NetChangeDebit">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeNetChangeDebit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalAccount_NetChangeDebit.Value)</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!gdeNetChangeDebitFormat.Value</Format>
+                                    <Format>=Fields!TotalAccount_NetChangeDebitFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -948,28 +1425,27 @@
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox27">
+                        <Textbox Name="TotalAccount_NetChangeCredit">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeNetChangeCredit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalAccount_NetChangeCredit.Value)</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!gdeNetChangeCreditFormat.Value</Format>
+                                    <Format>=Fields!TotalAccount_NetChangeCreditFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -982,28 +1458,27 @@
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox28">
+                        <Textbox Name="GLAccount_EndBalance">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeNetChangeDebit___gdeNetChangeCredit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalAccount_NetChangeDebit.Value - Fields!TotalAccount_NetChangeCredit.Value)</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!gdeNetChangeDebit___gdeNetChangeCreditFormat.Value</Format>
+                                    <Format>=Fields!TotalAccount_NetChangeDebitFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1012,14 +1487,11 @@
                               </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox28</rd:DefaultName>
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
@@ -1027,7 +1499,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.42301cm</Height>
+                  <Height>0.45cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -1051,9 +1523,7 @@
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>0.15cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
@@ -1080,10 +1550,8 @@
                           <rd:DefaultName>Textbox16</rd:DefaultName>
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.15cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                         <ColSpan>2</ColSpan>
@@ -1092,16 +1560,17 @@
                     <TablixCell />
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox18">
+                        <Textbox Name="EndBalanceFilter">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!STRSUBSTNO_gtcEndBalance_gdaEndDate_.Value</Value>
+                                  <Value>=Parameters!EndBalanceLbl.Value &amp; " " &amp; Fields!EndDate.Value</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -1109,31 +1578,32 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox18</rd:DefaultName>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.75cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox19">
+                        <Textbox Name="TotalAccount_EndDebit">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeEndDebit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalAccount_EndDebit.Value)</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!gdeEndDebitFormat.Value</Format>
+                                    <Format>=Fields!TotalAccount_EndDebitFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1146,28 +1616,27 @@
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox20">
+                        <Textbox Name="TotalAccount_EndCredit">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeEndCredit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalAccount_EndCredit.Value)</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!gdeEndCreditFormat.Value</Format>
+                                    <Format>=Fields!TotalAccount_EndCreditFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1180,28 +1649,27 @@
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
-                            <PaddingRight>0.075cm</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox21">
+                        <Textbox Name="EndBalance">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Code.BlankZero(Fields!gdeEndDebit___gdeEndCredit.Value)</Value>
+                                  <Value>=Code.BlankZero(Fields!TotalAccount_EndDebit.Value - Fields!TotalAccount_EndCredit.Value)</Value>
                                   <Style>
-                                    <FontSize>7pt</FontSize>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!gdeEndDebit___gdeEndCreditFormat.Value</Format>
+                                    <Format>=Fields!TotalAccount_EndDebitFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1210,14 +1678,11 @@
                               </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox21</rd:DefaultName>
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
@@ -1240,9 +1705,23 @@
             <TablixRowHierarchy>
               <TablixMembers>
                 <TablixMember>
+                  <Visibility>
+                    <Hidden>=First(Fields!Entries.Value, "DataSet_Result")</Hidden>
+                  </Visibility>
+                  <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                </TablixMember>
+                <TablixMember>
+                  <Visibility>
+                    <Hidden>=not First(Fields!Entries.Value, "DataSet_Result")</Hidden>
+                  </Visibility>
+                  <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                </TablixMember>
+                <TablixMember>
                   <Group Name="Table1_Group">
                     <GroupExpressions>
-                      <GroupExpression>=Fields!gcoAccountFilter.Value</GroupExpression>
+                      <GroupExpression>=Fields!GLAccountNo.Value</GroupExpression>
                     </GroupExpressions>
                   </Group>
                   <TablixMembers>
@@ -1260,27 +1739,27 @@
                                   <TablixMembers>
                                     <TablixMember>
                                       <Visibility>
-                                        <Hidden>=(not Fields!gboEntries.Value) or (Fields!G_L_Entry_Entry_No_.Value &lt; 1)</Hidden>
+                                        <Hidden>=(not Fields!Entries.Value) or (Fields!GLEntry_EntryNo.Value &lt; 1)</Hidden>
                                       </Visibility>
                                     </TablixMember>
                                     <TablixMember>
                                       <Visibility>
-                                        <Hidden>=(not Fields!gboSums.Value) or (Fields!TotalPer_Number.Value &lt;&gt; 1)</Hidden>
+                                        <Hidden>=(not Fields!Sums.Value) or (Fields!TotalPeriod_Number.Value &lt;&gt; 1)</Hidden>
                                       </Visibility>
                                     </TablixMember>
                                     <TablixMember>
                                       <Visibility>
-                                        <Hidden>=(not Fields!gboSums.Value) or (Fields!TotalPer_Number.Value &lt;&gt; 1)</Hidden>
+                                        <Hidden>=(not Fields!Sums.Value) or (Fields!TotalPeriod_Number.Value &lt;&gt; 1)</Hidden>
                                       </Visibility>
                                     </TablixMember>
                                     <TablixMember>
                                       <Visibility>
-                                        <Hidden>=Fields!TotalAcc_Number.Value &lt;&gt; 1</Hidden>
+                                        <Hidden>=Fields!TotalAccount_Number.Value &lt;&gt; 1</Hidden>
                                       </Visibility>
                                     </TablixMember>
                                     <TablixMember>
                                       <Visibility>
-                                        <Hidden>=Fields!TotalAcc_Number.Value &lt;&gt; 1</Hidden>
+                                        <Hidden>=Fields!TotalAccount_Number.Value &lt;&gt; 1</Hidden>
                                       </Visibility>
                                     </TablixMember>
                                   </TablixMembers>
@@ -1301,22 +1780,21 @@
             <DataSetName>DataSet_Result</DataSetName>
             <SortExpressions>
               <SortExpression>
-                <Value>=Fields!gcoAccountFilter.Value</Value>
+                <Value>=Fields!GLAccountNo.Value</Value>
               </SortExpression>
             </SortExpressions>
-            <Top>0.02083in</Top>
-            <Height>2.71506cm</Height>
-            <Width>18cm</Width>
+            <Height>3.6cm</Height>
+            <Width>18.00001cm</Width>
             <Style />
           </Tablix>
         </ReportItems>
-        <Height>2.76797cm</Height>
+        <Height>3.6cm</Height>
         <Style />
       </Body>
-      <Width>18cm</Width>
+      <Width>18.00001cm</Width>
       <Page>
         <PageHeader>
-          <Height>2.74967cm</Height>
+          <Height>2.64967cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -1328,7 +1806,8 @@
                     <TextRun>
                       <Value>=User!UserID</Value>
                       <Style>
-                        <FontSize>7pt</FontSize>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontSize>8pt</FontSize>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -1337,12 +1816,13 @@
                   </Style>
                 </Paragraph>
               </Paragraphs>
-              <Top>0.846cm</Top>
-              <Left>14.85cm</Left>
-              <Height>0.423cm</Height>
-              <Width>3.15cm</Width>
+              <Top>0.9cm</Top>
+              <Left>14.5cm</Left>
+              <Height>0.45cm</Height>
+              <Width>3.5cm</Width>
               <Style>
-                <VerticalAlign>Middle</VerticalAlign>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
               </Style>
             </Textbox>
             <Textbox Name="ExecutionTimeTextBox">
@@ -1353,7 +1833,8 @@
                     <TextRun>
                       <Value>=Globals!ExecutionTime</Value>
                       <Style>
-                        <FontSize>7pt</FontSize>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontSize>8pt</FontSize>
                         <Format>g</Format>
                       </Style>
                     </TextRun>
@@ -1363,15 +1844,16 @@
                   </Style>
                 </Paragraph>
               </Paragraphs>
-              <Left>14.85cm</Left>
-              <Height>0.423cm</Height>
-              <Width>3.15cm</Width>
+              <Left>14.5cm</Left>
+              <Height>0.45cm</Height>
+              <Width>3.5cm</Width>
               <ZIndex>1</ZIndex>
               <Style>
-                <VerticalAlign>Middle</VerticalAlign>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
               </Style>
             </Textbox>
-            <Textbox Name="COMPANYNAME1">
+            <Textbox Name="COMPANYNAME">
               <KeepTogether>true</KeepTogether>
               <Paragraphs>
                 <Paragraph>
@@ -1379,53 +1861,61 @@
                     <TextRun>
                       <Value>=First(Fields!COMPANYNAME.Value, "DataSet_Result")</Value>
                       <Style>
-                        <FontSize>7pt</FontSize>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontSize>8pt</FontSize>
                       </Style>
                     </TextRun>
                   </TextRuns>
                   <Style />
                 </Paragraph>
               </Paragraphs>
-              <Top>0.846cm</Top>
-              <Height>0.423cm</Height>
+              <Top>1.35cm</Top>
+              <Height>0.45cm</Height>
               <Width>7.5cm</Width>
               <ZIndex>2</ZIndex>
               <Style>
-                <VerticalAlign>Middle</VerticalAlign>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
               </Style>
             </Textbox>
-            <Textbox Name="STRSUBSTNO___1__2__gtcPeriod_gtePeriodText_1">
+            <Textbox Name="PeriodFilter">
               <KeepTogether>true</KeepTogether>
               <Paragraphs>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=First(Fields!STRSUBSTNO___1__2__gtcPeriod_gtePeriodText_.Value, "DataSet_Result")</Value>
+                      <Value>=Parameters!PeriodLbl.Value &amp; " " &amp; First(Fields!StartDate.Value, "DataSet_Result") &amp; ".." &amp; " " &amp; First(Fields!EndDate.Value, "DataSet_Result")</Value>
                       <Style>
-                        <FontSize>7pt</FontSize>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontSize>8pt</FontSize>
                       </Style>
                     </TextRun>
                   </TextRuns>
                   <Style />
                 </Paragraph>
               </Paragraphs>
-              <Top>0.423cm</Top>
-              <Height>0.423cm</Height>
+              <Top>0.9cm</Top>
+              <Height>0.45cm</Height>
               <Width>7.5cm</Width>
               <ZIndex>3</ZIndex>
               <Style>
-                <VerticalAlign>Middle</VerticalAlign>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
               </Style>
             </Textbox>
-            <Textbox Name="General_LedgerCaption1">
+            <Textbox Name="ReportNameLbl">
               <KeepTogether>true</KeepTogether>
               <Paragraphs>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=First(Fields!General_LedgerCaption.Value, "DataSet_Result")</Value>
+                      <Value>=Parameters!ReportNameLbl.Value</Value>
                       <Style>
-                        <FontSize>8pt</FontSize>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontSize>14pt</FontSize>
                         <FontWeight>Bold</FontWeight>
                       </Style>
                     </TextRun>
@@ -1433,279 +1923,67 @@
                   <Style />
                 </Paragraph>
               </Paragraphs>
-              <Height>0.423cm</Height>
+              <Height>0.9cm</Height>
               <Width>7.5cm</Width>
               <ZIndex>4</ZIndex>
               <Style>
-                <VerticalAlign>Middle</VerticalAlign>
-              </Style>
-            </Textbox>
-            <Textbox Name="CurrReport_PAGENOCaption1">
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!CurrReport_PAGENOCaption.Value, "DataSet_Result") &amp; " " &amp; Globals!PageNumber</Value>
-                      <Style>
-                        <FontSize>7pt</FontSize>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Right</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <Top>0.423cm</Top>
-              <Left>14.85cm</Left>
-              <Height>0.423cm</Height>
-              <Width>3.15cm</Width>
-              <ZIndex>5</ZIndex>
-              <Style>
-                <VerticalAlign>Middle</VerticalAlign>
-              </Style>
-            </Textbox>
-            <Textbox Name="gteTableFilter">
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!gteTableFilter.Value,"DataSet_Result")</Value>
-                      <Style>
-                        <FontSize>7pt</FontSize>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style />
-                </Paragraph>
-              </Paragraphs>
-              <Top>1.30428cm</Top>
-              <Height>0.423cm</Height>
-              <Width>14.86917cm</Width>
-              <ZIndex>6</ZIndex>
-              <Style>
-                <VerticalAlign>Middle</VerticalAlign>
-              </Style>
-            </Textbox>
-            <Textbox Name="gcoAccountFilterCaption2">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!gcoAccountFilterCaption.Value, "DataSet_Result")</Value>
-                      <Style>
-                        <FontSize>7pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style />
-                </Paragraph>
-              </Paragraphs>
-              <Top>0.73559in</Top>
-              <Height>0.33307in</Height>
-              <Width>0.58211in</Width>
-              <ZIndex>7</ZIndex>
-              <Style>
-                <VerticalAlign>Bottom</VerticalAlign>
                 <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>0.15cm</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="G_L_Entry__Posting_Date_Caption2">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!G_L_Entry__Posting_Date_Caption.Value, "DataSet_Result")</Value>
-                      <Style>
-                        <FontSize>7pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Right</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <Top>0.73559in</Top>
-              <Left>0.58211in</Left>
-              <Height>0.33307in</Height>
-              <Width>0.89854in</Width>
-              <ZIndex>8</ZIndex>
-              <Style>
-                <VerticalAlign>Bottom</VerticalAlign>
-                <PaddingLeft>0.15cm</PaddingLeft>
-                <PaddingRight>0.075cm</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="G_L_Entry__Document_No__Caption2">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!G_L_Entry__Document_No__Caption.Value, "DataSet_Result")</Value>
-                      <Style>
-                        <FontSize>7pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style />
-                </Paragraph>
-              </Paragraphs>
-              <Top>0.73559in</Top>
-              <Left>1.48066in</Left>
-              <Height>0.33307in</Height>
-              <Width>0.9153in</Width>
-              <ZIndex>9</ZIndex>
-              <Style>
-                <VerticalAlign>Bottom</VerticalAlign>
-                <PaddingLeft>0.075cm</PaddingLeft>
-                <PaddingRight>0.75cm</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="G_L_Entry_DescriptionCaption2">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!G_L_Entry_DescriptionCaption.Value, "DataSet_Result")</Value>
-                      <Style>
-                        <FontSize>7pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Left</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <Top>0.73559in</Top>
-              <Left>2.39596in</Left>
-              <Height>0.33307in</Height>
-              <Width>1.76321in</Width>
-              <ZIndex>10</ZIndex>
-              <Style>
-                <VerticalAlign>Bottom</VerticalAlign>
-                <PaddingLeft>0.075cm</PaddingLeft>
-                <PaddingRight>0.75cm</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="G_L_Entry__Debit_Amount_Caption2">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!G_L_Entry__Debit_Amount_Caption.Value, "DataSet_Result")</Value>
-                      <Style>
-                        <FontSize>7pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Right</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <Top>0.73559in</Top>
-              <Left>4.15917in</Left>
-              <Height>0.33307in</Height>
-              <Width>0.97581in</Width>
-              <ZIndex>11</ZIndex>
-              <Style>
-                <VerticalAlign>Bottom</VerticalAlign>
-                <PaddingLeft>0.075cm</PaddingLeft>
-                <PaddingRight>0.075cm</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="G_L_Entry__Credit_Amount_Caption2">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!G_L_Entry__Credit_Amount_Caption.Value, "DataSet_Result")</Value>
-                      <Style>
-                        <FontSize>7pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Right</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <Top>0.73559in</Top>
-              <Left>5.13499in</Left>
-              <Height>0.33307in</Height>
-              <Width>0.97581in</Width>
-              <ZIndex>12</ZIndex>
-              <Style>
-                <VerticalAlign>Bottom</VerticalAlign>
-                <PaddingLeft>0.075cm</PaddingLeft>
-                <PaddingRight>0.075cm</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="BalanceCaption2">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!BalanceCaption.Value, "DataSet_Result")</Value>
-                      <Style>
-                        <FontSize>7pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Right</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <Top>0.73559in</Top>
-              <Left>6.1108in</Left>
-              <Height>0.33307in</Height>
-              <Width>0.97581in</Width>
-              <ZIndex>13</ZIndex>
-              <Style>
-                <VerticalAlign>Bottom</VerticalAlign>
-                <PaddingLeft>0.075cm</PaddingLeft>
                 <PaddingRight>2pt</PaddingRight>
                 <PaddingTop>2pt</PaddingTop>
                 <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="PageLbl">
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=Parameters!PageLbl.Value &amp; " " &amp; Globals!PageNumber</Value>
+                      <Style>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontSize>8pt</FontSize>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Right</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <Top>0.45cm</Top>
+              <Left>14.5cm</Left>
+              <Height>0.45cm</Height>
+              <Width>3.5cm</Width>
+              <ZIndex>5</ZIndex>
+              <Style>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+              </Style>
+            </Textbox>
+            <Textbox Name="GLAccount_Filters">
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=First(Fields!GLAccount_Filters.Value,"DataSet_Result")</Value>
+                      <Style>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontSize>8pt</FontSize>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style />
+                </Paragraph>
+              </Paragraphs>
+              <Top>1.8cm</Top>
+              <Height>0.45cm</Height>
+              <Width>14.86917cm</Width>
+              <ZIndex>6</ZIndex>
+              <Style>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
               </Style>
             </Textbox>
           </ReportItems>
@@ -1721,6 +1999,212 @@
       </Page>
     </ReportSection>
   </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="ReportNameLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>ReportNameLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>ReportNameLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="PageLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>PageLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>PageLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AccountNoLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AccountNoLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AccountNoLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AccountNameLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AccountNameLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AccountNameLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="BalanceLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>BalanceLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>BalanceLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="StartBalanceLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>StartBalanceLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>StartBalanceLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="EndBalanceLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>EndBalanceLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>EndBalanceLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="NetChangePeriodLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>NetChangePeriodLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>NetChangePeriodLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="PeriodLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>PeriodLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>PeriodLbl</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="GLEntry_PostingDateCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>GLEntry_PostingDateCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>GLEntry_PostingDateCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="GLEntry_DocumentNoCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>GLEntry_DocumentNoCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>GLEntry_DocumentNoCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="GLEntry_DescriptionCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>GLEntry_DescriptionCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>GLEntry_DescriptionCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="GLEntry_DebitAmountCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>GLEntry_DebitAmountCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>GLEntry_DebitAmountCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="GLEntry_CreditAmountCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>GLEntry_CreditAmountCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>GLEntry_CreditAmountCaption</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>1</NumberOfColumns>
+      <NumberOfRows>14</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>ReportNameLbl</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>PageLbl</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>2</RowIndex>
+          <ParameterName>AccountNoLbl</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>3</RowIndex>
+          <ParameterName>AccountNameLbl</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>4</RowIndex>
+          <ParameterName>BalanceLbl</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>5</RowIndex>
+          <ParameterName>StartBalanceLbl</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>6</RowIndex>
+          <ParameterName>EndBalanceLbl</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>7</RowIndex>
+          <ParameterName>NetChangePeriodLbl</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>8</RowIndex>
+          <ParameterName>PeriodLbl</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>9</RowIndex>
+          <ParameterName>GLEntry_PostingDateCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>10</RowIndex>
+          <ParameterName>GLEntry_DocumentNoCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>11</RowIndex>
+          <ParameterName>GLEntry_DescriptionCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>12</RowIndex>
+          <ParameterName>GLEntry_DebitAmountCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>13</RowIndex>
+          <ParameterName>GLEntry_CreditAmountCaption</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
   <Code>Public Function BlankZero(ByVal Value As Decimal)
     if Value = 0 then
         Return ""
@@ -1766,218 +2250,131 @@ End Function
         <Field Name="COMPANYNAME">
           <DataField>COMPANYNAME</DataField>
         </Field>
-        <Field Name="STRSUBSTNO___1__2__gtcPeriod_gtePeriodText_">
-          <DataField>STRSUBSTNO___1__2__gtcPeriod_gtePeriodText_</DataField>
+        <Field Name="GLAccount_Filters">
+          <DataField>GLAccount_Filters</DataField>
         </Field>
-        <Field Name="gteTableFilter">
-          <DataField>gteTableFilter</DataField>
+        <Field Name="GLAccountNo">
+          <DataField>GLAccountNo</DataField>
         </Field>
-        <Field Name="gcoAccountFilter">
-          <DataField>gcoAccountFilter</DataField>
+        <Field Name="GLAccountName">
+          <DataField>GLAccountName</DataField>
         </Field>
-        <Field Name="gdeStartDebit">
-          <DataField>gdeStartDebit</DataField>
+        <Field Name="StartDate">
+          <DataField>StartDate</DataField>
         </Field>
-        <Field Name="gdeStartDebitFormat">
-          <DataField>gdeStartDebitFormat</DataField>
+        <Field Name="EndDate">
+          <DataField>EndDate</DataField>
         </Field>
-        <Field Name="gdeStartCredit">
-          <DataField>gdeStartCredit</DataField>
+        <Field Name="StartDebit">
+          <DataField>StartDebit</DataField>
         </Field>
-        <Field Name="gdeStartCreditFormat">
-          <DataField>gdeStartCreditFormat</DataField>
+        <Field Name="StartDebitFormat">
+          <DataField>StartDebitFormat</DataField>
         </Field>
-        <Field Name="STRSUBSTNO_gtcStartBalance__FORMAT_gdaStartDate__">
-          <DataField>STRSUBSTNO_gtcStartBalance__FORMAT_gdaStartDate__</DataField>
+        <Field Name="StartCredit">
+          <DataField>StartCredit</DataField>
         </Field>
-        <Field Name="gdeStartDebit___gdeStartCredit">
-          <DataField>gdeStartDebit___gdeStartCredit</DataField>
+        <Field Name="StartCreditFormat">
+          <DataField>StartCreditFormat</DataField>
         </Field>
-        <Field Name="gdeStartDebit___gdeStartCreditFormat">
-          <DataField>gdeStartDebit___gdeStartCreditFormat</DataField>
+        <Field Name="Sums">
+          <DataField>Sums</DataField>
         </Field>
-        <Field Name="gteGLAccDescr">
-          <DataField>gteGLAccDescr</DataField>
+        <Field Name="Entries">
+          <DataField>Entries</DataField>
         </Field>
-        <Field Name="General_LedgerCaption">
-          <DataField>General_LedgerCaption</DataField>
+        <Field Name="StartPeriod">
+          <DataField>StartPeriod</DataField>
         </Field>
-        <Field Name="CurrReport_PAGENOCaption">
-          <DataField>CurrReport_PAGENOCaption</DataField>
+        <Field Name="EndPeriod">
+          <DataField>EndPeriod</DataField>
         </Field>
-        <Field Name="gcoAccountFilterCaption">
-          <DataField>gcoAccountFilterCaption</DataField>
+        <Field Name="GLEntry_GLAccountNo">
+          <DataField>GLEntry_GLAccountNo</DataField>
         </Field>
-        <Field Name="G_L_Entry__Posting_Date_Caption">
-          <DataField>G_L_Entry__Posting_Date_Caption</DataField>
+        <Field Name="GLEntry_PostingDate">
+          <DataField>GLEntry_PostingDate</DataField>
         </Field>
-        <Field Name="G_L_Entry__Document_No__Caption">
-          <DataField>G_L_Entry__Document_No__Caption</DataField>
+        <Field Name="GLEntry_DocumentNo">
+          <DataField>GLEntry_DocumentNo</DataField>
         </Field>
-        <Field Name="G_L_Entry_DescriptionCaption">
-          <DataField>G_L_Entry_DescriptionCaption</DataField>
+        <Field Name="GLEntry_Description">
+          <DataField>GLEntry_Description</DataField>
         </Field>
-        <Field Name="G_L_Entry__Debit_Amount_Caption">
-          <DataField>G_L_Entry__Debit_Amount_Caption</DataField>
+        <Field Name="GLEntry_DebitAmount">
+          <DataField>GLEntry_DebitAmount</DataField>
         </Field>
-        <Field Name="G_L_Entry__Credit_Amount_Caption">
-          <DataField>G_L_Entry__Credit_Amount_Caption</DataField>
+        <Field Name="GLEntry_DebitAmountFormat">
+          <DataField>GLEntry_DebitAmountFormat</DataField>
         </Field>
-        <Field Name="BalanceCaption">
-          <DataField>BalanceCaption</DataField>
+        <Field Name="GLEntry_CreditAmount">
+          <DataField>GLEntry_CreditAmount</DataField>
         </Field>
-        <Field Name="G_L_Account_No_">
-          <DataField>G_L_Account_No_</DataField>
+        <Field Name="GLEntry_CreditAmountFormat">
+          <DataField>GLEntry_CreditAmountFormat</DataField>
         </Field>
-        <Field Name="gboPrint">
-          <DataField>gboPrint</DataField>
+        <Field Name="GLEntry_Amount">
+          <DataField>GLEntry_Amount</DataField>
         </Field>
-        <Field Name="gboSums">
-          <DataField>gboSums</DataField>
+        <Field Name="GLEntry_AmountFormat">
+          <DataField>GLEntry_AmountFormat</DataField>
         </Field>
-        <Field Name="gboEntries">
-          <DataField>gboEntries</DataField>
+        <Field Name="GLEntry_EntryNo">
+          <DataField>GLEntry_EntryNo</DataField>
         </Field>
-        <Field Name="Accounting_Period_Starting_Date">
-          <DataField>Accounting_Period_Starting_Date</DataField>
+        <Field Name="TotalPeriod_NetChangePeriodDebit">
+          <DataField>TotalPeriod_NetChangePeriodDebit</DataField>
         </Field>
-        <Field Name="gdaStartDate">
-          <DataField>gdaStartDate</DataField>
+        <Field Name="TotalPeriod_NetChangePeriodDebitFormat">
+          <DataField>TotalPeriod_NetChangePeriodDebitFormat</DataField>
         </Field>
-        <Field Name="gdaEndDate">
-          <DataField>gdaEndDate</DataField>
+        <Field Name="TotalPeriod_NetChangePeriodCredit">
+          <DataField>TotalPeriod_NetChangePeriodCredit</DataField>
         </Field>
-        <Field Name="GlAccount2_No_">
-          <DataField>GlAccount2_No_</DataField>
+        <Field Name="TotalPeriod_NetChangePeriodCreditFormat">
+          <DataField>TotalPeriod_NetChangePeriodCreditFormat</DataField>
         </Field>
-        <Field Name="G_L_Entry__G_L_Account_No__">
-          <DataField>G_L_Entry__G_L_Account_No__</DataField>
+        <Field Name="TotalPeriod_EndPeriodDebit">
+          <DataField>TotalPeriod_EndPeriodDebit</DataField>
         </Field>
-        <Field Name="G_L_Entry__Posting_Date_">
-          <DataField>G_L_Entry__Posting_Date_</DataField>
+        <Field Name="TotalPeriod_EndPeriodDebitFormat">
+          <DataField>TotalPeriod_EndPeriodDebitFormat</DataField>
         </Field>
-        <Field Name="G_L_Entry__Document_No__">
-          <DataField>G_L_Entry__Document_No__</DataField>
+        <Field Name="TotalPeriod_EndPeriodCredit">
+          <DataField>TotalPeriod_EndPeriodCredit</DataField>
         </Field>
-        <Field Name="G_L_Entry_Description">
-          <DataField>G_L_Entry_Description</DataField>
+        <Field Name="TotalPeriod_EndPeriodCreditFormat">
+          <DataField>TotalPeriod_EndPeriodCreditFormat</DataField>
         </Field>
-        <Field Name="G_L_Entry__Debit_Amount_">
-          <DataField>G_L_Entry__Debit_Amount_</DataField>
+        <Field Name="TotalPeriod_Number">
+          <DataField>TotalPeriod_Number</DataField>
         </Field>
-        <Field Name="G_L_Entry__Debit_Amount_Format">
-          <DataField>G_L_Entry__Debit_Amount_Format</DataField>
+        <Field Name="TotalAccount_EndDebit">
+          <DataField>TotalAccount_EndDebit</DataField>
         </Field>
-        <Field Name="G_L_Entry__Credit_Amount_">
-          <DataField>G_L_Entry__Credit_Amount_</DataField>
+        <Field Name="TotalAccount_EndDebitFormat">
+          <DataField>TotalAccount_EndDebitFormat</DataField>
         </Field>
-        <Field Name="G_L_Entry__Credit_Amount_Format">
-          <DataField>G_L_Entry__Credit_Amount_Format</DataField>
+        <Field Name="TotalAccount_EndCredit">
+          <DataField>TotalAccount_EndCredit</DataField>
         </Field>
-        <Field Name="G_L_Entry_Amount">
-          <DataField>G_L_Entry_Amount</DataField>
+        <Field Name="TotalAccount_EndCreditFormat">
+          <DataField>TotalAccount_EndCreditFormat</DataField>
         </Field>
-        <Field Name="G_L_Entry_AmountFormat">
-          <DataField>G_L_Entry_AmountFormat</DataField>
+        <Field Name="TotalAccount_NetChangeDebit">
+          <DataField>TotalAccount_NetChangeDebit</DataField>
         </Field>
-        <Field Name="G_L_Entry_Entry_No_">
-          <DataField>G_L_Entry_Entry_No_</DataField>
+        <Field Name="TotalAccount_NetChangeDebitFormat">
+          <DataField>TotalAccount_NetChangeDebitFormat</DataField>
         </Field>
-        <Field Name="STRSUBSTNO_gtcNetChange_gdaStartPeriod_gdaEndPeriod_">
-          <DataField>STRSUBSTNO_gtcNetChange_gdaStartPeriod_gdaEndPeriod_</DataField>
+        <Field Name="TotalAccount_NetChangeCredit">
+          <DataField>TotalAccount_NetChangeCredit</DataField>
         </Field>
-        <Field Name="gdeNetChangePerDebit">
-          <DataField>gdeNetChangePerDebit</DataField>
+        <Field Name="TotalAccount_NetChangeCreditFormat">
+          <DataField>TotalAccount_NetChangeCreditFormat</DataField>
         </Field>
-        <Field Name="gdeNetChangePerDebitFormat">
-          <DataField>gdeNetChangePerDebitFormat</DataField>
-        </Field>
-        <Field Name="gdeNetChangePerCredit">
-          <DataField>gdeNetChangePerCredit</DataField>
-        </Field>
-        <Field Name="gdeNetChangePerCreditFormat">
-          <DataField>gdeNetChangePerCreditFormat</DataField>
-        </Field>
-        <Field Name="gdeNetChangePerDebit___gdeNetChangePerCredit">
-          <DataField>gdeNetChangePerDebit___gdeNetChangePerCredit</DataField>
-        </Field>
-        <Field Name="gdeNetChangePerDebit___gdeNetChangePerCreditFormat">
-          <DataField>gdeNetChangePerDebit___gdeNetChangePerCreditFormat</DataField>
-        </Field>
-        <Field Name="gteGLAccDescr_Control1100162001">
-          <DataField>gteGLAccDescr_Control1100162001</DataField>
-        </Field>
-        <Field Name="STRSUBSTNO_gtcEndBalance_gdaEndPeriod_">
-          <DataField>STRSUBSTNO_gtcEndBalance_gdaEndPeriod_</DataField>
-        </Field>
-        <Field Name="gdeEndPerDebit">
-          <DataField>gdeEndPerDebit</DataField>
-        </Field>
-        <Field Name="gdeEndPerDebitFormat">
-          <DataField>gdeEndPerDebitFormat</DataField>
-        </Field>
-        <Field Name="gdeEndPerCredit">
-          <DataField>gdeEndPerCredit</DataField>
-        </Field>
-        <Field Name="gdeEndPerCreditFormat">
-          <DataField>gdeEndPerCreditFormat</DataField>
-        </Field>
-        <Field Name="gdeEndPerDebit___gdeEndPerCredit">
-          <DataField>gdeEndPerDebit___gdeEndPerCredit</DataField>
-        </Field>
-        <Field Name="gdeEndPerDebit___gdeEndPerCreditFormat">
-          <DataField>gdeEndPerDebit___gdeEndPerCreditFormat</DataField>
-        </Field>
-        <Field Name="TotalPer_Number">
-          <DataField>TotalPer_Number</DataField>
-        </Field>
-        <Field Name="gdeEndDebit">
-          <DataField>gdeEndDebit</DataField>
-        </Field>
-        <Field Name="gdeEndDebitFormat">
-          <DataField>gdeEndDebitFormat</DataField>
-        </Field>
-        <Field Name="gdeEndCredit">
-          <DataField>gdeEndCredit</DataField>
-        </Field>
-        <Field Name="gdeEndCreditFormat">
-          <DataField>gdeEndCreditFormat</DataField>
-        </Field>
-        <Field Name="STRSUBSTNO_gtcEndBalance_gdaEndDate_">
-          <DataField>STRSUBSTNO_gtcEndBalance_gdaEndDate_</DataField>
-        </Field>
-        <Field Name="gdeEndDebit___gdeEndCredit">
-          <DataField>gdeEndDebit___gdeEndCredit</DataField>
-        </Field>
-        <Field Name="gdeEndDebit___gdeEndCreditFormat">
-          <DataField>gdeEndDebit___gdeEndCreditFormat</DataField>
-        </Field>
-        <Field Name="gteGLAccDescr_Control1100162002">
-          <DataField>gteGLAccDescr_Control1100162002</DataField>
-        </Field>
-        <Field Name="STRSUBSTNO_gtcNetChange_gdaStartDate_gdaEndDate_">
-          <DataField>STRSUBSTNO_gtcNetChange_gdaStartDate_gdaEndDate_</DataField>
-        </Field>
-        <Field Name="gdeNetChangeDebit">
-          <DataField>gdeNetChangeDebit</DataField>
-        </Field>
-        <Field Name="gdeNetChangeDebitFormat">
-          <DataField>gdeNetChangeDebitFormat</DataField>
-        </Field>
-        <Field Name="gdeNetChangeCredit">
-          <DataField>gdeNetChangeCredit</DataField>
-        </Field>
-        <Field Name="gdeNetChangeCreditFormat">
-          <DataField>gdeNetChangeCreditFormat</DataField>
-        </Field>
-        <Field Name="gdeNetChangeDebit___gdeNetChangeCredit">
-          <DataField>gdeNetChangeDebit___gdeNetChangeCredit</DataField>
-        </Field>
-        <Field Name="gdeNetChangeDebit___gdeNetChangeCreditFormat">
-          <DataField>gdeNetChangeDebit___gdeNetChangeCreditFormat</DataField>
-        </Field>
-        <Field Name="TotalAcc_Number">
-          <DataField>TotalAcc_Number</DataField>
+        <Field Name="TotalAccount_Number">
+          <DataField>TotalAccount_Number</DataField>
         </Field>
       </Fields>
       <Query>

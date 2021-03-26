@@ -6,6 +6,7 @@
 codeunit 2301 "Tenant License State Impl."
 {
     Access = Internal;
+    Permissions = tabledata "Tenant License State" = r;
 
     var
         TenantLicenseStatePeriodProvider: DotNet TenantLicenseStatePeriodProvider;

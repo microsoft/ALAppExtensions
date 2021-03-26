@@ -34,6 +34,24 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
+    /// Gets the authorization token based on the authorization code via the OAuth2 v1.0 code grant flow. 
+    /// </summary>
+    /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
+    /// <param name="Certificate">The Base64-encoded certificate for the Application (client) configured in the "Azure Portal - Certificates &amp; Secrets".</param>
+    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
+    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
+    /// <param name="ResourceURL">The Application ID of the resource the application is requesting access to. This parameter can be empty.</param>
+    /// <param name="PromptInteraction">Indicates the type of user interaction that is required.</param>
+    /// <param name="AccessToken">Exit parameter containing the access token. When this parameter is empty, check the AuthCodeErr for a description of the error.</param>
+    /// <param name="AuthCodeErr">Exit parameter containing the encountered error in the authorization code grant flow. This parameter will be empty in case the token is aquired successfuly.</param>
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokenByAuthorizationCodeWithCertificate(ClientId: Text; Certificate: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; ResourceURL: Text; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var AuthCodeErr: Text)
+    begin
+        OAuth2Impl.AcquireTokenByAuthorizationCodeWithCertificate(ClientId, Certificate, OAuthAuthorityUrl, RedirectURL, ResourceURL, PromptInteraction, AccessToken, AuthCodeErr);
+    end;
+
+    /// <summary>
     /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow. 
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
@@ -55,6 +73,24 @@ codeunit 501 OAuth2
     /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow. 
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
+    /// <param name="Certificate">The Base64-encoded certificate for the application (client) configured in the "Azure Portal - Certificates &amp; Secrets".</param>
+    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
+    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
+    /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
+    /// <param name="PromptInteraction">Indicates the type of user interaction that is required.</param>
+    /// <param name="AccessToken">Exit parameter containing the access token. When this parameter is empty, check the AuthCodeErr for a description of the error.</param>
+    /// <param name="AuthCodeErr">Exit parameter containing the encountered error in the authorization code grant flow. This parameter will be empty in case the token is aquired successfuly.</param>
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokenByAuthorizationCodeWithCertificate(ClientId: Text; Certificate: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var AuthCodeErr: Text)
+    begin
+        OAuth2Impl.AcquireTokenByAuthorizationCodeWithCertificate(ClientId, Certificate, OAuthAuthorityUrl, RedirectURL, Scopes, PromptInteraction, AccessToken, AuthCodeErr);
+    end;
+
+    /// <summary>
+    /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow. 
+    /// </summary>
+    /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the "Azure Portal - Certificates &amp; Secrets".</param>
     /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -68,6 +104,25 @@ codeunit 501 OAuth2
     procedure AcquireTokensByAuthorizationCode(ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var IdToken: Text; var AuthCodeErr: Text)
     begin
         OAuth2Impl.AcquireTokensByAuthorizationCode(ClientId, ClientSecret, OAuthAuthorityUrl, RedirectURL, Scopes, PromptInteraction, AccessToken, IdToken, AuthCodeErr);
+    end;
+
+    /// <summary>
+    /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow. 
+    /// </summary>
+    /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
+    /// <param name="Certificate">The Base64-encoded certificate for the application (client) configured in the "Azure Portal - Certificates &amp; Secrets".</param>
+    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
+    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
+    /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
+    /// <param name="PromptInteraction">Indicates the type of user interaction that is required.</param>
+    /// <param name="AccessToken">Exit parameter containing the access token. When this parameter is empty, check the AuthCodeErr for a description of the error.</param>
+    /// <param name="IdToken">Exit parameter containing the id token.</param>
+    /// <param name="AuthCodeErr">Exit parameter containing the encountered error in the authorization code grant flow. This parameter will be empty in case the token is aquired successfuly.</param>
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokensByAuthorizationCodeWithCertificate(ClientId: Text; Certificate: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var IdToken: Text; var AuthCodeErr: Text)
+    begin
+        OAuth2Impl.AcquireTokensByAuthorizationCodeWithCertificate(ClientId, Certificate, OAuthAuthorityUrl, RedirectURL, Scopes, PromptInteraction, AccessToken, IdToken, AuthCodeErr);
     end;
 
     /// <summary>
@@ -93,6 +148,25 @@ codeunit 501 OAuth2
     /// Gets the access token and token cache state with authorization code flow. 
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
+    /// <param name="Certificate">The Base64-encoded certificate for the application (client) configured in the "Azure Portal - Certificates &amp; Secrets".</param>
+    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
+    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
+    /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
+    /// <param name="PromptInteraction">Indicates the type of user interaction that is required.</param>
+    /// <param name="AccessToken">Exit parameter containing the access token. When this parameter is empty, check the Error for a description of the error.</param>
+    /// <param name="TokenCache">Exit parameter containing the token cache acquired when the access token was requested.</param>
+    /// <param name="Error">Exit parameter containing the encountered error in the authorization code grant flow. This parameter will be empty in case the token is aquired successfuly.</param>
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokenAndTokenCacheByAuthorizationCodeWithCertificate(ClientId: Text; Certificate: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var TokenCache: Text; var Error: Text)
+    begin
+        OAuth2Impl.AcquireTokenAndTokenCacheByAuthorizationCodeWithCertificate(ClientId, Certificate, OAuthAuthorityUrl, RedirectURL, Scopes, PromptInteraction, AccessToken, TokenCache, Error);
+    end;
+
+    /// <summary>
+    /// Gets the access token and token cache state with authorization code flow. 
+    /// </summary>
+    /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the "Azure Portal - Certificates &amp; Secrets".</param>
     /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -107,6 +181,26 @@ codeunit 501 OAuth2
     procedure AcquireTokensAndTokenCacheByAuthorizationCode(ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var IdToken: Text; var TokenCache: Text; var Error: Text)
     begin
         OAuth2Impl.AcquireTokensAndTokenCacheByAuthorizationCode(ClientId, ClientSecret, OAuthAuthorityUrl, RedirectURL, Scopes, PromptInteraction, AccessToken, IdToken, TokenCache, Error);
+    end;
+
+    /// <summary>
+    /// Gets the access token and token cache state with authorization code flow. 
+    /// </summary>
+    /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
+    /// <param name="Certificate">The Base64-encoded certificate for the application (client) configured in the "Azure Portal - Certificates &amp; Secrets".</param>
+    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
+    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
+    /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
+    /// <param name="PromptInteraction">Indicates the type of user interaction that is required.</param>
+    /// <param name="AccessToken">Exit parameter containing the access token. When this parameter is empty, check the Error for a description of the error.</param>
+    /// <param name="IdToken">Exit parameter containing the id token.</param>
+    /// <param name="TokenCache">Exit parameter containing the token cache acquired when the access token was requested.</param>
+    /// <param name="Error">Exit parameter containing the encountered error in the authorization code grant flow. This parameter will be empty in case the token is aquired successfuly.</param>
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokensAndTokenCacheByAuthorizationCodeWithCertificate(ClientId: Text; Certificate: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var IdToken: Text; var TokenCache: Text; var Error: Text)
+    begin
+        OAuth2Impl.AcquireTokensAndTokenCacheByAuthorizationCodeWithCertificate(ClientId, Certificate, OAuthAuthorityUrl, RedirectURL, Scopes, PromptInteraction, AccessToken, IdToken, TokenCache, Error);
     end;
 
     /// <summary>
@@ -231,6 +325,22 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
+    /// Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol. 
+    /// </summary>
+    /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
+    /// <param name="Certificate">The Base64-encoded certificate for the Application (client) configured in the Azure Portal - Certificates &amp; Secrets.</param>
+    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
+    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
+    /// <param name="ResourceURL">The Application ID of the resource the application is requesting access to. This parameter can be empty.</param>
+    /// <param name="AccessToken">Exit parameter containing the access token.</param>
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireAuthorizationCodeTokenFromCacheWithCertificate(ClientId: Text; Certificate: Text; RedirectURL: Text; OAuthAuthorityUrl: Text; ResourceURL: Text; var AccessToken: Text)
+    begin
+        OAuth2Impl.AcquireTokenFromCacheWithCertificate(RedirectURL, ClientId, Certificate, OAuthAuthorityUrl, ResourceURL, AccessToken);
+    end;
+
+    /// <summary>
     /// Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol. 
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
@@ -262,6 +372,37 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
+    /// Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol. 
+    /// </summary>
+    /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
+    /// <param name="Certificate">The Base64-encoded certificate for the Application (client) configured in the Azure Portal - Certificates &amp; Secrets.</param>
+    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
+    /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
+    /// <param name="AccessToken">Exit parameter containing the access token.</param>
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireAuthorizationCodeTokenFromCacheWithCertificate(ClientId: Text; Certificate: Text; RedirectURL: Text; OAuthAuthorityUrl: Text; Scopes: List of [Text]; var AccessToken: Text)
+    begin
+        OAuth2Impl.AcquireTokenFromCacheWithCertificate(RedirectURL, ClientId, Certificate, OAuthAuthorityUrl, Scopes, AccessToken);
+    end;
+
+    /// <summary>
+    /// Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol. 
+    /// </summary>
+    /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
+    /// <param name="Certificate">The Base64-encoded certificate for the Application (client) configured in the Azure Portal - Certificates &amp; Secrets.</param>
+    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
+    /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
+    /// <param name="AccessToken">Exit parameter containing the access token.</param>
+    /// <param name="IdToken">Exit parameter containing the id token.</param>
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokensFromCacheWithCertificate(ClientId: Text; Certificate: Text; RedirectURL: Text; OAuthAuthorityUrl: Text; Scopes: List of [Text]; var AccessToken: Text; var IdToken: Text)
+    begin
+        OAuth2Impl.AcquireTokensFromCacheWithCertificate(RedirectURL, ClientId, Certificate, OAuthAuthorityUrl, Scopes, AccessToken, IdToken);
+    end;
+
+    /// <summary>
     /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
     /// </summary>
     /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
@@ -270,6 +411,7 @@ codeunit 501 OAuth2
     /// <param name="AccessToken">Exit parameter containing the access token.</param>
     /// <param name="RefreshToken">Exit parameter containing the refresh_token that you acquired when you requested an access token.</param>
     [NonDebuggable]
+    [Obsolete('Renaming to AcquireOnBehalfAccessTokenAndTokenCache', '18.0')]
     [TryFunction]
     procedure AcquireOnBehalfAccessTokenAndRefreshToken(OAuthAuthorityUrl: Text; RedirectURL: Text; ResourceURL: Text; var AccessToken: Text; var RefreshToken: Text)
     begin
@@ -301,6 +443,7 @@ codeunit 501 OAuth2
     /// <param name="AccessToken">Exit parameter containing the access token.</param>
     /// <param name="RefreshToken">Exit parameter containing the refresh_token that you acquired when you requested an access token.</param>
     [NonDebuggable]
+    [Obsolete('Renaming to AcquireOnBehalfAccessTokenAndTokenCache ', '18.0')]
     [TryFunction]
     procedure AcquireOnBehalfAccessTokenAndRefreshToken(OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text; var RefreshToken: Text)
     begin
@@ -348,6 +491,7 @@ codeunit 501 OAuth2
     /// <param name="AccessToken">Exit parameter containing the access token.</param>
     /// <param name="NewRefreshToken">Exit parameter containing the new refresh token.</param>
     [NonDebuggable]
+    [Obsolete('Renaming to AcquireOnBehalfOfTokenByTokenCache ', '18.0')]
     [TryFunction]
     procedure AcquireOnBehalfOfTokenByRefreshToken(ClientId: Text; RedirectURL: Text; ResourceURL: Text; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
     begin
@@ -381,6 +525,7 @@ codeunit 501 OAuth2
     /// <param name="AccessToken">Exit parameter containing the access token.</param>
     /// <param name="NewRefreshToken">Exit parameter containing the new refresh token.</param>
     [NonDebuggable]
+    [Obsolete('Renaming to AcquireOnBehalfOfTokenByTokenCache ', '18.0')]
     [TryFunction]
     procedure AcquireOnBehalfOfTokenByRefreshToken(ClientId: Text; RedirectURL: Text; Scopes: List of [Text]; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
     begin

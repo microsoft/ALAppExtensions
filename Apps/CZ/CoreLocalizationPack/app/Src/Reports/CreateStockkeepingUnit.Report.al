@@ -45,7 +45,7 @@ report 31069 "Create Stockkeeping Unit CZL"
                     StockkeepingUnit.DeleteAll();
                 end;
 
-                DialogWindow.Update(1, "No.");
+                WindowDialog.Update(1, "No.");
                 ItemVariant.SetRange("Item No.", "No.");
                 ItemVariant.SetFilter(Code, GetFilter("Variant Filter"));
                 case true of
@@ -54,7 +54,7 @@ report 31069 "Create Stockkeeping Unit CZL"
                      (not ItemVariant.Find('-'))):
                         if Location.FindSet() then
                             repeat
-                                DialogWindow.Update(2, Location.Code);
+                                WindowDialog.Update(2, Location.Code);
                                 SetRange("Location Filter", Location.Code);
                                 CreateSKUIfRequired(Item, Location.Code, '');
                             until Location.Next() = 0;
@@ -63,18 +63,18 @@ report 31069 "Create Stockkeeping Unit CZL"
                      (not Location.Find('-'))):
                         if ItemVariant.FindSet() then
                             repeat
-                                DialogWindow.Update(3, ItemVariant.Code);
+                                WindowDialog.Update(3, ItemVariant.Code);
                                 SetRange("Variant Filter", ItemVariant.Code);
                                 CreateSKUIfRequired(Item, '', ItemVariant.Code);
                             until ItemVariant.Next() = 0;
                     (SKUCreationMethod = SKUCreationMethod::"Location & Variant"):
                         if Location.FindSet() then
                             repeat
-                                DialogWindow.Update(2, Location.Code);
+                                WindowDialog.Update(2, Location.Code);
                                 SetRange("Location Filter", Location.Code);
                                 if ItemVariant.FindSet() then
                                     repeat
-                                        DialogWindow.Update(3, ItemVariant.Code);
+                                        WindowDialog.Update(3, ItemVariant.Code);
                                         SetRange("Variant Filter", ItemVariant.Code);
                                         CreateSKUIfRequired(Item, Location.Code, ItemVariant.Code);
                                     until ItemVariant.Next() = 0;
@@ -84,7 +84,7 @@ report 31069 "Create Stockkeeping Unit CZL"
 
             trigger OnPostDataItem()
             begin
-                DialogWindow.Close();
+                WindowDialog.Close();
                 Message(CreatedFromTemplateMsg, SKUCounter);
             end;
 
@@ -94,7 +94,7 @@ report 31069 "Create Stockkeeping Unit CZL"
 
                 Location.SetRange("Use As In-Transit", false);
 
-                DialogWindow.Open(
+                WindowDialog.Open(
                   ItemTxt +
                   LocationTxt +
                   VariantTxt);
@@ -154,7 +154,7 @@ report 31069 "Create Stockkeeping Unit CZL"
         ItemTxt: Label 'Item No.       #1##################\', Comment = '%1 = Item No.';
         LocationTxt: Label 'Location Code  #2########\', Comment = '%1 = Location Code';
         VariantTxt: Label 'Variant Code   #3########\', Comment = '%1 = Variant Code';
-        DialogWindow: Dialog;
+        WindowDialog: Dialog;
         SKUCreationMethod: Option Location,Variant,"Location & Variant";
         ItemInInventoryOnly: Boolean;
         ReplacePreviousSKUs: Boolean;
@@ -165,38 +165,38 @@ report 31069 "Create Stockkeeping Unit CZL"
         SKUCounter: Integer;
         CreatedFromTemplateMsg: Label '%1 Stockkeeping Units was created.', Comment = '%1 = Count of created SKUs';
 
-    procedure CreateSKUIfRequired(var Item2: Record Item; LocationCode: Code[10]; VariantCode: Code[10])
+    procedure CreateSKUIfRequired(var StockkeepingUnitItem: Record Item; LocationCode: Code[10]; VariantCode: Code[10])
     var
         StockkeepingUnitTemplateCZL: Record "Stockkeeping Unit Template CZL";
         ConfigTemplateHeader: Record "Config. Template Header";
         TempSkipField: Record "Field" temporary;
         ConfigTemplateManagement: Codeunit "Config. Template Management";
-        StockkeepingUnitRecRef: RecordRef;
+        StockkeepingUnitRecordRef: RecordRef;
         IsHandled: Boolean;
     begin
         IsHandled := false;
-        OnBeforeCreateSKU(Item2, LocationCode, VariantCode, ItemInInventoryOnly, IsHandled);
+        OnBeforeCreateSKU(StockkeepingUnitItem, LocationCode, VariantCode, ItemInInventoryOnly, IsHandled);
         if IsHandled then
             exit;
-        if OnlyForSKUTemplates and (not StockkeepingUnitTemplateCZL.Get(Item2."Item Category Code", LocationCode)) then
+        if OnlyForSKUTemplates and (not StockkeepingUnitTemplateCZL.Get(StockkeepingUnitItem."Item Category Code", LocationCode)) then
             exit;
 
-        Item2.CalcFields(Inventory);
-        if (ItemInInventoryOnly and (Item2.Inventory > 0)) or
+        StockkeepingUnitItem.CalcFields(Inventory);
+        if (ItemInInventoryOnly and (StockkeepingUnitItem.Inventory > 0)) or
            (not ItemInInventoryOnly)
         then
-            if not StockkeepingUnit.Get(LocationCode, Item2."No.", VariantCode) then begin
-                CreateSKU(Item2, LocationCode, VariantCode);
+            if not StockkeepingUnit.Get(LocationCode, StockkeepingUnitItem."No.", VariantCode) then begin
+                CreateSKU(StockkeepingUnitItem, LocationCode, VariantCode);
 
                 // update created SKU according to the Configuration Template
-                if StockkeepingUnitTemplateCZL.Get(Item2."Item Category Code", StockkeepingUnit."Location Code") then
+                if StockkeepingUnitTemplateCZL.Get(StockkeepingUnitItem."Item Category Code", StockkeepingUnit."Location Code") then
                     if StockkeepingUnitTemplateCZL."Configuration Template Code" <> '' then begin
                         ConfigTemplateHeader.Get(StockkeepingUnitTemplateCZL."Configuration Template Code");
                         ConfigTemplateHeader.TestField("Table ID", Database::"Stockkeeping Unit");
                         ConfigTemplateHeader.TestField(Enabled, true);
-                        StockkeepingUnitRecRef.GetTable(StockkeepingUnit);
-                        ConfigTemplateManagement.InsertTemplate(StockkeepingUnitRecRef, ConfigTemplateHeader, false, TempSkipField);
-                        StockkeepingUnitRecRef.Modify();
+                        StockkeepingUnitRecordRef.GetTable(StockkeepingUnit);
+                        ConfigTemplateManagement.InsertTemplate(StockkeepingUnitRecordRef, ConfigTemplateHeader, false, TempSkipField);
+                        StockkeepingUnitRecordRef.Modify();
                     end;
                 SKUCounter += 1;
             end;
@@ -225,21 +225,21 @@ report 31069 "Create Stockkeeping Unit CZL"
     begin
     end;
 
-    procedure CreateSKU(var Item2: Record Item; LocationCode: Code[10]; VariantCode: Code[10])
+    procedure CreateSKU(var StockkeepingUnitItem: Record Item; LocationCode: Code[10]; VariantCode: Code[10])
     begin
         StockkeepingUnit.Init();
-        StockkeepingUnit."Item No." := Item2."No.";
+        StockkeepingUnit."Item No." := StockkeepingUnitItem."No.";
         StockkeepingUnit."Location Code" := LocationCode;
         StockkeepingUnit."Variant Code" := VariantCode;
-        StockkeepingUnit.CopyFromItem(Item2);
+        StockkeepingUnit.CopyFromItem(StockkeepingUnitItem);
         StockkeepingUnit."Last Date Modified" := WorkDate();
-        StockkeepingUnit."Special Equipment Code" := Item2."Special Equipment Code";
-        StockkeepingUnit."Put-away Template Code" := Item2."Put-away Template Code";
+        StockkeepingUnit."Special Equipment Code" := StockkeepingUnitItem."Special Equipment Code";
+        StockkeepingUnit."Put-away Template Code" := StockkeepingUnitItem."Put-away Template Code";
         StockkeepingUnit.SetHideValidationDialog(true);
-        StockkeepingUnit.Validate("Phys Invt Counting Period Code", Item2."Phys Invt Counting Period Code");
-        StockkeepingUnit."Put-away Unit of Measure Code" := Item2."Put-away Unit of Measure Code";
-        StockkeepingUnit."Use Cross-Docking" := Item2."Use Cross-Docking";
-        OnBeforeStockkeepingUnitInsert(StockkeepingUnit, Item2);
+        StockkeepingUnit.Validate("Phys Invt Counting Period Code", StockkeepingUnitItem."Phys Invt Counting Period Code");
+        StockkeepingUnit."Put-away Unit of Measure Code" := StockkeepingUnitItem."Put-away Unit of Measure Code";
+        StockkeepingUnit."Use Cross-Docking" := StockkeepingUnitItem."Use Cross-Docking";
+        OnBeforeStockkeepingUnitInsert(StockkeepingUnit, StockkeepingUnitItem);
         StockkeepingUnit.Insert(true);
     end;
 

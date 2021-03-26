@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 page 11702 "Acc. Schedule File Mapping CZL"
 {
     Caption = 'Accounting Schedule File Mapping';
@@ -293,7 +292,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
             {
                 Caption = 'Export to Excel';
                 Image = ExportToExcel;
-                action(CreateNewDocument)
+                Action(CreateNewDocument)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Create New Document';
@@ -305,14 +304,14 @@ page 11702 "Acc. Schedule File Mapping CZL"
                     var
                         AccScheduleExportFileCZL: Report "Acc. Schedule Export File CZL";
                     begin
-                        AccSchedName.Get(Rec."Schedule Name");
+                        AccScheduleName.Get(Rec."Schedule Name");
                         AccScheduleExportFileCZL.SetAccSchedName(CurrentSchedName);
                         AccScheduleExportFileCZL.SetColumnLayoutName(CurrentColumnName);
                         AccScheduleExportFileCZL.SetExportAction(0);
                         AccScheduleExportFileCZL.Run();
                     end;
                 }
-                action(UpdateExistingDocument)
+                Action(UpdateExistingDocument)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Update Existing Document';
@@ -324,14 +323,14 @@ page 11702 "Acc. Schedule File Mapping CZL"
                     var
                         AccScheduleExportFileCZL: Report "Acc. Schedule Export File CZL";
                     begin
-                        AccSchedName.Get(Rec."Schedule Name");
+                        AccScheduleName.Get(Rec."Schedule Name");
                         AccScheduleExportFileCZL.SetAccSchedName(CurrentSchedName);
                         AccScheduleExportFileCZL.SetColumnLayoutName(CurrentColumnName);
                         AccScheduleExportFileCZL.SetExportAction(1);
                         AccScheduleExportFileCZL.Run();
                     end;
                 }
-                action(CreateFromTemplate)
+                Action(CreateFromTemplate)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Create from Template';
@@ -343,7 +342,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                     var
                         AccScheduleExportFileCZL: Report "Acc. Schedule Export File CZL";
                     begin
-                        AccSchedName.Get(Rec."Schedule Name");
+                        AccScheduleName.Get(Rec."Schedule Name");
                         AccScheduleExportFileCZL.SetAccSchedName(CurrentSchedName);
                         AccScheduleExportFileCZL.SetColumnLayoutName(CurrentColumnName);
                         AccScheduleExportFileCZL.SetExportAction(2);
@@ -351,7 +350,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                     end;
                 }
             }
-            action("Previous Column")
+            Action("Previous Column")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Previous Column';
@@ -367,7 +366,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                     AdjustColumnOffset(-1);
                 end;
             }
-            action("Next Column")
+            Action("Next Column")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Next Column';
@@ -390,24 +389,24 @@ page 11702 "Acc. Schedule File Mapping CZL"
         ColumnNo: Integer;
     begin
         Clear(ColumnValues);
-        AccScheduleFileMappingCZL1.Reset();
-        AccScheduleFileMappingCZL1.SetRange("Schedule Name", CurrentSchedName);
-        AccScheduleFileMappingCZL1.SetRange("Schedule Line No.", Rec."Line No.");
-        AccScheduleFileMappingCZL1.SetRange("Schedule Column Layout Name", CurrentColumnName);
+        FirstAccScheduleFileMappingCZL.Reset();
+        FirstAccScheduleFileMappingCZL.SetRange("Schedule Name", CurrentSchedName);
+        FirstAccScheduleFileMappingCZL.SetRange("Schedule Line No.", Rec."Line No.");
+        FirstAccScheduleFileMappingCZL.SetRange("Schedule Column Layout Name", CurrentColumnName);
 
         if TempColumnLayout.FindSet() then
             repeat
                 ColumnNo += 1;
                 if (ColumnNo > ColumnOffset) and (ColumnNo - ColumnOffset <= ArrayLen(ColumnValues)) then begin
-                    AccScheduleFileMappingCZL1.SetRange("Schedule Column No.", TempColumnLayout."Line No.");
-                    if AccScheduleFileMappingCZL1.FindSet() then
-                        if AccScheduleFileMappingCZL1.Count() > 1 then begin
+                    FirstAccScheduleFileMappingCZL.SetRange("Schedule Column No.", TempColumnLayout."Line No.");
+                    if FirstAccScheduleFileMappingCZL.FindSet() then
+                        if FirstAccScheduleFileMappingCZL.Count() > 1 then begin
                             repeat
-                                ColumnValues[ColumnNo - ColumnOffset] := ColumnValues[ColumnNo - ColumnOffset] + '|' + AccScheduleFileMappingCZL1."Excel Cell"
-                            until AccScheduleFileMappingCZL1.Next() = 0;
+                                ColumnValues[ColumnNo - ColumnOffset] := ColumnValues[ColumnNo - ColumnOffset] + '|' + FirstAccScheduleFileMappingCZL."Excel Cell"
+                            until FirstAccScheduleFileMappingCZL.Next() = 0;
                             ColumnValues[ColumnNo - ColumnOffset] := DelChr(ColumnValues[ColumnNo - ColumnOffset], '<', '|')
                         end else
-                            ColumnValues[ColumnNo - ColumnOffset] := AccScheduleFileMappingCZL1."Excel Cell";
+                            ColumnValues[ColumnNo - ColumnOffset] := FirstAccScheduleFileMappingCZL."Excel Cell";
                     ColumnLayout[ColumnNo - ColumnOffset] := TempColumnLayout;
                 end;
             until TempColumnLayout.Next() = 0;
@@ -415,7 +414,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
 
     trigger OnOpenPage()
     begin
-        GLSetup.Get();
+        GeneralLedgerSetup.Get();
         if NewCurrentSchedName <> '' then
             CurrentSchedName := NewCurrentSchedName;
         if CurrentSchedName = '' then
@@ -431,12 +430,12 @@ page 11702 "Acc. Schedule File Mapping CZL"
     end;
 
     var
-        AccScheduleFileMappingCZL1: Record "Acc. Schedule File Mapping CZL";
-        AccScheduleFileMappingCZL2: Record "Acc. Schedule File Mapping CZL";
+        FirstAccScheduleFileMappingCZL: Record "Acc. Schedule File Mapping CZL";
+        SecondAccScheduleFileMappingCZL: Record "Acc. Schedule File Mapping CZL";
         TempColumnLayout: Record "Column Layout" temporary;
         ColumnLayout: array[12] of Record "Column Layout";
-        AccSchedName: Record "Acc. Schedule Name";
-        GLSetup: Record "General Ledger Setup";
+        AccScheduleName: Record "Acc. Schedule Name";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         AccSchedManagement: Codeunit AccSchedManagement;
         CurrentSchedName: Code[10];
         CurrentColumnName: Code[10];
@@ -450,16 +449,16 @@ page 11702 "Acc. Schedule File Mapping CZL"
     procedure SetAccSchedName(NewAccSchedName: Code[10])
     begin
         NewCurrentSchedName := NewAccSchedName;
-        if AccSchedName.Get(NewCurrentSchedName) then
-            if AccSchedName."Default Column Layout" <> '' then
-                NewCurrentColumnName := AccSchedName."Default Column Layout";
+        if AccScheduleName.Get(NewCurrentSchedName) then
+            if AccScheduleName."Default Column Layout" <> '' then
+                NewCurrentColumnName := AccScheduleName."Default Column Layout";
     end;
 
     procedure ValidateColumn(ColumnNo: Integer)
     begin
         if ColumnValues[ColumnNo] <> '' then begin
-            Clear(AccScheduleFileMappingCZL2);
-            AccScheduleFileMappingCZL2.TestRowColumn(ColumnValues[ColumnNo]);
+            Clear(SecondAccScheduleFileMappingCZL);
+            SecondAccScheduleFileMappingCZL.TestRowColumn(ColumnValues[ColumnNo]);
         end;
     end;
 
@@ -468,26 +467,25 @@ page 11702 "Acc. Schedule File Mapping CZL"
         TempColumnLayout := ColumnLayout[ColumnNo];
 
         if ColumnValues[ColumnNo] <> '' then begin
-            AccScheduleFileMappingCZL2.Init();
-            AccScheduleFileMappingCZL2."Schedule Name" := CurrentSchedName;
-            AccScheduleFileMappingCZL2."Schedule Line No." := Rec."Line No.";
-            AccScheduleFileMappingCZL2."Schedule Column Layout Name" := CurrentColumnName;
-            AccScheduleFileMappingCZL2."Schedule Column No." := TempColumnLayout."Line No.";
-            AccScheduleFileMappingCZL2.Validate("Excel Cell", ColumnValues[ColumnNo]);
-            if AccScheduleFileMappingCZL2.Insert() then;
+            SecondAccScheduleFileMappingCZL.Init();
+            SecondAccScheduleFileMappingCZL."Schedule Name" := CurrentSchedName;
+            SecondAccScheduleFileMappingCZL."Schedule Line No." := Rec."Line No.";
+            SecondAccScheduleFileMappingCZL."Schedule Column Layout Name" := CurrentColumnName;
+            SecondAccScheduleFileMappingCZL."Schedule Column No." := TempColumnLayout."Line No.";
+            SecondAccScheduleFileMappingCZL.Validate("Excel Cell", ColumnValues[ColumnNo]);
+            if SecondAccScheduleFileMappingCZL.Insert() then;
         end;
     end;
 
     local procedure DrillDown(ColumnNo: Integer)
     begin
         TempColumnLayout := ColumnLayout[ColumnNo];
-
-        AccScheduleFileMappingCZL1.Reset();
-        AccScheduleFileMappingCZL1.SetRange("Schedule Name", CurrentSchedName);
-        AccScheduleFileMappingCZL1.SetRange("Schedule Line No.", Rec."Line No.");
-        AccScheduleFileMappingCZL1.SetRange("Schedule Column Layout Name", CurrentColumnName);
-        AccScheduleFileMappingCZL1.SetRange("Schedule Column No.", TempColumnLayout."Line No.");
-        Page.RunModal(Page::"File Mapping CZL", AccScheduleFileMappingCZL1);
+        FirstAccScheduleFileMappingCZL.Reset();
+        FirstAccScheduleFileMappingCZL.SetRange("Schedule Name", CurrentSchedName);
+        FirstAccScheduleFileMappingCZL.SetRange("Schedule Line No.", Rec."Line No.");
+        FirstAccScheduleFileMappingCZL.SetRange("Schedule Column Layout Name", CurrentColumnName);
+        FirstAccScheduleFileMappingCZL.SetRange("Schedule Column No.", TempColumnLayout."Line No.");
+        Page.RunModal(Page::"File Mapping CZL", FirstAccScheduleFileMappingCZL);
         CurrPage.Update(false);
     end;
 
@@ -513,8 +511,8 @@ page 11702 "Acc. Schedule File Mapping CZL"
     begin
         OldColumnOffset := ColumnOffset;
         ColumnOffset := ColumnOffset + Delta;
-        if ColumnOffset + 12 > TempColumnLayout.Count then
-            ColumnOffset := TempColumnLayout.Count - 12;
+        if ColumnOffset + 12 > TempColumnLayout.Count() then
+            ColumnOffset := TempColumnLayout.Count() - 12;
         if ColumnOffset < 0 then
             ColumnOffset := 0;
         if ColumnOffset <> OldColumnOffset then begin
@@ -527,11 +525,11 @@ page 11702 "Acc. Schedule File Mapping CZL"
     begin
         CurrPage.SaveRecord();
         AccSchedManagement.SetName(CurrentSchedName, Rec);
-        if AccSchedName.Get(CurrentSchedName) then
-            if (AccSchedName."Default Column Layout" <> '') and
-               (CurrentColumnName <> AccSchedName."Default Column Layout")
+        if AccScheduleName.Get(CurrentSchedName) then
+            if (AccScheduleName."Default Column Layout" <> '') and
+               (CurrentColumnName <> AccScheduleName."Default Column Layout")
             then begin
-                CurrentColumnName := AccSchedName."Default Column Layout";
+                CurrentColumnName := AccScheduleName."Default Column Layout";
                 AccSchedManagement.CopyColumnsToTemp(CurrentColumnName, TempColumnLayout);
                 AccSchedManagement.SetColumnName(CurrentColumnName, TempColumnLayout);
             end;

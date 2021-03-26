@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 page 31108 "Statutory Reporting Setup CZL"
 {
     ApplicationArea = Basic, Suite;
@@ -210,6 +209,91 @@ page 31108 "Statutory Reporting Setup CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the number of tax authority.';
+                }
+            }
+            group(Intrastat)
+            {
+                Caption = 'Intrastat';
+
+                field("Transaction Type Mandatory"; Rec."Transaction Type Mandatory")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies this option to make transaction type specification mandatory.';
+                }
+                field("Transaction Spec. Mandatory"; Rec."Transaction Spec. Mandatory")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies if you are using a mandatory transaction specification for reporting.';
+                }
+                field("Transport Method Mandatory"; Rec."Transport Method Mandatory")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies this option to make transport method specification mandatory.';
+                }
+                field("Shipment Method Mandatory"; Rec."Shipment Method Mandatory")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies this option to make shipment method specification mandatory.';
+                }
+                field("Tariff No. Mandatory"; Rec."Tariff No. Mandatory")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies this option to make tariff number specification mandatory.';
+                }
+                field("Net Weight Mandatory"; Rec."Net Weight Mandatory")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the possibility to select intrastat item''s net weight.';
+                }
+                field("Country/Region of Origin Mand."; Rec."Country/Region of Origin Mand.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies to determine the item''s country/region of origin information.';
+                }
+                field("No Item Charges in Intrastat"; Rec."No Item Charges in Intrastat")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether item charges will be included in Intrastat reports. Select this option if no item charges will be included.';
+                }
+                field("Get Tariff No. From"; Rec."Get Tariff No. From")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the source for the item''s tariff number for Intrastat declaration.';
+                }
+                field("Get Net Weight From"; Rec."Get Net Weight From")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the source for the item''s net weight for Intrastat declaration.';
+                }
+                field("Get Country/Region of Origin"; Rec."Get Country/Region of Origin")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the source for the item''s Country/Region of Origin for Intrastat declaration.';
+                }
+                field("Intrastat Rounding Type"; Rec."Intrastat Rounding Type")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the rounding type for amount calculation for Intrastat declaration.';
+                }
+                field("Stat. Value Reporting"; Rec."Stat. Value Reporting")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies type of statistical value calculation for Intrastat declaration.';
+                }
+                field("Cost Regulation %"; Rec."Cost Regulation %")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies percentage of cost regulation for statistical value calculation for Intrastat declaration when Stat. Value reporting is set to Percentage.';
+                }
+                field("Include other Period add.Costs"; Rec."Include other Period add.Costs")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies setup for statistical value calculation for Intrastat declaration.';
+                }
+                field("Intrastat Declaration Nos."; Rec."Intrastat Declaration Nos.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies declaration number series of intrastat.';
                 }
             }
             group("VAT Statement")

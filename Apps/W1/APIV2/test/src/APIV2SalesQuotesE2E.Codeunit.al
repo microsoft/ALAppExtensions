@@ -21,9 +21,6 @@ codeunit 139823 "APIV2 - Sales Quotes E2E"
         LibrarySmallBusiness: Codeunit "Library - Small Business";
         LibraryERM: Codeunit "Library - ERM";
         QuoteServiceNameTxt: Label 'salesQuotes';
-        CustomerIdFieldTxt: Label 'customerId';
-        CustomerNameFieldTxt: Label 'customerName';
-        CustomerNumberFieldTxt: Label 'customerNumber';
         DiscountAmountFieldTxt: Label 'discountAmount';
         ActionSendTxt: Label 'Microsoft.NAV.send', Locked = true;
         ActionMakeInvoiceTxt: Label 'Microsoft.NAV.makeInvoice', Locked = true;

@@ -7,6 +7,10 @@ codeunit 1289 "OAuth Impl."
     Access = Internal;
     SingleInstance = false;
 
+    var
+        TelemetrySecurityTok: Label 'AL Security', Locked = true;
+        WeakHashFunctionTxt: Label 'Use of weak hash function', Locked = true;
+
     [TryFunction]
     [NonDebuggable]
     procedure GetRequestToken(ConsumerKey: Text; ConsumerSecret: Text; RequestTokenUrl: Text; CallbackUrl: Text; var AccessTokenKey: Text; var AccessTokenSecret: Text)
@@ -72,6 +76,7 @@ codeunit 1289 "OAuth Impl."
             RequestMethod::DELETE:
                 AuthorizationHeader := OAuthAuthorization.GetAuthorizationHeader(RequestUrl, 'DELETE');
         end;
+        Session.LogMessage('0000ED2', WeakHashFunctionTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetrySecurityTok);
     end;
 
 }

@@ -110,9 +110,6 @@ page 30022 "APIV2 - Dimension Set Lines"
     end;
 
     trigger OnDeleteRecord(): Boolean
-    var
-        ParentIdFilter: Text;
-        ParentTypeFilter: Text;
     begin
         Delete(true);
         SaveDimensions(GetFilter("Parent Id"), GetFilter("Parent Type"));
@@ -206,16 +203,14 @@ page 30022 "APIV2 - Dimension Set Lines"
         ValueIdOrValueCodeShouldBeFilledErr: Label 'The "valueId" or "valueCode" field must be filled in.', Comment = 'valueId and valueCode are field names and should not be translated.';
         IdAndCodeCannotBeModifiedErr: Label 'The "id" and "code" fields cannot be modified.', Comment = 'id and code are field names and should not be translated.';
         ParentDoesntExistErr: Label 'Parent with ID %1 does not exist.', Comment = '%1 = Parent id';
-        RecordDoesntExistErr: Label 'Could not find the record.';
         DimensionFieldsDontMatchErr: Label 'The dimension field values do not match to a specific Dimension.';
         DimensionIdDoesNotMatchADimensionErr: Label 'The "id" does not match to a Dimension.', Comment = 'id is a field name and should not be translated.';
         DimensionCodeDoesNotMatchADimensionErr: Label 'The "code" does not match to a Dimension.', Comment = 'id is a field name and should not be translated.';
-        DimensionValueFieldsDontMatchErr: Label 'The values of the "dimensionCode" field and the "dimensionId"" field do not refer to the same Dimension Value.', Comment = 'dimensionCode and dimensionId are field names and should not be translated.';
+        DimensionValueFieldsDontMatchErr: Label 'The values of the "dimensionCode" field and the "dimensionId" field do not refer to the same Dimension Value.', Comment = 'dimensionCode and dimensionId are field names and should not be translated.';
         DimensionValueIdDoesNotMatchADimensionValueErr: Label 'The "valueId" does not match to a Dimension Value.', Comment = 'valueId is a field name and should not be translated.';
         DimensionValueCodeDoesNotMatchADimensionValueErr: Label 'The "valueCode" does not match to a Dimension Value.', Comment = 'valueCode is a field name and should not be translated.';
         RecordAlreadyExistErr: Label 'The dimension set line already exists. Check existing dimension set lines and the default dimension set lines on the parent.';
         ParentDoesNotExistOrReadOnlyErr: Label 'Parent with ID %1 does not exist or dimension set lines are read only for parent type %2.', Comment = '%1 = Parent id, %2 = Parent type';
-
 
     local procedure LoadLinesFromFilter(ParentIdFilter: Text; ParentTypeFilter: Text; IsInsert: Boolean): Boolean
     var
@@ -380,6 +375,12 @@ page 30022 "APIV2 - Dimension Set Lines"
             DimensionSetEntryBufferParentType::"Purchase Receipt Line":
                 if PurchRcptLine.GetBySystemId(ParentIdFilter) then
                     exit(PurchRcptLine."Dimension Set ID");
+            DimensionSetEntryBufferParentType::"Purchase Order":
+                if PurchaseHeader.GetBySystemId(ParentIdFilter) then
+                    exit(PurchaseHeader."Dimension Set ID");
+            DimensionSetEntryBufferParentType::"Purchase Order Line":
+                if PurchaseLine.GetBySystemId(ParentIdFilter) then
+                    exit(PurchaseLine."Dimension Set ID");
         end;
         ErrorMsg := StrSubstNo(ParentDoesntExistErr, ParentIdFilter);
         Error(ErrorMsg);
@@ -397,7 +398,6 @@ page 30022 "APIV2 - Dimension Set Lines"
         SalesInvoiceHeader: Record "Sales Invoice Header";
         PurchInvEntityAggregate: Record "Purch. Inv. Entity Aggregate";
         PurchInvHeader: Record "Purch. Inv. Header";
-        GLEntry: Record "G/L Entry";
         TimeSheetDetail: Record "Time Sheet Detail";
         SalesLine: Record "Sales Line";
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
@@ -567,6 +567,22 @@ page 30022 "APIV2 - Dimension Set Lines"
                         PurchaseInvLine.Modify(true);
                         exit;
                     end;
+                end;
+            DimensionSetEntryBufferParentType::"Purchase Order":
+                if PurchaseHeader.GetBySystemId(ParentIdFilter) then begin
+                    PurchaseHeader."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
+                    DimensionManagement.UpdateGlobalDimFromDimSetID(
+                        PurchaseHeader."Dimension Set ID", PurchaseHeader."Shortcut Dimension 1 Code", PurchaseHeader."Shortcut Dimension 2 Code");
+                    PurchaseHeader.Modify(true);
+                    exit;
+                end;
+            DimensionSetEntryBufferParentType::"Purchase Order Line":
+                if PurchaseLine.GetBySystemId(ParentIdFilter) then begin
+                    PurchaseLine."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
+                    DimensionManagement.UpdateGlobalDimFromDimSetID(
+                        PurchaseLine."Dimension Set ID", PurchaseLine."Shortcut Dimension 1 Code", PurchaseLine."Shortcut Dimension 2 Code");
+                    PurchaseLine.Modify(true);
+                    exit;
                 end;
         end;
         ErrorMsg := StrSubstNo(ParentDoesNotExistOrReadOnlyErr, ParentIdFilter, ParentTypeFilter);

@@ -58,6 +58,13 @@ page 4512 "SMTP Account"
                 ToolTip = 'Specifies the name of the SMTP server.';
                 ShowMandatory = true;
                 NotBlank = true;
+
+                trigger OnValidate()
+                begin
+                    SetProperties();
+                    if AuthActionsVisible then
+                        Message(EveryUserShouldPressAuthenticateMsg);
+                end;
             }
 
             field(ServerPort; Rec."Server Port")
@@ -77,14 +84,16 @@ page 4512 "SMTP Account"
 
                 trigger OnValidate()
                 begin
-                    AuthenticationOnAfterValidate();
+                    SetProperties();
+                    if AuthActionsVisible then
+                        Message(EveryUserShouldPressAuthenticateMsg);
                 end;
             }
 
             field(UserName; Rec."User Name")
             {
                 ApplicationArea = All;
-                Visible = UserIDEditable;
+                Editable = UserIDEditable;
                 Caption = 'User Name';
                 ToolTip = 'Specifies the username to use when authenticating with the SMTP server.';
             }
@@ -93,7 +102,7 @@ page 4512 "SMTP Account"
             {
                 ApplicationArea = All;
                 Caption = 'Password';
-                Visible = PasswordEditable;
+                Editable = PasswordEditable;
                 ExtendedDatatype = Masked;
                 ToolTip = 'Specifies the password of the SMTP server.';
 
@@ -138,9 +147,39 @@ page 4512 "SMTP Account"
 
                         SMTPConnectorImpl.ApplyOffice365Smtp(Rec);
 
-                        AuthenticationOnAfterValidate();
+                        SetProperties();
                         CurrPage.Update();
                     end
+                end;
+            }
+            action("Authenticate with OAuth 2.0")
+            {
+                Caption = 'Authenticate';
+                ApplicationArea = All;
+                Image = LinkWeb;
+                ToolTip = 'Authenticate with your Exchange Online account.';
+                Visible = AuthActionsVisible;
+
+                trigger OnAction()
+                var
+                    OAuth2SMTPAuthentication: Codeunit "OAuth2 SMTP Authentication";
+                begin
+                    OAuth2SMTPAuthentication.AuthenticateWithOAuth2();
+                end;
+            }
+            action("Check OAuth 2.0 authentication")
+            {
+                Caption = 'Verify Authentication';
+                ApplicationArea = All;
+                Image = Confirm;
+                ToolTip = 'Verify that OAuth 2.0 authentication was successful.';
+                Visible = AuthActionsVisible;
+
+                trigger OnAction()
+                var
+                    OAuth2SMTPAuthentication: Codeunit "OAuth2 SMTP Authentication";
+                begin
+                    OAuth2SMTPAuthentication.CheckOAuth2Authentication();
                 end;
             }
         }
@@ -154,28 +193,27 @@ page 4512 "SMTP Account"
         PasswordEditable: Boolean;
         [InDataSet]
         Password: Text;
+        [InDataSet]
+        AuthActionsVisible: Boolean;
         ConfirmApplyO365Qst: Label 'Do you want to override the current data?';
-
-    trigger OnInit()
-    begin
-        UserIDEditable := true;
-        PasswordEditable := true;
-    end;
+        EveryUserShouldPressAuthenticateMsg: Label 'Before people can send email they must authenticate their email account. They can do that by choosing the Authenticate action on the SMTP Account page.';
 
     trigger OnOpenPage()
-    var
     begin
         Rec.SetCurrentKey(Name);
 
         if not IsNullGuid(Rec."Password Key") then
             Password := '***';
 
-        AuthenticationOnAfterValidate();
+        SetProperties();
     end;
 
-    local procedure AuthenticationOnAfterValidate()
+    local procedure SetProperties()
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        UserIDEditable := Rec.Authentication = Rec.Authentication::Basic;
+        UserIDEditable := (Rec.Authentication = Rec.Authentication::Basic) or (Rec.Authentication = Rec.Authentication::"OAuth 2.0");
         PasswordEditable := Rec.Authentication = Rec.Authentication::Basic;
+        AuthActionsVisible := (not EnvironmentInformation.IsSaaSInfrastructure()) and (Rec.Authentication = Rec.Authentication::"OAuth 2.0") and (Rec.Server = SMTPConnectorImpl.GetO365SmtpServer());
     end;
 }

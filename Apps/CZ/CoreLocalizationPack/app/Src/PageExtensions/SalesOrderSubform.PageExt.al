@@ -17,5 +17,14 @@ pageextension 11790 "Sales Order Subform CZL" extends "Sales Order Subform"
                 Visible = false;
             }
         }
+        addafter("Bin Code")
+        {
+            field("Country/Reg. of Orig. Code CZL"; Rec."Country/Reg. of Orig. Code CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the origin country/region code.';
+                Visible = false;
+            }
+        }
     }
 }

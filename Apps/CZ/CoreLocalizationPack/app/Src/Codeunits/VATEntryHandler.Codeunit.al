@@ -13,11 +13,28 @@ codeunit 11741 "VAT Entry Handler CZL"
         VATEntry."VAT Date CZL" := GenJournalLine."VAT Date CZL";
         VATEntry."Original Doc. VAT Date CZL" := GenJournalLine."Original Doc. VAT Date CZL";
         VATEntry."EU 3-Party Intermed. Role CZL" := GenJournalLine."EU 3-Party Intermed. Role CZL";
+        VATEntry."VAT Delay CZL" := GenJournalLine."VAT Delay CZL";
+        VATEntry."Registration No. CZL" := GenJournalLine."Registration No. CZL";
+        VATEntry."Tax Registration No. CZL" := GenJournalLine."Tax Registration No. CZL";
+        if VATEntry."Bill-to/Pay-to No." = '' then
+            VATEntry."Bill-to/Pay-to No." := GenJournalLine."Original Doc. Partner No. CZL";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"VAT Entry - Edit", 'OnBeforeVATEntryModify', '', false, false)]
     local procedure EditEU3PartyIntermedRoleOnBeforeVATEntryModify(var VATEntry: Record "VAT Entry"; FromVATEntry: Record "VAT Entry")
     begin
         VATEntry."EU 3-Party Intermed. Role CZL" := FromVATEntry."EU 3-Party Intermed. Role CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnInsertVATOnAfterAssignVATEntryFields', '', false, false)]
+    local procedure SetVATIdentifierCZLOnInsertVATOnAfterAssignVATEntryFields(GenJnlLine: Record "Gen. Journal Line"; var VATEntry: Record "VAT Entry")
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        if GenJnlLine."Gen. Posting Type" = GenJnlLine."Gen. Posting Type"::" " then
+            exit;
+        if not VATPostingSetup.Get(GenJnlLine."VAT Bus. Posting Group", GenJnlLine."VAT Prod. Posting Group") then
+            exit;
+        VATEntry."VAT Identifier CZL" := VATPostingSetup."VAT Identifier";
     end;
 }

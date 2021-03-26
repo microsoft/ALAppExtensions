@@ -8,6 +8,7 @@
 /// </summary>
 enum 9203 "Barcode Font Provider" implements "Barcode Font Provider"
 {
+    Access = Public;
     Extensible = true;
 
     /// <summary>

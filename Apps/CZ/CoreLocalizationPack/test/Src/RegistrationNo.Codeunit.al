@@ -5,10 +5,7 @@ codeunit 148051 "Registration No. CZL"
     TestPermissions = Disabled;
 
     var
-        RegNoSrvConfig: Record "Reg. No. Srv Config";
-        RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
         RegistrationLogCZL: Record "Registration Log CZL";
-        VATRegNoSrvConfig: Record "VAT Reg. No. Srv Config";
         LibrarySales: Codeunit "Library - Sales";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryMarketing: Codeunit "Library - Marketing";
@@ -16,8 +13,6 @@ codeunit 148051 "Registration No. CZL"
         isInitialized: Boolean;
 
     local procedure Initialize();
-    var
-        RegLookupExtDataCZL: Codeunit "Reg. Lookup Ext. Data CZL";
     begin
         RegistrationLogCZL.Reset();
         RegistrationLogCZL.DeleteAll();
@@ -25,23 +20,6 @@ codeunit 148051 "Registration No. CZL"
 
         if isInitialized then
             exit;
-
-        RegNoSrvConfig.DeleteAll();
-        if RegNoServiceConfigCZL.FindFirst() then begin
-            RegNoServiceConfigCZL.Enabled := true;
-            RegNoServiceConfigCZL."Service Endpoint" := RegLookupExtDataCZL.GetRegistrationNoValidationWebServiceURL();
-            RegNoServiceConfigCZL.Modify();
-        end else begin
-            RegNoServiceConfigCZL.Init();
-            RegNoServiceConfigCZL.Enabled := true;
-            RegNoServiceConfigCZL."Service Endpoint" := RegLookupExtDataCZL.GetRegistrationNoValidationWebServiceURL();
-            RegNoServiceConfigCZL.Insert();
-        end;
-
-        if VATRegNoSrvConfig.Get() then begin
-            VATRegNoSrvConfig.Enabled := false;
-            VATRegNoSrvConfig.Modify();
-        end;
 
         isInitialized := true;
         Commit();

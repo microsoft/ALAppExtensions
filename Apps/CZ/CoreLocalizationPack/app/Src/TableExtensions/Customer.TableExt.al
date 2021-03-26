@@ -34,7 +34,32 @@ tableextension 11701 "Customer CZL" extends Customer
                 RegistrationNoMgtCZL.CheckTaxRegistrationNo("Tax Registration No. CZL", "No.", Database::Customer);
             end;
         }
+        field(31070; "Transaction Type CZL"; Code[10])
+        {
+            Caption = 'Transaction Type';
+            TableRelation = "Transaction Type";
+            DataClassification = CustomerContent;            
+        }
+        field(31071; "Transaction Specification CZL"; Code[10])
+        {
+            Caption = 'Transaction Specification';
+            TableRelation = "Transaction Specification";
+            DataClassification = CustomerContent;            
+        }
+        field(31072; "Transport Method CZL"; Code[10])
+        {
+            Caption = 'Transport Method';
+            TableRelation = "Transport Method";
+            DataClassification = CustomerContent;            
+        }
     }
+    keys
+    {
+        key(Key11700; "Registration No. CZL")
+        {
+        }
+    }
+
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
         RegistrationNoMgtCZL: Codeunit "Registration No. Mgt. CZL";
@@ -53,17 +78,17 @@ tableextension 11701 "Customer CZL" extends Customer
 
     procedure GetLinkedVendorCZL(): Code[20]
     var
-        ContBusRel: Record "Contact Business Relation";
+        ContactBusinessRelation: Record "Contact Business Relation";
     begin
-        ContBusRel.SetCurrentKey("Link to Table", "No.");
-        ContBusRel.SetRange("Link to Table", ContBusRel."Link to Table"::Customer);
-        ContBusRel.SetRange("No.", "No.");
-        if ContBusRel.FindFirst() then begin
-            ContBusRel.SetRange("Contact No.", ContBusRel."Contact No.");
-            ContBusRel.SetRange("Link to Table", ContBusRel."Link to Table"::Vendor);
-            ContBusRel.SetRange("No.");
-            if ContBusRel.FindFirst() then
-                exit(ContBusRel."No.");
+        ContactBusinessRelation.SetCurrentKey("Link to Table", "No.");
+        ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Customer);
+        ContactBusinessRelation.SetRange("No.", "No.");
+        if ContactBusinessRelation.FindFirst() then begin
+            ContactBusinessRelation.SetRange("Contact No.", ContactBusinessRelation."Contact No.");
+            ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Vendor);
+            ContactBusinessRelation.SetRange("No.");
+            if ContactBusinessRelation.FindFirst() then
+                exit(ContactBusinessRelation."No.");
         end;
     end;
 }

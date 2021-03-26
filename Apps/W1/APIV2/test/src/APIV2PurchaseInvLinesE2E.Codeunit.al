@@ -12,7 +12,6 @@ codeunit 139838 "APIV2 - Purchase Inv Lines E2E"
 
     var
         Assert: Codeunit "Assert";
-        SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
         SalesInvLinesE2E: Codeunit "APIV2 - Sales Inv. Lines E2E";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryUtility: Codeunit "Library - Utility";
@@ -467,7 +466,7 @@ codeunit 139838 "APIV2 - Purchase Inv Lines E2E"
         Vendor: Record "Vendor";
         PageRecordRef: RecordRef;
         ApiRecordRef: RecordRef;
-        PurchaseInvoice: TestPage 51;
+        PurchaseInvoice: TestPage "Purchase Invoice";
         ResponseText: Text;
         TargetURL: Text;
         InvoiceLineJSON: Text;
@@ -866,7 +865,6 @@ codeunit 139838 "APIV2 - Purchase Inv Lines E2E"
         ResponseText: Text;
         TargetURL: Text;
         InvoiceLineJSON: Text;
-        LineNoFromJSON: Text;
         InvoiceID: Text;
     begin
         // [SCENARIO] POST a new line to an unposted Invoice with wrong item variant
@@ -947,7 +945,7 @@ codeunit 139838 "APIV2 - Purchase Inv Lines E2E"
         exit(LineJSON);
     end;
 
-    local procedure CreateInvoiceAndLinesThroughPage(var PurchaseInvoice: TestPage 51; VendorNo: Text; ItemNo: Text; ItemQuantity: Integer)
+    local procedure CreateInvoiceAndLinesThroughPage(var PurchaseInvoice: TestPage "Purchase Invoice"; VendorNo: Text; ItemNo: Text; ItemQuantity: Integer)
     begin
         PurchaseInvoice.OpenNew();
         PurchaseInvoice."Document Date".SetValue(WorkDate());

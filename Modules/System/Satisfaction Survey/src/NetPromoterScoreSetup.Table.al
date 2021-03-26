@@ -26,6 +26,7 @@ table 1432 "Net Promoter Score Setup"
         {
             ObsoleteReason = 'This field is not needed and it is not used anymore.';
             ObsoleteState = Removed;
+            ObsoleteTag = '18.0';
         }
         field(5; "Request Timeout"; Integer)
         {

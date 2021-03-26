@@ -29,12 +29,9 @@ codeunit 11787 "VAT Stmt XML Export Helper CZL"
         SettlementNoFilterTok: Label 'SettlementNoFilter', Locked = true;
         NoTaxTok: Label 'NoTax', Locked = true;
         UseAmtsInAddCurrTok: Label 'UseAmtsInAddCurr', Locked = true;
-        ParametersOptionsPathTxt: Label '/ReportParameters/Options', Locked = true;
-        XmlNodeNotFoundErr: Label 'XML node %1 cannot be found.', Comment = '%1=NodePath';
         VATControlReportNoTok: Label 'VATControlReportNo', Locked = true;
         FastAppelReactionTok: Label 'FastAppelReaction', Locked = true;
         AppelDocumentNoTok: Label 'AppelDocumentNo', Locked = true;
-        VATCtrlReportFormatTok: Label 'VATCtrlReportFormat', Locked = true;
 
     procedure GetParametersXmlDoc(Parameters: Text; var ParametersXmlDoc: XmlDocument);
     var
@@ -91,12 +88,12 @@ codeunit 11787 "VAT Stmt XML Export Helper CZL"
     procedure GetReportRequestPageParameters(ReportID: Integer) XMLTxt: Text
     var
         ObjectOptions: Record "Object Options";
-        InStr: InStream;
+        XMLTxtInStream: InStream;
     begin
         if ObjectOptions.Get(LastUsedTxt, ReportID, ObjectOptions."Object Type"::Report, UserId, CompanyName) then begin
             ObjectOptions.CalcFields("Option Data");
-            ObjectOptions."Option Data".CreateInStream(InStr);
-            InStr.ReadText(XMLTxt);
+            ObjectOptions."Option Data".CreateInStream(XMLTxtInStream);
+            XMLTxtInStream.ReadText(XMLTxt);
         end else
             XMLTxt := CreateReportRequestPageParameters(ReportID);
         exit(XMLTxt);
@@ -130,7 +127,7 @@ codeunit 11787 "VAT Stmt XML Export Helper CZL"
     procedure SaveReportRequestPageParameters(ReportID: Integer; XMLText: Text)
     var
         ObjectOptions: Record "Object Options";
-        OutStr: OutStream;
+        ReportOutStream: OutStream;
     begin
         if XMLText = '' then
             exit;
@@ -144,8 +141,8 @@ codeunit 11787 "VAT Stmt XML Export Helper CZL"
         ObjectOptions."User Name" := CopyStr(UserId, 1, MaxStrLen(ObjectOptions."User Name"));
         ObjectOptions."Company Name" := CopyStr(CompanyName, 1, MaxStrLen(ObjectOptions."Company Name"));
         ObjectOptions."Created By" := CopyStr(UserId, 1, MaxStrLen(ObjectOptions."Created By"));
-        ObjectOptions."Option Data".CreateOutStream(OutStr);
-        OutStr.WriteText(XMLText);
+        ObjectOptions."Option Data".CreateOutStream(ReportOutStream);
+        ReportOutStream.WriteText(XMLText);
         ObjectOptions.Insert();
     end;
 
@@ -194,19 +191,19 @@ codeunit 11787 "VAT Stmt XML Export Helper CZL"
     procedure EncodeAttachmentsToXML(var TempBlob: Codeunit "Temp Blob"; AttachmentXPath: Text; AttachmentNodeName: Text; VATStatementAttachmentCZL: Record "VAT Statement Attachment CZL")
     var
         XMLDoc: XmlDocument;
-        InStr: InStream;
-        OutStr: OutStream;
+        XMLDocInStream: InStream;
+        XMLDocOutStream: OutStream;
         ReadOptions: XmlReadOptions;
         WriteOptions: XmlWriteOptions;
     begin
-        TempBlob.CreateInStream(InStr, TextEncoding::UTF8);
+        TempBlob.CreateInStream(XMLDocInStream, TextEncoding::UTF8);
         ReadOptions.PreserveWhitespace := true;
-        XMLDocument.ReadFrom(InStr, ReadOptions, XMLDoc);
+        XMLDocument.ReadFrom(XMLDocInStream, ReadOptions, XMLDoc);
         if FillAttachmentsContent(XMLDoc, AttachmentXPath, AttachmentNodeName, VATStatementAttachmentCZL) then begin
             Clear(TempBlob);
             WriteOptions.PreserveWhitespace := true;
-            TempBlob.CreateOutStream(OutStr, TextEncoding::UTF8);
-            XMLDoc.WriteTo(WriteOptions, OutStr);
+            TempBlob.CreateOutStream(XMLDocOutStream, TextEncoding::UTF8);
+            XMLDoc.WriteTo(WriteOptions, XMLDocOutStream);
         end;
     end;
 
@@ -235,11 +232,11 @@ codeunit 11787 "VAT Stmt XML Export Helper CZL"
     local procedure AddEncodedFile(var AttachmentNode: XmlNode; var AttachmentTempBlob: Codeunit "Temp Blob") Result: Boolean
     var
         Base64Convert: Codeunit "Base64 Convert";
-        InStr: InStream;
+        InStream: InStream;
         XmlCDataSection: XmlCData;
     begin
-        AttachmentTempBlob.CreateInStream(InStr);
-        XmlCDataSection := XmlCData.Create(Base64Convert.ToBase64(InStr, true));
+        AttachmentTempBlob.CreateInStream(InStream);
+        XmlCDataSection := XmlCData.Create(Base64Convert.ToBase64(InStream, true));
         AttachmentNode.AsXmlElement().Add(XMLCDATASection);
         Result := true;
     end;

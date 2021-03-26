@@ -6,12 +6,15 @@
 /// <summary>
 /// Stores information about properties changed for users in Office 365 in-memory.
 /// </summary>
+#pragma warning disable AS0039
 table 9010 "Azure AD User Update Buffer"
 {
     Caption = 'Azure AD User Updates';
-    DataPerCompany = false;
     ReplicateData = false;
     Access = Internal;
+#pragma warning disable AS0034
+    TableType = Temporary;
+#pragma warning restore AS0034
 
     fields
     {
@@ -113,3 +116,4 @@ table 9010 "Azure AD User Update Buffer"
         }
     }
 }
+#pragma warning restore AS0039

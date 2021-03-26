@@ -14,6 +14,7 @@ codeunit 149002 "BCPT Role Wrapper"
         BCPTHeader: Record "BCPT Header";
         NoOfInsertedLogEntries: Integer;
         AccumulatedWaitTimeMs: Integer;
+        WasSuccess: Boolean;
         ScenarioLbl: Label 'Scenario';
 
     trigger OnRun();
@@ -26,6 +27,8 @@ codeunit 149002 "BCPT Role Wrapper"
             exit;
         SetBCPTLine(Rec);
 
+        NoOfInsertedLogEntries := 0;
+        AccumulatedWaitTimeMs := 0;
         PoissonLimit := 0;
         InitializeBCPTLineForRun(Rec, BCPTHeader, PoissonLimit);
         SetBCPTHeader(BCPTHeader);
@@ -122,7 +125,8 @@ codeunit 149002 "BCPT Role Wrapper"
         TestMethodLine."Line Type" := TestMethodLine."Line Type"::Codeunit;
         TestMethodLine."Skip Logging Results" := true;
         TestMethodLine."Test Codeunit" := BCPTLine."Codeunit ID";
-        exit(TestRunnerIsolDisabled.Run(TestMethodLine));
+        WasSuccess := true; // init in case the event subscriber is not called
+        exit(TestRunnerIsolDisabled.Run(TestMethodLine) and WasSuccess);  // WasSuccess is set in an eventsubscriber
     end;
 
     internal procedure GetScenarioLbl(): Text[100]
@@ -200,5 +204,11 @@ codeunit 149002 "BCPT Role Wrapper"
     [InternalEvent(false)]
     procedure OnBeforeExecuteIteration(var BCPTHeader: Record "BCPT Header"; var BCPTLine: Record "BCPT Line"; var SkipDelay: Boolean)
     begin
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Test Runner - Mgt", 'OnAfterTestMethodRun', '', false, false)]
+    local procedure OnAfterTestMethodRun(var CurrentTestMethodLine: Record "Test Method Line"; CodeunitID: Integer; CodeunitName: Text[30]; FunctionName: Text[128]; FunctionTestPermissions: TestPermissions; IsSuccess: Boolean)
+    begin
+        WasSuccess := IsSuccess;
     end;
 }

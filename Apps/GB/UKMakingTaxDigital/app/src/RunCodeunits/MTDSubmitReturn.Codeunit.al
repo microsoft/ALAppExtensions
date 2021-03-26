@@ -6,7 +6,7 @@
 codeunit 10532 "MTD Submit Return"
 {
     TableNo = "VAT Report Header";
-    Permissions = tabledata 747 = d;
+    Permissions = TableData "VAT Report Archive" = d;
 
     trigger OnRun()
     var

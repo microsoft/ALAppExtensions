@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31175 "Sync.Dep.Fld-VATEntry CZL"
 {
@@ -23,7 +24,6 @@ codeunit 31175 "Sync.Dep.Fld-VATEntry CZL"
         SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
         PreviousRecordRef: RecordRef;
         DepFieldTxt, NewFieldTxt : Text;
-        DepFieldInt, NewFieldInt : Integer;
     begin
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
@@ -35,3 +35,4 @@ codeunit 31175 "Sync.Dep.Fld-VATEntry CZL"
         Rec."VAT Settlement No. CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."VAT Settlement No. CZL"));
     end;
 }
+#endif

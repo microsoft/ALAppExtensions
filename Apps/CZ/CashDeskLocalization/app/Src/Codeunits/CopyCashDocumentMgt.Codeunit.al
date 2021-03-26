@@ -2,7 +2,7 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
 {
     var
         Currency: Record Currency;
-        ErrorMessageMgt: Codeunit "Error Message Management";
+        ErrorMessageManagement: Codeunit "Error Message Management";
         ConfirmManagement: Codeunit "Confirm Management";
         CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         CashDocType: Option "Cash Document","Posted Cash Document";
@@ -98,8 +98,8 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
         end;
 
         LinesNotCopied := 0;
-        ErrorMessageMgt.Activate(ErrorMessageHandler);
-        ErrorMessageMgt.PushContext(ErrorContextElement, ToCashDocumentHeaderCZP.RecordId, 0, StrSubstNo(CashErrorContextMsg, FromDocNo));
+        ErrorMessageManagement.Activate(ErrorMessageHandler);
+        ErrorMessageManagement.PushContext(ErrorContextElement, ToCashDocumentHeaderCZP.RecordId, 0, StrSubstNo(CashErrorContextMsg, FromDocNo));
         case FromDocType of
             CashDocType::"Cash Document":
                 begin
@@ -132,17 +132,17 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
                     CashDocumentReleaseCZP.Reopen(ToCashDocumentHeaderCZP);
                 end;
 
-        if ErrorMessageMgt.GetLastErrorID() > 0 then
+        if ErrorMessageManagement.GetLastErrorID() > 0 then
             ErrorMessageHandler.NotifyAboutErrors();
     end;
 
-    local procedure GetLastToCashDocLineNo(ToCashDocHeader: Record "Cash Document Header CZP"): Decimal
+    local procedure GetLastToCashDocLineNo(ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"): Decimal
     var
         ToCashDocumentLineCZP: Record "Cash Document Line CZP";
     begin
         ToCashDocumentLineCZP.LockTable();
-        ToCashDocumentLineCZP.SetRange("Cash Desk No.", ToCashDocHeader."Cash Desk No.");
-        ToCashDocumentLineCZP.SetRange("Cash Document No.", ToCashDocHeader."No.");
+        ToCashDocumentLineCZP.SetRange("Cash Desk No.", ToCashDocumentHeaderCZP."Cash Desk No.");
+        ToCashDocumentLineCZP.SetRange("Cash Document No.", ToCashDocumentHeaderCZP."No.");
         if ToCashDocumentLineCZP.FindLast() then
             exit(ToCashDocumentLineCZP."Line No.");
         exit(0);
@@ -296,16 +296,16 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
 
     local procedure InsertOldCashDocNoLine(ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; OldDocNo: Code[20]; OldCashDeskNo: Code[20]; var NextLineNo: Integer)
     var
-        ToCashDocumentLineCZP2: Record "Cash Document Line CZP";
+        NewCashDocumentLineCZP: Record "Cash Document Line CZP";
         TwoPlaceholdersTok: Label '%1 %2:', Locked = true;
     begin
         NextLineNo += 10000;
-        ToCashDocumentLineCZP2.Init();
-        ToCashDocumentLineCZP2."Line No." := NextLineNo;
-        ToCashDocumentLineCZP2."Cash Desk No." := ToCashDocumentHeaderCZP."Cash Desk No.";
-        ToCashDocumentLineCZP2."Cash Document No." := ToCashDocumentHeaderCZP."No.";
-        ToCashDocumentLineCZP2.Description := StrSubstNo(TwoPlaceholdersTok, OldCashDeskNo, OldDocNo);
-        ToCashDocumentLineCZP2.Insert();
+        NewCashDocumentLineCZP.Init();
+        NewCashDocumentLineCZP."Line No." := NextLineNo;
+        NewCashDocumentLineCZP."Cash Desk No." := ToCashDocumentHeaderCZP."Cash Desk No.";
+        NewCashDocumentLineCZP."Cash Document No." := ToCashDocumentHeaderCZP."No.";
+        NewCashDocumentLineCZP.Description := StrSubstNo(TwoPlaceholdersTok, OldCashDeskNo, OldDocNo);
+        NewCashDocumentLineCZP.Insert();
     end;
 
     local procedure InitCurrency(CurrencyCode: Code[10])

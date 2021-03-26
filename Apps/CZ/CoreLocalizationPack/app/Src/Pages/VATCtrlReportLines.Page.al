@@ -127,7 +127,7 @@ page 31116 "VAT Ctrl. Report Lines CZL"
                 field(Name; Rec.Name)
                 {
                     ApplicationArea = VAT;
-                    ToolTip = 'Specifies name of whse. net change template list';
+                    ToolTip = 'Specifies the customer''s name.';
                 }
                 field("Birth Date"; Rec."Birth Date")
                 {

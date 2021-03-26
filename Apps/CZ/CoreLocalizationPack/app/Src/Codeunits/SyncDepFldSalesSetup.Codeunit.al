@@ -3,7 +3,7 @@ codeunit 31163 "Sync.Dep.Fld-SalesSetup CZL"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '17.0';
+    ObsoleteTag = '18.0';
 
     [EventSubscriber(ObjectType::Table, Database::"Sales & Receivables Setup", 'OnBeforeInsertEvent', '', false, false)]
     local procedure SyncOnBeforeInsertSalesSetup(var Rec: Record "Sales & Receivables Setup")
@@ -32,5 +32,6 @@ codeunit 31163 "Sync.Dep.Fld-SalesSetup CZL"
         SyncDepFldUtilities.SyncFields(DepField, NewFieldInt, PreviousRecord."Default VAT Date", PreviousRecord."Default VAT Date CZL".AsInteger());
         Rec."Default VAT Date" := DepField;
         Rec."Default VAT Date CZL" := NewFieldInt;
+        SyncDepFldUtilities.SyncFields(Rec."Allow Alter Posting Groups", Rec."Allow Alter Posting Groups CZL", PreviousRecord."Allow Alter Posting Groups", PreviousRecord."Allow Alter Posting Groups CZL");
     end;
 }

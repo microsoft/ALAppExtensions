@@ -12,15 +12,19 @@ tableextension 11747 "Company Information CZL" extends "Company Information"
             var
                 BankAccount: Record "Bank Account";
             begin
-                if "Default Bank Account Code CZL" <> '' then begin
-                    BankAccount.Get("Default Bank Account Code CZL");
-                    Validate("Bank Name", BankAccount.Name);
-                    Validate("Bank Account No.", BankAccount."Bank Account No.");
-                    Validate(IBAN, BankAccount.IBAN);
-                    Validate("SWIFT Code", BankAccount."SWIFT Code");
-                    Validate("Payment Routing No.", BankAccount."Transit No.");
-                    Validate("Bank Branch No.", BankAccount."Bank Branch No.");
+                if "Default Bank Account Code CZL" = '' then begin
+                    UpdateBankInfoCZL('', '', '', '', '', '', '');
+                    exit;
                 end;
+                BankAccount.Get("Default Bank Account Code CZL");
+                UpdateBankInfoCZL(
+                  BankAccount."No.",
+                  BankAccount."Bank Account No.",
+                  BankAccount."Bank Branch No.",
+                  BankAccount.Name,
+                  BankAccount."Transit No.",
+                  BankAccount.IBAN,
+                  BankAccount."SWIFT Code");
             end;
         }
         field(11771; "Bank Branch Name CZL"; Text[100])
@@ -39,4 +43,21 @@ tableextension 11747 "Company Information CZL" extends "Company Information"
             DataClassification = CustomerContent;
         }
     }
+
+    procedure UpdateBankInfoCZL(BankAccountCode: Code[20]; BankAccountNo: Text[30]; BankBranchNo: Text[20]; BankName: Text[100]; TransitNo: Text[20]; IBANCode: Code[50]; SWIFTCode: Code[20])
+    begin
+        "Default Bank Account Code CZL" := BankAccountCode;
+        "Bank Account No." := BankAccountNo;
+        "Bank Branch No." := BankBranchNo;
+        "Bank Name" := BankName;
+        "Payment Routing No." := TransitNo;
+        "IBAN" := IBANCode;
+        "SWIFT Code" := SWIFTCode;
+        OnAfterUpdateBankInfoCZL(Rec);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateBankInfoCZL(var CompanyInformation: Record "Company Information")
+    begin
+    end;
 }

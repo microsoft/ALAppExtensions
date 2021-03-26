@@ -16,14 +16,12 @@ codeunit 134934 "Manual Setup Test"
 
     var
         Assert: Codeunit "Library Assert";
-        TestExtensionName: Text;
         TestBusinessSetupNameTxt: Text;
         TestBusinessSetupDescriptionTxt: Text;
         TestBusinessSetupNameManualTxt: Text;
         TestBusinessSetupKeywordsTxt: Text;
         TestBusinessSetupDescriptionManualTxt: Text;
         TestBusinessSetupKeywordsManualTxt: Text;
-        AppId: Guid;
 
     [Test]
     [Scope('OnPrem')]
@@ -38,20 +36,18 @@ codeunit 134934 "Manual Setup Test"
         // [Given] A subscriber that registers a manual setup and randomly initialized values
         // sets the global vars in this instance and in the subscriber instance of ManualSetupTest
         Initialize(ManualSetupTest);
-        AppId := ManualSetupTest.AddExtension();
 
         // [When] Invoke the event subscription by opening page
         ManualSetupPage.OpenView();
 
         // [Then] Verify that the first registered setup is present on the page
-        ManualSetupPage.Filter.SetFilter(Name, TestBusinessSetupNameTxt);
+        ManualSetupPage.Filter.SetFilter(Title, TestBusinessSetupNameTxt);
         ManualSetupPage.First();
         //ManualSetupPage.GoToKey(TestBusinessSetupNameTxt);
 
         Assert.AreEqual(TestBusinessSetupNameTxt, ManualSetupPage.Name.Value(), 'Page with given name is not found');
         Assert.AreEqual(TestBusinessSetupDescriptionTxt, ManualSetupPage.Description.Value(), 'Page description is not correct');
         Assert.AreEqual(TestBusinessSetupKeywordsTxt, ManualSetupPage.Keywords.Value(), 'Keywords are not correct');
-        Assert.AreEqual(TestExtensionName, ManualSetupPage.ExtensionName.Value(), 'Extension name is not correct');
 
         // [When] Open the manual setup page
         // [Then] Verify that the my manual setup page is opened
@@ -66,7 +62,7 @@ codeunit 134934 "Manual Setup Test"
     procedure TestFilteredView()
     var
         ManualSetupTest: Codeunit "Manual Setup Test";
-        ManualSetup: Codeunit "Manual Setup";
+        GuidedExperience: Codeunit "Guided Experience";
         ManualSetupCategory: Enum "Manual Setup Category";
     begin
         BindSubscription(ManualSetupTest);
@@ -75,22 +71,26 @@ codeunit 134934 "Manual Setup Test"
         Initialize(ManualSetupTest);
 
         // [When] The list is fetched
-        ManualSetup.Open(ManualSetupCategory::Uncategorized);
+        GuidedExperience.OpenManualSetupPage(ManualSetupCategory::Uncategorized);
 
         // [Then] Verificaton of records happens inside the modal form handler
     end;
 
+#if not CLEAN18
     [Test]
     [Scope('OnPrem')]
     procedure VerifyListOfPageIDs()
     var
         ManualSetupTest: Codeunit "Manual Setup Test";
         ManualSetup: Codeunit "Manual Setup";
+        AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
         PageIDs: List of [Integer];
         OldCount: Integer;
     begin
         // [Given] A subscriber that registers a manual setup and randomly initialized values
         Initialize(ManualSetupTest);
+
+        AssistedSetupTestLibrary.DeleteAll();
 
         // [When] The list is fetched
         ManualSetup.GetPageIDs(PageIDs);
@@ -106,20 +106,19 @@ codeunit 134934 "Manual Setup Test"
         // [Then] and the new entry is found
         Assert.IsTrue(PageIDs.Contains(Page::"My Manual Setup"), 'The added setup page is not in list.');
     end;
+#endif
 
     local procedure Initialize(var ManualSetupTest: Codeunit "Manual Setup Test")
     begin
-        ManualSetupTest.Initialize(TestExtensionName, TestBusinessSetupNameTxt, TestBusinessSetupDescriptionTxt, TestBusinessSetupNameManualTxt, TestBusinessSetupKeywordsTxt, TestBusinessSetupDescriptionManualTxt, TestBusinessSetupKeywordsManualTxt);
+        ManualSetupTest.Initialize(TestBusinessSetupNameTxt, TestBusinessSetupDescriptionTxt, TestBusinessSetupNameManualTxt, TestBusinessSetupKeywordsTxt, TestBusinessSetupDescriptionManualTxt, TestBusinessSetupKeywordsManualTxt);
     end;
 
-    internal procedure Initialize(var ExtensionName: Text; var BusinessSetupNameTxt: Text; var BusinessSetupDescriptionTxt: Text; var BusinessSetupNameManualTxt: Text; var BusinessSetupKeywordsTxt: Text; var BusinessSetupDescriptionManualTxt: Text; var BusinessSetupKeywordsManualTxt: Text)
+    internal procedure Initialize(var BusinessSetupNameTxt: Text; var BusinessSetupDescriptionTxt: Text; var BusinessSetupNameManualTxt: Text; var BusinessSetupKeywordsTxt: Text; var BusinessSetupDescriptionManualTxt: Text; var BusinessSetupKeywordsManualTxt: Text)
     var
         Any: Codeunit Any;
         Keywords: array[5] of Text;
         i: Integer;
     begin
-        TestExtensionName := Any.AlphabeticText(15);
-        ExtensionName := TestExtensionName;
         TestBusinessSetupNameTxt := Any.AlphabeticText(20);
         BusinessSetupNameTxt := TestBusinessSetupNameTxt;
         TestBusinessSetupDescriptionTxt := 'Gert'; //Any.AlphabeticText(20);
@@ -138,44 +137,19 @@ codeunit 134934 "Manual Setup Test"
         BusinessSetupKeywordsManualTxt := TestBusinessSetupKeywordsManualTxt;
     end;
 
-    procedure AddExtension(): Guid
-    var
-        PublishedApplication: Record "Published Application";
-        Extension: Record "Published Application";
-        TenantInformation: Codeunit "Tenant Information";
-    begin
-        PublishedApplication.FindFirst();
-        
-        AppId := CreateGuid();
-
-        Extension.Init();
-        Extension.ID := AppId;
-        Extension."Package ID" := AppId;
-        Extension."Runtime Package ID" := AppId;
-        Extension."Tenant ID" := CopyStr(TenantInformation.GetTenantId(), 1, 128);
-        Extension.Name := CopyStr(TestExtensionName, 1, 250);
-
-        // these fields needs to be filled in, just add the hash and any blob.
-        Extension."Package Hash" := PublishedApplication."Package Hash";
-        Extension.Blob := PublishedApplication.Blob;
-        Extension.Insert();
-        exit(AppId)
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
-    [Scope('OnPrem')]
-    local procedure HandleOnRegisterManualSetup(var Sender: Codeunit "Manual Setup")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', false, false)]
+    local procedure HandleOnRegisterManualSetup(var Sender: Codeunit "Guided Experience")
     var
         ManualSetupCategory: Enum "Manual Setup Category";
     begin
-        Sender.Insert(CopyStr(TestBusinessSetupNameTxt, 1, 50), CopyStr(TestBusinessSetupDescriptionTxt, 1, 250),
-          CopyStr(TestBusinessSetupKeywordsTxt, 1, 250), Page::"My Manual Setup", AppId, ManualSetupCategory::Uncategorized);
+        Sender.InsertManualSetup(CopyStr(TestBusinessSetupNameTxt, 1, 50), CopyStr(TestBusinessSetupNameTxt, 1, 50), CopyStr(TestBusinessSetupDescriptionTxt, 1, 250), 0,
+            ObjectType::Page, Page::"My Manual Setup", ManualSetupCategory::Uncategorized, CopyStr(TestBusinessSetupKeywordsTxt, 1, 250));
     end;
 
     [ModalPageHandler]
     procedure HandleManualSetup(var ManualSetup: TestPage "Manual Setup")
     begin
-        ManualSetup.GoToKey(CopyStr(TestBusinessSetupNameTxt, 1, 50));
+        ManualSetup.GoToKey('MANUAL SETUP_PAGE_134934_', 0);
     end;
 }
 

@@ -89,4 +89,16 @@ page 30063 "APIV2 - Sales Shipment Lines"
     actions
     {
     }
+
+    trigger OnOpenPage()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+    begin
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetNewSalesShipmentLineUpgradeTag()) then
+            Error(SetupNotCompletedErr);
+    end;
+
+    var
+        SetupNotCompletedErr: Label 'Data required by the API was not set up. To set up the data, invoke the action from the API Setup page.';
 }

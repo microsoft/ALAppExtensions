@@ -424,6 +424,7 @@ table 11510 "Swiss QR-Bill Buffer"
     var
         CompanyInformation: Record "Company Information";
     begin
+        OnBeforeValidateIBAN(IBAN);
         CompanyInformation.Get();
         if "IBAN Type" = "IBAN Type"::"QR-IBAN" then begin
             CompanyInformation.TestField("Swiss QR-Bill IBAN");
@@ -432,6 +433,7 @@ table 11510 "Swiss QR-Bill Buffer"
             CompanyInformation.TestField(IBAN);
             IBAN := SwissQRBillMgt.FormatIBAN(CompanyInformation.IBAN);
         end;
+        OnAfterValidateIBAN(IBAN);
     end;
 
     internal procedure SetCreditorInfo(Customer: Record Customer)
@@ -679,5 +681,15 @@ table 11510 "Swiss QR-Bill Buffer"
     begin
         "Source Record Printed" := false;
         Validate("Payment Reference", SwissQRBillMgt.GetNextReferenceNo("Payment Reference Type", false));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateIBAN(var IBAN: Code[50])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterValidateIBAN(var IBAN: Code[50])
+    begin
     end;
 }

@@ -8,74 +8,11 @@ report 11703 "Accounting Sheets CZL"
 
     dataset
     {
-        dataitem(CommonLabels; "Integer")
+        dataitem(CommonData; "Integer")
         {
             DataItemTableView = sorting(Number);
             MaxIteration = 1;
-            column(NameDescCaption; NameDescCaption)
-            {
-            }
-            column(PostingDateCaption; "Sales Invoice Header".FieldCaption("Posting Date"))
-            {
-            }
-            column(VATDateCaption; "Sales Invoice Header".FieldCaption("VAT Date CZL"))
-            {
-            }
-            column(DocumentDateCaption; "Sales Invoice Header".FieldCaption("Document Date"))
-            {
-            }
-            column(DueDateCaption; "Sales Invoice Header".FieldCaption("Due Date"))
-            {
-            }
-            column(SalesInvoiceCaption; SalesInvoiceLbl)
-            {
-            }
-            column(CustomerCaption; CustomerLbl)
-            {
-            }
-            column(RateCaption; RateLbl)
-            {
-            }
-            column(CreditAmountCaption; CreditAmountLbl)
-            {
-            }
-            column(DebitAmountCaption; DebitAmountLbl)
-            {
-            }
-            column(GLAccountCaption; GLAccountLbl)
-            {
-            }
-            column(DateCaption; DateLbl)
-            {
-            }
-            column(SalesCreditMemoCaption; SalesCreditMemoLbl)
-            {
-            }
-            column(PurchaseInvoiceCaption; PurchaseInvoiceLbl)
-            {
-            }
-            column(VendorCaption; VendorLbl)
-            {
-            }
-            column(ExternalNoCaption; ExternalNoLbl)
-            {
-            }
-            column(PurchaseCreditMemoCaption; PurchaseCreditMemoLbl)
-            {
-            }
-            column(GeneralDocumentCaption; GeneralDocumentLbl)
-            {
-            }
-            column(FactualCorrectnessVerifiedByCaption; FactualCorrectnessVerifiedByLbl)
-            {
-            }
-            column(PostedByCaption; PostedByLbl)
-            {
-            }
-            column(ApprovedByCaption; ApprovedByLbl)
-            {
-            }
-            column(FormalCorrectnessVerifiedByCaption; FormalCorrectnessVerifiedByLbl)
+            column(GroupCaption; GroupCaption)
             {
             }
             column(LastDataItem; LastDataItem)
@@ -96,51 +33,40 @@ report 11703 "Accounting Sheets CZL"
             column(GeneralDocExists; GeneralDocExists)
             {
             }
+            column(CompanyInformation_Name; CompanyInformation.Name)
+            {
+            }
+            column(GlobalDimension2CodeCaption; CaptionClassTranslate('1,1,2'))
+            {
+            }
+            column(GlobalDimension1CodeCaption; CaptionClassTranslate('1,1,1'))
+            {
+            }
             trigger OnAfterGetRecord()
             begin
+                GroupCaption := DescriptionTxt;
                 if GroupGLAccounts then
-                    NameDescCaption := GLAccountNameLbl
-                else
-                    NameDescCaption := DescriptionLbl;
+                    GroupCaption := GLAccountNameTxt
             end;
         }
-        dataitem("Sales Invoice Header"; "Sales Invoice Header")
+        dataitem(SalesInvoiceHeader; "Sales Invoice Header")
         {
             CalcFields = Amount, "Amount Including VAT";
             DataItemTableView = sorting("No.");
             RequestFilterFields = "No.", "Posting Date";
-            column(greCompanyInfo_Name; CompanyInfo.Name)
+            column(SalesInvoiceHeader_No; "No.")
             {
             }
-            column(Sales_Invoice_Header__No; "No.")
+            column(SalesInvoiceHeader_SelltoCustomerName; "Sell-to Customer Name")
             {
             }
-            column(Sales_Invoice_Header__Sell_to_Customer_Name_; "Sell-to Customer Name")
+            column(SalesInvoiceHeader_DueDate; Format("Due Date"))
             {
             }
-            column(Sales_Invoice_Header__Due_Date_; Format("Due Date"))
+            column(SalesInvoiceHeader_Amount; Amount)
             {
             }
-            column(Sales_Invoice_Header_Amount; Amount)
-            {
-            }
-            column(Amount_Including_VAT__Amount; "Amount Including VAT" - Amount)
-            {
-            }
-            column(gdeFCYRate; FCYRate)
-            {
-                DecimalPlaces = 5 : 5;
-            }
-            column(Sales_Invoice_Header__Currency_Code_; "Currency Code")
-            {
-            }
-            column(Sales_Invoice_Header__No_Caption; FieldCaption("No."))
-            {
-            }
-            column(Sales_Invoice_Header_AmountCaption; FieldCaption(Amount))
-            {
-            }
-            column(Sales_Invoice_Header__Currency_Code_Caption; FieldCaption("Currency Code"))
+            column(SalesInvoiceHeader_CurrencyCode; "Currency Code")
             {
             }
             column(SalesInvoiceHeader_PostingDate; "Posting Date")
@@ -152,18 +78,18 @@ report 11703 "Accounting Sheets CZL"
             column(SalesInvoiceHeader_DocumentDate; "Document Date")
             {
             }
-            dataitem(GLEntry1; "G/L Entry")
+            column(SalesInvoiceHeader_FCYRate; FCYRate)
+            {
+                DecimalPlaces = 5 : 5;
+            }
+            dataitem(SalesInvoiceEntry; "G/L Entry")
             {
                 DataItemLink = "Document No." = field("No.");
                 DataItemTableView = sorting("Document No.", "Posting Date");
 
                 trigger OnAfterGetRecord()
                 begin
-                    if UserSetup."User ID" <> "User ID" then
-                        if not UserSetup.Get("User ID") then
-                            UserSetup.Init();
-
-                    BufferGLEntry(GLEntry1);
+                    BufferGLEntry(SalesInvoiceEntry);
                 end;
 
                 trigger OnPreDataItem()
@@ -171,40 +97,28 @@ report 11703 "Accounting Sheets CZL"
                     SetRange("Entry No.", 1, LastGLEntry);
                 end;
             }
-            dataitem("Integer"; "Integer")
+            dataitem(SalesInvoiceBufferedEntry; "Integer")
             {
                 DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-                column(greTGLEntry__Credit_Amount_; TempGLEntry."Credit Amount")
+                column(SalesInvoiceEntry_CreditAmount; TempGLEntry."Credit Amount")
                 {
                 }
-                column(greTGLEntry__Debit_Amount_; TempGLEntry."Debit Amount")
+                column(SalesInvoiceEntry_DebitAmount; TempGLEntry."Debit Amount")
                 {
                 }
-                column(greTGLEntry__Global_Dimension_2_Code_; TempGLEntry."Global Dimension 2 Code")
+                column(SalesInvoiceEntry_GlobalDimension2Code; TempGLEntry."Global Dimension 2 Code")
                 {
                 }
-                column(greTGLEntry__Global_Dimension_1_Code_; TempGLEntry."Global Dimension 1 Code")
+                column(SalesInvoiceEntry_GlobalDimension1Code; TempGLEntry."Global Dimension 1 Code")
                 {
                 }
-                column(NameDescText1; NameDescText)
+                column(SalesInvoiceEntry_GLAccountNo; TempGLEntry."G/L Account No.")
                 {
                 }
-                column(greTGLEntry__G_L_Account_No__; TempGLEntry."G/L Account No.")
+                column(SalesInvoiceEntry_UserName; UserSetup."User Name CZL")
                 {
                 }
-                column(Sales_Invoice_Header___Posting_Date_; Format("Sales Invoice Header"."Posting Date"))
-                {
-                }
-                column(greUserSetup__User_Name_; UserSetup."User Name")
-                {
-                }
-                column(greTGLEntry__Global_Dimension_2_Code_Caption; CaptionClassTranslate('1,1,2'))
-                {
-                }
-                column(greTGLEntry__Global_Dimension_1_Code_Caption; CaptionClassTranslate('1,1,1'))
-                {
-                }
-                column(Integer_Number; Number)
+                column(SalesInvoiceEntry_GroupText; GroupText)
                 {
                 }
                 trigger OnAfterGetRecord()
@@ -214,11 +128,8 @@ report 11703 "Accounting Sheets CZL"
                     else
                         TempGLEntry.Next();
 
-                    GLAcc.Get(TempGLEntry."G/L Account No.");
-                    if GroupGLAccounts then
-                        NameDescText := GLAcc.Name
-                    else
-                        NameDescText := TempGLEntry.Description;
+                    GetUserSetup(TempGLEntry."User ID");
+                    GroupText := GetGroupText(TempGLEntry);
                 end;
 
                 trigger OnPreDataItem()
@@ -238,48 +149,33 @@ report 11703 "Accounting Sheets CZL"
 
             trigger OnPreDataItem()
             begin
-                if not "Sales Invoice Header".HasFilter then
+                if not SalesInvoiceHeader.HasFilter then
                     CurrReport.Break();
             end;
         }
-        dataitem("Sales Cr.Memo Header"; "Sales Cr.Memo Header")
+        dataitem(SalesCrMemoHeader; "Sales Cr.Memo Header")
         {
             CalcFields = Amount, "Amount Including VAT";
             DataItemTableView = sorting("No.");
             RequestFilterFields = "No.", "Posting Date";
-            column(Sales_Cr_Memo_Header__No; "No.")
+            column(SalesCrMemoHeader_No; "No.")
             {
             }
-            column(greCompanyInfo_Name_Control4; CompanyInfo.Name)
+            column(SalesCrMemoHeader_DueDate; Format("Due Date"))
             {
             }
-            column(Sales_Cr_Memo_Header__Due_Date_; Format("Due Date"))
+            column(SalesCrMemoHeader_SelltoCustomerName; "Sell-to Customer Name")
             {
             }
-            column(Sales_Cr_Memo_Header__Sell_to_Customer_Name_; "Sell-to Customer Name")
+            column(SalesCrMemoHeader_Amount; Amount)
             {
             }
-            column(Amount_Including_VAT__Amount_Control235; "Amount Including VAT" - Amount)
+            column(SalesCrMemoHeader_CurrencyCode; "Currency Code")
             {
             }
-            column(Sales_Cr_Memo_Header_Amount; Amount)
-            {
-            }
-            column(Sales_Cr_Memo_Header__Currency_Code_; "Currency Code")
-            {
-            }
-            column(gdeFCYRate_Control1100162004; FCYRate)
+            column(SalesCrMemoHeader_FCYRate; FCYRate)
             {
                 DecimalPlaces = 5 : 5;
-            }
-            column(Sales_Cr_Memo_Header__No_Caption; FieldCaption("No."))
-            {
-            }
-            column(Sales_Cr_Memo_Header_AmountCaption; FieldCaption(Amount))
-            {
-            }
-            column(Sales_Cr_Memo_Header__Currency_Code_Caption; FieldCaption("Currency Code"))
-            {
             }
             column(SalesCrMemoHeader_PostingDate; "Posting Date")
             {
@@ -290,18 +186,14 @@ report 11703 "Accounting Sheets CZL"
             column(SalesCrMemoHeader_DocumentDate; "Document Date")
             {
             }
-            dataitem(GLEntry2; "G/L Entry")
+            dataitem(SalesCrMemoEntry; "G/L Entry")
             {
                 DataItemLink = "Document No." = field("No.");
                 DataItemTableView = sorting("Document No.", "Posting Date");
 
                 trigger OnAfterGetRecord()
                 begin
-                    if UserSetup."User ID" <> "User ID" then
-                        if not UserSetup.Get("User ID") then
-                            UserSetup.Init();
-
-                    BufferGLEntry(GLEntry2);
+                    BufferGLEntry(SalesCrMemoEntry);
                 end;
 
                 trigger OnPreDataItem()
@@ -309,40 +201,28 @@ report 11703 "Accounting Sheets CZL"
                     SetRange("Entry No.", 1, LastGLEntry);
                 end;
             }
-            dataitem(Integer2; "Integer")
+            dataitem(SalesCrMemoBufferedEntry; "Integer")
             {
                 DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-                column(greTGLEntry__Credit_Amount__Control90; TempGLEntry."Credit Amount")
+                column(SalesCrMemoEntry_CreditAmount; TempGLEntry."Credit Amount")
                 {
                 }
-                column(greTGLEntry__Debit_Amount__Control91; TempGLEntry."Debit Amount")
+                column(SalesCrMemoEntry_DebitAmount; TempGLEntry."Debit Amount")
                 {
                 }
-                column(greTGLEntry__Global_Dimension_2_Code__Control106; TempGLEntry."Global Dimension 2 Code")
+                column(SalesCrMemoEntry_GlobalDimension2Code; TempGLEntry."Global Dimension 2 Code")
                 {
                 }
-                column(greTGLEntry__Global_Dimension_1_Code__Control112; TempGLEntry."Global Dimension 1 Code")
+                column(SalesCrMemoEntry_GlobalDimension1Code; TempGLEntry."Global Dimension 1 Code")
                 {
                 }
-                column(NameDescText2; NameDescText)
+                column(SalesCrMemoEntry_GLAccountNo; TempGLEntry."G/L Account No.")
                 {
                 }
-                column(greTGLEntry__G_L_Account_No___Control115; TempGLEntry."G/L Account No.")
+                column(SalesCrMemoEntry_UserName; UserSetup."User Name CZL")
                 {
                 }
-                column(Sales_Cr_Memo_Header___Posting_Date_; Format("Sales Cr.Memo Header"."Posting Date"))
-                {
-                }
-                column(greUserSetup__User_Name__Control310; UserSetup."User Name")
-                {
-                }
-                column(greTGLEntry__Global_Dimension_2_Code__Control106Caption; CaptionClassTranslate('1,1,2'))
-                {
-                }
-                column(greTGLEntry__Global_Dimension_1_Code__Control112Caption; CaptionClassTranslate('1,1,1'))
-                {
-                }
-                column(Integer2_Number; Number)
+                column(SalesCrMemoEntry_GroupText; GroupText)
                 {
                 }
                 trigger OnAfterGetRecord()
@@ -352,11 +232,8 @@ report 11703 "Accounting Sheets CZL"
                     else
                         TempGLEntry.Next();
 
-                    GLAcc.Get(TempGLEntry."G/L Account No.");
-                    if GroupGLAccounts then
-                        NameDescText := GLAcc.Name
-                    else
-                        NameDescText := TempGLEntry.Description;
+                    GetUserSetup(TempGLEntry."User ID");
+                    GroupText := GetGroupText(TempGLEntry);
                 end;
 
                 trigger OnPreDataItem()
@@ -376,73 +253,54 @@ report 11703 "Accounting Sheets CZL"
 
             trigger OnPreDataItem()
             begin
-                if not "Sales Cr.Memo Header".HasFilter then
+                if not SalesCrMemoHeader.HasFilter then
                     CurrReport.Break();
             end;
         }
-        dataitem("Purch. Inv. Header"; "Purch. Inv. Header")
+        dataitem(PurchInvHeader; "Purch. Inv. Header")
         {
             CalcFields = Amount, "Amount Including VAT";
             DataItemTableView = sorting("No.");
             RequestFilterFields = "No.", "Posting Date";
-            column(Purch__Inv__Header__No; "No.")
+            column(PurchInvHeader_No; "No.")
             {
             }
-            column(greCompanyInfo_Name_Control32; CompanyInfo.Name)
+            column(PurchInvHeader_DueDate; Format("Due Date"))
             {
             }
-            column(Purch__Inv__Header__Due_Date_; Format("Due Date"))
+            column(PurchInvHeader_BuyfromVendorName; "Buy-from Vendor Name")
             {
             }
-            column(Purch__Inv__Header__Buy_from_Vendor_Name_; "Buy-from Vendor Name")
+            column(PurchInvHeader_VendorInvoiceNo; "Vendor Invoice No.")
             {
             }
-            column(Purch__Inv__Header__Vendor_Invoice_No__; "Vendor Invoice No.")
+            column(PurchInvHeader_Amount; Amount)
             {
             }
-            column(Purch__Inv__Header_Amount; Amount)
+            column(PurchInvHeader_CurrencyCode; "Currency Code")
             {
             }
-            column(Amount_Including_VAT__Amount_Control241; "Amount Including VAT" - Amount)
-            {
-            }
-            column(Purch__Inv__Header__Currency_Code_; "Currency Code")
-            {
-            }
-            column(gdeFCYRate_Control1100162009; FCYRate)
+            column(PurchInvHeader_FCYRate; FCYRate)
             {
                 DecimalPlaces = 5 : 5;
             }
-            column(Purch__Inv__Header__No_Caption; FieldCaption("No."))
+            column(PurchInvHeader_PostingDate; "Posting Date")
             {
             }
-            column(Purch__Inv__Header_AmountCaption; FieldCaption(Amount))
+            column(PurchInvHeader_VATDate; "VAT Date CZL")
             {
             }
-            column(Purch__Inv__Header__Currency_Code_Caption; FieldCaption("Currency Code"))
+            column(PurchInvHeader_DocumentDate; "Document Date")
             {
             }
-            column(PurchInvoiceHeader_PostingDate; "Posting Date")
-            {
-            }
-            column(PurchInvoiceHeader_VATDate; "VAT Date CZL")
-            {
-            }
-            column(PurchInvoiceHeader_DocumentDate; "Document Date")
-            {
-            }
-            dataitem(GLEntry3; "G/L Entry")
+            dataitem(PurchInvEntry; "G/L Entry")
             {
                 DataItemLink = "Document No." = field("No.");
                 DataItemTableView = sorting("Document No.", "Posting Date");
 
                 trigger OnAfterGetRecord()
                 begin
-                    if UserSetup."User ID" <> "User ID" then
-                        if not UserSetup.Get("User ID") then
-                            UserSetup.Init();
-
-                    BufferGLEntry(GLEntry3);
+                    BufferGLEntry(PurchInvEntry);
                 end;
 
                 trigger OnPreDataItem()
@@ -450,40 +308,28 @@ report 11703 "Accounting Sheets CZL"
                     SetRange("Entry No.", 1, LastGLEntry);
                 end;
             }
-            dataitem(Integer3; "Integer")
+            dataitem(PurchInvBufferedEntry; "Integer")
             {
                 DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-                column(greTGLEntry__Credit_Amount__Control331; TempGLEntry."Credit Amount")
+                column(PurchInvEntry_CreditAmount; TempGLEntry."Credit Amount")
                 {
                 }
-                column(greTGLEntry__Debit_Amount__Control332; TempGLEntry."Debit Amount")
+                column(PurchInvEntry_DebitAmount; TempGLEntry."Debit Amount")
                 {
                 }
-                column(greTGLEntry__Global_Dimension_2_Code__Control334; TempGLEntry."Global Dimension 2 Code")
+                column(PurchInvEntry_GlobalDimension2Code; TempGLEntry."Global Dimension 2 Code")
                 {
                 }
-                column(greTGLEntry__Global_Dimension_1_Code__Control335; TempGLEntry."Global Dimension 1 Code")
+                column(PurchInvEntry_GlobalDimension1Code; TempGLEntry."Global Dimension 1 Code")
                 {
                 }
-                column(NameDescText3; NameDescText)
+                column(PurchInvEntry_GLAccountNo; TempGLEntry."G/L Account No.")
                 {
                 }
-                column(greTGLEntry__G_L_Account_No___Control338; TempGLEntry."G/L Account No.")
+                column(PurchInvEntry_UserName; UserSetup."User Name CZL")
                 {
                 }
-                column(Purch__Inv__Header___Posting_Date_; Format("Purch. Inv. Header"."Posting Date"))
-                {
-                }
-                column(greUserSetup__User_Name__Control352; UserSetup."User Name")
-                {
-                }
-                column(greTGLEntry__Global_Dimension_2_Code__Control334Caption; CaptionClassTranslate('1,1,2'))
-                {
-                }
-                column(greTGLEntry__Global_Dimension_1_Code__Control335Caption; CaptionClassTranslate('1,1,1'))
-                {
-                }
-                column(Integer3_Number; Number)
+                column(PurchInvEntry_GroupText; GroupText)
                 {
                 }
                 trigger OnAfterGetRecord()
@@ -493,11 +339,8 @@ report 11703 "Accounting Sheets CZL"
                     else
                         TempGLEntry.Next();
 
-                    GLAcc.Get(TempGLEntry."G/L Account No.");
-                    if GroupGLAccounts then
-                        NameDescText := GLAcc.Name
-                    else
-                        NameDescText := TempGLEntry.Description;
+                    GetUserSetup(TempGLEntry."User ID");
+                    GroupText := GetGroupText(TempGLEntry);
                 end;
 
                 trigger OnPreDataItem()
@@ -517,73 +360,54 @@ report 11703 "Accounting Sheets CZL"
 
             trigger OnPreDataItem()
             begin
-                if not "Purch. Inv. Header".HasFilter then
+                if not PurchInvHeader.HasFilter then
                     CurrReport.Break();
             end;
         }
-        dataitem("Purch. Cr. Memo Hdr."; "Purch. Cr. Memo Hdr.")
+        dataitem(PurchCrMemoHdr; "Purch. Cr. Memo Hdr.")
         {
             CalcFields = Amount, "Amount Including VAT";
             DataItemTableView = sorting("No.");
             RequestFilterFields = "No.", "Posting Date";
-            column(Purch__Cr__Memo_Hdr__No; "No.")
+            column(PurchCrMemoHdr_No; "No.")
             {
             }
-            column(greCompanyInfo_Name_Control35; CompanyInfo.Name)
+            column(PurchCrMemoHdr_DueDate; Format("Due Date"))
             {
             }
-            column(Purch__Cr__Memo_Hdr___Due_Date_; Format("Due Date"))
+            column(PurchCrMemoHdr_BuyfromVendorName; "Buy-from Vendor Name")
             {
             }
-            column(Purch__Cr__Memo_Hdr___Buy_from_Vendor_Name_; "Buy-from Vendor Name")
+            column(PurchCrMemoHdr_VendorCrMemoNo; "Vendor Cr. Memo No.")
             {
             }
-            column(Purch__Cr__Memo_Hdr___Vendor_Cr__Memo_No__; "Vendor Cr. Memo No.")
+            column(PurchCrMemoHdr_Amount; Amount)
             {
             }
-            column(Purch__Cr__Memo_Hdr__Amount; Amount)
-            {
-            }
-            column(Amount_Including_VAT__Amount_Control245; "Amount Including VAT" - Amount)
-            {
-            }
-            column(gdeFCYRate_Control1100162011; FCYRate)
+            column(PurchCrMemoHdr_FCYRate; FCYRate)
             {
                 DecimalPlaces = 5 : 5;
             }
-            column(Purch__Cr__Memo_Hdr___Currency_Code_; "Currency Code")
+            column(PurchCrMemoHdr_CurrencyCode; "Currency Code")
             {
             }
-            column(Purch__Cr__Memo_Hdr__No_Caption; FieldCaption("No."))
+            column(PurchCrMemoHdr_PostingDate; "Posting Date")
             {
             }
-            column(Purch__Cr__Memo_Hdr__AmountCaption; FieldCaption(Amount))
+            column(PurchCrMemoHdr_VATDate; "VAT Date CZL")
             {
             }
-            column(Purch__Cr__Memo_Hdr___Currency_Code_Caption; FieldCaption("Currency Code"))
+            column(PurchCrMemoHdr_DocumentDate; "Document Date")
             {
             }
-            column(PurchCrMemoHeader_PostingDate; "Posting Date")
-            {
-            }
-            column(PurchCrMemoHeader_VATDate; "VAT Date CZL")
-            {
-            }
-            column(PurchCrMemoHeader_DocumentDate; "Document Date")
-            {
-            }
-            dataitem(GLEntry4; "G/L Entry")
+            dataitem(PurchCrMemoEntry; "G/L Entry")
             {
                 DataItemLink = "Document No." = field("No.");
                 DataItemTableView = sorting("Document No.", "Posting Date");
 
                 trigger OnAfterGetRecord()
                 begin
-                    if UserSetup."User ID" <> "User ID" then
-                        if not UserSetup.Get("User ID") then
-                            UserSetup.Init();
-
-                    BufferGLEntry(GLEntry4);
+                    BufferGLEntry(PurchCrMemoEntry);
                 end;
 
                 trigger OnPreDataItem()
@@ -591,40 +415,28 @@ report 11703 "Accounting Sheets CZL"
                     SetRange("Entry No.", 1, LastGLEntry);
                 end;
             }
-            dataitem(Integer4; "Integer")
+            dataitem(PurchCrMemoBufferedEntry; "Integer")
             {
                 DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-                column(greTGLEntry__Credit_Amount__Control373; TempGLEntry."Credit Amount")
+                column(PurchCrMemoEntry_CreditAmount; TempGLEntry."Credit Amount")
                 {
                 }
-                column(greTGLEntry__Debit_Amount__Control374; TempGLEntry."Debit Amount")
+                column(PurchCrMemoEntry_DebitAmount; TempGLEntry."Debit Amount")
                 {
                 }
-                column(greTGLEntry__Global_Dimension_2_Code__Control376; TempGLEntry."Global Dimension 2 Code")
+                column(PurchCrMemoEntry_GlobalDimension2Code; TempGLEntry."Global Dimension 2 Code")
                 {
                 }
-                column(greTGLEntry__Global_Dimension_1_Code__Control377; TempGLEntry."Global Dimension 1 Code")
+                column(PurchCrMemoEntry_GlobalDimension1Code; TempGLEntry."Global Dimension 1 Code")
                 {
                 }
-                column(NameDescText4; NameDescText)
+                column(PurchCrMemoEntry_GLAccountNo; TempGLEntry."G/L Account No.")
                 {
                 }
-                column(greTGLEntry__G_L_Account_No___Control380; TempGLEntry."G/L Account No.")
+                column(PurchCrMemoEntry_UserName; UserSetup."User Name CZL")
                 {
                 }
-                column(Purch__Cr__Memo_Hdr____Posting_Date_; Format("Purch. Cr. Memo Hdr."."Posting Date"))
-                {
-                }
-                column(greUserSetup__User_Name__Control394; UserSetup."User Name")
-                {
-                }
-                column(greTGLEntry__Global_Dimension_2_Code__Control376Caption; CaptionClassTranslate('1,1,2'))
-                {
-                }
-                column(greTGLEntry__Global_Dimension_1_Code__Control377Caption; CaptionClassTranslate('1,1,1'))
-                {
-                }
-                column(Integer4_Number; Number)
+                column(PurchCrMemoEntry_GroupText; GroupText)
                 {
                 }
                 trigger OnAfterGetRecord()
@@ -634,11 +446,8 @@ report 11703 "Accounting Sheets CZL"
                     else
                         TempGLEntry.Next();
 
-                    GLAcc.Get(TempGLEntry."G/L Account No.");
-                    if GroupGLAccounts then
-                        NameDescText := GLAcc.Name
-                    else
-                        NameDescText := TempGLEntry.Description;
+                    GetUserSetup(TempGLEntry."User ID");
+                    GroupText := GetGroupText(TempGLEntry);
                 end;
 
                 trigger OnPreDataItem()
@@ -658,7 +467,7 @@ report 11703 "Accounting Sheets CZL"
 
             trigger OnPreDataItem()
             begin
-                if not "Purch. Cr. Memo Hdr.".HasFilter then
+                if not PurchCrMemoHdr.HasFilter then
                     CurrReport.Break();
             end;
         }
@@ -667,36 +476,17 @@ report 11703 "Accounting Sheets CZL"
             DataItemTableView = sorting("Document No.", "Posting Date");
             RequestFilterFields = "Document No.", "Posting Date";
             RequestFilterHeading = 'General Document';
-            column(greCompanyInfo_Name_Control14; CompanyInfo.Name)
+            column(GeneralDoc_DocumentNo; "Document No.")
             {
             }
-            column(GeneralDoc__Document_No; "Document No.")
-            {
-            }
-            column(greTGLEntry__Global_Dimension_2_Code__Control104Caption; CaptionClassTranslate('1,1,2'))
-            {
-            }
-            column(greTGLEntry__Global_Dimension_1_Code__Control107Caption; CaptionClassTranslate('1,1,1'))
-            {
-            }
-            column(GeneralDoc__Document_No_Caption; FieldCaption("Document No."))
-            {
-            }
-            column(GeneralDoc_Entry_No_; "Entry No.")
-            {
-            }
-            dataitem(GLEntry5; "G/L Entry")
+            dataitem(GeneralDocEntry; "G/L Entry")
             {
                 DataItemLink = "Document No." = field("Document No.");
                 DataItemTableView = sorting("Document No.", "Posting Date");
 
                 trigger OnAfterGetRecord()
                 begin
-                    if UserSetup."User ID" <> "User ID" then
-                        if not UserSetup.Get("User ID") then
-                            UserSetup.Init();
-
-                    BufferGLEntry(GLEntry5);
+                    BufferGLEntry(GeneralDocEntry);
                 end;
 
                 trigger OnPreDataItem()
@@ -704,37 +494,34 @@ report 11703 "Accounting Sheets CZL"
                     SetRange("Entry No.", 1, LastGLEntry);
                 end;
             }
-            dataitem(Integer5; "Integer")
+            dataitem(GeneralDocBufferedEntry; "Integer")
             {
                 DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-                column(greTGLEntry__Credit_Amount__Control98; TempGLEntry."Credit Amount")
+                column(GeneralDocEntry_CreditAmount; TempGLEntry."Credit Amount")
                 {
                 }
-                column(greTGLEntry__Debit_Amount__Control99; TempGLEntry."Debit Amount")
+                column(GeneralDocEntry_DebitAmount; TempGLEntry."Debit Amount")
                 {
                 }
-                column(greTGLEntry__Global_Dimension_2_Code__Control104; TempGLEntry."Global Dimension 2 Code")
+                column(GeneralDocEntry_GlobalDimension2Code; TempGLEntry."Global Dimension 2 Code")
                 {
                 }
-                column(greTGLEntry__Global_Dimension_1_Code__Control107; TempGLEntry."Global Dimension 1 Code")
+                column(GeneralDocEntry_GlobalDimension1Code; TempGLEntry."Global Dimension 1 Code")
                 {
                 }
-                column(greTGLEntry_Description; TempGLEntry.Description)
+                column(GeneralDocEntry_Description; TempGLEntry.Description)
                 {
                 }
-                column(NameDescText5; NameDescText)
+                column(GeneralDocEntry_GLAccountNo; TempGLEntry."G/L Account No.")
                 {
                 }
-                column(greTGLEntry__G_L_Account_No___Control127; TempGLEntry."G/L Account No.")
+                column(GeneralDocEntry_PostingDate; Format(TempGLEntry."Posting Date"))
                 {
                 }
-                column(greTGLEntry__Posting_Date_; Format(TempGLEntry."Posting Date"))
+                column(GeneralDocEntry_UserName; UserSetup."User Name CZL")
                 {
                 }
-                column(greUserSetup__User_Name__Control55; UserSetup."User Name")
-                {
-                }
-                column(Integer5_Number; Number)
+                column(GeneralDocEntry_GroupText; GroupText)
                 {
                 }
                 trigger OnAfterGetRecord()
@@ -744,11 +531,8 @@ report 11703 "Accounting Sheets CZL"
                     else
                         TempGLEntry.Next();
 
-                    GLAcc.Get(TempGLEntry."G/L Account No.");
-                    if GroupGLAccounts then
-                        NameDescText := GLAcc.Name
-                    else
-                        NameDescText := TempGLEntry.Description;
+                    GetUserSetup(TempGLEntry."User ID");
+                    GroupText := GetGroupText(TempGLEntry);
                 end;
 
                 trigger OnPreDataItem()
@@ -793,6 +577,37 @@ report 11703 "Accounting Sheets CZL"
             }
         }
     }
+
+    labels
+    {
+        SalesInvoiceLbl = '(Sales Invoice)';
+        SalesCreditMemoLbl = '(Sales Credit Memo)';
+        PurchaseInvoiceLbl = '(Purchase Invoice)';
+        PurchaseCreditMemoLbl = '(Purchase Credit Memo)';
+        GeneralDocumentLbl = '(General Document)';
+        CustomerLbl = 'Customer';
+        VendorLbl = 'Vendor';
+        DateLbl = 'Date:';
+        RateLbl = 'Rate';
+        CreditAmountLbl = 'Credit Amount';
+        DebitAmountLbl = 'Debit Amount';
+        GLAccountLbl = 'G/L Account';
+        FormalCorrectnessVerifiedByLbl = 'Formal Correctness Verified by:';
+        FactualCorrectnessVerifiedByLbl = 'Factual Correctness Verified by :';
+        PostedByLbl = 'Posted by :';
+        ApprovedByLbl = 'Approved by :';
+        ExternalNoLbl = 'External No.';
+        DescriptionLbl = 'Description';
+        PostingDateLbl = 'Posting Date';
+        VATDateLbl = 'VAT Date';
+        DocumentDateLbl = 'Document Date';
+        DueDateLbl = 'Due Date';
+        NoLbl = 'No.';
+        AmountLbl = 'Amount';
+        CurrencyCodeLbl = 'Currency Code';
+        DocumentNoLbl = 'Document No.';
+    }
+
     trigger OnInitReport()
     begin
         GroupGLAccounts := true;
@@ -800,23 +615,22 @@ report 11703 "Accounting Sheets CZL"
 
     trigger OnPreReport()
     begin
-        CompanyInfo.Get();
+        CompanyInformation.Get();
 
         GLEntry.Reset();
         if GLEntry.FindLast() then
             LastGLEntry := GLEntry."Entry No.";
 
         LastDataItem := GetLastDataItem();
-        SalesInvHdrExists := not "Sales Invoice Header".IsEmpty() and "Sales Invoice Header".HasFilter();
-        SalesCrMemoHdrExists := not "Sales Cr.Memo Header".IsEmpty() and "Sales Cr.Memo Header".HasFilter();
-        PurchInvHdrExists := not "Purch. Inv. Header".IsEmpty() and "Purch. Inv. Header".HasFilter();
-        PurchCrMemoHdrExists := not "Purch. Cr. Memo Hdr.".IsEmpty() and "Purch. Cr. Memo Hdr.".HasFilter();
+        SalesInvHdrExists := not SalesInvoiceHeader.IsEmpty() and SalesInvoiceHeader.HasFilter();
+        SalesCrMemoHdrExists := not SalesCrMemoHeader.IsEmpty() and SalesCrMemoHeader.HasFilter();
+        PurchInvHdrExists := not PurchInvHeader.IsEmpty() and PurchInvHeader.HasFilter();
+        PurchCrMemoHdrExists := not PurchCrMemoHdr.IsEmpty() and PurchCrMemoHdr.HasFilter();
         GeneralDocExists := not GeneralDoc.IsEmpty() and GeneralDoc.HasFilter();
     end;
 
     var
-        CompanyInfo: Record "Company Information";
-        GLAcc: Record "G/L Account";
+        CompanyInformation: Record "Company Information";
         UserSetup: Record "User Setup";
         TempGLEntry: Record "G/L Entry" temporary;
         GLEntry: Record "G/L Entry";
@@ -830,40 +644,23 @@ report 11703 "Accounting Sheets CZL"
         PurchInvHdrExists: Boolean;
         PurchCrMemoHdrExists: Boolean;
         GeneralDocExists: Boolean;
-        NameDescCaption: Text;
-        NameDescText: Text;
-        SalesInvoiceLbl: Label '(Sales Invoice)';
-        SalesCreditMemoLbl: Label '(Sales Credit Memo)';
-        PurchaseInvoiceLbl: Label '(Purchase Invoice)';
-        PurchaseCreditMemoLbl: Label '(Purchase Credit Memo)';
-        GeneralDocumentLbl: Label '(General Document)';
-        CustomerLbl: Label 'Customer';
-        VendorLbl: Label 'Vendor';
-        DateLbl: Label 'Date:';
-        RateLbl: Label 'Rate';
-        CreditAmountLbl: Label 'Credit Amount';
-        DebitAmountLbl: Label 'Debit Amount';
-        GLAccountLbl: Label 'G/L Account';
-        GLAccountNameLbl: Label 'G/L Account Name';
-        FormalCorrectnessVerifiedByLbl: Label 'Formal Correctness Verified by:';
-        FactualCorrectnessVerifiedByLbl: Label 'Factual Correctness Verified by :';
-        PostedByLbl: Label 'Posted by :';
-        ApprovedByLbl: Label 'Approved by :';
-        ExternalNoLbl: Label 'External No.';
-        DescriptionLbl: Label 'Description';
+        GroupCaption: Text;
+        GroupText: Text;
+        GLAccountNameTxt: Label 'G/L Account Name';
+        DescriptionTxt: Label 'Description';
 
     procedure GetLastDataItem(): Integer
     begin
         case true of
             not GeneralDoc.IsEmpty() and GeneralDoc.HasFilter():
                 exit(5);
-            not "Purch. Cr. Memo Hdr.".IsEmpty() and "Purch. Cr. Memo Hdr.".HasFilter():
+            not PurchCrMemoHdr.IsEmpty() and PurchCrMemoHdr.HasFilter():
                 exit(4);
-            not "Purch. Inv. Header".IsEmpty() and "Purch. Inv. Header".HasFilter():
+            not PurchInvHeader.IsEmpty() and PurchInvHeader.HasFilter():
                 exit(3);
-            not "Sales Cr.Memo Header".IsEmpty() and "Sales Cr.Memo Header".HasFilter():
+            not SalesCrMemoHeader.IsEmpty() and SalesCrMemoHeader.HasFilter():
                 exit(2);
-            not "Sales Invoice Header".IsEmpty() and "Sales Invoice Header".HasFilter():
+            not SalesInvoiceHeader.IsEmpty() and SalesInvoiceHeader.HasFilter():
                 exit(1);
         end;
     end;
@@ -885,5 +682,23 @@ report 11703 "Accounting Sheets CZL"
             TempGLEntry.TransferFields(GLEntry);
             TempGLEntry.Insert();
         end;
+    end;
+
+    local procedure GetUserSetup(UserCode: Code[50])
+    begin
+        if UserSetup."User ID" <> UserCode then
+            if not UserSetup.Get(UserCode) then
+                UserSetup.Init();
+    end;
+
+    local procedure GetGroupText(GLEntry: Record "G/L Entry"): Text
+    var
+        GLAccount: Record "G/L Account";
+    begin
+        if GroupGLAccounts then begin
+            GLAccount.Get(GLEntry."G/L Account No.");
+            exit(GLAccount.Name);
+        end;
+        exit(GLEntry.Description);
     end;
 }

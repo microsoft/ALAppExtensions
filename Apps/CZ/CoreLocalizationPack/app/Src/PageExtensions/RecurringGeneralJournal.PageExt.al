@@ -16,6 +16,15 @@ pageextension 11725 "Recurring General Journal CZL" extends "Recurring General J
                 Visible = false;
             }
         }
+        addafter("Account No.")
+        {
+            field("Posting Group CZL"; Rec."Posting Group")
+            {
+                ApplicationArea = Suite;
+                ToolTip = 'Specifies the posting group that will be used in posting the journal line.The field is used only if the account type is either customer or vendor.';
+                Visible = false;
+            }
+        }
         addafter(Correction)
         {
             field("Original Doc. Partner Type CZL"; Rec."Original Doc. Partner Type CZL")

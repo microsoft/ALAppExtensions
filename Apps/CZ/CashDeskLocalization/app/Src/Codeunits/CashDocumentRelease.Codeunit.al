@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 codeunit 11725 "Cash Document-Release CZP"
 {
     TableNo = "Cash Document Header CZP";
@@ -26,8 +25,8 @@ codeunit 11725 "Cash Document-Release CZP"
                 if CashDocumentLineCZP."Gen. Posting Type" <> CashDocumentLineCZP."Gen. Posting Type"::" " then
                     VATPostingSetup.Get(CashDocumentLineCZP."VAT Bus. Posting Group", CashDocumentLineCZP."VAT Prod. Posting Group");
                 CashDocumentPostCZP.InitGenJnlLine(Rec, CashDocumentLineCZP);
-                CashDocumentPostCZP.GetGenJnlLine(GenJnlLine);
-                GenJnlCheckLine.RunCheck(GenJnlLine);
+                CashDocumentPostCZP.GetGenJnlLine(GenJournalLine);
+                GenJnlCheckLine.RunCheck(GenJournalLine);
             end;
         until CashDocumentLineCZP.Next() = 0;
 
@@ -44,7 +43,7 @@ codeunit 11725 "Cash Document-Release CZP"
     var
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalLine: Record "Gen. Journal Line";
         CashDeskCZP: Record "Cash Desk CZP";
         ConfirmManagement: Codeunit "Confirm Management";
         CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
@@ -233,44 +232,44 @@ codeunit 11725 "Cash Document-Release CZP"
 
     local procedure CheckCashPaymentLimit(CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     var
-        CashDocHeader2: Record "Cash Document Header CZP";
-        GLSetup: Record "General Ledger Setup";
-        PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        TotalPostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
+        TotalCashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashPaymentTotal: Decimal;
     begin
-        GLSetup.Get();
-        if GLSetup."Cash Payment Limit (LCY) CZP" = 0 then
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Cash Payment Limit (LCY) CZP" = 0 then
             exit;
 
         if not (CashDocumentHeaderCZP."Partner Type" in [CashDocumentHeaderCZP."Partner Type"::Customer, CashDocumentHeaderCZP."Partner Type"::Vendor]) then
             exit;
 
-        PostedCashDocumentHdrCZP.SetRange("Partner Type", CashDocumentHeaderCZP."Partner Type");
-        PostedCashDocumentHdrCZP.SetRange("Partner No.", CashDocumentHeaderCZP."Partner No.");
-        PostedCashDocumentHdrCZP.SetRange("Posting Date", CashDocumentHeaderCZP."Posting Date");
-        if PostedCashDocumentHdrCZP.FindSet() then
+        TotalPostedCashDocumentHdrCZP.SetRange("Partner Type", CashDocumentHeaderCZP."Partner Type");
+        TotalPostedCashDocumentHdrCZP.SetRange("Partner No.", CashDocumentHeaderCZP."Partner No.");
+        TotalPostedCashDocumentHdrCZP.SetRange("Posting Date", CashDocumentHeaderCZP."Posting Date");
+        if TotalPostedCashDocumentHdrCZP.FindSet() then
             repeat
-                PostedCashDocumentHdrCZP.CalcFields("Amount Including VAT (LCY)");
-                if PostedCashDocumentHdrCZP."Document Type" = PostedCashDocumentHdrCZP."Document Type"::Withdrawal then
-                    CashPaymentTotal -= PostedCashDocumentHdrCZP."Amount Including VAT (LCY)"
+                TotalPostedCashDocumentHdrCZP.CalcFields("Amount Including VAT (LCY)");
+                if TotalPostedCashDocumentHdrCZP."Document Type" = TotalPostedCashDocumentHdrCZP."Document Type"::Withdrawal then
+                    CashPaymentTotal -= TotalPostedCashDocumentHdrCZP."Amount Including VAT (LCY)"
                 else
-                    CashPaymentTotal += PostedCashDocumentHdrCZP."Amount Including VAT (LCY)";
-            until PostedCashDocumentHdrCZP.Next() = 0;
+                    CashPaymentTotal += TotalPostedCashDocumentHdrCZP."Amount Including VAT (LCY)";
+            until TotalPostedCashDocumentHdrCZP.Next() = 0;
 
-        CashDocHeader2.SetRange("Partner Type", CashDocumentHeaderCZP."Partner Type");
-        CashDocHeader2.SetRange("Partner No.", CashDocumentHeaderCZP."Partner No.");
-        CashDocHeader2.SetRange("Posting Date", CashDocumentHeaderCZP."Posting Date");
-        if CashDocHeader2.FindSet() then
+        TotalCashDocumentHeaderCZP.SetRange("Partner Type", CashDocumentHeaderCZP."Partner Type");
+        TotalCashDocumentHeaderCZP.SetRange("Partner No.", CashDocumentHeaderCZP."Partner No.");
+        TotalCashDocumentHeaderCZP.SetRange("Posting Date", CashDocumentHeaderCZP."Posting Date");
+        if TotalCashDocumentHeaderCZP.FindSet() then
             repeat
-                CashDocHeader2.CalcFields("Amount Including VAT (LCY)");
-                if CashDocHeader2."Document Type" = CashDocHeader2."Document Type"::Withdrawal then
-                    CashPaymentTotal -= CashDocHeader2."Amount Including VAT (LCY)"
+                TotalCashDocumentHeaderCZP.CalcFields("Amount Including VAT (LCY)");
+                if TotalCashDocumentHeaderCZP."Document Type" = TotalCashDocumentHeaderCZP."Document Type"::Withdrawal then
+                    CashPaymentTotal -= TotalCashDocumentHeaderCZP."Amount Including VAT (LCY)"
                 else
-                    CashPaymentTotal += CashDocHeader2."Amount Including VAT (LCY)";
-            until CashDocHeader2.Next() = 0;
+                    CashPaymentTotal += TotalCashDocumentHeaderCZP."Amount Including VAT (LCY)";
+            until TotalCashDocumentHeaderCZP.Next() = 0;
 
-        if Abs(CashPaymentTotal) > GLSetup."Cash Payment Limit (LCY) CZP" then
-            Error(CashPaymentLimitErr, GLSetup."Cash Payment Limit (LCY) CZP", CashDocumentHeaderCZP."Partner No.");
+        if Abs(CashPaymentTotal) > GeneralLedgerSetup."Cash Payment Limit (LCY) CZP" then
+            Error(CashPaymentLimitErr, GeneralLedgerSetup."Cash Payment Limit (LCY) CZP", CashDocumentHeaderCZP."Partner No.");
     end;
 
     local procedure GetCashDesk(CashDeskNo: Code[20])

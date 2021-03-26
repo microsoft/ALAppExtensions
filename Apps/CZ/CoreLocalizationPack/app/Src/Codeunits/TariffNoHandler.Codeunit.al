@@ -1,29 +1,11 @@
+#pragma warning disable AL0432
 codeunit 11782 "Tariff No. Handler CZL"
 {
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnCheckAndUpdateOnAfterSetPostingFlags', '', false, false)]
-    local procedure CheckTariffNoOnCheckAndUpdateOnAfterSetPostingFlags(var SalesHeader: Record "Sales Header");
-    begin
-        CheckTariffNo(SalesHeader);
-    end;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Event subscribers optimized.';
+    ObsoleteTag = '18.0';
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnCheckAndUpdateOnAfterSetPostingFlags', '', false, false)]
-    local procedure CheckTarifNoOnCheckAndUpdateOnAfterSetPostingFlags(var PurchHeader: Record "Purchase Header");
-    begin
-        CheckTariffNo(PurchHeader);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterTransfldsFromSalesToPurchLine', '', false, false)]
-    local procedure TariffNoOnAfterTransfldsFromSalesToPurchLine(var FromSalesLine: Record "Sales Line"; var ToPurchaseLine: Record "Purchase Line")
-    begin
-        ToPurchaseLine."Tariff No. CZL" := FromSalesLine."Tariff No. CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service-Post", 'OnAfterInitialize', '', false, false)]
-    local procedure OnAfterInitialize(var ServiceHeader: Record "Service Header")
-    begin
-        CheckTariffNo(ServiceHeader);
-    end;
-
+    [Obsolete('Not used: moved to "Sales Posting Handler CZL" codeunit.', '18.0')]
     procedure CheckTariffNo(SalesHeader: Record "Sales Header")
     var
         SalesLine: Record "Sales Line";
@@ -144,13 +126,12 @@ codeunit 11782 "Tariff No. Handler CZL"
 
                 if AmountToCheckLimit < CommoditySetupCZL."Commodity Limit Amount LCY" then begin
                     // Normal
-                    if not CheckTariffNoByBaseApp(CommoditySetupCZL) then // check done by Base Application
-                        if TempInventoryBuffer1.Get(TempInventoryBuffer."Item No.", Format(SalesLine."VAT Calculation Type"::"Reverse Charge VAT", 0, '<Number>')) then
-                            if not ConfirmManagement.GetResponseOrDefault(StrSubStno(VATPostingSetupPostMismashQst,
-                                CommoditySetupCZL."Commodity Code", CommoditySetupCZL."Commodity Limit Amount LCY",
-                                SalesLine."VAT Calculation Type"::"Reverse Charge VAT", ItemNoText, AmountToCheckLimit), false)
-                            then
-                                Error('');
+                    if TempInventoryBuffer1.Get(TempInventoryBuffer."Item No.", Format(SalesLine."VAT Calculation Type"::"Reverse Charge VAT", 0, '<Number>')) then
+                        if not ConfirmManagement.GetResponseOrDefault(StrSubStno(VATPostingSetupPostMismashQst,
+                             CommoditySetupCZL."Commodity Code", CommoditySetupCZL."Commodity Limit Amount LCY",
+                             SalesLine."VAT Calculation Type"::"Reverse Charge VAT", ItemNoText, AmountToCheckLimit), false)
+                        then
+                            Error('');
                 end else
                     // Reverse
                     if TempInventoryBuffer1.Get(TempInventoryBuffer."Item No.", Format(SalesLine."VAT Calculation Type"::"Normal VAT", 0, '<Number>')) then
@@ -160,17 +141,7 @@ codeunit 11782 "Tariff No. Handler CZL"
             until TempInventoryBuffer.Next() = 0;
     end;
 
-    [Obsolete('Will be removed together with Commodity Setup remove from Base App.', '17.2')]
-    local procedure CheckTariffNoByBaseApp(var CommoditySetupCZL: Record "Commodity Setup CZL"): Boolean
-    var
-        CommoditySetup: Record "Commodity Setup";
-    begin
-        CommoditySetupCZL.CopyFilter("Commodity Code", CommoditySetup."Commodity Code");
-        CommoditySetupCZL.CopyFilter("Valid From", CommoditySetup."Valid From");
-        CommoditySetupCZL.CopyFilter("Valid To", CommoditySetup."Valid To");
-        exit(not CommoditySetupCZL.IsEmpty());
-    end;
-
+    [Obsolete('Not used: moved to "Purchase Posting Handler CZL" codeunit.', '18.0')]
     procedure CheckTariffNo(PurchHeader: Record "Purchase Header")
     var
         PurchaseLine: Record "Purchase Line";
@@ -195,6 +166,7 @@ codeunit 11782 "Tariff No. Handler CZL"
             until PurchaseLine.Next() = 0;
     end;
 
+    [Obsolete('Opimized: moved to "Sales Posting Handler CZL" codeunit.', '18.0')]
     local procedure GetListItemNo(var TempInvtBuf2: Record "Inventory Buffer" temporary; TempInvtBuf: Record "Inventory Buffer" temporary): Text
     var
         ItemNoText: Text;
@@ -215,6 +187,7 @@ codeunit 11782 "Tariff No. Handler CZL"
         exit(ItemNoText);
     end;
 
+    [Obsolete('Not used: moved to "Service Posting Handler CZL" codeunit.', '18.0')]
     procedure CheckTariffNo(ServiceHeader: Record "Service Header")
     var
         ServiceLine: Record "Service Line";
@@ -236,6 +209,7 @@ codeunit 11782 "Tariff No. Handler CZL"
             until ServiceLine.Next() = 0;
     end;
 
+    [Obsolete('Opimized: moved to "Sales Posting Handler CZL" codeunit.', '18.0')]
     local procedure GetQtyToInvoice(SalesLine: Record "Sales Line"; Ship: Boolean): Decimal
     var
         AllowedQtyToInvoice: Decimal;

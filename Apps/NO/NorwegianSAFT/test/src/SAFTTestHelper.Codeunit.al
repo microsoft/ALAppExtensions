@@ -615,6 +615,12 @@ codeunit 148099 "SAF-T Test Helper"
             end;
     end;
 
+    procedure FilterChildElementsByName(var TempResultElementXMLBuffer: Record "XML Buffer" temporary; var TempXMLBuffer: Record "XML Buffer" temporary; Name: Text[250])
+    begin
+        TempXMLBuffer.FindChildElements(TempResultElementXMLBuffer);
+        TempResultElementXMLBuffer.SETRANGE(Name, Name);
+    end;
+
     procedure FormatDate(DateToFormat: Date): Text
     begin
         exit(format(DateToFormat, 0, 9));

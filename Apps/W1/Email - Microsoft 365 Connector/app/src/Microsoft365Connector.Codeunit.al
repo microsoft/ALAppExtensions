@@ -52,7 +52,6 @@ codeunit 4503 "Microsoft 365 Connector" implements "Email Connector"
     procedure ShowAccountInformation(AccountId: Guid)
     var
         OutlookAccount: Record "Email - Outlook Account";
-        Microsoft365EmailAccount: Page "Microsoft 365 Email Account";
     begin
         if not OutlookAccount.Get(AccountId) then
             Error(NotRegisteredAccountErr);

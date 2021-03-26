@@ -152,7 +152,7 @@ page 31160 "Cash Document CZP"
                 {
                     ApplicationArea = Basic, Suite;
                     DrillDown = false;
-                    ToolTip = 'Specifies whether the cash register works with EET.';
+                    ToolTip = 'Specifies that the cash register works with EET.';
                 }
             }
             part(CashDocLines; "Cash Document Subform CZP")
@@ -255,6 +255,12 @@ page 31160 "Cash Document CZP"
         }
         area(factboxes)
         {
+            part("Attached Documents"; "Document Attachment Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Attachments';
+                SubPageLink = "Table ID" = const(11732), "No." = field("No.");
+            }
             systempart(Links; Links)
             {
                 ApplicationArea = RecordLinks;
@@ -281,7 +287,6 @@ page 31160 "Cash Document CZP"
             }
         }
     }
-
     actions
     {
         area(navigation)
@@ -331,6 +336,23 @@ page 31160 "Cash Document CZP"
                         ApprovalsMgmt: Codeunit "Approvals Mgmt.";
                     begin
                         ApprovalsMgmt.OpenApprovalEntriesPage(Rec.RecordId);
+                    end;
+                }
+                action(DocAttach)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Attachments';
+                    Image = Attach;
+                    ToolTip = 'Add a file as an attachment. You can attach images as well as documents.';
+
+                    trigger OnAction()
+                    var
+                        DocumentAttachmentDetails: Page "Document Attachment Details";
+                        RecRef: RecordRef;
+                    begin
+                        RecRef.GetTable(Rec);
+                        DocumentAttachmentDetails.OpenForRecRef(RecRef);
+                        DocumentAttachmentDetails.RunModal();
                     end;
                 }
             }
@@ -673,10 +695,24 @@ page 31160 "Cash Document CZP"
                     CashDocumentHeaderCZP.PrintRecords(true);
                 end;
             }
+            action(PrintToAttachment)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Attach as PDF';
+                Image = PrintAttachment;
+                Promoted = true;
+                PromotedCategory = "Report";
+                PromotedOnly = true;
+                ToolTip = 'Create a PDF file and attach it to the document.';
+
+                trigger OnAction()
+                begin
+                    Rec.PrintToDocumentAttachment();
+                end;
+            }
         }
     }
 
-    #pragma implicitwith disable
     trigger OnAfterGetCurrRecord()
     begin
         SetShowMandatoryConditions();
@@ -688,6 +724,9 @@ page 31160 "Cash Document CZP"
         UpdateEditable();
         UpdateEnabled();
         SetControlVisibility();
+#if not CLEAN18
+        LinkAdvLettersEnabled := not Rec.IsEETCashRegister();
+#endif        
     end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean

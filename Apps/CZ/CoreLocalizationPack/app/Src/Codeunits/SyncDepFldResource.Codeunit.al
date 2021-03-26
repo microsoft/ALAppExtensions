@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31148 "Sync.Dep.Fld-Resource CZL"
 {
@@ -34,3 +35,4 @@ codeunit 31148 "Sync.Dep.Fld-Resource CZL"
         Rec."Tariff No. CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Tariff No. CZL"));
     end;
 }
+#endif

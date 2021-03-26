@@ -239,7 +239,7 @@ page 20009 "APIV1 - Customers"
                         RegisterFieldSet(FIELDNO(Blocked));
                     end;
                 }
-                part(customerFinancialDetails; 20048)
+                part(customerFinancialDetails; "Customer Financial Details")
                 {
                     Caption = 'Customer Financial Details', Locked = true;
                     EntityName = 'customerFinancialDetail';
@@ -250,14 +250,14 @@ page 20009 "APIV1 - Customers"
                 {
                     Caption = 'lastModifiedDateTime', Locked = true;
                 }
-                part(picture; 5468)
+                part(picture; "APIV1 - Pictures")
                 {
                     Caption = 'picture';
                     EntityName = 'picture';
                     EntitySetName = 'picture';
                     SubPageLink = Id = FIELD(SystemId);
                 }
-                part(defaultDimensions; 5509)
+                part(defaultDimensions; "APIV1 - Default Dimensions")
                 {
                     Caption = 'Default Dimensions', Locked = true;
                     EntityName = 'defaultDimensions';

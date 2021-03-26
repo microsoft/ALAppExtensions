@@ -44,7 +44,7 @@ page 20013 "APIV1 - Cust. Paym. Journals"
                     Editable = false;
                 }
             }
-            part(customerPayments; 5479)
+            part(customerPayments; "APIV1 - Customer Payments")
             {
                 ApplicationArea = All;
                 Caption = 'customerPayments', Locked = true;

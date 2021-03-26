@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
 {
     layout
@@ -28,20 +27,10 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if the vendor is unreliabe payer.';
             }
-        }
-        addlast(Payments)
-        {
-            field(IsPublicBankAccountCZL; Rec.IsPublicBankAccountCZL())
+            field("Vendor Posting Group CZL"; Rec."Vendor Posting Group")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Public Bank Account';
-                Editable = false;
-                ToolTip = 'Specifies if the vendor''s bank account is public.';
-            }
-            field("Third Party Bank Account CZL"; Rec."Third Party Bank Account CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies if the account is third party bank account.';
+                ToolTip = 'Specifies the vendor''s market type to link business transactions made for the vendor with the appropriate account in the general ledger.';
             }
         }
         addafter("VAT Registration No.")
@@ -75,7 +64,7 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
                     else
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", WorkDate());
 
-                    if ChangeExchangeRate.RunModal() = ACTION::OK then begin
+                    if ChangeExchangeRate.RunModal() = Action::OK then begin
                         Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
                         CurrPage.Update();
                     end;
@@ -88,8 +77,15 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
                 end;
             }
         }
-        addafter(IsIntrastatTransaction)
+        addafter("Area")
         {
+            field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Transaction';
+                Editable = false;
+                ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+            }
             field("EU 3-Party Trade CZL"; Rec."EU 3-Party Trade CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -100,13 +96,95 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies when the purchase header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
+            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
+            }
+        }
+        addafter("Foreign Trade")
+        {
+            group(PaymentsCZL)
+            {
+                Caption = 'Payment Details';
+                field("Variable Symbol CZL"; Rec."Variable Symbol CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the detail information for payment.';
+                    Importance = Promoted;
+                }
+                field("Constant Symbol CZL"; Rec."Constant Symbol CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the additional symbol of bank payments.';
+                    Importance = Additional;
+                }
+                field("Specific Symbol CZL"; Rec."Specific Symbol CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the additional symbol of bank payments.';
+                    Importance = Additional;
+                }
+                field("Bank Account Code CZL"; Rec."Bank Account Code CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies a code to idenfity bank account of company.';
+                }
+                field("Bank Name CZL"; Rec."Bank Name CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the name of the bank.';
+                }
+                field("Bank Account No. CZL"; Rec."Bank Account No. CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the number used by the bank for the bank account.';
+                    Importance = Promoted;
+                }
+                field("IBAN CZL"; Rec."IBAN CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the bank account''s international bank account number.';
+                    Importance = Promoted;
+                }
+                field("SWIFT Code CZL"; Rec."SWIFT Code CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the international bank identifier code (SWIFT) of the bank where you have the account.';
+                }
+                field("Transit No. CZL"; Rec."Transit No. CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies a bank identification number of your own choice.';
+                    Importance = Additional;
+                }
+                field("Bank Branch No. CZL"; Rec."Bank Branch No. CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the number of the bank branch.';
+                    Importance = Additional;
+                }
+                field(IsPublicBankAccountCZL; Rec.IsPublicBankAccountCZL())
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Public Bank Account';
+                    Editable = false;
+                    ToolTip = 'Specifies if the vendor''s bank account is public.';
+                }
+                field("Third Party Bank Account CZL"; Rec."Third Party Bank Account CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies if the account is third party bank account.';
+                }
+            }
         }
     }
+
     var
         ChangeExchangeRate: Page "Change Exchange Rate";
 
     local procedure CurrencyCodeOnAfterValidate()
     begin
-        CurrPage.PurchLines.PAGE.UpdateForm(true);
+        CurrPage.PurchLines.Page.UpdateForm(true);
     end;
 }

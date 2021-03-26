@@ -1,11 +1,11 @@
 codeunit 1073 "MS - PayPal Webhook Management"
 {
-    Permissions = TableData 2000000199 = rimd;
-    TableNo = 2000000194;
+    Permissions = TableData "Webhook Subscription" = rimd;
+    TableNo = "Webhook Notification";
 
     trigger OnRun();
     var
-        MSPayPalTransactionsMgt: Codeunit 1075;
+        MSPayPalTransactionsMgt: Codeunit "MS - PayPal Transactions Mgt.";
         InvoiceNo: Text;
         InvoiceNoCode: Code[20];
         TotalAmount: Decimal;
@@ -34,10 +34,10 @@ codeunit 1073 "MS - PayPal Webhook Management"
         PaymentRegistrationFailedTxt: Label 'Payment registration failed.', Locked = true;
         PaymentRegistrationSucceedTxt: Label 'Payment registration succeed.', Locked = true;
 
-    [EventSubscriber(ObjectType::Table, 2000000194, 'OnAfterInsertEvent', '', false, false)]
-    local procedure SyncToNavOnWebhookNotificationInsert(var Rec: Record 2000000194; RunTrigger: Boolean);
+    [EventSubscriber(ObjectType::Table, Database::"Webhook Notification", 'OnAfterInsertEvent', '', false, false)]
+    local procedure SyncToNavOnWebhookNotificationInsert(var Rec: Record "Webhook Notification"; RunTrigger: Boolean);
     var
-        WebhookSubscription: Record 2000000199;
+        WebhookSubscription: Record "Webhook Subscription";
         AccountID: Text[250];
         BackgroundSessionAllowed: Boolean;
     begin
@@ -73,10 +73,10 @@ codeunit 1073 "MS - PayPal Webhook Management"
     local procedure PostPaymentForInvoice(InvoiceNo: Code[20]; AmountReceived: Decimal): Boolean;
     var
         TempPaymentRegistrationBuffer: Record 981 temporary;
-        PaymentMethod: Record 289;
-        PaymentRegistrationMgt: Codeunit 980;
-        O365SalesInvoicePayment: Codeunit 2105;
-        MSPayPalStandardMgt: Codeunit 1070;
+        PaymentMethod: Record "Payment Method";
+        PaymentRegistrationMgt: Codeunit "Payment Registration Mgt.";
+        O365SalesInvoicePayment: Codeunit "O365 Sales Invoice Payment";
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
         IF NOT O365SalesInvoicePayment.CollectRemainingPayments(InvoiceNo, TempPaymentRegistrationBuffer) THEN BEGIN
             Session.LogMessage('00008GO', NoRemainingPaymentsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);

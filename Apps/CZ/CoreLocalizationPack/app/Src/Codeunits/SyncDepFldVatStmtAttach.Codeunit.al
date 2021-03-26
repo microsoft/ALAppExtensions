@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
 {
@@ -153,7 +154,7 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
         if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
-            exit;        
+            exit;
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"VAT Statement Attachment CZL") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"VAT Statement Attachment");
@@ -170,3 +171,4 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

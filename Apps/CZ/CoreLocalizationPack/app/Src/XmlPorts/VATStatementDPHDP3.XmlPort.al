@@ -1032,6 +1032,8 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
                         trigger OnBeforePassVariable()
                         begin
                             GetAmtAndSkipIfEmpty(dano, 'dano');
+                            if (dano <> '') and (DeclarationType <> DeclarationType::Supplementary) then
+                                dano := '';
                         end;
                     }
                     textattribute(odp_zocelk)
@@ -1237,7 +1239,7 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
 
     local procedure PrepareExportData()
     var
-        CompanyOfficials: Record "Company Official CZL";
+        CompanyOfficialCZL: Record "Company Official CZL";
         ApplicationSystemConstants: Codeunit "Application System Constants";
     begin
         StatutoryReportingSetupCZL.Get();
@@ -1302,15 +1304,15 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
         PostCode := CheckLen(DelChr(CompanyInformation."Post Code", '=', ' '), CompanyInformation.FieldCaption("Post Code"), 5);
 
         StatutoryReportingSetupCZL.TestField("VAT Stat. Auth. Employee No.");
-        CompanyOfficials.Get(StatutoryReportingSetupCZL."VAT Stat. Auth. Employee No.");
-        AuthEmpLastName := CompanyOfficials."Last Name";
-        AuthEmpFirstName := CheckLen(CompanyOfficials."First Name", CompanyOfficials.FieldCaption("First Name"), 20);
-        AuthEmpJobTitle := CompanyOfficials."Job Title";
+        CompanyOfficialCZL.Get(StatutoryReportingSetupCZL."VAT Stat. Auth. Employee No.");
+        AuthEmpLastName := CompanyOfficialCZL."Last Name";
+        AuthEmpFirstName := CheckLen(CompanyOfficialCZL."First Name", CompanyOfficialCZL.FieldCaption("First Name"), 20);
+        AuthEmpJobTitle := CompanyOfficialCZL."Job Title";
 
-        CompanyOfficials.Get(FilledByEmployeeCode);
-        FillEmpLastName := CompanyOfficials."Last Name";
-        FillEmpFirstName := CheckLen(CompanyOfficials."First Name", CompanyOfficials.FieldCaption("First Name"), 20);
-        FillEmpPhoneNo := CheckLen(CompanyOfficials."Phone No.", CompanyOfficials.FieldCaption("Phone No."), 14);
+        CompanyOfficialCZL.Get(FilledByEmployeeCode);
+        FillEmpLastName := CompanyOfficialCZL."Last Name";
+        FillEmpFirstName := CheckLen(CompanyOfficialCZL."First Name", CompanyOfficialCZL.FieldCaption("First Name"), 20);
+        FillEmpPhoneNo := CheckLen(CompanyOfficialCZL."Phone No.", CompanyOfficialCZL.FieldCaption("Phone No."), 14);
 
         trans := VATStmtXMLExportHelperCZL.ConvertBoolean(not (NoTaxBoolean));
 
@@ -1383,15 +1385,19 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
     local procedure SetVATLiability()
     begin
         dano_no := '';
-        dano_da := GetAmount('dano_da');
-        dano_da := DelChr(dano_da, '=', '-');
+        if DeclarationType <> DeclarationType::Supplementary then begin
+            dano_da := GetAmount('dano_da');
+            dano_da := DelChr(dano_da, '=', '-');
+        end;
     end;
 
     local procedure SetExcessVATDeduction()
     begin
         dano_da := '';
-        dano_no := GetAmount('dano_no');
-        dano_no := DelChr(dano_no, '=', '-');
+        if DeclarationType <> DeclarationType::Supplementary then begin
+            dano_no := GetAmount('dano_no');
+            dano_no := DelChr(dano_no, '=', '-');
+        end;
     end;
 
     local procedure GetAmount(XMLTag: Code[20]): Text[14]
@@ -1465,27 +1471,27 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
 
     local procedure GetXMLTag(VATStatementLine: Record "VAT Statement Line"): Code[20]
     var
-        VATAttributeCode: Record "VAT Attribute Code CZL";
+        VATAttributeCodeCZL: Record "VAT Attribute Code CZL";
     begin
-        VATAttributeCode.Get(VATStatementLine."Statement Template Name", VATStatementLine."Attribute Code CZL");
-        VATAttributeCode.TestField("XML Code");
-        exit(VATAttributeCode."XML Code");
+        VATAttributeCodeCZL.Get(VATStatementLine."Statement Template Name", VATStatementLine."Attribute Code CZL");
+        VATAttributeCodeCZL.TestField("XML Code");
+        exit(VATAttributeCodeCZL."XML Code");
     end;
 
     local procedure GetColumnValue(var VATStatementLine: Record "VAT Statement Line") ColumnValue: Decimal
     var
-        VATStatement: Report "VAT Statement CZL";
+        VATStatementCZL: Report "VAT Statement CZL";
     begin
-        VATStatement.InitializeRequest(
+        VATStatementCZL.InitializeRequest(
           VATStatementName, VATStatementLine, Selection,
           PeriodSelection, PrintInIntegers, UseAmtsInAddCurr,
           SettlementNoFilter);
 
-        VATStatement.SetRoundingDirection(RoundingDirection);
+        VATStatementCZL.SetRoundingDirection(RoundingDirection);
 
-        VATStatement.CalcLineTotal(VATStatementLine, ColumnValue, 0);
+        VATStatementCZL.CalcLineTotal(VATStatementLine, ColumnValue, 0);
         if PrintInIntegers then
-            ColumnValue := VATStatement.RoundAmount(ColumnValue);
+            ColumnValue := VATStatementCZL.RoundAmount(ColumnValue);
 
         ColumnValue := ColumnValue;
 
@@ -1493,9 +1499,9 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
             ColumnValue := -ColumnValue;
     end;
 
-    procedure CopyAttachmentFilter(var VATStatementAttachment: Record "VAT Statement Attachment CZL")
+    procedure CopyAttachmentFilter(var VATStatementAttachmentCZL: Record "VAT Statement Attachment CZL")
     begin
-        VATStatementAttachment.CopyFilters(attachment);
+        VATStatementAttachmentCZL.CopyFilters(Attachment);
     end;
 }
 

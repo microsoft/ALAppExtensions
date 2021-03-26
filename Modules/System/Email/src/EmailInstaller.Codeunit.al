@@ -9,6 +9,7 @@ codeunit 1596 "Email Installer"
 {
     Subtype = Install;
     Access = Internal;
+    Permissions = tabledata Field = r;
 
     trigger OnInstallAppPerCompany()
     begin

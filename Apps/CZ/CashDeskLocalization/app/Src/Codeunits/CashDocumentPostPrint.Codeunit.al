@@ -34,10 +34,10 @@ codeunit 11721 "Cash Document-Post + Print CZP"
 
     procedure GetReport(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     var
-        PostedCashDocHeader: Record "Posted Cash Document Hdr. CZP";
+        PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
     begin
-        PostedCashDocHeader.Get(CashDocumentHeaderCZP."Cash Desk No.", CashDocumentHeaderCZP."No.");
-        PostedCashDocHeader.SetRecFilter();
-        PostedCashDocHeader.PrintRecords(false);
+        PostedCashDocumentHdrCZP.Get(CashDocumentHeaderCZP."Cash Desk No.", CashDocumentHeaderCZP."No.");
+        PostedCashDocumentHdrCZP.SetRecFilter();
+        PostedCashDocumentHdrCZP.PrintRecords(false);
     end;
 }

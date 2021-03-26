@@ -29,6 +29,7 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyData()
     begin
         CopyCompanyInformation();
+        CopyResponsibilityCenter();
         CopyCustomer();
         CopyVendor();
         CopyVendorBankAccount();
@@ -48,7 +49,9 @@ codeunit 11748 "Install Application CZL"
         CopyVATPeriod();
         CopyGLEntry();
         CopyCustLedgerEntry();
+        CopyDetailedCustLedgEntry();
         CopyVendLedgerEntry();
+        CopyDetailedVendorLedgEntry();
         CopyVATEntry();
         CopyGenJournalLine();
         CopySalesHeader();
@@ -119,6 +122,34 @@ codeunit 11748 "Install Application CZL"
         CopyEETCashRegister();
         CopyEETEntry();
         CopyEETEntryStatus();
+        CopyBankAccount();
+        CopyConstantSymbol();
+        CopyDepreciationBook();
+        CopyValueEntry();
+        CopySubstCustomerPostingGroup();
+        CopySubstVendorPostingGroup();
+        CopyShipmentMethod();
+        CopySpecificMovement();
+        CopyIntrastatDeliveryGroup();
+        CopyUnitofMeasure();
+        CopySalesLineArchive();
+        CopyPurchaseLineArchive();
+        CopyTransferHeader();
+        CopyTransferLine();
+        CopyTransferReceiptHeader();
+        CopyTransferShipmentHeader();
+        CopyItemLedgerEntry();
+        CopyJobLedgerEntry();
+        CopyItemCharge();
+        CopyItemChargeAssignmentPurch();
+        CopyItemChargeAssignmentSales();
+        CopyPostedGenJournalLine();
+        CopyIntrastatJournalBatch();
+        CopyIntrastatJournalLine();
+        CopyInventoryPostingSetup();
+        CopyGeneralPostingSetup();
+        CopyUserSetupLine();
+        CopyGenJournalTemplate();
     end;
 
     local procedure ModifyData()
@@ -129,9 +160,9 @@ codeunit 11748 "Install Application CZL"
         ModifyItemJournalTemplate();
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '18.0')]
     local procedure CopyPermission();
     begin
+        InsertTableDataPermissions(Database::"Constant Symbol", Database::"Constant Symbol CZL");
         InsertTableDataPermissions(Database::"Excel Template", Database::"Excel Template CZL");
         InsertTableDataPermissions(Database::"Statement File Mapping", Database::"Acc. Schedule File Mapping CZL");
         InsertTableDataPermissions(Database::"VAT Attribute Code", Database::"VAT Attribute Code CZL");
@@ -163,6 +194,11 @@ codeunit 11748 "Install Application CZL"
         InsertTableDataPermissions(Database::"EET Entry", Database::"EET Entry CZL");
         InsertTableDataPermissions(Database::"EET Entry Status", Database::"EET Entry Status Log CZL");
         InsertTableDataPermissions(Database::"EET Service Setup", Database::"EET Service Setup CZL");
+        InsertTableDataPermissions(Database::"Subst. Customer Posting Group", Database::"Subst. Cust. Posting Group CZL");
+        InsertTableDataPermissions(Database::"Subst. Vendor Posting Group", Database::"Subst. Vend. Posting Group CZL");
+        InsertTableDataPermissions(Database::"Specific Movement", Database::"Specific Movement CZL");
+        InsertTableDataPermissions(Database::"Intrastat Delivery Group", Database::"Intrastat Delivery Group CZL");
+        InsertTableDataPermissions(Database::"User Setup Line", Database::"User Setup Line CZL");
     end;
 
     local procedure InsertTableDataPermissions(OldTableID: Integer; NewTableID: Integer)
@@ -184,14 +220,12 @@ codeunit 11748 "Install Application CZL"
         until Permission.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyCompanyInformation();
     var
         CompanyInformation: Record "Company Information";
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
     begin
         if CompanyInformation.Get() then begin
-            CompanyInformation."Bank Branch Name CZL" := CompanyInformation."Branch Name";
             CompanyInformation."Default Bank Account Code CZL" := CompanyInformation."Default Bank Account Code";
             CompanyInformation."Bank Account Format Check CZL" := CompanyInformation."Bank Account Format Check";
             CompanyInformation."Tax Registration No. CZL" := CompanyInformation."Tax Registration No.";
@@ -214,7 +248,17 @@ codeunit 11748 "Install Application CZL"
         StatutoryReportingSetupCZL.Modify();
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
+    local procedure CopyResponsibilityCenter();
+    var
+        ResponsibilityCenter: Record "Responsibility Center";
+    begin
+        if ResponsibilityCenter.FindSet(true) then
+            repeat
+                ResponsibilityCenter."Default Bank Account Code CZL" := ResponsibilityCenter."Bank Account Code";
+                ResponsibilityCenter.Modify(false);
+            until ResponsibilityCenter.Next() = 0;
+    end;
+
     local procedure CopyCustomer();
     var
         Customer: Record Customer;
@@ -223,11 +267,13 @@ codeunit 11748 "Install Application CZL"
             repeat
                 Customer."Registration No. CZL" := Customer."Registration No.";
                 Customer."Tax Registration No. CZL" := Customer."Tax Registration No.";
+                Customer."Transaction Type CZL" := Customer."Transaction Type";
+                Customer."Transaction Specification CZL" := Customer."Transaction Specification";
+                Customer."Transport Method CZL" := Customer."Transport Method";
                 Customer.Modify(false);
             until Customer.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVendor();
     var
         Vendor: Record Vendor;
@@ -236,12 +282,14 @@ codeunit 11748 "Install Application CZL"
             repeat
                 Vendor."Registration No. CZL" := Vendor."Registration No.";
                 Vendor."Tax Registration No. CZL" := Vendor."Tax Registration No.";
-                Vendor."Disable Unreliab. Check CZL" := true;
+                Vendor."Disable Unreliab. Check CZL" := Vendor."Disable Uncertainty Check";
+                Vendor."Transaction Type CZL" := Vendor."Transaction Type";
+                Vendor."Transaction Specification CZL" := Vendor."Transaction Specification";
+                Vendor."Transport Method CZL" := Vendor."Transport Method";
                 Vendor.Modify(false);
             until Vendor.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVendorBankAccount();
     var
         VendorBankAccount: Record "Vendor Bank Account";
@@ -253,7 +301,6 @@ codeunit 11748 "Install Application CZL"
             until VendorBankAccount.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyContact();
     var
         Contact: Record Contact;
@@ -266,7 +313,6 @@ codeunit 11748 "Install Application CZL"
             until Contact.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyUncertaintyPayerEntry();
     var
         UncertaintyPayerEntry: Record "Uncertainty Payer Entry";
@@ -293,7 +339,6 @@ codeunit 11748 "Install Application CZL"
             until UncertaintyPayerEntry.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyRegistrationLog();
     var
         RegistrationLog: Record "Registration Log";
@@ -322,7 +367,6 @@ codeunit 11748 "Install Application CZL"
             until RegistrationLog.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyWhseNetChangeTemplate();
     var
         WhseNetChangeTemplate: Record "Whse. Net Change Template";
@@ -342,19 +386,26 @@ codeunit 11748 "Install Application CZL"
             until WhseNetChangeTemplate.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyItemJournalLine();
     var
         ItemJournalLine: Record "Item Journal Line";
     begin
         if ItemJournalLine.FindSet() then
             repeat
+                ItemJournalLine."Tariff No. CZL" := ItemJournalLine."Tariff No.";
+                ItemJournalLine."Physical Transfer CZL" := ItemJournalLine."Physical Transfer";
+                ItemJournalLine."Incl. in Intrastat Amount CZL" := ItemJournalLine."Incl. in Intrastat Amount";
+                ItemJournalLine."Incl. in Intrastat S.Value CZL" := ItemJournalLine."Incl. in Intrastat Stat. Value";
+                ItemJournalLine."Net Weight CZL" := ItemJournalLine."Net Weight";
+                ItemJournalLine."Country/Reg. of Orig. Code CZL" := ItemJournalLine."Country/Region of Origin Code";
+                ItemJournalLine."Statistic Indication CZL" := ItemJournalLine."Statistic Indication";
+                ItemJournalLine."Intrastat Transaction CZL" := ItemJournalLine."Intrastat Transaction";
                 ItemJournalLine."Invt. Movement Template CZL" := ItemJournalLine."Whse. Net Change Template";
+                ItemJournalLine."G/L Correction CZL" := ItemJournalLine."G/L Correction";
                 ItemJournalLine.Modify(false);
             until ItemJournalLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyJobJournalLine();
     var
         JobJournalLine: Record "Job Journal Line";
@@ -362,11 +413,16 @@ codeunit 11748 "Install Application CZL"
         if JobJournalLine.FindSet() then
             repeat
                 JobJournalLine."Invt. Movement Template CZL" := JobJournalLine."Whse. Net Change Template";
+                JobJournalLine."Correction CZL" := JobJournalLine.Correction;
+                JobJournalLine."Tariff No. CZL" := JobJournalLine."Tariff No.";
+                JobJournalLine."Net Weight CZL" := JobJournalLine."Net Weight";
+                JobJournalLine."Country/Reg. of Orig. Code CZL" := JobJournalLine."Country/Region of Origin Code";
+                JobJournalLine."Statistic Indication CZL" := JobJournalLine."Statistic Indication";
+                JobJournalLine."Intrastat Transaction CZL" := JobJournalLine."Intrastat Transaction";
                 JobJournalLine.Modify(false);
             until JobJournalLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyPhysInvtOrderLine();
     var
         PhysInvtOrderLine: Record "Phys. Invt. Order Line";
@@ -378,19 +434,20 @@ codeunit 11748 "Install Application CZL"
             until PhysInvtOrderLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyInventorySetup();
     var
         InventorySetup: Record "Inventory Setup";
     begin
         if InventorySetup.Get() then begin
+            InventorySetup."Date Order Invt. Change CZL" := InventorySetup."Date Order Inventory Change";
             InventorySetup."Def.Tmpl. for Phys.Pos.Adj CZL" := InventorySetup."Def.Template for Phys.Pos.Adj";
             InventorySetup."Def.Tmpl. for Phys.Neg.Adj CZL" := InventorySetup."Def.Template for Phys.Neg.Adj";
+            InventorySetup."Post Exp.Cost Conv.As Corr.CZL" := InventorySetup."Post Exp. Cost Conv. as Corr.";
+            InventorySetup."Post Neg.Transf. As Corr.CZL" := InventorySetup."Post Neg. Transfers as Corr.";
             InventorySetup.Modify(false);
         end;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyGLSetup();
     var
         GLSetup: Record "General Ledger Setup";
@@ -401,8 +458,12 @@ codeunit 11748 "Install Application CZL"
             GLSetup."Allow VAT Posting From CZL" := GLSetup."Allow VAT Posting From";
             GLSetup."Allow VAT Posting To CZL" := GLSetup."Allow VAT Posting To";
             GLSetup."Do Not Check Dimensions CZL" := GLSetup."Dont Check Dimension";
+            GLSetup."Check Posting Debit/Credit CZL" := GLSetup."Check Posting Debit/Credit";
+            GLSetup."Mark Neg. Qty as Correct. CZL" := GLSetup."Mark Neg. Qty as Correction";
+            GLSetup."Rounding Date CZL" := GLSetup."Rounding Date";
+            GLSetup."Closed Per. Entry Pos.Date CZL" := GLSetup."Closed Period Entry Pos.Date";
+            GLSetup."User Checks Allowed CZL" := GLSetup."User Checks Allowed";
             GLSetup.Modify(false);
-
             if not StatutoryReportingSetupCZL.Get() then begin
                 StatutoryReportingSetupCZL.Init();
                 StatutoryReportingSetupCZL.Insert();
@@ -412,41 +473,40 @@ codeunit 11748 "Install Application CZL"
         end;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopySalesSetup();
     var
         SalesSetup: Record "Sales & Receivables Setup";
     begin
         if SalesSetup.Get() then begin
             SalesSetup."Default VAT Date CZL" := SalesSetup."Default VAT Date";
+            SalesSetup."Allow Alter Posting Groups CZL" := SalesSetup."Allow Alter Posting Groups";
             SalesSetup.Modify(false);
         end;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyPurchaseSetup();
     var
         PurchaseSetup: Record "Purchases & Payables Setup";
     begin
         if PurchaseSetup.Get() then begin
             PurchaseSetup."Default VAT Date CZL" := PurchaseSetup."Default VAT Date";
+            PurchaseSetup."Allow Alter Posting Groups CZL" := PurchaseSetup."Allow Alter Posting Groups";
             PurchaseSetup."Def. Orig. Doc. VAT Date CZL" := PurchaseSetup."Default Orig. Doc. VAT Date";
             PurchaseSetup.Modify(false);
         end;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyServiceSetup();
     var
         ServiceSetup: Record "Service Mgt. Setup";
     begin
         if ServiceSetup.Get() then begin
             ServiceSetup."Default VAT Date CZL" := ServiceSetup."Default VAT Date";
+            ServiceSetup."Allow Alter Posting Groups CZL" := ServiceSetup."Allow Alter Cust. Post. Groups";
             ServiceSetup.Modify(false);
         end;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyUserSetup();
     var
         UserSetup: Record "User Setup";
@@ -455,11 +515,25 @@ codeunit 11748 "Install Application CZL"
             repeat
                 UserSetup."Allow VAT Posting From CZL" := UserSetup."Allow VAT Posting From";
                 UserSetup."Allow VAT Posting To CZL" := UserSetup."Allow VAT Posting To";
+                UserSetup."Check Doc. Date(work date) CZL" := UserSetup."Check Document Date(work date)";
+                UserSetup."Check Doc. Date(sys. date) CZL" := UserSetup."Check Document Date(sys. date)";
+                UserSetup."Check Post.Date(work date) CZL" := UserSetup."Check Posting Date (work date)";
+                UserSetup."Check Post.Date(sys. date) CZL" := UserSetup."Check Posting Date (sys. date)";
+                UserSetup."Check Bank Accounts CZL" := UserSetup."Check Bank Accounts";
+                UserSetup."Check Journal Templates CZL" := UserSetup."Check Journal Templates";
+                UserSetup."Check Dimension Values CZL" := UserSetup."Check Dimension Values";
+                UserSetup."Allow Post.toClosed Period CZL" := UserSetup."Allow Posting to Closed Period";
+                UserSetup."Allow Complete Job CZL" := UserSetup."Allow Complete Job";
+                UserSetup."Employee No. CZL" := UserSetup."Employee No.";
+                UserSetup."User Name CZL" := UserSetup."User Name";
+                UserSetup."Allow Item Unapply CZL" := UserSetup."Allow Item Unapply";
+                UserSetup."Check Location Code CZL" := UserSetup."Check Location Code";
+                UserSetup."Check Release LocationCode CZL" := UserSetup."Check Release Location Code";
+                UserSetup."Check Invt. Movement Temp. CZL" := UserSetup."Check Whse. Net Change Temp.";
                 UserSetup.Modify(false);
             until UserSetup.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVATPeriod();
     var
         VATPeriod: Record "VAT Period";
@@ -479,7 +553,6 @@ codeunit 11748 "Install Application CZL"
             until VATPeriod.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyGLEntry();
     var
         GLEntry: Record "G/L Entry";
@@ -493,35 +566,84 @@ codeunit 11748 "Install Application CZL"
 
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyCustLedgerEntry();
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
     begin
-        CustLedgerEntry.SetFilter(CustLedgerEntry."VAT Date", '<>0D');
         if CustLedgerEntry.FindSet(true) then
             repeat
+                CustLedgerEntry."Specific Symbol CZL" := CustLedgerEntry."Specific Symbol";
+                CustLedgerEntry."Variable Symbol CZL" := CustLedgerEntry."Variable Symbol";
+                CustLedgerEntry."Constant Symbol CZL" := CustLedgerEntry."Constant Symbol";
+                CustLedgerEntry."Bank Account Code CZL" := CustLedgerEntry."Bank Account Code";
+                CustLedgerEntry."Bank Account No. CZL" := CustLedgerEntry."Bank Account No.";
+                CustLedgerEntry."Transit No. CZL" := CustLedgerEntry."Transit No.";
+                CustLedgerEntry."IBAN CZL" := CustLedgerEntry.IBAN;
+                CustLedgerEntry."SWIFT Code CZL" := CustLedgerEntry."SWIFT Code";
                 CustLedgerEntry."VAT Date CZL" := CustLedgerEntry."VAT Date";
                 CustLedgerEntry.Modify(false);
             until CustLedgerEntry.Next() = 0;
 
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
+    local procedure CopyDetailedCustLedgEntry();
+    var
+        DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
+        ApplAcrCustPostGroupsCZL: Query "Appl.Acr. Cust.Post.Groups CZL";
+        ApplAcrossPostGrpEntryNo: List of [Integer];
+    begin
+        if ApplAcrCustPostGroupsCZL.Open() then
+            while ApplAcrCustPostGroupsCZL.Read() do
+                ApplAcrossPostGrpEntryNo.Add(ApplAcrCustPostGroupsCZL.Entry_No_);
+
+        if DetailedCustLedgEntry.FindSet(true) then
+            repeat
+                DetailedCustLedgEntry."Customer Posting Group CZL" := DetailedCustLedgEntry."Customer Posting Group";
+                if ApplAcrossPostGrpEntryNo.Contains(DetailedCustLedgEntry."Entry No.") then
+                    DetailedCustLedgEntry."Appl. Across Post. Groups CZL" := true;
+                DetailedCustLedgEntry.Modify(false);
+            until DetailedCustLedgEntry.Next() = 0;
+    end;
+
     local procedure CopyVendLedgerEntry();
     var
-        VendLedgerEntry: Record "Vendor Ledger Entry";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
-        VendLedgerEntry.SetFilter(VendLedgerEntry."VAT Date", '<>0D');
-        if VendLedgerEntry.FindSet(true) then
+        if VendorLedgerEntry.FindSet(true) then
             repeat
-                VendLedgerEntry."VAT Date CZL" := VendLedgerEntry."VAT Date";
-                VendLedgerEntry.Modify(false);
-            until VendLedgerEntry.Next() = 0;
+                VendorLedgerEntry."Specific Symbol CZL" := VendorLedgerEntry."Specific Symbol";
+                VendorLedgerEntry."Variable Symbol CZL" := VendorLedgerEntry."Variable Symbol";
+                VendorLedgerEntry."Constant Symbol CZL" := VendorLedgerEntry."Constant Symbol";
+                VendorLedgerEntry."Bank Account Code CZL" := VendorLedgerEntry."Bank Account Code";
+                VendorLedgerEntry."Bank Account No. CZL" := VendorLedgerEntry."Bank Account No.";
+                VendorLedgerEntry."Transit No. CZL" := VendorLedgerEntry."Transit No.";
+                VendorLedgerEntry."IBAN CZL" := VendorLedgerEntry.IBAN;
+                VendorLedgerEntry."SWIFT Code CZL" := VendorLedgerEntry."SWIFT Code";
+                VendorLedgerEntry."VAT Date CZL" := VendorLedgerEntry."VAT Date";
+                VendorLedgerEntry.Modify(false);
+            until VendorLedgerEntry.Next() = 0;
 
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
+    local procedure CopyDetailedVendorLedgEntry();
+    var
+        DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
+        ApplAcrVendPostGroupsCZL: Query "Appl.Acr. Vend.Post.Groups CZL";
+        ApplAcrossPostGrpEntryNo: List of [Integer];
+    begin
+        if ApplAcrVendPostGroupsCZL.Open() then
+            while ApplAcrVendPostGroupsCZL.Read() do
+                ApplAcrossPostGrpEntryNo.Add(ApplAcrVendPostGroupsCZL.Entry_No_);
+
+        if DetailedVendorLedgEntry.FindSet(true) then
+            repeat
+                DetailedVendorLedgEntry."Vendor Posting Group CZL" := DetailedVendorLedgEntry."Vendor Posting Group";
+                if ApplAcrossPostGrpEntryNo.Contains(DetailedVendorLedgEntry."Entry No.") then
+                    DetailedVendorLedgEntry."Appl. Across Post. Groups CZL" := true;
+                DetailedVendorLedgEntry.Modify(false);
+            until DetailedVendorLedgEntry.Next() = 0;
+    end;
+
     local procedure CopyVATEntry();
     var
         VATEntry: Record "VAT Entry";
@@ -533,20 +655,26 @@ codeunit 11748 "Install Application CZL"
                 VATEntry."VAT Settlement No. CZL" := VATEntry."VAT Settlement No.";
                 VATEntry."Original Doc. VAT Date CZL" := VATEntry."Original Document VAT Date";
                 VATEntry."EU 3-Party Intermed. Role CZL" := VATEntry."EU 3-Party Intermediate Role";
-                VATEntry."VAT Ctrl. Report No. CZL" := VATEntry."VAT Control Report No.";
-                VATEntry."VAT Ctrl. Report Line No. CZL" := VATEntry."VAT Control Report Line No.";
                 VATEntry."VAT Delay CZL" := VATEntry."VAT Delay";
+                VATEntry."VAT Identifier CZL" := VATEntry."VAT Identifier";
                 VATEntry.Modify(false);
             until VATEntry.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyGenJournalLine();
     var
         GenJournalLine: Record "Gen. Journal Line";
     begin
         if GenJournalLine.FindSet(true) then
             repeat
+                GenJournalLine."Specific Symbol CZL" := GenJournalLine."Specific Symbol";
+                GenJournalLine."Variable Symbol CZL" := GenJournalLine."Variable Symbol";
+                GenJournalLine."Constant Symbol CZL" := GenJournalLine."Constant Symbol";
+                GenJournalLine."Bank Account Code CZL" := GenJournalLine."Bank Account Code";
+                GenJournalLine."Bank Account No. CZL" := GenJournalLine."Bank Account No.";
+                GenJournalLine."Transit No. CZL" := GenJournalLine."Transit No.";
+                GenJournalLine."IBAN CZL" := GenJournalLine.IBAN;
+                GenJournalLine."SWIFT Code CZL" := GenJournalLine."SWIFT Code";
                 GenJournalLine."VAT Date CZL" := GenJournalLine."VAT Date";
                 GenJournalLine."Registration No. CZL" := GenJournalLine."Registration No.";
                 GenJournalLine."Tax Registration No. CZL" := GenJournalLine."Tax Registration No.";
@@ -561,17 +689,28 @@ codeunit 11748 "Install Application CZL"
             until GenJournalLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopySalesHeader();
     var
         SalesHeader: Record "Sales Header";
     begin
         if SalesHeader.FindSet(true) then
             repeat
+                SalesHeader."Specific Symbol CZL" := SalesHeader."Specific Symbol";
+                SalesHeader."Variable Symbol CZL" := SalesHeader."Variable Symbol";
+                SalesHeader."Constant Symbol CZL" := SalesHeader."Constant Symbol";
+                SalesHeader."Bank Account Code CZL" := SalesHeader."Bank Account Code";
+                SalesHeader."Bank Account No. CZL" := SalesHeader."Bank Account No.";
+                SalesHeader."Bank Branch No. CZL" := SalesHeader."Bank Branch No.";
+                SalesHeader."Bank Name CZL" := SalesHeader."Bank Name";
+                SalesHeader."Transit No. CZL" := SalesHeader."Transit No.";
+                SalesHeader."IBAN CZL" := SalesHeader.IBAN;
+                SalesHeader."SWIFT Code CZL" := SalesHeader."SWIFT Code";
                 SalesHeader."VAT Date CZL" := SalesHeader."VAT Date";
                 SalesHeader."Registration No. CZL" := SalesHeader."Registration No.";
                 SalesHeader."Tax Registration No. CZL" := SalesHeader."Tax Registration No.";
                 SalesHeader."Credit Memo Type CZL" := SalesHeader."Credit Memo Type";
+                SalesHeader."Physical Transfer CZL" := SalesHeader."Physical Transfer";
+                SalesHeader."Intrastat Exclude CZL" := SalesHeader."Intrastat Exclude";
                 SalesHeader."EU 3-Party Intermed. Role CZL" := SalesHeader."EU 3-Party Intermediate Role";
                 SalesHeader."Original Doc. VAT Date CZL" := SalesHeader."Original Document VAT Date";
                 SalesHeader."VAT Currency Factor CZL" := SalesHeader."VAT Currency Factor";
@@ -580,7 +719,6 @@ codeunit 11748 "Install Application CZL"
             until SalesHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopySalesShipmentHeader();
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
@@ -589,21 +727,34 @@ codeunit 11748 "Install Application CZL"
             repeat
                 SalesShipmentHeader."Registration No. CZL" := SalesShipmentHeader."Registration No.";
                 SalesShipmentHeader."Tax Registration No. CZL" := SalesShipmentHeader."Tax Registration No.";
+                SalesShipmentHeader."Physical Transfer CZL" := SalesShipmentHeader."Physical Transfer";
+                SalesShipmentHeader."Intrastat Exclude CZL" := SalesShipmentHeader."Intrastat Exclude";
                 SalesShipmentHeader."EU 3-Party Intermed. Role CZL" := SalesShipmentHeader."EU 3-Party Intermediate Role";
                 SalesShipmentHeader.Modify(false);
             until SalesShipmentHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopySalesInvoiceHeader();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
     begin
         if SalesInvoiceHeader.FindSet(true) then
             repeat
+                SalesInvoiceHeader."Specific Symbol CZL" := SalesInvoiceHeader."Specific Symbol";
+                SalesInvoiceHeader."Variable Symbol CZL" := SalesInvoiceHeader."Variable Symbol";
+                SalesInvoiceHeader."Constant Symbol CZL" := SalesInvoiceHeader."Constant Symbol";
+                SalesInvoiceHeader."Bank Account Code CZL" := SalesInvoiceHeader."Bank Account Code";
+                SalesInvoiceHeader."Bank Account No. CZL" := SalesInvoiceHeader."Bank Account No.";
+                SalesInvoiceHeader."Bank Branch No. CZL" := SalesInvoiceHeader."Bank Branch No.";
+                SalesInvoiceHeader."Bank Name CZL" := SalesInvoiceHeader."Bank Name";
+                SalesInvoiceHeader."Transit No. CZL" := SalesInvoiceHeader."Transit No.";
+                SalesInvoiceHeader."IBAN CZL" := SalesInvoiceHeader.IBAN;
+                SalesInvoiceHeader."SWIFT Code CZL" := SalesInvoiceHeader."SWIFT Code";
                 SalesInvoiceHeader."VAT Date CZL" := SalesInvoiceHeader."VAT Date";
                 SalesInvoiceHeader."Registration No. CZL" := SalesInvoiceHeader."Registration No.";
                 SalesInvoiceHeader."Tax Registration No. CZL" := SalesInvoiceHeader."Tax Registration No.";
+                SalesInvoiceHeader."Physical Transfer CZL" := SalesInvoiceHeader."Physical Transfer";
+                SalesInvoiceHeader."Intrastat Exclude CZL" := SalesInvoiceHeader."Intrastat Exclude";
                 SalesInvoiceHeader."EU 3-Party Intermed. Role CZL" := SalesInvoiceHeader."EU 3-Party Intermediate Role";
                 SalesInvoiceHeader."VAT Currency Factor CZL" := SalesInvoiceHeader."VAT Currency Factor";
                 SalesInvoiceHeader."VAT Currency Code CZL" := SalesInvoiceHeader."Currency Code";
@@ -611,16 +762,27 @@ codeunit 11748 "Install Application CZL"
             until SalesInvoiceHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopySalesCrMemoHeader();
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
     begin
         if SalesCrMemoHeader.FindSet(true) then
             repeat
+                SalesCrMemoHeader."Specific Symbol CZL" := SalesCrMemoHeader."Specific Symbol";
+                SalesCrMemoHeader."Variable Symbol CZL" := SalesCrMemoHeader."Variable Symbol";
+                SalesCrMemoHeader."Constant Symbol CZL" := SalesCrMemoHeader."Constant Symbol";
+                SalesCrMemoHeader."Bank Account Code CZL" := SalesCrMemoHeader."Bank Account Code";
+                SalesCrMemoHeader."Bank Account No. CZL" := SalesCrMemoHeader."Bank Account No.";
+                SalesCrMemoHeader."Bank Branch No. CZL" := SalesCrMemoHeader."Bank Branch No.";
+                SalesCrMemoHeader."Bank Name CZL" := SalesCrMemoHeader."Bank Name";
+                SalesCrMemoHeader."Transit No. CZL" := SalesCrMemoHeader."Transit No.";
+                SalesCrMemoHeader."IBAN CZL" := SalesCrMemoHeader.IBAN;
+                SalesCrMemoHeader."SWIFT Code CZL" := SalesCrMemoHeader."SWIFT Code";
                 SalesCrMemoHeader."VAT Date CZL" := SalesCrMemoHeader."VAT Date";
                 SalesCrMemoHeader."Registration No. CZL" := SalesCrMemoHeader."Registration No.";
                 SalesCrMemoHeader."Tax Registration No. CZL" := SalesCrMemoHeader."Tax Registration No.";
+                SalesCrMemoHeader."Physical Transfer CZL" := SalesCrMemoHeader."Physical Transfer";
+                SalesCrMemoHeader."Intrastat Exclude CZL" := SalesCrMemoHeader."Intrastat Exclude";
                 SalesCrMemoHeader."Credit Memo Type CZL" := SalesCrMemoHeader."Credit Memo Type";
                 SalesCrMemoHeader."EU 3-Party Intermed. Role CZL" := SalesCrMemoHeader."EU 3-Party Intermediate Role";
                 SalesCrMemoHeader."VAT Currency Factor CZL" := SalesCrMemoHeader."VAT Currency Factor";
@@ -629,7 +791,6 @@ codeunit 11748 "Install Application CZL"
             until SalesCrMemoHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyReturnReceiptHeader();
     var
         ReturnReceiptHeader: Record "Return Receipt Header";
@@ -638,20 +799,31 @@ codeunit 11748 "Install Application CZL"
             repeat
                 ReturnReceiptHeader."Registration No. CZL" := ReturnReceiptHeader."Registration No.";
                 ReturnReceiptHeader."Tax Registration No. CZL" := ReturnReceiptHeader."Tax Registration No.";
+                ReturnReceiptHeader."Physical Transfer CZL" := ReturnReceiptHeader."Physical Transfer";
+                ReturnReceiptHeader."Intrastat Exclude CZL" := ReturnReceiptHeader."Intrastat Exclude";
                 ReturnReceiptHeader.Modify(false);
             until ReturnReceiptHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopySalesHeaderArchive();
     var
         SalesHeaderArchive: Record "Sales Header Archive";
     begin
         if SalesHeaderArchive.FindSet(true) then
             repeat
+                SalesHeaderArchive."Specific Symbol CZL" := SalesHeaderArchive."Specific Symbol";
+                SalesHeaderArchive."Variable Symbol CZL" := SalesHeaderArchive."Variable Symbol";
+                SalesHeaderArchive."Constant Symbol CZL" := SalesHeaderArchive."Constant Symbol";
+                SalesHeaderArchive."Bank Account Code CZL" := SalesHeaderArchive."Bank Account Code";
+                SalesHeaderArchive."Bank Account No. CZL" := SalesHeaderArchive."Bank Account No.";
+                SalesHeaderArchive."Transit No. CZL" := SalesHeaderArchive."Transit No.";
+                SalesHeaderArchive."IBAN CZL" := SalesHeaderArchive.IBAN;
+                SalesHeaderArchive."SWIFT Code CZL" := SalesHeaderArchive."SWIFT Code";
                 SalesHeaderArchive."VAT Date CZL" := SalesHeaderArchive."VAT Date";
                 SalesHeaderArchive."Registration No. CZL" := SalesHeaderArchive."Registration No.";
                 SalesHeaderArchive."Tax Registration No. CZL" := SalesHeaderArchive."Tax Registration No.";
+                SalesHeaderArchive."Intrastat Exclude CZL" := SalesHeaderArchive."Intrastat Exclude";
+                SalesHeaderArchive."Physical Transfer CZL" := SalesHeaderArchive."Physical Transfer";
                 SalesHeaderArchive."EU 3-Party Intermed. Role CZL" := SalesHeaderArchive."EU 3-Party Intermediate Role";
                 SalesHeaderArchive."VAT Currency Factor CZL" := SalesHeaderArchive."VAT Currency Factor";
                 SalesHeaderArchive."VAT Currency Code CZL" := SalesHeaderArchive."Currency Code";
@@ -659,16 +831,27 @@ codeunit 11748 "Install Application CZL"
             until SalesHeaderArchive.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyPurchaseHeader();
     var
         PurchaseHeader: Record "Purchase Header";
     begin
         if PurchaseHeader.FindSet(true) then
             repeat
+                PurchaseHeader."Specific Symbol CZL" := PurchaseHeader."Specific Symbol";
+                PurchaseHeader."Variable Symbol CZL" := PurchaseHeader."Variable Symbol";
+                PurchaseHeader."Constant Symbol CZL" := PurchaseHeader."Constant Symbol";
+                PurchaseHeader."Bank Account Code CZL" := PurchaseHeader."Bank Account Code";
+                PurchaseHeader."Bank Account No. CZL" := PurchaseHeader."Bank Account No.";
+                PurchaseHeader."Bank Branch No. CZL" := PurchaseHeader."Bank Branch No.";
+                PurchaseHeader."Bank Name CZL" := PurchaseHeader."Bank Name";
+                PurchaseHeader."Transit No. CZL" := PurchaseHeader."Transit No.";
+                PurchaseHeader."IBAN CZL" := PurchaseHeader.IBAN;
+                PurchaseHeader."SWIFT Code CZL" := PurchaseHeader."SWIFT Code";
                 PurchaseHeader."VAT Date CZL" := PurchaseHeader."VAT Date";
                 PurchaseHeader."Registration No. CZL" := PurchaseHeader."Registration No.";
                 PurchaseHeader."Tax Registration No. CZL" := PurchaseHeader."Tax Registration No.";
+                PurchaseHeader."Physical Transfer CZL" := PurchaseHeader."Physical Transfer";
+                PurchaseHeader."Intrastat Exclude CZL" := PurchaseHeader."Intrastat Exclude";
                 PurchaseHeader."EU 3-Party Intermed. Role CZL" := PurchaseHeader."EU 3-Party Intermediate Role";
                 PurchaseHeader."EU 3-Party Trade CZL" := PurchaseHeader."EU 3-Party Trade";
                 PurchaseHeader."Original Doc. VAT Date CZL" := PurchaseHeader."Original Document VAT Date";
@@ -678,7 +861,6 @@ codeunit 11748 "Install Application CZL"
             until PurchaseHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyPurchaseReceiptHeader();
     var
         PurchRcptHeader: Record "Purch. Rcpt. Header";
@@ -687,22 +869,33 @@ codeunit 11748 "Install Application CZL"
             repeat
                 PurchRcptHeader."Registration No. CZL" := PurchRcptHeader."Registration No.";
                 PurchRcptHeader."Tax Registration No. CZL" := PurchRcptHeader."Tax Registration No.";
+                PurchRcptHeader."Physical Transfer CZL" := PurchRcptHeader."Physical Transfer";
+                PurchRcptHeader."Intrastat Exclude CZL" := PurchRcptHeader."Intrastat Exclude";
                 PurchRcptHeader."EU 3-Party Intermed. Role CZL" := PurchRcptHeader."EU 3-Party Intermediate Role";
                 PurchRcptHeader."EU 3-Party Trade CZL" := PurchRcptHeader."EU 3-Party Trade";
                 PurchRcptHeader.Modify(false);
             until PurchRcptHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyPurchaseInvoiceHeader();
     var
         PurchaseInvoiceHeader: Record "Purch. Inv. Header";
     begin
         if PurchaseInvoiceHeader.FindSet(true) then
             repeat
+                PurchaseInvoiceHeader."Specific Symbol CZL" := PurchaseInvoiceHeader."Specific Symbol";
+                PurchaseInvoiceHeader."Variable Symbol CZL" := PurchaseInvoiceHeader."Variable Symbol";
+                PurchaseInvoiceHeader."Constant Symbol CZL" := PurchaseInvoiceHeader."Constant Symbol";
+                PurchaseInvoiceHeader."Bank Account Code CZL" := PurchaseInvoiceHeader."Bank Account Code";
+                PurchaseInvoiceHeader."Bank Account No. CZL" := PurchaseInvoiceHeader."Bank Account No.";
+                PurchaseInvoiceHeader."Transit No. CZL" := PurchaseInvoiceHeader."Transit No.";
+                PurchaseInvoiceHeader."IBAN CZL" := PurchaseInvoiceHeader.IBAN;
+                PurchaseInvoiceHeader."SWIFT Code CZL" := PurchaseInvoiceHeader."SWIFT Code";
                 PurchaseInvoiceHeader."VAT Date CZL" := PurchaseInvoiceHeader."VAT Date";
                 PurchaseInvoiceHeader."Registration No. CZL" := PurchaseInvoiceHeader."Registration No.";
                 PurchaseInvoiceHeader."Tax Registration No. CZL" := PurchaseInvoiceHeader."Tax Registration No.";
+                PurchaseInvoiceHeader."Physical Transfer CZL" := PurchaseInvoiceHeader."Physical Transfer";
+                PurchaseInvoiceHeader."Intrastat Exclude CZL" := PurchaseInvoiceHeader."Intrastat Exclude";
                 PurchaseInvoiceHeader."EU 3-Party Intermed. Role CZL" := PurchaseInvoiceHeader."EU 3-Party Intermediate Role";
                 PurchaseInvoiceHeader."EU 3-Party Trade CZL" := PurchaseInvoiceHeader."EU 3-Party Trade";
                 PurchaseInvoiceHeader."Original Doc. VAT Date CZL" := PurchaseInvoiceHeader."Original Document VAT Date";
@@ -712,16 +905,25 @@ codeunit 11748 "Install Application CZL"
             until PurchaseInvoiceHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyPurchaseCrMemoHeader();
     var
         PurchaseCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
     begin
         if PurchaseCrMemoHeader.FindSet(true) then
             repeat
+                PurchaseCrMemoHeader."Specific Symbol CZL" := PurchaseCrMemoHeader."Specific Symbol";
+                PurchaseCrMemoHeader."Variable Symbol CZL" := PurchaseCrMemoHeader."Variable Symbol";
+                PurchaseCrMemoHeader."Constant Symbol CZL" := PurchaseCrMemoHeader."Constant Symbol";
+                PurchaseCrMemoHeader."Bank Account Code CZL" := PurchaseCrMemoHeader."Bank Account Code";
+                PurchaseCrMemoHeader."Bank Account No. CZL" := PurchaseCrMemoHeader."Bank Account No.";
+                PurchaseCrMemoHeader."Transit No. CZL" := PurchaseCrMemoHeader."Transit No.";
+                PurchaseCrMemoHeader."IBAN CZL" := PurchaseCrMemoHeader.IBAN;
+                PurchaseCrMemoHeader."SWIFT Code CZL" := PurchaseCrMemoHeader."SWIFT Code";
                 PurchaseCrMemoHeader."VAT Date CZL" := PurchaseCrMemoHeader."VAT Date";
                 PurchaseCrMemoHeader."Registration No. CZL" := PurchaseCrMemoHeader."Registration No.";
                 PurchaseCrMemoHeader."Tax Registration No. CZL" := PurchaseCrMemoHeader."Tax Registration No.";
+                PurchaseCrMemoHeader."Physical Transfer CZL" := PurchaseCrMemoHeader."Physical Transfer";
+                PurchaseCrMemoHeader."Intrastat Exclude CZL" := PurchaseCrMemoHeader."Intrastat Exclude";
                 PurchaseCrMemoHeader."EU 3-Party Intermed. Role CZL" := PurchaseCrMemoHeader."EU 3-Party Intermediate Role";
                 PurchaseCrMemoHeader."EU 3-Party Trade CZL" := PurchaseCrMemoHeader."EU 3-Party Trade";
                 PurchaseCrMemoHeader."Original Doc. VAT Date CZL" := PurchaseCrMemoHeader."Original Document VAT Date";
@@ -731,7 +933,6 @@ codeunit 11748 "Install Application CZL"
             until PurchaseCrMemoHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyReturnShipmentHeader();
     var
         ReturnShipmentHeader: Record "Return Shipment Header";
@@ -740,18 +941,27 @@ codeunit 11748 "Install Application CZL"
             repeat
                 ReturnShipmentHeader."Registration No. CZL" := ReturnShipmentHeader."Registration No.";
                 ReturnShipmentHeader."Tax Registration No. CZL" := ReturnShipmentHeader."Tax Registration No.";
+                ReturnShipmentHeader."Physical Transfer CZL" := ReturnShipmentHeader."Physical Transfer";
+                ReturnShipmentHeader."Intrastat Exclude CZL" := ReturnShipmentHeader."Intrastat Exclude";
                 ReturnShipmentHeader."EU 3-Party Trade CZL" := ReturnShipmentHeader."EU 3-Party Trade";
                 ReturnShipmentHeader.Modify(false);
             until ReturnShipmentHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyPurchaseHeaderArchive();
     var
         PurchaseHeaderArchive: Record "Purchase Header Archive";
     begin
         if PurchaseHeaderArchive.FindSet(true) then
             repeat
+                PurchaseHeaderArchive."Specific Symbol CZL" := PurchaseHeaderArchive."Specific Symbol";
+                PurchaseHeaderArchive."Variable Symbol CZL" := PurchaseHeaderArchive."Variable Symbol";
+                PurchaseHeaderArchive."Constant Symbol CZL" := PurchaseHeaderArchive."Constant Symbol";
+                PurchaseHeaderArchive."Bank Account Code CZL" := PurchaseHeaderArchive."Bank Account Code";
+                PurchaseHeaderArchive."Bank Account No. CZL" := PurchaseHeaderArchive."Bank Account No.";
+                PurchaseHeaderArchive."Transit No. CZL" := PurchaseHeaderArchive."Transit No.";
+                PurchaseHeaderArchive."IBAN CZL" := PurchaseHeaderArchive.IBAN;
+                PurchaseHeaderArchive."SWIFT Code CZL" := PurchaseHeaderArchive."SWIFT Code";
                 PurchaseHeaderArchive."VAT Date CZL" := PurchaseHeaderArchive."VAT Date";
                 PurchaseHeaderArchive."Registration No. CZL" := PurchaseHeaderArchive."Registration No.";
                 PurchaseHeaderArchive."Tax Registration No. CZL" := PurchaseHeaderArchive."Tax Registration No.";
@@ -763,16 +973,27 @@ codeunit 11748 "Install Application CZL"
             until PurchaseHeaderArchive.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyServiceHeader();
     var
         ServiceHeader: Record "Service Header";
     begin
         if ServiceHeader.FindSet(true) then
             repeat
+                ServiceHeader."Specific Symbol CZL" := ServiceHeader."Specific Symbol";
+                ServiceHeader."Variable Symbol CZL" := ServiceHeader."Variable Symbol";
+                ServiceHeader."Constant Symbol CZL" := ServiceHeader."Constant Symbol";
+                ServiceHeader."Bank Account Code CZL" := ServiceHeader."Bank Account Code";
+                ServiceHeader."Bank Account No. CZL" := ServiceHeader."Bank Account No.";
+                ServiceHeader."Bank Branch No. CZL" := ServiceHeader."Bank Branch No.";
+                ServiceHeader."Bank Name CZL" := ServiceHeader."Bank Name";
+                ServiceHeader."Transit No. CZL" := ServiceHeader."Transit No.";
+                ServiceHeader."IBAN CZL" := ServiceHeader.IBAN;
+                ServiceHeader."SWIFT Code CZL" := ServiceHeader."SWIFT Code";
                 ServiceHeader."VAT Date CZL" := ServiceHeader."VAT Date";
                 ServiceHeader."Registration No. CZL" := ServiceHeader."Registration No.";
                 ServiceHeader."Tax Registration No. CZL" := ServiceHeader."Tax Registration No.";
+                ServiceHeader."Physical Transfer CZL" := ServiceHeader."Physical Transfer";
+                ServiceHeader."Intrastat Exclude CZL" := ServiceHeader."Intrastat Exclude";
                 ServiceHeader."Credit Memo Type CZL" := ServiceHeader."Credit Memo Type";
                 ServiceHeader."EU 3-Party Intermed. Role CZL" := ServiceHeader."EU 3-Party Intermediate Role";
                 ServiceHeader."VAT Currency Factor CZL" := ServiceHeader."VAT Currency Factor";
@@ -781,7 +1002,6 @@ codeunit 11748 "Install Application CZL"
             until ServiceHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyServiceShipmentHeader();
     var
         ServiceShipmentHeader: Record "Service Shipment Header";
@@ -790,21 +1010,34 @@ codeunit 11748 "Install Application CZL"
             repeat
                 ServiceShipmentHeader."Registration No. CZL" := ServiceShipmentHeader."Registration No.";
                 ServiceShipmentHeader."Tax Registration No. CZL" := ServiceShipmentHeader."Tax Registration No.";
+                ServiceShipmentHeader."Physical Transfer CZL" := ServiceShipmentHeader."Physical Transfer";
+                ServiceShipmentHeader."Intrastat Exclude CZL" := ServiceShipmentHeader."Intrastat Exclude";
                 ServiceShipmentHeader."EU 3-Party Intermed. Role CZL" := ServiceShipmentHeader."EU 3-Party Intermediate Role";
                 ServiceShipmentHeader.Modify(false);
             until ServiceShipmentHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyServiceInvoiceHeader();
     var
         ServiceInvoiceHeader: Record "Service Invoice Header";
     begin
         if ServiceInvoiceHeader.FindSet(true) then
             repeat
+                ServiceInvoiceHeader."Specific Symbol CZL" := ServiceInvoiceHeader."Specific Symbol";
+                ServiceInvoiceHeader."Variable Symbol CZL" := ServiceInvoiceHeader."Variable Symbol";
+                ServiceInvoiceHeader."Constant Symbol CZL" := ServiceInvoiceHeader."Constant Symbol";
+                ServiceInvoiceHeader."Bank Account Code CZL" := ServiceInvoiceHeader."Bank Account Code";
+                ServiceInvoiceHeader."Bank Account No. CZL" := ServiceInvoiceHeader."Bank Account No.";
+                ServiceInvoiceHeader."Bank Branch No. CZL" := ServiceInvoiceHeader."Bank Branch No.";
+                ServiceInvoiceHeader."Bank Name CZL" := ServiceInvoiceHeader."Bank Name";
+                ServiceInvoiceHeader."Transit No. CZL" := ServiceInvoiceHeader."Transit No.";
+                ServiceInvoiceHeader."IBAN CZL" := ServiceInvoiceHeader.IBAN;
+                ServiceInvoiceHeader."SWIFT Code CZL" := ServiceInvoiceHeader."SWIFT Code";
                 ServiceInvoiceHeader."VAT Date CZL" := ServiceInvoiceHeader."VAT Date";
                 ServiceInvoiceHeader."Registration No. CZL" := ServiceInvoiceHeader."Registration No.";
                 ServiceInvoiceHeader."Tax Registration No. CZL" := ServiceInvoiceHeader."Tax Registration No.";
+                ServiceInvoiceHeader."Physical Transfer CZL" := ServiceInvoiceHeader."Physical Transfer";
+                ServiceInvoiceHeader."Intrastat Exclude CZL" := ServiceInvoiceHeader."Intrastat Exclude";
                 ServiceInvoiceHeader."EU 3-Party Intermed. Role CZL" := ServiceInvoiceHeader."EU 3-Party Intermediate Role";
                 ServiceInvoiceHeader."VAT Currency Factor CZL" := ServiceInvoiceHeader."VAT Currency Factor";
                 ServiceInvoiceHeader."VAT Currency Code CZL" := ServiceInvoiceHeader."Currency Code";
@@ -812,16 +1045,27 @@ codeunit 11748 "Install Application CZL"
             until ServiceInvoiceHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyServiceCrMemoHeader();
     var
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
     begin
         if ServiceCrMemoHeader.FindSet(true) then
             repeat
+                ServiceCrMemoHeader."Specific Symbol CZL" := ServiceCrMemoHeader."Specific Symbol";
+                ServiceCrMemoHeader."Variable Symbol CZL" := ServiceCrMemoHeader."Variable Symbol";
+                ServiceCrMemoHeader."Constant Symbol CZL" := ServiceCrMemoHeader."Constant Symbol";
+                ServiceCrMemoHeader."Bank Account Code CZL" := ServiceCrMemoHeader."Bank Account Code";
+                ServiceCrMemoHeader."Bank Account No. CZL" := ServiceCrMemoHeader."Bank Account No.";
+                ServiceCrMemoHeader."Bank Branch No. CZL" := ServiceCrMemoHeader."Bank Branch No.";
+                ServiceCrMemoHeader."Bank Name CZL" := ServiceCrMemoHeader."Bank Name";
+                ServiceCrMemoHeader."Transit No. CZL" := ServiceCrMemoHeader."Transit No.";
+                ServiceCrMemoHeader."IBAN CZL" := ServiceCrMemoHeader.IBAN;
+                ServiceCrMemoHeader."SWIFT Code CZL" := ServiceCrMemoHeader."SWIFT Code";
                 ServiceCrMemoHeader."VAT Date CZL" := ServiceCrMemoHeader."VAT Date";
                 ServiceCrMemoHeader."Registration No. CZL" := ServiceCrMemoHeader."Registration No.";
                 ServiceCrMemoHeader."Tax Registration No. CZL" := ServiceCrMemoHeader."Tax Registration No.";
+                ServiceCrMemoHeader."Physical Transfer CZL" := ServiceCrMemoHeader."Physical Transfer";
+                ServiceCrMemoHeader."Intrastat Exclude CZL" := ServiceCrMemoHeader."Intrastat Exclude";
                 ServiceCrMemoHeader."Credit Memo Type CZL" := ServiceCrMemoHeader."Credit Memo Type";
                 ServiceCrMemoHeader."EU 3-Party Intermed. Role CZL" := ServiceCrMemoHeader."EU 3-Party Intermediate Role";
                 ServiceCrMemoHeader."VAT Currency Factor CZL" := ServiceCrMemoHeader."VAT Currency Factor";
@@ -830,59 +1074,94 @@ codeunit 11748 "Install Application CZL"
             until ServiceCrMemoHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyReminderHeader();
     var
         ReminderHeader: Record "Reminder Header";
     begin
         if ReminderHeader.FindSet(true) then
             repeat
+                ReminderHeader."Specific Symbol CZL" := ReminderHeader."Specific Symbol";
+                ReminderHeader."Variable Symbol CZL" := ReminderHeader."Variable Symbol";
+                ReminderHeader."Constant Symbol CZL" := ReminderHeader."Constant Symbol";
+                ReminderHeader."Bank Account Code CZL" := ReminderHeader."Bank No.";
+                ReminderHeader."Bank Account No. CZL" := ReminderHeader."Bank Account No.";
+                ReminderHeader."Bank Branch No. CZL" := ReminderHeader."Bank Branch No.";
+                ReminderHeader."Bank Name CZL" := ReminderHeader."Bank Name";
+                ReminderHeader."Transit No. CZL" := ReminderHeader."Transit No.";
+                ReminderHeader."IBAN CZL" := ReminderHeader.IBAN;
+                ReminderHeader."SWIFT Code CZL" := ReminderHeader."SWIFT Code";
                 ReminderHeader."Registration No. CZL" := ReminderHeader."Registration No.";
                 ReminderHeader."Tax Registration No. CZL" := ReminderHeader."Tax Registration No.";
                 ReminderHeader.Modify(false);
             until ReminderHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyIssuedReminderHeader();
     var
         IssuedReminderHeader: Record "Issued Reminder Header";
     begin
         if IssuedReminderHeader.FindSet(true) then
             repeat
+                IssuedReminderHeader."Specific Symbol CZL" := IssuedReminderHeader."Specific Symbol";
+                IssuedReminderHeader."Variable Symbol CZL" := IssuedReminderHeader."Variable Symbol";
+                IssuedReminderHeader."Constant Symbol CZL" := IssuedReminderHeader."Constant Symbol";
+                IssuedReminderHeader."Bank Account Code CZL" := IssuedReminderHeader."Bank No.";
+                IssuedReminderHeader."Bank Account No. CZL" := IssuedReminderHeader."Bank Account No.";
+                IssuedReminderHeader."Bank Branch No. CZL" := IssuedReminderHeader."Bank Branch No.";
+                IssuedReminderHeader."Bank Name CZL" := IssuedReminderHeader."Bank Name";
+                IssuedReminderHeader."Transit No. CZL" := IssuedReminderHeader."Transit No.";
+                IssuedReminderHeader."IBAN CZL" := IssuedReminderHeader.IBAN;
+                IssuedReminderHeader."SWIFT Code CZL" := IssuedReminderHeader."SWIFT Code";
                 IssuedReminderHeader."Registration No. CZL" := IssuedReminderHeader."Registration No.";
                 IssuedReminderHeader."Tax Registration No. CZL" := IssuedReminderHeader."Tax Registration No.";
                 IssuedReminderHeader.Modify(false);
             until IssuedReminderHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyFinanceChargeMemoHeader();
     var
         FinanceChargeMemoHeader: Record "Finance Charge Memo Header";
     begin
         if FinanceChargeMemoHeader.FindSet(true) then
             repeat
+                FinanceChargeMemoHeader."Specific Symbol CZL" := FinanceChargeMemoHeader."Specific Symbol";
+                FinanceChargeMemoHeader."Variable Symbol CZL" := FinanceChargeMemoHeader."Variable Symbol";
+                FinanceChargeMemoHeader."Constant Symbol CZL" := FinanceChargeMemoHeader."Constant Symbol";
+                FinanceChargeMemoHeader."Bank Account Code CZL" := FinanceChargeMemoHeader."Bank No.";
+                FinanceChargeMemoHeader."Bank Account No. CZL" := FinanceChargeMemoHeader."Bank Account No.";
+                FinanceChargeMemoHeader."Bank Branch No. CZL" := FinanceChargeMemoHeader."Bank Branch No.";
+                FinanceChargeMemoHeader."Bank Name CZL" := FinanceChargeMemoHeader."Bank Name";
+                FinanceChargeMemoHeader."Transit No. CZL" := FinanceChargeMemoHeader."Transit No.";
+                FinanceChargeMemoHeader."IBAN CZL" := FinanceChargeMemoHeader.IBAN;
+                FinanceChargeMemoHeader."SWIFT Code CZL" := FinanceChargeMemoHeader."SWIFT Code";
                 FinanceChargeMemoHeader."Registration No. CZL" := FinanceChargeMemoHeader."Registration No.";
                 FinanceChargeMemoHeader."Tax Registration No. CZL" := FinanceChargeMemoHeader."Tax Registration No.";
                 FinanceChargeMemoHeader.Modify(false);
             until FinanceChargeMemoHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyIssuedFinanceChargeMemoHeader();
     var
         IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header";
     begin
         if IssuedFinChargeMemoHeader.FindSet(true) then
             repeat
+                IssuedFinChargeMemoHeader."Specific Symbol CZL" := IssuedFinChargeMemoHeader."Specific Symbol";
+                IssuedFinChargeMemoHeader."Variable Symbol CZL" := IssuedFinChargeMemoHeader."Variable Symbol";
+                IssuedFinChargeMemoHeader."Constant Symbol CZL" := IssuedFinChargeMemoHeader."Constant Symbol";
+                IssuedFinChargeMemoHeader."Bank Account Code CZL" := IssuedFinChargeMemoHeader."Bank No.";
+                IssuedFinChargeMemoHeader."Bank Account No. CZL" := IssuedFinChargeMemoHeader."Bank Account No.";
+                IssuedFinChargeMemoHeader."Bank Branch No. CZL" := IssuedFinChargeMemoHeader."Bank Branch No.";
+                IssuedFinChargeMemoHeader."Bank Name CZL" := IssuedFinChargeMemoHeader."Bank Name";
+                IssuedFinChargeMemoHeader."Transit No. CZL" := IssuedFinChargeMemoHeader."Transit No.";
+                IssuedFinChargeMemoHeader."IBAN CZL" := IssuedFinChargeMemoHeader.IBAN;
+                IssuedFinChargeMemoHeader."SWIFT Code CZL" := IssuedFinChargeMemoHeader."SWIFT Code";
                 IssuedFinChargeMemoHeader."Registration No. CZL" := IssuedFinChargeMemoHeader."Registration No.";
                 IssuedFinChargeMemoHeader."Tax Registration No. CZL" := IssuedFinChargeMemoHeader."Tax Registration No.";
                 IssuedFinChargeMemoHeader.Modify(false);
             until IssuedFinChargeMemoHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyStatutoryReportingSetup();
     var
         StatReportingSetup: Record "Stat. Reporting Setup";
@@ -907,7 +1186,12 @@ codeunit 11748 "Install Application CZL"
             StatutoryReportingSetupCZL."VAT Control Report XML Format" := StatReportingSetup."VAT Control Report Xml Format";
             StatutoryReportingSetupCZL."Tax Office Number" := StatReportingSetup."Tax Office Number";
             StatutoryReportingSetupCZL."Tax Office Region Number" := StatReportingSetup."Tax Office Region Number";
-            StatutoryReportingSetupCZL."Company Type" := StatReportingSetup."Official Type";
+            case StatReportingSetup."Taxpayer Type" of
+                StatReportingSetup."Taxpayer Type"::Corporation:
+                    StatutoryReportingSetupCZL."Company Type" := StatutoryReportingSetupCZL."Company Type"::Corporate;
+                StatReportingSetup."Taxpayer Type"::Individual:
+                    StatutoryReportingSetupCZL."Company Type" := StatutoryReportingSetupCZL."Company Type"::Individual;
+            end;
             StatutoryReportingSetupCZL."Individual First Name" := StatReportingSetup."Natural Person First Name";
             StatutoryReportingSetupCZL."Individual Surname" := StatReportingSetup."Natural Person Surname";
             StatutoryReportingSetupCZL."Individual Title" := StatReportingSetup."Natural Person Title";
@@ -929,15 +1213,38 @@ codeunit 11748 "Install Application CZL"
             StatutoryReportingSetupCZL."VIES Decl. Auth. Employee No." := StatReportingSetup."VIES Decl. Auth. Employee No.";
             StatutoryReportingSetupCZL."VIES Decl. Filled Employee No." := StatReportingSetup."VIES Decl. Filled by Empl. No.";
             StatutoryReportingSetupCZL."VIES Number of Lines" := StatReportingSetup."VIES Number of Lines";
+#if CLEAN17
+            if StatReportingSetup."VIES Declaration Report No." = 31060 then
+#else
             if StatReportingSetup."VIES Declaration Report No." = Report::"VIES Declaration" then
+#endif            
                 StatutoryReportingSetupCZL."VIES Declaration Report No." := Report::"VIES Declaration CZL";
+#if CLEAN17
+            if (StatReportingSetup."VIES Decl. Exp. Obj. Type" = StatReportingSetup."VIES Decl. Exp. Obj. Type"::Report) and (StatReportingSetup."VIES Decl. Exp. Obj. No." = 31066) then
+#else
             if (StatReportingSetup."VIES Decl. Exp. Obj. Type" = StatReportingSetup."VIES Decl. Exp. Obj. Type"::Report) and (StatReportingSetup."VIES Decl. Exp. Obj. No." = Report::"VIES Declaration Export") then
+#endif
                 StatutoryReportingSetupCZL."VIES Declaration Export No." := Xmlport::"VIES Declaration CZL";
+            StatutoryReportingSetupCZL."Transaction Type Mandatory" := StatReportingSetup."Transaction Type Mandatory";
+            StatutoryReportingSetupCZL."Transaction Spec. Mandatory" := StatReportingSetup."Transaction Spec. Mandatory";
+            StatutoryReportingSetupCZL."Transport Method Mandatory" := StatReportingSetup."Transport Method Mandatory";
+            StatutoryReportingSetupCZL."Shipment Method Mandatory" := StatReportingSetup."Shipment Method Mandatory";
+            StatutoryReportingSetupCZL."Tariff No. Mandatory" := StatReportingSetup."Tariff No. Mandatory";
+            StatutoryReportingSetupCZL."Net Weight Mandatory" := StatReportingSetup."Net Weight Mandatory";
+            StatutoryReportingSetupCZL."Country/Region of Origin Mand." := StatReportingSetup."Country/Region of Origin Mand.";
+            StatutoryReportingSetupCZL."Get Tariff No. From" := "Intrastat Detail Source CZL".FromInteger(StatReportingSetup."Get Tariff No. From");
+            StatutoryReportingSetupCZL."Get Net Weight From" := "Intrastat Detail Source CZL".FromInteger(StatReportingSetup."Get Net Weight From");
+            StatutoryReportingSetupCZL."Get Country/Region of Origin" := "Intrastat Detail Source CZL".FromInteger(StatReportingSetup."Get Country/Region of Origin");
+            StatutoryReportingSetupCZL."Intrastat Rounding Type" := StatReportingSetup."Intrastat Rounding Type";
+            StatutoryReportingSetupCZL."No Item Charges in Intrastat" := StatReportingSetup."No Item Charges in Intrastat";
+            StatutoryReportingSetupCZL."Intrastat Declaration Nos." := StatReportingSetup."Intrastat Declaration Nos.";
+            StatutoryReportingSetupCZL."Stat. Value Reporting" := StatReportingSetup."Stat. Value Reporting";
+            StatutoryReportingSetupCZL."Cost Regulation %" := StatReportingSetup."Cost Regulation %";
+            StatutoryReportingSetupCZL."Include other Period add.Costs" := StatReportingSetup."Include other Period add.Costs";
             StatutoryReportingSetupCZL.Modify(false);
         end;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVATControlReportSection();
     var
         VATControlReportSection: Record "VAT Control Report Section";
@@ -957,7 +1264,6 @@ codeunit 11748 "Install Application CZL"
             until VATControlReportSection.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVATControlReportHeader();
     var
         VATControlReportHeader: Record "VAT Control Report Header";
@@ -985,7 +1291,6 @@ codeunit 11748 "Install Application CZL"
             until VATControlReportHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVATControlReportLine();
     var
         VATControlReportLine: Record "VAT Control Report Line";
@@ -1029,7 +1334,6 @@ codeunit 11748 "Install Application CZL"
             until VATControlReportLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVATControlReportEntryLink();
     var
         VATCtrlRepVATEntryLink: Record "VAT Ctrl.Rep. - VAT Entry Link";
@@ -1047,7 +1351,6 @@ codeunit 11748 "Install Application CZL"
             until VATCtrlRepVATEntryLink.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVATPostingSetup();
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1063,11 +1366,11 @@ codeunit 11748 "Install Application CZL"
                 VATPostingSetup."Purch. VAT Curr. Exch. Acc CZL" := VATPostingSetup."Purchase VAT Delay Account";
                 VATPostingSetup."VIES Purchase CZL" := VATPostingSetup."VIES Purchases";
                 VATPostingSetup."VIES Sales CZL" := VATPostingSetup."VIES Sales";
+                VATPostingSetup."Intrastat Service CZL" := VATPostingSetup."Intrastat Service";
                 VATPostingSetup.Modify(false);
             until VATPostingSetup.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVATStatementTemplate();
     var
         VATStatementTemplate: Record "VAT Statement Template";
@@ -1080,7 +1383,6 @@ codeunit 11748 "Install Application CZL"
             until VATStatementTemplate.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVATStatementLine();
     var
         VATStatementLine: Record "VAT Statement Line";
@@ -1101,14 +1403,16 @@ codeunit 11748 "Install Application CZL"
             until VATStatementLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure ConvertVATStatementLineDeprEnumValues(var VATStatementLine: Record "VAT Statement Line");
     begin
+#if CLEAN17
+        if VATStatementLine.Type = 4 then //4 = VATStatementLine.Type::Formula
+#else
         if VATStatementLine.Type = VATStatementLine.Type::Formula then
+#endif
             VATStatementLine.Type := VATStatementLine.Type::"Formula CZL";
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVIESDeclarationHeader();
     var
         VIESDeclarationHeader: Record "VIES Declaration Header";
@@ -1160,7 +1464,6 @@ codeunit 11748 "Install Application CZL"
             until VIESDeclarationHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVIESDeclarationLine();
     var
         VIESDeclarationLine: Record "VIES Declaration Line";
@@ -1197,7 +1500,6 @@ codeunit 11748 "Install Application CZL"
             until VIESDeclarationLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyCompanyOfficials();
     var
         CompanyOfficials: Record "Company Officials";
@@ -1233,7 +1535,6 @@ codeunit 11748 "Install Application CZL"
             until CompanyOfficials.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyDocumentFooter();
     var
         DocumentFooter: Record "Document Footer";
@@ -1251,7 +1552,6 @@ codeunit 11748 "Install Application CZL"
             until DocumentFooter.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyGLAccount();
     var
         GLAccount: Record "G/L Account";
@@ -1263,7 +1563,6 @@ codeunit 11748 "Install Application CZL"
             until GLAccount.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVATAttributeCode();
     var
         VATAttributeCode: Record "VAT Attribute Code";
@@ -1283,7 +1582,6 @@ codeunit 11748 "Install Application CZL"
             until VATAttributeCode.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVATStatementCommentLine();
     var
         VATStatementCommentLine: Record "VAT Statement Comment Line";
@@ -1304,7 +1602,6 @@ codeunit 11748 "Install Application CZL"
             until VATStatementCommentLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyVATStatementAttachment();
     var
         VATStatementAttachment: Record "VAT Statement Attachment";
@@ -1328,7 +1625,6 @@ codeunit 11748 "Install Application CZL"
             until VATStatementAttachment.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyAccScheduleName();
     var
         AccScheduleName: Record "Acc. Schedule Name";
@@ -1340,7 +1636,6 @@ codeunit 11748 "Install Application CZL"
             until AccScheduleName.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyAccScheduleLine();
     var
         AccScheduleLine: Record "Acc. Schedule Line";
@@ -1354,7 +1649,6 @@ codeunit 11748 "Install Application CZL"
             until AccScheduleLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyExcelTemplate();
     var
         ExcelTemplate: Record "Excel Template";
@@ -1382,7 +1676,6 @@ codeunit 11748 "Install Application CZL"
             until ExcelTemplate.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyStatementFileMapping();
     var
         StatementFileMapping: Record "Statement File Mapping";
@@ -1407,20 +1700,21 @@ codeunit 11748 "Install Application CZL"
             until StatementFileMapping.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyPurchaseLine();
     var
         PurchaseLine: Record "Purchase Line";
     begin
         if PurchaseLine.FindSet() then
             repeat
+                PurchaseLine."Negative CZL" := PurchaseLine.Negative;
+                PurchaseLine."Physical Transfer CZL" := PurchaseLine."Physical Transfer";
                 PurchaseLine."Tariff No. CZL" := PurchaseLine."Tariff No.";
                 PurchaseLine."Statistic Indication CZL" := PurchaseLine."Statistic Indication";
+                PurchaseLine."Country/Reg. of Orig. Code CZL" := PurchaseLine."Country/Region of Origin Code";
                 PurchaseLine.Modify(false);
             until PurchaseLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyPurchCrMemoLine();
     var
         PurchCrMemoLine: Record "Purch. Cr. Memo Line";
@@ -1429,11 +1723,11 @@ codeunit 11748 "Install Application CZL"
             repeat
                 PurchCrMemoLine."Tariff No. CZL" := PurchCrMemoLine."Tariff No.";
                 PurchCrMemoLine."Statistic Indication CZL" := PurchCrMemoLine."Statistic Indication";
+                PurchCrMemoLine."Country/Reg. of Orig. Code CZL" := PurchCrMemoLine."Country/Region of Origin Code";
                 PurchCrMemoLine.Modify(false);
             until PurchCrMemoLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyPurchInvLine();
     var
         PurchInvLine: Record "Purch. Inv. Line";
@@ -1442,11 +1736,11 @@ codeunit 11748 "Install Application CZL"
             repeat
                 PurchInvLine."Tariff No. CZL" := PurchInvLine."Tariff No.";
                 PurchInvLine."Statistic Indication CZL" := PurchInvLine."Statistic Indication";
+                PurchInvLine."Country/Reg. of Orig. Code CZL" := PurchInvLine."Country/Region of Origin Code";
                 PurchInvLine.Modify(false);
             until PurchInvLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyPurchRcptLine();
     var
         PurchRcptLine: Record "Purch. Rcpt. Line";
@@ -1455,11 +1749,11 @@ codeunit 11748 "Install Application CZL"
             repeat
                 PurchRcptLine."Tariff No. CZL" := PurchRcptLine."Tariff No.";
                 PurchRcptLine."Statistic Indication CZL" := PurchRcptLine."Statistic Indication";
+                PurchRcptLine."Country/Reg. of Orig. Code CZL" := PurchRcptLine."Country/Region of Origin Code";
                 PurchRcptLine.Modify(false);
             until PurchRcptLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopySalesCrMemoLine();
     var
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
@@ -1468,11 +1762,11 @@ codeunit 11748 "Install Application CZL"
             repeat
                 SalesCrMemoLine."Tariff No. CZL" := SalesCrMemoLine."Tariff No.";
                 SalesCrMemoLine."Statistic Indication CZL" := SalesCrMemoLine."Statistic Indication";
+                SalesCrMemoLine."Country/Reg. of Orig. Code CZL" := SalesCrMemoLine."Country/Region of Origin Code";
                 SalesCrMemoLine.Modify(false);
             until SalesCrMemoLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopySalesInvoiceLine();
     var
         SalesInvoiceLine: Record "Sales Invoice Line";
@@ -1481,24 +1775,26 @@ codeunit 11748 "Install Application CZL"
             repeat
                 SalesInvoiceLine."Tariff No. CZL" := SalesInvoiceLine."Tariff No.";
                 SalesInvoiceLine."Statistic Indication CZL" := SalesInvoiceLine."Statistic Indication";
+                SalesInvoiceLine."Country/Reg. of Orig. Code CZL" := SalesInvoiceLine."Country/Region of Origin Code";
                 SalesInvoiceLine.Modify(false);
             until SalesInvoiceLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopySalesLine();
     var
         SalesLine: Record "Sales Line";
     begin
         if SalesLine.FindSet() then
             repeat
+                SalesLine."Negative CZL" := SalesLine.Negative;
+                SalesLine."Physical Transfer CZL" := SalesLine."Physical Transfer";
                 SalesLine."Tariff No. CZL" := SalesLine."Tariff No.";
                 SalesLine."Statistic Indication CZL" := SalesLine."Statistic Indication";
+                SalesLine."Country/Reg. of Orig. Code CZL" := SalesLine."Country/Region of Origin Code";
                 SalesLine.Modify(false);
             until SalesLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopySalesShipmentLine();
     var
         SalesShipmentLine: Record "Sales Shipment Line";
@@ -1511,7 +1807,6 @@ codeunit 11748 "Install Application CZL"
             until SalesShipmentLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyTariffNumber();
     var
         TariffNumber: Record "Tariff Number";
@@ -1522,11 +1817,12 @@ codeunit 11748 "Install Application CZL"
                 TariffNumber."Statement Limit Code CZL" := TariffNumber."Statement Limit Code";
                 TariffNumber."VAT Stat. UoM Code CZL" := TariffNumber."VAT Stat. Unit of Measure Code";
                 TariffNumber."Allow Empty UoM Code CZL" := TariffNumber."Allow Empty Unit of Meas.Code";
+                TariffNumber."Description EN CZL" := CopyStr(TariffNumber."Full Name ENG", 1, MaxStrLen(TariffNumber."Description EN CZL"));
+                TariffNumber."Suppl. Unit of Meas. Code CZL" := TariffNumber."Supplem. Unit of Measure Code";
                 TariffNumber.Modify(false);
             until TariffNumber.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyCommodity();
     var
         Commodity: Record Commodity;
@@ -1544,7 +1840,6 @@ codeunit 11748 "Install Application CZL"
             until Commodity.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyCommoditySetup();
     var
         CommoditySetup: Record "Commodity Setup";
@@ -1564,7 +1859,6 @@ codeunit 11748 "Install Application CZL"
             until CommoditySetup.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyStatisticIndication();
     var
         StatisticIndication: Record "Statistic Indication";
@@ -1579,11 +1873,11 @@ codeunit 11748 "Install Application CZL"
                     StatisticIndicationCZL.Insert();
                 end;
                 StatisticIndicationCZL.Description := StatisticIndication.Description;
+                StatisticIndicationCZL."Description EN" := CopyStr(StatisticIndication."Full Name ENG", 1, MaxStrLen(StatisticIndicationCZL."Description EN"));
                 StatisticIndication.Modify(false);
             until StatisticIndication.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopySourceCodeSetup();
     var
         SourceCodeSetup: Record "Source Code Setup";
@@ -1596,7 +1890,6 @@ codeunit 11748 "Install Application CZL"
 
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyStockkeepingUnitTemplate();
     var
         StockkeepingUnitTemplate: Record "Stockkeeping Unit Template";
@@ -1634,7 +1927,6 @@ codeunit 11748 "Install Application CZL"
             until StockkeepingUnitTemplate.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CreateTemplateHeader(var ConfigTemplateHeader: Record "Config. Template Header"; "Code": Code[10]; Description: Text[100]; TableID: Integer)
     begin
         ConfigTemplateHeader.Init();
@@ -1645,7 +1937,6 @@ codeunit 11748 "Install Application CZL"
         ConfigTemplateHeader.Insert();
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CreateTemplateLine(var ConfigTemplateHeader: Record "Config. Template Header"; FieldID: Integer; Value: Text[50])
     var
         ConfigTemplateLine: Record "Config. Template Line";
@@ -1666,22 +1957,19 @@ codeunit 11748 "Install Application CZL"
         ConfigTemplateLine.Insert(true);
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure GetNextDataTemplateAvailableCode(): Code[10]
     var
         ConfigTemplateHeader: Record "Config. Template Header";
         StockkeepingUnitConfigTemplCode: Code[10];
         StockkeepingUnitConfigTemplCodeTxt: Label 'SKU0000000', MaxLength = 10;
     begin
-        if StockkeepingUnitConfigTemplCode = '' then
-            StockkeepingUnitConfigTemplCode := StockkeepingUnitConfigTemplCodeTxt;
+        StockkeepingUnitConfigTemplCode := StockkeepingUnitConfigTemplCodeTxt;
         repeat
             StockkeepingUnitConfigTemplCode := CopyStr(IncStr(StockkeepingUnitConfigTemplCode), 1, MaxStrLen(ConfigTemplateHeader.Code));
         until not ConfigTemplateHeader.Get(StockkeepingUnitConfigTemplCode);
         exit(StockkeepingUnitConfigTemplCode);
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure GetDataTemplateDescription(StockkeepingUnitTemplate1: Record "Stockkeeping Unit Template"): Text[100]
     var
         StockkeepingUnit: Record "Stockkeeping Unit";
@@ -1693,7 +1981,6 @@ codeunit 11748 "Install Application CZL"
                                 StockkeepingUnitTemplate1."Location Code"), 1, 100));
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyStockkeepingUnit();
     var
         StockkeepingUnit: Record "Stockkeeping Unit";
@@ -1705,7 +1992,6 @@ codeunit 11748 "Install Application CZL"
             until StockkeepingUnit.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyItem();
     var
         Item: Record Item;
@@ -1713,11 +1999,11 @@ codeunit 11748 "Install Application CZL"
         if Item.FindSet() then
             repeat
                 Item."Statistic Indication CZL" := Item."Statistic Indication";
+                Item."Specific Movement CZL" := Item."Specific Movement";
                 Item.Modify(false);
             until Item.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyResource();
     var
         Resource: Record Resource;
@@ -1729,20 +2015,21 @@ codeunit 11748 "Install Application CZL"
             until Resource.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyServiceLine();
     var
         ServiceLine: Record "Service Line";
     begin
         if ServiceLine.FindSet() then
             repeat
+                ServiceLine."Negative CZL" := ServiceLine.Negative;
+                ServiceLine."Physical Transfer CZL" := ServiceLine."Physical Transfer";
                 ServiceLine."Tariff No. CZL" := ServiceLine."Tariff No.";
                 ServiceLine."Statistic Indication CZL" := ServiceLine."Statistic Indication";
+                ServiceLine."Country/Reg. of Orig. Code CZL" := ServiceLine."Country/Region of Origin Code";
                 ServiceLine.Modify(false);
             until ServiceLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyServiceInvoiceLine();
     var
         ServiceInvoiceLine: Record "Service Invoice Line";
@@ -1751,11 +2038,11 @@ codeunit 11748 "Install Application CZL"
             repeat
                 ServiceInvoiceLine."Tariff No. CZL" := ServiceInvoiceLine."Tariff No.";
                 ServiceInvoiceLine."Statistic Indication CZL" := ServiceInvoiceLine."Statistic Indication";
+                ServiceInvoiceLine."Country/Reg. of Orig. Code CZL" := ServiceInvoiceLine."Country/Region of Origin Code";
                 ServiceInvoiceLine.Modify(false);
             until ServiceInvoiceLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyServiceCrMemoLine();
     var
         ServiceCrMemoLine: Record "Service Cr.Memo Line";
@@ -1764,11 +2051,11 @@ codeunit 11748 "Install Application CZL"
             repeat
                 ServiceCrMemoLine."Tariff No. CZL" := ServiceCrMemoLine."Tariff No.";
                 ServiceCrMemoLine."Statistic Indication CZL" := ServiceCrMemoLine."Statistic Indication";
+                ServiceCrMemoLine."Country/Reg. of Orig. Code CZL" := ServiceCrMemoLine."Country/Region of Origin Code";
                 ServiceCrMemoLine.Modify(false);
             until ServiceCrMemoLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '17.0')]
     local procedure CopyServiceShipmentLine();
     var
         ServiceShipmentLine: Record "Service Shipment Line";
@@ -1781,7 +2068,6 @@ codeunit 11748 "Install Application CZL"
             until ServiceShipmentLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '18.0')]
     local procedure CopyCertificateCZCode()
     var
         CertificateCZCode: Record "Certificate CZ Code";
@@ -1799,7 +2085,6 @@ codeunit 11748 "Install Application CZL"
             until CertificateCZCode.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization Pack for Czech.', '18.0')]
     local procedure CopyIsolatedCertificate()
     var
         IsolatedCertificate: Record "Isolated Certificate";
@@ -1811,7 +2096,6 @@ codeunit 11748 "Install Application CZL"
             until IsolatedCertificate.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization for Czech.', '18.0')]
     local procedure CopyEETServiceSetup()
     var
         EETServiceSetup: Record "EET Service Setup";
@@ -1837,7 +2121,6 @@ codeunit 11748 "Install Application CZL"
         end;
     end;
 
-    [Obsolete('Moved to Core Localization for Czech.', '18.0')]
     local procedure CopyEETBusinessPremises()
     var
         EETBusinessPremises: Record "EET Business Premises";
@@ -1857,7 +2140,6 @@ codeunit 11748 "Install Application CZL"
             until EETBusinessPremises.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization for Czech.', '18.0')]
     local procedure CopyEETCashRegister()
     var
         EETCashRegister: Record "EET Cash Register";
@@ -1880,7 +2162,6 @@ codeunit 11748 "Install Application CZL"
             until EETCashRegister.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization for Czech.', '18.0')]
     local procedure CopyEETEntry()
     var
         EETEntry: Record "EET Entry";
@@ -1931,7 +2212,6 @@ codeunit 11748 "Install Application CZL"
             until EETEntry.Next() = 0;
     end;
 
-    [Obsolete('Moved to Core Localization for Czech.', '18.0')]
     local procedure CopyEETEntryStatus()
     var
         EETEntryStatus: Record "EET Entry Status";
@@ -1952,6 +2232,392 @@ codeunit 11748 "Install Application CZL"
             until EETEntryStatus.Next() = 0;
     end;
 
+    local procedure CopyBankAccount();
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        if BankAccount.FindSet() then
+            repeat
+                BankAccount."Excl. from Exch. Rate Adj. CZL" := BankAccount."Exclude from Exch. Rate Adj.";
+                BankAccount.Modify(false);
+            until BankAccount.Next() = 0;
+    end;
+
+    local procedure CopyConstantSymbol();
+    var
+        ConstantSymbol: Record "Constant Symbol";
+        ConstantSymbolCZL: Record "Constant Symbol CZL";
+    begin
+        if ConstantSymbol.FindSet() then
+            repeat
+                if not ConstantSymbolCZL.Get(ConstantSymbol.Code) then begin
+                    ConstantSymbolCZL.Init();
+                    ConstantSymbolCZL.Code := ConstantSymbol.Code;
+                    ConstantSymbolCZL.Insert();
+                end;
+                ConstantSymbolCZL.Description := ConstantSymbol.Description;
+                ConstantSymbolCZL.Modify(false);
+            until ConstantSymbol.Next() = 0;
+    end;
+
+    local procedure CopyDepreciationBook();
+    var
+        DepreciationBook: Record "Depreciation Book";
+    begin
+        if DepreciationBook.FindSet() then
+            repeat
+                DepreciationBook."Mark Reclass. as Correct. CZL" := DepreciationBook."Mark Reclass. as Corrections";
+                DepreciationBook.Modify(false);
+            until DepreciationBook.Next() = 0;
+    end;
+
+    local procedure CopyValueEntry();
+    var
+        ValueEntry: Record "Value Entry";
+    begin
+        if ValueEntry.FindSet(true) then
+            repeat
+                ValueEntry."G/L Correction CZL" := ValueEntry."G/L Correction";
+                ValueEntry."Incl. in Intrastat Amount CZL" := ValueEntry."Incl. in Intrastat Amount";
+                ValueEntry."Incl. in Intrastat S.Value CZL" := ValueEntry."Incl. in Intrastat Stat. Value";
+                ValueEntry.Modify(false);
+            until ValueEntry.Next() = 0;
+    end;
+
+    local procedure CopySubstCustomerPostingGroup();
+    var
+        SubstCustomerPostingGroup: Record "Subst. Customer Posting Group";
+        SubstCustPostingGroupCZL: Record "Subst. Cust. Posting Group CZL";
+    begin
+        if SubstCustomerPostingGroup.FindSet() then
+            repeat
+                if not SubstCustPostingGroupCZL.Get(SubstCustomerPostingGroup."Parent Cust. Posting Group", SubstCustomerPostingGroup."Customer Posting Group") then begin
+                    SubstCustPostingGroupCZL.Init();
+                    SubstCustPostingGroupCZL."Parent Customer Posting Group" := SubstCustomerPostingGroup."Parent Cust. Posting Group";
+                    SubstCustPostingGroupCZL."Customer Posting Group" := SubstCustomerPostingGroup."Customer Posting Group";
+                    SubstCustPostingGroupCZL.Insert(false);
+                end;
+            until SubstCustomerPostingGroup.Next() = 0;
+    end;
+
+    local procedure CopySubstVendorPostingGroup();
+    var
+        SubstVendorPostingGroup: Record "Subst. Vendor Posting Group";
+        SubstVendPostingGroupCZL: Record "Subst. Vend. Posting Group CZL";
+    begin
+        if SubstVendorPostingGroup.FindSet() then
+            repeat
+                if not SubstVendPostingGroupCZL.Get(SubstVendorPostingGroup."Parent Vend. Posting Group", SubstVendorPostingGroup."Vendor Posting Group") then begin
+                    SubstVendPostingGroupCZL.Init();
+                    SubstVendPostingGroupCZL."Parent Vendor Posting Group" := SubstVendorPostingGroup."Parent Vend. Posting Group";
+                    SubstVendPostingGroupCZL."Vendor Posting Group" := SubstVendorPostingGroup."Vendor Posting Group";
+                    SubstVendPostingGroupCZL.Insert(false);
+                end;
+            until SubstVendorPostingGroup.Next() = 0;
+    end;
+
+    local procedure CopyShipmentMethod();
+    var
+        ShipmentMethod: Record "Shipment Method";
+    begin
+        if ShipmentMethod.FindSet() then
+            repeat
+                ShipmentMethod."Incl. Item Charges (Amt.) CZL" := ShipmentMethod."Include Item Charges (Amount)";
+                ShipmentMethod."Intrastat Deliv. Grp. Code CZL" := ShipmentMethod."Intrastat Delivery Group Code";
+                ShipmentMethod."Incl. Item Charges (S.Val) CZL" := ShipmentMethod."Incl. Item Charges (Stat.Val.)";
+                ShipmentMethod."Adjustment % CZL" := ShipmentMethod."Adjustment %";
+                ShipmentMethod.Modify(false);
+            until ShipmentMethod.Next() = 0;
+    end;
+
+    local procedure CopySpecificMovement()
+    var
+        SpecificMovement: Record "Specific Movement";
+        SpecificMovementCZL: Record "Specific Movement CZL";
+    begin
+        if SpecificMovement.FindSet() then
+            repeat
+                if not SpecificMovementCZL.Get(SpecificMovement.Code) then begin
+                    SpecificMovementCZL.Init();
+                    SpecificMovementCZL.Code := SpecificMovement.Code;
+                    SpecificMovementCZL.Insert();
+                end;
+                SpecificMovementCZL.Description := SpecificMovement.Description;
+                SpecificMovementCZL.Modify(false);
+            until SpecificMovement.Next() = 0;
+    end;
+
+    local procedure CopyIntrastatDeliveryGroup()
+    var
+        IntrastatDeliveryGroup: Record "Intrastat Delivery Group";
+        IntrastatDeliveryGroupCZL: Record "Intrastat Delivery Group CZL";
+    begin
+        if IntrastatDeliveryGroup.FindSet() then
+            repeat
+                if not IntrastatDeliveryGroupCZL.Get(IntrastatDeliveryGroup.Code) then begin
+                    IntrastatDeliveryGroupCZL.Init();
+                    IntrastatDeliveryGroupCZL.Code := IntrastatDeliveryGroup.Code;
+                    IntrastatDeliveryGroupCZL.Insert();
+                end;
+                IntrastatDeliveryGroupCZL.Description := IntrastatDeliveryGroup.Description;
+                IntrastatDeliveryGroupCZL.Modify(false);
+            until IntrastatDeliveryGroup.Next() = 0;
+    end;
+
+    local procedure CopyUnitofMeasure();
+    var
+        UnitofMeasure: Record "Unit of Measure";
+    begin
+        if UnitofMeasure.FindSet() then
+            repeat
+                UnitofMeasure."Tariff Number UOM Code CZL" := CopyStr(UnitofMeasure."Tariff Number UOM Code", 1, 10);
+                UnitofMeasure.Modify(false);
+            until UnitofMeasure.Next() = 0;
+    end;
+
+    local procedure CopySalesLineArchive();
+    var
+        SalesLineArchive: Record "Sales Line Archive";
+    begin
+        if SalesLineArchive.FindSet() then
+            repeat
+                SalesLineArchive."Physical Transfer CZL" := SalesLineArchive."Physical Transfer";
+                SalesLineArchive.Modify(false);
+            until SalesLineArchive.Next() = 0;
+    end;
+
+    local procedure CopyPurchaseLineArchive();
+    var
+        PurchaseLineArchive: Record "Purchase Line Archive";
+    begin
+        if PurchaseLineArchive.FindSet() then
+            repeat
+                PurchaseLineArchive."Physical Transfer CZL" := PurchaseLineArchive."Physical Transfer";
+                PurchaseLineArchive.Modify(false);
+            until PurchaseLineArchive.Next() = 0;
+    end;
+
+    local procedure CopyTransferHeader();
+    var
+        TransferHeader: Record "Transfer Header";
+    begin
+        if TransferHeader.FindSet() then
+            repeat
+                TransferHeader."Intrastat Exclude CZL" := TransferHeader."Intrastat Exclude";
+                TransferHeader.Modify(false);
+            until TransferHeader.Next() = 0;
+    end;
+
+    local procedure CopyTransferLine();
+    var
+        TransferLine: Record "Transfer Line";
+    begin
+        if TransferLine.FindSet() then
+            repeat
+                TransferLine."Tariff No. CZL" := TransferLine."Tariff No.";
+                TransferLine."Statistic Indication CZL" := TransferLine."Statistic Indication";
+                TransferLine."Country/Reg. of Orig. Code CZL" := TransferLine."Country/Region of Origin Code";
+                TransferLine.Modify(false);
+            until TransferLine.Next() = 0;
+    end;
+
+    local procedure CopyTransferReceiptHeader();
+    var
+        TransferReceiptHeader: Record "Transfer Receipt Header";
+    begin
+        if TransferReceiptHeader.FindSet() then
+            repeat
+                TransferReceiptHeader."Intrastat Exclude CZL" := TransferReceiptHeader."Intrastat Exclude";
+                TransferReceiptHeader.Modify(false);
+            until TransferReceiptHeader.Next() = 0;
+    end;
+
+    local procedure CopyTransferShipmentHeader();
+    var
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+    begin
+        if TransferShipmentHeader.FindSet() then
+            repeat
+                TransferShipmentHeader."Intrastat Exclude CZL" := TransferShipmentHeader."Intrastat Exclude";
+                TransferShipmentHeader.Modify(false);
+            until TransferShipmentHeader.Next() = 0;
+    end;
+
+    local procedure CopyItemLedgerEntry();
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        if ItemLedgerEntry.FindSet(true) then
+            repeat
+                ItemLedgerEntry."Tariff No. CZL" := ItemLedgerEntry."Tariff No.";
+                ItemLedgerEntry."Physical Transfer CZL" := ItemLedgerEntry."Physical Transfer";
+                ItemLedgerEntry."Net Weight CZL" := ItemLedgerEntry."Net Weight";
+                ItemLedgerEntry."Country/Reg. of Orig. Code CZL" := ItemLedgerEntry."Country/Region of Origin Code";
+                ItemLedgerEntry."Statistic Indication CZL" := ItemLedgerEntry."Statistic Indication";
+                ItemLedgerEntry."Intrastat Transaction CZL" := ItemLedgerEntry."Intrastat Transaction";
+                ItemLedgerEntry.Modify(false);
+            until ItemLedgerEntry.Next() = 0;
+    end;
+
+    local procedure CopyJobLedgerEntry();
+    var
+        JobLedgerEntry: Record "Job Ledger Entry";
+    begin
+        if JobLedgerEntry.FindSet(true) then
+            repeat
+                JobLedgerEntry."Tariff No. CZL" := JobLedgerEntry."Tariff No.";
+                JobLedgerEntry."Net Weight CZL" := JobLedgerEntry."Net Weight";
+                JobLedgerEntry."Country/Reg. of Orig. Code CZL" := JobLedgerEntry."Country/Region of Origin Code";
+                JobLedgerEntry."Statistic Indication CZL" := JobLedgerEntry."Statistic Indication";
+                JobLedgerEntry."Intrastat Transaction CZL" := JobLedgerEntry."Intrastat Transaction";
+                JobLedgerEntry.Modify(false);
+            until JobLedgerEntry.Next() = 0;
+    end;
+
+    local procedure CopyItemCharge();
+    var
+        ItemCharge: Record "Item Charge";
+    begin
+        if ItemCharge.FindSet(true) then
+            repeat
+                ItemCharge."Incl. in Intrastat Amount CZL" := ItemCharge."Incl. in Intrastat Amount";
+                ItemCharge."Incl. in Intrastat S.Value CZL" := ItemCharge."Incl. in Intrastat Stat. Value";
+                ItemCharge.Modify(false);
+            until ItemCharge.Next() = 0;
+    end;
+
+    local procedure CopyItemChargeAssignmentPurch();
+    var
+        ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)";
+    begin
+        if ItemChargeAssignmentPurch.FindSet(true) then
+            repeat
+                ItemChargeAssignmentPurch."Incl. in Intrastat Amount CZL" := ItemChargeAssignmentPurch."Incl. in Intrastat Amount";
+                ItemChargeAssignmentPurch."Incl. in Intrastat S.Value CZL" := ItemChargeAssignmentPurch."Incl. in Intrastat Stat. Value";
+                ItemChargeAssignmentPurch.Modify(false);
+            until ItemChargeAssignmentPurch.Next() = 0;
+    end;
+
+    local procedure CopyItemChargeAssignmentSales();
+    var
+        ItemChargeAssignmentSales: Record "Item Charge Assignment (Sales)";
+    begin
+        if ItemChargeAssignmentSales.FindSet(true) then
+            repeat
+                ItemChargeAssignmentSales."Incl. in Intrastat Amount CZL" := ItemChargeAssignmentSales."Incl. in Intrastat Amount";
+                ItemChargeAssignmentSales."Incl. in Intrastat S.Value CZL" := ItemChargeAssignmentSales."Incl. in Intrastat Stat. Value";
+                ItemChargeAssignmentSales.Modify(false);
+            until ItemChargeAssignmentSales.Next() = 0;
+    end;
+
+    local procedure CopyPostedGenJournalLine();
+    var
+        PostedGenJournalLine: Record "Posted Gen. Journal Line";
+    begin
+        if PostedGenJournalLine.FindSet(true) then
+            repeat
+                PostedGenJournalLine."Specific Symbol CZL" := PostedGenJournalLine."Specific Symbol";
+                PostedGenJournalLine."Variable Symbol CZL" := PostedGenJournalLine."Variable Symbol";
+                PostedGenJournalLine."Constant Symbol CZL" := PostedGenJournalLine."Constant Symbol";
+                PostedGenJournalLine."Bank Account Code CZL" := PostedGenJournalLine."Bank Account Code";
+                PostedGenJournalLine."Bank Account No. CZL" := PostedGenJournalLine."Bank Account No.";
+                PostedGenJournalLine."Transit No. CZL" := PostedGenJournalLine."Transit No.";
+                PostedGenJournalLine."IBAN CZL" := PostedGenJournalLine.IBAN;
+                PostedGenJournalLine."SWIFT Code CZL" := PostedGenJournalLine."SWIFT Code";
+                PostedGenJournalLine.Modify(false);
+            until PostedGenJournalLine.Next() = 0;
+    end;
+
+    local procedure CopyIntrastatJournalBatch();
+    var
+        IntrastatJnlBatch: Record "Intrastat Jnl. Batch";
+    begin
+        if IntrastatJnlBatch.FindSet(true) then
+            repeat
+                IntrastatJnlBatch."Declaration No. CZL" := IntrastatJnlBatch."Declaration No.";
+                IntrastatJnlBatch."Statement Type CZL" := "Intrastat Statement Type CZL".FromInteger(IntrastatJnlBatch."Statement Type");
+                IntrastatJnlBatch.Modify(false);
+            until IntrastatJnlBatch.Next() = 0;
+    end;
+
+    local procedure CopyIntrastatJournalLine();
+    var
+        IntrastatJnlLine: Record "Intrastat Jnl. Line";
+    begin
+        if IntrastatJnlLine.FindSet(true) then
+            repeat
+                IntrastatJnlLine."Additional Costs CZL" := IntrastatJnlLine."Additional Costs";
+                IntrastatJnlLine."Source Entry Date CZL" := IntrastatJnlLine."Source Entry Date";
+                IntrastatJnlLine."Statistic Indication CZL" := IntrastatJnlLine."Statistic Indication";
+                IntrastatJnlLine."Statistics Period CZL" := IntrastatJnlLine."Statistics Period";
+                IntrastatJnlLine."Declaration No. CZL" := IntrastatJnlLine."Declaration No.";
+                IntrastatJnlLine."Statement Type CZL" := "Intrastat Statement Type CZL".FromInteger(IntrastatJnlLine."Statement Type");
+                IntrastatJnlLine."Prev. Declaration No. CZL" := IntrastatJnlLine."Prev. Declaration No.";
+                IntrastatJnlLine."Prev. Declaration Line No. CZL" := IntrastatJnlLine."Prev. Declaration Line No.";
+                IntrastatJnlLine."Specific Movement CZL" := IntrastatJnlLine."Specific Movement";
+                IntrastatJnlLine."Supplem. UoM Code CZL" := IntrastatJnlLine."Supplem. UoM Code";
+                IntrastatJnlLine."Supplem. UoM Quantity CZL" := IntrastatJnlLine."Supplem. UoM Quantity";
+                IntrastatJnlLine."Supplem. UoM Net Weight CZL" := IntrastatJnlLine."Supplem. UoM Net Weight";
+                IntrastatJnlLine."Base Unit of Measure CZL" := IntrastatJnlLine."Base Unit of Measure";
+                IntrastatJnlLine.Modify(false);
+            until IntrastatJnlLine.Next() = 0;
+    end;
+
+    local procedure CopyInventoryPostingSetup();
+    var
+        InventoryPostingSetup: Record "Inventory Posting Setup";
+    begin
+        if InventoryPostingSetup.FindSet() then
+            repeat
+                InventoryPostingSetup."Change In Inv.OfProd. Acc. CZL" := InventoryPostingSetup."Change In Inv.Of Product Acc.";
+                InventoryPostingSetup."Change In Inv.Of WIP Acc. CZL" := InventoryPostingSetup."Change In Inv.Of WIP Acc.";
+                InventoryPostingSetup."Consumption Account CZL" := InventoryPostingSetup."Consumption Account";
+                InventoryPostingSetup.Modify(false);
+            until InventoryPostingSetup.Next() = 0;
+    end;
+
+    local procedure CopyGeneralPostingSetup();
+    var
+        GeneralPostingSetup: Record "General Posting Setup";
+    begin
+        if GeneralPostingSetup.FindSet() then
+            repeat
+                GeneralPostingSetup."Invt. Rounding Adj. Acc. CZL" := GeneralPostingSetup."Invt. Rounding Adj. Account";
+                GeneralPostingSetup.Modify(false);
+            until GeneralPostingSetup.Next() = 0;
+    end;
+
+    local procedure CopyUserSetupLine();
+    var
+        UserSetupLine: Record "User Setup Line";
+        UserSetupLineCZL: Record "User Setup Line CZL";
+    begin
+        if UserSetupLine.FindSet() then
+            repeat
+                if not UserSetupLineCZL.Get(UserSetupLine."User ID", UserSetupLine.Type, UserSetupLine."Line No.") then begin
+                    UserSetupLineCZL.Init();
+                    UserSetupLineCZL."User ID" := UserSetupLine."User ID";
+                    UserSetupLineCZL.Type := UserSetupLine.Type;
+                    UserSetupLineCZL."Line No." := UserSetupLine."Line No.";
+                    UserSetupLineCZL.Insert();
+                end;
+                UserSetupLineCZL."Code / Name" := UserSetupLine."Code / Name";
+                UserSetupLineCZL.Modify(false);
+            until UserSetupLine.Next() = 0;
+    end;
+
+    local procedure CopyGenJournalTemplate();
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        GenJournalTemplate.SetRange("Not Check Doc. Type", true);
+        if GenJournalTemplate.FindSet() then
+            repeat
+                GenJournalTemplate."Not Check Doc. Type CZL" := GenJournalTemplate."Not Check Doc. Type";
+                GenJournalTemplate.Modify(false);
+            until GenJournalTemplate.Next() = 0;
+    end;
+
     local procedure ModifyGenJournalTemplate()
     var
         GenJournalTemplate: Record "Gen. Journal Template";
@@ -1961,7 +2627,11 @@ codeunit 11748 "Install Application CZL"
             repeat
                 PrevGenJournalTemplate := GenJournalTemplate;
                 GenJournalTemplate."Test Report ID" := Report::"General Journal - Test CZL";
+#if CLEAN17
+                if GenJournalTemplate."Posting Report ID" = 11763 then
+#else
                 if GenJournalTemplate."Posting Report ID" = Report::"General Ledger Document" then
+#endif
                     GenJournalTemplate."Posting Report ID" := Report::"General Ledger Document CZL";
                 if (GenJournalTemplate."Test Report ID" <> PrevGenJournalTemplate."Test Report ID") or (GenJournalTemplate."Posting Report ID" <> PrevGenJournalTemplate."Posting Report ID") then
                     GenJournalTemplate.Modify();
@@ -1977,41 +2647,131 @@ codeunit 11748 "Install Application CZL"
             repeat
                 PrevReportSelections := ReportSelections;
                 case ReportSelections."Report ID" of
-                    Report::"Sales - Quote CZ", Report::"Standard Sales - Quote":
+#if CLEAN17
+                    31094,
+#else
+                    Report::"Sales - Quote CZ",
+#endif
+                    Report::"Standard Sales - Quote":
                         ReportSelections."Report ID" := Report::"Sales Quote CZL";
-                    Report::"Order Confirmation CZ", Report::"Standard Sales - Order Conf.":
+#if CLEAN17
+                    31095,
+#else
+                    Report::"Order Confirmation CZ",
+#endif
+                    Report::"Standard Sales - Order Conf.":
                         ReportSelections."Report ID" := Report::"Sales Order Confirmation CZL";
-                    Report::"Sales - Invoice CZ", Report::"Standard Sales - Invoice":
+#if CLEAN17
+                    31096,
+#else
+                    Report::"Sales - Invoice CZ",
+#endif
+                    Report::"Standard Sales - Invoice":
                         ReportSelections."Report ID" := Report::"Sales Invoice CZL";
-                    Report::"Return Order Confirmation CZ", Report::"Return Order Confirmation":
+#if CLEAN17
+                    31093,
+#else
+                    Report::"Return Order Confirmation CZ",
+#endif
+                    Report::"Return Order Confirmation":
                         ReportSelections."Report ID" := Report::"Sales Return Order Confirm CZL";
-                    Report::"Sales - Credit Memo CZ", Report::"Standard Sales - Credit Memo":
+#if CLEAN17
+                    31097,
+#else
+                    Report::"Sales - Credit Memo CZ",
+#endif
+                    Report::"Standard Sales - Credit Memo":
                         ReportSelections."Report ID" := Report::"Sales Credit Memo CZL";
-                    Report::"Sales - Shipment CZ", Report::"Sales - Shipment":
+#if CLEAN17
+                    31098,
+#else
+                    Report::"Sales - Shipment CZ",
+#endif
+                    Report::"Sales - Shipment":
                         ReportSelections."Report ID" := Report::"Sales Shipment CZL";
-                    Report::"Sales - Return Reciept CZ", Report::"Sales - Return Receipt":
+#if CLEAN17 
+                    31099,
+#else
+                    Report::"Sales - Return Reciept CZ",
+#endif
+                    Report::"Sales - Return Receipt":
                         ReportSelections."Report ID" := Report::"Sales Return Reciept CZL";
-                    Report::"Purchase - Quote CZ", Report::"Purchase - Quote":
+#if CLEAN17
+                    31091,
+#else
+                    Report::"Purchase - Quote CZ",
+#endif
+                    Report::"Purchase - Quote":
                         ReportSelections."Report ID" := Report::"Purchase Quote CZL";
-                    Report::"Order CZ", Report::"Standard Purchase - Order":
+#if CLEAN17
+                    31092,
+#else
+                    Report::"Order CZ",
+#endif
+                    Report::"Standard Purchase - Order":
                         ReportSelections."Report ID" := Report::"Purchase Order CZL";
-                    Report::"Service Quote CZ", Report::"Service Quote":
+#if CLEAN17
+                    31110,
+#else
+                    Report::"Service Quote CZ",
+#endif
+                    Report::"Service Quote":
                         ReportSelections."Report ID" := Report::"Service Quote CZL";
-                    Report::"Service Order CZ", Report::"Service Order":
+#if CLEAN17
+                    31111,
+#else
+                    Report::"Service Order CZ",
+#endif
+                    Report::"Service Order":
                         ReportSelections."Report ID" := Report::"Service Order CZL";
-                    Report::"Service - Invoice CZ", Report::"Service - Invoice":
+#if CLEAN17
+                    31088,
+#else
+                    Report::"Service - Invoice CZ",
+#endif
+                    Report::"Service - Invoice":
                         ReportSelections."Report ID" := Report::"Service Invoice CZL";
-                    Report::"Service - Credit Memo CZ", Report::"Service - Credit Memo":
+#if CLEAN17
+                    31089,
+#else
+                    Report::"Service - Credit Memo CZ",
+#endif
+                    Report::"Service - Credit Memo":
                         ReportSelections."Report ID" := Report::"Service Credit Memo CZL";
-                    Report::"Service - Shipment CZ", Report::"Service - Shipment":
+#if CLEAN17
+                    31090,
+#else
+                    Report::"Service - Shipment CZ",
+#endif
+                    Report::"Service - Shipment":
                         ReportSelections."Report ID" := Report::"Service Shipment CZL";
-                    Report::"Service Contract Quote CZ", Report::"Service Contract Quote":
+#if CLEAN17
+                    31112,
+#else
+                    Report::"Service Contract Quote CZ",
+#endif
+                    Report::"Service Contract Quote":
                         ReportSelections."Report ID" := Report::"Service Contract Quote CZL";
-                    Report::"Service Contract CZ", Report::"Service Contract":
+#if CLEAN17
+                    31113,
+#else
+                    Report::"Service Contract CZ",
+#endif
+                    Report::"Service Contract":
                         ReportSelections."Report ID" := Report::"Service Contract CZL";
-                    Report::"Reminder CZ", Report::Reminder:
+#if CLEAN17
+                    31086,
+#else
+                    Report::"Reminder CZ",
+#endif
+                    Report::Reminder:
                         ReportSelections."Report ID" := Report::"Reminder CZL";
-                    Report::"Finance Charge Memo CZ", Report::"Finance Charge Memo":
+#if CLEAN17
+                    31087,
+#else
+                    Report::"Finance Charge Memo CZ",
+#endif
+                    Report::"Finance Charge Memo":
                         ReportSelections."Report ID" := Report::"Finance Charge Memo CZL";
                 end;
                 if ReportSelections."Report ID" <> PrevReportSelections."Report ID" then
@@ -2042,8 +2802,9 @@ codeunit 11748 "Install Application CZL"
     begin
         InitRegistrationNoServiceConfig();
         InitUnreliablePayerServiceSetup();
-        InitVATCtrlReportSection();
+        InitVATCtrlReportSections();
         InitStatutoryReportingSetup();
+        InitSWIFTCodes();
         InitEETServiceSetup();
         InitSourceCodeSetup();
 
@@ -2087,7 +2848,7 @@ codeunit 11748 "Install Application CZL"
             UnrelPayerServiceSetupCZL.Modify();
     end;
 
-    local procedure InitVATCtrlReportSection()
+    local procedure InitVATCtrlReportSections()
     var
         XA1Tok: Label 'A1', Locked = true;
         XA2Tok: Label 'A2', Locked = true;
@@ -2154,6 +2915,62 @@ codeunit 11748 "Install Application CZL"
             StatutoryReportingSetupCZL.Modify();
     end;
 
+    local procedure InitSWIFTCodes()
+    var
+        KOMBCZPPTok: Label 'KOMBCZPP', Locked = true;
+        KOMBCZPPTxt: Label 'Komerční banka, a.s.';
+        CEKOCZPPTok: Label 'CEKOCZPP', Locked = true;
+        CEKOCZPPTxt: Label 'Československá obchodní banka, a.s.';
+        CNBACZPPTok: Label 'CNBACZPP', Locked = true;
+        CNBACZPPTxt: Label 'Česká národní banka';
+        GIBACZPXTok: Label 'GIBACZPX', Locked = true;
+        GIBACZPXTxt: Label 'Česká spořitelna, a.s.';
+        AGBACZPPTok: Label 'AGBACZPP', Locked = true;
+        AGBACZPPTxt: Label 'MONETA Money Bank, a.s.';
+        FIOBCZPPTok: Label 'FIOBCZPP', Locked = true;
+        FIOBCZPPTxt: Label 'Fio banka, a.s.';
+        BACXCZPPTok: Label 'BACXCZPP', Locked = true;
+        BACXCZPPTxt: Label 'UniCredit Bank Czech Republic and Slovakia, a.s.';
+        AIRACZPPTok: Label 'AIRACZPP', Locked = true;
+        AIRACZPPTxt: Label 'Air Bank a.s.';
+        INGBCZPPTok: Label 'INGBCZPP', Locked = true;
+        INGBCZPPTxt: Label 'ING Bank N.V.';
+        RZBCCZPPTok: Label 'RZBCCZPP', Locked = true;
+        RZBCCZPPTxt: Label 'Raiffeisenbank a.s.';
+        JTBPCZPPTok: Label 'JTBPCZPP', Locked = true;
+        JTBPCZPPTxt: Label 'J & T Banka, a.s.';
+        PMBPCZPPTok: Label 'PMBPCZPP', Locked = true;
+        PMBPCZPPTxt: Label 'PPF banka a.s.';
+        EQBKCZPPTok: Label 'EQBKCZPP', Locked = true;
+        EQBKCZPPTxt: Label 'Equa bank a.s.';
+    begin
+        InsertSWIFTCode(KOMBCZPPTok, KOMBCZPPTxt);
+        InsertSWIFTCode(CEKOCZPPTok, CEKOCZPPTxt);
+        InsertSWIFTCode(CNBACZPPTok, CNBACZPPTxt);
+        InsertSWIFTCode(GIBACZPXTok, GIBACZPXTxt);
+        InsertSWIFTCode(AGBACZPPTok, AGBACZPPTxt);
+        InsertSWIFTCode(FIOBCZPPTok, FIOBCZPPTxt);
+        InsertSWIFTCode(BACXCZPPTok, BACXCZPPTxt);
+        InsertSWIFTCode(AIRACZPPTok, AIRACZPPTxt);
+        InsertSWIFTCode(INGBCZPPTok, INGBCZPPTxt);
+        InsertSWIFTCode(RZBCCZPPTok, RZBCCZPPTxt);
+        InsertSWIFTCode(JTBPCZPPTok, JTBPCZPPTxt);
+        InsertSWIFTCode(PMBPCZPPTok, PMBPCZPPTxt);
+        InsertSWIFTCode(EQBKCZPPTok, EQBKCZPPTxt);
+    end;
+
+    local procedure InsertSWIFTCode(SWIFTCodeCode: Code[20]; SWIFTCodeName: Text[100])
+    var
+        SWIFTCode: Record "SWIFT Code";
+    begin
+        if SWIFTCode.Get(SWIFTCodeCode) then
+            exit;
+        SWIFTCode.Init();
+        SWIFTCode.Code := SWIFTCodeCode;
+        SWIFTCode.Name := SWIFTCodeName;
+        SWIFTCode.Insert();
+    end;
+
     local procedure InitEETServiceSetup()
     var
         EETServiceSetupCZL: Record "EET Service Setup CZL";
@@ -2174,14 +2991,18 @@ codeunit 11748 "Install Application CZL"
         PurchaseVATDelaySourceCodeDescriptionTxt: Label 'Purchase VAT Delay', MaxLength = 100;
         SalesVATDelaySourceCodeTxt: Label 'VATSD', MaxLength = 10;
         SalesVATDelaySourceCodeDescriptionTxt: Label 'Sales VAT Delay', MaxLength = 100;
+        VATLCYCorrectionSourceCodeTxt: Label 'VATCORR', MaxLength = 10;
+        VATLCYCorrectionSourceCodeDescriptionTxt: Label 'VAT Correction in LCY', MaxLength = 100;
     begin
         SourceCodeSetup.Get();
         PrevSourceCodeSetup := SourceCodeSetup;
         InsertSourceCode(SourceCodeSetup."Purchase VAT Delay CZL", PurchaseVATDelaySourceCodeTxt, PurchaseVATDelaySourceCodeDescriptionTxt);
         InsertSourceCode(SourceCodeSetup."Sales VAT Delay CZL", SalesVATDelaySourceCodeTxt, SalesVATDelaySourceCodeDescriptionTxt);
+        InsertSourceCode(SourceCodeSetup."VAT LCY Correction CZL", VATLCYCorrectionSourceCodeTxt, VATLCYCorrectionSourceCodeDescriptionTxt);
 
         if (SourceCodeSetup."Purchase VAT Delay CZL" <> PrevSourceCodeSetup."Purchase VAT Delay CZL") or
-           (SourceCodeSetup."Sales VAT Delay CZL" <> PrevSourceCodeSetup."Sales VAT Delay CZL")
+           (SourceCodeSetup."Sales VAT Delay CZL" <> PrevSourceCodeSetup."Sales VAT Delay CZL") or
+           (SourceCodeSetup."VAT LCY Correction CZL" <> PrevSourceCodeSetup."VAT LCY Correction CZL")
         then
             SourceCodeSetup.Modify();
     end;
@@ -2207,7 +3028,11 @@ codeunit 11748 "Install Application CZL"
         if ItemJournalTemplate.FindSet(true) then
             repeat
                 PrevItemJournalTemplate := ItemJournalTemplate;
+#if CLEAN17
+                if ItemJournalTemplate."Posting Report ID" = 31078 then
+#else
                 if ItemJournalTemplate."Posting Report ID" = Report::"Posted Inventory Document" then
+#endif
                     ItemJournalTemplate."Posting Report ID" := Report::"Posted Inventory Document CZL";
                 if (ItemJournalTemplate."Posting Report ID" <> PrevItemJournalTemplate."Posting Report ID") then
                     ItemJournalTemplate.Modify();

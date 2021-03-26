@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
 {
@@ -172,3 +173,4 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

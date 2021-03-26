@@ -12,46 +12,13 @@ report 11705 "General Journal CZL"
         {
             DataItemTableView = sorting("Period Type", "Period Start") WHERE("Period Type" = CONST(Date));
             PrintOnlyIfDetail = true;
-            column(FORMAT_TODAY_0_4_; Format(Today, 0, 4))
-            {
-            }
             column(COMPANYNAME; COMPANYPROPERTY.DisplayName())
             {
             }
-            column(USERID; UserId)
+            column(PostingDateFilter; PostingDateFilter)
             {
             }
-            column(greTGLEntry_FIELDCAPTION__Posting_Date___________; TempGLEntry.FieldCaption("Posting Date") + ': ' + GetFilter("Period Start"))
-            {
-            }
-            column(General_JournalCaption; General_JournalCaptionLbl)
-            {
-            }
-            column(CurrReport_PAGENOCaption; CurrReport_PAGENOCaptionLbl)
-            {
-            }
-            column(greTGLEntry__Credit_Amount_Caption; TGLEntry__Credit_Amount_CaptionLbl)
-            {
-            }
-            column(greTGLEntry__Debit_Amount_Caption; TGLEntry__Debit_Amount_CaptionLbl)
-            {
-            }
-            column(greTGLEntry_DescriptionCaption; TGLEntry_DescriptionCaptionLbl)
-            {
-            }
-            column(greTGLEntry__G_L_Account_No__Caption; TGLEntry__G_L_Account_No__CaptionLbl)
-            {
-            }
-            column(greTGLEntry__External_Document_No__Caption; TGLEntry__External_Document_No__CaptionLbl)
-            {
-            }
-            column(greTGLEntry__Document_No__Caption; TGLEntry__Document_No__CaptionLbl)
-            {
-            }
-            column(greTGLEntry__Posting_Date_Caption; TGLEntry__Posting_Date_CaptionLbl)
-            {
-            }
-            dataitem("G/L Entry"; "G/L Entry")
+            dataitem(GLEntry; "G/L Entry")
             {
                 DataItemLink = "Posting Date" = field("Period Start");
                 DataItemTableView = sorting("Posting Date", "G/L Account No.", "Dimension Set ID");
@@ -62,22 +29,22 @@ report 11705 "General Journal CZL"
                         CurrReport.Skip();
 
                     if (RecordNo mod 100) = 0 then
-                        Window.Update(2, Round(RecordNo / NoOfRecords * 10000, 1));
+                        WindowDialog.Update(2, Round(RecordNo / NoOfRecords * 10000, 1));
                     RecordNo := RecordNo + 1;
 
-                    TempGLEntry.SetRange("Document No.", "Document No.");
-                    TempGLEntry.SetRange("G/L Account No.", "G/L Account No.");
-                    TempGLEntry.SetRange("Global Dimension 1 Code", "Global Dimension 1 Code");
-                    TempGLEntry.SetRange("Global Dimension 2 Code", "Global Dimension 2 Code");
+                    TempGLEntry.SetRange("Document No.", GLEntry."Document No.");
+                    TempGLEntry.SetRange("G/L Account No.", GLEntry."G/L Account No.");
+                    TempGLEntry.SetRange("Global Dimension 1 Code", GLEntry."Global Dimension 1 Code");
+                    TempGLEntry.SetRange("Global Dimension 2 Code", GLEntry."Global Dimension 2 Code");
                     TempGLEntry.SetRange("Job No.", "Job No.");
 
-                    if TempGLEntry.FindSet() and SumGLAccounts then begin
-                        TempGLEntry."Debit Amount" += "Debit Amount";
-                        TempGLEntry."Credit Amount" += "Credit Amount";
+                    if TempGLEntry.FindFirst() and SumGLAccounts then begin
+                        TempGLEntry."Debit Amount" += GLEntry."Debit Amount";
+                        TempGLEntry."Credit Amount" += GLEntry."Credit Amount";
                         TempGLEntry.Modify();
                     end else begin
                         TempGLEntry.Init();
-                        TempGLEntry.TransferFields("G/L Entry");
+                        TempGLEntry.TransferFields(GLEntry);
                         TempGLEntry.Insert();
                     end;
                 end;
@@ -88,30 +55,29 @@ report 11705 "General Journal CZL"
                     NoOfRecords := Count;
                 end;
             }
-            dataitem("Integer"; "Integer")
+            dataitem(BufferedGLEntry; "Integer")
             {
-                column(greTGLEntry__Posting_Date_; TempGLEntry."Posting Date")
+                DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+
+                column(TempGLEntry_PostingDate; TempGLEntry."Posting Date")
                 {
                 }
-                column(greTGLEntry__Document_No__; TempGLEntry."Document No.")
+                column(TempGLEntry_DocumentNo; TempGLEntry."Document No.")
                 {
                 }
-                column(greTGLEntry__External_Document_No__; TempGLEntry."External Document No.")
+                column(TempGLEntry_ExternalDocumentNo; TempGLEntry."External Document No.")
                 {
                 }
-                column(greTGLEntry__G_L_Account_No__; TempGLEntry."G/L Account No.")
+                column(TempGLEntry_GLAccountNo; TempGLEntry."G/L Account No.")
                 {
                 }
-                column(greTGLEntry_Description; TempGLEntry.Description)
+                column(TempGLEntry_Description; TempGLEntry.Description)
                 {
                 }
-                column(greTGLEntry__Debit_Amount_; TempGLEntry."Debit Amount")
+                column(TempGLEntry_DebitAmount; TempGLEntry."Debit Amount")
                 {
                 }
-                column(greTGLEntry__Credit_Amount_; TempGLEntry."Credit Amount")
-                {
-                }
-                column(Integer_Number; Number)
+                column(TempGLEntry_CreditAmount; TempGLEntry."Credit Amount")
                 {
                 }
                 trigger OnAfterGetRecord()
@@ -120,8 +86,6 @@ report 11705 "General Journal CZL"
                         TempGLEntry.FindSet()
                     else
                         TempGLEntry.Next();
-
-                    GLAccount.Get(TempGLEntry."G/L Account No.");
                 end;
 
                 trigger OnPostDataItem()
@@ -139,20 +103,27 @@ report 11705 "General Journal CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                Window.Update(1, "Period Start");
-                Window.Update(2, 0);
+                WindowDialog.Update(1, "Period Start");
+                WindowDialog.Update(2, 0);
             end;
 
             trigger OnPostDataItem()
             begin
-                Window.Close();
+                WindowDialog.Close();
             end;
 
             trigger OnPreDataItem()
+            var
+                PostingDateFilterTok: Label '%1: %2', Locked = true;
             begin
                 SetRange("Period Start", FromDate, ToDate);
 
-                Window.Open(ProcessingDateMsg + ProgressMsg);
+                PostingDateFilter := '';
+                if GetFilter("Period Start") <> '' then
+                    PostingDateFilter := StrSubstNo(PostingDateFilterTok,
+                        TempGLEntry.FieldCaption("Posting Date"), GetFilter("Period Start"));
+
+                WindowDialog.Open(ProcessingDateMsg + ProgressMsg);
             end;
         }
     }
@@ -189,6 +160,20 @@ report 11705 "General Journal CZL"
             }
         }
     }
+
+    labels
+    {
+        PageLbl = 'Page';
+        ReportNameLbl = 'General Journal';
+        CreditAmountLbl = 'Credit Amount';
+        DebitAmountLbl = 'Debit Amount';
+        DescriptionLbl = 'Description';
+        GLAccountNoLbl = 'G/L Account No.';
+        ExternalDocumentNoLbl = 'External Document No.';
+        DocumentNoLbl = 'Document No.';
+        PostingDateLbl = 'Posting Date';
+    }
+
     trigger OnPreReport()
     begin
         if FromDate = 0D then
@@ -196,21 +181,12 @@ report 11705 "General Journal CZL"
     end;
 
     var
-        GLAccount: Record "G/L Account";
         TempGLEntry: Record "G/L Entry" temporary;
         FromDateErr: Label 'Enter the value "From Date".';
         ProcessingDateMsg: Label 'Processing Date #1#########\\', Comment = '#1 = date of period';
         ProgressMsg: Label 'Progress @2@@@@@@@@@@@@@';
-        General_JournalCaptionLbl: Label 'General Journal';
-        CurrReport_PAGENOCaptionLbl: Label 'Page';
-        TGLEntry__Credit_Amount_CaptionLbl: Label 'Credit Amount';
-        TGLEntry__Debit_Amount_CaptionLbl: Label 'Debit Amount';
-        TGLEntry_DescriptionCaptionLbl: Label 'Description';
-        TGLEntry__G_L_Account_No__CaptionLbl: Label 'G/L Account No.';
-        TGLEntry__External_Document_No__CaptionLbl: Label 'External Document No.';
-        TGLEntry__Document_No__CaptionLbl: Label 'Document No.';
-        TGLEntry__Posting_Date_CaptionLbl: Label 'Posting Date';
-        Window: Dialog;
+        WindowDialog: Dialog;
+        PostingDateFilter: Text;
         RecordNo: Integer;
         NoOfRecords: Integer;
         SumGLAccounts: Boolean;

@@ -42,11 +42,11 @@ page 31152 "Cash Desk Statistics CZP"
 
                             trigger OnDrillDown()
                             begin
-                                CashDocHeaderCZP.SetRange("Cash Desk No.", Rec."No.");
-                                CashDocHeaderCZP.SetRange(Status, CashDocHeaderCZP.Status::Released);
-                                CashDocHeaderCZP.SetRange("Document Type", CashDocHeaderCZP."Document Type"::Receipt);
-                                Rec.CopyFilter("Date Filter", CashDocHeaderCZP."Posting Date");
-                                Page.RunModal(0, CashDocHeaderCZP);
+                                CashDocumentHeaderCZP.SetRange("Cash Desk No.", Rec."No.");
+                                CashDocumentHeaderCZP.SetRange(Status, CashDocumentHeaderCZP.Status::Released);
+                                CashDocumentHeaderCZP.SetRange("Document Type", CashDocumentHeaderCZP."Document Type"::Receipt);
+                                Rec.CopyFilter("Date Filter", CashDocumentHeaderCZP."Posting Date");
+                                Page.RunModal(0, CashDocumentHeaderCZP);
                             end;
                         }
                         field("-RelWithdrawal"; -ReleasedWithdrawal)
@@ -57,11 +57,11 @@ page 31152 "Cash Desk Statistics CZP"
 
                             trigger OnDrillDown()
                             begin
-                                CashDocHeaderCZP.SetRange("Cash Desk No.", Rec."No.");
-                                CashDocHeaderCZP.SetRange(Status, CashDocHeaderCZP.Status::Released);
-                                CashDocHeaderCZP.SetRange("Document Type", CashDocHeaderCZP."Document Type"::Withdrawal);
-                                Rec.CopyFilter("Date Filter", CashDocHeaderCZP."Posting Date");
-                                Page.RunModal(0, CashDocHeaderCZP);
+                                CashDocumentHeaderCZP.SetRange("Cash Desk No.", Rec."No.");
+                                CashDocumentHeaderCZP.SetRange(Status, CashDocumentHeaderCZP.Status::Released);
+                                CashDocumentHeaderCZP.SetRange("Document Type", CashDocumentHeaderCZP."Document Type"::Withdrawal);
+                                Rec.CopyFilter("Date Filter", CashDocumentHeaderCZP."Posting Date");
+                                Page.RunModal(0, CashDocumentHeaderCZP);
                             end;
                         }
                     }
@@ -70,30 +70,30 @@ page 31152 "Cash Desk Statistics CZP"
                         Caption = 'Posted';
                         field(PostReceipt; PostedReceipt)
                         {
-                            Caption = 'PostedReceipt';
+                            Caption = 'Posted Receipt';
                             ApplicationArea = Basic, Suite;
-                            ToolTip = 'Specifies quantity of post receipts.';
+                            ToolTip = 'Specifies the amount of posted receipts.';
 
                             trigger OnDrillDown()
                             begin
-                                PostedCashDocHeader.SetRange("Cash Desk No.", Rec."No.");
-                                PostedCashDocHeader.SetRange("Document Type", PostedCashDocHeader."Document Type"::Receipt);
-                                Rec.CopyFilter("Date Filter", PostedCashDocHeader."Posting Date");
-                                Page.RunModal(0, PostedCashDocHeader);
+                                PostedCashDocumentHdrCZP.SetRange("Cash Desk No.", Rec."No.");
+                                PostedCashDocumentHdrCZP.SetRange("Document Type", PostedCashDocumentHdrCZP."Document Type"::Receipt);
+                                Rec.CopyFilter("Date Filter", PostedCashDocumentHdrCZP."Posting Date");
+                                Page.RunModal(0, PostedCashDocumentHdrCZP);
                             end;
                         }
                         field(PostWithdrawal; -PostedWithdrawal)
                         {
                             Caption = 'Posted Withdrawal';
                             ApplicationArea = Basic, Suite;
-                            ToolTip = 'Specifies quantity of post withdrawals.';
+                            ToolTip = 'Specifies the amount of posted withdrawals.';
 
                             trigger OnDrillDown()
                             begin
-                                PostedCashDocHeader.SetRange("Cash Desk No.", Rec."No.");
-                                PostedCashDocHeader.SetRange("Document Type", PostedCashDocHeader."Document Type"::Withdrawal);
-                                Rec.CopyFilter("Date Filter", PostedCashDocHeader."Posting Date");
-                                Page.RunModal(0, PostedCashDocHeader);
+                                PostedCashDocumentHdrCZP.SetRange("Cash Desk No.", Rec."No.");
+                                PostedCashDocumentHdrCZP.SetRange("Document Type", PostedCashDocumentHdrCZP."Document Type"::Withdrawal);
+                                Rec.CopyFilter("Date Filter", PostedCashDocumentHdrCZP."Posting Date");
+                                Page.RunModal(0, PostedCashDocumentHdrCZP);
                             end;
                         }
                     }
@@ -130,8 +130,8 @@ page 31152 "Cash Desk Statistics CZP"
     end;
 
     var
-        CashDocHeaderCZP: Record "Cash Document Header CZP";
-        PostedCashDocHeader: Record "Posted Cash Document Hdr. CZP";
+        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
+        PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
         BalanceToDate: Decimal;
         ReleasedReceipt: Decimal;
         ReleasedWithdrawal: Decimal;

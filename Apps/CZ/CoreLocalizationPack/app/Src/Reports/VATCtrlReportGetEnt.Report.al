@@ -99,6 +99,7 @@ report 31102 "VAT Ctrl. Report Get Ent. CZL"
             }
         }
     }
+
     var
         VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL";
         VATCtrlReportMgtCZL: Codeunit "VAT Ctrl. Report Mgt. CZL";
@@ -110,9 +111,9 @@ report 31102 "VAT Ctrl. Report Get Ent. CZL"
         DateMismashErr: Label 'Starting od Ending Date is not in allowed values range (%1..%2).', Comment = '%1 = "Start Date";%2 = "End Date"';
         UseMergeVATEntries: Boolean;
 
-    procedure SetVATCtrlReportHeader(NewVATCtrlReportHeader: Record "VAT Ctrl. Report Header CZL")
+    procedure SetVATCtrlReportHeader(NewVATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL")
     begin
-        VATCtrlReportHeaderCZL := NewVATCtrlReportHeader;
+        VATCtrlReportHeaderCZL := NewVATCtrlReportHeaderCZL;
         InitializeRequest();
     end;
 

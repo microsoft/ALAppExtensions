@@ -188,7 +188,7 @@ page 30062 "APIV2 - Sales Shipments"
                     Caption = 'Lines';
                     EntityName = 'salesShipmentLine';
                     EntitySetName = 'salesShipmentLines';
-                    SubPageLink = "Document No." = Field("No.");
+                    SubPageLink = "Document Id" = Field(SystemId);
                 }
                 field(lastModifiedDateTime; SystemModifiedAt)
                 {

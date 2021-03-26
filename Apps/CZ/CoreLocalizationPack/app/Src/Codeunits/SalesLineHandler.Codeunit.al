@@ -1,15 +1,15 @@
 codeunit 11783 "Sales Line Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignItemValues', '', false, false)]
-    local procedure TariffNoOnAfterAssignItemValues(var SalesLine: Record "Sales Line"; Item: Record Item)
+    local procedure CopyFromItemOnAfterAssignItemValues(var SalesLine: Record "Sales Line"; Item: Record Item)
+    var
+        SalesHeader: Record "Sales Header";
     begin
         SalesLine."Tariff No. CZL" := Item."Tariff No.";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignItemValues', '', false, false)]
-    local procedure StatisticIndicationOnAfterAssignItemValues(var SalesLine: Record "Sales Line"; Item: Record Item)
-    begin
         SalesLine."Statistic Indication CZL" := Item."Statistic Indication CZL";
+        SalesLine."Country/Reg. of Orig. Code CZL" := Item."Country/Region of Origin Code";
+        if SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then
+            SalesLine."Physical Transfer CZL" := SalesHeader."Physical Transfer CZL";        
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignResourceValues', '', false, false)]

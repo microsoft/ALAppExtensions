@@ -382,6 +382,16 @@ page 30042 "APIV2 - Purchase Invoices"
                         RegisterFieldSet(FieldNo("Currency Code"));
                     end;
                 }
+                field(orderId; "Order Id")
+                {
+                    Caption = 'Order Id';
+                    Editable = false;
+                }
+                field(orderNumber; "Order No.")
+                {
+                    Caption = 'Order No.';
+                    Editable = false;
+                }
                 field(pricesIncludeTax; "Prices Including VAT")
                 {
                     Caption = 'Prices Include Tax';
@@ -390,13 +400,6 @@ page 30042 "APIV2 - Purchase Invoices"
                     begin
                         RegisterFieldSet(FieldNo("Prices Including VAT"));
                     end;
-                }
-                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
-                {
-                    Caption = 'Dimension Set Lines';
-                    EntityName = 'dimensionSetLine';
-                    EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(10);
                 }
                 part(purchaseInvoiceLines; "APIV2 - Purchase Invoice Lines")
                 {
@@ -467,6 +470,13 @@ page 30042 "APIV2 - Purchase Invoices"
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const(6);
+                }
+                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
+                {
+                    Caption = 'Dimension Set Lines';
+                    EntityName = 'dimensionSetLine';
+                    EntitySetName = 'dimensionSetLines';
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(10);
                 }
             }
         }
@@ -561,8 +571,6 @@ page 30042 "APIV2 - Purchase Invoices"
         PurchaseInvoicePermissionsErr: Label 'You do not have permissions to read Purchase Invoices.';
 
     local procedure SetCalculatedFields()
-    var
-        GraphMgtPurchaseInvoice: Codeunit "Graph Mgt - Purchase Invoice";
     begin
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;

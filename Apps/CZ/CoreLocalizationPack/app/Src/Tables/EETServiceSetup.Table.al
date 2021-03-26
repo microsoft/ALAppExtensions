@@ -7,11 +7,13 @@ table 31125 "EET Service Setup CZL"
         field(1; "Primary Key"; Code[10])
         {
             Caption = 'Primary Key';
+            DataClassification = CustomerContent;
         }
         field(2; "Service URL"; Text[250])
         {
             Caption = 'Service URL';
             ExtendedDatatype = URL;
+            DataClassification = CustomerContent;
 
             trigger OnValidate()
             var
@@ -37,20 +39,25 @@ table 31125 "EET Service Setup CZL"
         field(10; "Sales Regime"; Enum "EET Sales Regime CZL")
         {
             Caption = 'Sales Regime';
+            DataClassification = CustomerContent;
         }
         field(11; "Limit Response Time"; Integer)
         {
             Caption = 'Limit Response Time';
+            DataClassification = CustomerContent;
             InitValue = 2000;
             MinValue = 2000;
         }
         field(12; "Appointing VAT Reg. No."; Text[20])
         {
             Caption = 'Appointing VAT Reg. No.';
+            DataClassification = CustomerContent;
         }
         field(15; Enabled; Boolean)
         {
+
             Caption = 'Enabled';
+            DataClassification = CustomerContent;
 
             trigger OnValidate()
             var
@@ -68,6 +75,7 @@ table 31125 "EET Service Setup CZL"
         {
             Caption = 'Certificate Code';
             TableRelation = "Certificate Code CZL";
+            DataClassification = CustomerContent;
         }
     }
 

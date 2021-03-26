@@ -68,7 +68,7 @@ report 31199 "Service Shipment CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Service Shipment Header"; "Service Shipment Header")
@@ -315,36 +315,36 @@ report 31199 "Service Shipment CZL"
                     dataitem(ItemTrackingLine; "Integer")
                     {
                         DataItemTableView = sorting(Number);
-                        column(LotNo_TrackingSpecBuffer; TempTrackingSpecBuf."Lot No.")
+                        column(LotNo_TrackingSpecBuffer; TempTrackingSpecification."Lot No.")
                         {
                         }
-                        column(SerNo_TrackingSpecBuffer; TempTrackingSpecBuf."Serial No.")
+                        column(SerNo_TrackingSpecBuffer; TempTrackingSpecification."Serial No.")
                         {
                         }
-                        column(Expiration_TrackingSpecBuffer; TempTrackingSpecBuf."Expiration Date")
+                        column(Expiration_TrackingSpecBuffer; TempTrackingSpecification."Expiration Date")
                         {
                         }
-                        column(Quantity_TrackingSpecBuffer; TempTrackingSpecBuf."Quantity (Base)")
+                        column(Quantity_TrackingSpecBuffer; TempTrackingSpecification."Quantity (Base)")
                         {
                         }
                         trigger OnAfterGetRecord()
                         begin
                             if Number = 1 then
-                                TempTrackingSpecBuf.FindSet()
+                                TempTrackingSpecification.FindSet()
                             else
-                                TempTrackingSpecBuf.Next();
+                                TempTrackingSpecification.Next();
                         end;
 
                         trigger OnPreDataItem()
                         begin
-                            TempTrackingSpecBuf.SetRange("Source Ref. No.", "Service Shipment Line"."Line No.");
+                            TempTrackingSpecification.SetRange("Source Ref. No.", "Service Shipment Line"."Line No.");
 
-                            TrackingSpecCount := TempTrackingSpecBuf.Count();
+                            TrackingSpecCount := TempTrackingSpecification.Count();
                             if TrackingSpecCount = 0 then
                                 CurrReport.Break();
 
                             SetRange(Number, 1, TrackingSpecCount);
-                            TempTrackingSpecBuf.SetCurrentKey("Source ID", "Source Type", "Source Subtype", "Source Batch Name",
+                            TempTrackingSpecification.SetCurrentKey("Source ID", "Source Type", "Source Subtype", "Source Batch Name",
                               "Source Prod. Order Line", "Source Ref. No.");
                         end;
                     }
@@ -356,7 +356,7 @@ report 31199 "Service Shipment CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -388,15 +388,15 @@ report 31199 "Service Shipment CZL"
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
-                FormatAddr.ServiceShptShipTo(ShipToAddr, "Service Shipment Header");
-                FormatAddr.ServiceShptBillTo(CustAddr, ShipToAddr, "Service Shipment Header");
+                FormatAddress.ServiceShptShipTo(ShipToAddr, "Service Shipment Header");
+                FormatAddress.ServiceShptBillTo(CustAddr, ShipToAddr, "Service Shipment Header");
                 DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
 
-                ItemTrackingDocMgt.SetRetrieveAsmItemTracking(true);
+                ItemTrackingDocManagement.SetRetrieveAsmItemTracking(true);
                 TrackingSpecCount :=
-                  ItemTrackingDocMgt.RetrieveDocumentItemTracking(TempTrackingSpecBuf,
+                  ItemTrackingDocManagement.RetrieveDocumentItemTracking(TempTrackingSpecification,
                     "No.", Database::"Service Shipment Header", 0);
-                ItemTrackingDocMgt.SetRetrieveAsmItemTracking(false);
+                ItemTrackingDocManagement.SetRetrieveAsmItemTracking(false);
 
                 if "Currency Code" = '' then
                     "Currency Code" := "General Ledger Setup"."LCY Code";
@@ -430,12 +430,13 @@ report 31199 "Service Shipment CZL"
             }
         }
     }
+
     var
-        TempTrackingSpecBuf: Record "Tracking Specification" temporary;
+        TempTrackingSpecification: Record "Tracking Specification" temporary;
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        ItemTrackingDocMgt: Codeunit "Item Tracking Doc. Management";
+        ItemTrackingDocManagement: Codeunit "Item Tracking Doc. Management";
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];

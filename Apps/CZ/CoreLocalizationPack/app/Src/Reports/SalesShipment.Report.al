@@ -56,7 +56,7 @@ report 31191 "Sales Shipment CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Sales Shipment Header"; "Sales Shipment Header")
@@ -122,24 +122,6 @@ report 31191 "Sales Shipment CZL"
             {
             }
             column(RegistrationNo_SalesShipmentHeader; "Registration No. CZL")
-            {
-            }
-            column(BankAccountNo_SalesShipmentHeaderCaption; FieldCaption("Bank Account No."))
-            {
-            }
-            column(BankAccountNo_SalesShipmentHeader; "Bank Account No.")
-            {
-            }
-            column(IBAN_SalesShipmentHeaderCaption; FieldCaption(IBAN))
-            {
-            }
-            column(IBAN_SalesShipmentHeader; IBAN)
-            {
-            }
-            column(BIC_SalesShipmentHeaderCaption; FieldCaption("SWIFT Code"))
-            {
-            }
-            column(BIC_SalesShipmentHeader; "SWIFT Code")
             {
             }
             column(DocumentDate_SalesShipmentHeaderCaption; FieldCaption("Document Date"))
@@ -264,36 +246,36 @@ report 31191 "Sales Shipment CZL"
                     dataitem(ItemTrackingLine; "Integer")
                     {
                         DataItemTableView = sorting(Number);
-                        column(LotNo_TrackingSpecBuffer; TempTrackingSpecBuf."Lot No.")
+                        column(LotNo_TrackingSpecBuffer; TempTrackingSpecification."Lot No.")
                         {
                         }
-                        column(SerNo_TrackingSpecBuffer; TempTrackingSpecBuf."Serial No.")
+                        column(SerNo_TrackingSpecBuffer; TempTrackingSpecification."Serial No.")
                         {
                         }
-                        column(Expiration_TrackingSpecBuffer; TempTrackingSpecBuf."Expiration Date")
+                        column(Expiration_TrackingSpecBuffer; TempTrackingSpecification."Expiration Date")
                         {
                         }
-                        column(Quantity_TrackingSpecBuffer; TempTrackingSpecBuf."Quantity (Base)")
+                        column(Quantity_TrackingSpecBuffer; TempTrackingSpecification."Quantity (Base)")
                         {
                         }
                         trigger OnAfterGetRecord()
                         begin
                             if Number = 1 then
-                                TempTrackingSpecBuf.FindSet()
+                                TempTrackingSpecification.FindSet()
                             else
-                                TempTrackingSpecBuf.Next();
+                                TempTrackingSpecification.Next();
                         end;
 
                         trigger OnPreDataItem()
                         begin
-                            TempTrackingSpecBuf.SetRange("Source Ref. No.", "Sales Shipment Line"."Line No.");
+                            TempTrackingSpecification.SetRange("Source Ref. No.", "Sales Shipment Line"."Line No.");
 
-                            TrackingSpecCount := TempTrackingSpecBuf.Count();
+                            TrackingSpecCount := TempTrackingSpecification.Count();
                             if TrackingSpecCount = 0 then
                                 CurrReport.Break();
 
                             SetRange(Number, 1, TrackingSpecCount);
-                            TempTrackingSpecBuf.SetCurrentKey("Source ID", "Source Type", "Source Subtype", "Source Batch Name",
+                            TempTrackingSpecification.SetCurrentKey("Source ID", "Source Type", "Source Subtype", "Source Batch Name",
                               "Source Prod. Order Line", "Source Ref. No.");
                         end;
                     }
@@ -305,7 +287,7 @@ report 31191 "Sales Shipment CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -337,21 +319,21 @@ report 31191 "Sales Shipment CZL"
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
-                FormatAddr.SalesShptShipTo(ShipToAddr, "Sales Shipment Header");
-                FormatAddr.SalesShptBillTo(CustAddr, ShipToAddr, "Sales Shipment Header");
+                FormatAddress.SalesShptShipTo(ShipToAddr, "Sales Shipment Header");
+                FormatAddress.SalesShptBillTo(CustAddr, ShipToAddr, "Sales Shipment Header");
                 FormatDocument.SetShipmentMethod(ShipmentMethod, "Shipment Method Code", "Language Code");
                 DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
 
                 if LogInteraction and not IsReportInPreviewMode() then
-                    SegMgt.LogDocument(
+                    SegManagement.LogDocument(
                       5, "No.", 0, 0, Database::Customer, "Sell-to Customer No.", "Salesperson Code",
                       "Campaign No.", "Posting Description", '');
                 if ShowLotSN then begin
-                    ItemTrackingDocMgt.SetRetrieveAsmItemTracking(true);
+                    ItemTrackingDocManagement.SetRetrieveAsmItemTracking(true);
                     TrackingSpecCount :=
-                      ItemTrackingDocMgt.RetrieveDocumentItemTracking(TempTrackingSpecBuf,
+                      ItemTrackingDocManagement.RetrieveDocumentItemTracking(TempTrackingSpecification,
                         "No.", Database::"Sales Shipment Header", 0);
-                    ItemTrackingDocMgt.SetRetrieveAsmItemTracking(false);
+                    ItemTrackingDocManagement.SetRetrieveAsmItemTracking(false);
                 end;
 
                 if "Currency Code" = '' then
@@ -411,13 +393,13 @@ report 31191 "Sales Shipment CZL"
 
     var
         ShipmentMethod: Record "Shipment Method";
-        TempTrackingSpecBuf: Record "Tracking Specification" temporary;
+        TempTrackingSpecification: Record "Tracking Specification" temporary;
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        SegMgt: Codeunit SegManagement;
-        ItemTrackingDocMgt: Codeunit "Item Tracking Doc. Management";
+        SegManagement: Codeunit SegManagement;
+        ItemTrackingDocManagement: Codeunit "Item Tracking Doc. Management";
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];
@@ -448,7 +430,7 @@ report 31191 "Sales Shipment CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegMgt.FindInteractTmplCode(5) <> '';
+        LogInteraction := SegManagement.FindInteractTmplCode(5) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

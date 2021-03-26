@@ -137,11 +137,11 @@ table 11744 "Cash Desk CZP"
                     exit;
 
                 TestZeroBalance();
-                if not BankAccLedgEntry.SetCurrentKey("Bank Account No.", Open) then
-                    BankAccLedgEntry.SetCurrentKey("Bank Account No.");
-                BankAccLedgEntry.SetRange("Bank Account No.", "No.");
-                BankAccLedgEntry.SetRange(Open, true);
-                if not BankAccLedgEntry.IsEmpty() then
+                if not BankAccountLedgerEntry.SetCurrentKey("Bank Account No.", Open) then
+                    BankAccountLedgerEntry.SetCurrentKey("Bank Account No.");
+                BankAccountLedgerEntry.SetRange("Bank Account No.", "No.");
+                BankAccountLedgerEntry.SetRange(Open, true);
+                if not BankAccountLedgerEntry.IsEmpty() then
                     Error(OpenLedgerEntriesErr, FieldCaption("Currency Code"));
                 if "Currency Code" = '' then
                     "Exclude from Exch. Rate Adj." := false;
@@ -612,7 +612,7 @@ table 11744 "Cash Desk CZP"
             BankAccount."Global Dimension 1 Code" := "Global Dimension 1 Code";
             BankAccount."Global Dimension 2 Code" := "Global Dimension 2 Code";
             BankAccount."Currency Code" := "Currency Code";
-            BankAccount."Exclude from Exch. Rate Adj." := "Exclude from Exch. Rate Adj.";
+            BankAccount."Excl. from Exch. Rate Adj. CZL" := "Exclude from Exch. Rate Adj.";
             BankAccount."Last Date Modified" := Today();
             DimensionManagement.UpdateDefaultDim(Database::"Bank Account", "No.", "Global Dimension 1 Code", "Global Dimension 2 Code");
             BankAccount.Insert(false);
@@ -632,12 +632,11 @@ table 11744 "Cash Desk CZP"
         BankAccount.Name := Name;
         BankAccount."Search Name" := "Search Name";
         BankAccount."Bank Acc. Posting Group" := "Bank Acc. Posting Group";
-        BankAccount."Global Dimension 1 Code" := "Global Dimension 1 Code";
-        BankAccount."Global Dimension 2 Code" := "Global Dimension 2 Code";
+        BankAccount.Validate("Global Dimension 1 Code", "Global Dimension 1 Code");
+        BankAccount.Validate("Global Dimension 2 Code", "Global Dimension 2 Code");
         BankAccount."Currency Code" := "Currency Code";
-        BankAccount."Exclude from Exch. Rate Adj." := "Exclude from Exch. Rate Adj.";
+        BankAccount."Excl. from Exch. Rate Adj. CZL" := "Exclude from Exch. Rate Adj.";
         BankAccount."Last Date Modified" := Today();
-        DimensionManagement.UpdateDefaultDim(Database::"Bank Account", "No.", "Global Dimension 1 Code", "Global Dimension 2 Code");
         BankAccount.Modify(false);
     end;
 
@@ -652,14 +651,13 @@ table 11744 "Cash Desk CZP"
         GeneralLedgerSetup: Record "General Ledger Setup";
         CashDeskCZP: Record "Cash Desk CZP";
         BankAccount: Record "Bank Account";
-        BankAccLedgEntry: Record "Bank Account Ledger Entry";
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         CommentLine: Record "Comment Line";
         PostCode: Record "Post Code";
         NoSeriesManagement: Codeunit NoSeriesManagement;
         ConfirmManagement: Codeunit "Confirm Management";
         MoveEntries: Codeunit MoveEntries;
         DimensionManagement: Codeunit DimensionManagement;
-        CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         OpenLedgerEntriesErr: Label 'You cannot change %1 because there are one or more open ledger entries for this bank account.', Comment = '%1 = Currenc Code FieldCaption';
         OnlineMapSetupErr: Label 'Before you can use Online Map, you must fill in the Online Map Setup window.\See Setting Up Online Map in Help.';
         ExcludeEntriesQst: Label 'All entries will be excluded from Exchange Rates Adjustment. Do you want to continue?';
@@ -693,11 +691,11 @@ table 11744 "Cash Desk CZP"
 
     procedure DisplayMap()
     var
-        MapPoint: Record "Online Map Setup";
-        MapMgt: Codeunit "Online Map Management";
+        OnlineMapSetup: Record "Online Map Setup";
+        OnlineMapManagement: Codeunit "Online Map Management";
     begin
-        if not MapPoint.IsEmpty() then
-            MapMgt.MakeSelection(Database::"Cash Desk CZP", CopyStr(GetPosition(), 1, 1000))
+        if not OnlineMapSetup.IsEmpty() then
+            OnlineMapManagement.MakeSelection(Database::"Cash Desk CZP", CopyStr(GetPosition(), 1, 1000))
         else
             Message(OnlineMapSetupErr);
     end;
@@ -808,15 +806,15 @@ table 11744 "Cash Desk CZP"
 
     procedure CheckCurrExchRateExist(Date: Date)
     var
-        CurrExchRate: Record "Currency Exchange Rate";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
     begin
         if IsInLocalCurrency() then
             exit;
 
-        CurrExchRate.SetRange("Currency Code", "Currency Code");
-        CurrExchRate.SetRange("Starting Date", 0D, Date);
-        if CurrExchRate.IsEmpty() then
-            Error(CurrExchRateIsEmptyErr, CurrExchRate.GetFilters());
+        CurrencyExchangeRate.SetRange("Currency Code", "Currency Code");
+        CurrencyExchangeRate.SetRange("Starting Date", 0D, Date);
+        if CurrencyExchangeRate.IsEmpty() then
+            Error(CurrExchRateIsEmptyErr, CurrencyExchangeRate.GetFilters());
     end;
 
     procedure IsEETCashRegister(): Boolean
@@ -827,12 +825,12 @@ table 11744 "Cash Desk CZP"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeValidateShortcutDimCode(var CashDeskCZP: Record "Cash Desk CZP"; var xCashdeskCZP: Record "Cash Desk CZP"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
+    local procedure OnBeforeValidateShortcutDimCode(var CashDeskCZP: Record "Cash Desk CZP"; var xCashDeskCZP: Record "Cash Desk CZP"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterValidateShortcutDimCode(var CashdeskCZP: Record "Cash Desk CZP"; var xCashdeskCZP: Record "Cash Desk CZP"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
+    local procedure OnAfterValidateShortcutDimCode(var CashDeskCZP: Record "Cash Desk CZP"; var xCashDeskCZP: Record "Cash Desk CZP"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
     begin
     end;
 }

@@ -3,7 +3,7 @@ codeunit 31164 "Sync.Dep.Fld-PurchSetup CZL"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '17.0';
+    ObsoleteTag = '18.0';
 
     [EventSubscriber(ObjectType::Table, Database::"Purchases & Payables Setup", 'OnBeforeInsertEvent', '', false, false)]
     local procedure SyncOnBeforeInsertPurchSetup(var Rec: Record "Purchases & Payables Setup")
@@ -37,5 +37,6 @@ codeunit 31164 "Sync.Dep.Fld-PurchSetup CZL"
         SyncDepFldUtilities.SyncFields(DepFieldInt, NewFieldInt, PreviousRecord."Default Orig. Doc. VAT Date", PreviousRecord."Def. Orig. Doc. VAT Date CZL");
         Rec."Default Orig. Doc. VAT Date" := DepFieldInt;
         Rec."Def. Orig. Doc. VAT Date CZL" := NewFieldInt;
+        SyncDepFldUtilities.SyncFields(Rec."Allow Alter Posting Groups", Rec."Allow Alter Posting Groups CZL", PreviousRecord."Allow Alter Posting Groups", PreviousRecord."Allow Alter Posting Groups CZL");
     end;
 }

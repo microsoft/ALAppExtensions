@@ -8,199 +8,130 @@ report 11714 "Joining G/L Account Adj. CZL"
 
     dataset
     {
-        dataitem("G/L Entry"; "G/L Entry")
+        dataitem(GLEntryFilter; "G/L Entry")
         {
             DataItemTableView = sorting("G/L Account No.", "Posting Date");
             RequestFilterFields = "G/L Account No.", "Document No.", "External Document No.";
 
+            column(COMPANYNAME; COMPANYPROPERTY.DisplayName())
+            {
+            }
+            column(GLEntry_Filters; GLEntryFilters)
+            {
+            }
+
             trigger OnAfterGetRecord()
             var
-                lcoDocNo: Code[20];
+                DocumentNo: Code[20];
             begin
                 j := j + 1;
-                Window.Update(1, Round((9999 / i) * j, 1));
-                case SortingType of
-                    0:
-                        lcoDocNo := "Document No.";
-                    1:
-                        lcoDocNo := CopyStr("External Document No.", 1, MaxStrLen(lcoDocNo));
-                    2:
-                        if "External Document No." <> '' then
-                            lcoDocNo := CopyStr("External Document No.", 1, MaxStrLen(lcoDocNo))
-                        else
-                            lcoDocNo := "Document No.";
-                end;
-                if TempBuffer.Get(lcoDocNo) then begin
-                    TempBuffer.Amount := TempBuffer.Amount + "G/L Entry".Amount;
-                    TempBuffer."Debit Amount" := TempBuffer."Debit Amount" + "Debit Amount";
-                    TempBuffer."Credit Amount" := TempBuffer."Credit Amount" + "Credit Amount";
-                    if ShowPostingDate and (TempBuffer."Posting Date" = 0D) and ("Posting Date" <> 0D) then
-                        TempBuffer."Posting Date" := "Posting Date";
-                    if ShowDescription and (TempBuffer.Description = '') and (Description <> '') then
-                        TempBuffer.Description := Description;
-                    TempBuffer.Modify();
+                WindowDialog.Update(1, Round((9999 / i) * j, 1));
+
+                DocumentNo := GetDocumentNoBySortingType(GLEntryFilter);
+                if TempGLAccountAdjustmentBuffer.Get(DocumentNo) then begin
+                    TempGLAccountAdjustmentBuffer.Amount += GLEntryFilter.Amount;
+                    TempGLAccountAdjustmentBuffer."Debit Amount" += GLEntryFilter."Debit Amount";
+                    TempGLAccountAdjustmentBuffer."Credit Amount" += GLEntryFilter."Credit Amount";
+                    if ShowPostingDate and (TempGLAccountAdjustmentBuffer."Posting Date" = 0D) and (GLEntryFilter."Posting Date" <> 0D) then
+                        TempGLAccountAdjustmentBuffer."Posting Date" := GLEntryFilter."Posting Date";
+                    if ShowDescription and (TempGLAccountAdjustmentBuffer.Description = '') and (GLEntryFilter.Description <> '') then
+                        TempGLAccountAdjustmentBuffer.Description := GLEntryFilter.Description;
+                    TempGLAccountAdjustmentBuffer.Modify();
                 end else begin
-                    TempBuffer.Init();
-                    TempBuffer."Document No." := lcoDocNo;
-                    TempBuffer.Amount := "G/L Entry".Amount;
-                    TempBuffer."Debit Amount" := "Debit Amount";
-                    TempBuffer."Credit Amount" := "Credit Amount";
+                    TempGLAccountAdjustmentBuffer.Init();
+                    TempGLAccountAdjustmentBuffer."Document No." := DocumentNo;
+                    TempGLAccountAdjustmentBuffer.Amount := GLEntryFilter.Amount;
+                    TempGLAccountAdjustmentBuffer."Debit Amount" := GLEntryFilter."Debit Amount";
+                    TempGLAccountAdjustmentBuffer."Credit Amount" := GLEntryFilter."Credit Amount";
                     if ShowPostingDate then
-                        TempBuffer."Posting Date" := "Posting Date";
+                        TempGLAccountAdjustmentBuffer."Posting Date" := GLEntryFilter."Posting Date";
                     if ShowDescription then
-                        TempBuffer.Description := Description;
-                    TempBuffer.Insert();
+                        TempGLAccountAdjustmentBuffer.Description := GLEntryFilter.Description;
+                    TempGLAccountAdjustmentBuffer.Insert();
                 end;
             end;
 
             trigger OnPreDataItem()
             begin
-                if GetFilter("G/L Account No.") = '' then
-                    Error(EmptyAccountNoFilterErr);
-
-                Filter := CopyStr("G/L Entry".GetFilters, 1, MaxStrLen(Filter));
                 i := Count;
                 j := 0;
-                Window.Open(ProcessingEntriesMsg);
+                WindowDialog.Open(ProcessingEntriesMsg);
             end;
         }
-        dataitem("Integer"; "Integer")
+        dataitem(EntryBuffer; "Integer")
         {
             DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-            column(USERID; UserId)
+            column(EntryBuffer_DocumentNo; TempGLAccountAdjustmentBuffer."Document No.")
             {
             }
-            column(FORMAT_TODAY_0_4_; Format(Today, 0, 4))
+            column(EntryBuffer_Amount; TempGLAccountAdjustmentBuffer.Amount)
             {
             }
-            column(COMPANYNAME; COMPANYPROPERTY.DisplayName())
+            column(EntryBuffer_DebitAmount; TempGLAccountAdjustmentBuffer."Debit Amount")
             {
             }
-            column(gteFilter; Filter)
+            column(EntryBuffer_CreditAmount; TempGLAccountAdjustmentBuffer."Credit Amount")
             {
             }
-            column(greTBuffer__Document_No__; TempBuffer."Document No.")
+            column(EntryBuffer_Description; TempGLAccountAdjustmentBuffer.Description)
             {
             }
-            column(greTBuffer_Amount; TempBuffer.Amount)
+            column(EntryBuffer_PostingDate; TempGLAccountAdjustmentBuffer."Posting Date")
             {
             }
-            column(greTBuffer__Debit_Amount_; TempBuffer."Debit Amount")
-            {
-            }
-            column(greTBuffer__Credit_Amount_; TempBuffer."Credit Amount")
-            {
-            }
-            column(greTBuffer_Description; TempBuffer.Description)
-            {
-            }
-            column(greTBuffer__Posting_Date_; TempBuffer."Posting Date")
-            {
-            }
-            column(CurrReport_PAGENOCaption; CurrReport_PAGENOCaptionLbl)
-            {
-            }
-            column(Joining_G_L_Account_AdjustmentCaption; Joining_G_L_Account_AdjustmentCaptionLbl)
-            {
-            }
-            column(greTBuffer__Document_No__Caption; TBuffer__Document_No__CaptionLbl)
-            {
-            }
-            column(G_L_Entry2_AmountCaption; "G/L Entry2".FieldCaption(Amount))
-            {
-            }
-            column(G_L_Entry2__Debit_Amount_Caption; "G/L Entry2".FieldCaption("Debit Amount"))
-            {
-            }
-            column(G_L_Entry2__Credit_Amount_Caption; "G/L Entry2".FieldCaption("Credit Amount"))
-            {
-            }
-            column(G_L_Entry2_DescriptionCaption; "G/L Entry2".FieldCaption(Description))
-            {
-            }
-            column(G_L_Entry2__Posting_Date_Caption; "G/L Entry2".FieldCaption("Posting Date"))
-            {
-            }
-            column(G_L_Entry2__Entry_No__Caption; "G/L Entry2".FieldCaption("Entry No."))
-            {
-            }
-            column(G_L_Entry2_DescriptionCaption_Control34; "G/L Entry2".FieldCaption(Description))
-            {
-            }
-            column(G_L_Entry2__Credit_Amount_Caption_Control35; "G/L Entry2".FieldCaption("Credit Amount"))
-            {
-            }
-            column(G_L_Entry2__Debit_Amount_Caption_Control36; "G/L Entry2".FieldCaption("Debit Amount"))
-            {
-            }
-            column(G_L_Entry2_AmountCaption_Control37; "G/L Entry2".FieldCaption(Amount))
-            {
-            }
-            column(greTBuffer__Document_No__Caption_Control38; TBuffer__Document_No__Caption_Control38Lbl)
-            {
-            }
-            column(G_L_Entry2__Posting_Date_Caption_Control40; "G/L Entry2".FieldCaption("Posting Date"))
-            {
-            }
-            column(G_L_Entry2__Entry_No__Caption_Control1100162001; "G/L Entry2".FieldCaption("Entry No."))
-            {
-            }
-            column(gdeTotalCaption; TotalCaptionLbl)
-            {
-            }
-            column(Integer_Number; Number)
-            {
-            }
-            dataitem("G/L Entry2"; "G/L Entry")
+            dataitem(GLEntry; "G/L Entry")
             {
                 DataItemTableView = sorting("Entry No.");
-                column(G_L_Entry2_Amount; Amount)
+                column(GLEntry_Amount; Amount)
                 {
+                    IncludeCaption = true;
                 }
-                column(G_L_Entry2__Debit_Amount_; "Debit Amount")
+                column(GLEntry_DebitAmount; "Debit Amount")
                 {
+                    IncludeCaption = true;
                 }
-                column(G_L_Entry2__Credit_Amount_; "Credit Amount")
+                column(GLEntry_CreditAmount; "Credit Amount")
                 {
+                    IncludeCaption = true;
                 }
-                column(G_L_Entry2_Description; Description)
+                column(GLEntry_Description; Description)
                 {
+                    IncludeCaption = true;
                 }
-                column(G_L_Entry2__Posting_Date_; "Posting Date")
+                column(GLEntry_PostingDate; "Posting Date")
                 {
+                    IncludeCaption = true;
                 }
-                column(G_L_Entry2__Entry_No__; "Entry No.")
+                column(GLEntry_EntryNo; "Entry No.")
                 {
-                }
-                column(gboDetail; ShowDetail)
-                {
+                    IncludeCaption = true;
                 }
                 trigger OnPreDataItem()
                 begin
                     if not ShowDetail then
                         CurrReport.Break();
 
-                    CopyFilters("G/L Entry");
+                    GLEntry.CopyFilters(GLEntryFilter);
                     if SortingType = 0 then begin
-                        SetCurrentKey("Document No.");
-                        SetRange("Document No.", TempBuffer."Document No.");
+                        GLEntry.SetCurrentKey("Document No.");
+                        GLEntry.SetRange("Document No.", TempGLAccountAdjustmentBuffer."Document No.");
                     end else
-                        SetRange("External Document No.", TempBuffer."Document No.");
+                        GLEntry.SetRange("External Document No.", TempGLAccountAdjustmentBuffer."Document No.");
                 end;
             }
             trigger OnAfterGetRecord()
             begin
-                if Number <> 1 then
-                    if TempBuffer.Next() = 0 then
+                if EntryBuffer.Number <> 1 then
+                    if TempGLAccountAdjustmentBuffer.Next() = 0 then
                         CurrReport.Break();
 
-                if TempBuffer.Amount = 0 then
+                if TempGLAccountAdjustmentBuffer.Amount = 0 then
                     CurrReport.Skip();
             end;
 
             trigger OnPreDataItem()
             begin
-                if not TempBuffer.FindSet() then
+                if not TempGLAccountAdjustmentBuffer.FindSet() then
                     CurrReport.Quit();
             end;
         }
@@ -244,21 +175,49 @@ report 11714 "Joining G/L Account Adj. CZL"
             }
         }
     }
+
+    labels
+    {
+        PageLbl = 'Page';
+        ReportNameLbl = 'Joining G/L Account Adjustment';
+        DocumentNoLbl = 'Document No.';
+        TotalLbl = 'Total';
+    }
+
+    trigger OnPreReport()
+    begin
+        if GLEntryFilter.GetFilter("G/L Account No.") = '' then
+            Error(EmptyAccountNoFilterErr);
+        if GLEntryFilter.GetFilters() <> '' then
+            GLEntryFilters := GLEntryFilter.GetFilters();
+    end;
+
     var
-        TempBuffer: Record "G/L Account Adjustment Buffer" temporary;
-        Window: Dialog;
-        "Filter": Text[250];
+        TempGLAccountAdjustmentBuffer: Record "G/L Account Adjustment Buffer" temporary;
+        WindowDialog: Dialog;
+        GLEntryFilters: Text;
         SortingType: Option DocumentNo,ExternalDocumentNo,Combination;
         i: Integer;
         j: Integer;
         ShowDetail: Boolean;
         ShowDescription: Boolean;
         ShowPostingDate: Boolean;
-        CurrReport_PAGENOCaptionLbl: Label 'Page';
-        Joining_G_L_Account_AdjustmentCaptionLbl: Label 'Joining G/L Account Adjustment';
-        TBuffer__Document_No__CaptionLbl: Label 'Document No.';
-        TBuffer__Document_No__Caption_Control38Lbl: Label 'Document No.';
-        TotalCaptionLbl: Label 'Total';
         EmptyAccountNoFilterErr: Label 'Please enter a Filter to Account No..';
         ProcessingEntriesMsg: Label 'Processing Entries @1@@@@@@@@@@@@';
+
+    local procedure GetDocumentNoBySortingType(GLEntry: Record "G/L Entry"): Code[20]
+    begin
+        case SortingType of
+            SortingType::DocumentNo:
+                exit(GLEntry."Document No.");
+            SortingType::ExternalDocumentNo:
+                exit(CopyStr(GLEntry."External Document No.", 1, MaxStrLen(GLEntry."Document No.")));
+            SortingType::Combination:
+                begin
+                    if GLEntry."External Document No." <> '' then
+                        exit(CopyStr(GLEntry."External Document No.", 1, MaxStrLen(GLEntry."Document No.")));
+                    exit(GLEntry."Document No.");
+                end;
+        end;
+    end;
 }

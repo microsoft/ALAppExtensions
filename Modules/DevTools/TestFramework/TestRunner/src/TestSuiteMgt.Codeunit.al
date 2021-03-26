@@ -17,7 +17,6 @@ codeunit 130456 "Test Suite Mgt."
         SelectTestsToRunQst: Label '&All,Active &Codeunit,Active &Line', Locked = true;
         SelectCodeunitsToRunQst: Label '&All,Active &Codeunit', Locked = true;
         DefaultTestSuiteNameTxt: Label 'DEFAULT', Locked = true;
-        DialogGettingTestsMsg: Label 'Getting Tests: \#1#\#2#', Comment = '1 = Object being processed, 2 = Progress';
         DialogUpdatingTestsMsg: Label 'Updating Tests: \#1#\#2#', Comment = '1 = Object being processed, 2 = Progress';
 
     procedure RunTestSuiteSelection(var TestMethodLine: Record "Test Method Line")
@@ -252,33 +251,15 @@ codeunit 130456 "Test Suite Mgt."
     procedure GetTestMethods(var ALTestSuite: Record "AL Test Suite"; var AllObjWithCaption: Record AllObjWithCaption)
     var
         TestLineNo: Integer;
-        Counter: Integer;
-        TotalCount: Integer;
-        Window: Dialog;
     begin
         if not AllObjWithCaption.FindSet() then
             exit;
 
-        if GuiAllowed() then begin
-            Counter := 0;
-            TotalCount := AllObjWithCaption.Count();
-            Window.Open(DialogGettingTestsMsg);
-        end;
-
         repeat
-            if GuiAllowed() then begin
-                Counter += 1;
-                Window.Update(1, format(AllObjWithCaption."Object Type") + ' ' + format(AllObjWithCaption."Object ID") + ' - ' + AllObjWithCaption."Object Caption");
-                Window.Update(2, format(Counter) + '/' + format(TotalCount) + ' (' + format(round(Counter / TotalCount * 100, 1)) + '%)');
-            end;
-
             // Must be inside of loop. Test Runner used for discovering tests is adding methods
             TestLineNo := GetLastTestLineNo(ALTestSuite) + 10000;
             AddTestMethod(AllObjWithCaption, ALTestSuite, TestLineNo);
         until AllObjWithCaption.Next() = 0;
-
-        if GuiAllowed() then
-            Window.Close();
     end;
 
     procedure UpdateTestMethods(var TestMethodLine: record "Test Method Line")

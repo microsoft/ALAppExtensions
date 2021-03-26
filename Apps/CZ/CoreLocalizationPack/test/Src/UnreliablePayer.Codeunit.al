@@ -5,7 +5,9 @@ codeunit 148052 "Unreliable Payer CZL"
     TestPermissions = Disabled;
 
     var
+#if not CLEAN17
         ElectronicallyGovernSetup: Record "Electronically Govern. Setup";
+#endif
         UnrelPayerServiceSetupCZL: Record "Unrel. Payer Service Setup CZL";
         UnreliablePayerEntryCZL: Record "Unreliable Payer Entry CZL";
         LibraryDialogHandler: Codeunit "Library - Dialog Handler";
@@ -31,11 +33,6 @@ codeunit 148052 "Unreliable Payer CZL"
         if isInitialized then
             exit;
 
-        if ElectronicallyGovernSetup.Get() then begin
-            ElectronicallyGovernSetup.UncertaintyPayerWebService := '';
-            ElectronicallyGovernSetup.Modify(false);
-        end;
-
         UnrelPayerServiceSetupCZL.DeleteAll();
         UnrelPayerServiceSetupCZL.Init();
         UnrelPayerServiceSetupCZL.Enabled := true;
@@ -43,6 +40,13 @@ codeunit 148052 "Unreliable Payer CZL"
         UnrelPayerServiceSetupCZL."Public Bank Acc.Chck.Star.Date" := 20900101D;
         UnrelPayerServiceSetupCZL.Insert();
 
+#if not CLEAN17
+        if ElectronicallyGovernSetup.Get() then begin
+            ElectronicallyGovernSetup.UncertaintyPayerWebService := '';
+            ElectronicallyGovernSetup.Modify(false);
+        end;
+
+#endif
         isInitialized := true;
         Commit();
     end;

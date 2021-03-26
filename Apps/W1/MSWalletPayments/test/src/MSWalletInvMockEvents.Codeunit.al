@@ -28,13 +28,13 @@ codeunit 139581 "MS - Wallet Inv Mock Events"
         MockedPaypalIncludeOnDocuments := false;
     end;
 
-    [EventSubscriber(ObjectType::Table, 1060, 'OnRegisterPaymentServices', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnRegisterPaymentServices', '', false, false)]
     local procedure RegisterPayPalStandardAccounts(var PaymentServiceSetup: Record 1060);
     begin
         HandleMockPaypalInvoicing(PaymentServiceSetup);
     end;
 
-    [EventSubscriber(ObjectType::Table, 1060, 'OnRegisterPaymentServiceProviders', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnRegisterPaymentServiceProviders', '', false, false)]
     local procedure RegisterPayPalStandardTemplate(var PaymentServiceSetup: Record 1060);
     begin
         HandleMockPaypalInvoicing(PaymentServiceSetup);
@@ -60,26 +60,26 @@ codeunit 139581 "MS - Wallet Inv Mock Events"
         PaymentServiceSetup.Insert(true);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1060, 'GetPaypalAccount', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Paypal Account Proxy", 'GetPaypalAccount', '', false, false)]
     local procedure GetPaypalAccount(var Account: Text[250]);
     begin
         if MockUpPayPal then
             Account := 'mockuppaypal@test.microsoft.com';
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1060, 'SetAlwaysIncludePaypalOnDocuments', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Paypal Account Proxy", 'SetAlwaysIncludePaypalOnDocuments', '', false, false)]
     local procedure HandleSetAlwaysIncludePaypalOnDocuments(NewAlwaysIncludeOnDocuments: Boolean; HideDialogs: Boolean);
     begin
         MockedPaypalIncludeOnDocuments := NewAlwaysIncludeOnDocuments;
     end;
 
-    [EventSubscriber(ObjectType::Table, 1060, 'OnDoNotIncludeAnyPaymentServicesOnAllDocuments', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnDoNotIncludeAnyPaymentServicesOnAllDocuments', '', false, false)]
     local procedure HandleOnDoNotIncludeAnyPaymentServicesOnAllDocuments();
     begin
         MockedPaypalIncludeOnDocuments := false;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1060, 'GetPaypalSetupOptions', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Paypal Account Proxy", 'GetPaypalSetupOptions', '', false, false)]
     local procedure HandleGetPaypalSetupOptions(var Enabled: Boolean; var IncludeInAllDocuments: Boolean);
     begin
         if not MockUpPayPal then
@@ -89,10 +89,10 @@ codeunit 139581 "MS - Wallet Inv Mock Events"
         IncludeInAllDocuments := MockedPaypalIncludeOnDocuments;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1060, 'SetPaypalAccount', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Paypal Account Proxy", 'SetPaypalAccount', '', false, false)]
     local procedure SetPaypalAccount(Account: Text[250]; Silent: Boolean);
     var
-        O365SalesInvoicePayment: Codeunit 2105;
+        O365SalesInvoicePayment: Codeunit "O365 Sales Invoice Payment";
     begin
         if not MockUpPayPal then
             exit;
@@ -115,20 +115,20 @@ codeunit 139581 "MS - Wallet Inv Mock Events"
         exit(LibraryVariableStorage.DequeueText());
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 9520, 'OnBeforeDoSending', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Mail Management", 'OnBeforeDoSending', '', false, false)]
     local procedure BlockEmailSendingEventSubscriber(var CancelSending: Boolean);
     begin
         CancelSending := true;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 260, 'OnBeforeSendEmail', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document-Mailing", 'OnBeforeSendEmail', '', false, false)]
     local procedure SaveEmailContentBeforeSending(var TempEmailItem: Record "Email Item" temporary; IsFromPostedDoc: Boolean; PostedDocNo: Code[20]; HideDialog: Boolean; ReportUsage: Integer);
     begin
         LibraryVariableStorage.Enqueue(TempEmailItem.GetBodyText());
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1084, 'OnBeforeRetrieveMerchantId', '', false, false)]
-    local procedure RetrieveMerchantIdInvoicing(var MSWalletMerchantAccount: Record 1080; var Handled: Boolean);
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"MS - Wallet Merchant Mgt", 'OnBeforeRetrieveMerchantId', '', false, false)]
+    local procedure RetrieveMerchantIdInvoicing(var MSWalletMerchantAccount: Record "MS - Wallet Merchant Account"; var Handled: Boolean);
     var
         EnvInfoProxy: Codeunit "Env. Info Proxy";
     begin

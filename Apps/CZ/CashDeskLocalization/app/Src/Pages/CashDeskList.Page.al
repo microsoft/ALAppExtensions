@@ -55,7 +55,7 @@ page 31150 "Cash Desk List CZP"
                 }
             }
         }
-        area(factboxes)
+        area(FactBoxes)
         {
             part(CashDeskFB; "Cash Desk FactBox CZP")
             {
@@ -74,7 +74,6 @@ page 31150 "Cash Desk List CZP"
             }
         }
     }
-
     actions
     {
         area(processing)
@@ -270,7 +269,7 @@ page 31150 "Cash Desk List CZP"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Cash Desk Book';
                 Ellipsis = true;
-                Image = Print;
+                Image = PrintReport;
                 ToolTip = 'Open the report for cash desk entries during the period.';
 
                 trigger OnAction()
@@ -282,12 +281,29 @@ page 31150 "Cash Desk List CZP"
                     Report.RunModal(Report::"Cash Desk Book CZP", true, false, CashDeskCZP);
                 end;
             }
+            action(CashDeskAccountBook)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Cash Desk Account Book';
+                Ellipsis = true;
+                Image = PrintReport;
+                ToolTip = 'Open the report for cash desk account book.';
+
+                trigger OnAction()
+                var
+                    CashDeskCZP: Record "Cash Desk CZP";
+                begin
+                    CashDeskCZP := Rec;
+                    CashDeskCZP.SetRecFilter();
+                    Report.RunModal(Report::"Cash Desk Account Book CZP", true, false, CashDeskCZP);
+                end;
+            }
             action(CashDeskInventory)
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Cash Desk Inventory';
                 Ellipsis = true;
-                Image = Print;
+                Image = Currencies;
                 ToolTip = 'Open the report for cash desk inventory.';
 
                 trigger OnAction()

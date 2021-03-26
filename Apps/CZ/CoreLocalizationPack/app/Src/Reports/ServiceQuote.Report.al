@@ -49,7 +49,7 @@ report 31193 "Service Quote CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Service Header"; "Service Header")
@@ -104,22 +104,22 @@ report 31193 "Service Quote CZL"
             column(RegistrationNo_ServiceHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_ServiceHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_ServiceHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_ServiceHeader; "Bank Account No.")
+            column(BankAccountNo_ServiceHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_ServiceHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_ServiceHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_ServiceHeader; IBAN)
+            column(IBAN_ServiceHeader; "IBAN CZL")
             {
             }
-            column(SWIFTCode_ServiceHeaderCaption; FieldCaption("SWIFT Code"))
+            column(SWIFTCode_ServiceHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(SWIFTCode_ServiceHeader; "SWIFT Code")
+            column(SWIFTCode_ServiceHeader; "SWIFT Code CZL")
             {
             }
             column(OrderDate_ServiceHeaderCaption; FieldCaption("Order Date"))
@@ -388,7 +388,7 @@ report 31193 "Service Quote CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -424,8 +424,8 @@ report 31193 "Service Quote CZL"
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
-                FormatAddr.ServiceOrderSellto(CustAddr, "Service Header");
-                FormatAddr.ServiceHeaderShipTo(ShipToAddr, "Service Header");
+                FormatAddress.ServiceOrderSellto(CustAddr, "Service Header");
+                FormatAddress.ServiceHeaderShipTo(ShipToAddr, "Service Header");
                 FormatDocument.SetPaymentTerms(PaymentTerms, "Payment Terms Code", "Language Code");
                 FormatDocument.SetShipmentMethod(ShipmentMethod, "Shipment Method Code", "Language Code");
                 FormatDocument.SetPaymentMethod(PaymentMethod, "Payment Method Code", "Language Code");
@@ -433,10 +433,10 @@ report 31193 "Service Quote CZL"
 
                 if LogInteraction and not IsReportInPreviewMode() then
                     if "Contact No." <> '' then
-                        SegMgt.LogDocument(
+                        SegManagement.LogDocument(
                           25, "No.", 0, 0, Database::Contact, "Contact No.", "Salesperson Code", '', "Posting Description", '')
                     else
-                        SegMgt.LogDocument(
+                        SegManagement.LogDocument(
                           25, "No.", 0, 0, Database::Customer, "Customer No.", "Salesperson Code", '', "Posting Description", '');
             end;
         }
@@ -478,6 +478,7 @@ report 31193 "Service Quote CZL"
             LogInteractionEnable := LogInteraction;
         end;
     }
+
     trigger OnPreReport()
     begin
         if not CurrReport.UseRequestPage then
@@ -489,10 +490,10 @@ report 31193 "Service Quote CZL"
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        SegMgt: Codeunit SegManagement;
+        SegManagement: Codeunit SegManagement;
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];
@@ -531,7 +532,7 @@ report 31193 "Service Quote CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegMgt.FindInteractTmplCode(25) <> '';
+        LogInteraction := SegManagement.FindInteractTmplCode(25) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

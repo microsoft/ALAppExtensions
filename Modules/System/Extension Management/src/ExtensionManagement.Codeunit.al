@@ -39,6 +39,17 @@ codeunit 2504 "Extension Management"
     end;
 
     /// <summary>
+    /// Uninstalls an extension, based on its PackageId and permanently deletes the tables that contain data for the extension.
+    /// </summary>
+    /// <param name="PackageId">The ID of the extension package.</param>
+    /// <param name="IsUIEnabled">Indicates if the uninstall operation is invoked through the UI.</param>
+    /// <returns>True if the extention is uninstalled successfully; false otherwise.</returns>
+    procedure UninstallExtensionAndDeleteExtensionData(PackageId: Guid; IsUIEnabled: Boolean): Boolean
+    begin
+        exit(ExtensionInstallationImpl.UninstallExtension(PackageId, IsUIEnabled, true));
+    end;
+
+    /// <summary>
     /// Uploads an extension, using a File Stream and based on the Locale Identifier.
     /// This method is only applicable in SaaS environment.
     /// </summary>
@@ -86,12 +97,13 @@ codeunit 2504 "Extension Management"
     /// Retrives the source of an extension, based on its PackageId.
     /// </summary>
     /// <param name="PackageId">The PackageId of the extension.</param>
-    /// <param name="TempBlob">TempBlob where the zip is stored.</param>
-    /// <param name="CleanFileName">A filename identifyning the extension</param>
+    /// <param name="ExtensionSourceTempBlob">TempBlob where the zip is stored.</param>
     /// <returns>True if the operation was successful; false otherwise.</returns>
-    procedure GetExtensionSource(PackageId: Guid; var TempBlob: Codeunit "Temp Blob"; var CleanFileName: Text): Boolean
+    procedure GetExtensionSource(PackageId: Guid; var ExtensionSourceTempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        FileName: Text;
     begin
-        exit(ExtensionOperationImpl.GetExtensionSource(PackageId, TempBlob, CleanFileName));
+        exit(ExtensionOperationImpl.GetExtensionSource(PackageId, ExtensionSourceTempBlob, FileName));
     end;
 
     /// <summary>

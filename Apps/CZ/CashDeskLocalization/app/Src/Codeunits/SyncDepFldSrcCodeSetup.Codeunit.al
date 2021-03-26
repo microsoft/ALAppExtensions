@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31129 "Sync.Dep.Fld-SrcCodeSetup CZP"
 {
@@ -34,3 +35,4 @@ codeunit 31129 "Sync.Dep.Fld-SrcCodeSetup CZP"
         Rec."Cash Desk CZP" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Cash Desk CZP"));
     end;
 }
+#endif

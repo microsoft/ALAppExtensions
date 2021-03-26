@@ -77,7 +77,7 @@ page 20000 "APIV1 - Aut. Config. Packages"
                     Caption = 'applyError', Locked = true;
                     Editable = false;
                 }
-                part(file; 5433)
+                part(file; "APIV1 - Aut. Conf. Pack. File")
                 {
                     Caption = 'file', Locked = true;
                     EntityName = 'file';
@@ -94,7 +94,7 @@ page 20000 "APIV1 - Aut. Config. Packages"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
-        TenantConfigPackageFile: Record 5433;
+        TenantConfigPackageFile: Record "Tenant Config. Package File";
     begin
         VALIDATE("Import Status", "Import Status"::No);
         VALIDATE("Apply Status", "Apply Status"::No);
@@ -119,7 +119,7 @@ page 20000 "APIV1 - Aut. Config. Packages"
     [Scope('Cloud')]
     procedure Import(var ActionContext: WebServiceActionContext)
     var
-        TenantConfigPackageFile: Record 5433;
+        TenantConfigPackageFile: Record "Tenant Config. Package File";
         ImportSessionID: Integer;
     begin
         IF IsImportOrApplyPending() THEN

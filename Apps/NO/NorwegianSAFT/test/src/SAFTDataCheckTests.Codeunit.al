@@ -117,7 +117,8 @@ codeunit 148107 "SAF-T Data Check Tests"
         SAFTSetup.Modify(true);
         Customer.Init();
         Customer.Insert(true);
-        LibraryVariableStorage.Enqueue('Name,Address,City,Contact,Post Code'); // a list of the fields with missing values 
+        // TFS ID 389723: Contact field is not mandatory for the SAF-T functionality        
+        LibraryVariableStorage.Enqueue('Name,Address,City,Post Code'); // a list of the fields with missing values 
         CustomerCardPage.OpenEdit();
         CustomerCardPage.Filter.SetFilter("No.", Customer."No.");
         CustomerCardPage.Close();
@@ -180,7 +181,8 @@ codeunit 148107 "SAF-T Data Check Tests"
         SAFTSetup.Modify(true);
         Vendor.Init();
         Vendor.Insert(true);
-        LibraryVariableStorage.Enqueue('Name,Address,City,Contact,Post Code'); // a list of the fields with missing values 
+        // TFS ID 389723: Contact field is not mandatory for the SAF-T functionality        
+        LibraryVariableStorage.Enqueue('Name,Address,City,Post Code'); // a list of the fields with missing values 
         VendorCardPage.OpenEdit();
         VendorCardPage.Filter.SetFilter("No.", Vendor."No.");
         VendorCardPage.Close();
@@ -462,7 +464,6 @@ codeunit 148107 "SAF-T Data Check Tests"
         Customer.Address := LibraryUtility.GenerateGUID();
         Customer.City := PostCode.City;
         Customer."Post Code" := PostCode.Code;
-        Customer.Contact := LibraryUtility.GenerateGUID();
         Customer.Insert();
     end;
 
@@ -477,7 +478,6 @@ codeunit 148107 "SAF-T Data Check Tests"
         Vendor.Address := LibraryUtility.GenerateGUID();
         Vendor.City := PostCode.City;
         Vendor."Post Code" := PostCode.Code;
-        Vendor.Contact := LibraryUtility.GenerateGUID();
         Vendor.Insert();
     end;
 

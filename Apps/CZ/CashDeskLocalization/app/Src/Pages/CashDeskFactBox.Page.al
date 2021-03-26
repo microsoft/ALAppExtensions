@@ -11,7 +11,7 @@ page 31153 "Cash Desk FactBox CZP"
             field("No."; Rec."No.")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the number of the cash document.';
+                ToolTip = 'Specifies the number of the cash desk.';
             }
             field(CalcBalance; Rec.CalcBalance())
             {

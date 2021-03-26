@@ -81,8 +81,14 @@ page 31162 "Cash Document List CZP"
                 }
             }
         }
-        area(factboxes)
+        area(FactBoxes)
         {
+            part("Attached Documents"; "Document Attachment Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Attachments';
+                SubPageLink = "Table ID" = const(11732), "No." = field("No.");
+            }
             systempart(Links; Links)
             {
                 ApplicationArea = RecordLinks;
@@ -95,7 +101,6 @@ page 31162 "Cash Document List CZP"
             }
         }
     }
-
     actions
     {
         area(navigation)
@@ -129,6 +134,23 @@ page 31162 "Cash Document List CZP"
                         ApprovalsMgmt: Codeunit "Approvals Mgmt.";
                     begin
                         ApprovalsMgmt.OpenApprovalEntriesPage(Rec.RecordId);
+                    end;
+                }
+                action(DocAttach)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Attachments';
+                    Image = Attach;
+                    ToolTip = 'Add a file as an attachment. You can attach images as well as documents.';
+
+                    trigger OnAction()
+                    var
+                        DocumentAttachmentDetails: Page "Document Attachment Details";
+                        RecRef: RecordRef;
+                    begin
+                        RecRef.GetTable(Rec);
+                        DocumentAttachmentDetails.OpenForRecRef(RecRef);
+                        DocumentAttachmentDetails.RunModal();
                     end;
                 }
             }
@@ -282,6 +304,21 @@ page 31162 "Cash Document List CZP"
                     CashDocumentHeaderCZP.PrintRecords(true);
                 end;
             }
+            action(PrintToAttachment)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Attach as PDF';
+                Image = PrintAttachment;
+                Promoted = true;
+                PromotedCategory = "Report";
+                PromotedOnly = true;
+                ToolTip = 'Create a PDF file and attach it to the document.';
+
+                trigger OnAction()
+                begin
+                    Rec.PrintToDocumentAttachment();
+                end;
+            }
         }
     }
 
@@ -304,7 +341,6 @@ page 31162 "Cash Document List CZP"
     end;
 
     var
-        UniSingleInstCU: Codeunit "Universal Single Inst. CU";
         CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         OpenApprovalEntriesExist: Boolean;
 
@@ -327,8 +363,8 @@ page 31162 "Cash Document List CZP"
 
     local procedure ShowPreview()
     var
-        CashDocumentPostYesNo: Codeunit "Cash Document-Post(Yes/No) CZP";
+        CashDocumentPostYesNoCZP: Codeunit "Cash Document-Post(Yes/No) CZP";
     begin
-        CashDocumentPostYesNo.Preview(Rec);
+        CashDocumentPostYesNoCZP.Preview(Rec);
     end;
 }

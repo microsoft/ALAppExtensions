@@ -87,6 +87,8 @@ codeunit 8901 "Email"
     /// <remarks>The default account will be used for sending the email.</remarks>
     /// <param name="EmailMessage">The email message to use as payload.</param>
     /// <returns>True if the email was successfully sent; otherwise - false.</returns>
+    /// <error>The email message has already been queued.</error>
+    /// <error>The email message has already been sent.</error>
     procedure Send(EmailMessage: Codeunit "Email Message"): Boolean
     begin
         exit(EmailImpl.Send(EmailMessage, Enum::"Email Scenario"::Default));
@@ -99,6 +101,8 @@ codeunit 8901 "Email"
     /// <param name="EmailMessage">The email message to use as payload.</param>
     /// <param name="EmailScenario">The scenario to use in order to determine the email account to use for sending the email.</param>
     /// <returns>True if the email was successfully sent; otherwise - false.</returns>
+    /// <error>The email message has already been queued.</error>
+    /// <error>The email message has already been sent.</error>
     procedure Send(EmailMessage: Codeunit "Email Message"; EmailScenario: Enum "Email Scenario"): Boolean
     begin
         exit(EmailImpl.Send(EmailMessage, EmailScenario));
@@ -111,6 +115,8 @@ codeunit 8901 "Email"
     /// <param name="EmailAccount">The email account to use for sending the email.</param>
     /// <remarks>Both "Account Id" and Connector fields need to be set on the <paramref name="EmailAccount"/> parameter.</remarks>
     /// <returns>True if the email was successfully sent; otherwise - false</returns>
+    /// <error>The email message has already been queued.</error>
+    /// <error>The email message has already been sent.</error>
     procedure Send(EmailMessage: Codeunit "Email Message"; EmailAccount: Record "Email Account" temporary): Boolean
     begin
         exit(EmailImpl.Send(EmailMessage, EmailAccount."Account Id", EmailAccount.Connector));
@@ -123,6 +129,8 @@ codeunit 8901 "Email"
     /// <param name="EmailAccountId">The ID of the email account to use for sending the email.</param>
     /// <param name="EmailConnector">The email connector to use for sending the email.</param>
     /// <returns>True if the email was successfully sent; otherwise - false</returns>
+    /// <error>The email message has already been queued.</error>
+    /// <error>The email message has already been sent.</error>
     procedure Send(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"): Boolean
     begin
         exit(EmailImpl.Send(EmailMessage, EmailAccountId, EmailConnector));
@@ -220,6 +228,29 @@ codeunit 8901 "Email"
 
     #endregion
 
+    ///<summary>
+    /// Gets the sent emails related to a record.
+    ///</summary>
+    ///<param name="TableId">The table ID of the record.</param>
+    ///<param name="SystemId">The system ID of the record.</param>
+    ///<returns>The sent email related to a record.<returns>
+    procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid) ResultSentEmails: Record "Sent Email" temporary;
+    begin
+        exit(EmailImpl.GetSentEmailsForRecord(TableId, SystemId));
+    end;
+
+    ///<summary>
+    /// Adds a relation between an email message and a record.
+    ///<summary>
+    ///<param name="EmailMessage">The email message for which to create the relation.</param>
+    ///<param name="TableId">The table ID of the record.</param>
+    ///<param name="SystemId">The system ID of the record.</param>
+    ///<param name="RelationType">The relation type to set.</param>
+    procedure AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type")
+    begin
+        EmailImpl.AddRelation(EmailMessage, TableId, SystemId, RelationType);
+    end;
+
     #region Events
 
 #if not CLEAN17
@@ -233,8 +264,19 @@ codeunit 8901 "Email"
     procedure OnGetTestEmailBody(Connector: Enum "Email Connector"; var Body: Text)
     begin
     end;
-
 #endif
+
+    /// <summary>
+    /// Integration event to show an email source record.
+    /// </summary>
+    /// <param name="SourceTable">The ID of table that contains the source record.</param>
+    /// <param name="SourceSystemId">The system ID of the source record.</param>
+    /// <param name="IsHandled">Out parameter to set if the event was handled.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnShowSource(SourceTableId: Integer; SourceSystemId: Guid; var IsHandled: Boolean)
+    begin
+    end;
+
     /// <summary>
     /// Integration event to override the default email body for test messages.
     /// </summary>

@@ -154,7 +154,6 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
         ResponseInStream: InStream;
         FinstaXmlNode: XmlNode;
         ResponseXmlDoc: XmlDocument;
-        ResponseOutStream: OutStream;
         Found: Boolean;
     begin
         TempBlob.CreateInStream(ResponseInStream);

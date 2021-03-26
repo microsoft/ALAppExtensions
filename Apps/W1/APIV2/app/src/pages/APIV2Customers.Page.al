@@ -317,6 +317,13 @@ page 30009 "APIV2 - Customers"
                     EntitySetName = 'agedAccountsReceivables';
                     SubPageLink = AccountId = Field(SystemId);
                 }
+                part(contactsInformation; "APIV2 - Contacts Information")
+                {
+                    Caption = 'Contacts Information';
+                    EntityName = 'contactInformation';
+                    EntitySetName = 'contactsInformation';
+                    SubPageLink = "Related Id" = field(SystemId), "Related Type" = const(1);
+                }
             }
         }
     }

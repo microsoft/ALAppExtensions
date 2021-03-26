@@ -51,7 +51,7 @@ report 11794 "Balance Sheet CZL"
                 column(ShowAccSchedSetup; ShowAccSchedSetup)
                 {
                 }
-                column(CompanyInfo_Name; CompanyInfo.Name)
+                column(CompanyInfo_Name; CompanyInformation.Name)
                 {
                 }
                 dataitem(AccSchedLineSpec; "Acc. Schedule Line")
@@ -368,21 +368,21 @@ report 11794 "Balance Sheet CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                GLSetup.Get();
+                GeneralLedgerSetup.Get();
 
                 if "Analysis View Name" <> '' then
                     AnalysisView.Get("Analysis View Name")
                 else begin
                     AnalysisView.Init();
-                    AnalysisView."Dimension 1 Code" := GLSetup."Global Dimension 1 Code";
-                    AnalysisView."Dimension 2 Code" := GLSetup."Global Dimension 2 Code";
+                    AnalysisView."Dimension 1 Code" := GeneralLedgerSetup."Global Dimension 1 Code";
+                    AnalysisView."Dimension 2 Code" := GeneralLedgerSetup."Global Dimension 2 Code";
                 end;
 
                 if UseAmtsInAddCurr then
-                    HeaderText := StrSubstNo(AmountsInTxt, GLSetup."Additional Reporting Currency")
+                    HeaderText := StrSubstNo(AmountsInTxt, GeneralLedgerSetup."Additional Reporting Currency")
                 else
-                    if GLSetup."LCY Code" <> '' then
-                        HeaderText := StrSubstNo(AmountsInTxt, GLSetup."LCY Code")
+                    if GeneralLedgerSetup."LCY Code" <> '' then
+                        HeaderText := StrSubstNo(AmountsInTxt, GeneralLedgerSetup."LCY Code")
                     else
                         HeaderText := '';
             end;
@@ -655,7 +655,7 @@ report 11794 "Balance Sheet CZL"
 
         trigger OnOpenPage()
         begin
-            GLSetup.Get();
+            GeneralLedgerSetup.Get();
             TransferValues();
             UpdateFilters();
             if AccSchedName <> '' then
@@ -685,6 +685,7 @@ report 11794 "Balance Sheet CZL"
         AccSchedLineSpec__Row_Type_CaptionLbl = 'Row Type';
         AccSchedLineSpec__Amount_Type_CaptionLbl = 'Amount Type';
     }
+
     trigger OnPreReport()
     begin
         if AccSchedName = '' then begin
@@ -694,14 +695,14 @@ report 11794 "Balance Sheet CZL"
         end;
 
         InitAccSched();
-        CompanyInfo.Get();
+        CompanyInformation.Get();
     end;
 
     var
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         TempColumnLayout: Record "Column Layout" temporary;
         AnalysisView: Record "Analysis View";
-        GLSetup: Record "General Ledger Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         AccSchedManagement: Codeunit AccSchedManagement;
         AccScheduleManagementCZL: Codeunit "Acc. Schedule Management CZL";
         AccountingPeriodMgt: Codeunit "Accounting Period Mgt.";
@@ -834,17 +835,17 @@ report 11794 "Balance Sheet CZL"
 
     local procedure FormLookUpDimFilter(Dim: Code[20]; var Text: Text): Boolean
     var
-        DimVal: Record "Dimension Value";
-        DimValList: Page "Dimension Value List";
+        DimensionValue: Record "Dimension Value";
+        DimensionValueList: Page "Dimension Value List";
     begin
         if Dim = '' then
             exit(false);
-        DimValList.LookupMode(true);
-        DimVal.SetRange("Dimension Code", Dim);
-        DimValList.SetTableView(DimVal);
-        if DimValList.RunModal() = Action::LookupOK then begin
-            DimValList.GetRecord(DimVal);
-            Text := DimValList.GetSelectionFilter();
+        DimensionValueList.LookupMode(true);
+        DimensionValue.SetRange("Dimension Code", Dim);
+        DimensionValueList.SetTableView(DimensionValue);
+        if DimensionValueList.RunModal() = Action::LookupOK then begin
+            DimensionValueList.GetRecord(DimensionValue);
+            Text := DimensionValueList.GetSelectionFilter();
             exit(true);
         end;
         exit(false)
@@ -857,7 +858,7 @@ report 11794 "Balance Sheet CZL"
 
     local procedure TransferValues()
     begin
-        GLSetup.Get();
+        GeneralLedgerSetup.Get();
         if AccSchedNameHidden <> '' then
             AccSchedName := AccSchedNameHidden;
         if ColumnLayoutNameHidden <> '' then
@@ -873,8 +874,8 @@ report 11794 "Balance Sheet CZL"
         if AccScheduleName."Analysis View Name" <> '' then
             AnalysisView.Get(AccScheduleName."Analysis View Name")
         else begin
-            AnalysisView."Dimension 1 Code" := GLSetup."Global Dimension 1 Code";
-            AnalysisView."Dimension 2 Code" := GLSetup."Global Dimension 2 Code";
+            AnalysisView."Dimension 1 Code" := GeneralLedgerSetup."Global Dimension 1 Code";
+            AnalysisView."Dimension 2 Code" := GeneralLedgerSetup."Global Dimension 2 Code";
         end;
     end;
 
@@ -906,8 +907,8 @@ report 11794 "Balance Sheet CZL"
             AnalysisView.Get(AccScheduleName."Analysis View Name")
         else begin
             Clear(AnalysisView);
-            AnalysisView."Dimension 1 Code" := GLSetup."Global Dimension 1 Code";
-            AnalysisView."Dimension 2 Code" := GLSetup."Global Dimension 2 Code";
+            AnalysisView."Dimension 1 Code" := GeneralLedgerSetup."Global Dimension 1 Code";
+            AnalysisView."Dimension 2 Code" := GeneralLedgerSetup."Global Dimension 2 Code";
         end;
         Dim1FilterEnable := AnalysisView."Dimension 1 Code" <> '';
         Dim2FilterEnable := AnalysisView."Dimension 2 Code" <> '';

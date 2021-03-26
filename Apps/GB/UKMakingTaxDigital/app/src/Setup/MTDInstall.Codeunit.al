@@ -69,7 +69,6 @@ codeunit 10539 "MTD Install"
     local procedure InitVATReportSetup(VATReportLabelText: Code[10])
     var
         VATReportSetup: Record "VAT Report Setup";
-        IsModify: Boolean;
     begin
         with VATReportSetup do begin
             if not Get() then

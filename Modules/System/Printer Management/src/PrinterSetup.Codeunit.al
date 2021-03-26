@@ -15,7 +15,7 @@ codeunit 2616 "Printer Setup"
     /// Subscribe to this event if you want to introduce user configurable settings for a printer.
     /// </summary>
     /// <param name="PrinterID">A value that determines the printer being drilled down.</param>    
-    /// <param name="Handled">Stores whether the operation was successful.</param>
+    /// <param name="IsHandled">Stores whether the operation was successful.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnOpenPrinterSettings(PrinterID: Text; var IsHandled: Boolean)
     begin
@@ -27,7 +27,7 @@ codeunit 2616 "Printer Setup"
     /// </summary>
     /// <param name="PrinterID">A value that determines the printer being set as default.</param>
     /// <param name="UserID">A value that determines the user for whom the printer is being set as default. Empty value implies all users.</param>  
-    /// <param name="Handled">Stores whether the operation was successful.</param>
+    /// <param name="IsHandled">Stores whether the operation was successful.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnSetAsDefaultPrinter(PrinterID: Text; UserID: Text; var IsHandled: Boolean)
     begin
@@ -37,7 +37,7 @@ codeunit 2616 "Printer Setup"
     /// Integration event that is called to get the page ID of the Printer Selection page.
     /// </summary>
     /// <param name="PageID">An out value that determines the id of the Printer Selection page.</param>
-    /// <param name="Handled">Stores whether the operation was successful.</param>
+    /// <param name="IsHandled">Stores whether the operation was successful.</param>
     [IntegrationEvent(false, false)]
     internal procedure GetPrinterSelectionsPage(var PageID: Integer; var IsHandled: Boolean)
     begin

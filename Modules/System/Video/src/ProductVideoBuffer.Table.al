@@ -9,6 +9,7 @@ table 1470 "Product Video Buffer"
     Extensible = false;
     Caption = 'Product Video Buffer';
     ReplicateData = false;
+    //TableType = Temporary; // need to fix AS0034 and AS0039 first
 
     fields
     {
@@ -37,6 +38,7 @@ table 1470 "Product Video Buffer"
             DataClassification = SystemMetadata;
             ObsoleteState = Removed;
             ObsoleteReason = 'All assisted setups shall be shown';
+            ObsoleteTag = '18.0';
         }
         field(5; Indentation; Integer)
         {
@@ -44,6 +46,7 @@ table 1470 "Product Video Buffer"
             DataClassification = SystemMetadata;
             ObsoleteState = Removed;
             ObsoleteReason = 'Product videos are no more grouped.';
+            ObsoleteTag = '18.0';
         }
         field(6; "Table Num"; Integer)
         {
@@ -65,7 +68,7 @@ table 1470 "Product Video Buffer"
         {
             Caption = 'Extension Name';
             FieldClass = FlowField;
-            CalcFormula = Lookup ("Published Application".Name where(ID = FIELD("App ID"), "Tenant Visible" = CONST(true)));
+            CalcFormula = Lookup("Published Application".Name where(ID = FIELD("App ID"), "Tenant Visible" = CONST(true)));
             Editable = false;
         }
         field(10; Category; Enum "Video Category")

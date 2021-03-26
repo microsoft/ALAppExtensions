@@ -183,7 +183,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                 column(CreditAmount; CreditAmount)
                 {
                 }
-                column(GetCurrCodeCurrencyBufCode; StrSubstNo(FinalBalanceAmountTxt, GetCurrencyCode(TempCurrencyBuffer.Code)))
+                column(GetCurrCodeCurrencyBufCode; StrSubstNo(FinalBalanceAmountTxt, GetCurrencyCode(TempCurrency.Code)))
                 {
                 }
                 column(TotalInCurrencyNumber; Number)
@@ -192,12 +192,12 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                 trigger OnAfterGetRecord()
                 begin
                     if Number = 1 then
-                        TempCurrencyBuffer.FindSet()
+                        TempCurrency.FindSet()
                     else
-                        TempCurrencyBuffer.Next();
+                        TempCurrency.Next();
 
                     if PrintAmountsInCurrency then begin
-                        TotalAmount := CustomerVendorBalanceCZL.CalcCustomerVendorBalance(CustomerNo, Vendor."No.", TempCurrencyBuffer.Code, ReconcileDate, false);
+                        TotalAmount := CustomerVendorBalanceCZL.CalcCustomerVendorBalance(CustomerNo, Vendor."No.", TempCurrency.Code, ReconcileDate, false);
                         CalcDebitCredit(TotalAmount);
                     end else
                         CalcDebitCredit(TotalAmountLCY);
@@ -205,7 +205,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
 
                 trigger OnPreDataItem()
                 begin
-                    SetRange(Number, 1, TempCurrencyBuffer.Count());
+                    SetRange(Number, 1, TempCurrency.Count());
                 end;
             }
             dataitem(Footer; "Integer")
@@ -230,7 +230,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             dataitem(Currencies; "Integer")
             {
                 DataItemTableView = SORTING(Number) WHERE(Number = FILTER(1 ..));
-                column(OpenDocumentsCaption; StrSubstNo(OpenDocumentsTxt, GetCurrencyCode(TempCurrencyBuffer.Code)))
+                column(OpenDocumentsCaption; StrSubstNo(OpenDocumentsTxt, GetCurrencyCode(TempCurrency.Code)))
                 {
                 }
                 column(AmountCaption; AmountCaptionLbl)
@@ -308,7 +308,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                     begin
                         TempCVLedgerEntryBuffer.SetCurrentKey("Document Date");
                         if PrintAmountsInCurrency then
-                            TempCVLedgerEntryBuffer.SetRange("Currency Code", TempCurrencyBuffer.Code);
+                            TempCVLedgerEntryBuffer.SetRange("Currency Code", TempCurrency.Code);
 
                         SetRange(Number, 1, TempCVLedgerEntryBuffer.Count());
                     end;
@@ -316,7 +316,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                 dataitem(Total; "Integer")
                 {
                     DataItemTableView = SORTING(Number) WHERE(Number = CONST(1));
-                    column(TotalCaption; StrSubstNo(TotalTxt, GetCurrencyCode(TempCurrencyBuffer.Code)))
+                    column(TotalCaption; StrSubstNo(TotalTxt, GetCurrencyCode(TempCurrency.Code)))
                     {
                     }
                     column(TotalAmount; TotalAmount)
@@ -331,15 +331,15 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                 trigger OnAfterGetRecord()
                 begin
                     if Number = 1 then
-                        TempCurrencyBuffer.FindSet()
+                        TempCurrency.FindSet()
                     else
-                        TempCurrencyBuffer.Next();
+                        TempCurrency.Next();
 
-                    LCYEntriesOnly := (TempCurrencyBuffer.Code = '') and (TempCurrencyBuffer.Count() = 1);
+                    LCYEntriesOnly := (TempCurrency.Code = '') and (TempCurrency.Count() = 1);
                     if PrintAmountsInCurrency then begin
-                        TotalAmount := CustomerVendorBalanceCZL.CalcCustomerVendorBalance(CustomerNo, Vendor."No.", TempCurrencyBuffer.Code, ReconcileDate, false);
+                        TotalAmount := CustomerVendorBalanceCZL.CalcCustomerVendorBalance(CustomerNo, Vendor."No.", TempCurrency.Code, ReconcileDate, false);
                         if PrintAmountsInCurrency then
-                            TempCVLedgerEntryBuffer.SetRange("Currency Code", TempCurrencyBuffer.Code);
+                            TempCVLedgerEntryBuffer.SetRange("Currency Code", TempCurrency.Code);
                         if (TotalAmount = 0) and TempCVLedgerEntryBuffer.IsEmpty() then
                             CurrReport.Skip();
                     end else
@@ -351,7 +351,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                     if (TotalAmountLCY = 0) and TempCVLedgerEntryBuffer.IsEmpty() or (not PrintDetails) then
                         CurrReport.Break();
 
-                    SetRange(Number, 1, TempCurrencyBuffer.Count());
+                    SetRange(Number, 1, TempCurrency.Count());
                 end;
             }
             dataitem(TotalLCY; "Integer")
@@ -397,7 +397,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                     CurrReport.Skip();
 
                 CalcDebitCredit(TotalAmountLCY);
-                CustomerVendorBalanceCZL.FillCustomerVendorBuffer(TempCurrencyBuffer, TempCVLedgerEntryBuffer,
+                CustomerVendorBalanceCZL.FillCustomerVendorBuffer(TempCurrency, TempCVLedgerEntryBuffer,
                                                                     CustomerNo, "No.", ReconcileDate, PrintAmountsInCurrency);
                 ResponsibleEmployee := GetFormattedResponsibleEmployee();
             end;
@@ -479,7 +479,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         CompanyInformation: Record "Company Information";
-        TempCurrencyBuffer: Record Currency temporary;
+        TempCurrency: Record Currency temporary;
         TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary;
         CompanyOfficialCZL: Record "Company Official CZL";
         Employee: Record Employee;

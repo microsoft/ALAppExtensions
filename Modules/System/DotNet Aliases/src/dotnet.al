@@ -766,6 +766,10 @@ dotnet
         type("Microsoft.Dynamics.Nav.Runtime.Designer.NavDesignerALProfileExportResponse"; "NavDesignerALProfileExportResponse")
         {
         }
+
+        type("Microsoft.Dynamics.Nav.Runtime.Designer.NavDesignerALCopyResponse"; "NavDesignerALCopyResponse")
+        {
+        }
     }
 
     assembly("Microsoft.Dynamics.Nav.O365ActionableMessageWrapper")
@@ -866,12 +870,16 @@ dotnet
         }
     }
 
-    assembly("Microsoft.Dynamics.Nav.PdfWriter")
+    assembly("Microsoft.BusinessCentral.DocumentProcessor")
     {
         Culture = 'neutral';
         PublicKeyToken = '31bf3856ad364e35';
 
-        type("Microsoft.Dynamics.Nav.PdfWriter.WordToPdf"; "WordToPdf")
+        type("Microsoft.BusinessCentral.DocumentProcessor.WordTransformation"; "WordTransformation")
+        {
+        }
+
+        type("Microsoft.BusinessCentral.DocumentProcessor.MailMerge"; "MailMerge")
         {
         }
     }
@@ -2020,14 +2028,6 @@ dotnet
         {
         }
 
-        type("System.Resources.ResXResourceReader"; "ResXResourceReader")
-        {
-        }
-
-        type("System.Resources.ResXResourceWriter"; "ResXResourceWriter")
-        {
-        }
-
         type("System.Windows.Forms.DialogResult"; "DialogResult")
         {
         }
@@ -2222,6 +2222,10 @@ dotnet
         }
 
         type("MailKit.Security.SecureSocketOptions"; "SecureSocketOptions")
+        {
+        }
+
+        type("MailKit.Security.SaslMechanismOAuth2"; "SaslMechanismOAuth2")
         {
         }
     }

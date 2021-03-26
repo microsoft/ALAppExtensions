@@ -553,7 +553,7 @@ codeunit 139811 "APIV2 - Sales Orders E2E"
         VerifyPostedInvoiceCreated(OrderNo, OrderNoSeries);
 
         // [THEN] Record was deleted from Sales Oreder Entity Buffer
-        VerifySalesOrderEntityBufferDeletedAfterPosting(OrderNo);        
+        VerifySalesOrderEntityBufferDeletedAfterPosting(OrderNo);
     end;
 
     local procedure CreateOrderWithLines(var SalesHeader: Record "Sales Header")

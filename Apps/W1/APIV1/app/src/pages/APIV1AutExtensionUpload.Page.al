@@ -48,7 +48,7 @@ page 20006 "APIV1 - Aut. Extension Upload"
 
     trigger OnModifyRecord(): Boolean
     var
-        ExtensionManagement: Codeunit 2504;
+        ExtensionManagement: Codeunit "Extension Management";
         FileStream: InStream;
     begin
         IF Content.HasValue() THEN begin

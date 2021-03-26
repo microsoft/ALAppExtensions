@@ -9,9 +9,6 @@ codeunit 148070 "Cash Desk Documents CZP"
         CashDeskUserCZP: Record "Cash Desk User CZP";
         CashDeskEventCZP: Record "Cash Desk Event CZP";
         Assert: Codeunit Assert;
-        LibraryERM: Codeunit "Library - ERM";
-        LibraryUtility: Codeunit "Library - Utility";
-        LibraryFixedAsset: Codeunit "Library - Fixed Asset";
         LibrarySales: Codeunit "Library - Sales";
         LibraryRandom: Codeunit "Library - Random";
         LibraryCashDeskCZP: Codeunit "Library - Cash Desk CZP";

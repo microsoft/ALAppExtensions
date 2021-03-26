@@ -38,11 +38,13 @@ codeunit 148054 "VAT Date CZL"
             exit;
 
         GeneralLedgerSetup.Get();
+#if not CLEAN17
         GeneralLedgerSetup."Use VAT Date" := false;
-        GeneralLedgerSetup."Use VAT Date CZL" := true;
         GeneralLedgerSetup."Allow VAT Posting From" := 0D;
-        GeneralLedgerSetup."Allow VAT Posting From CZL" := 0D;
         GeneralLedgerSetup."Allow VAT Posting To" := 0D;
+#endif
+        GeneralLedgerSetup."Use VAT Date CZL" := true;
+        GeneralLedgerSetup."Allow VAT Posting From CZL" := 0D;
         GeneralLedgerSetup."Allow VAT Posting To CZL" := 0D;
         GeneralLedgerSetup.Modify();
 
@@ -51,19 +53,25 @@ codeunit 148054 "VAT Date CZL"
 
         SalesReceivablesSetup.Get();
         SalesReceivablesSetup."Order Nos." := LibraryERM.CreateNoSeriesCode();
+#if not CLEAN17
         SalesReceivablesSetup."Default VAT Date" := SalesReceivablesSetup."Default VAT Date"::Blank;
+#endif
         SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date CZL"::Blank;
         SalesReceivablesSetup.Modify();
 
         PurchasesPayablesSetup.Get();
         PurchasesPayablesSetup."Order Nos." := LibraryERM.CreateNoSeriesCode();
+#if not CLEAN17
         PurchasesPayablesSetup."Default VAT Date" := PurchasesPayablesSetup."Default VAT Date"::Blank;
+#endif
         PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date CZL"::Blank;
         PurchasesPayablesSetup.Modify();
 
         ServiceMgtSetup.Get();
         ServiceMgtSetup."Service Order Nos." := LibraryERM.CreateNoSeriesCode();
+#if not CLEAN17
         ServiceMgtSetup."Default VAT Date" := ServiceMgtSetup."Default VAT Date"::Blank;
+#endif
         ServiceMgtSetup."Default VAT Date CZL" := ServiceMgtSetup."Default VAT Date CZL"::Blank;
         ServiceMgtSetup.Modify();
 
@@ -274,5 +282,92 @@ codeunit 148054 "VAT Date CZL"
         // [THEN] VAT Entry has VAT Date
         VatEntry.FindLast();
         Assert.AreEqual(VatEntry."Posting Date", VatEntry."VAT Date CZL", VatEntry.FieldCaption(VatEntry."VAT Date CZL"));
+    end;
+
+    [Test]
+    procedure GenJnlLinePostWithoutVATToClosedVATPeriod()
+    var
+        VATPeriodCZL: Record "VAT Period CZL";
+        GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
+    begin
+        // [FEATURE] [VAT]
+        // [SCENARIO] If the Gen. Journal Line is posting to closed VAT period without VAT (it means that VAT Entries are not created) 
+        // then VAT Date check is not performed
+        Initialize();
+
+        // [GIVEN] Close VAT Period
+        VATPeriodCZL.FindFirst();
+        VATPeriodCZL.Validate(Closed, true);
+        VATPeriodCZL.Modify();
+
+        // [GIVEN] New Gen. Journal Template created
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+
+        // [GIVEN] New Gen. Journal Batch created
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+
+        // [GIVEN] New balanced Gen. Journal Line created
+        LibraryERM.CreateGeneralJnlLineWithBalAcc(
+            GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name, DocumentType::" ",
+            AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(),
+            AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(),
+            LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Modify Gen. Journal Line
+        // - Set Posting Date to closed VAT period
+        // - Clear gen. posting group information, VAT date and posting type
+        GenJournalLine.Validate("Posting Date", VATPeriodCZL."Starting Date");
+        GenJournalLine.Validate("VAT Date CZL", 0D);
+        GenJournalLine.Validate("Gen. Posting Type", Enum::"General Posting Type"::" ");
+        GenJournalLine.Validate("Gen. Bus. Posting Group", '');
+        GenJournalLine.Validate("Gen. Prod. Posting Group", '');
+        GenJournalLine.Modify();
+
+        // [WHEN] Post Gen. Journal Line
+        GenJnlPostLine.Run(GenJournalLine);
+
+        // [THEN] Any errors occur
+    end;
+
+    [Test]
+    procedure GenJnlLinePostWithVATToClosedVATPeriod()
+    var
+        VATPeriodCZL: Record "VAT Period CZL";
+        GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
+        TestClosedFieldErr: Label 'Closed must be equal to ''No''  in VAT Period: Starting Date=%1. Current value is ''Yes''.', Comment = '%1 = Starting Date of VAT period';
+    begin
+        // [FEATURE] [VAT]
+        // [SCENARIO] If the Gen. Journal Line is posting to closed VAT period with VAT (it means that VAT Entries are created) 
+        // then VAT Date check is performed
+        Initialize();
+
+        // [GIVEN] Close VAT Period
+        VATPeriodCZL.FindFirst();
+        VATPeriodCZL.Validate(Closed, true);
+        VATPeriodCZL.Modify();
+
+        // [GIVEN] New VAT Posting Setup created
+        LibraryERM.CreateVATPostingSetupWithAccounts(VatPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 10);
+
+        // [GIVEN] New Gen. Journal Template created
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+
+        // [GIVEN] New Gen. Journal Batch created
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+
+        // [GIVEN] New balanced Gen. Journal Line created
+        LibraryERM.CreateGeneralJnlLineWithBalAcc(
+            GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name, DocumentType::" ",
+            AccountType::"G/L Account", LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, Enum::"General Posting Type"::Sale),
+            AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(), LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Validate Posting Date
+        GenJournalLine.Validate("Posting Date", VATPeriodCZL."Starting Date");
+
+        // [WHEN] Post Gen. Journal Line
+        asserterror GenJnlPostLine.Run(GenJournalLine);
+
+        // [THEN] Error occur because VAT period must be open
+        Assert.ExpectedError(StrSubstNo(TestClosedFieldErr, VATPeriodCZL."Starting Date"));
     end;
 }

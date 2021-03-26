@@ -8,8 +8,6 @@ codeunit 4509 "Email - Outlook API Helper"
     Permissions = tabledata "Email - Outlook Account" = rimd;
 
     var
-        EmailClientIdTok: Label 'Email-ClientId', Locked = true;
-        EmailClientSecretTok: Label 'Email-ClientSecret', Locked = true;
         CannotConnectToMailServerErr: Label 'Client ID or Client secret is not set up on the Email Application AAD Registration page.';
         SetupOutlookAPIQst: Label 'To connect to your email account you must create an App registration in Azure Active Directory and then enter information about the registration on the Email Application AAD Registration Page in Business Central. Do you want to do that now?';
         OnPremOnlyErr: Label 'Authentication using the Client ID and secret should only be used for Business Central on-premises.';

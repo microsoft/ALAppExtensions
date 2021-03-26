@@ -12,7 +12,6 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
 
     var
         Assert: Codeunit "Assert";
-        SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
         SalesInvLinesE2E: Codeunit "APIV2 - Sales Inv. Lines E2E";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryUtility: Codeunit "Library - Utility";
@@ -403,7 +402,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         Customer: Record "Customer";
         ApiSalesLine: Record "Sales Line";
         PageSalesLine: Record "Sales Line";
-        SalesCreditMemo: TestPage 44;
+        SalesCreditMemo: TestPage "Sales Credit Memo";
         ResponseText: Text;
         CreditMemoLineJSON: Text;
         LineNoFromJSON: Text;
@@ -937,7 +936,6 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         ItemVariantCode: Code[10];
         ResponseText: Text;
         CreditMemoLineJSON: Text;
-        LineNoFromJSON: Text;
         CreditMemoID: Text;
     begin
         // [SCENARIO] POST a new line to an unposted Credit Memo with wrong item variant
@@ -1025,7 +1023,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         exit(LineJSON);
     end;
 
-    local procedure CreateCreditMemoAndLinesThroughPage(var SalesCreditMemo: TestPage 44; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
+    local procedure CreateCreditMemoAndLinesThroughPage(var SalesCreditMemo: TestPage "Sales Credit Memo"; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
     var
         SalesLine: Record "Sales Line";
     begin

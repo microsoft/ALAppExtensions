@@ -6,8 +6,8 @@
 codeunit 2500 "Extension Installation Impl"
 {
     Access = Internal;
-    Permissions = TableData "NAV App Installed App" = rimd,
-                  TableData "Published Application" = rimd;
+    Permissions = tabledata "NAV App Installed App" = rimd,
+                  tabledata "Published Application" = rimd;
     SingleInstance = false;
 
     var
@@ -128,6 +128,14 @@ codeunit 2500 "Extension Installation Impl"
         exit(NotInstalledTxt);
     end;
 
+    procedure GetExtensionInstalledDisplayString(Installed: Boolean): Text
+    begin
+        if Installed then
+            exit(InstalledTxt);
+
+        exit(NotInstalledTxt);
+    end;
+
     procedure GetDependenciesForExtensionToInstall(PackageID: Guid): Text
     begin
         AssertIsInitialized();
@@ -162,12 +170,17 @@ codeunit 2500 "Extension Installation Impl"
     end;
 
     procedure UninstallExtension(PackageID: Guid; IsUIEnabled: Boolean): Boolean
+    begin
+        exit(UninstallExtension(PackageID, IsUIEnabled, false));
+    end;
+
+    procedure UninstallExtension(PackageID: Guid; IsUIEnabled: Boolean; ClearSchema: Boolean): Boolean
     var
         PublishedApplication: Record "Published Application";
     begin
         CheckPermissions();
         if IsUIEnabled = true then
-            exit(UninstallExtensionWithConfirmDialog(PackageID, false, false));
+            exit(UninstallExtensionWithConfirmDialog(PackageID, false, ClearSchema));
 
         PublishedApplication.SetRange("Package ID", PackageID);
         PublishedApplication.SetRange("Tenant Visible", true);
@@ -175,7 +188,7 @@ codeunit 2500 "Extension Installation Impl"
         if PublishedApplication.IsEmpty() then
             exit(false);
 
-        exit(UninstallExtensionSilently(PackageID, false, false));
+        exit(UninstallExtensionSilently(PackageID, false, ClearSchema));
     end;
 
     local procedure UninstallExtensionSilently(PackageID: Guid; ClearData: Boolean; ClearSchema: Boolean): Boolean

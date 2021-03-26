@@ -25,19 +25,19 @@ codeunit 11754 "Reg. Lookup Ext. Data CZL"
     local procedure SendRequest() ResponseText: Text
     var
         RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
-        Client: HttpClient;
-        ResponseMessage: HttpResponseMessage;
+        HttpClient: HttpClient;
+        HttpResponseMessage: HttpResponseMessage;
         RequestURL: Text;
         RegNoTok: Label '%1?ico=%2', Locked = true, Comment = '%1 = Registration No. service URL, %2 = Reistraton No.';
         ServiceCallErr: Label 'Web service call failed.';
         ServiceStatusErr: Label 'Web service returned error message.\\Status Code: %1\Description: %2', Comment = '%1 = HTTP error status, %2 = HTTP error description';
     begin
         RequestURL := StrSubstNo(RegNoTok, RegNoServiceConfigCZL.GetRegNoURL(), RegistrationLogCZL."Registration No.");
-        if not Client.Get(RequestURL, ResponseMessage) then
+        if not HttpClient.Get(RequestURL, HttpResponseMessage) then
             Error(ServiceCallErr);
-        if not ResponseMessage.IsSuccessStatusCode() then
-            Error(ServiceStatusErr, ResponseMessage.HttpStatusCode(), ResponseMessage.ReasonPhrase());
-        ResponseMessage.Content().ReadAs(ResponseText);
+        if not HttpResponseMessage.IsSuccessStatusCode() then
+            Error(ServiceStatusErr, HttpResponseMessage.HttpStatusCode(), HttpResponseMessage.ReasonPhrase());
+        HttpResponseMessage.Content().ReadAs(ResponseText);
     end;
 
     local procedure InsertLogEntry(ResponseText: Text)
@@ -56,8 +56,8 @@ codeunit 11754 "Reg. Lookup Ext. Data CZL"
         exit(RegNoValidationWebServiceURLTok);
     end;
 
-    procedure SetRegistrationLog(RegnLog: Record "Registration Log CZL")
+    procedure SetRegistrationLog(RegistrationLogCZL: Record "Registration Log CZL")
     begin
-        RegistrationLogCZL := RegnLog;
+        RegistrationLogCZL := RegistrationLogCZL;
     end;
 }

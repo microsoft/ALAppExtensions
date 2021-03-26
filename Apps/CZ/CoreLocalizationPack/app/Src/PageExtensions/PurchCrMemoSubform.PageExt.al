@@ -16,6 +16,12 @@ pageextension 11788 "Purch. Cr. Memo Subform CZL" extends "Purch. Cr. Memo Subfo
                 ToolTip = 'Specifies the statistic indication code.';
                 Visible = false;
             }
+            field("Country/Reg. of Orig. Code CZL"; Rec."Country/Reg. of Orig. Code CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the origin country/region code.';
+                Visible = false;
+            }
         }
     }
 }

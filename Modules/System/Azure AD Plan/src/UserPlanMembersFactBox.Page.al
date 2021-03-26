@@ -13,6 +13,7 @@ page 9823 "User Plan Members FactBox"
     PageType = ListPart;
     SourceTable = "User Plan";
     ContextSensitiveHelpPage = 'ui-how-users-permissions';
+    Permissions = tabledata "User Plan" = r;
 
     layout
     {
@@ -20,12 +21,12 @@ page 9823 "User Plan Members FactBox"
         {
             repeater(Group)
             {
-                field("User Name"; "User Name")
+                field("User Name"; Rec."User Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the short name for the user.';
                 }
-                field("Plan Name"; "Plan Name")
+                field("Plan Name"; Rec."Plan Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the subscription plan.';

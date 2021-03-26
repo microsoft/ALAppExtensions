@@ -67,7 +67,7 @@ report 31104 "Export VAT Ctrl. Dialog CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Declaration Type';
-                        ToolTip = 'Specifies the declaration type (recapitulative, corrective, supplementary).';
+                        ToolTip = 'Specifies the declaration type.';
 
                         trigger OnValidate()
                         begin

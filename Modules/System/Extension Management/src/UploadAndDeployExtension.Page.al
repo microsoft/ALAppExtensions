@@ -54,7 +54,7 @@ page 2507 "Upload And Deploy Extension"
             {
                 ApplicationArea = All;
                 Caption = 'Language';
-                ToolTip = 'Language.';
+                ToolTip = 'Language';
                 Editable = false;
 
                 trigger OnAssistEdit()
@@ -110,7 +110,7 @@ page 2507 "Upload And Deploy Extension"
             {
                 ApplicationArea = All;
                 Caption = 'Deploy';
-                ToolTip = 'Deploy.';
+                ToolTip = 'Deploy';
                 Image = ServiceOrderSetup;
                 Enabled = IsAccepted;
                 InFooterBar = true;
@@ -134,7 +134,7 @@ page 2507 "Upload And Deploy Extension"
                 ApplicationArea = All;
                 Image = Cancel;
                 Caption = 'Cancel';
-                ToolTip = 'Cancel.';
+                ToolTip = 'Cancel';
                 InFooterBar = true;
                 RunPageMode = Edit;
 

@@ -6,6 +6,8 @@
 codeunit 9011 "Azure AD Graph User Impl."
 {
     Access = Internal;
+    Permissions = tabledata User = rm,
+                  tabledata "User Property" = r;
 
     trigger OnRun()
     begin

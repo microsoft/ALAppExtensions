@@ -7,6 +7,11 @@ codeunit 3903 "Retention Policy Setup Impl."
 {
     Access = Internal;
     EventSubscriberInstance = Manual;
+    Permissions = tabledata AllObj = r,
+                  tabledata AllObjWithCaption = r,
+                  tabledata Field = r,
+                  tabledata "Retention Period" = ri,
+                  tabledata "Retention Policy Setup Line" = ri;
 
     var
         ManualSetupNameTxt: Label 'Retention Policies';
@@ -223,13 +228,14 @@ codeunit 3903 "Retention Policy Setup Impl."
         exit(RetentionPolicyLogCategory::"Retention Policy - Setup")
     end;
 
-    procedure AddRetentionPolicyOnRegisterManualSetup(ManualSetup: Codeunit "Manual Setup")
+    procedure AddRetentionPolicyOnRegisterManualSetup(GuidedExperience: Codeunit "Guided Experience")
     var
         ManualSetupCategory: Enum "Manual Setup Category";
         CurrModuleInfo: ModuleInfo;
     begin
         NavApp.GetCurrentModuleInfo(CurrModuleInfo);
-        ManualSetup.Insert(ManualSetupNameTxt, ManualSetupDescriptionTxt, ManualSetupKeyWordsTxt, Page::"Retention Policy Setup List", CurrModuleInfo.Id, ManualSetupCategory::Uncategorized);
+        GuidedExperience.InsertManualSetup(ManualSetupNameTxt, ManualSetupNameTxt, ManualSetupDescriptionTxt, 0, ObjectType::Page,
+            Page::"Retention Policy Setup List", ManualSetupCategory::Uncategorized, ManualSetupKeyWordsTxt);
     end;
 
     procedure VerifyRetentionPolicySetupOnbeforeDeleteRetentionPeriod(var RetentionPeriod: Record "Retention Period")
@@ -274,13 +280,13 @@ codeunit 3903 "Retention Policy Setup Impl."
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
-        RetenPolAllowedTablesImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
+        RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
         TableFilters: JsonArray;
     begin
         RetentionPolicySetup.CalcFields("Table Caption");
         if not RetenPolAllowedTables.IsAllowedTable(RetentionPolicySetup."Table ID") then
             RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(TableNotAllowedErrorLbl, RetentionPolicySetup."Table ID", RetentionPolicySetup."Table Caption"));
-        TableFilters := RetenPolAllowedTablesImpl.GetTableFilters(RetentionPolicySetup."Table Id");
+        TableFilters := RetenPolAllowedTblImpl.GetTableFilters(RetentionPolicySetup."Table Id");
         if TableFilters.Count <> 0 then
             RetentionPolicySetup."Apply to all records" := false;
     end;
@@ -288,7 +294,7 @@ codeunit 3903 "Retention Policy Setup Impl."
     procedure InsertDefaultTableFiltersOnAfterInsertRetenPolSetup(var RetentionPolicySetup: Record "Retention Policy Setup")
     var
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
-        RetenPolAllowedTablesImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
+        RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         RetPeriodCalc: DateFormula;
         TableFilters: JsonArray;
@@ -306,7 +312,7 @@ codeunit 3903 "Retention Policy Setup Impl."
         if RetentionPolicySetup.IsTemporary then
             exit;
 
-        TableFilters := RetenPolAllowedTablesImpl.GetTableFilters(RetentionPolicySetup."Table Id");
+        TableFilters := RetenPolAllowedTblImpl.GetTableFilters(RetentionPolicySetup."Table Id");
         if TableFilters.Count = 0 then
             exit;
 
@@ -318,7 +324,7 @@ codeunit 3903 "Retention Policy Setup Impl."
             RetentionPolicySetupLine."Line No." += 10000;
             TableFilters.Get(i - 1, JsonToken);
             JsonObject := JsonToken.AsObject();
-            RetenPolAllowedTablesImpl.ParseTableFilter(JsonObject, TableId, RetentionPeriodEnum, RetPeriodCalc, DateFieldNo, Enabled, Locked, TableFilter);
+            RetenPolAllowedTblImpl.ParseTableFilter(JsonObject, TableId, RetentionPeriodEnum, RetPeriodCalc, DateFieldNo, Enabled, Locked, TableFilter);
             if TableId <> RetentionPolicySetupLine."Table ID" then
                 RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(RetenPolAllowedTableFilterMismatchLbl, RetentionPolicySetupLine."Table ID", TableId))
             else begin
@@ -413,10 +419,8 @@ codeunit 3903 "Retention Policy Setup Impl."
     /// These elements combined are to ensure that only procedure DeleteRetentionPolicySetup can delete locked lines from the table.
     /// You should only be able to delete locked lines when deleting the 'header' Retention Policy Setup record.
     /// </Summary>
-#pragma warning disable AA0150 // Parameter 'DeleteAllowed' is declared by reference but never changed in method 'OnVerifyDeleteAllowed'.
     [InternalEvent(false)]
     internal procedure OnVerifyDeleteAllowed(TableId: Integer; var DeleteAllowed: Boolean)
-#pragma warning restore AA0150
     begin
     end;
 

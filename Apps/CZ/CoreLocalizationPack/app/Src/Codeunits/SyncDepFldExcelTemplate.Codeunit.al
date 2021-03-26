@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31190 "Sync.Dep.Fld-ExcelTemplate CZL"
 {
@@ -180,3 +181,4 @@ codeunit 31190 "Sync.Dep.Fld-ExcelTemplate CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

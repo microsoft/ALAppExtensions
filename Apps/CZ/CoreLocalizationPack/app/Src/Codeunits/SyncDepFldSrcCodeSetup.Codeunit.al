@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31192 "Sync.Dep.Fld-SrcCodeSetup CZL"
 {
@@ -39,3 +40,4 @@ codeunit 31192 "Sync.Dep.Fld-SrcCodeSetup CZL"
         Rec."Purchase VAT Delay CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Purchase VAT Delay CZL"));
     end;
 }
+#endif

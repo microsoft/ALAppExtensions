@@ -12,7 +12,6 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
 
     var
         Assert: Codeunit "Assert";
-        SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryERM: Codeunit "Library - ERM";
         LibraryUtility: Codeunit "Library - Utility";
@@ -26,8 +25,6 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         InvoiceServiceNameTxt: Label 'salesInvoices';
         InvoiceServiceLinesNameTxt: Label 'salesInvoiceLines';
         LineTypeFieldNameTxt: Label 'lineType';
-        UoMComplexTypeNameTxt: Label 'unitOfMeasure';
-        UoMComplexTypeCodeNameTxt: Label 'code';
         UoMIdTxt: Label 'unitOfMeasureId';
         UoMCodeTxt: Label 'unitOfMeasureCode';
 
@@ -75,7 +72,6 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         TargetURL: Text;
         InvoiceId: Text;
         LineNo: Integer;
-        IdValue: Text;
         SequenceValue: Text;
     begin
         // [SCENARIO] Call GET on the Line of a unposted Invoice
@@ -296,7 +292,6 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         Item: Record "Item";
         SalesHeader: Record "Sales Header";
         UnitOfMeasure: Record "Unit of Measure";
-        UoMJSON: Text;
         ResponseText: array[2] of Text;
         TargetURL: Text;
         InvoiceLineJSON: array[2] of Text;
@@ -436,7 +431,6 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         SalesLine: Record "Sales Line";
         UnitOfMeasure: Record "Unit of Measure";
         Item: Record Item;
-        UoMJSON: Text;
         ResponseText: array[2] of Text;
         TargetURL: Text;
         InvoiceLineJSON: array[2] of Text;
@@ -573,7 +567,7 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         Customer: Record "Customer";
         PageRecordRef: RecordRef;
         ApiRecordRef: RecordRef;
-        SalesInvoice: TestPage 43;
+        SalesInvoice: TestPage "Sales Invoice";
         ResponseText: Text;
         TargetURL: Text;
         InvoiceLineJSON: Text;
@@ -1209,7 +1203,6 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         ResponseText: Text;
         TargetURL: Text;
         InvoiceLineJSON: Text;
-        LineNoFromJSON: Text;
         InvoiceID: Text;
     begin
         // [SCENARIO] POST a new line to an unposted Invoice with wrong item variant
@@ -1315,7 +1308,7 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         exit(LineJSON);
     end;
 
-    local procedure CreateInvoiceAndLinesThroughPage(var SalesInvoice: TestPage 43; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
+    local procedure CreateInvoiceAndLinesThroughPage(var SalesInvoice: TestPage "Sales Invoice"; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
     var
         SalesLine: Record "Sales Line";
     begin

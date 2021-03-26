@@ -84,5 +84,21 @@ codeunit 6723 "Server Setting"
     begin
         exit(ServerSettingImpl.GetTestAutomationEnabled());
     end;
+
+    /// <summary>Checks whether permissions are read from the permission table in SQL or from metadata (.al code)</summary>
+    /// <returns>True if enabled; otherwise, false.</returns>
+    /// <remarks>Gets the value of the server setting UsePermissionSetsFromExtensions.</remarks>
+    procedure GetUsePermissionSetsFromExtensions(): Boolean
+    begin
+        exit(ServerSettingImpl.GetUsePermissionSetsFromExtensions());
+    end;
+
+    /// <summary>Checks whether Entitlements are enabled</summary>
+    /// <returns>True if enabled; otherwise false.</returns>
+    /// <remarks>Gets the value of the server setting EnableMembershipEntitlement.</remarks>
+    procedure GetEnableMembershipEntitlement(): Boolean
+    begin
+        exit(ServerSettingImpl.GetEnableMembershipEntitlement());
+    end;
 }
 

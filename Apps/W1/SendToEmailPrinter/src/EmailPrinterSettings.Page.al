@@ -147,8 +147,7 @@ page 2650 "Email Printer Settings"
             group(EmailSetup)
             {
                 ShowCaption = false;
-                Visible = (not IsEmailAccountDefined) and IsEmailFeatureEnabled;
-
+                Visible = (not IsEmailAccountDefined) and IsEmailFeatureEnabled and HasEmailAccountPermission;
                 group(EmailSetupInner)
                 {
                     ShowCaption = false;
@@ -158,10 +157,10 @@ page 2650 "Email Printer Settings"
                         Editable = false;
                         ShowCaption = false;
                         Style = Attention;
-                        Caption = 'This printer requires email account setup to print the jobs.';
+                        Caption = 'For this printer to work, set up an email account in Business Central to use for sending print jobs to the email printers.';
                         ToolTip = 'Specifies the requirement for the printer.';
                     }
-                    field(SetupEmailAccount; RegisterEmailAccountLbl)
+                    field(SetupEmailAccount; SetupEmailAccountLbl)
                     {
                         ApplicationArea = All;
                         Editable = false;
@@ -175,6 +174,25 @@ page 2650 "Email Printer Settings"
                     }
                 }
             }
+
+            group(EmailSetupNoPermisssions)
+            {
+                ShowCaption = false;
+                Visible = (not IsEmailAccountDefined) and IsEmailFeatureEnabled and (not HasEmailAccountPermission);
+                group(EmailSetupNoPermissionsInner)
+                {
+                    ShowCaption = false;
+                    field(EmailAccountPermissionsRequired; EmailAccountPermissionsRequiredLbl)
+                    {
+                        ApplicationArea = All;
+                        Editable = false;
+                        ShowCaption = false;
+                        Style = Attention;
+                        Caption = 'For this printer to work, a user with respective permissions needs to set up an email account in Business Central.';
+                        ToolTip = 'Specifies the requirement for the printer.';
+                    }
+                }
+            }
         }
     }
     actions
@@ -184,14 +202,14 @@ page 2650 "Email Printer Settings"
             action(NewPrinter)
             {
                 ApplicationArea = All;
-                Caption = 'Add another email printer.';
+                Caption = 'Add another email printer';
                 Image = New;
                 Promoted = true;
                 PromotedIsBig = true;
                 PromotedOnly = true;
                 RunPageMode = Create;
                 RunObject = Page "Email Printer Settings";
-                ToolTip = 'Create new email printer.';
+                ToolTip = 'Opens new email printer card page.';
             }
         }
     }
@@ -212,17 +230,18 @@ page 2650 "Email Printer Settings"
     var
         SetupPrinters: Codeunit "Setup Printers";
         EmailFeature: Codeunit "Email Feature";
-        EmailAccount: Codeunit "Email Account";
         IsSizeCustom: Boolean;
         IsSmtpSetup: Boolean;
         IsEmailFeatureEnabled: Boolean;
         IsEmailAccountDefined: Boolean;
+        HasEmailAccountPermission: Boolean;
         NewMode: Boolean;
         DeleteMode: Boolean;
         SetupSMTPLbl: Label 'Set up SMTP';
-        RegisterEmailAccountLbl: Label 'Register email account';
+        SetupEmailAccountLbl: Label 'Set up email account';
         SMTPSetupRequiredLbl: Label 'This printer requires SMTP mail setup to print the jobs.';
-        EmailAccountRequiredLbl: Label 'This printer requires an email account to be registered to print the jobs.';
+        EmailAccountRequiredLbl: Label 'For this printer to work, set up an email account in Business Central to use for sending print jobs to the email printers.';
+        EmailAccountPermissionsRequiredLbl: Label 'For this printer to work, a user with respective permissions needs to set up an email account in Business Central.';
         LearnMoreActionLbl: Label 'Learn more';
         PrintPrivacyNotificationMsg: Label 'Print jobs will be sent to the specified email address. Please take privacy precautions.';
         PrintPrivacyNotificationGuidTok: Label 'f0178e0e-e19a-4a7c-bdbb-843c37d9125a', Locked = true;
@@ -256,6 +275,7 @@ page 2650 "Email Printer Settings"
         IsSizeCustom := SetupPrinters.IsPaperSizeCustom("Paper Size");
         IsSmtpSetup := SetupPrinters.IsSMTPSetup();
         IsEmailFeatureEnabled := EmailFeature.IsEnabled();
+        HasEmailAccountPermission := EmailAccount.WritePermission();
         IsEmailAccountDefined := EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Email Printer", EmailAccount);
     end;
 }

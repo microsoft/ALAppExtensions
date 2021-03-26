@@ -12,6 +12,16 @@ tableextension 11729 "Return Shipment Header CZL" extends "Return Shipment Heade
             Caption = 'Tax Registration No.';
             DataClassification = CustomerContent;
         }
+        field(31068; "Physical Transfer CZL"; Boolean)
+        {
+            Caption = 'Physical Transfer';
+            DataClassification = CustomerContent;
+        }
+        field(31069; "Intrastat Exclude CZL"; Boolean)
+        {
+            Caption = 'Intrastat Exclude';
+            DataClassification = CustomerContent;
+        }
         field(31073; "EU 3-Party Trade CZL"; Boolean)
         {
             Caption = 'EU 3-Party Trade';

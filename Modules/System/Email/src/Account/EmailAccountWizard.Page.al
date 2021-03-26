@@ -20,6 +20,7 @@ page 8886 "Email Account Wizard"
     Editable = true;
     ShowFilter = false;
     LinksAllowed = false;
+    Permissions = tabledata "Media Resources" = r;
 
     layout
     {

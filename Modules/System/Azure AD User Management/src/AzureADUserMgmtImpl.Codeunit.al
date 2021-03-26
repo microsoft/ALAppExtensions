@@ -7,10 +7,9 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
 {
     Access = Internal;
 
-    Permissions = TableData "Access Control" = rimd,
-                  TableData User = rimd,
-                  TableData "User Property" = rimd,
-                  TableData "Membership Entitlement" = rimd;
+    Permissions = TableData User = rm,
+                  TableData "User Property" = r,
+                  tabledata "User Personalization" = r;
 
     trigger OnRun()
     begin
@@ -36,7 +35,9 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         CouldNotGetUserErr: Label 'Could not get a user.', Locked = true;
         UserTenantAdminMsg: Label 'User is a tenant admin.', Locked = true;
         UserNotTenantAdminMsg: Label 'User is not a tenant admin.', Locked = true;
+#pragma warning disable AA0240
         CompanyAdminRoleTemplateIdTok: Label '62e90394-69f5-4237-9190-012177145e10', Locked = true;
+#pragma warning restore
         UserSetupCategoryTxt: Label 'User Setup', Locked = true;
         UserCreatedMsg: Label 'User %1 has been created', Locked = true;
         AuthenticationEmailUpdateShouldBeTheFirstForANewUserErr: Label 'Authentication email should be the first entity to update.';

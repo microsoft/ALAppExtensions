@@ -15,7 +15,7 @@ report 11766 "General Ledger Document CZL"
 
             trigger OnAfterGetRecord()
             begin
-                GLReg := "G/L Register";
+                GLRegister := "G/L Register";
                 CurrReport.Break();
             end;
 
@@ -68,10 +68,10 @@ report 11766 "General Ledger Document CZL"
             column(CompanyAddr1; CompanyAddr[1])
             {
             }
-            column(VATRegistrationNo; StrSubstNo(CaptionValueTok, CoInfo.FieldCaption("VAT Registration No."), CoInfo."VAT Registration No."))
+            column(VATRegistrationNo; StrSubstNo(CaptionValueTok, CompanyInformation.FieldCaption("VAT Registration No."), CompanyInformation."VAT Registration No."))
             {
             }
-            column(RegistrationNo; StrSubstNo(CaptionValueTok, CoInfo.FieldCaption("Registration No."), CoInfo."Registration No."))
+            column(RegistrationNo; StrSubstNo(CaptionValueTok, CompanyInformation.FieldCaption("Registration No."), CompanyInformation."Registration No."))
             {
             }
             column(UserFullName_GLEntry; UserFullName("User ID"))
@@ -158,7 +158,7 @@ report 11766 "General Ledger Document CZL"
                 trigger OnAfterGetRecord()
                 begin
                     if Number = 1 then begin
-                        if not DimSetEntry.Find('-') then
+                        if not DimensionSetEntry.Find('-') then
                             CurrReport.Break();
                     end else
                         if not Continue then
@@ -169,17 +169,17 @@ report 11766 "General Ledger Document CZL"
                     repeat
                         OldDimText := DimText;
                         if DimText = '' then
-                            DimText := StrSubstNo(CaptionValue2Tok, DimSetEntry."Dimension Code", DimSetEntry."Dimension Value Code")
+                            DimText := StrSubstNo(CaptionValue2Tok, DimensionSetEntry."Dimension Code", DimensionSetEntry."Dimension Value Code")
                         else
                             DimText :=
                               StrSubstNo(
-                                DimTextAppenderTok, DimText, DimSetEntry."Dimension Code", DimSetEntry."Dimension Value Code");
+                                DimTextAppenderTok, DimText, DimensionSetEntry."Dimension Code", DimensionSetEntry."Dimension Value Code");
                         if StrLen(DimText) > MaxStrLen(OldDimText) then begin
                             DimText := OldDimText;
                             Continue := true;
                             exit;
                         end;
-                    until DimSetEntry.Next() = 0;
+                    until DimensionSetEntry.Next() = 0;
                 end;
 
                 trigger OnPreDataItem()
@@ -187,14 +187,14 @@ report 11766 "General Ledger Document CZL"
                     if not ShouldShowDim then
                         CurrReport.Break();
 
-                    DimSetEntry.Reset();
-                    DimSetEntry.SetRange("Dimension Set ID", "G/L Entry"."Dimension Set ID");
+                    DimensionSetEntry.Reset();
+                    DimensionSetEntry.SetRange("Dimension Set ID", "G/L Entry"."Dimension Set ID");
                 end;
             }
             trigger OnPreDataItem()
             begin
-                if GLReg."No." <> 0 then
-                    SetRange("Entry No.", GLReg."From Entry No.", GLReg."To Entry No.");
+                if GLRegister."No." <> 0 then
+                    SetRange("Entry No.", GLRegister."From Entry No.", GLRegister."To Entry No.");
             end;
         }
     }
@@ -220,16 +220,16 @@ report 11766 "General Ledger Document CZL"
     }
     trigger OnPreReport()
     begin
-        CoInfo.Get();
-        FormatAddr.Company(CompanyAddr, CoInfo);
+        CompanyInformation.Get();
+        FormatAddress.Company(CompanyAddr, CompanyInformation);
     end;
 
     var
-        CoInfo: Record "Company Information";
-        DimSetEntry: Record "Dimension Set Entry";
-        GLReg: Record "G/L Register";
+        CompanyInformation: Record "Company Information";
+        DimensionSetEntry: Record "Dimension Set Entry";
+        GLRegister: Record "G/L Register";
         User: Record User;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         ShouldShowDim: Boolean;
         Continue: Boolean;
         DimText: Text;

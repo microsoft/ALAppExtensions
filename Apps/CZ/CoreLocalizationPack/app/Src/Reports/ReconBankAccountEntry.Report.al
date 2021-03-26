@@ -81,26 +81,26 @@ report 11719 "Recon. Bank Account Entry CZL"
                 }
                 trigger OnAfterGetRecord()
                 begin
-                    BankAccPost.TestField("G/L Account No.");
+                    BankAccountPostingGroup.TestField("G/L Account No.");
 
-                    if TempBuffer.Get(GLAccNo) then begin
-                        TempBuffer."Net Change in Jnl." += "Amount (LCY)";
-                        TempBuffer.Modify();
+                    if TempGLAccountNetChange.Get(GLAccNo) then begin
+                        TempGLAccountNetChange."Net Change in Jnl." += "Amount (LCY)";
+                        TempGLAccountNetChange.Modify();
                     end else begin
-                        TempBuffer.Init();
-                        TempBuffer."No." := GLAccNo;
-                        TempBuffer."Net Change in Jnl." := "Amount (LCY)";
-                        TempBuffer.Insert();
+                        TempGLAccountNetChange.Init();
+                        TempGLAccountNetChange."No." := GLAccNo;
+                        TempGLAccountNetChange."Net Change in Jnl." := "Amount (LCY)";
+                        TempGLAccountNetChange.Insert();
                     end;
                 end;
             }
             trigger OnAfterGetRecord()
             begin
-                if "Bank Acc. Posting Group" <> BankAccPost.Code then
-                    if BankAccPost.Get("Bank Acc. Posting Group") then
-                        GLAccNo := BankAccPost."G/L Account No."
+                if "Bank Acc. Posting Group" <> BankAccountPostingGroup.Code then
+                    if BankAccountPostingGroup.Get("Bank Acc. Posting Group") then
+                        GLAccNo := BankAccountPostingGroup."G/L Account No."
                     else begin
-                        Clear(BankAccPost);
+                        Clear(BankAccountPostingGroup);
                         Clear(GLAccNo);
                     end;
             end;
@@ -108,37 +108,37 @@ report 11719 "Recon. Bank Account Entry CZL"
         dataitem("Integer"; "Integer")
         {
             DataItemTableView = sorting(Number);
-            column(greGLAcc_FIELDCAPTION__Balance_at_Date__; GLAcc.FieldCaption("Balance at Date"))
+            column(greGLAcc_FIELDCAPTION__Balance_at_Date__; GLAccount.FieldCaption("Balance at Date"))
             {
             }
-            column(greGLAcc_FIELDCAPTION_Name_; GLAcc.FieldCaption(Name))
+            column(greGLAcc_FIELDCAPTION_Name_; GLAccount.FieldCaption(Name))
             {
             }
-            column(greGLAcc_FIELDCAPTION__No___; GLAcc.FieldCaption("No."))
+            column(greGLAcc_FIELDCAPTION__No___; GLAccount.FieldCaption("No."))
             {
             }
-            column(greTBuffer__No__; TempBuffer."No.")
+            column(greTBuffer__No__; TempGLAccountNetChange."No.")
             {
             }
-            column(greTBuffer__Net_Change_in_Jnl__; TempBuffer."Net Change in Jnl.")
+            column(greTBuffer__Net_Change_in_Jnl__; TempGLAccountNetChange."Net Change in Jnl.")
             {
             }
-            column(greGLAcc_Name; GLAcc.Name)
+            column(greGLAcc_Name; GLAccount.Name)
             {
             }
-            column(greTBuffer__Net_Change_in_Jnl_____greGLAcc__Net_Change_; TempBuffer."Net Change in Jnl." - GLAcc."Net Change")
+            column(greTBuffer__Net_Change_in_Jnl_____greGLAcc__Net_Change_; TempGLAccountNetChange."Net Change in Jnl." - GLAccount."Net Change")
             {
             }
-            column(greGLAcc__Net_Change_; GLAcc."Net Change")
+            column(greGLAcc__Net_Change_; GLAccount."Net Change")
             {
             }
-            column(greTBuffer__Net_Change_in_Jnl_____greGLAcc__Net_Change__Control1100170000; TempBuffer."Net Change in Jnl." - GLAcc."Net Change")
+            column(greTBuffer__Net_Change_in_Jnl_____greGLAcc__Net_Change__Control1100170000; TempGLAccountNetChange."Net Change in Jnl." - GLAccount."Net Change")
             {
             }
-            column(greGLAcc__Net_Change__Control1100170001; GLAcc."Net Change")
+            column(greGLAcc__Net_Change__Control1100170001; GLAccount."Net Change")
             {
             }
-            column(greTBuffer__Net_Change_in_Jnl___Control1100170002; TempBuffer."Net Change in Jnl.")
+            column(greTBuffer__Net_Change_in_Jnl___Control1100170002; TempGLAccountNetChange."Net Change in Jnl.")
             {
             }
             column(General_Ledger_SpecificationCaption; General_Ledger_SpecificationCaptionLbl)
@@ -159,20 +159,20 @@ report 11719 "Recon. Bank Account Entry CZL"
             trigger OnAfterGetRecord()
             begin
                 if Number = 1 then
-                    TempBuffer.FindSet()
+                    TempGLAccountNetChange.FindSet()
                 else
-                    TempBuffer.Next();
+                    TempGLAccountNetChange.Next();
 
-                GLAcc.Get(TempBuffer."No.");
-                GLAcc.CalcFields("Net Change");
+                GLAccount.Get(TempGLAccountNetChange."No.");
+                GLAccount.CalcFields("Net Change");
             end;
 
             trigger OnPreDataItem()
             begin
-                TempBuffer.Reset();
-                SetRange(Number, 1, TempBuffer.Count);
+                TempGLAccountNetChange.Reset();
+                SetRange(Number, 1, TempGLAccountNetChange.Count);
 
-                GLAcc.SetFilter("Date Filter", "Bank Account".GetFilter("Date Filter"));
+                GLAccount.SetFilter("Date Filter", "Bank Account".GetFilter("Date Filter"));
             end;
         }
     }
@@ -202,9 +202,11 @@ report 11719 "Recon. Bank Account Entry CZL"
     end;
 
     var
-        TempBuffer: Record "G/L Account Net Change" temporary;
-        GLAcc: Record "G/L Account";
-        BankAccPost: Record "Bank Account Posting Group";
+#pragma warning disable AL0432
+        TempGLAccountNetChange: Record "G/L Account Net Change" temporary;
+#pragma warning restore AL0432
+        GLAccount: Record "G/L Account";
+        BankAccountPostingGroup: Record "Bank Account Posting Group";
         "Filter": Text[1024];
         ShowDetail: Boolean;
         GLAccNo: Code[20];

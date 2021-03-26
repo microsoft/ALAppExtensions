@@ -146,12 +146,12 @@ page 31166 "Posted Cash Document Subf. CZP"
             group(Control2)
             {
                 ShowCaption = false;
-                field(VATBaseAmount; TotalPostedCashDocumentHeaderCZP."VAT Base Amount")
+                field(VATBaseAmount; TotalPostedCashDocumentHdrCZP."VAT Base Amount")
                 {
                     ApplicationArea = Basic, Suite;
-                    AutoFormatExpression = TotalPostedCashDocumentHeaderCZP."Currency Code";
+                    AutoFormatExpression = TotalPostedCashDocumentHdrCZP."Currency Code";
                     AutoFormatType = 1;
-                    CaptionClass = CashDocumentTotalsCZP.GetTotalExclVATCaption(TotalPostedCashDocumentHeaderCZP."Currency Code");
+                    CaptionClass = CashDocumentTotalsCZP.GetTotalExclVATCaption(TotalPostedCashDocumentHdrCZP."Currency Code");
                     Caption = 'Total Amount Excl. VAT';
                     Editable = false;
                     ToolTip = 'Specifies the total amout excl. VAT.';
@@ -159,19 +159,19 @@ page 31166 "Posted Cash Document Subf. CZP"
                 field(VATAmount; VATAmount)
                 {
                     ApplicationArea = Basic, Suite;
-                    AutoFormatExpression = TotalPostedCashDocumentHeaderCZP."Currency Code";
+                    AutoFormatExpression = TotalPostedCashDocumentHdrCZP."Currency Code";
                     AutoFormatType = 1;
-                    CaptionClass = CashDocumentTotalsCZP.GetTotalVATCaption(TotalPostedCashDocumentHeaderCZP."Currency Code");
+                    CaptionClass = CashDocumentTotalsCZP.GetTotalVATCaption(TotalPostedCashDocumentHdrCZP."Currency Code");
                     Caption = 'Total VAT';
                     Editable = false;
                     ToolTip = 'Specifies the total amout of VAT.';
                 }
-                field(AmountIncludingVAT; TotalPostedCashDocumentHeaderCZP."Amount Including VAT")
+                field(AmountIncludingVAT; TotalPostedCashDocumentHdrCZP."Amount Including VAT")
                 {
                     ApplicationArea = Basic, Suite;
-                    AutoFormatExpression = TotalPostedCashDocumentHeaderCZP."Currency Code";
+                    AutoFormatExpression = TotalPostedCashDocumentHdrCZP."Currency Code";
                     AutoFormatType = 1;
-                    CaptionClass = CashDocumentTotalsCZP.GetTotalInclVATCaption(TotalPostedCashDocumentHeaderCZP."Currency Code");
+                    CaptionClass = CashDocumentTotalsCZP.GetTotalInclVATCaption(TotalPostedCashDocumentHdrCZP."Currency Code");
                     Caption = 'Total Amount Incl. VAT';
                     Editable = false;
                     Style = Strong;
@@ -222,11 +222,11 @@ page 31166 "Posted Cash Document Subf. CZP"
 
     trigger OnAfterGetCurrRecord()
     begin
-        CashDocumentTotalsCZP.CalculatePostedCashDocumentTotals(TotalPostedCashDocumentHeaderCZP, VATAmount, Rec);
+        CashDocumentTotalsCZP.CalculatePostedCashDocumentTotals(TotalPostedCashDocumentHdrCZP, VATAmount, Rec);
     end;
 
     var
-        TotalPostedCashDocumentHeaderCZP: Record "Posted Cash Document Hdr. CZP";
+        TotalPostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
         CashDocumentTotalsCZP: Codeunit "Cash Document Totals CZP";
         VATAmount: Decimal;
 }

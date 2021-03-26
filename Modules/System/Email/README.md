@@ -17,8 +17,6 @@ Holds draft emails, and emails that were not successfully sent.
 
 ### Sent Email
 Holds emails that have been sent.
-<br />
-<br />
 
 # Public Objects
 ## Email Account (Table 8902)
@@ -229,7 +227,7 @@ procedure GetLogoAsBase64(): Text
 #### Return Value
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
-The logo of the connector is Base64 format
+Base64 encoded image.
 ### GetDescription (Method) <a name="GetDescription"></a> 
 
  Provides a more detailed description of the connector.
@@ -1090,6 +1088,43 @@ The scenario to unassign.
  Lists all of the registered email accounts
  
 
+### GetAccount (Method) <a name="GetAccount"></a> 
+
+ Gets the selected email account.
+ 
+
+#### Syntax
+```
+procedure GetAccount(var Account: Record "Email Account")
+```
+#### Parameters
+*Account ([Record "Email Account"]())* 
+
+The selected email account
+
+### SetAccount (Method) <a name="SetAccount"></a> 
+
+ Sets an email account to be selected.
+ 
+
+#### Syntax
+```
+procedure SetAccount(var Account: Record "Email Account")
+```
+#### Parameters
+*Account ([Record "Email Account"]())* 
+
+The email account to be initially selected on the page
+
+### EnableLookupMode (Method) <a name="EnableLookupMode"></a> 
+
+ Enables the lookup mode on the page.
+ 
+
+#### Syntax
+```
+procedure EnableLookupMode()
+```
 
 ## Email Account Wizard (Page 8886)
 
@@ -1139,6 +1174,16 @@ The scenario to unassign.
 
  Displays the scenarios that could be linked to a provided e-mail account.
  
+
+### GetSelectedScenarios (Method) <a name="GetSelectedScenarios"></a> 
+#### Syntax
+```
+procedure GetSelectedScenarios(var Result: Record "Email Account Scenario")
+```
+#### Parameters
+*Result ([Record "Email Account Scenario"]())* 
+
+
 
 
 ## Email User-Specified Address (Page 8884)

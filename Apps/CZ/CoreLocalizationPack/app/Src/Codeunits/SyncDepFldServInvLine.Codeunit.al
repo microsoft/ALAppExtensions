@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31146 "Sync.Dep.Fld-ServInvLine CZL"
 {
@@ -39,3 +40,4 @@ codeunit 31146 "Sync.Dep.Fld-ServInvLine CZL"
         Rec."Statistic Indication CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Statistic Indication CZL"));
     end;
 }
+#endif

@@ -100,19 +100,19 @@ report 31077 "Suggest VIES Declaration CZL"
                     Commit();
                 end;
 
-                Window.Open(ProcessTxt);
+                WindowDialog.Open(ProcessTxt);
             end;
 
             trigger OnAfterGetRecord()
             begin
-                Window.Update(1, "Period No.");
-                Window.Update(2, Year);
+                WindowDialog.Update(1, "Period No.");
+                WindowDialog.Update(2, Year);
             end;
 
             trigger OnPostDataItem()
             begin
                 SaveBuffer();
-                Window.Close();
+                WindowDialog.Close();
             end;
         }
     }
@@ -146,7 +146,7 @@ report 31077 "Suggest VIES Declaration CZL"
     var
         TempVIESDeclarationLineCZL: Record "VIES Declaration Line CZL" temporary;
         VIESTransactionBuffer: List of [Integer];
-        Window: Dialog;
+        WindowDialog: Dialog;
         NoOfRecords: Integer;
         RecordNo: Integer;
         NewProgress: Integer;
@@ -216,11 +216,11 @@ report 31077 "Suggest VIES Declaration CZL"
 
     procedure IsEUCountry(VATEntry: Record "VAT Entry"): Boolean
     var
-        Country: Record "Country/Region";
+        CountryRegion: Record "Country/Region";
     begin
         if VATEntry."Country/Region Code" <> '' then begin
-            Country.Get(VATEntry."Country/Region Code");
-            exit(Country."EU Country/Region Code" <> '');
+            CountryRegion.Get(VATEntry."Country/Region Code");
+            exit(CountryRegion."EU Country/Region Code" <> '');
         end;
         exit(false);
     end;
@@ -272,7 +272,7 @@ report 31077 "Suggest VIES Declaration CZL"
             NewProgress := Round(RecordNo / NoOfRecords * 100, 1);
             if NewProgress <> OldProgress then begin
                 OldProgress := NewProgress;
-                Window.Update(3, NewProgress)
+                WindowDialog.Update(3, NewProgress)
             end;
             OldTime := Time;
         end;

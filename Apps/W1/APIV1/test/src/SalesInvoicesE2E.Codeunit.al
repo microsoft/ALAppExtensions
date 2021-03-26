@@ -23,8 +23,6 @@ codeunit 139709 "Sales Invoices E2E"
         LibraryApplicationArea: Codeunit "Library - Application Area";
         NumberFieldTxt: Label 'number';
         InvoiceServiceNameTxt: Label 'salesInvoices';
-        CustomerIdFieldTxt: Label 'customerId';
-        CustomerNameFieldTxt: Label 'customerName';
         CustomerNumberFieldTxt: Label 'customerNumber';
         CurrencyIdFieldTxt: Label 'currencyId';
         PaymentTermsIdFieldTxt: Label 'paymentTermsId';

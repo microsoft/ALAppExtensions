@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31176 "Sync.Dep.Fld-VatPeriod CZL"
 {
@@ -162,3 +163,4 @@ codeunit 31176 "Sync.Dep.Fld-VatPeriod CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432,AL0603
 codeunit 31173 "Sync.Dep.Fld-VatPostSetup CZL"
 {
@@ -61,5 +62,7 @@ codeunit 31173 "Sync.Dep.Fld-VatPostSetup CZL"
         Evaluate(Rec."Reverse Charge Check CZL", format(NewFieldInt));
         SyncDepFldUtilities.SyncFields(Rec."VIES Purchases", Rec."VIES Purchase CZL", PreviousRecord."VIES Purchases", PreviousRecord."VIES Purchase CZL");
         SyncDepFldUtilities.SyncFields(Rec."VIES Sales", Rec."VIES Sales CZL", PreviousRecord."VIES Sales", PreviousRecord."VIES Sales CZL");
+        SyncDepFldUtilities.SyncFields(Rec."Intrastat Service", Rec."Intrastat Service CZL", PreviousRecord."Intrastat Service", PreviousRecord."Intrastat Service CZL");
     end;
 }
+#endif

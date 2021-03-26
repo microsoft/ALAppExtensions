@@ -56,7 +56,7 @@ report 31182 "Reminder CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Issued Reminder Header"; "Issued Reminder Header")
@@ -297,7 +297,7 @@ report 31182 "Reminder CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -329,11 +329,11 @@ report 31182 "Reminder CZL"
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
-                FormatAddr.IssuedReminder(CustAddr, "Issued Reminder Header");
+                FormatAddress.IssuedReminder(CustAddr, "Issued Reminder Header");
                 DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
 
                 if LogInteraction and not IsReportInPreviewMode() then
-                    SegMgt.LogDocument(
+                    SegManagement.LogDocument(
                       8, "No.", 0, 0, Database::Customer, "Customer No.", '', '', "Posting Description", '');
 
                 if "Currency Code" = '' then
@@ -383,6 +383,7 @@ report 31182 "Reminder CZL"
             LogInteractionEnable := LogInteraction;
         end;
     }
+
     trigger OnPreReport()
     begin
         if not CurrReport.UseRequestPage then
@@ -391,9 +392,9 @@ report 31182 "Reminder CZL"
 
     var
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        SegMgt: Codeunit SegManagement;
+        SegManagement: Codeunit SegManagement;
         CompanyAddr: array[8] of Text[100];
         DocumentLbl: Label 'Reminder';
         PageLbl: Label 'Page';
@@ -422,7 +423,7 @@ report 31182 "Reminder CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegMgt.FindInteractTmplCode(8) <> '';
+        LogInteraction := SegManagement.FindInteractTmplCode(8) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

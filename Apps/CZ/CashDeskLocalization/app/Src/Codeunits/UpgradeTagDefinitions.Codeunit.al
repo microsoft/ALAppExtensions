@@ -5,6 +5,7 @@ codeunit 31106 "Upgrade Tag Definitions CZP"
     begin
         PerDatabaseUpgradeTags.Add(GetDataVersion173PerDatabaseUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetDataVersion174PerDatabaseUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetDataVersion180PerDatabaseUpgradeTag());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
@@ -12,6 +13,7 @@ codeunit 31106 "Upgrade Tag Definitions CZP"
     begin
         PerCompanyUpgradeTags.Add(GetDataVersion173PerCompanyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetDataVersion174PerCompanyUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetDataVersion180PerCompanyUpgradeTag());
     end;
 
     procedure GetDataVersion173PerDatabaseUpgradeTag(): Code[250]
@@ -19,18 +21,28 @@ codeunit 31106 "Upgrade Tag Definitions CZP"
         exit('CZP-UpgradeCashDeskLocalizationForCzech-PerDatabase-17.3');
     end;
 
-    procedure GetDataVersion173PerCompanyUpgradeTag(): Code[250]
-    begin
-        exit('CZP-UpgradeCashDeskLocalizationForCzech-PerCompany-17.3');
-    end;
-
     procedure GetDataVersion174PerDatabaseUpgradeTag(): Code[250]
     begin
         exit('CZP-UpgradeCashDeskLocalizationForCzech-PerDatabase-17.4');
     end;
 
+    procedure GetDataVersion180PerDatabaseUpgradeTag(): Code[250]
+    begin
+        exit('CZP-UpgradeCashDeskLocalizationForCzech-PerDatabase-18.0');
+    end;
+
+    procedure GetDataVersion173PerCompanyUpgradeTag(): Code[250]
+    begin
+        exit('CZP-UpgradeCashDeskLocalizationForCzech-PerCompany-17.3');
+    end;
+
     procedure GetDataVersion174PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZP-UpgradeCashDeskLocalizationForCzech-PerCompany-17.4');
+    end;
+
+    procedure GetDataVersion180PerCompanyUpgradeTag(): Code[250]
+    begin
+        exit('CZP-UpgradeCashDeskLocalizationForCzech-PerCompany-18.0');
     end;
 }

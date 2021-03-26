@@ -8,9 +8,6 @@ codeunit 148074 "Cash Desk Reports CZP"
         CashDeskEventCZP: Record "Cash Desk Event CZP";
         LibraryReportDataset: Codeunit "Library - Report Dataset";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
-        LibraryERM: Codeunit "Library - ERM";
-        LibraryUtility: Codeunit "Library - Utility";
-        LibraryFixedAsset: Codeunit "Library - Fixed Asset";
         LibraryRandom: Codeunit "Library - Random";
         LibraryCashDeskCZP: Codeunit "Library - Cash Desk CZP";
         LibraryCashDocumentCZP: Codeunit "Library - Cash Document CZP";

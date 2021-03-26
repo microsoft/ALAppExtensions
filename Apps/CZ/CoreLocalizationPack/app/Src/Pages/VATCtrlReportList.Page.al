@@ -51,6 +51,15 @@ page 31109 "VAT Ctrl. Report List CZL"
                 }
             }
         }
+        area(FactBoxes)
+        {
+            part("Attached Documents"; "Document Attachment Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Attachments';
+                SubPageLink = "Table ID" = const(31106), "No." = field("No.");
+            }
+        }
     }
     actions
     {
@@ -73,6 +82,21 @@ page 31109 "VAT Ctrl. Report List CZL"
                     trigger OnAction()
                     begin
                         Page.RunModal(Page::"VAT Ctrl. Report Stat. CZL", Rec);
+                    end;
+                }
+                action(PrintToAttachment)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Attach as PDF';
+                    Image = PrintAttachment;
+                    Promoted = true;
+                    PromotedCategory = "Report";
+                    PromotedOnly = true;
+                    ToolTip = 'Create a PDF file and attach it to the document.';
+
+                    trigger OnAction()
+                    begin
+                        Rec.PrintToDocumentAttachment();
                     end;
                 }
             }
@@ -201,6 +225,23 @@ page 31109 "VAT Ctrl. Report List CZL"
                 ToolTip = 'Shows related VAT Control Report lines.';
                 RunObject = Page "VAT Ctrl. Report Lines CZL";
                 RunPageLink = "VAT Ctrl. Report No." = field("No.");
+            }
+            action(DocAttach)
+            {
+                ApplicationArea = All;
+                Caption = 'Attachments';
+                Image = Attach;
+                ToolTip = 'Add a file as an attachment. You can attach images as well as documents.';
+
+                trigger OnAction()
+                var
+                    DocumentAttachmentDetails: Page "Document Attachment Details";
+                    RecRef: RecordRef;
+                begin
+                    RecRef.GetTable(Rec);
+                    DocumentAttachmentDetails.OpenForRecRef(RecRef);
+                    DocumentAttachmentDetails.RunModal();
+                end;
             }
         }
     }

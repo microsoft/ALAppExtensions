@@ -65,7 +65,7 @@ report 31184 "Purchase Quote CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Purchase Header"; "Purchase Header")
@@ -134,22 +134,22 @@ report 31184 "Purchase Quote CZL"
             column(RegistrationNo_PurchaseHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_PurchaseHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_PurchaseHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_PurchaseHeader; "Bank Account No.")
+            column(BankAccountNo_PurchaseHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_PurchaseHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_PurchaseHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_PurchaseHeader; IBAN)
+            column(IBAN_PurchaseHeader; "IBAN CZL")
             {
             }
-            column(BIC_PurchaseHeaderCaption; FieldCaption("SWIFT Code"))
+            column(BIC_PurchaseHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(BIC_PurchaseHeader; "SWIFT Code")
+            column(BIC_PurchaseHeader; "SWIFT Code CZL")
             {
             }
             column(DocumentDate_PurchaseHeaderCaption; FieldCaption("Document Date"))
@@ -325,7 +325,7 @@ report 31184 "Purchase Quote CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -368,10 +368,10 @@ report 31184 "Purchase Quote CZL"
 
                 if not IsReportInPreviewMode() then begin
                     if ArchiveDocument then
-                        ArchiveMgt.StorePurchDocument("Purchase Header", LogInteraction);
+                        ArchiveManagement.StorePurchDocument("Purchase Header", LogInteraction);
                     if LogInteraction then begin
                         CalcFields("No. of Archived Versions");
-                        SegMgt.LogDocument(
+                        SegManagement.LogDocument(
                           11, "No.", "Doc. No. Occurrence", "No. of Archived Versions", Database::Vendor, "Pay-to Vendor No.",
                           "Purchaser Code", '', "Posting Description", '');
                     end;
@@ -434,10 +434,10 @@ report 31184 "Purchase Quote CZL"
 
         trigger OnOpenPage()
         begin
-            case PurchSetup."Archive Quotes" of
-                PurchSetup."Archive Quotes"::Never:
+            case PurchasesPayablesSetup."Archive Quotes" of
+                PurchasesPayablesSetup."Archive Quotes"::Never:
                     ArchiveDocument := false;
-                PurchSetup."Archive Quotes"::Always:
+                PurchasesPayablesSetup."Archive Quotes"::Always:
                     ArchiveDocument := true;
             end;
             InitLogInteraction();
@@ -446,7 +446,7 @@ report 31184 "Purchase Quote CZL"
     }
     trigger OnInitReport()
     begin
-        PurchSetup.Get();
+        PurchasesPayablesSetup.Get();
     end;
 
     trigger OnPreReport()
@@ -456,17 +456,17 @@ report 31184 "Purchase Quote CZL"
     end;
 
     var
-        PurchSetup: Record "Purchases & Payables Setup";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         Vendor: Record Vendor;
         PaymentTerms: Record "Payment Terms";
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        SegMgt: Codeunit SegManagement;
-        ArchiveMgt: Codeunit ArchiveManagement;
+        SegManagement: Codeunit SegManagement;
+        ArchiveManagement: Codeunit ArchiveManagement;
         CompanyAddr: array[8] of Text[100];
         VendAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];
@@ -503,7 +503,7 @@ report 31184 "Purchase Quote CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegMgt.FindInteractTmplCode(11) <> '';
+        LogInteraction := SegManagement.FindInteractTmplCode(11) <> '';
     end;
 
     local procedure FormatDocumentFields(PurchaseHeader: Record "Purchase Header")
@@ -516,8 +516,8 @@ report 31184 "Purchase Quote CZL"
 
     local procedure FormatAddressFields(PurchaseHeader: Record "Purchase Header")
     begin
-        FormatAddr.PurchHeaderBuyFrom(VendAddr, PurchaseHeader);
-        FormatAddr.PurchHeaderShipTo(ShipToAddr, PurchaseHeader);
+        FormatAddress.PurchHeaderBuyFrom(VendAddr, PurchaseHeader);
+        FormatAddress.PurchHeaderShipTo(ShipToAddr, PurchaseHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

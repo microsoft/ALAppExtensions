@@ -33,13 +33,13 @@ report 11759 "Unreliable Payer List CZL"
             column(VATRegNo_Vendor_fld; "VAT Registration No.")
             {
             }
-            column(CheckDate_Vendor_var; Format(UnreliablePayerEntryCZL1."Check Date"))
+            column(CheckDate_Vendor_var; Format(FirstUnreliablePayerEntryCZL."Check Date"))
             {
             }
-            column(UncertPayer_Vendor_var; Format(UnreliablePayerEntryCZL1."Unreliable Payer"))
+            column(UncertPayer_Vendor_var; Format(FirstUnreliablePayerEntryCZL."Unreliable Payer"))
             {
             }
-            column(TaxOfficeNo_Vendor_var; UnreliablePayerEntryCZL1."Tax Office Number")
+            column(TaxOfficeNo_Vendor_var; FirstUnreliablePayerEntryCZL."Tax Office Number")
             {
             }
             column(WarningText_Vendor_var; WarningText)
@@ -58,13 +58,13 @@ report 11759 "Unreliable Payer List CZL"
                 column(PublicBA_VBA_var; Format(PublicBankAccount))
                 {
                 }
-                column(BankAccType_VBA_var; Format(UnreliablePayerEntryCZL2."Bank Account No. Type"))
+                column(BankAccType_VBA_var; Format(SecondUnreliablePayerEntryCZL."Bank Account No. Type"))
                 {
                 }
-                column(PublicDate_VBA_var; Format(UnreliablePayerEntryCZL2."Public Date"))
+                column(PublicDate_VBA_var; Format(SecondUnreliablePayerEntryCZL."Public Date"))
                 {
                 }
-                column(EndPublicDate_VBA_var; Format(UnreliablePayerEntryCZL2."End Public Date"))
+                column(EndPublicDate_VBA_var; Format(SecondUnreliablePayerEntryCZL."End Public Date"))
                 {
                 }
                 column(RecCount_VBA_var; RecCount)
@@ -76,10 +76,10 @@ report 11759 "Unreliable Payer List CZL"
                     PublicBankAccount := UnreliablePayerMgtCZL.IsPublicBankAccount("Vendor No.", "Vendor VAT Registration No.",
                         "Bank Account No.", IBAN);
 
-                    UnreliablePayerEntryCZL2.SetRange("VAT Registration No.", "Vendor VAT Registration No.");
-                    UnreliablePayerEntryCZL2.SetFilter("Full Bank Account No.", '%1|%2', "Bank Account No.", IBAN);
-                    if not UnreliablePayerEntryCZL2.FindLast() then
-                        Clear(UnreliablePayerEntryCZL2);
+                    SecondUnreliablePayerEntryCZL.SetRange("VAT Registration No.", "Vendor VAT Registration No.");
+                    SecondUnreliablePayerEntryCZL.SetFilter("Full Bank Account No.", '%1|%2', "Bank Account No.", IBAN);
+                    if not SecondUnreliablePayerEntryCZL.FindLast() then
+                        Clear(SecondUnreliablePayerEntryCZL);
 
                     if OnlyErrors and PublicBankAccount then
                         CurrReport.Skip();
@@ -92,9 +92,9 @@ report 11759 "Unreliable Payer List CZL"
                     if not PrintVendBankAcc then
                         CurrReport.Break();
 
-                    UnreliablePayerEntryCZL2.Reset();
-                    UnreliablePayerEntryCZL2.SetCurrentKey("VAT Registration No.");
-                    UnreliablePayerEntryCZL2.SetRange("Entry Type", UnreliablePayerEntryCZL2."Entry Type"::"Bank Account");
+                    SecondUnreliablePayerEntryCZL.Reset();
+                    SecondUnreliablePayerEntryCZL.SetCurrentKey("VAT Registration No.");
+                    SecondUnreliablePayerEntryCZL.SetRange("Entry Type", SecondUnreliablePayerEntryCZL."Entry Type"::"Bank Account");
                 end;
             }
             trigger OnAfterGetRecord()
@@ -112,17 +112,17 @@ report 11759 "Unreliable Payer List CZL"
                 end else
                     WarningText := NotUseLbl;
 
-                Clear(UnreliablePayerEntryCZL1);
+                Clear(FirstUnreliablePayerEntryCZL);
                 if WarningText = '' then begin
-                    UnreliablePayerEntryCZL1.SetRange("VAT Registration No.", "VAT Registration No.");
-                    UnreliablePayerEntryCZL1.SetRange("Entry Type", UnreliablePayerEntryCZL1."Entry Type"::Payer);
-                    if not UnreliablePayerEntryCZL1.FindLast() then
+                    FirstUnreliablePayerEntryCZL.SetRange("VAT Registration No.", "VAT Registration No.");
+                    FirstUnreliablePayerEntryCZL.SetRange("Entry Type", FirstUnreliablePayerEntryCZL."Entry Type"::Payer);
+                    if not FirstUnreliablePayerEntryCZL.FindLast() then
                         WarningText := NotCheckLbl
                     else
-                        case UnreliablePayerEntryCZL1."Unreliable Payer" of
-                            UnreliablePayerEntryCZL1."Unreliable Payer"::YES:
+                        case FirstUnreliablePayerEntryCZL."Unreliable Payer" of
+                            FirstUnreliablePayerEntryCZL."Unreliable Payer"::YES:
                                 WarningText := UnreliableLbl;
-                            UnreliablePayerEntryCZL1."Unreliable Payer"::NOTFOUND:
+                            FirstUnreliablePayerEntryCZL."Unreliable Payer"::NOTFOUND:
                                 WarningText := NotCheckLbl;
                         end;
                 end;
@@ -145,7 +145,7 @@ report 11759 "Unreliable Payer List CZL"
 
             trigger OnPreDataItem()
             begin
-                UnreliablePayerEntryCZL1.SetCurrentKey("VAT Registration No.");
+                FirstUnreliablePayerEntryCZL.SetCurrentKey("VAT Registration No.");
             end;
         }
     }
@@ -198,9 +198,10 @@ report 11759 "Unreliable Payer List CZL"
         Printed_Lbl = 'Printed';
         Pages_Of_Report_Lbl = 'Page Of Report';
     }
+
     var
-        UnreliablePayerEntryCZL1: Record "Unreliable Payer Entry CZL";
-        UnreliablePayerEntryCZL2: Record "Unreliable Payer Entry CZL";
+        FirstUnreliablePayerEntryCZL: Record "Unreliable Payer Entry CZL";
+        SecondUnreliablePayerEntryCZL: Record "Unreliable Payer Entry CZL";
         VendorBankAccount: Record "Vendor Bank Account";
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
         WarningText: Text[250];

@@ -27,7 +27,7 @@ report 11715 "Open Cust. Entries to Date CZL"
             column(gteInfoText; InfoText)
             {
             }
-            column(Customer_TABLECAPTION__________gteCustFilter; Customer.TableCaption + ': ' + CustFilter)
+            column(Customer_TABLECAPTION__________gteCustFilter; SecondCustomer.TableCaption + ': ' + CustFilter)
             {
             }
             column(Cust__Ledger_Entry__TABLECAPTION__________gteLedgerEntryFilter; "Cust. Ledger Entry".TableCaption + ': ' + LedgerEntryFilter)
@@ -63,10 +63,10 @@ report 11715 "Open Cust. Entries to Date CZL"
             column(Header_Number; Number)
             {
             }
-            column(CustomerNoCaption; Customer.FieldCaption("No."))
+            column(CustomerNoCaption; SecondCustomer.FieldCaption("No."))
             {
             }
-            column(CustomerNameCaption; Customer.FieldCaption(Name))
+            column(CustomerNameCaption; SecondCustomer.FieldCaption(Name))
             {
             }
             column(Original_AmountCaption; "Cust. Ledger Entry".FieldCaption("Original Amount"))
@@ -110,10 +110,10 @@ report 11715 "Open Cust. Entries to Date CZL"
             {
                 DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
                 PrintOnlyIfDetail = true;
-                column(greCustomer_Name; Cust.Name)
+                column(greCustomer_Name; SecondCustomer.Name)
                 {
                 }
-                column(greCustomer__No__; Cust."No.")
+                column(greCustomer__No__; SecondCustomer."No.")
                 {
                 }
                 column(Integer_Number; Number)
@@ -126,7 +126,7 @@ report 11715 "Open Cust. Entries to Date CZL"
                     column(Cust__Ledger_Entry__Original_Amt___LCY__; "Original Amt. (LCY)")
                     {
                     }
-                    column(greGLSetup__LCY_Code_; GLSetup."LCY Code")
+                    column(greGLSetup__LCY_Code_; GeneralLedgerSetup."LCY Code")
                     {
                     }
                     column(ginDaysAfterDue; DaysAfterDue)
@@ -217,7 +217,7 @@ report 11715 "Open Cust. Entries to Date CZL"
                             CurrReport.Skip();
 
                         if "Currency Code" = '' then
-                            CurrencyCode := GLSetup."LCY Code"
+                            CurrencyCode := GeneralLedgerSetup."LCY Code"
                         else
                             CurrencyCode := "Currency Code";
 
@@ -267,38 +267,38 @@ report 11715 "Open Cust. Entries to Date CZL"
                             end;
 
                         // buffer for total sumary by G/L account;
-                        CustPostingGroup.Get("Customer Posting Group");
+                        CustomerPostingGroup.Get("Customer Posting Group");
 
                         if Prepayment then
-                            UpdateBuffer(TempGLAccBuffer, CustPostingGroup."Advance Account", "Remaining Amt. (LCY)", 0)
+                            UpdateBuffer(TempGLAccountNetChange, CustomerPostingGroup."Advance Account", "Remaining Amt. (LCY)", 0)
                         else
-                            UpdateBuffer(TempGLAccBuffer, CustPostingGroup."Receivables Account", "Remaining Amt. (LCY)", 0);
-                        UpdateBuffer(TempTotalCurrencyBuffer, '', "Original Amt. (LCY)", "Remaining Amt. (LCY)");
+                            UpdateBuffer(TempGLAccountNetChange, CustomerPostingGroup."Receivables Account", "Remaining Amt. (LCY)", 0);
+                        UpdateBuffer(TempTotalCurrencyGLAccountNetChange, '', "Original Amt. (LCY)", "Remaining Amt. (LCY)");
 
                         if PrintCurrency then begin
-                            UpdateBuffer(TempCurrencyBuffer, CurrencyCode, "Original Amount", "Remaining Amount");
-                            UpdateBuffer(TempTotalCurrencyBuffer, CurrencyCode, "Original Amount", "Remaining Amount");
+                            UpdateBuffer(TempCurrencyGLAccountNetChange, CurrencyCode, "Original Amount", "Remaining Amount");
+                            UpdateBuffer(TempTotalCurrencyGLAccountNetChange, CurrencyCode, "Original Amount", "Remaining Amount");
                         end;
                     end;
 
                     trigger OnPreDataItem()
                     begin
-                        SetRange("Customer No.", Cust."No.");
-                        SetFilter("Posting Date", Customer.GetFilter("Date Filter"));
-                        SetFilter("Date Filter", Customer.GetFilter("Date Filter"));
+                        SetRange("Customer No.", SecondCustomer."No.");
+                        SetFilter("Posting Date", SecondCustomer.GetFilter("Date Filter"));
+                        SetFilter("Date Filter", SecondCustomer.GetFilter("Date Filter"));
                         Clear(Balance);
                     end;
                 }
                 dataitem(CustomerByCurrency; "Integer")
                 {
                     DataItemTableView = sorting(Number) ORDER(Ascending) WHERE(Number = FILTER(> 0));
-                    column(greTCurrencyBuffer__Net_Change_in_Jnl__; TempCurrencyBuffer."Net Change in Jnl.")
+                    column(greTCurrencyBuffer__Net_Change_in_Jnl__; TempCurrencyGLAccountNetChange."Net Change in Jnl.")
                     {
                     }
-                    column(greTCurrencyBuffer__Balance_after_Posting_; TempCurrencyBuffer."Balance after Posting")
+                    column(greTCurrencyBuffer__Balance_after_Posting_; TempCurrencyGLAccountNetChange."Balance after Posting")
                     {
                     }
-                    column(greTCurrencyBuffer__No__; TempCurrencyBuffer."No.")
+                    column(greTCurrencyBuffer__No__; TempCurrencyGLAccountNetChange."No.")
                     {
                     }
                     column(of_itCaption; of_itCaptionLbl)
@@ -310,14 +310,14 @@ report 11715 "Open Cust. Entries to Date CZL"
                     trigger OnAfterGetRecord()
                     begin
                         if Number <> 1 then
-                            TempCurrencyBuffer.Next();
+                            TempCurrencyGLAccountNetChange.Next();
                     end;
 
                     trigger OnPreDataItem()
                     begin
-                        if not TempCurrencyBuffer.FindSet() then
+                        if not TempCurrencyGLAccountNetChange.FindSet() then
                             CurrReport.Break();
-                        SetRange(Number, 1, TempCurrencyBuffer.Count);
+                        SetRange(Number, 1, TempCurrencyGLAccountNetChange.Count);
                     end;
                 }
                 trigger OnAfterGetRecord()
@@ -325,52 +325,52 @@ report 11715 "Open Cust. Entries to Date CZL"
                     lreCustEntry: Record "Cust. Ledger Entry";
                 begin
                     CustActual := CustActual + 1;
-                    Window.Update(1, Round(CustActual / CustCount * 10000, 1));
+                    WindowDialog.Update(1, Round(CustActual / CustCount * 10000, 1));
                     if Number <> 1 then
-                        Cust.Next();
+                        SecondCustomer.Next();
 
                     if CustActual = CustCount then begin
-                        Cust.Reset();
-                        Cust.Init();
-                        Cust."No." := '';
+                        SecondCustomer.Reset();
+                        SecondCustomer.Init();
+                        SecondCustomer."No." := '';
                         lreCustEntry.SetCurrentKey("Customer No.");
                         lreCustEntry.SetRange("Customer No.", '');
                         if lreCustEntry.IsEmpty() then
                             CurrReport.Skip();
                     end;
-                    TempCurrencyBuffer.DeleteAll();
+                    TempCurrencyGLAccountNetChange.DeleteAll();
                 end;
 
                 trigger OnPreDataItem()
                 begin
-                    if not Cust.FindSet() then
+                    if not SecondCustomer.FindSet() then
                         CurrReport.Break();
 
-                    CustCount := Cust.Count + 1;
+                    CustCount := SecondCustomer.Count + 1;
                     CustActual := 0;
-                    Window.Open(ProcessingCustomersMsg);
+                    WindowDialog.Open(ProcessingCustomersMsg);
                     SetRange(Number, 1, CustCount);
                 end;
             }
             dataitem(TotalByCurrency; "Integer")
             {
                 DataItemTableView = sorting(Number) ORDER(Ascending) WHERE(Number = FILTER(> 0));
-                column(greTTotalCurrencyBuffer__Net_Change_in_Jnl__; TempTotalCurrencyBuffer."Net Change in Jnl.")
+                column(greTTotalCurrencyBuffer__Net_Change_in_Jnl__; TempTotalCurrencyGLAccountNetChange."Net Change in Jnl.")
                 {
                 }
-                column(greTTotalCurrencyBuffer__Balance_after_Posting_; TempTotalCurrencyBuffer."Balance after Posting")
+                column(greTTotalCurrencyBuffer__Balance_after_Posting_; TempTotalCurrencyGLAccountNetChange."Balance after Posting")
                 {
                 }
-                column(greGLSetup__LCY_Code__Control72; GLSetup."LCY Code")
+                column(greGLSetup__LCY_Code__Control72; GeneralLedgerSetup."LCY Code")
                 {
                 }
-                column(greTTotalCurrencyBuffer__Net_Change_in_Jnl___Control1104000005; TempTotalCurrencyBuffer."Net Change in Jnl.")
+                column(greTTotalCurrencyBuffer__Net_Change_in_Jnl___Control1104000005; TempTotalCurrencyGLAccountNetChange."Net Change in Jnl.")
                 {
                 }
-                column(greTTotalCurrencyBuffer__Balance_after_Posting__Control1104000009; TempTotalCurrencyBuffer."Balance after Posting")
+                column(greTTotalCurrencyBuffer__Balance_after_Posting__Control1104000009; TempTotalCurrencyGLAccountNetChange."Balance after Posting")
                 {
                 }
-                column(greTTotalCurrencyBuffer__No__; TempTotalCurrencyBuffer."No.")
+                column(greTTotalCurrencyBuffer__No__; TempTotalCurrencyGLAccountNetChange."No.")
                 {
                 }
                 column(gdeBalanceT_1_; BalanceT[1])
@@ -427,51 +427,51 @@ report 11715 "Open Cust. Entries to Date CZL"
                 trigger OnAfterGetRecord()
                 begin
                     if Number <> 1 then
-                        TempTotalCurrencyBuffer.Next();
+                        TempTotalCurrencyGLAccountNetChange.Next();
                 end;
 
                 trigger OnPreDataItem()
                 begin
-                    if not TempTotalCurrencyBuffer.FindSet() then
+                    if not TempTotalCurrencyGLAccountNetChange.FindSet() then
                         CurrReport.Break();
 
-                    SetRange(Number, 1, TempTotalCurrencyBuffer.Count);
+                    SetRange(Number, 1, TempTotalCurrencyGLAccountNetChange.Count);
                 end;
             }
             dataitem(GLAccDetail; "Integer")
             {
                 DataItemTableView = sorting(Number);
-                column(greGLAcc_FIELDCAPTION__Balance_at_Date__; GLAcc.FieldCaption("Balance at Date"))
+                column(greGLAcc_FIELDCAPTION__Balance_at_Date__; GLAccount.FieldCaption("Balance at Date"))
                 {
                 }
-                column(greGLAcc_FIELDCAPTION__No___; GLAcc.FieldCaption("No."))
+                column(greGLAcc_FIELDCAPTION__No___; GLAccount.FieldCaption("No."))
                 {
                 }
-                column(greGLAcc_FIELDCAPTION_Name_; GLAcc.FieldCaption(Name))
+                column(greGLAcc_FIELDCAPTION_Name_; GLAccount.FieldCaption(Name))
                 {
                 }
-                column(greTGLAccBuffer__No__; TempGLAccBuffer."No.")
+                column(greTGLAccBuffer__No__; TempGLAccountNetChange."No.")
                 {
                 }
-                column(greGLAcc_Name; GLAcc.Name)
+                column(greGLAcc_Name; GLAccount.Name)
                 {
                 }
-                column(greTGLAccBuffer__Balance_after_Posting_; TempGLAccBuffer."Balance after Posting")
+                column(greTGLAccBuffer__Balance_after_Posting_; TempGLAccountNetChange."Balance after Posting")
                 {
                 }
-                column(greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_; TempGLAccBuffer."Balance after Posting" - GLAcc."Net Change")
+                column(greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_; TempGLAccountNetChange."Balance after Posting" - GLAccount."Net Change")
                 {
                 }
-                column(greGLAcc__Net_Change_; GLAcc."Net Change")
+                column(greGLAcc__Net_Change_; GLAccount."Net Change")
                 {
                 }
-                column(greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change__Control1100170000; TempGLAccBuffer."Balance after Posting" - GLAcc."Net Change")
+                column(greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change__Control1100170000; TempGLAccountNetChange."Balance after Posting" - GLAccount."Net Change")
                 {
                 }
-                column(greGLAcc__Net_Change__Control1100170001; GLAcc."Net Change")
+                column(greGLAcc__Net_Change__Control1100170001; GLAccount."Net Change")
                 {
                 }
-                column(greTGLAccBuffer__Balance_after_Posting__Control1100170002; TempGLAccBuffer."Balance after Posting")
+                column(greTGLAccBuffer__Balance_after_Posting__Control1100170002; TempGLAccountNetChange."Balance after Posting")
                 {
                 }
                 column(General_Ledger_SpecificationCaption; General_Ledger_SpecificationCaptionLbl)
@@ -492,14 +492,14 @@ report 11715 "Open Cust. Entries to Date CZL"
                 trigger OnAfterGetRecord()
                 begin
                     if Number = 1 then begin
-                        if not TempGLAccBuffer.FindSet() then
+                        if not TempGLAccountNetChange.FindSet() then
                             CurrReport.Break();
                     end else
-                        if TempGLAccBuffer.Next() = 0 then
+                        if TempGLAccountNetChange.Next() = 0 then
                             CurrReport.Break();
 
-                    GLAcc.Get(TempGLAccBuffer."No.");
-                    GLAcc.CalcFields("Net Change");
+                    GLAccount.Get(TempGLAccountNetChange."No.");
+                    GLAccount.CalcFields("Net Change");
                 end;
 
                 trigger OnPreDataItem()
@@ -507,12 +507,12 @@ report 11715 "Open Cust. Entries to Date CZL"
                     if SkipGLAcc then
                         CurrReport.Break();
 
-                    TempGLAccBuffer.Reset();
-                    if TempGLAccBuffer.IsEmpty() then
+                    TempGLAccountNetChange.Reset();
+                    if TempGLAccountNetChange.IsEmpty() then
                         CurrReport.Break();
 
-                    SetRange(Number, 1, TempGLAccBuffer.Count);
-                    GLAcc.SetFilter("Date Filter", Customer.GetFilter("Date Filter"));
+                    SetRange(Number, 1, TempGLAccountNetChange.Count);
+                    GLAccount.SetFilter("Date Filter", SecondCustomer.GetFilter("Date Filter"));
                 end;
             }
             trigger OnPreDataItem()
@@ -542,7 +542,7 @@ report 11715 "Open Cust. Entries to Date CZL"
                         ApplicationArea = All;
                         Caption = 'Show Currency';
                         ToolTip = 'Specifies when the currency is to be show';
-                        Visible = CurrencyIncludeVisible;
+                        Visible = CurrencyAllowed;
                     }
                     field(CustPerPageField; CustPerPage)
                     {
@@ -574,73 +574,55 @@ report 11715 "Open Cust. Entries to Date CZL"
                         ApplicationArea = Basic, Suite;
                         Caption = 'Skip Balance';
                         ToolTip = 'Specifies when the balance is to be skip';
-
-                        trigger OnValidate()
-                        begin
-                            SkipBalanceOnPush();
-                        end;
                     }
                     group(Limits)
                     {
                         Caption = 'Limits';
-                        Enabled = LimitEnabled;
+                        Enabled = not SkipBalance;
                         field("LimitDate[1]"; LimitDate[1])
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'Limit 1.';
-                            Enabled = LimitEnabled;
-                            ToolTip = 'Specifies the number of due date for customer''s entries calculation.';
+                            Enabled = not SkipBalance;
+                            ToolTip = 'Specifies the number of due date for customer''s entries calculation. Enter the value in format 30D, 60D or 1M.';
+                            ShowMandatory = true;
                         }
                         field("LimitDate[2]"; LimitDate[2])
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'Limit 2.';
-                            Enabled = LimitEnabled;
-                            ToolTip = 'Specifies the number of due date for customer''s entries calculation.';
+                            Enabled = not SkipBalance;
+                            ToolTip = 'Specifies the number of due date for customer''s entries calculation. Enter the value in format 30D, 60D or 1M.';
+                            ShowMandatory = true;
                         }
                         field("LimitDate[3]"; LimitDate[3])
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'Limit 3.';
-                            Enabled = LimitEnabled;
-                            ToolTip = 'Specifies the number of due date for customer''s entries calculation.';
+                            Enabled = not SkipBalance;
+                            ToolTip = 'Specifies the number of due date for customer''s entries calculation. Enter the value in format 30D, 60D or 1M.';
+                            ShowMandatory = true;
                         }
                         field("LimitDate[4]"; LimitDate[4])
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'Limit 4.';
-                            Enabled = LimitEnabled;
-                            ToolTip = 'Specifies the number of due date for customer''s entries calculation.';
+                            Enabled = not SkipBalance;
+                            ToolTip = 'Specifies the number of due date for customer''s entries calculation. Enter the value in format 30D, 60D or 1M.';
+                            ShowMandatory = true;
                         }
                         field("LimitDate[5]"; LimitDate[5])
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'Limit 5.';
-                            Enabled = LimitEnabled;
-                            ToolTip = 'Specifies the number of due date for customer''s entries calculation.';
+                            Enabled = not SkipBalance;
+                            ToolTip = 'Specifies the number of due date for customer''s entries calculation. Enter the value in format 30D, 60D or 1M.';
+                            ShowMandatory = true;
                         }
                     }
                 }
             }
         }
-        trigger OnInit()
-        begin
-            LimitEnabled := true;
-            CurrencyIncludeVisible := true;
-        end;
-
-        trigger OnOpenPage()
-        begin
-            CurrencyIncludeVisible := CurrencyAllowed;
-            LimitEnabled := not SkipBalance;
-            if not SkipBalance then begin
-                Evaluate(LimitDate[1], Format('<30D>'));
-                Evaluate(LimitDate[2], Format('<60D>'));
-                Evaluate(LimitDate[3], Format('<90D>'));
-                Evaluate(LimitDate[4], Format('<120D>'));
-                Evaluate(LimitDate[5], Format('<150D>'));
-            end;
-        end;
     }
     trigger OnInitReport()
     var
@@ -654,12 +636,12 @@ report 11715 "Open Cust. Entries to Date CZL"
         InLocalCurrencyTxt: Label 'In local currency';
         InOriginalCurrencyTxt: Label ' and in original currency.';
     begin
-        GLSetup.Get();
-        Cust.CopyFilters(Customer);
-        CustFilter := Customer.GetFilters;
-        CustDateFilter := Customer.GetFilter("Date Filter");
+        GeneralLedgerSetup.Get();
+        SecondCustomer.CopyFilters(Customer);
+        CustFilter := SecondCustomer.GetFilters;
+        CustDateFilter := SecondCustomer.GetFilter("Date Filter");
         LedgerEntryFilter := "Cust. Ledger Entry".GetFilters;
-        LastDate := Customer.GetRangeMax("Date Filter");
+        LastDate := SecondCustomer.GetRangeMax("Date Filter");
         InfoText := InLocalCurrencyTxt;
         if PrintCurrency and CurrencyAllowed then
             InfoText := CopyStr(InfoText + InOriginalCurrencyTxt, 1, MaxStrLen(InfoText))
@@ -668,16 +650,18 @@ report 11715 "Open Cust. Entries to Date CZL"
     end;
 
     var
-        Cust: Record Customer;
-        GLSetup: Record "General Ledger Setup";
-        TempGLAccBuffer: Record "G/L Account Net Change" temporary;
-        TempCurrencyBuffer: Record "G/L Account Net Change" temporary;
-        TempTotalCurrencyBuffer: Record "G/L Account Net Change" temporary;
-        CustPostingGroup: Record "Customer Posting Group";
-        GLAcc: Record "G/L Account";
+        SecondCustomer: Record Customer;
+        GeneralLedgerSetup: Record "General Ledger Setup";
+#pragma warning disable AL0432
+        TempGLAccountNetChange: Record "G/L Account Net Change" temporary;
+        TempCurrencyGLAccountNetChange: Record "G/L Account Net Change" temporary;
+        TempTotalCurrencyGLAccountNetChange: Record "G/L Account Net Change" temporary;
+#pragma warning restore AL0432        
+        CustomerPostingGroup: Record "Customer Posting Group";
+        GLAccount: Record "G/L Account";
         LimitDate: array[5] of DateFormula;
         CurrencyCode: Code[10];
-        Window: Dialog;
+        WindowDialog: Dialog;
         CustDateFilter: Text;
         CustFilter: Text;
         LedgerEntryFilter: Text;
@@ -689,17 +673,15 @@ report 11715 "Open Cust. Entries to Date CZL"
         CustCount: Integer;
         CustActual: Integer;
         Days: array[5] of Integer;
+        [InDataSet]
         SkipBalance: Boolean;
         PrintCurrency: Boolean;
         SkipDetail: Boolean;
         SkipTotal: Boolean;
         SkipGLAcc: Boolean;
         CustPerPage: Boolean;
+        [InDataSet]
         CurrencyAllowed: Boolean;
-        [InDataSet]
-        CurrencyIncludeVisible: Boolean;
-        [InDataSet]
-        LimitEnabled: Boolean;
         PeriodLbl: Label 'Period: %1', Comment = '%1 = Date Filter';
         ToLbl: Label 'To %1', Comment = '%1 = Date';
         OverLbl: Label 'Over %1', Comment = '%1 = Date';
@@ -717,7 +699,9 @@ report 11715 "Open Cust. Entries to Date CZL"
         TotalCaption_Control1100170003Lbl: Label 'Total';
         ProcessingCustomersMsg: Label 'Processing Customers @1@@@@@@@@@@@@@@@@@@';
 
+#pragma warning disable AL0432
     local procedure UpdateBuffer(var TempGLAccountNetChange: Record "G/L Account Net Change" temporary; Account: Code[20]; Amount1: Decimal; Amount2: Decimal)
+#pragma warning restore AL0432
     begin
         if TempGLAccountNetChange.Get(Account) then begin
             TempGLAccountNetChange."Balance after Posting" := TempGLAccountNetChange."Balance after Posting" + Amount1;
@@ -730,11 +714,5 @@ report 11715 "Open Cust. Entries to Date CZL"
             TempGLAccountNetChange."Net Change in Jnl." := Amount2;
             TempGLAccountNetChange.Insert();
         end;
-    end;
-
-    local procedure SkipBalanceOnPush()
-    begin
-        LimitEnabled := not SkipBalance;
-        RequestOptionsPage.Update();
     end;
 }

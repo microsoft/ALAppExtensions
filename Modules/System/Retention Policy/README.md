@@ -1,6 +1,5 @@
 Administrators can define retention policies to specify how frequently they want Business Central to delete outdated data in tables that contain log entries and archived records. For example, cleaning up log entries can make it easier to work with the data that's actually relevant. Policies can include all data in the tables that is past the expiration date, or you can add filter criteria that will include only certain expired data in the policy.
 
-
 # Public Objects
 ## Reten. Pol. Deleting Param (Table 3907)
 
@@ -262,8 +261,6 @@ The record reference which contains the expired records to be deleted.
 Indicates whether the event has been handled.
 
 
-## Reten. Pol. Delete. Impl. (Codeunit 3916)
-
 ## Reten. Pol. Deleting (Interface)
 
  The Reten. Pol. Deleting interface is used to set filters on the table for which a retention policy is applied.
@@ -403,8 +400,6 @@ A record reference.
 
 The number of records.
 
-## Reten. Pol. Filtering Impl. (Codeunit 3915)
-
 ## Retention Period (Interface)
 
  The retention period interface provides functions to retrieve the date formula and calculate the expiration date based on a retention period record.
@@ -503,9 +498,6 @@ The expiration date and time are calculated based on this date and time.
 
 The expiration date and time.
 
-## Retention Period Custom Impl. (Codeunit 3901)
-
-## Retention Period Impl. (Codeunit 3900)
 
 ## Reten. Pol. Allowed Tables (Codeunit 3905)
 

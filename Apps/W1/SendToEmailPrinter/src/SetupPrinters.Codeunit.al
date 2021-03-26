@@ -17,40 +17,39 @@ codeunit 2650 "Setup Printers"
         PaperTray: JsonObject;
         PrinterPaperSourceKind: Enum "Printer Paper Source Kind";
     begin
-        if EmailPrinterSettings.IsEmpty() then
-            InsertDefaultEmailPrinter();
-        if EmailPrinterSettings.FindSet() then
-            // Create payload for each email printer containing version, papertrays and description
-            repeat
-                //Ensure Printer Key is not empty as it is not supported by platform
-                if EmailPrinterSettings.ID <> '' then begin
-                    Clear(PaperTray);
-                    Clear(PaperTrays);
-                    Clear(Payload);
-                    PaperTray.Add('papersourcekind', PrinterPaperSourceKind::AutomaticFeed.AsInteger());
 
-                    PaperTray.Add('paperkind', EmailPrinterSettings."Paper Size".AsInteger());
-                    // If paper size is custom and no height and width is specified then set the paper size to A4
-                    if IsPaperSizeCustom(EmailPrinterSettings."Paper Size") then begin
-                        if (EmailPrinterSettings."Paper Height" <= 0) or (EmailPrinterSettings."Paper Width" <= 0) then begin
-                            PaperTray.Replace('paperkind', EmailPrinterSettings."Paper Size"::A4.AsInteger());
-                            Session.LogMessage('0000BOZ', CustomSizeErrorTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailPrinterTelemetryCategoryTok);
-                        end;
-                        ConvertAndAddPrinterPaperDimensions(EmailPrinterSettings, PaperTray);
+        if not EmailPrinterSettings.FindSet() then
+            exit;
+
+        // Create payload for each email printer containing version, papertrays and description
+        repeat
+            //Ensure Printer Key is not empty as it is not supported by platform
+            if EmailPrinterSettings.ID <> '' then begin
+                Clear(PaperTray);
+                Clear(PaperTrays);
+                Clear(Payload);
+
+                PaperTray.Add('papersourcekind', PrinterPaperSourceKind::AutomaticFeed.AsInteger());
+                PaperTray.Add('paperkind', EmailPrinterSettings."Paper Size".AsInteger());
+                // If paper size is custom and no height and width is specified then set the paper size to A4
+                if IsPaperSizeCustom(EmailPrinterSettings."Paper Size") then begin
+                    if (EmailPrinterSettings."Paper Height" <= 0) or (EmailPrinterSettings."Paper Width" <= 0) then begin
+                        PaperTray.Replace('paperkind', EmailPrinterSettings."Paper Size"::A4.AsInteger());
+                        Session.LogMessage('0000BOZ', CustomSizeErrorTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailPrinterTelemetryCategoryTok);
                     end;
+                    ConvertAndAddPrinterPaperDimensions(EmailPrinterSettings, PaperTray);
+                end;
+                PaperTray.Add('landscape', EmailPrinterSettings.Landscape);
+                PaperTrays.Add(PaperTray);
 
-                    PaperTray.Add('landscape', EmailPrinterSettings.Landscape);
+                Payload.Add('version', 1);
+                Payload.Add('description', EmailPrinterSettings.Description);
+                Payload.Add('papertrays', PaperTrays);
 
-                    PaperTrays.Add(PaperTray);
-
-                    Payload.Add('version', 1);
-                    Payload.Add('description', EmailPrinterSettings.Description);
-                    Payload.Add('papertrays', PaperTrays);
-
-                    Printers.Add(EmailPrinterSettings.ID, Payload);
-                end else
-                    Session.LogMessage('0000BJQ', PrinterIDMissingTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailPrinterTelemetryCategoryTok);
-            until EmailPrinterSettings.Next() = 0;
+                Printers.Add(EmailPrinterSettings.ID, Payload);
+            end else
+                Session.LogMessage('0000BJQ', PrinterIDMissingTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailPrinterTelemetryCategoryTok);
+        until EmailPrinterSettings.Next() = 0;
 
     end;
 
@@ -65,15 +64,6 @@ codeunit 2650 "Setup Printers"
             Page.Run(Page::"Email Printer Settings", EmailPrinterSettings);
             IsHandled := true;
         end;
-    end;
-
-    local procedure InsertDefaultEmailPrinter()
-    var
-        EmailPrinterSettings: Record "Email Printer Settings";
-    begin
-        EmailPrinterSettings.Validate(ID, PrinterIDTxt);
-        InsertDefaults(EmailPrinterSettings);
-        IF EmailPrinterSettings.Insert(true) THEN;
     end;
 
     internal procedure InsertDefaults(var EmailPrinterSettings: Record "Email Printer Settings")
@@ -94,7 +84,6 @@ codeunit 2650 "Setup Printers"
 
     internal procedure DeletePrinterSettings(PrinterID: Text[250])
     var
-        EmailPrinterSettings: Record "Email Printer Settings";
         PrinterSelection: Record "Printer Selection";
     begin
         if not PrinterSelection.ReadPermission() then
@@ -102,9 +91,6 @@ codeunit 2650 "Setup Printers"
         PrinterSelection.SetRange("Printer Name", PrinterID);
         if NOT PrinterSelection.IsEmpty() then
             Error(UsedInPrinterSelectionErr, PrinterID);
-        EmailPrinterSettings.FindSet();
-        if EmailPrinterSettings.Count() = 1 then
-            Error(CannotDeleteOnlyEmailPrinterErr);
     end;
 
     internal procedure OnQueryClosePrinterSettingsPage(EmailPrinterSettings: Record "Email Printer Settings"): Boolean
@@ -165,10 +151,8 @@ codeunit 2650 "Setup Printers"
 
     var
         MailManagement: Codeunit "Mail Management";
-        PrinterIDTxt: Label 'Email Printer';
         DefaultDescriptionTxt: Label 'Sends print jobs to the printer''s email address';
         DefaultEmailSubjectTxt: Label 'Printed Copy';
-        CannotDeleteOnlyEmailPrinterErr: Label 'There is only one email printer. Please uninstall the extension to delete this printer.';
         HeightInputErr: Label 'The value in the Paper Height field must be greater than 0.';
         WidthInputErr: Label 'The value in the Paper Width field must be greater than 0.';
         UsedInPrinterSelectionErr: Label 'You cannot delete printer %1. It is used on the Printer Selections page.', Comment = '%1 = Printer ID';

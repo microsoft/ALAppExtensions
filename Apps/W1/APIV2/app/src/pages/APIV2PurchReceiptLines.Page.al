@@ -84,4 +84,15 @@ page 30065 "APIV2 - Purch Receipt Lines"
     {
     }
 
+    trigger OnOpenPage()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+    begin
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetNewPurchRcptLineUpgradeTag()) then
+            Error(SetupNotCompletedErr);
+    end;
+
+    var
+        SetupNotCompletedErr: Label 'Data required by the API was not set up. To set up the data, invoke the action from the API Setup page.';
 }

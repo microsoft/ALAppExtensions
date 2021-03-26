@@ -896,9 +896,8 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
                         vatyear := Format(VATCtrlReportHeaderCZL.Year);
                     VATCtrlReportFormatCZL := VATCtrlReportHeaderCZL."VAT Control Report XML Format";
 
-                    TempVATCtrlReportBufferCZL.Reset();
-                    TempVATCtrlReportBufferCZL.DeleteAll();
                     VATCtrlReportMgtCZL.CreateBufferForExport(VATCtrlReportHeaderCZL, TempVATCtrlReportBufferCZL, false, VATStatementReportSelection);
+                    TempVATCtrlReportBufferCZL.Reset();
                     if PrintInIntegers then
                         VATCtrlReportMgtCZL.RoundVATCtrlReportBufferAmounts(TempVATCtrlReportBufferCZL, 1);
                 end;
@@ -950,12 +949,12 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
     local procedure PrepareExportData()
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         CompanyOfficialCZL: Record "Company Official CZL";
         ApplicationSystemConstants: Codeunit "Application System Constants";
     begin
         StatutoryReportingSetupCZL.Get();
-        CompanyInfo.Get();
+        CompanyInformation.Get();
 
         SWVersion := ApplicationSystemConstants.ApplicationVersion();
         SWName := SWNameTxt;
@@ -974,7 +973,7 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         CheckLen(StatutoryReportingSetupCZL."Tax Office Number", StatutoryReportingSetupCZL.FieldCaption("Tax Office Number"), 3);
         c_ufo := StatutoryReportingSetupCZL."Tax Office Number";
         c_pracufo := StatutoryReportingSetupCZL."Tax Office Region Number";
-        VATRegNo := FormatVATRegistration(CompanyInfo."VAT Registration No.");
+        VATRegNo := FormatVATRegistration(CompanyInformation."VAT Registration No.");
         StatutoryReportingSetupCZL.TestField("Company Type");
         TaxPayerType := VATStmtXMLExportHelperCZL.ConvertSubjectType(StatutoryReportingSetupCZL."Company Type");
 
@@ -984,15 +983,15 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         CheckLen(StatutoryReportingSetupCZL."Individual Title", StatutoryReportingSetupCZL.FieldCaption("Individual Title"), 10);
         NatPersTitle := StatutoryReportingSetupCZL."Individual Title";
         CompanyTradeName := StatutoryReportingSetupCZL."Company Trade Name";
-        City := CompanyInfo.City;
+        City := CompanyInformation.City;
         CheckLen(StatutoryReportingSetupCZL.Street, StatutoryReportingSetupCZL.FieldCaption(Street), 38);
         Street := StatutoryReportingSetupCZL.Street;
         CheckLen(StatutoryReportingSetupCZL."House No.", StatutoryReportingSetupCZL.FieldCaption("House No."), 6);
         HouseNo := StatutoryReportingSetupCZL."House No.";
         CheckLen(StatutoryReportingSetupCZL."Municipality No.", StatutoryReportingSetupCZL.FieldCaption("Municipality No."), 4);
         MunicipalityNo := StatutoryReportingSetupCZL."Municipality No.";
-        PostCode := DelChr(CompanyInfo."Post Code", '=', ' ');
-        CheckLen(PostCode, CompanyInfo.FieldCaption("Post Code"), 5);
+        PostCode := DelChr(CompanyInformation."Post Code", '=', ' ');
+        CheckLen(PostCode, CompanyInformation.FieldCaption("Post Code"), 5);
         if CompanyOfficialCZL.Get(StatutoryReportingSetupCZL."VAT Stat. Auth. Employee No.") then begin
             AuthEmpLastName := CompanyOfficialCZL."Last Name";
             CheckLen(CompanyOfficialCZL."First Name", CompanyOfficialCZL.FieldCaption("First Name"), 20);
@@ -1007,8 +1006,8 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
             FillEmpPhoneNo := CompanyOfficialCZL."Phone No.";
         end;
 
-        CheckLen(CompanyInfo."Phone No.", CompanyInfo.FieldCaption("Phone No."), 14);
-        CompPhoneNo := CompanyInfo."Phone No.";
+        CheckLen(CompanyInformation."Phone No.", CompanyInformation.FieldCaption("Phone No."), 14);
+        CompPhoneNo := CompanyInformation."Phone No.";
         CompRegion := StatutoryReportingSetupCZL."VAT Statement Country Name";
         id_dats := StatutoryReportingSetupCZL."Data Box ID";
         CompEmail := StatutoryReportingSetupCZL."VAT Control Report E-mail";
@@ -1023,22 +1022,22 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         zast_ic := StatutoryReportingSetupCZL."Official Registration No.";
     end;
 
-    procedure CopyBuffer(var TempVATCtrlReportBuffer2: Record "VAT Ctrl. Report Buffer CZL" temporary)
+    procedure CopyBuffer(var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
     begin
         if PrintOnlyHeader then
             exit;
 
-        if TempVATCtrlReportBuffer2.FindSet() then
+        if TempVATCtrlReportBufferCZL.FindSet() then
             repeat
-                TempVATCtrlReportBufferCZL := TempVATCtrlReportBuffer2;
+                TempVATCtrlReportBufferCZL := TempVATCtrlReportBufferCZL;
                 TempVATCtrlReportBufferCZL.Insert();
-            until TempVATCtrlReportBuffer2.Next() = 0;
+            until TempVATCtrlReportBufferCZL.Next() = 0;
     end;
 
-    local procedure CopyBufferToSection(var TempVATCtrlReportBufferCZL2: Record "VAT Ctrl. Report Buffer CZL" temporary; SectionCode: Code[20])
+    local procedure CopyBufferToSection(var SectionTempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary; SectionCode: Code[20])
     begin
-        TempVATCtrlReportBufferCZL2.Reset();
-        TempVATCtrlReportBufferCZL2.DeleteAll();
+        SectionTempVATCtrlReportBufferCZL.Reset();
+        SectionTempVATCtrlReportBufferCZL.DeleteAll();
 
         TempVATCtrlReportBufferCZL.Reset();
         TempVATCtrlReportBufferCZL.SetRange("VAT Ctrl. Report Section Code", SectionCode);
@@ -1048,18 +1047,18 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
                    ((TempVATCtrlReportBufferCZL."Base 2" + TempVATCtrlReportBufferCZL."Amount 2") <> 0) or
                    ((TempVATCtrlReportBufferCZL."Base 3" + TempVATCtrlReportBufferCZL."Amount 3") <> 0)
                 then begin
-                    TempVATCtrlReportBufferCZL2 := TempVATCtrlReportBufferCZL;
-                    if TempVATCtrlReportBufferCZL2."VAT Ctrl. Report Section Code" in ['A1', 'A3', 'A4', 'A5'] then begin
-                        TempVATCtrlReportBufferCZL2."Base 1" *= -1;
-                        TempVATCtrlReportBufferCZL2."Amount 1" *= -1;
-                        TempVATCtrlReportBufferCZL2."Base 2" *= -1;
-                        TempVATCtrlReportBufferCZL2."Amount 2" *= -1;
-                        TempVATCtrlReportBufferCZL2."Base 3" *= -1;
-                        TempVATCtrlReportBufferCZL2."Amount 3" *= -1;
-                        TempVATCtrlReportBufferCZL2."Total Base" *= -1;
-                        TempVATCtrlReportBufferCZL2."Total Amount" *= -1;
+                    SectionTempVATCtrlReportBufferCZL := TempVATCtrlReportBufferCZL;
+                    if SectionTempVATCtrlReportBufferCZL."VAT Ctrl. Report Section Code" in ['A1', 'A3', 'A4', 'A5'] then begin
+                        SectionTempVATCtrlReportBufferCZL."Base 1" *= -1;
+                        SectionTempVATCtrlReportBufferCZL."Amount 1" *= -1;
+                        SectionTempVATCtrlReportBufferCZL."Base 2" *= -1;
+                        SectionTempVATCtrlReportBufferCZL."Amount 2" *= -1;
+                        SectionTempVATCtrlReportBufferCZL."Base 3" *= -1;
+                        SectionTempVATCtrlReportBufferCZL."Amount 3" *= -1;
+                        SectionTempVATCtrlReportBufferCZL."Total Base" *= -1;
+                        SectionTempVATCtrlReportBufferCZL."Total Amount" *= -1;
                     end;
-                    TempVATCtrlReportBufferCZL2.Insert();
+                    SectionTempVATCtrlReportBufferCZL.Insert();
                 end;
             until TempVATCtrlReportBufferCZL.Next() = 0;
     end;
@@ -1090,13 +1089,13 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         rez_pren5 := FormatDec(B1."Base 2" + B1."Base 3");
     end;
 
-    local procedure CalcTotalAmountsBuffer(var TempVATCtrlReportBuffer: Record "VAT Ctrl. Report Buffer CZL" temporary)
+    local procedure CalcTotalAmountsBuffer(var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
     begin
-        TempVATCtrlReportBuffer.Reset();
-        TempVATCtrlReportBuffer.SetFilter("Corrections for Bad Receivable", '%1|%2',
-            TempVATCtrlReportBuffer."Corrections for Bad Receivable"::" ",
-            TempVATCtrlReportBuffer."Corrections for Bad Receivable"::"Bad Receivable (p.46 resp. 74a)");
-        TempVATCtrlReportBuffer.CalcSums("Base 1", "Base 2", "Base 3");
+        TempVATCtrlReportBufferCZL.Reset();
+        TempVATCtrlReportBufferCZL.SetFilter("Corrections for Bad Receivable", '%1|%2',
+            TempVATCtrlReportBufferCZL."Corrections for Bad Receivable"::" ",
+            TempVATCtrlReportBufferCZL."Corrections for Bad Receivable"::"Bad Receivable (p.46 resp. 74a)");
+        TempVATCtrlReportBufferCZL.CalcSums("Base 1", "Base 2", "Base 3");
     end;
 
     local procedure SkipEmptyValue(Value: Text[1024])

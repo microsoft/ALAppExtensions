@@ -96,14 +96,14 @@ codeunit 144741 "BCPT Setup Card Test"
         NoOfIterationsToRun := 1;
         UnbindSubscription(BCPTSetupCardTest);
         BindSubscription(BCPTSetupCardTest);
-        BCPTSetupCard.Start.Invoke();
+        BCPTSetupCard.Start.Invoke(); //Warmup to ignore extra SQL called just for the first time
         BCPTSetupCard.Start.Invoke();
         UnbindSubscription(BCPTSetupCardTest);
 
         BCPTHeader.Find();
         BCPTLogEntry.SetRange("BCPT Code", BCPTHeader.Code);
         BCPTLogEntry.SetRange(Version, BCPTHeader.Version);
-        Assert.RecordCount(BCPTLogEntry, 1);
+        Assert.RecordIsNotEmpty(BCPTLogEntry);
 
         BCPTLogEntry.FindFirst();
         BCPTLogEntry.TestField("Codeunit ID", Codeunit::"BCPT Empty Codeunit");
@@ -165,7 +165,7 @@ codeunit 144741 "BCPT Setup Card Test"
         BCPTHeader.Find();
         BCPTLogEntry.SetRange("BCPT Code", BCPTHeader.Code);
         BCPTLogEntry.SetRange(Version, BCPTHeader.Version);
-        Assert.RecordCount(BCPTLogEntry, 1);
+        Assert.RecordIsNotEmpty(BCPTLogEntry);
 
         BCPTLogEntry.FindFirst();
         BCPTLogEntry.TestField("Codeunit ID", Codeunit::"BCPT Codeunit With Error");

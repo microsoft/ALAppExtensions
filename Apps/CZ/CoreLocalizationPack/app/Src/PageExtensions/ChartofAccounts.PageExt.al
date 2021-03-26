@@ -4,18 +4,6 @@ pageextension 11765 "Chart of Accounts CZL" extends "Chart of Accounts"
     {
         addlast("Periodic Activities")
         {
-            action(CloseIncomeStatementCZL)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Close Income Statement CZ';
-                Image = CloseYear;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
-                RunObject = Report "Close Income Statement CZL";
-                ToolTip = 'Start the transfer of the year''s result to an account in the balance sheet and close the income statement accounts.';
-            }
             action(CloseBalanceSheetCZL)
             {
                 ApplicationArea = Basic, Suite;
@@ -38,7 +26,7 @@ pageextension 11765 "Chart of Accounts CZL" extends "Chart of Accounts"
                 PromotedIsBig = true;
                 PromotedOnly = true;
                 RunObject = Report "Open Balance Sheet CZL";
-                ToolTip = 'Start the balances transfer of the balance sheet accounts from an opening balance sheet account and close the balance sheet accounts.';
+                ToolTip = 'Start the balances transfer of the balance sheet accounts from an opening balance sheet account and open the balance sheet accounts.';
             }
         }
         addafter("Trial Balance by Period")

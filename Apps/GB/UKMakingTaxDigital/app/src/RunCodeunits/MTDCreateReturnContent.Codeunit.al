@@ -6,7 +6,7 @@
 codeunit 10531 "MTD Create Return Content"
 {
     TableNo = "VAT Report Header";
-    Permissions = tabledata 747 = d;
+    Permissions = TableData "VAT Report Archive" = d;
 
     trigger OnRun()
     var

@@ -32,7 +32,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
             column(DocNo; DocNo)
             {
             }
-            column(GLAccSettleNo; GLAccSettle."No.")
+            column(GLAccSettleNo; SettleGLAccount."No.")
             {
             }
             column(UseAmtsInAddCurr; UseAmtsInAddCurr)
@@ -290,47 +290,47 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                         column(PostingDate1; Format(PostingDate))
                         {
                         }
-                        column(GenJnlLineDocumentNo; GenJnlLine."Document No.")
+                        column(GenJnlLineDocumentNo; GenJournalLine."Document No.")
                         {
                         }
-                        column(GenJnlLineVATBaseAmount; GenJnlLine."VAT Base Amount")
-                        {
-                            AutoFormatExpression = GetCurrency();
-                            AutoFormatType = 1;
-                        }
-                        column(GenJnlLineVATAmount; GenJnlLine."VAT Amount")
+                        column(GenJnlLineVATBaseAmount; GenJournalLine."VAT Base Amount")
                         {
                             AutoFormatExpression = GetCurrency();
                             AutoFormatType = 1;
                         }
-                        column(GenJnlLnVATCalcType; Format(GenJnlLine."VAT Calculation Type"))
+                        column(GenJnlLineVATAmount; GenJournalLine."VAT Amount")
+                        {
+                            AutoFormatExpression = GetCurrency();
+                            AutoFormatType = 1;
+                        }
+                        column(GenJnlLnVATCalcType; Format(GenJournalLine."VAT Calculation Type"))
                         {
                         }
                         column(NextVATEntryNo; NextVATEntryNo)
                         {
                         }
-                        column(GenJnlLnSrcCurrVATAmount; GenJnlLine."Source Curr. VAT Amount")
+                        column(GenJnlLnSrcCurrVATAmount; GenJournalLine."Source Curr. VAT Amount")
                         {
                             AutoFormatExpression = GetCurrency();
                             AutoFormatType = 1;
                         }
-                        column(GenJnlLnSrcCurrVATBaseAmt; GenJnlLine."Source Curr. VAT Base Amount")
+                        column(GenJnlLnSrcCurrVATBaseAmt; GenJournalLine."Source Curr. VAT Base Amount")
                         {
                             AutoFormatExpression = GetCurrency();
                             AutoFormatType = 1;
                         }
-                        column(GenJnlLine2Amount; GenJnlLine2.Amount)
+                        column(GenJnlLine2Amount; SecondGenJournalLine.Amount)
                         {
                             AutoFormatExpression = GetCurrency();
                             AutoFormatType = 1;
                         }
-                        column(GenJnlLine2DocumentNo; GenJnlLine2."Document No.")
+                        column(GenJnlLine2DocumentNo; SecondGenJournalLine."Document No.")
                         {
                         }
                         column(ReversingEntry; ReversingEntry)
                         {
                         }
-                        column(GenJnlLn2SrcCurrencyAmt; GenJnlLine2."Source Currency Amount")
+                        column(GenJnlLn2SrcCurrencyAmt; SecondGenJournalLine."Source Currency Amount")
                         {
                             AutoFormatExpression = GetCurrency();
                             AutoFormatType = 1;
@@ -338,16 +338,16 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                         column(SettlementCaption; SettlementCaptionLbl)
                         {
                         }
-                        column(GenJnlLineVATRegistrationNo; GenJnlLine."VAT Registration No.")
+                        column(GenJnlLineVATRegistrationNo; GenJournalLine."VAT Registration No.")
                         {
                         }
-                        column(GenJnlLineCountryRegionCode; GenJnlLine."Country/Region Code")
+                        column(GenJnlLineCountryRegionCode; GenJournalLine."Country/Region Code")
                         {
                         }
-                        column(GenJnlLine2VATRegistrationNo; GenJnlLine2."VAT Registration No.")
+                        column(GenJnlLine2VATRegistrationNo; SecondGenJournalLine."VAT Registration No.")
                         {
                         }
-                        column(GenJnlLine2CountryRegionCode; GenJnlLine2."Country/Region Code")
+                        column(GenJnlLine2CountryRegionCode; SecondGenJournalLine."Country/Region Code")
                         {
                         }
                         trigger OnAfterGetRecord()
@@ -359,43 +359,43 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                             ReversingEntry := false;
 
                             // Balancing entries to VAT accounts
-                            Clear(GenJnlLine);
-                            GenJnlLine."System-Created Entry" := true;
-                            GenJnlLine."Account Type" := GenJnlLine."Account Type"::"G/L Account";
+                            Clear(GenJournalLine);
+                            GenJournalLine."System-Created Entry" := true;
+                            GenJournalLine."Account Type" := GenJournalLine."Account Type"::"G/L Account";
                             case VATType of
                                 VATEntry.Type::Purchase:
-                                    GenJnlLine.Description := CopyStr(
+                                    GenJournalLine.Description := CopyStr(
                                       DelChr(
                                         StrSubstNo(
                                           PurchaseVatSettlementTxt,
                                           "VAT Posting Setup"."VAT Bus. Posting Group",
                                           "VAT Posting Setup"."VAT Prod. Posting Group"),
-                                        '>'), 1, MaxStrLen(GenJnlLine.Description));
+                                        '>'), 1, MaxStrLen(GenJournalLine.Description));
                                 VATEntry.Type::Sale:
-                                    GenJnlLine.Description := CopyStr(
+                                    GenJournalLine.Description := CopyStr(
                                       DelChr(
                                         StrSubstNo(
                                           SalesVatSettlementTxt,
                                           "VAT Posting Setup"."VAT Bus. Posting Group",
                                           "VAT Posting Setup"."VAT Prod. Posting Group"),
-                                        '>'), 1, MaxStrLen(GenJnlLine.Description));
+                                        '>'), 1, MaxStrLen(GenJournalLine.Description));
                             end;
-                            SetVatPostingSetupToGenJnlLine(GenJnlLine, "VAT Posting Setup");
-                            GenJnlLine."Posting Date" := PostingDate;
-                            GenJnlLine.Validate("VAT Date CZL", PostingDate);
-                            GenJnlLine."Document Type" := GenJnlLine."Document Type"::" ";
-                            GenJnlLine."Document No." := DocNo;
-                            GenJnlLine."Source Code" := SourceCodeSetup."VAT Settlement";
-                            GenJnlLine."VAT Posting" := GenJnlLine."VAT Posting"::"Manual VAT Entry";
+                            SetVatPostingSetupToGenJnlLine(GenJournalLine, "VAT Posting Setup");
+                            GenJournalLine."Posting Date" := PostingDate;
+                            GenJournalLine.Validate("VAT Date CZL", PostingDate);
+                            GenJournalLine."Document Type" := GenJournalLine."Document Type"::" ";
+                            GenJournalLine."Document No." := DocNo;
+                            GenJournalLine."Source Code" := SourceCodeSetup."VAT Settlement";
+                            GenJournalLine."VAT Posting" := GenJournalLine."VAT Posting"::"Manual VAT Entry";
                             case "VAT Posting Setup"."VAT Calculation Type" of
                                 "VAT Posting Setup"."VAT Calculation Type"::"Normal VAT",
                                 "VAT Posting Setup"."VAT Calculation Type"::"Full VAT":
                                     begin
-                                        GenJnlLine."Account No." :=
+                                        GenJournalLine."Account No." :=
                                           "VAT Posting Setup".GetVATAccountNoCZL(VATEntry.Type, VATEntry."Advance Letter No." <> '');
-                                        CopyAmounts(GenJnlLine, VATEntry);
+                                        CopyAmounts(GenJournalLine, VATEntry);
                                         if PostSettlement then
-                                            PostGenJnlLine(GenJnlLine);
+                                            PostGenJnlLine(GenJournalLine);
                                         VATAmount := VATAmount + VATEntry.Amount;
                                         VATAmountAddCurr := VATAmountAddCurr + VATEntry."Additional-Currency Amount";
                                     end;
@@ -403,64 +403,64 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                                     case VATType of
                                         VATEntry.Type::Purchase:
                                             begin
-                                                GenJnlLine."Account No." :=
+                                                GenJournalLine."Account No." :=
                                                   "VAT Posting Setup".GetVATAccountNoCZL(VATEntry.Type, VATEntry."Advance Letter No." <> '');
-                                                CopyAmounts(GenJnlLine, VATEntry);
+                                                CopyAmounts(GenJournalLine, VATEntry);
                                                 if PostSettlement then
-                                                    PostGenJnlLine(GenJnlLine);
+                                                    PostGenJnlLine(GenJournalLine);
 
-                                                CreateGenJnlLine(GenJnlLine2, "VAT Posting Setup".GetRevChargeAccount(false));
-                                                SetVatPostingSetupToGenJnlLine(GenJnlLine2, "VAT Posting Setup");
+                                                CreateGenJnlLine(SecondGenJournalLine, "VAT Posting Setup".GetRevChargeAccount(false));
+                                                SetVatPostingSetupToGenJnlLine(SecondGenJournalLine, "VAT Posting Setup");
                                                 if PostSettlement then
-                                                    PostGenJnlLine(GenJnlLine2);
+                                                    PostGenJnlLine(SecondGenJournalLine);
                                                 ReversingEntry := true;
                                             end;
                                         VATEntry.Type::Sale:
                                             begin
-                                                GenJnlLine."Account No." :=
+                                                GenJournalLine."Account No." :=
                                                   "VAT Posting Setup".GetVATAccountNoCZL(VATEntry.Type, VATEntry."Advance Letter No." <> '');
-                                                CopyAmounts(GenJnlLine, VATEntry);
+                                                CopyAmounts(GenJournalLine, VATEntry);
                                                 if PostSettlement then
-                                                    PostGenJnlLine(GenJnlLine);
+                                                    PostGenJnlLine(GenJournalLine);
                                             end;
                                     end;
                                 "VAT Posting Setup"."VAT Calculation Type"::"Sales Tax":
                                     begin
                                         TaxJurisdiction.Get(VATEntry."Tax Jurisdiction Code");
-                                        GenJnlLine."Tax Area Code" := TaxJurisdiction.Code;
-                                        GenJnlLine."Use Tax" := VATEntry."Use Tax";
+                                        GenJournalLine."Tax Area Code" := TaxJurisdiction.Code;
+                                        GenJournalLine."Use Tax" := VATEntry."Use Tax";
                                         case VATType of
                                             VATEntry.Type::Purchase:
                                                 if VATEntry."Use Tax" then begin
                                                     TaxJurisdiction.TestField("Tax Account (Purchases)");
-                                                    GenJnlLine."Account No." := TaxJurisdiction."Tax Account (Purchases)";
-                                                    CopyAmounts(GenJnlLine, VATEntry);
+                                                    GenJournalLine."Account No." := TaxJurisdiction."Tax Account (Purchases)";
+                                                    CopyAmounts(GenJournalLine, VATEntry);
                                                     if PostSettlement then
-                                                        PostGenJnlLine(GenJnlLine);
+                                                        PostGenJnlLine(GenJournalLine);
 
                                                     TaxJurisdiction.TestField("Reverse Charge (Purchases)");
-                                                    CreateGenJnlLine(GenJnlLine2, TaxJurisdiction."Reverse Charge (Purchases)");
-                                                    GenJnlLine2."Tax Area Code" := TaxJurisdiction.Code;
-                                                    GenJnlLine2."Use Tax" := VATEntry."Use Tax";
+                                                    CreateGenJnlLine(SecondGenJournalLine, TaxJurisdiction."Reverse Charge (Purchases)");
+                                                    SecondGenJournalLine."Tax Area Code" := TaxJurisdiction.Code;
+                                                    SecondGenJournalLine."Use Tax" := VATEntry."Use Tax";
                                                     if PostSettlement then
-                                                        PostGenJnlLine(GenJnlLine2);
+                                                        PostGenJnlLine(SecondGenJournalLine);
                                                     ReversingEntry := true;
                                                 end else begin
                                                     TaxJurisdiction.TestField("Tax Account (Purchases)");
-                                                    GenJnlLine."Account No." := TaxJurisdiction."Tax Account (Purchases)";
-                                                    CopyAmounts(GenJnlLine, VATEntry);
+                                                    GenJournalLine."Account No." := TaxJurisdiction."Tax Account (Purchases)";
+                                                    CopyAmounts(GenJournalLine, VATEntry);
                                                     if PostSettlement then
-                                                        PostGenJnlLine(GenJnlLine);
+                                                        PostGenJnlLine(GenJournalLine);
                                                     VATAmount := VATAmount + VATEntry.Amount;
                                                     VATAmountAddCurr := VATAmountAddCurr + VATEntry."Additional-Currency Amount";
                                                 end;
                                             VATEntry.Type::Sale:
                                                 begin
                                                     TaxJurisdiction.TestField("Tax Account (Sales)");
-                                                    GenJnlLine."Account No." := TaxJurisdiction."Tax Account (Sales)";
-                                                    CopyAmounts(GenJnlLine, VATEntry);
+                                                    GenJournalLine."Account No." := TaxJurisdiction."Tax Account (Sales)";
+                                                    CopyAmounts(GenJournalLine, VATEntry);
                                                     if PostSettlement then
-                                                        PostGenJnlLine(GenJnlLine);
+                                                        PostGenJnlLine(GenJournalLine);
                                                     VATAmount := VATAmount + VATEntry.Amount;
                                                     VATAmountAddCurr := VATAmountAddCurr + VATEntry."Additional-Currency Amount";
                                                 end;
@@ -561,31 +561,31 @@ report 11971 "Calc. and Post VAT Settl. CZL"
             begin
                 // Post to settlement account
                 if VATAmount <> 0 then begin
-                    GenJnlLine.Init();
-                    GenJnlLine."System-Created Entry" := true;
-                    GenJnlLine."Account Type" := GenJnlLine."Account Type"::"G/L Account";
+                    GenJournalLine.Init();
+                    GenJournalLine."System-Created Entry" := true;
+                    GenJournalLine."Account Type" := GenJournalLine."Account Type"::"G/L Account";
 
-                    GLAccSettle.TestField("Gen. Posting Type", GenJnlLine."Gen. Posting Type"::" ".AsInteger());
-                    GLAccSettle.TestField("VAT Bus. Posting Group", '');
-                    GLAccSettle.TestField("VAT Prod. Posting Group", '');
-                    if VATPostingSetup.Get(GLAccSettle."VAT Bus. Posting Group", GLAccSettle."VAT Prod. Posting Group") then
+                    SettleGLAccount.TestField("Gen. Posting Type", GenJournalLine."Gen. Posting Type"::" ".AsInteger());
+                    SettleGLAccount.TestField("VAT Bus. Posting Group", '');
+                    SettleGLAccount.TestField("VAT Prod. Posting Group", '');
+                    if VATPostingSetup.Get(SettleGLAccount."VAT Bus. Posting Group", SettleGLAccount."VAT Prod. Posting Group") then
                         VATPostingSetup.TestField("VAT %", 0);
-                    GLAccSettle.TestField("Gen. Bus. Posting Group", '');
-                    GLAccSettle.TestField("Gen. Prod. Posting Group", '');
+                    SettleGLAccount.TestField("Gen. Bus. Posting Group", '');
+                    SettleGLAccount.TestField("Gen. Prod. Posting Group", '');
 
-                    GenJnlLine.Validate("Account No.", GLAccSettle."No.");
-                    GenJnlLine."Posting Date" := PostingDate;
-                    GenJnlLine.Validate("VAT Date CZL", PostingDate);
-                    GenJnlLine."Document Type" := GenJnlLine."Document Type"::" ";
-                    GenJnlLine."Document No." := DocNo;
-                    GenJnlLine.Description := VatSettlementTxt;
-                    GenJnlLine.Amount := VATAmount;
-                    GenJnlLine."Source Currency Code" := GLSetup."Additional Reporting Currency";
-                    GenJnlLine."Source Currency Amount" := VATAmountAddCurr;
-                    GenJnlLine."Source Code" := SourceCodeSetup."VAT Settlement";
-                    GenJnlLine."VAT Posting" := GenJnlLine."VAT Posting"::"Manual VAT Entry";
+                    GenJournalLine.Validate("Account No.", SettleGLAccount."No.");
+                    GenJournalLine."Posting Date" := PostingDate;
+                    GenJournalLine.Validate("VAT Date CZL", PostingDate);
+                    GenJournalLine."Document Type" := GenJournalLine."Document Type"::" ";
+                    GenJournalLine."Document No." := DocNo;
+                    GenJournalLine.Description := VatSettlementTxt;
+                    GenJournalLine.Amount := VATAmount;
+                    GenJournalLine."Source Currency Code" := GeneralLedgerSetup."Additional Reporting Currency";
+                    GenJournalLine."Source Currency Amount" := VATAmountAddCurr;
+                    GenJournalLine."Source Code" := SourceCodeSetup."VAT Settlement";
+                    GenJournalLine."VAT Posting" := GenJournalLine."VAT Posting"::"Manual VAT Entry";
                     if PostSettlement then
-                        PostGenJnlLine(GenJnlLine);
+                        PostGenJnlLine(GenJournalLine);
                 end;
             end;
 
@@ -598,15 +598,15 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                 NextVATEntryNo := VATEntry.GetLastEntryNo();
 
                 SourceCodeSetup.Get();
-                GLSetup.Get();
+                GeneralLedgerSetup.Get();
                 VATAmount := 0;
                 VATAmountAddCurr := 0;
 
                 if UseAmtsInAddCurr then
-                    HeaderText := StrSubstNo(AllAmountsAreInTxt, GLSetup."Additional Reporting Currency")
+                    HeaderText := StrSubstNo(AllAmountsAreInTxt, GeneralLedgerSetup."Additional Reporting Currency")
                 else begin
-                    GLSetup.TestField("LCY Code");
-                    HeaderText := StrSubstNo(AllAmountsAreInTxt, GLSetup."LCY Code");
+                    GeneralLedgerSetup.TestField("LCY Code");
+                    HeaderText := StrSubstNo(AllAmountsAreInTxt, GeneralLedgerSetup."LCY Code");
                 end;
             end;
         }
@@ -655,7 +655,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                         Caption = 'Document No.';
                         ToolTip = 'Specifies a document number. This field must be filled in.';
                     }
-                    field(SettlementAcc; GLAccSettle."No.")
+                    field(SettlementAcc; SettleGLAccount."No.")
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Settlement Account';
@@ -664,9 +664,9 @@ report 11971 "Calc. and Post VAT Settl. CZL"
 
                         trigger OnValidate()
                         begin
-                            if GLAccSettle."No." <> '' then begin
-                                GLAccSettle.Find();
-                                GLAccSettle.CheckGLAcc();
+                            if SettleGLAccount."No." <> '' then begin
+                                SettleGLAccount.Find();
+                                SettleGLAccount.CheckGLAcc();
                             end;
                         end;
                     }
@@ -714,9 +714,9 @@ report 11971 "Calc. and Post VAT Settl. CZL"
             Error(PostingDateErr);
         if DocNo = '' then
             Error(DocumentNoErr);
-        if GLAccSettle."No." = '' then
+        if SettleGLAccount."No." = '' then
             Error(SettlementAccErr);
-        GLAccSettle.Find();
+        SettleGLAccount.Find();
 
         if PostSettlement and not Initialized then
             if not ConfirmManagement.GetResponseOrDefault(ConfirmCalcPostQst, true) then
@@ -733,16 +733,15 @@ report 11971 "Calc. and Post VAT Settl. CZL"
     end;
 
     var
-        GLAccSettle: Record "G/L Account";
+        SettleGLAccount: Record "G/L Account";
         SourceCodeSetup: Record "Source Code Setup";
-        GenJnlLine: Record "Gen. Journal Line";
-        GenJnlLine2: Record "Gen. Journal Line";
+        GenJournalLine: Record "Gen. Journal Line";
+        SecondGenJournalLine: Record "Gen. Journal Line";
         GLEntry: Record "G/L Entry";
         VATEntry: Record "VAT Entry";
         TaxJurisdiction: Record "Tax Jurisdiction";
-        GLSetup: Record "General Ledger Setup";
-        VATPostingSetup: Record "VAT Posting Setup";
         GeneralLedgerSetup: Record "General Ledger Setup";
+        VATPostingSetup: Record "VAT Posting Setup";
         VATPeriodCZL: Record "VAT Period CZL";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         EntrdStartDate: Date;
@@ -793,7 +792,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
         EndDateReq := NewEndDate;
         PostingDate := NewPostingDate;
         DocNo := NewDocNo;
-        GLAccSettle."No." := NewSettlementAcc;
+        SettleGLAccount."No." := NewSettlementAcc;
         PrintVATEntries := ShowVATEntries;
         PostSettlement := Post;
         Initialized := true;
@@ -808,26 +807,26 @@ report 11971 "Calc. and Post VAT Settl. CZL"
     local procedure GetCurrency(): Code[10]
     begin
         if UseAmtsInAddCurr then
-            exit(GLSetup."Additional Reporting Currency");
+            exit(GeneralLedgerSetup."Additional Reporting Currency");
 
         exit('');
     end;
 
-    local procedure PostGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")
+    local procedure PostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
     var
-        DimMgt: Codeunit DimensionManagement;
+        DimensionManagement: Codeunit DimensionManagement;
         TableID: array[10] of Integer;
         No: array[10] of Code[20];
     begin
         TableID[1] := Database::"G/L Account";
         TableID[2] := Database::"G/L Account";
-        No[1] := GenJnlLine."Account No.";
-        No[2] := GenJnlLine."Bal. Account No.";
-        GenJnlLine."Dimension Set ID" :=
-          DimMgt.GetRecDefaultDimID(
-            GenJnlLine, 0, TableID, No, GenJnlLine."Source Code",
-            GenJnlLine."Shortcut Dimension 1 Code", GenJnlLine."Shortcut Dimension 2 Code", 0, 0);
-        GenJnlPostLine.Run(GenJnlLine);
+        No[1] := GenJournalLine."Account No.";
+        No[2] := GenJournalLine."Bal. Account No.";
+        GenJournalLine."Dimension Set ID" :=
+          DimensionManagement.GetRecDefaultDimID(
+            GenJournalLine, 0, TableID, No, GenJournalLine."Source Code",
+            GenJournalLine."Shortcut Dimension 1 Code", GenJournalLine."Shortcut Dimension 2 Code", 0, 0);
+        GenJnlPostLine.Run(GenJournalLine);
     end;
 
     procedure SetInitialized(Initialize: Boolean)
@@ -840,36 +839,36 @@ report 11971 "Calc. and Post VAT Settl. CZL"
         GenJournalLine.Amount := -VATEntry.Amount;
         GenJournalLine."VAT Amount" := -VATEntry.Amount;
         GenJournalLine."VAT Base Amount" := -VATEntry.Base - VATEntry."Advance Base";
-        GenJournalLine."Source Currency Code" := GLSetup."Additional Reporting Currency";
+        GenJournalLine."Source Currency Code" := GeneralLedgerSetup."Additional Reporting Currency";
         GenJournalLine."Source Currency Amount" := -VATEntry."Additional-Currency Amount";
         GenJournalLine."Source Curr. VAT Amount" := -VATEntry."Additional-Currency Amount";
         GenJournalLine."Source Curr. VAT Base Amount" := -VATEntry."Additional-Currency Base";
     end;
 
-    local procedure CreateGenJnlLine(var GenJnlLine2: Record "Gen. Journal Line"; AccountNo: Code[20])
+    local procedure CreateGenJnlLine(var CreatedGenJournalLine: Record "Gen. Journal Line"; AccountNo: Code[20])
     begin
-        Clear(GenJnlLine2);
-        GenJnlLine2."System-Created Entry" := true;
-        GenJnlLine2."Account Type" := GenJnlLine2."Account Type"::"G/L Account";
-        GenJnlLine2.Description := GenJnlLine.Description;
-        GenJnlLine2."Posting Date" := PostingDate;
-        GenJnlLine2.Validate("VAT Date CZL", PostingDate);
-        GenJnlLine2."Document Type" := GenJnlLine2."Document Type"::" ";
-        GenJnlLine2."Document No." := DocNo;
-        GenJnlLine2."Source Code" := SourceCodeSetup."VAT Settlement";
-        GenJnlLine2."VAT Posting" := GenJnlLine2."VAT Posting"::"Manual VAT Entry";
-        GenJnlLine2."Account No." := AccountNo;
-        GenJnlLine2.Amount := VATEntry.Amount;
-        GenJnlLine2."Source Currency Code" := GLSetup."Additional Reporting Currency";
-        GenJnlLine2."Source Currency Amount" := VATEntry."Additional-Currency Amount";
+        Clear(CreatedGenJournalLine);
+        CreatedGenJournalLine."System-Created Entry" := true;
+        CreatedGenJournalLine."Account Type" := CreatedGenJournalLine."Account Type"::"G/L Account";
+        CreatedGenJournalLine.Description := GenJournalLine.Description;
+        CreatedGenJournalLine."Posting Date" := PostingDate;
+        CreatedGenJournalLine.Validate("VAT Date CZL", PostingDate);
+        CreatedGenJournalLine."Document Type" := CreatedGenJournalLine."Document Type"::" ";
+        CreatedGenJournalLine."Document No." := DocNo;
+        CreatedGenJournalLine."Source Code" := SourceCodeSetup."VAT Settlement";
+        CreatedGenJournalLine."VAT Posting" := CreatedGenJournalLine."VAT Posting"::"Manual VAT Entry";
+        CreatedGenJournalLine."Account No." := AccountNo;
+        CreatedGenJournalLine.Amount := VATEntry.Amount;
+        CreatedGenJournalLine."Source Currency Code" := GeneralLedgerSetup."Additional Reporting Currency";
+        CreatedGenJournalLine."Source Currency Amount" := VATEntry."Additional-Currency Amount";
     end;
 
-    local procedure SetVatPostingSetupToGenJnlLine(var GenJnlLine: Record "Gen. Journal Line"; VATPostingSetup: Record "VAT Posting Setup")
+    local procedure SetVatPostingSetupToGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; VATPostingSetup: Record "VAT Posting Setup")
     begin
-        GenJnlLine."Gen. Posting Type" := GenJnlLine."Gen. Posting Type"::Settlement;
-        GenJnlLine."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
-        GenJnlLine."VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
-        GenJnlLine."VAT Calculation Type" := VATPostingSetup."VAT Calculation Type";
+        GenJournalLine."Gen. Posting Type" := GenJournalLine."Gen. Posting Type"::Settlement;
+        GenJournalLine."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
+        GenJournalLine."VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
+        GenJournalLine."VAT Calculation Type" := VATPostingSetup."VAT Calculation Type";
     end;
 
     local procedure IncrementGenPostingType(var OldGenPostingType: Enum "General Posting Type") NewGenPostingType: Enum "General Posting Type"

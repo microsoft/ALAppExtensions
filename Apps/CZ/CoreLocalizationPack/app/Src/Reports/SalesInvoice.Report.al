@@ -56,7 +56,7 @@ report 31189 "Sales Invoice CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Sales Invoice Header"; "Sales Invoice Header")
@@ -148,22 +148,22 @@ report 31189 "Sales Invoice CZL"
             column(RegistrationNo_SalesInvoiceHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_SalesInvoiceHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_SalesInvoiceHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_SalesInvoiceHeader; "Bank Account No.")
+            column(BankAccountNo_SalesInvoiceHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_SalesInvoiceHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_SalesInvoiceHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_SalesInvoiceHeader; IBAN)
+            column(IBAN_SalesInvoiceHeader; "IBAN CZL")
             {
             }
-            column(BIC_SalesInvoiceHeaderCaption; FieldCaption("SWIFT Code"))
+            column(BIC_SalesInvoiceHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(BIC_SalesInvoiceHeader; "SWIFT Code")
+            column(BIC_SalesInvoiceHeader; "SWIFT Code CZL")
             {
             }
             column(PostingDate_SalesInvoiceHeaderCaption; FieldCaption("Posting Date"))
@@ -393,14 +393,14 @@ report 31189 "Sales Invoice CZL"
                     column(VATDocLetterNo_SalesInvoiceAdvance; "VAT Doc. Letter No.")
                     {
                     }
-                    column(PostingDate_SalesInvoiceAdvance; SalesInvHeader."Posting Date")
+                    column(PostingDate_SalesInvoiceAdvance; SalesInvoiceHeader."Posting Date")
                     {
                     }
                     trigger OnAfterGetRecord()
                     begin
                         if "VAT Doc. Letter No." <> '' then
-                            if not SalesInvHeader.Get("VAT Doc. Letter No.") then
-                                SalesInvHeader.Init();
+                            if not SalesInvoiceHeader.Get("VAT Doc. Letter No.") then
+                                SalesInvoiceHeader.Init();
                     end;
                 }
                 dataitem(VATCounter; "Integer")
@@ -423,12 +423,12 @@ report 31189 "Sales Invoice CZL"
                         AutoFormatExpression = "Sales Invoice Header"."Currency Code";
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATBaseLCY; TempVATAmountLine."VAT Base (LCY)")
+                    column(VATAmtLineVATBaseLCY; TempVATAmountLine."VAT Base (LCY) CZL")
                     {
                         AutoFormatExpression = "Sales Invoice Line".GetCurrencyCode();
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATAmtLCY; TempVATAmountLine."VAT Amount (LCY)")
+                    column(VATAmtLineVATAmtLCY; TempVATAmountLine."VAT Amount (LCY) CZL")
                     {
                         AutoFormatExpression = "Sales Invoice Header"."Currency Code";
                         AutoFormatType = 1;
@@ -471,16 +471,16 @@ report 31189 "Sales Invoice CZL"
                 dataitem(LineFee; "Integer")
                 {
                     DataItemTableView = sorting(Number) ORDER(Ascending) WHERE(Number = FILTER(1 ..));
-                    column(LineFeeCaptionLbl; TempLineFeeNoteOnReportHist.ReportText)
+                    column(LineFeeCaptionLbl; TempLineFeeNoteonReportHist.ReportText)
                     {
                     }
                     trigger OnAfterGetRecord()
                     begin
                         if Number = 1 then begin
-                            if not TempLineFeeNoteOnReportHist.FindSet() then
+                            if not TempLineFeeNoteonReportHist.FindSet() then
                                 CurrReport.Break()
                         end else
-                            if TempLineFeeNoteOnReportHist.Next() = 0 then
+                            if TempLineFeeNoteonReportHist.Next() = 0 then
                                 CurrReport.Break();
                     end;
 
@@ -488,7 +488,7 @@ report 31189 "Sales Invoice CZL"
                     begin
                         if not DisplayAdditionalFeeNote then
                             CurrReport.Break();
-                        SetRange(Number, 1, TempLineFeeNoteOnReportHist.Count);
+                        SetRange(Number, 1, TempLineFeeNoteonReportHist.Count);
                     end;
                 }
                 dataitem("User Setup"; "User Setup")
@@ -498,7 +498,7 @@ report 31189 "Sales Invoice CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -538,11 +538,12 @@ report 31189 "Sales Invoice CZL"
                     Clear(Customer);
 
                 SalesInvLine.CalcVATAmountLines("Sales Invoice Header", TempVATAmountLine);
+                TempVATAmountLine.UpdateVATEntryLCYAmountsCZL("Sales Invoice Header");
                 if ("Currency Factor" <> 0) and ("Currency Factor" <> 1) then begin
-                    CurrExchRate.FindCurrency("Posting Date", "Currency Code", 1);
-                    CalculatedExchRate := Round(1 / "Currency Factor" * CurrExchRate."Exchange Rate Amount", 0.00001);
+                    CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
+                    CalculatedExchRate := Round(1 / "Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
                     ExchRateText := StrSubstNo(ExchRateLbl, CalculatedExchRate, "General Ledger Setup"."LCY Code",
-                                        CurrExchRate."Exchange Rate Amount", "Currency Code");
+                                        CurrencyExchangeRate."Exchange Rate Amount", "Currency Code");
                 end else
                     CalculatedExchRate := 1;
 
@@ -559,11 +560,11 @@ report 31189 "Sales Invoice CZL"
 
                 if LogInteraction and not IsReportInPreviewMode() then
                     if "Bill-to Contact No." <> '' then
-                        SegMgt.LogDocument(
+                        SegManagement.LogDocument(
                           4, "No.", 0, 0, Database::Contact, "Bill-to Contact No.", "Salesperson Code",
                           "Campaign No.", "Posting Description", '')
                     else
-                        SegMgt.LogDocument(
+                        SegManagement.LogDocument(
                           4, "No.", 0, 0, Database::Customer, "Bill-to Customer No.", "Salesperson Code",
                           "Campaign No.", "Posting Description", '');
 
@@ -624,20 +625,20 @@ report 31189 "Sales Invoice CZL"
 
     var
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-        TempLineFeeNoteOnReportHist: Record "Line Fee Note on Report Hist." temporary;
+        TempLineFeeNoteonReportHist: Record "Line Fee Note on Report Hist." temporary;
         Customer: Record Customer;
         PaymentTerms: Record "Payment Terms";
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
         ReasonCode: Record "Reason Code";
-        CurrExchRate: Record "Currency Exchange Rate";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
         VATClause: Record "VAT Clause";
-        SalesInvHeader: Record "Sales Invoice Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        SegMgt: Codeunit SegManagement;
+        SegManagement: Codeunit SegManagement;
         ExchRateText: Text[50];
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
@@ -680,39 +681,39 @@ report 31189 "Sales Invoice CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegMgt.FindInteractTmplCode(4) <> '';
+        LogInteraction := SegManagement.FindInteractTmplCode(4) <> '';
     end;
 
     local procedure GetLineFeeNoteOnReportHist(SalesInvoiceHeaderNo: Code[20])
     var
-        LineFeeNoteOnReportHist: Record "Line Fee Note on Report Hist.";
+        LineFeeNoteonReportHist: Record "Line Fee Note on Report Hist.";
         CustLedgerEntry: Record "Cust. Ledger Entry";
-        CustomerLanguage: Record Customer;
+        LanguageCustomer: Record Customer;
     begin
-        TempLineFeeNoteOnReportHist.DeleteAll();
+        TempLineFeeNoteonReportHist.DeleteAll();
         CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::Invoice);
         CustLedgerEntry.SetRange("Document No.", SalesInvoiceHeaderNo);
         if not CustLedgerEntry.FindFirst() then
             exit;
-        if not CustomerLanguage.Get(CustLedgerEntry."Customer No.") then
+        if not LanguageCustomer.Get(CustLedgerEntry."Customer No.") then
             exit;
 
-        LineFeeNoteOnReportHist.SetRange("Cust. Ledger Entry No", CustLedgerEntry."Entry No.");
-        LineFeeNoteOnReportHist.SetRange("Language Code", CustomerLanguage."Language Code");
-        if LineFeeNoteOnReportHist.FindSet() then
+        LineFeeNoteonReportHist.SetRange("Cust. Ledger Entry No", CustLedgerEntry."Entry No.");
+        LineFeeNoteonReportHist.SetRange("Language Code", LanguageCustomer."Language Code");
+        if LineFeeNoteonReportHist.FindSet() then
             repeat
-                TempLineFeeNoteOnReportHist.Init();
-                TempLineFeeNoteOnReportHist.Copy(LineFeeNoteOnReportHist);
-                TempLineFeeNoteOnReportHist.Insert();
-            until LineFeeNoteOnReportHist.Next() = 0
+                TempLineFeeNoteonReportHist.Init();
+                TempLineFeeNoteonReportHist.Copy(LineFeeNoteonReportHist);
+                TempLineFeeNoteonReportHist.Insert();
+            until LineFeeNoteonReportHist.Next() = 0
         else begin
-            LineFeeNoteOnReportHist.SetRange("Language Code", Language.GetUserLanguageCode());
-            if LineFeeNoteOnReportHist.FindSet() then
+            LineFeeNoteonReportHist.SetRange("Language Code", Language.GetUserLanguageCode());
+            if LineFeeNoteonReportHist.FindSet() then
                 repeat
-                    TempLineFeeNoteOnReportHist.Init();
-                    TempLineFeeNoteOnReportHist.Copy(LineFeeNoteOnReportHist);
-                    TempLineFeeNoteOnReportHist.Insert();
-                until LineFeeNoteOnReportHist.Next() = 0;
+                    TempLineFeeNoteonReportHist.Init();
+                    TempLineFeeNoteonReportHist.Copy(LineFeeNoteonReportHist);
+                    TempLineFeeNoteonReportHist.Insert();
+                until LineFeeNoteonReportHist.Next() = 0;
         end;
     end;
 
@@ -727,16 +728,16 @@ report 31189 "Sales Invoice CZL"
             ReasonCode.Get(SalesInvoiceHeader."Reason Code");
         FormatDocumentMgtCZL.SetPaymentSymbols(
           PaymentSymbol, PaymentSymbolLabel,
-          SalesInvoiceHeader."Variable Symbol", SalesInvoiceHeader.FieldCaption(SalesInvoiceHeader."Variable Symbol"),
-          SalesInvoiceHeader."Constant Symbol", SalesInvoiceHeader.FieldCaption(SalesInvoiceHeader."Constant Symbol"),
-          SalesInvoiceHeader."Specific Symbol", SalesInvoiceHeader.FieldCaption(SalesInvoiceHeader."Specific Symbol"));
+          SalesInvoiceHeader."Variable Symbol CZL", SalesInvoiceHeader.FieldCaption(SalesInvoiceHeader."Variable Symbol CZL"),
+          SalesInvoiceHeader."Constant Symbol CZL", SalesInvoiceHeader.FieldCaption(SalesInvoiceHeader."Constant Symbol CZL"),
+          SalesInvoiceHeader."Specific Symbol CZL", SalesInvoiceHeader.FieldCaption(SalesInvoiceHeader."Specific Symbol CZL"));
         DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText(SalesInvoiceHeader."Language Code");
     end;
 
     local procedure FormatAddressFields(SalesInvoiceHeader: Record "Sales Invoice Header")
     begin
-        FormatAddr.SalesInvBillTo(CustAddr, SalesInvoiceHeader);
-        FormatAddr.SalesInvShipTo(ShipToAddr, CustAddr, SalesInvoiceHeader);
+        FormatAddress.SalesInvBillTo(CustAddr, SalesInvoiceHeader);
+        FormatAddress.SalesInvShipTo(ShipToAddr, CustAddr, SalesInvoiceHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

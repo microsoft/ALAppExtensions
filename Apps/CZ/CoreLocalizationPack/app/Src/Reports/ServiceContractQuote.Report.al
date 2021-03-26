@@ -55,7 +55,7 @@ report 31195 "Service Contract Quote CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Service Contract Header"; "Service Contract Header")
@@ -286,7 +286,7 @@ report 31195 "Service Contract Quote CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -316,18 +316,18 @@ report 31195 "Service Contract Quote CZL"
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
-                FormatAddr.ServContractSellto(CustAddr, "Service Contract Header");
-                FormatAddr.ServContractShipto(ShipToAddr, "Service Contract Header");
+                FormatAddress.ServContractSellto(CustAddr, "Service Contract Header");
+                FormatAddress.ServContractShipto(ShipToAddr, "Service Contract Header");
                 DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
                 if not Customer.Get("Customer No.") then
                     Customer.Init();
 
                 if LogInteraction and not IsReportInPreviewMode() then
                     if "Contact No." <> '' then
-                        SegMgt.LogDocument(
+                        SegManagement.LogDocument(
                           24, "Contract No.", 0, 0, Database::Contact, "Contact No.", "Salesperson Code", '', Description, '')
                     else
-                        SegMgt.LogDocument(
+                        SegManagement.LogDocument(
                           24, "Contract No.", 0, 0, Database::Customer, "Customer No.", "Salesperson Code", '', Description, '');
             end;
         }
@@ -369,6 +369,7 @@ report 31195 "Service Contract Quote CZL"
             LogInteractionEnable := LogInteraction;
         end;
     }
+
     trigger OnPreReport()
     begin
         if not CurrReport.UseRequestPage then
@@ -378,9 +379,9 @@ report 31195 "Service Contract Quote CZL"
     var
         Customer: Record Customer;
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        SegMgt: Codeunit SegManagement;
+        SegManagement: Codeunit SegManagement;
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];
@@ -409,7 +410,7 @@ report 31195 "Service Contract Quote CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegMgt.FindInteractTmplCode(24) <> '';
+        LogInteraction := SegManagement.FindInteractTmplCode(24) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

@@ -3,7 +3,7 @@ codeunit 31199 "Sync.Dep.Fld-Item CZL"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '17.0';
+    ObsoleteTag = '18.0';
 
     [EventSubscriber(ObjectType::Table, Database::Item, 'OnBeforeInsertEvent', '', false, false)]
     local procedure SyncOnBeforeInsertInvtSetup(var Rec: Record Item)
@@ -32,5 +32,10 @@ codeunit 31199 "Sync.Dep.Fld-Item CZL"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Statistic Indication", PreviousRecord."Statistic Indication CZL");
         Rec."Statistic Indication" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Statistic Indication"));
         Rec."Statistic Indication CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Statistic Indication CZL"));
+        DepFieldTxt := Rec."Specific Movement";
+        NewFieldTxt := Rec."Specific Movement CZL";
+        SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Specific Movement", PreviousRecord."Specific Movement CZL");
+        Rec."Specific Movement" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Specific Movement"));
+        Rec."Specific Movement CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Specific Movement CZL"));
     end;
 }

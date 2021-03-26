@@ -1,0 +1,5 @@
+permissionsetextension 16295 "D365 BUS PREMIUM - ELSTER VAT Localization for Germany" extends "D365 BUS PREMIUM"
+{
+    Permissions = tabledata "Elec. VAT Decl. Setup" = RIMD,
+                  tabledata "Sales VAT Advance Notif." = RIMD;
+}

@@ -82,7 +82,7 @@ table 1071 "MS - PayPal Standard Template"
 
     procedure SetTargetURL(TargetURL: Text);
     var
-        MSPayPalStandardMgt: Codeunit 1070;
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
         OutStream: OutStream;
     begin
         if not MSPayPalStandardMgt.IsValidAndSecureURL(TargetURL) then
@@ -118,7 +118,7 @@ table 1071 "MS - PayPal Standard Template"
 
     procedure SetLogoURL(LogoURL: Text);
     var
-        MSPayPalStandardMgt: Codeunit 1070;
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
         OutStream: OutStream;
     begin
         if not MSPayPalStandardMgt.IsValidAndSecureURL(LogoURL) then

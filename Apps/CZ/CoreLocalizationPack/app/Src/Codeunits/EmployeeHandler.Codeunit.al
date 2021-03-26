@@ -1,5 +1,8 @@
 codeunit 11750 "Employee Handler CZL"
 {
+    var
+        BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
+
     [EventSubscriber(ObjectType::Table, Database::Employee, 'OnAfterModifyEvent', '', false, false)]
     local procedure UpdateCompOfficalCZLOnAfterModify(var Rec: Record Employee; var xRec: Record Employee)
     var
@@ -55,5 +58,25 @@ codeunit 11750 "Employee Handler CZL"
     begin
         CompanyOfficialCZL.SetRange("Employee No.", Rec."No.");
         CompanyOfficialCZL.ModifyAll("Employee No.", '', true);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::Employee, 'OnBeforeValidateEvent', 'Bank Account No.', false, false)]
+    local procedure CheckCzBankAccountNoOnBeforeBankAccountNoValidate(var Rec: Record Employee)
+    begin
+        BankOperationsFunctionsCZL.CheckCzBankAccountNo(Rec."Bank Account No.", Rec."Country/Region Code");
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::Employee, 'OnBeforeValidateEvent', 'Country/Region Code', false, false)]
+    local procedure CheckCzBankAccountNoOnBeforeCountryRegionCodeValidate(var Rec: Record Employee)
+    begin
+        BankOperationsFunctionsCZL.CheckCzBankAccountNo(Rec."Bank Account No.", Rec."Country/Region Code");
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Employee Ledger Entry", 'OnAfterCopyEmployeeLedgerEntryFromGenJnlLine', '', false, false)]
+    local procedure OnAfterCopyEmployeeLedgerEntryFromGenJnlLine(var EmployeeLedgerEntry: Record "Employee Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")
+    begin
+        EmployeeLedgerEntry."Specific Symbol CZL" := GenJournalLine."Specific Symbol CZL";
+        EmployeeLedgerEntry."Variable Symbol CZL" := GenJournalLine."Variable Symbol CZL";
+        EmployeeLedgerEntry."Constant Symbol CZL" := GenJournalLine."Constant Symbol CZL";
     end;
 }

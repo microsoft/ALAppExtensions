@@ -49,7 +49,7 @@ codeunit 149004 "BCPT Header"
         BCPTLine.SetRange("BCPT Code", Rec."Code");
         BCPTLine.DeleteAll(true);
 
-        BCPTLogEntry.SetRange("BCPT Code");
+        BCPTLogEntry.SetRange("BCPT Code", Rec."Code");
         BCPTLogEntry.DeleteAll(true);
     end;
 

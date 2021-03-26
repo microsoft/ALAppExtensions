@@ -6,6 +6,7 @@
 codeunit 460 "Azure AD Licensing Impl."
 {
     Access = Internal;
+    Permissions = tabledata "Membership Entitlement" = r;
 
     var
         AzureADGraph: Codeunit "Azure AD Graph";
@@ -37,7 +38,7 @@ codeunit 460 "Azure AD Licensing Impl."
     [NonDebuggable]
     procedure NextSubscribedSKU(): Boolean
     var
-        MembershipEntitlement: Record "Membership Entitlement";
+        AzureADPlan: Codeunit "Azure AD Plan";
         TempSubscribedSku: DotNet SkuInfo;
         TempServicePlanEnumerator: DotNet IEnumerator;
         FoundKnownPlan: Boolean;
@@ -49,41 +50,33 @@ codeunit 460 "Azure AD Licensing Impl."
             IsInitialized := true;
         end;
 
-        MembershipEntitlement.SetRange(Type, MembershipEntitlement.Type::"Azure AD Plan");
+        if not SubscribedSkuEnumerator.MoveNext() then
+            exit(false);
+        SubscribedSku := SubscribedSkuEnumerator.Current();
+        ServicePlanEnumerator := SubscribedSku.ServicePlans().GetEnumerator();
+
+        if DoIncludeUnknownPlans then
+            exit(true);
 
         TempSubscribedSku := SubscribedSku;
         TempServicePlanEnumerator := ServicePlanEnumerator;
 
-        if SubscribedSkuEnumerator.MoveNext() then begin
-            SubscribedSku := SubscribedSkuEnumerator.Current();
-            ServicePlanEnumerator := SubscribedSku.ServicePlans().GetEnumerator();
-
-            if not DoIncludeUnknownPlans then begin
-                FoundKnownPlan := false;
-                while NextServicePlan() do begin
-                    MembershipEntitlement.SetFilter(ID, LowerCase(ServicePlanId()));
-                    if MembershipEntitlement.Count() > 0 then
-                        FoundKnownPlan := true
-                    else begin
-                        MembershipEntitlement.SetFilter(ID, UpperCase(ServicePlanId()));
-                        if MembershipEntitlement.Count() > 0 then
-                            FoundKnownPlan := true;
-                    end;
-                end;
-
-                if not FoundKnownPlan then begin
-                    SubscribedSku := TempSubscribedSku;
-                    ServicePlanEnumerator := TempServicePlanEnumerator;
-                    exit(NextSubscribedSKU());
-                end;
-
-                ServicePlanEnumerator.Reset();
+        FoundKnownPlan := false;
+        while NextServicePlan() do
+            if AzureADPlan.IsBCServicePlan(ServicePlanId()) then begin
+                FoundKnownPlan := true;
+                break;
             end;
 
-            exit(true);
+        if not FoundKnownPlan then begin
+            SubscribedSku := TempSubscribedSku;
+            ServicePlanEnumerator := TempServicePlanEnumerator;
+            exit(false);
         end;
 
-        exit(false)
+        ServicePlanEnumerator.Reset();
+
+        exit(true);
     end;
 
     [NonDebuggable]

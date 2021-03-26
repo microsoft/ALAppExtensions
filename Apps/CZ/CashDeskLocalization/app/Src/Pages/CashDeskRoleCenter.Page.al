@@ -19,18 +19,6 @@ page 31155 "Cash Desk Role Center CZP"
                     ApplicationArea = Basic, Suite;
                 }
             }
-            group(Control2)
-            {
-                ShowCaption = false;
-                chartpart("Q11750-01"; "Q11750-01")
-                {
-                    ApplicationArea = Basic, Suite;
-                }
-                systempart(Outlook; Outlook)
-                {
-                    ApplicationArea = Basic, Suite;
-                }
-            }
         }
     }
 

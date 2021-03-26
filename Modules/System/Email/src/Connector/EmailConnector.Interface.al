@@ -45,7 +45,7 @@ interface "Email Connector"
     /// <summary>
     /// Provides a custom logo for the connector that shows in the Setup Email Account Guide.
     /// </summary>
-    /// <return>Base64 encoded image.</return>
+    /// <returns>Base64 encoded image.</returns>
     /// <remarks>The recomended image size is 128x128.</remarks>
     /// <returns>The logo of the connector is Base64 format</returns>
     procedure GetLogoAsBase64(): Text;

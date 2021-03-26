@@ -41,7 +41,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         PayPalTelemetryCategoryTok: Label 'AL Paypal', Locked = true;
         PayerAddressFormatTxt: Label '%1, %2 %3, %4, %5', Locked = true;
 
-    procedure ValidateNotification(var WebhookNotification: Record 2000000194; var InvoiceNo: Text; var GrossAmount: Decimal): Boolean;
+    procedure ValidateNotification(var WebhookNotification: Record "Webhook Notification"; var InvoiceNo: Text; var GrossAmount: Decimal): Boolean;
     var
         JsonString: Text;
         AccountID: Text;
@@ -86,9 +86,9 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
 
     local procedure ValidateTransactionDetails(AccountID: Text; TransactionID: Text; TransactionStatus: Text; InvoiceNo: Text; CurrencyCode: Text; GrossAmount: Decimal): Boolean;
     var
-        MSPayPalTransaction: Record 1077;
-        MSPayPalStandardAccount: Record 1070;
-        SalesInvoiceHeader: Record 112;
+        MSPayPalTransaction: Record "MS - PayPal Transaction";
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
         InvoiceCurrencyCode: Code[10];
     begin
         Session.LogMessage('00008GV', VerifyTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
@@ -136,7 +136,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
 
     local procedure SaveTransactionDetails(AccountID: Text; TransactionID: Text; PayPalTransactionType: Text; TransactionDate: DateTime; TransactionStatus: Text; InvoiceNo: Text; CurrencyCode: Text; GrossAmount: Decimal; NetAmount: Decimal; FeeAmount: Decimal; PayerEmail: Text; PayerName: Text; PayerAddress: Text; Custom: Text; Note: Text; Details: Text);
     var
-        MSPayPalTransaction: Record 1077;
+        MSPayPalTransaction: Record "MS - PayPal Transaction";
     begin
         MSPayPalTransaction.SETRANGE("Account ID", AccountID);
         MSPayPalTransaction.SETRANGE("Transaction ID", TransactionID);
@@ -255,7 +255,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         EXIT(PreparedDateTimeText);
     end;
 
-    procedure GetNotificationJsonString(var WebhookNotification: Record 2000000194): Text;
+    procedure GetNotificationJsonString(var WebhookNotification: Record "Webhook Notification"): Text;
     var
         NotificationStream: InStream;
         NotificationString: Text;
@@ -271,14 +271,14 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
 
     local procedure GetUtcNow(): DateTime;
     var
-        DateFilterCalc: Codeunit 358;
+        DateFilterCalc: Codeunit "DateFilter-Calc";
     begin
         EXIT(DateFilterCalc.ConvertToUtcDateTime(CURRENTDATETIME()));
     end;
 
     local procedure GetDefaultCurrencyCode(): Code[10];
     var
-        GeneralLedgerSetup: Record 98;
+        GeneralLedgerSetup: Record "General Ledger Setup";
         CurrencyCode: Code[10];
     begin
         GeneralLedgerSetup.GET();

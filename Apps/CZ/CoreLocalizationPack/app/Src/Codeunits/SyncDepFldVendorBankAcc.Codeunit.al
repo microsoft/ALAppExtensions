@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31155 "Sync.Dep.Fld-VendorBankAcc CZL"
 {
@@ -29,3 +30,4 @@ codeunit 31155 "Sync.Dep.Fld-VendorBankAcc CZL"
         SyncDepFldUtilities.SyncFields(Rec."Third Party Bank Account", Rec."Third Party Bank Account CZL", PreviousRecord."Third Party Bank Account", PreviousRecord."Third Party Bank Account CZL");
     end;
 }
+#endif

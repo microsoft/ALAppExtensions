@@ -776,7 +776,6 @@ codeunit 139736 "APIV1 - Sales Quote Lines E2E"
         ResponseText: Text;
         TargetURL: Text;
         QuoteLineJSON: Text;
-        LineNoFromJSON: Text;
         QuoteId: Text;
     begin
         // [SCENARIO] POST a new line to a quote with wrong item variant

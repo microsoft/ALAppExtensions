@@ -415,7 +415,7 @@ codeunit 139737 "APIV1 - Sales CrMemo Lines E2E"
         Customer: Record "Customer";
         ApiSalesLine: Record "Sales Line";
         PageSalesLine: Record "Sales Line";
-        SalesCreditMemo: TestPage 44;
+        SalesCreditMemo: TestPage "Sales Credit Memo";
         ResponseText: Text;
         CreditMemoLineJSON: Text;
         LineNoFromJSON: Text;
@@ -954,7 +954,6 @@ codeunit 139737 "APIV1 - Sales CrMemo Lines E2E"
         ItemVariantCode: Code[10];
         ResponseText: Text;
         CreditMemoLineJSON: Text;
-        LineNoFromJSON: Text;
         CreditMemoID: Text;
     begin
         // [SCENARIO] POST a new line to an unposted Credit Memo with wrong item variant
@@ -1042,7 +1041,7 @@ codeunit 139737 "APIV1 - Sales CrMemo Lines E2E"
         exit(LineJSON);
     end;
 
-    local procedure CreateCreditMemoAndLinesThroughPage(var SalesCreditMemo: TestPage 44; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
+    local procedure CreateCreditMemoAndLinesThroughPage(var SalesCreditMemo: TestPage "Sales Credit Memo"; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
     var
         SalesLine: Record "Sales Line";
     begin

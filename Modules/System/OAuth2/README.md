@@ -421,6 +421,7 @@ Exit parameter containing the access token.
 #### Syntax
 ```
 [NonDebuggable]
+[Obsolete('Renaming to AcquireOnBehalfAccessTokenAndTokenCache', '18.0')]
 [TryFunction]
 procedure AcquireOnBehalfAccessTokenAndRefreshToken(OAuthAuthorityUrl: Text; RedirectURL: Text; ResourceURL: Text; var AccessToken: Text; var RefreshToken: Text)
 ```
@@ -485,6 +486,7 @@ Exit parameter containing the token cache acquired when the access token was req
 #### Syntax
 ```
 [NonDebuggable]
+[Obsolete('Renaming to AcquireOnBehalfAccessTokenAndTokenCache ', '18.0')]
 [TryFunction]
 procedure AcquireOnBehalfAccessTokenAndRefreshToken(OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text; var RefreshToken: Text)
 ```
@@ -549,6 +551,7 @@ Exit parameter containing the token cache acquired when the access token was req
 #### Syntax
 ```
 [NonDebuggable]
+[Obsolete('Renaming to AcquireOnBehalfOfTokenByTokenCache ', '18.0')]
 [TryFunction]
 procedure AcquireOnBehalfOfTokenByRefreshToken(ClientId: Text; RedirectURL: Text; ResourceURL: Text; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
 ```
@@ -621,6 +624,7 @@ Exit parameter containing the new token cache.
 #### Syntax
 ```
 [NonDebuggable]
+[Obsolete('Renaming to AcquireOnBehalfOfTokenByTokenCache ', '18.0')]
 [TryFunction]
 procedure AcquireOnBehalfOfTokenByRefreshToken(ClientId: Text; RedirectURL: Text; Scopes: List of [Text]; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
 ```

@@ -26,15 +26,21 @@ page 30055 "APIV2 - Customer Payments"
                 field(journalId; "Journal Batch Id")
                 {
                     Caption = 'Journal Id';
-                    Editable = false;
+
+                    trigger OnValidate()
+                    begin
+                        if (not IsNullGuid(xRec."Journal Batch Id")) and (xRec."Journal Batch Id" <> Rec."Journal Batch Id") then
+                            Error(CannotEditJournalIdErr);
+                    end;
                 }
-                field(journalDisplayName; GlobalJournalDisplayNameTxt)
+                field(journalDisplayName; "Journal Batch Name")
                 {
                     Caption = 'Journal Display Name';
 
                     trigger OnValidate()
                     begin
-                        Error(CannotEditBatchNameErr);
+                        if (xRec."Journal Batch Name" <> '') and (xRec."Journal Batch Name" <> Rec."Journal Batch Name") then
+                            Error(CannotEditBatchNameErr);
                     end;
                 }
                 field(lineNumber; "Line No.")
@@ -197,7 +203,24 @@ page 30055 "APIV2 - Customer Payments"
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         TempGenJournalLine: Record "Gen. Journal Line" temporary;
+        JournalBatchId: Guid;
+        JournalBatchIdFilter: Text;
     begin
+        if IsNullGuid("Journal Batch Id") then begin
+            JournalBatchIdFilter := Rec.GetFilter("Journal Batch Id");
+            if JournalBatchIdFilter = '' then
+                Error(FiltersNotSpecifiedErr);
+            JournalBatchId := JournalBatchIdFilter;
+        end else begin
+            JournalBatchIdFilter := Rec.GetFilter("Journal Batch Id");
+            if (JournalBatchIdFilter <> '') then begin
+                JournalBatchId := JournalBatchIdFilter;
+                if (JournalBatchId <> "Journal Batch Id") then
+                    Error(JournalBatchIdNameNotMatchErr)
+            end else
+                JournalBatchId := "Journal Batch Id";
+        end;
+
         ProcessAppliesToInvoiceNumberAndId();
 
         TempGenJournalLine.Reset();
@@ -205,7 +228,7 @@ page 30055 "APIV2 - Customer Payments"
 
         Clear(Rec);
         GraphMgtCustomerPayments.SetCustomerPaymentsTemplateAndBatch(
-          Rec, LibraryAPIGeneralJournal.GetBatchNameFromId(TempGenJournalLine.GetFilter("Journal Batch Id")));
+          Rec, LibraryAPIGeneralJournal.GetBatchNameFromId(JournalBatchId));
         LibraryAPIGeneralJournal.InitializeLine(
           Rec, TempGenJournalLine."Line No.", TempGenJournalLine."Document No.", TempGenJournalLine."External Document No.");
         TransferGeneratedFieldsFromInitializeLine(TempGenJournalLine);
@@ -238,8 +261,6 @@ page 30055 "APIV2 - Customer Payments"
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
-        CheckFilters();
-
         ClearCalculatedFields();
 
         "Document Type" := "Document Type"::Payment;
@@ -257,11 +278,12 @@ page 30055 "APIV2 - Customer Payments"
         SalesInvoiceHeader: Record "Sales Invoice Header";
         GraphMgtCustomerPayments: Codeunit "Graph Mgt - Customer Payments";
         LibraryAPIGeneralJournal: Codeunit "Library API - General Journal";
-        GlobalJournalDisplayNameTxt: Text;
         AppliesToInvoiceNumberText: Code[20];
         AppliesToInvoiceIdText: Guid;
         FiltersNotSpecifiedErr: Label 'You must specify a journal batch ID or a journal ID to get a journal line.';
-        CannotEditBatchNameErr: Label 'The Journal Batch Display Name isn''t editable.';
+        JournalBatchIdNameNotMatchErr: Label 'The Journal Id and Journal Display Name do not match.';
+        CannotEditBatchNameErr: Label 'The Journal Batch Display Name cannot be changed.';
+        CannotEditJournalIdErr: Label 'The Journal Id cannot be changed.';
         CustomerValuesDontMatchErr: Label 'The customer values do not match to a specific Customer.';
         CustomerIdDoesNotMatchACustomerErr: Label 'The "customerId" does not match to a Customer.', Comment = 'customerId is a field name and should not be translated.';
         CustomerNumberDoesNotMatchACustomerErr: Label 'The "customerNumber" does not match to a Customer.', Comment = 'customerNumber is a field name and should not be translated.';
@@ -277,17 +299,13 @@ page 30055 "APIV2 - Customer Payments"
     end;
 
     local procedure SetCalculatedFields()
-    var
-        GraphMgtComplexTypes: Codeunit "Graph Mgt - Complex Types";
     begin
-        GlobalJournalDisplayNameTxt := "Journal Batch Name";
         AppliesToInvoiceNumberText := "Applies-to Doc. No.";
         AppliesToInvoiceIdText := "Applies-to Invoice Id";
     end;
 
     local procedure ClearCalculatedFields()
     begin
-        Clear(GlobalJournalDisplayNameTxt);
         Clear(AppliesToInvoiceIdText);
         Clear(AppliesToInvoiceNumberText);
     end;

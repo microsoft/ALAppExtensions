@@ -60,7 +60,7 @@ report 11721 "G/L Acc. Group Post. Check CZL"
                     DifferentGLAccountGroup: Boolean;
                 begin
                     if (RecordNo mod 100) = 0 then
-                        Window.Update(2, Round(RecordNo / NoOfRecords * 10000, 1));
+                        WindowDialog.Update(2, Round(RecordNo / NoOfRecords * 10000, 1));
                     RecordNo := RecordNo + 1;
 
                     if PrevDocumentNo = "Document No." then
@@ -109,22 +109,22 @@ report 11721 "G/L Acc. Group Post. Check CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                Window.Update(1, "Period Start");
-                Window.Update(2, 0);
+                WindowDialog.Update(1, "Period Start");
+                WindowDialog.Update(2, 0);
 
                 Clear(PrevDocumentNo);
             end;
 
             trigger OnPostDataItem()
             begin
-                Window.Close();
+                WindowDialog.Close();
             end;
 
             trigger OnPreDataItem()
             begin
                 SetRange("Period Start", FromDate, ToDate);
 
-                Window.Open(Text000Msg + Text001Msg);
+                WindowDialog.Open(Text000Msg + Text001Msg);
             end;
         }
         dataitem("Integer"; "Integer")
@@ -211,7 +211,7 @@ report 11721 "G/L Acc. Group Post. Check CZL"
         FromDate: Date;
         ToDate: Date;
         FromDateErr: Label 'Enter the value "From Date".';
-        Window: Dialog;
+        WindowDialog: Dialog;
         RecordNo: Integer;
         NoOfRecords: Integer;
         Text000Msg: Label 'Processing Date #1#########\\', Comment = '#1######### = PeriodText';

@@ -390,13 +390,6 @@ page 30038 "APIV2 - Sales Credit Memos"
                         RegisterFieldSet(FieldNo("Prices Including VAT"));
                     end;
                 }
-                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
-                {
-                    Caption = 'Dimension Set Lines';
-                    EntityName = 'dimensionSetLine';
-                    EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(6);
-                }
                 part(salesCreditMemoLines; "APIV2 - Sales Credit Mem Lines")
                 {
                     Caption = 'Lines';
@@ -528,6 +521,13 @@ page 30038 "APIV2 - Sales Credit Memos"
                         RegisterFieldSet(FieldNo("Sell-to E-Mail"));
                     end;
                 }
+                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
+                {
+                    Caption = 'Dimension Set Lines';
+                    EntityName = 'dimensionSetLine';
+                    EntitySetName = 'dimensionSetLines';
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(6);
+                }
                 part(attachments; "APIV2 - Attachments")
                 {
                     Caption = 'Attachments';
@@ -602,7 +602,6 @@ page 30038 "APIV2 - Sales Credit Memos"
         Currency: Record "Currency";
         PaymentTerms: Record "Payment Terms";
         ShipmentMethod: Record "Shipment Method";
-        GraphMgtSalesCreditMemo: Codeunit "Graph Mgt - Sales Credit Memo";
         GraphMgtSalCrMemoBuf: Codeunit "Graph Mgt - Sal. Cr. Memo Buf.";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         LCYCurrencyCode: Code[10];

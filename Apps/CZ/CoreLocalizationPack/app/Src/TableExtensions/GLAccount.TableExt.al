@@ -50,5 +50,48 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
             AutoFormatType = 1;
             BlankZero = true;
         }
+        field(11783; "Net Change ACY (VAT Date) CZL"; Decimal)
+        {
+            Caption = 'Net Change ACY (VAT Date)';
+            Editable = false;
+            FieldClass = FlowField;
+            CalcFormula = Sum("G/L Entry"."Additional-Currency Amount" where("G/L Account No." = field("No."),
+                                                                              "G/L Account No." = field(filter(Totaling)),
+                                                                              "Business Unit Code" = field("Business Unit Filter"),
+                                                                              "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                                              "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                                              "VAT Date CZL" = field("Date Filter")));
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+        }
+        field(11784; "Debit Amt. ACY (VAT Date) CZL"; Decimal)
+        {
+            Caption = 'Debit Amount ACY (VAT Date)';
+            Editable = false;
+            FieldClass = FlowField;
+            CalcFormula = Sum("G/L Entry"."Add.-Currency Debit Amount" where("G/L Account No." = field("No."),
+                                                                              "G/L Account No." = field(filter(Totaling)),
+                                                                              "Business Unit Code" = field("Business Unit Filter"),
+                                                                              "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                                              "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                                              "VAT Date CZL" = field("Date Filter")));
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;                                                                              
+        }
+        field(11785; "Credit Amt. ACY (VAT Date) CZL"; Decimal)
+        {
+            Caption = 'Credit Amount ACY (VAT Date)';
+            Editable = false;
+            FieldClass = FlowField;
+            CalcFormula = Sum("G/L Entry"."Add.-Currency Debit Amount" where("G/L Account No." = field("No."),
+                                                                              "G/L Account No." = field(filter(Totaling)),
+                                                                              "Business Unit Code" = field("Business Unit Filter"),
+                                                                              "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                                              "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                                              "VAT Date CZL" = field("Date Filter")));
+
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+        }
     }
 }

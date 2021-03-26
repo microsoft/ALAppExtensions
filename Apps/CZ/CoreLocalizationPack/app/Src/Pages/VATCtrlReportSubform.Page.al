@@ -72,7 +72,7 @@ page 31112 "VAT Ctrl. Report Subform CZL"
                 {
                     ApplicationArea = VAT;
                     Editable = false;
-                    ToolTip = 'Specifies the type of user setup lines list';
+                    ToolTip = 'Specifies the type of transaction.';
                 }
                 field("VAT Bus. Posting Group"; Rec."VAT Bus. Posting Group")
                 {
@@ -104,7 +104,7 @@ page 31112 "VAT Ctrl. Report Subform CZL"
                 field("Commodity Code"; Rec."Commodity Code")
                 {
                     ApplicationArea = VAT;
-                    ToolTip = 'Specifies code from reverse charge.';
+                    ToolTip = 'Specifies Commodity Code.';
                 }
                 field("Supplies Mode Code"; Rec."Supplies Mode Code")
                 {
@@ -124,7 +124,7 @@ page 31112 "VAT Ctrl. Report Subform CZL"
                 field(Name; Rec.Name)
                 {
                     ApplicationArea = VAT;
-                    ToolTip = 'Specifies name of whse. net change template list';
+                    ToolTip = 'Specifies the customer''s name.';
                 }
                 field("Birth Date"; Rec."Birth Date")
                 {
@@ -145,7 +145,7 @@ page 31112 "VAT Ctrl. Report Subform CZL"
                 {
                     ApplicationArea = VAT;
                     Editable = false;
-                    ToolTip = 'Specifies the document number whitch the document was closed.';
+                    ToolTip = 'Specifies the document number which the line was closed with.';
                 }
             }
         }

@@ -110,17 +110,6 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
         }
         addfirst("F&unctions")
         {
-            action(CalcAndPostVATSettlementCZL)
-            {
-                ApplicationArea = VAT;
-                Caption = 'Calculate and Post VAT Settlement';
-                Ellipsis = true;
-                Image = SettleOpenTransactions;
-                Promoted = true;
-                PromotedCategory = Process;
-                RunObject = Report "Calc. and Post VAT Settl. CZL";
-                ToolTip = 'Close open VAT entries and transfers purchase and sales VAT amounts to the VAT settlement account.';
-            }
             action(ExportCZL)
             {
                 ApplicationArea = VAT;

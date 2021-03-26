@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31170 "Sync.Dep.Fld-PhyInvOrdLine CZL"
 {
@@ -34,3 +35,4 @@ codeunit 31170 "Sync.Dep.Fld-PhyInvOrdLine CZL"
         Rec."Invt. Movement Template CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Invt. Movement Template CZL"));
     end;
 }
+#endif

@@ -14,6 +14,7 @@ page 2508 "Extension Deployment Status"
     RefreshOnActivate = true;
     SourceTable = "NAV App Tenant Operation";
     ContextSensitiveHelpPage = 'ui-extensions';
+    Permissions = tabledata "Nav App Tenant Operation" = r;
 
     layout
     {

@@ -46,9 +46,9 @@ codeunit 31054 "Install Application CZP"
         CopySourceCodeSetup();
         CopyUserSetup();
         CopyGeneralLedgerSetup();
+        CopyCurrencyNominalValue();
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
     local procedure CopyPermission();
     begin
         InsertTableDataPermissions(Database::"Cash Document Header", Database::"Cash Document Header CZP");
@@ -82,7 +82,6 @@ codeunit 31054 "Install Application CZP"
         until Permission.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopyCashDesk();
     var
         BankAccount: Record "Bank Account";
@@ -166,7 +165,6 @@ codeunit 31054 "Install Application CZP"
             until BankAccount.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
     local procedure CopyCashDeskUser();
     var
         CashDeskUser: Record "Cash Desk User";
@@ -189,7 +187,6 @@ codeunit 31054 "Install Application CZP"
             until CashDeskUser.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
     local procedure CopyCashDeskEvent();
     var
         CashDeskEvent: Record "Cash Desk Event";
@@ -218,7 +215,6 @@ codeunit 31054 "Install Application CZP"
             until CashDeskEvent.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopyCashDocumentHeader();
     var
         CashDocumentHeader: Record "Cash Document Header";
@@ -271,7 +267,6 @@ codeunit 31054 "Install Application CZP"
             until CashDocumentHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
     local procedure CopyCashDocumentLine();
     var
         CashDocumentLine: Record "Cash Document Line";
@@ -340,7 +335,6 @@ codeunit 31054 "Install Application CZP"
             until CashDocumentLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
     local procedure CopyPostedCashDocumentHeader();
     var
         PostedCashDocumentHeader: Record "Posted Cash Document Header";
@@ -392,7 +386,6 @@ codeunit 31054 "Install Application CZP"
             until PostedCashDocumentHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '18.0')]
     local procedure CopyPostedCashDocumentLine();
     var
         PostedCashDocumentLine: Record "Posted Cash Document Line";
@@ -451,7 +444,6 @@ codeunit 31054 "Install Application CZP"
             until PostedCashDocumentLine.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopyPaymentMethod();
     var
         PaymentMethod: Record "Payment Method";
@@ -466,7 +458,6 @@ codeunit 31054 "Install Application CZP"
             until PaymentMethod.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopySalesHeader();
     var
         SalesHeader: Record "Sales Header";
@@ -479,7 +470,6 @@ codeunit 31054 "Install Application CZP"
             until SalesHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopySalesInvoiceHeader();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -492,7 +482,6 @@ codeunit 31054 "Install Application CZP"
             until SalesInvoiceHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopySalesCrMemoHeader();
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
@@ -505,7 +494,6 @@ codeunit 31054 "Install Application CZP"
             until SalesCrMemoHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopyPurchaseHeader();
     var
         PurchaseHeader: Record "Purchase Header";
@@ -518,7 +506,6 @@ codeunit 31054 "Install Application CZP"
             until PurchaseHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopyPurchaseInvoiceHeader();
     var
         PurchInvHeader: Record "Purch. Inv. Header";
@@ -531,7 +518,6 @@ codeunit 31054 "Install Application CZP"
             until PurchInvHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopyPurchaseCrMemoHeader();
     var
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
@@ -544,7 +530,6 @@ codeunit 31054 "Install Application CZP"
             until PurchCrMemoHdr.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopyServiceHeader();
     var
         ServiceHeader: Record "Service Header";
@@ -557,7 +542,6 @@ codeunit 31054 "Install Application CZP"
             until ServiceHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopyServiceInvoiceHeader();
     var
         ServiceInvoiceHeader: Record "Service Invoice Header";
@@ -570,7 +554,6 @@ codeunit 31054 "Install Application CZP"
             until ServiceInvoiceHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopyServiceCrMemoHeader();
     var
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
@@ -583,7 +566,6 @@ codeunit 31054 "Install Application CZP"
             until ServiceCrMemoHeader.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopySourceCodeSetup();
     var
         SourceCodeSetup: Record "Source Code Setup";
@@ -594,7 +576,6 @@ codeunit 31054 "Install Application CZP"
         end;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopyUserSetup();
     var
         UserSetup: Record "User Setup";
@@ -608,7 +589,6 @@ codeunit 31054 "Install Application CZP"
             until UserSetup.Next() = 0;
     end;
 
-    [Obsolete('Moved to Cash Desk Localization for Czech.', '17.0')]
     local procedure CopyGeneralLedgerSetup();
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
@@ -618,6 +598,22 @@ codeunit 31054 "Install Application CZP"
             GeneralLedgerSetup."Cash Payment Limit (LCY) CZP" := GeneralLedgerSetup."Cash Payment Limit (LCY)";
             GeneralLedgerSetup.Modify(false);
         end;
+    end;
+
+    local procedure CopyCurrencyNominalValue();
+    var
+        CurrencyNominalValue: Record "Currency Nominal Value";
+        CurrencyNominalValueCZP: Record "Currency Nominal Value CZP";
+    begin
+        if CurrencyNominalValue.FindSet() then
+            repeat
+                if not CurrencyNominalValueCZP.Get(CurrencyNominalValue."Currency Code", CurrencyNominalValue.Value) then begin
+                    CurrencyNominalValueCZP.Init();
+                    CurrencyNominalValueCZP."Currency Code" := CurrencyNominalValue."Currency Code";
+                    CurrencyNominalValueCZP."Nominal Value" := CurrencyNominalValue.Value;
+                    CurrencyNominalValueCZP.Insert();
+                end;
+            until CurrencyNominalValue.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

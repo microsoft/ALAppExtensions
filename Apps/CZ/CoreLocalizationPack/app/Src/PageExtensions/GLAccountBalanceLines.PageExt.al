@@ -13,6 +13,23 @@ pageextension 11710 "G/L Account Balance Lines CZL" extends "G/L Account Balance
                 DrillDown = true;
                 Editable = false;
                 ToolTip = 'Specifies the debit in the account balance during the time period in the Date Filter field posted by VAT date';
+
+                trigger OnDrillDown()
+                begin
+                    BalanceDrillDown();
+                end;
+            }
+            field("Debit Amt. ACY (VAT Date) CZL"; GLAcc."Debit Amt. ACY (VAT Date) CZL")
+            {
+                Caption = 'Debit Amount ACY (VAT Date)';
+                ApplicationArea = Basic, Suite;
+                AutoFormatType = 1;
+                BlankNumbers = BlankZero;
+                DrillDown = true;
+                Editable = false;
+                ToolTip = 'Specifies the debit in the account balance during the time period in the Date Filter field posted by VAT date. This amount is in additional reporting currency.';
+                Visible = false;
+
                 trigger OnDrillDown()
                 begin
                     BalanceDrillDown();
@@ -30,6 +47,23 @@ pageextension 11710 "G/L Account Balance Lines CZL" extends "G/L Account Balance
                 DrillDown = true;
                 Editable = false;
                 ToolTip = 'Specifies the credit in the account balance during the time period in the Date Filter field posted by VAT date';
+
+                trigger OnDrillDown()
+                begin
+                    BalanceDrillDown();
+                end;
+            }
+            field("Credit Amt. ACY (VAT Date) CZL"; GLAcc."Credit Amt. ACY (VAT Date) CZL")
+            {
+                Caption = 'Credit Amount ACY (VAT Date)';
+                ApplicationArea = Basic, Suite;
+                AutoFormatType = 1;
+                BlankNumbers = BlankZero;
+                DrillDown = true;
+                Editable = false;
+                ToolTip = 'Specifies the credit in the account balance during the time period in the Date Filter field posted by VAT date. This amount is in additional reporting currency.';
+                Visible = false;
+
                 trigger OnDrillDown()
                 begin
                     BalanceDrillDown();
@@ -48,6 +82,23 @@ pageextension 11710 "G/L Account Balance Lines CZL" extends "G/L Account Balance
                 Editable = false;
                 ToolTip = 'Specifies the net change in the account balance during the time period in the Date Filter field posted by VAT date.';
                 Visible = false;
+
+                trigger OnDrillDown()
+                begin
+                    BalanceDrillDown();
+                end;
+            }
+            field("Net Change ACY (VAT Date) CZL"; GLAcc."Net Change ACY (VAT Date) CZL")
+            {
+                Caption = 'Net Change ACY (VAT Date)';
+                ApplicationArea = Basic, Suite;
+                AutoFormatType = 1;
+                BlankNumbers = BlankZero;
+                DrillDown = true;
+                Editable = false;
+                ToolTip = 'Specifies the net change in the account balance during the time period in the Date Filter field posted by VAT date. This amount is in additional reporting currency.';
+                Visible = false;
+
                 trigger OnDrillDown()
                 begin
                     BalanceDrillDown();
@@ -58,15 +109,23 @@ pageextension 11710 "G/L Account Balance Lines CZL" extends "G/L Account Balance
     trigger OnAfterGetRecord()
     begin
         if DebitCreditTotals then
-            GLAcc.CalcFields("Debit Amount (VAT Date) CZL", "Credit Amount (VAT Date) CZL", "Net Change (VAT Date) CZL")
+            GLAcc.CalcFields("Debit Amount (VAT Date) CZL", "Credit Amount (VAT Date) CZL", "Net Change (VAT Date) CZL",
+                            "Debit Amt. ACY (VAT Date) CZL", "Credit Amt. ACY (VAT Date) CZL", "Net Change ACY (VAT Date) CZL")
         else begin
-            GLAcc.CalcFields("Net Change (VAT Date) CZL");
+            GLAcc.CalcFields("Net Change (VAT Date) CZL", "Net Change ACY (VAT Date) CZL");
             if GLAcc."Net Change (VAT Date) CZL" > 0 then begin
                 GLAcc."Debit Amount (VAT Date) CZL" := GLAcc."Net Change (VAT Date) CZL";
-                GLAcc."Credit Amount (VAT Date) CZL" := 0
+                GLAcc."Credit Amount (VAT Date) CZL" := 0;
             end else begin
                 GLAcc."Debit Amount (VAT Date) CZL" := 0;
-                GLAcc."Credit Amount (VAT Date) CZL" := -GLAcc."Net Change (VAT Date) CZL"
+                GLAcc."Credit Amount (VAT Date) CZL" := -GLAcc."Net Change (VAT Date) CZL";
+            end;
+            if GLAcc."Net Change ACY (VAT Date) CZL" > 0 then begin
+                GLAcc."Debit Amt. ACY (VAT Date) CZL" := GLAcc."Net Change ACY (VAT Date) CZL";
+                GLAcc."Credit Amt. ACY (VAT Date) CZL" := 0;
+            end else begin
+                GLAcc."Debit Amt. ACY (VAT Date) CZL" := 0;
+                GLAcc."Credit Amt. ACY (VAT Date) CZL" := -GLAcc."Net Change ACY (VAT Date) CZL";
             end;
         end;
     end;

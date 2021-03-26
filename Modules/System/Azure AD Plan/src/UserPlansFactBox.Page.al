@@ -17,6 +17,7 @@ page 9826 "User Plans FactBox"
     InsertAllowed = false;
     ModifyAllowed = false;
     DeleteAllowed = false;
+    Permissions = tabledata "User Plan" = r;
 
     layout
     {
@@ -24,7 +25,7 @@ page 9826 "User Plans FactBox"
         {
             repeater(Group)
             {
-                field(Name; "Plan Name")
+                field(Name; Rec."Plan Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the plan.';

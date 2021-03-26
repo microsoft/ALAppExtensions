@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432,AL0603
 codeunit 31189 "Sync.Dep.Fld-AccSchedLine CZL"
 {
@@ -45,3 +46,4 @@ codeunit 31189 "Sync.Dep.Fld-AccSchedLine CZL"
         Rec."Assets/Liabilities Type CZL" := NewFieldInt;
     end;
 }
+#endif

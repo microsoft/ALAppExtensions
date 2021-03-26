@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 codeunit 31103 "VAT Ctrl. Report Release CZL"
 {
     TableNo = "VAT Ctrl. Report Header CZL";
@@ -31,11 +30,11 @@ codeunit 31103 "VAT Ctrl. Report Release CZL"
     var
         LinesNotExistErr: Label 'There is nothing to release for VAT Control Report No. %1.', Comment = '%1 = VAT Control Report No.';
 
-    procedure Reopen(var VATCtrlReportHeader: Record "VAT Ctrl. Report Header CZL")
+    procedure Reopen(var VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL")
     begin
-        if VATCtrlReportHeader.Status = VATCtrlReportHeader.Status::Open then
+        if VATCtrlReportHeaderCZL.Status = VATCtrlReportHeaderCZL.Status::Open then
             exit;
-        VATCtrlReportHeader.Status := VATCtrlReportHeader.Status::Open;
-        VATCtrlReportHeader.Modify(true);
+        VATCtrlReportHeaderCZL.Status := VATCtrlReportHeaderCZL.Status::Open;
+        VATCtrlReportHeaderCZL.Modify(true);
     end;
 }

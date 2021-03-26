@@ -111,6 +111,11 @@ codeunit 2611 "Feature Management Facade"
     end;
 
     [IntegrationEvent(false, false)]
+    internal procedure OnBeforeUpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
     internal procedure OnBeforeScheduleTask(FeatureDataUpdateStatus: Record "Feature Data Update Status"; var DoNotScheduleTask: Boolean; var TaskId: Guid)
     begin
     end;

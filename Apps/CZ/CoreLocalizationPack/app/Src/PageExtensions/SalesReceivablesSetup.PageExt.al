@@ -2,6 +2,14 @@ pageextension 11718 "Sales & Receivables Setup CZL" extends "Sales & Receivables
 {
     layout
     {
+        addlast(General)
+        {
+            field("Allow Alter Posting Groups CZL"; Rec."Allow Alter Posting Groups CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Allows you to use a different posting group on the document than the one set on the customer.';
+            }
+        }
         addlast(content)
         {
             group(VatCZL)

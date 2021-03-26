@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 page 31147 "EET Entry Preview Card CZL"
 {
     Caption = 'EET Entry Preview Card';
@@ -227,7 +226,6 @@ page 31147 "EET Entry Preview Card CZL"
     var
         TempEETEntryStatusLogCZL: Record "EET Entry Status Log CZL" temporary;
         TempErrorMessage: Record "Error Message" temporary;
-        EETManagementCZL: Codeunit "EET Management CZL";
         SignatureCode: Text;
         [InDataSet]
         StatusStyleExpr: Text;

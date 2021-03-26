@@ -218,24 +218,24 @@ table 11746 "Cash Desk Event CZP"
 
     trigger OnDelete()
     begin
-        DimMgt.DeleteDefaultDim(Database::"Cash Desk Event CZP", Code);
+        DimensionManagement.DeleteDefaultDim(Database::"Cash Desk Event CZP", Code);
     end;
 
     trigger OnRename()
     begin
-        DimMgt.RenameDefaultDim(Database::"Cash Desk Event CZP", xRec.Code, Code);
+        DimensionManagement.RenameDefaultDim(Database::"Cash Desk Event CZP", xRec.Code, Code);
     end;
 
     var
-        DimMgt: Codeunit DimensionManagement;
+        DimensionManagement: Codeunit DimensionManagement;
 
     procedure ValidateShortcutDimCode(FieldNumber: Integer; var ShortcutDimCode: Code[20])
     begin
         OnBeforeValidateShortcutDimCode(Rec, xRec, FieldNumber, ShortcutDimCode);
 
-        DimMgt.ValidateDimValueCode(FieldNumber, ShortcutDimCode);
+        DimensionManagement.ValidateDimValueCode(FieldNumber, ShortcutDimCode);
         if not IsTemporary then begin
-            DimMgt.SaveDefaultDim(DATABASE::"Cash Desk Event CZP", Code, FieldNumber, ShortcutDimCode);
+            DimensionManagement.SaveDefaultDim(DATABASE::"Cash Desk Event CZP", Code, FieldNumber, ShortcutDimCode);
             Modify();
         end;
 

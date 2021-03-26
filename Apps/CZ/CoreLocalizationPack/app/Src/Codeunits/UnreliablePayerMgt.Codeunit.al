@@ -23,7 +23,7 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
 
     procedure ImportUnrPayerStatus(ShowMessage: Boolean): Boolean
     var
-        TempBlobResponse: Codeunit "Temp Blob";
+        ResponseTempBlob: Codeunit "Temp Blob";
         InsertEntryCount: Integer;
         VATRegNoCount: Integer;
         MaxVATRegNoCount: Integer;
@@ -39,10 +39,10 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
             CurrVATRegNoCount := MaxVATRegNoCount;
             if VATRegNoCount <= MaxVATRegNoCount then
                 CurrVATRegNoCount := VATRegNoCount;
-            if not GetUnrPayerStatus(VATRegNoList, TempBlobResponse) then
+            if not GetUnrPayerStatus(VATRegNoList, ResponseTempBlob) then
                 exit(false);
 
-            InsertEntryCount += ImportUnrPayerStatusResponse(TempBlobResponse);
+            InsertEntryCount += ImportUnrPayerStatusResponse(ResponseTempBlob);
             VATRegNoCount -= CurrVATRegNoCount;
         until VATRegNoCount = 0;
 
@@ -53,9 +53,14 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
 
     procedure ImportUnrPayerStatusForVendor(Vendor: Record Vendor): Boolean
     var
+        CheckDisabledMsg: Label 'Check is disabled for vendor %1.', Comment = '%1 = Vendor No.';
         VatRegNoEmptyMsg: Label 'Check is not possible.\%1 must not be empty and must match %2 in %3.', Comment = '%1 = VAT Registration No. FieldCaption, %2 =  Country/Region CodeFieldCaption, %3 = CompanyInfromation TabeCaption';
     begin
         GetUnreliablePayerServiceSetup();
+        if Vendor."Disable Unreliab. Check CZL" then begin
+            Message(CheckDisabledMsg, Vendor."No.");
+            exit(false);
+        end;
         if not Vendor.IsUnreliablePayerCheckPossibleCZL() then begin
             Message(VatRegNoEmptyMsg, Vendor.FieldCaption("VAT Registration No."), CompanyInformation.FieldCaption("Country/Region Code"), CompanyInformation.TableCaption());
             exit(false);
@@ -68,46 +73,46 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
 
     procedure ImportUnrPayerList(ShowMessage: Boolean): Boolean
     var
-        TempBlobResponse: Codeunit "Temp Blob";
+        ResponseTempBlob: Codeunit "Temp Blob";
         InsertEntryCount: Integer;
     begin
         GetUnreliablePayerServiceSetup();
-        if not GetUnrPayerList(TempBlobResponse) then
+        if not GetUnrPayerList(ResponseTempBlob) then
             exit(false);
 
-        InsertEntryCount := ImportUnrPayerListResponse(TempBlobResponse);
+        InsertEntryCount := ImportUnrPayerListResponse(ResponseTempBlob);
         if ShowMessage then
             Message(ImportSuccessfulMsg, InsertEntryCount);
         exit(true);
     end;
 
-    local procedure GetUnrPayerStatus(VATRegNoList: List of [Code[20]]; var TempBlobResponse: Codeunit "Temp Blob"): Boolean
+    local procedure GetUnrPayerStatus(VATRegNoList: List of [Code[20]]; var ResponseTempBlob: Codeunit "Temp Blob"): Boolean
     begin
-        exit(UnreliablePayerWSCZL.GetStatus(VATRegNoList, TempBlobResponse));
+        exit(UnreliablePayerWSCZL.GetStatus(VATRegNoList, ResponseTempBlob));
     end;
 
-    local procedure GetUnrPayerList(var TempBlobResponse: Codeunit "Temp Blob"): Boolean
+    local procedure GetUnrPayerList(var ResponseTempBlob: Codeunit "Temp Blob"): Boolean
     begin
-        exit(UnreliablePayerWSCZL.GetList(TempBlobResponse));
+        exit(UnreliablePayerWSCZL.GetList(ResponseTempBlob));
     end;
 
-    local procedure ImportUnrPayerStatusResponse(var TempBlobResponse: Codeunit "Temp Blob"): Integer
+    local procedure ImportUnrPayerStatusResponse(var ResponseTempBlob: Codeunit "Temp Blob"): Integer
     var
         UnreliablePayerStatusCZL: XMLport "Unreliable Payer Status CZL";
         ResponseInStream: InStream;
     begin
-        TempBlobResponse.CreateInStream(ResponseInStream);
+        ResponseTempBlob.CreateInStream(ResponseInStream);
         UnreliablePayerStatusCZL.SetSource(ResponseInStream);
         UnreliablePayerStatusCZL.Import();
         exit(UnreliablePayerStatusCZL.GetInsertEntryCount());
     end;
 
-    local procedure ImportUnrPayerListResponse(var TempBlobResponse: Codeunit "Temp Blob"): Integer
+    local procedure ImportUnrPayerListResponse(var ResponseTempBlob: Codeunit "Temp Blob"): Integer
     var
         UnreliablePayerListCZL: XMLport "Unreliable Payer List CZL";
         ResponseInStream: InStream;
     begin
-        TempBlobResponse.CreateInStream(ResponseInStream);
+        ResponseTempBlob.CreateInStream(ResponseInStream);
         UnreliablePayerListCZL.SetSource(ResponseInStream);
         UnreliablePayerListCZL.Import();
         exit(UnreliablePayerListCZL.GetInsertEntryCount());
@@ -264,7 +269,7 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
     var
         UnreliablePayerEntryCZL: Record "Unreliable Payer Entry CZL";
         TotalPurchaseLine: Record "Purchase Line";
-        TotalPurchaseLineLCY: Record "Purchase Line";
+        TotalLCYPurchaseLine: Record "Purchase Line";
         TempPurchaseLine: Record "Purchase Line" temporary;
         PurchPost: Codeunit "Purch.-Post";
         VATAmount: Decimal;
@@ -277,7 +282,7 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
 
         PurchPost.GetPurchLines(PurchaseHeader, TempPurchaseLine, 0);
         Clear(PurchPost);
-        PurchPost.SumPurchLinesTemp(PurchaseHeader, TempPurchaseLine, 0, TotalPurchaseLine, TotalPurchaseLineLCY, VATAmount, VATAmountText);
+        PurchPost.SumPurchLinesTemp(PurchaseHeader, TempPurchaseLine, 0, TotalPurchaseLine, TotalLCYPurchaseLine, VATAmount, VATAmountText);
 
         if PurchaseHeader.IsUnreliablePayerCheckPossibleCZL() then begin
             case PurchaseHeader.GetUnreliablePayerStatusCZL() of
@@ -288,20 +293,20 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
             end;
 
             if not (PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::"Credit Memo", PurchaseHeader."Document Type"::"Return Order"]) then begin
-                if PurchaseHeader."Bank Account Code" = '' then begin
-                    if PublicBankAccountCheckPossible(PurchaseHeader."Posting Date", TotalPurchaseLineLCY."Amount Including VAT") then
+                if PurchaseHeader."Bank Account Code CZL" = '' then begin
+                    if PublicBankAccountCheckPossible(PurchaseHeader."Posting Date", TotalLCYPurchaseLine."Amount Including VAT") then
                         ConfirmProcess(BankAccCodeNotExistQst);
                     exit;
                 end;
 
-                if PublicBankAccountCheckPossible(PurchaseHeader."Posting Date", TotalPurchaseLineLCY."Amount Including VAT") and
-                   not ForeignBankAccountCheckPossible(PurchaseHeader."Pay-to Vendor No.", PurchaseHeader."Bank Account Code") and
-                   not IsPublicBankAccount(PurchaseHeader."Pay-to Vendor No.", PurchaseHeader."VAT Registration No.", PurchaseHeader."Bank Account No.", PurchaseHeader.IBAN)
+                if PublicBankAccountCheckPossible(PurchaseHeader."Posting Date", TotalLCYPurchaseLine."Amount Including VAT") and
+                   not ForeignBankAccountCheckPossible(PurchaseHeader."Pay-to Vendor No.", PurchaseHeader."Bank Account Code CZL") and
+                   not IsPublicBankAccount(PurchaseHeader."Pay-to Vendor No.", PurchaseHeader."VAT Registration No.", PurchaseHeader."Bank Account No. CZL", PurchaseHeader."IBAN CZL")
                 then
-                    ConfirmProcess(StrSubstNo(BankAccNotPublicQst, PurchaseHeader."Bank Account No.", PurchaseHeader."Pay-to Vendor No."));
+                    ConfirmProcess(StrSubstNo(BankAccNotPublicQst, PurchaseHeader."Bank Account No. CZL", PurchaseHeader."Pay-to Vendor No."));
 
-                if ForeignBankAccountCheckPossible(PurchaseHeader."Pay-to Vendor No.", PurchaseHeader."Bank Account Code") then
-                    ConfirmProcess(StrSubstNo(BankAccIsForeignQst, PurchaseHeader."Bank Account Code", PurchaseHeader."Pay-to Vendor No."));
+                if ForeignBankAccountCheckPossible(PurchaseHeader."Pay-to Vendor No.", PurchaseHeader."Bank Account Code CZL") then
+                    ConfirmProcess(StrSubstNo(BankAccIsForeignQst, PurchaseHeader."Bank Account Code CZL", PurchaseHeader."Pay-to Vendor No."));
             end;
         end;
     end;

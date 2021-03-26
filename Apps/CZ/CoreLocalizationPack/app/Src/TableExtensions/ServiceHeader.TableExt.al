@@ -2,6 +2,123 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
 {
     fields
     {
+        field(11717; "Specific Symbol CZL"; Code[10])
+        {
+            Caption = 'Specific Symbol';
+            CharAllowed = '09';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                TestField(Status, Status::Pending);
+            end;
+        }
+        field(11718; "Variable Symbol CZL"; Code[10])
+        {
+            Caption = 'Variable Symbol';
+            CharAllowed = '09';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                TestField(Status, Status::Pending);
+            end;
+        }
+        field(11719; "Constant Symbol CZL"; Code[10])
+        {
+            Caption = 'Constant Symbol';
+            CharAllowed = '09';
+            TableRelation = "Constant Symbol CZL";
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                TestField(Status, Status::Pending);
+            end;
+        }
+        field(11720; "Bank Account Code CZL"; Code[20])
+        {
+            Caption = 'Bank Account Code';
+            TableRelation = if ("Document Type" = filter(Quote | Order | Invoice)) "Bank Account" else
+            if ("Document Type" = filter("Credit Memo")) "Customer Bank Account".Code where("Customer No." = field("Bill-to Customer No."));
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                BankAccount: Record "Bank Account";
+                CustomerBankAccount: Record "Customer Bank Account";
+            begin
+                TestField(Status, Status::Pending);
+                if "Bank Account Code CZL" = '' then begin
+                    UpdateBankInfoCZL('', '', '', '', '', '', '');
+                    exit;
+                end;
+                case "Document Type" of
+                    "Document Type"::Quote, "Document Type"::Order, "Document Type"::Invoice:
+                        begin
+                            BankAccount.Get("Bank Account Code CZL");
+                            UpdateBankInfoCZL(
+                              BankAccount."No.",
+                              BankAccount."Bank Account No.",
+                              BankAccount."Bank Branch No.",
+                              BankAccount.Name,
+                              BankAccount."Transit No.",
+                              BankAccount.IBAN,
+                              BankAccount."SWIFT Code");
+                        end;
+                    "Document Type"::"Credit Memo":
+                        begin
+                            TestField("Bill-to Customer No.");
+                            CustomerBankAccount.Get("Bill-to Customer No.", "Bank Account Code CZL");
+                            UpdateBankInfoCZL(
+                              CustomerBankAccount.Code,
+                              CustomerBankAccount."Bank Account No.",
+                              CustomerBankAccount."Bank Branch No.",
+                              CustomerBankAccount.Name,
+                              CustomerBankAccount."Transit No.",
+                              CustomerBankAccount.IBAN,
+                              CustomerBankAccount."SWIFT Code");
+                        end;
+                end;
+            end;
+        }
+        field(11721; "Bank Account No. CZL"; Text[30])
+        {
+            Caption = 'Bank Account No.';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11722; "Bank Branch No. CZL"; Text[20])
+        {
+            Caption = 'Bank Branch No.';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11723; "Bank Name CZL"; Text[100])
+        {
+            Caption = 'Bank Name';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11724; "Transit No. CZL"; Text[20])
+        {
+            Caption = 'Transit No.';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11725; "IBAN CZL"; Code[50])
+        {
+            Caption = 'IBAN';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11726; "SWIFT Code CZL"; Code[20])
+        {
+            Caption = 'SWIFT Code';
+            Editable = false;
+            TableRelation = "SWIFT Code";
+            DataClassification = CustomerContent;
+        }
         field(11774; "VAT Currency Factor CZL"; Decimal)
         {
             Caption = 'VAT Currency Factor';
@@ -66,6 +183,24 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
                     Clear("Credit Memo Type CZL");
             end;
         }
+        field(31068; "Physical Transfer CZL"; Boolean)
+        {
+            Caption = 'Physical Transfer';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Physical Transfer CZL" then
+                    if "Document Type" <> "Document Type"::"Credit Memo" then
+                        FieldError("Document Type");
+                UpdateServLinesByFieldNo(FieldNo("Physical Transfer CZL"), false);
+            end;
+        }
+        field(31069; "Intrastat Exclude CZL"; Boolean)
+        {
+            Caption = 'Intrastat Exclude';
+            DataClassification = CustomerContent;
+        }
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
         {
             Caption = 'EU 3-Party Intermediate Role';
@@ -78,30 +213,31 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
             end;
         }
     }
+
     var
         ConfirmManagement: Codeunit "Confirm Management";
 
     local procedure CheckCurrencyExchangeRateCZL(CurrencyDate: Date)
     var
-        CurrExchRate: Record "Currency Exchange Rate";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
         CurrExchRateNotExistsErr: Label '%1 does not exist for currency %2 and date %3.', Comment = '%1 = CurrExchRate.TableCaption, %2 = Currency Code, %3 = Date';
     begin
         if "Currency Code" = '' then
             exit;
-        CurrExchRate.SetRange("Currency Code", "Currency Code");
-        CurrExchRate.SetRange("Starting Date", 0D, CurrencyDate);
-        if CurrExchRate.IsEmpty() then
+        CurrencyExchangeRate.SetRange("Currency Code", "Currency Code");
+        CurrencyExchangeRate.SetRange("Starting Date", 0D, CurrencyDate);
+        if CurrencyExchangeRate.IsEmpty() then
             Error(CurrExchRateNotExistsErr)
     end;
 
     local procedure VATDateUpdateVATCurrencyFactorCZL()
     var
-        CurrExchRate: Record "Currency Exchange Rate";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
         VATCurrencyFactor: Decimal;
         UpdateChangedFieldQst: Label 'You have changed %1. Do you want to update %2?', Comment = '%1 = field caption, %2 = field caption';
     begin
         if "VAT Currency Code CZL" <> '' then begin
-            VATCurrencyFactor := CurrExchRate.ExchangeRate("VAT Date CZL", "VAT Currency Code CZL");
+            VATCurrencyFactor := CurrencyExchangeRate.ExchangeRate("VAT Date CZL", "VAT Currency Code CZL");
             if "VAT Currency Factor CZL" <> VATCurrencyFactor then
                 if ConfirmManagement.GetResponseOrDefault(StrSubstNo(UpdateChangedFieldQst, FieldCaption("VAT Date CZL"), FieldCaption("VAT Currency Factor CZL")), true) then
                     Validate("VAT Currency Factor CZL", VATCurrencyFactor);
@@ -125,5 +261,33 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
             if ConfirmManagement.GetResponseOrDefault(StrSubstNo(UpdateChangedFieldQst, FieldCaption("Currency Factor"), FieldCaption("VAT Currency Factor CZL")), true) then
                 Validate("VAT Currency Factor CZL", "Currency Factor");
         end;
+    end;
+
+    procedure UpdateBankInfoCZL(BankAccountCode: Code[20]; BankAccountNo: Text[30]; BankBranchNo: Text[20]; BankName: Text[100]; TransitNo: Text[20]; IBANCode: Code[50]; SWIFTCode: Code[20])
+    begin
+        "Bank Account Code CZL" := BankAccountCode;
+        "Bank Account No. CZL" := BankAccountNo;
+        "Bank Branch No. CZL" := BankBranchNo;
+        "Bank Name CZL" := BankName;
+        "Transit No. CZL" := TransitNo;
+        "IBAN CZL" := IBANCode;
+        "SWIFT Code CZL" := SWIFTCode;
+        OnAfterUpdateBankInfoCZL(Rec);
+    end;
+
+    procedure IsIntrastatTransactionCZL(): Boolean
+    var
+        CountryRegion: Record "Country/Region";
+    begin
+        if "EU 3-Party Trade" then
+            exit(false);
+        if "Intrastat Exclude CZL" then
+            exit(false);
+        exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", false));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateBankInfoCZL(var ServiceHeader: Record "Service Header")
+    begin
     end;
 }

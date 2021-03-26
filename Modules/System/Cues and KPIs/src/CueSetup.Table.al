@@ -7,6 +7,7 @@ table 9701 "Cue Setup"
 {
     Access = Internal;
     Caption = 'Cue Setup';
+    Permissions = tabledata Field = r;
 
     fields
     {
@@ -55,7 +56,7 @@ table 9701 "Cue Setup"
         }
         field(4; "Field Name"; Text[80])
         {
-            CalcFormula = Lookup (Field."Field Caption" WHERE(TableNo = FIELD("Table ID"),
+            CalcFormula = Lookup(Field."Field Caption" WHERE(TableNo = FIELD("Table ID"),
                                                               "No." = FIELD("Field No.")));
             Caption = 'Cue Name';
             FieldClass = FlowField;
@@ -95,7 +96,7 @@ table 9701 "Cue Setup"
         }
         field(10; "Table Name"; Text[249])
         {
-            CalcFormula = Lookup (AllObjWithCaption."Object Caption" WHERE("Object ID" = FIELD("Table ID"),
+            CalcFormula = Lookup(AllObjWithCaption."Object Caption" WHERE("Object ID" = FIELD("Table ID"),
                                                                            "Object Type" = CONST(Table)));
             FieldClass = FlowField;
             Editable = false;

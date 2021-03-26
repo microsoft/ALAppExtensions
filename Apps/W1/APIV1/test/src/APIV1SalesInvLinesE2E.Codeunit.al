@@ -584,7 +584,7 @@ codeunit 139734 "APIV1 - Sales Inv. Lines E2E"
         Customer: Record "Customer";
         PageRecordRef: RecordRef;
         ApiRecordRef: RecordRef;
-        SalesInvoice: TestPage 43;
+        SalesInvoice: TestPage "Sales Invoice";
         ResponseText: Text;
         TargetURL: Text;
         InvoiceLineJSON: Text;
@@ -1219,7 +1219,6 @@ codeunit 139734 "APIV1 - Sales Inv. Lines E2E"
         ResponseText: Text;
         TargetURL: Text;
         InvoiceLineJSON: Text;
-        LineNoFromJSON: Text;
         InvoiceID: Text;
     begin
         // [SCENARIO] POST a new line to an unposted Invoice with wrong item variant
@@ -1313,7 +1312,7 @@ codeunit 139734 "APIV1 - Sales Inv. Lines E2E"
         exit(LineJSON);
     end;
 
-    local procedure CreateInvoiceAndLinesThroughPage(var SalesInvoice: TestPage 43; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
+    local procedure CreateInvoiceAndLinesThroughPage(var SalesInvoice: TestPage "Sales Invoice"; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
     var
         SalesLine: Record "Sales Line";
     begin

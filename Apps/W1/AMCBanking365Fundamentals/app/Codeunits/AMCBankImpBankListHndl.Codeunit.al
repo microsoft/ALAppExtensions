@@ -102,8 +102,6 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         BankListXmlNodeList: XmlNodeList;
         ChildNode: XmlNode;
         InStreamData: InStream;
-        index: Integer;
-        XPath: Text;
         Found: Boolean;
         ChildCounter: Integer;
     begin
@@ -140,7 +138,7 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         SyslogXmlNode: XmlNode;
         Found: Boolean;
         ErrorText: Text;
-        i, j : Integer;
+        j: Integer;
     begin
         TempBlobBankList.CreateInStream(InStreamData);
         XmlDocument.ReadFrom(InStreamData, ResponseXmlDoc);

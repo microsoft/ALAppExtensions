@@ -324,8 +324,6 @@ codeunit 10679 "SAF-T Data Check"
             AddBasicSAFTMissingField(TempSAFTMissingField, Customer, Customer.FieldNo(City));
         if Customer."Post Code" = '' then
             AddBasicSAFTMissingField(TempSAFTMissingField, Customer, Customer.FieldNo("Post Code"));
-        if Customer.Contact = '' then
-            AddBasicSAFTMissingField(TempSAFTMissingField, Customer, Customer.FieldNo(Contact));
     end;
 
     local procedure GetMissedValueFieldsForVendor(var TempSAFTMissingField: Record "SAF-T Missing Field" temporary; Vendor: Record Vendor)
@@ -340,8 +338,6 @@ codeunit 10679 "SAF-T Data Check"
             AddBasicSAFTMissingField(TempSAFTMissingField, Vendor, Vendor.FieldNo(City));
         if Vendor."Post Code" = '' then
             AddBasicSAFTMissingField(TempSAFTMissingField, Vendor, Vendor.FieldNo("Post Code"));
-        if Vendor.Contact = '' then
-            AddBasicSAFTMissingField(TempSAFTMissingField, Vendor, Vendor.FieldNo(Contact));
     end;
 
     local procedure LogErrorsGivenSAFTMissingFieldSource(var TempSAFTMissingField: Record "SAF-T Missing Field" temporary)

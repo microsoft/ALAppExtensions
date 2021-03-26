@@ -6,6 +6,7 @@
 codeunit 3712 "Translation Implementation"
 {
     Access = Internal;
+    Permissions = tabledata Translation = rimd;
 
     var
         NoRecordIdErr: Label 'The variant passed is not a record.';

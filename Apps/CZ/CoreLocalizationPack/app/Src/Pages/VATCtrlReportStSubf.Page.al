@@ -79,14 +79,14 @@ page 31114 "VAT Ctrl. Report St. Subf. CZL"
         }
     }
 
-    procedure SetTempVATCtrlRepBuffer(var NewVATCtrlReportBuffer: Record "VAT Ctrl. Report Buffer CZL")
+    procedure SetTempVATCtrlRepBuffer(var NewVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL")
     begin
         Rec.DeleteAll();
-        if NewVATCtrlReportBuffer.FindSet() then
+        if NewVATCtrlReportBufferCZL.FindSet() then
             repeat
-                Rec.Copy(NewVATCtrlReportBuffer);
+                Rec.Copy(NewVATCtrlReportBufferCZL);
                 Rec.Insert();
-            until NewVATCtrlReportBuffer.Next() = 0;
+            until NewVATCtrlReportBufferCZL.Next() = 0;
         CurrPage.Update(false);
     end;
 }

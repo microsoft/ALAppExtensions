@@ -16,7 +16,7 @@ table 11793 "Company Official CZL"
             begin
                 if "No." <> xRec."No." then begin
                     StatutoryReportingSetupCZL.Get();
-                    NoSeriesMgt.TestManual(StatutoryReportingSetupCZL."Company Official Nos.");
+                    NoSeriesManagement.TestManual(StatutoryReportingSetupCZL."Company Official Nos.");
                     "No. Series" := '';
                 end;
             end;
@@ -220,7 +220,7 @@ table 11793 "Company Official CZL"
         if "No." = '' then begin
             StatutoryReportingSetupCZL.Get();
             StatutoryReportingSetupCZL.TestField("Company Official Nos.");
-            NoSeriesMgt.InitSeries(StatutoryReportingSetupCZL."Company Official Nos.", xRec."No. Series", 0D, "No.", "No. Series");
+            NoSeriesManagement.InitSeries(StatutoryReportingSetupCZL."Company Official Nos.", xRec."No. Series", 0D, "No.", "No. Series");
         end;
     end;
 
@@ -239,17 +239,17 @@ table 11793 "Company Official CZL"
         Employee: Record Employee;
         PostCode: Record "Post Code";
         CompanyOfficialCZL: Record "Company Official CZL";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeriesManagement: Codeunit NoSeriesManagement;
 
     procedure AssistEdit(OldCompanyOfficialCZL: Record "Company Official CZL"): Boolean
     begin
         CompanyOfficialCZL := Rec;
         StatutoryReportingSetupCZL.Get();
         StatutoryReportingSetupCZL.TestField("Company Official Nos.");
-        if NoSeriesMgt.SelectSeries(StatutoryReportingSetupCZL."Company Official Nos.", OldCompanyOfficialCZL."No. Series", OldCompanyOfficialCZL."No. Series") then begin
+        if NoSeriesManagement.SelectSeries(StatutoryReportingSetupCZL."Company Official Nos.", OldCompanyOfficialCZL."No. Series", OldCompanyOfficialCZL."No. Series") then begin
             StatutoryReportingSetupCZL.Get();
             StatutoryReportingSetupCZL.TestField("Company Official Nos.");
-            NoSeriesMgt.SetSeries(OldCompanyOfficialCZL."No.");
+            NoSeriesManagement.SetSeries(OldCompanyOfficialCZL."No.");
             Rec := CompanyOfficialCZL;
             exit(true);
         end;
@@ -264,11 +264,11 @@ table 11793 "Company Official CZL"
 
     procedure DisplayMap()
     var
-        MapPoint: Record "Online Map Setup";
-        MapMgt: Codeunit "Online Map Management";
+        OnlineMapSetup: Record "Online Map Setup";
+        OnlineMapManagement: Codeunit "Online Map Management";
     begin
-        if MapPoint.IsEmpty() then
+        if OnlineMapSetup.IsEmpty() then
             exit;
-        MapMgt.MakeSelection(Database::"Company Official CZL", CopyStr(GetPosition(), 1, 1000));
+        OnlineMapManagement.MakeSelection(Database::"Company Official CZL", CopyStr(GetPosition(), 1, 1000));
     end;
 }

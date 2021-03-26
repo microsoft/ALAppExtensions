@@ -3,7 +3,7 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '17.0';
+    ObsoleteTag = '18.0';
 
     [EventSubscriber(ObjectType::Table, Database::"Stat. Reporting Setup", 'OnAfterInsertEvent', '', false, false)]
     local procedure SyncOnAfterInsertStatReportingSetup(var Rec: Record "Stat. Reporting Setup")
@@ -48,7 +48,12 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         StatutoryReportingSetupCZL."VAT Control Report XML Format" := Rec."VAT Control Report Xml Format";
         StatutoryReportingSetupCZL."Tax Office Number" := Rec."Tax Office Number";
         StatutoryReportingSetupCZL."Tax Office Region Number" := Rec."Tax Office Region Number";
-        StatutoryReportingSetupCZL."Company Type" := Rec."Official Type";
+        case Rec."Taxpayer Type" of
+            Rec."Taxpayer Type"::Corporation:
+                StatutoryReportingSetupCZL."Company Type" := StatutoryReportingSetupCZL."Company Type"::Corporate;
+            Rec."Taxpayer Type"::Individual:
+                StatutoryReportingSetupCZL."Company Type" := StatutoryReportingSetupCZL."Company Type"::Individual;
+        end;
         StatutoryReportingSetupCZL."Individual First Name" := Rec."Natural Person First Name";
         StatutoryReportingSetupCZL."Individual Surname" := Rec."Natural Person Surname";
         StatutoryReportingSetupCZL."Individual Title" := Rec."Natural Person Title";
@@ -70,6 +75,22 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         StatutoryReportingSetupCZL."VIES Decl. Auth. Employee No." := Rec."VIES Decl. Auth. Employee No.";
         StatutoryReportingSetupCZL."VIES Decl. Filled Employee No." := Rec."VIES Decl. Filled by Empl. No.";
         StatutoryReportingSetupCZL."VIES Number of Lines" := Rec."VIES Number of Lines";
+        StatutoryReportingSetupCZL."Transaction Type Mandatory" := Rec."Transaction Type Mandatory";
+        StatutoryReportingSetupCZL."Transaction Spec. Mandatory" := Rec."Transaction Spec. Mandatory";
+        StatutoryReportingSetupCZL."Transport Method Mandatory" := Rec."Transport Method Mandatory";
+        StatutoryReportingSetupCZL."Shipment Method Mandatory" := Rec."Shipment Method Mandatory";
+        StatutoryReportingSetupCZL."Tariff No. Mandatory" := Rec."Tariff No. Mandatory";
+        StatutoryReportingSetupCZL."Net Weight Mandatory" := Rec."Net Weight Mandatory";
+        StatutoryReportingSetupCZL."Country/Region of Origin Mand." := Rec."Country/Region of Origin Mand.";
+        StatutoryReportingSetupCZL."Get Tariff No. From" := "Intrastat Detail Source CZL".FromInteger(Rec."Get Tariff No. From");
+        StatutoryReportingSetupCZL."Get Net Weight From" := "Intrastat Detail Source CZL".FromInteger(Rec."Get Net Weight From");
+        StatutoryReportingSetupCZL."Get Country/Region of Origin" := "Intrastat Detail Source CZL".FromInteger(Rec."Get Country/Region of Origin");
+        StatutoryReportingSetupCZL."Intrastat Rounding Type" := Rec."Intrastat Rounding Type";
+        StatutoryReportingSetupCZL."No Item Charges in Intrastat" := Rec."No Item Charges in Intrastat";
+        StatutoryReportingSetupCZL."Intrastat Declaration Nos." := Rec."Intrastat Declaration Nos.";
+        StatutoryReportingSetupCZL."Stat. Value Reporting" := Rec."Stat. Value Reporting";
+        StatutoryReportingSetupCZL."Cost Regulation %" := Rec."Cost Regulation %";
+        StatutoryReportingSetupCZL."Include other Period add.Costs" := Rec."Include other Period add.Costs";
         StatutoryReportingSetupCZL.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statutory Reporting Setup CZL");
     end;
@@ -119,7 +140,13 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         StatReportingSetup."VAT Control Report XML Format" := Rec."VAT Control Report Xml Format";
         StatReportingSetup."Tax Office Number" := Rec."Tax Office Number";
         StatReportingSetup."Tax Office Region Number" := Rec."Tax Office Region Number";
-        StatReportingSetup."Official Type" := Rec."Company Type";
+        case Rec."Company Type" of
+            Rec."Company Type"::" ",
+            Rec."Company Type"::Corporate:
+                StatReportingSetup."Taxpayer Type" := StatReportingSetup."Taxpayer Type"::Corporation;
+            Rec."Company Type"::Individual:
+                StatReportingSetup."Taxpayer Type" := StatReportingSetup."Taxpayer Type"::Individual;
+        end;
         StatReportingSetup."Natural Person First Name" := Rec."Individual First Name";
         StatReportingSetup."Natural Person Surname" := Rec."Individual Surname";
         StatReportingSetup."Natural Person Title" := Rec."Individual Title";
@@ -141,6 +168,22 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         StatReportingSetup."VIES Decl. Auth. Employee No." := Rec."VIES Decl. Auth. Employee No.";
         StatReportingSetup."VIES Decl. Filled by Empl. No." := Rec."VIES Decl. Filled Employee No.";
         StatReportingSetup."VIES Number of Lines" := Rec."VIES Number of Lines";
+        StatReportingSetup."Transaction Type Mandatory" := Rec."Transaction Type Mandatory";
+        StatReportingSetup."Transaction Spec. Mandatory" := Rec."Transaction Spec. Mandatory";
+        StatReportingSetup."Transport Method Mandatory" := Rec."Transport Method Mandatory";
+        StatReportingSetup."Shipment Method Mandatory" := Rec."Shipment Method Mandatory";
+        StatReportingSetup."Tariff No. Mandatory" := Rec."Tariff No. Mandatory";
+        StatReportingSetup."Net Weight Mandatory" := Rec."Net Weight Mandatory";
+        StatReportingSetup."Country/Region of Origin Mand." := Rec."Country/Region of Origin Mand.";
+        StatReportingSetup."Get Tariff No. From" := Rec."Get Tariff No. From".AsInteger();
+        StatReportingSetup."Get Net Weight From" := Rec."Get Net Weight From".AsInteger();
+        StatReportingSetup."Get Country/Region of Origin" := Rec."Get Country/Region of Origin".AsInteger();
+        StatReportingSetup."Intrastat Rounding Type" := Rec."Intrastat Rounding Type";
+        StatReportingSetup."No Item Charges in Intrastat" := Rec."No Item Charges in Intrastat";
+        StatReportingSetup."Intrastat Declaration Nos." := Rec."Intrastat Declaration Nos.";
+        StatReportingSetup."Stat. Value Reporting" := Rec."Stat. Value Reporting";
+        StatReportingSetup."Cost Regulation %" := Rec."Cost Regulation %";
+        StatReportingSetup."Include other Period add.Costs" := Rec."Include other Period add.Costs";
         StatReportingSetup.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stat. Reporting Setup");
 

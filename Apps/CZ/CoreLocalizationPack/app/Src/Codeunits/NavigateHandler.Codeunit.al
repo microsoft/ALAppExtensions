@@ -6,20 +6,19 @@ codeunit 31044 "Navigate Handler CZL"
         EETEntryCZL: Record "EET Entry CZL";
 
     [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateFindRecords', '', false, false)]
-    local procedure OnAfterNavigateFindRecords(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text;
-                                                PostingDateFilter: Text; Sender: Page Navigate)
+    local procedure OnAfterNavigateFindRecords(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; Sender: Page Navigate)
     begin
-        FindEETEntries(DocumentEntry, DocNoFilter, PostingDateFilter, Sender);
+        FindEETEntries(DocumentEntry, DocNoFilter, Sender);
         DeleteObsoleteTables(DocumentEntry);
     end;
 
-    local procedure FindEETEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; Sender: Page Navigate)
+    local procedure FindEETEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; Navigate: Page Navigate)
     begin
         if EETEntryCZL.ReadPermission() then begin
             EETEntryCZL.Reset();
             EETEntryCZL.SetCurrentKey("Document No.");
             EETEntryCZL.SetFilter("Document No.", DocNoFilter);
-            Sender.InsertIntoDocEntry(DocumentEntry, DATABASE::"EET Entry CZL", 0,
+            Navigate.InsertIntoDocEntry(DocumentEntry, Database::"EET Entry CZL", "Document Entry Document Type"::Quote,
                 EETEntryCZL.TableCaption(), EETEntryCZL.Count());
         end;
     end;

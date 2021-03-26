@@ -48,7 +48,7 @@ page 31156 "Cash Desk Users CZP"
                 field("Post EET Only"; Rec."Post EET Only")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies that the user has the right to post only the documents that meet conditions for a recorded sale.';
+                    ToolTip = 'Specifies that the user has the right to post only the documents that are marked as "EET Transaction" = Yes.';
                 }
             }
         }

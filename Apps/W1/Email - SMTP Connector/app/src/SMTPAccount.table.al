@@ -36,11 +36,11 @@ table 4511 "SMTP Account"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                SMTPAuthentication: Interface "SMTP Authentication";
             begin
-                if Rec.Authentication = Rec.Authentication::Basic then
-                    exit;
-                Rec."User Name" := '';
-                SetPassword('');
+                SMTPAuthentication := Rec.Authentication;
+                SMTPAuthentication.Validate(Rec);
             end;
         }
 
@@ -53,7 +53,6 @@ table 4511 "SMTP Account"
                 Rec."User Name" := DelChr(Rec."User Name", '<>', ' ');
                 if Rec."User Name" = '' then
                     exit;
-                TestField(Rec.Authentication, Rec.Authentication::Basic.AsInteger());
             end;
         }
 

@@ -48,13 +48,13 @@ table 11748 "Cash Desk Rep. Selections CZP"
     }
 
     var
-        ReportSelection2: Record "Report Selections";
+        CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP";
 
     procedure NewRecord()
     begin
-        ReportSelection2.SetRange(Usage, Usage);
-        if ReportSelection2.FindLast() and (ReportSelection2.Sequence <> '') then
-            Sequence := IncStr(ReportSelection2.Sequence)
+        CashDeskRepSelectionsCZP.SetRange(Usage, Usage);
+        if CashDeskRepSelectionsCZP.FindLast() and (CashDeskRepSelectionsCZP.Sequence <> '') then
+            Sequence := IncStr(CashDeskRepSelectionsCZP.Sequence)
         else
             Sequence := '1';
     end;

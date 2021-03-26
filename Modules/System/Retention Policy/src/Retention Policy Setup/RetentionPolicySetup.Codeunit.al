@@ -21,9 +21,9 @@ codeunit 3902 "Retention Policy Setup"
     /// <returns>The filter in Text format.</returns>
     procedure SetTableFilterView(var RetentionPolicySetupLine: record "Retention Policy Setup Line"): Text[2048]
     var
-        RetentionPolicyImpl: Codeunit "Retention Policy Setup Impl.";
+        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
-        exit(CopyStr(RetentionPolicyImpl.SetTableFilterView(RetentionPolicySetupLine), 1, 2048));
+        exit(CopyStr(RetentionPolicySetupImpl.SetTableFilterView(RetentionPolicySetupLine), 1, 2048));
     end;
 
     /// <summary>
@@ -33,9 +33,9 @@ codeunit 3902 "Retention Policy Setup"
     /// <returns>The filter in View format.</returns>
     procedure GetTableFilterView(RetentionPolicySetupLine: record "Retention Policy Setup Line"): Text
     var
-        RetentionPolicyImpl: Codeunit "Retention Policy Setup Impl.";
+        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
-        exit(RetentionPolicyImpl.GetTableFilterView(RetentionPolicySetupLine));
+        exit(RetentionPolicySetupImpl.GetTableFilterView(RetentionPolicySetupLine));
     end;
 
     /// <summary>
@@ -45,9 +45,9 @@ codeunit 3902 "Retention Policy Setup"
     /// <returns>The Filter in text format.</returns>
     procedure GetTableFilterText(RetentionPolicySetupLine: Record "Retention Policy Setup Line"): Text[2048]
     var
-        RetentionPolicyImpl: Codeunit "Retention Policy Setup Impl.";
+        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
-        exit(CopyStr(RetentionPolicyImpl.GetTableFilterText(RetentionPolicySetupLine), 1, 2048));
+        exit(CopyStr(RetentionPolicySetupImpl.GetTableFilterText(RetentionPolicySetupLine), 1, 2048));
     end;
 
     /// <summary>
@@ -57,9 +57,9 @@ codeunit 3902 "Retention Policy Setup"
     /// <returns>The new selected table id.</returns>
     procedure TableIdLookup(TableId: Integer): Integer
     var
-        RetentionPolicyImpl: Codeunit "Retention Policy Setup Impl.";
+        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
-        exit(RetentionPolicyImpl.TableIdLookup(TableId))
+        exit(RetentionPolicySetupImpl.TableIdLookup(TableId))
     end;
 
     /// <summary>
@@ -70,9 +70,9 @@ codeunit 3902 "Retention Policy Setup"
     /// <returns>The new selected field number.</returns>
     procedure DateFieldNoLookup(TableId: Integer; FieldNo: Integer): Integer
     var
-        RetentionPolicyImpl: Codeunit "Retention Policy Setup Impl.";
+        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
-        exit(RetentionPolicyImpl.DateFieldNoLookup(TableId, FieldNo))
+        exit(RetentionPolicySetupImpl.DateFieldNoLookup(TableId, FieldNo))
     end;
 
     /// <summary>
@@ -81,9 +81,9 @@ codeunit 3902 "Retention Policy Setup"
     /// <returns>True if a retention policy is enabled. False if no retention policies are enabled.</returns>
     procedure IsRetentionPolicyEnabled(): Boolean
     var
-        RetentionPolicyImpl: Codeunit "Retention Policy Setup Impl.";
+        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
-        exit(RetentionPolicyImpl.IsRetentionPolicyEnabled())
+        exit(RetentionPolicySetupImpl.IsRetentionPolicyEnabled())
     end;
 
     /// <summary>
@@ -93,15 +93,15 @@ codeunit 3902 "Retention Policy Setup"
     /// <returns>True if a retention policy is enabled for the table ID. False if no retention policy is enabled for the table ID.</returns>
     procedure IsRetentionPolicyEnabled(TableId: Integer): Boolean
     var
-        RetentionPolicyImpl: Codeunit "Retention Policy Setup Impl.";
+        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
-        exit(RetentionPolicyImpl.IsRetentionPolicyEnabled(TableId))
+        exit(RetentionPolicySetupImpl.IsRetentionPolicyEnabled(TableId))
     end;
 
     // these event subscribers are here because the Impl. codeunit has a manual subscriber
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', true, true)]
-    local procedure AddRetentionPolicyOnRegisterManualSetup(sender: Codeunit "Manual Setup")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', true, true)]
+    local procedure AddRetentionPolicyOnRegisterManualSetup(sender: Codeunit "Guided Experience")
     var
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
@@ -144,36 +144,36 @@ codeunit 3902 "Retention Policy Setup"
     local procedure ErrorOnBeforeRenameRetentionPolicySetup(var Rec: Record "Retention Policy Setup"; var xRec: Record "Retention Policy Setup")
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
-        RetentionPolicyImpl: Codeunit "Retention Policy Setup Impl.";
+        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
-        RetentionPolicyLog.LogError(RetentionPolicyImpl.LogCategory(), StrSubstNo(RetenPolSetupRenameErr, xRec."Table Id", Rec."Table Id"));
+        RetentionPolicyLog.LogError(RetentionPolicySetupImpl.LogCategory(), StrSubstNo(RetenPolSetupRenameErr, xRec."Table Id", Rec."Table Id"));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", 'OnBeforeRenameEvent', '', false, false)]
     local procedure ErrorOnBeforeRenameRetentionPolicySetupLine(var Rec: Record "Retention Policy Setup Line"; var xRec: Record "Retention Policy Setup Line")
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
-        RetentionPolicyImpl: Codeunit "Retention Policy Setup Impl.";
+        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
-        RetentionPolicyLog.LogError(RetentionPolicyImpl.LogCategory(), StrSubstNo(RetenPolSetupLineRenameErr, xRec."Table Id", Rec."Table Id"));
+        RetentionPolicyLog.LogError(RetentionPolicySetupImpl.LogCategory(), StrSubstNo(RetenPolSetupLineRenameErr, xRec."Table Id", Rec."Table Id"));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", 'OnBeforeModifyEvent', '', false, false)]
     local procedure CheckRecordLockedOnRetentionPolicySetupLineOnAfterModify(var Rec: Record "Retention Policy Setup Line"; var xRec: Record "Retention Policy Setup Line")
     var
-        RetentionPolicyImpl: Codeunit "Retention Policy Setup Impl.";
+        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
         if not Rec.IsTemporary then
             xRec.Get(Rec."Table ID", Rec."Line No.");
 
-        RetentionPolicyImpl.CheckRecordLockedOnRetentionPolicySetupLine(xRec);
+        RetentionPolicySetupImpl.CheckRecordLockedOnRetentionPolicySetupLine(xRec);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", 'OnBeforeDeleteEvent', '', false, false)]
     local procedure CheckRecordLockedOnRetentionPolicySetupLineOnAfterDelete(var Rec: Record "Retention Policy Setup Line")
     var
-        RetentionPolicyImpl: Codeunit "Retention Policy Setup Impl.";
+        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
-        RetentionPolicyImpl.CheckRecordLockedOnRetentionPolicySetupLine(Rec);
+        RetentionPolicySetupImpl.CheckRecordLockedOnRetentionPolicySetupLine(Rec);
     end;
 }

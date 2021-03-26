@@ -286,7 +286,7 @@ table 11732 "Cash Document Header CZP"
 
             trigger OnValidate()
             begin
-                if not UserSetupMgt.CheckRespCenter(3, "Responsibility Center") then
+                if not UserSetupManagement.CheckRespCenter(3, "Responsibility Center") then
                     Error(RespCenterErr, FieldCaption("Responsibility Center"), CashDeskManagementCZP.GetUserCashResponsibilityFilter(CopyStr(UserId(), 1, 50)));
 
                 CreateDim(
@@ -587,7 +587,7 @@ table 11732 "Cash Document Header CZP"
         CashDocumentApprovMgtCZP.DeleteApprovalEntryForRecord(Rec);
 
         CashDeskManagementCZP.CheckCashDesks();
-        if not UserSetupMgt.CheckRespCenter(3, "Responsibility Center") then
+        if not UserSetupManagement.CheckRespCenter(3, "Responsibility Center") then
             Error(RespCenterDeleteErr, FieldCaption("Responsibility Center"), CashDeskManagementCZP.GetUserCashResponsibilityFilter(CopyStr(UserId(), 1, 50)));
 
         CashDocumentPostCZP.DeleteCashDocumentHeader(Rec);
@@ -658,7 +658,7 @@ table 11732 "Cash Document Header CZP"
 
     trigger OnModify()
     begin
-        if not UserSetupMgt.CheckRespCenter(3, "Responsibility Center") then
+        if not UserSetupManagement.CheckRespCenter(3, "Responsibility Center") then
             Error(RespCenterModifyErr, FieldCaption("Responsibility Center"), CashDeskManagementCZP.GetUserCashResponsibilityFilter(CopyStr(UserId(), 1, 50)));
     end;
 
@@ -669,8 +669,7 @@ table 11732 "Cash Document Header CZP"
 
     var
         CashDeskCZP: Record "Cash Desk CZP";
-        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
-        CurrExchRate: Record "Currency Exchange Rate";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
         Customer: Record Customer;
         Vendor: Record Vendor;
         Contact: Record Contact;
@@ -678,7 +677,7 @@ table 11732 "Cash Document Header CZP"
         Employee: Record Employee;
         NoSeriesManagement: Codeunit NoSeriesManagement;
         DimensionManagement: Codeunit DimensionManagement;
-        UserSetupMgt: Codeunit "User Setup Management";
+        UserSetupManagement: Codeunit "User Setup Management";
         ConfirmManagement: Codeunit "Confirm Management";
         CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         RenameErr: Label 'You cannot rename a %1.', Comment = '%1 = TableCaption';
@@ -688,20 +687,20 @@ table 11732 "Cash Document Header CZP"
         RespCenterErr: Label 'Your identification is set up to process from %1 %2 only.', Comment = '%1 = fieldcaption of Responsibility Center; %2 = Responsibility Center';
         RespCenterModifyErr: Label 'You cannot modify this document. Your identification is set up to process from %1 %2 only.', Comment = '%1 = fieldcaption of Responsibility Center; %2 = Responsibility Center';
         RespCenterDeleteErr: Label 'You cannot delete this document. Your identification is set up to process from %1 %2 only.', Comment = '%1 = fieldcaption of Responsibility Center; %2 = Responsibility Center';
-        RespCreateErr: Label 'You are not alloved create %1 on %2 %3.', Comment = '%1 = TableCaption, %2 = Cash Desk TableCaption, %3= Cash Desk No.';
+        RespCreateErr: Label 'You are not allowed create %1 on %2 %3.', Comment = '%1 = TableCaption, %2 = Cash Desk TableCaption, %3= Cash Desk No.';
         CreateQst: Label 'Do you want to create %1 at Cash Desk %2?', Comment = '%1 = Cash Document Type, %2 = Cash Desk No.';
         DeleteQst: Label 'Deleting this document will cause a gap in the number series for posted cash documents.\Do you want continue?';
         CurrencyDate: Date;
         SkipLineNo: Integer;
         HideValidationDialog: Boolean;
 
-    procedure AssistEdit(OldCashDocHeader: Record "Cash Document Header CZP"): Boolean
+    procedure AssistEdit(OldCashDocumentHeaderCZP: Record "Cash Document Header CZP"): Boolean
     begin
-        OldCashDocHeader.Copy(Rec);
+        OldCashDocumentHeaderCZP.Copy(Rec);
         TestNoSeries();
-        if NoSeriesManagement.SelectSeries(GetNoSeriesCode(), OldCashDocHeader."No. Series", OldCashDocHeader."No. Series") then begin
-            NoSeriesManagement.SetSeries(OldCashDocHeader."No.");
-            Rec := OldCashDocHeader;
+        if NoSeriesManagement.SelectSeries(GetNoSeriesCode(), OldCashDocumentHeaderCZP."No. Series", OldCashDocumentHeaderCZP."No. Series") then begin
+            NoSeriesManagement.SetSeries(OldCashDocumentHeaderCZP."No.");
+            Rec := OldCashDocumentHeaderCZP;
             exit(true);
         end;
     end;
@@ -735,7 +734,7 @@ table 11732 "Cash Document Header CZP"
                 CurrencyDate := WorkDate()
             else
                 CurrencyDate := "Posting Date";
-            "Currency Factor" := CurrExchRate.ExchangeRate(CurrencyDate, "Currency Code");
+            "Currency Factor" := CurrencyExchangeRate.ExchangeRate(CurrencyDate, "Currency Code");
         end else
             "Currency Factor" := 0;
 
@@ -858,7 +857,7 @@ table 11732 "Cash Document Header CZP"
 
     procedure UpdateCashDocumentLinesByFieldNo(ChangedFieldNo: Integer; AskQuestion: Boolean)
     var
-        CashDocLineCZP: Record "Cash Document Line CZP";
+        CashDocumentLineCZP: Record "Cash Document Line CZP";
         "Field": Record "Field";
         Question: Text[250];
         IsHandled: Boolean;
@@ -881,25 +880,25 @@ table 11732 "Cash Document Header CZP"
                     exit;
         end;
 
-        CashDocLineCZP.LockTable();
+        CashDocumentLineCZP.LockTable();
         Modify();
 
-        CashDocLineCZP.SetRange("Cash Desk No.", "Cash Desk No.");
-        CashDocLineCZP.SetRange("Cash Document No.", "No.");
-        if CashDocLineCZP.FindSet(true) then
+        CashDocumentLineCZP.SetRange("Cash Desk No.", "Cash Desk No.");
+        CashDocumentLineCZP.SetRange("Cash Document No.", "No.");
+        if CashDocumentLineCZP.FindSet(true) then
             repeat
                 case ChangedFieldNo of
                     FieldNo("External Document No."):
-                        CashDocLineCZP.Validate("External Document No.", "External Document No.");
+                        CashDocumentLineCZP.Validate("External Document No.", "External Document No.");
                     FieldNo("Currency Factor"):
-                        if CashDocLineCZP.Amount <> 0 then
-                            CashDocLineCZP.Validate(Amount);
+                        if CashDocumentLineCZP.Amount <> 0 then
+                            CashDocumentLineCZP.Validate(Amount);
                     FieldNo("Amounts Including VAT"):
-                        if CashDocLineCZP.Amount <> 0 then
-                            CashDocLineCZP.Validate(Amount);
+                        if CashDocumentLineCZP.Amount <> 0 then
+                            CashDocumentLineCZP.Validate(Amount);
                 end;
-                CashDocLineCZP.Modify(true);
-            until CashDocLineCZP.Next() = 0;
+                CashDocumentLineCZP.Modify(true);
+            until CashDocumentLineCZP.Next() = 0;
         CalcFields("VAT Base Amount", "Amount Including VAT", "VAT Base Amount (LCY)", "Amount Including VAT (LCY)");
     end;
 
@@ -978,7 +977,7 @@ table 11732 "Cash Document Header CZP"
                 CashDocumentLineCZP."Amount (LCY)" := Round(CashDocumentLineCZP.Amount);
                 if "Currency Code" <> '' then
                     CashDocumentLineCZP."Amount (LCY)" :=
-                      Round(CurrExchRate.ExchangeAmtFCYToLCY("Posting Date", "Currency Code", CashDocumentLineCZP.Amount, "Currency Factor"));
+                      Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY("Posting Date", "Currency Code", CashDocumentLineCZP.Amount, "Currency Factor"));
             end;
             CashDocumentLineCZP."System-Created Entry" := true;
             CashDocumentLineCZP.Insert(true);
@@ -1005,15 +1004,16 @@ table 11732 "Cash Document Header CZP"
 
     procedure CashDocLinesExist(): Boolean
     var
-        CashDocumentLineCZL: Record "Cash Document Line CZP";
+        CashDocumentLineCZP: Record "Cash Document Line CZP";
     begin
-        CashDocumentLineCZL.SetRange("Cash Desk No.", "Cash Desk No.");
-        CashDocumentLineCZL.SetRange("Cash Document No.", "No.");
-        exit(not CashDocumentLineCZL.IsEmpty());
+        CashDocumentLineCZP.SetRange("Cash Desk No.", "Cash Desk No.");
+        CashDocumentLineCZP.SetRange("Cash Document No.", "No.");
+        exit(not CashDocumentLineCZP.IsEmpty());
     end;
 
     procedure PrintRecords(ShowRequestForm: Boolean)
     var
+        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP";
     begin
         TestField("Document Type");
@@ -1029,6 +1029,54 @@ table 11732 "Cash Document Header CZP"
         repeat
             Report.RunModal(CashDeskRepSelectionsCZP."Report ID", ShowRequestForm, false, CashDocumentHeaderCZP);
         until CashDeskRepSelectionsCZP.Next() = 0;
+    end;
+
+    procedure PrintToDocumentAttachment()
+    var
+        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
+        CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP";
+        DocumentAttachment: Record "Document Attachment";
+        DocumentAttachmentMgmt: Codeunit "Document Attachment Mgmt";
+        TempBlob: Codeunit "Temp Blob";
+        RecordRef: RecordRef;
+        DummyInStream: InStream;
+        ReportOutStream: OutStream;
+        DocumentInStream: InStream;
+        FileName: Text[250];
+        DocumentAttachmentFileNameLbl: Label '%1 %2', Comment = '%1 = Usage, %2 = Cash Document No.';
+    begin
+        TestField(Status, Status::Released);
+        CashDocumentHeaderCZP := Rec;
+        CashDocumentHeaderCZP.SetRecFilter();
+        RecordRef.GetTable(CashDocumentHeaderCZP);
+        if not RecordRef.FindFirst() then
+            exit;
+
+        case CashDocumentHeaderCZP."Document Type" of
+            CashDocumentHeaderCZP."Document Type"::Receipt:
+                CashDeskRepSelectionsCZP.SetRange(Usage, CashDeskRepSelectionsCZP.Usage::"Cash Receipt");
+            CashDocumentHeaderCZP."Document Type"::Withdrawal:
+                CashDeskRepSelectionsCZP.SetRange(Usage, CashDeskRepSelectionsCZP.Usage::"Cash Withdrawal");
+        end;
+        CashDeskRepSelectionsCZP.SetFilter("Report ID", '<>0');
+        CashDeskRepSelectionsCZP.FindSet();
+        repeat
+            if not Report.RdlcLayout(CashDeskRepSelectionsCZP."Report ID", DummyInStream) then
+                exit;
+
+            Clear(TempBlob);
+            TempBlob.CreateOutStream(ReportOutStream);
+            Report.SaveAs(CashDeskRepSelectionsCZP."Report ID", '',
+                        ReportFormat::Pdf, ReportOutStream, RecordRef);
+
+            Clear(DocumentAttachment);
+            DocumentAttachment.InitFieldsFromRecRef(RecordRef);
+            FileName := DocumentAttachment.FindUniqueFileName(
+                        StrSubstNo(DocumentAttachmentFileNameLbl, CashDeskRepSelectionsCZP.Usage, CashDocumentHeaderCZP."No."), 'pdf');
+            TempBlob.CreateInStream(DocumentInStream);
+            DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, FileName);
+        until CashDeskRepSelectionsCZP.Next() = 0;
+        DocumentAttachmentMgmt.ShowNotification(RecordRef, CashDeskRepSelectionsCZP.Count(), true);
     end;
 
     procedure SetSkipLineNoToUpdateLine(LineNo: Integer)
@@ -1212,32 +1260,32 @@ table 11732 "Cash Document Header CZP"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterCopyCashDocumentHeaderFromSalesInvHeader(SalesInvoiceHeader: Record "Sales Invoice Header"; var CashDocumentHeaderCZL: Record "Cash Document Header CZP")
+    local procedure OnAfterCopyCashDocumentHeaderFromSalesInvHeader(SalesInvoiceHeader: Record "Sales Invoice Header"; var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterCopyCashDocumentHeaderFromSalesCrMemoHeader(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var CashDocumentHeaderCZL: Record "Cash Document Header CZP")
+    local procedure OnAfterCopyCashDocumentHeaderFromSalesCrMemoHeader(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterCopyCashDocumentHeaderFromPurchInvHeader(PurchInvHeader: Record "Purch. Inv. Header"; var CashDocumentHeaderCZL: Record "Cash Document Header CZP")
+    local procedure OnAfterCopyCashDocumentHeaderFromPurchInvHeader(PurchInvHeader: Record "Purch. Inv. Header"; var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterCopyCashDocumentHeaderFromPurchCrMemoHdr(PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var CashDocumentHeaderCZL: Record "Cash Document Header CZP")
+    local procedure OnAfterCopyCashDocumentHeaderFromPurchCrMemoHdr(PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterCopyCashDocumentHeaderFromServiceInvoiceHeader(ServiceInvoiceHeader: Record "Service Invoice Header"; var CashDocumentHeader: Record "Cash Document Header CZP")
+    local procedure OnAfterCopyCashDocumentHeaderFromServiceInvoiceHeader(ServiceInvoiceHeader: Record "Service Invoice Header"; var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterCopyCashDocumentHeaderFromServiceCrMemoHeader(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var CashDocumentHeader: Record "Cash Document Header CZP")
+    local procedure OnAfterCopyCashDocumentHeaderFromServiceCrMemoHeader(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
     end;
 }

@@ -20,6 +20,12 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
             Editable = false;
             DataClassification = CustomerContent;
         }
+        field(11726; "VAT Identifier CZL"; Code[20])
+        {
+            Caption = 'VAT Identifier';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
         field(11781; "Registration No. CZL"; Text[20])
         {
             Caption = 'Registration No.';

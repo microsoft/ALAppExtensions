@@ -434,6 +434,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         LibraryLowerPermissions.SetBanking();
         BankAccReconciliation.OpenNew();
         BankAccReconciliation.BankAccountNo.SetValue(BankAccount."No.");
+        BankAccReconciliation.StatementDate.SetValue(DMY2Date(2, 2, 2016));
         BankAccReconciliation.ImportBankStatement.Invoke();
 
         // Verify.

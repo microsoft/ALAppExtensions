@@ -15,7 +15,7 @@ pageextension 11700 "Company Information CZL" extends "Company Information"
             field("Bank Branch Name CZL"; Rec."Bank Branch Name CZL")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the branch name of the bank.';
+                ToolTip = 'Specifies the bank branch name.';
             }
         }
         addlast(Payments)
@@ -43,8 +43,16 @@ pageextension 11700 "Company Information CZL" extends "Company Information"
     }
     actions
     {
+#if CLEAN17
+        addafter("System Settings")
+        {
+            group("Other CZL")
+            {
+                Caption = 'O&ther';
+#else
         addfirst("O&ther")
         {
+#endif
             action(OfficialsCZL)
             {
                 ApplicationArea = Basic, Suite;
@@ -62,5 +70,10 @@ pageextension 11700 "Company Information CZL" extends "Company Information"
                 ToolTip = 'Allows the setup of document footers for printout.';
             }
         }
+#if CLEAN17
+        }
     }
+#else
+    }
+#endif
 }

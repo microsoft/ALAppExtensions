@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31157 "Sync.Dep.Fld-DocFooter CZL"
 {
@@ -158,3 +159,4 @@ codeunit 31157 "Sync.Dep.Fld-DocFooter CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

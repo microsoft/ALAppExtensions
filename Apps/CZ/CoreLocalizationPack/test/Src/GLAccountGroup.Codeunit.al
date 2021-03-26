@@ -141,7 +141,6 @@ codeunit 148056 "G/L Account Group CZL"
     end;
 
     [RequestPageHandler]
-    [Scope('OnPrem')]
     procedure GLAccountGroupPostCheckRequestPageHandler(var GLAccGroupPostCheckCZL: TestRequestPage "G/L Acc. Group Post. Check CZL")
     begin
         GLAccGroupPostCheckCZL.FromDateField.SetValue(Today());

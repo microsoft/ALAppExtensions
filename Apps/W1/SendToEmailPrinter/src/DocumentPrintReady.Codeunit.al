@@ -8,7 +8,6 @@
 /// </summary>
 codeunit 2651 "Document Print Ready"
 {
-    EventSubscriberInstance = StaticAutomatic;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reporting Triggers", 'OnDocumentPrintReady', '', true, true)]
     procedure OnDocumentPrintReady(ObjectType: Option "Report","Page"; ObjectId: Integer; ObjectPayload: JsonObject; DocumentStream: InStream; var Success: Boolean);
@@ -18,7 +17,6 @@ codeunit 2651 "Document Print Ready"
         PrinterNameToken: JsonToken;
         PrinterName: Text[250];
         ToList: List of [Text];
-        FileExtension: Text;
         AttachmentName: Text[250];
     begin
         // exit if handled already
@@ -55,9 +53,7 @@ codeunit 2651 "Document Print Ready"
     local procedure GetAttachmentName(ObjectPayload: JsonObject; var AttachmentName: Text[250])
     var
         FileName: Text;
-        PrinterName: Text[250];
         DocumentTypeParts: List of [Text];
-        ToList: List of [Text];
         FileExtension: Text;
         ObjectName: JsonToken;
         DocumentType: JsonToken;
@@ -86,7 +82,6 @@ codeunit 2651 "Document Print Ready"
         EmailAccount: Record "Email Account";
         Email: Codeunit Email;
         Message: Codeunit "Email Message";
-        EmailFeature: Codeunit "Email Feature";
         EmailScenario: Codeunit "Email Scenario";
     begin
         // exit if email account is not set for Email Printer scenario

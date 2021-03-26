@@ -49,7 +49,7 @@ report 31194 "Service Order CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Service Header"; "Service Header")
@@ -104,22 +104,22 @@ report 31194 "Service Order CZL"
             column(RegistrationNo_ServiceHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_ServiceHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_ServiceHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_ServiceHeader; "Bank Account No.")
+            column(BankAccountNo_ServiceHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_ServiceHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_ServiceHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_ServiceHeader; IBAN)
+            column(IBAN_ServiceHeader; "IBAN CZL")
             {
             }
-            column(SWIFTCode_ServiceHeaderCaption; FieldCaption("SWIFT Code"))
+            column(SWIFTCode_ServiceHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(SWIFTCode_ServiceHeader; "SWIFT Code")
+            column(SWIFTCode_ServiceHeader; "SWIFT Code CZL")
             {
             }
             column(OrderDate_ServiceHeaderCaption; FieldCaption("Order Date"))
@@ -418,7 +418,7 @@ report 31194 "Service Order CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -479,12 +479,13 @@ report 31194 "Service Order CZL"
             }
         }
     }
+
     var
         PaymentTerms: Record "Payment Terms";
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         CompanyAddr: array[8] of Text[100];
@@ -529,8 +530,8 @@ report 31194 "Service Order CZL"
 
     local procedure FormatAddressFields(ServiceHeader: Record "Service Header")
     begin
-        FormatAddr.ServiceOrderSellto(CustAddr, ServiceHeader);
-        FormatAddr.ServiceHeaderShipTo(ShipToAddr, ServiceHeader);
+        FormatAddress.ServiceOrderSellto(CustAddr, ServiceHeader);
+        FormatAddress.ServiceHeaderShipTo(ShipToAddr, ServiceHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

@@ -19,10 +19,12 @@ codeunit 2202 "Azure Key Vault Impl."
         AzureKeyVaultSecretProvider: DotNet IAzureKeyVaultSecretProvider;
         SecretNotFoundErr: Label '%1 is not an application secret.', Comment = '%1 = Secret Name.';
         [NonDebuggable]
-        CachedSecretsDictionary: DotNet GenericDictionary2;
+        CachedSecretsDictionary: Dictionary of [Text, Text];
+        [NonDebuggable]
+        CachedCertificatesDictionary: Dictionary of [Text, Text];
         AllowedApplicationSecretsSecretNameTxt: Label 'AllowedApplicationSecrets', Locked = true;
         [NonDebuggable]
-        AllowedSecretNamesArray: DotNet Array;
+        AllowedSecretNamesList: List of [Text];
         IsKeyVaultClientInitialized: Boolean;
         NoSecretsErr: Label 'The key vault did not have any secrets that are allowed to be fetched.';
         AllowedApplicationSecretsSecretNotFetchedMsg: Label 'The list of allowed secret names could not be fetched.', Locked = true;
@@ -44,6 +46,14 @@ codeunit 2202 "Azure Key Vault Impl."
     end;
 
     [NonDebuggable]
+    procedure GetAzureKeyVaultCertificate(CertificateName: Text; var Certificate: Text)
+    begin
+        // Gets the certificate as a base 64 encoded string from the key vault, given a CertificateName.
+
+        Certificate := GetCertificateFromClient(CertificateName);
+    end;
+
+    [NonDebuggable]
     procedure SetAzureKeyVaultSecretProvider(NewAzureKeyVaultSecretProvider: DotNet IAzureKeyVaultSecretProvider)
     begin
         // Sets the secret provider to simulate the vault. Used for testing.
@@ -57,12 +67,10 @@ codeunit 2202 "Azure Key Vault Impl."
     begin
         Clear(NavAzureKeyVaultClient);
         Clear(AzureKeyVaultSecretProvider);
-
-        InitBuffer();
-
-        CachedSecretsDictionary.Clear();
+        Clear(CachedSecretsDictionary);
+        Clear(CachedCertificatesDictionary);
+        Clear(AllowedSecretNamesList);
         IsKeyVaultClientInitialized := false;
-        Clear(AllowedSecretNamesArray);
     end;
 
     [TryFunction]
@@ -75,8 +83,10 @@ codeunit 2202 "Azure Key Vault Impl."
     [NonDebuggable]
     local procedure GetSecretFromClient(SecretName: Text) Secret: Text
     begin
-        if KeyValuePairInBuffer(SecretName, Secret) then
+        if CachedSecretsDictionary.ContainsKey(SecretName) then begin
+            Secret := CachedSecretsDictionary.Get(SecretName);
             exit;
+        end;
 
         if not IsKeyVaultClientInitialized then begin
             NavAzureKeyVaultClient := NavAzureKeyVaultClient.AzureKeyVaultClientHelper();
@@ -85,56 +95,42 @@ codeunit 2202 "Azure Key Vault Impl."
         end;
         Secret := NavAzureKeyVaultClient.GetAzureKeyVaultSecret(SecretName);
 
-        StoreKeyValuePairInBuffer(SecretName, Secret);
+        CachedSecretsDictionary.Add(SecretName, Secret);
     end;
 
     [NonDebuggable]
-    local procedure KeyValuePairInBuffer("Key": Text; var Value: Text): Boolean
-    var
-        ValueFound: Boolean;
-        ValueToReturn: Text;
+    local procedure GetCertificateFromClient(CertificateName: Text) Certificate: Text
     begin
-        InitBuffer();
+        if CachedCertificatesDictionary.ContainsKey(CertificateName) then begin
+            Certificate := CachedCertificatesDictionary.Get(CertificateName);
+            exit;
+        end;
 
-        ValueFound := CachedSecretsDictionary.TryGetValue(Key, ValueToReturn);
-        Value := ValueToReturn;
-        exit(ValueFound);
-    end;
+        if not IsKeyVaultClientInitialized then begin
+            NavAzureKeyVaultClient := NavAzureKeyVaultClient.AzureKeyVaultClientHelper();
+            NavAzureKeyVaultClient.SetAzureKeyVaultProvider(AzureKeyVaultSecretProvider);
+            IsKeyVaultClientInitialized := true;
+        end;
+        Certificate := NavAzureKeyVaultClient.GetAzureKeyVaultCertificate(CertificateName);
 
-    [NonDebuggable]
-    local procedure StoreKeyValuePairInBuffer("Key": Text; Value: Text)
-    begin
-        InitBuffer();
-
-        CachedSecretsDictionary.Add(Key, Value);
-    end;
-
-    [NonDebuggable]
-    local procedure InitBuffer()
-    begin
-        if IsNull(CachedSecretsDictionary) then
-            CachedSecretsDictionary := CachedSecretsDictionary.Dictionary();
+        CachedCertificatesDictionary.Add(CertificateName, Certificate);
     end;
 
     [NonDebuggable]
     local procedure IsSecretNameAllowed(SecretName: Text): Boolean
     var
-        Name: Text;
         UppercaseSecretName: Text;
     begin
         UppercaseSecretName := UpperCase(SecretName);
-        foreach Name in AllowedSecretNamesArray do
-            if Name = UppercaseSecretName then
-                exit(true);
+        exit(AllowedSecretNamesList.Contains(UppercaseSecretName));
     end;
 
     [NonDebuggable]
     local procedure InitializeAllowedSecretNames(): Boolean
     var
-        AllowedSecretNames: DotNet String;
-        Delimiters: DotNet String;
+        AllowedSecretNames: Text;
     begin
-        if not IsNull(AllowedSecretNamesArray) then
+        if AllowedSecretNamesList.Count() > 0 then
             exit(true);
 
         if not TryGetSecretFromClient(AllowedApplicationSecretsSecretNameTxt, AllowedSecretNames) then begin
@@ -148,8 +144,7 @@ codeunit 2202 "Azure Key Vault Impl."
             exit(false);
         end;
 
-        Delimiters := ',';
-        AllowedSecretNamesArray := AllowedSecretNames.Split(Delimiters.ToCharArray());
+        AllowedSecretNamesList := AllowedSecretNames.Split(',');
         exit(true);
     end;
 }

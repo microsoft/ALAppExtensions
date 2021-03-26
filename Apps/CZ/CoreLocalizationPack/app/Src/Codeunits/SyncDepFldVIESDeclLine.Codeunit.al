@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
 {
@@ -196,3 +197,4 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

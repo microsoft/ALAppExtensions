@@ -9,6 +9,12 @@
 codeunit 2610 "Feature Management Impl."
 {
     Access = Internal;
+    Permissions = tabledata "Active Session" = r,
+                  tabledata Company = r,
+                  tabledata "Feature Key" = rimd,
+                  tabledata "Feature Data Update Status" = rimd,
+                  tabledata "Session Event" = r,
+                  tabledata "Scheduled Task" = r;
 
     var
         FeatureDataUpdate: interface "Feature Data Update";
@@ -213,6 +219,7 @@ codeunit 2610 "Feature Management Impl."
         FeatureManagementFacade: Codeunit "Feature Management Facade";
     begin
         if GetImplementation(FeatureDataUpdateStatus) then begin
+            FeatureManagementFacade.OnBeforeUpdateData(FeatureDataUpdateStatus);
             UpdateData(FeatureDataUpdateStatus, FeatureDataUpdate);
             FeatureManagementFacade.OnAfterUpdateData(FeatureDataUpdateStatus);
         end;
@@ -329,12 +336,9 @@ codeunit 2610 "Feature Management Impl."
         exit(not SessionEvent.IsEmpty);
     end;
 
-    local procedure IsTaskScheduled(var TaskId: Guid) TaskExists: Boolean
-    var
-        ScheduledTask: Record "Scheduled Task";
+    local procedure IsTaskScheduled(var TaskId: Guid): Boolean
     begin
-        if not TaskExists then
-            exit(ScheduledTask.Get(TaskId));
+        exit(TaskScheduler.TaskExists(TaskId));
     end;
 
     /// <summary>

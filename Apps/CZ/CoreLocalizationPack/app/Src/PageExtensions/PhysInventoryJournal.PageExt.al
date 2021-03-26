@@ -1,4 +1,3 @@
-#pragma implicitwith disable
 pageextension 11712 "Phys. Inventory Journal CZL" extends "Phys. Inventory Journal"
 {
     layout
@@ -20,12 +19,21 @@ pageextension 11712 "Phys. Inventory Journal CZL" extends "Phys. Inventory Journ
                 end;
             }
         }
+        addafter("Gen. Prod. Posting Group")
+        {
+            field("G/L Correction CZL"; Rec."G/L Correction CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies to include general ledger corrections on the item journal line.';
+                Visible = false;
+            }
+        }
     }
     actions
     {
         addlast("F&unctions")
         {
-            action("CreateNewEmptyLineCZL")
+            Action("CreateNewEmptyLineCZL")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'C&reate New Empty Line';

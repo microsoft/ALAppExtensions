@@ -19,6 +19,8 @@ page 2610 "Feature Management"
     DeleteAllowed = false;
     LinksAllowed = false;
     Extensible = false;
+    Permissions = tabledata "Feature Key" = rm,
+                  tabledata "Feature Data Update Status" = r;
 
     layout
     {
@@ -222,6 +224,10 @@ page 2610 "Feature Management"
     trigger OnAfterGetRecord()
     begin
         GetFeatureDataUpdateStatus();
+        if Rec."Can Try" then
+            TryItOut := TryItOutLbl
+        else
+            Clear(TryItOut);
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -238,7 +244,7 @@ page 2610 "Feature Management"
         FeatureManagementFacade: Codeunit "Feature Management Facade";
         LearnMoreLbl: Label 'Learn more';
         TryItOutLbl: Label 'Try it out';
-        TryItOutStartedMsg: Label 'This feature has been enabled for new sessions in your browser. When you are done, sign out or close the browser.';
+        TryItOutStartedMsg: Label 'A new browser tab was opened for you to try out the feature. For now, the feature has been temporarily enabled for you only. It will remain enabled whenever you open Business Central in the browser, until you completely sign out or close the browser.';
         OneWayWarningMsg: Label 'After you enable this feature for all users, you cannot turn it off again. This is because the feature may include changes to your data and may initiate an upgrade of some database tables as soon as you enable it.\\We strongly recommend that you first enable and test this feature on a sandbox environment that has a copy of production data before doing this on a production environment.\\For detailed information about the impact of enabling this feature, you should choose No and use the Learn more link.\\Are you sure you want to enable this feature?';
         OneWayAlreadyEnabledErr: Label 'This feature has already been enabled and cannot be disabled.';
         TryItOut: Text;

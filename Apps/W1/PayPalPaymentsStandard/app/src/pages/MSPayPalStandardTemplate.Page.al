@@ -2,7 +2,7 @@ page 1071 "MS - PayPal Standard Template"
 {
     Caption = 'PayPal Payments Standard Template';
     PageType = Card;
-    SourceTable = 1071;
+    SourceTable = "MS - PayPal Standard Template";
 
     layout
     {
@@ -35,7 +35,7 @@ page 1071 "MS - PayPal Standard Template"
 
                     trigger OnValidate();
                     var
-                        MSPayPalStandardMgt: Codeunit 1070;
+                        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
                     begin
                         MSPayPalStandardMgt.ValidateChangeTargetURL();
                         SetTargetURL(ServiceTargetURL);
@@ -84,7 +84,7 @@ page 1071 "MS - PayPal Standard Template"
 
                 trigger OnAction();
                 var
-                    MSPayPalStandardMgt: Codeunit 1070;
+                    MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
                 begin
                     MSPayPalStandardMgt.TemplateAssignDefaultValues(Rec);
                     MESSAGE(SetToDefaultMsg);
@@ -102,7 +102,7 @@ page 1071 "MS - PayPal Standard Template"
     trigger OnOpenPage();
     var
         TempMSPayPalStandardTemplate: Record 1071 temporary;
-        MSPayPalStandardMgt: Codeunit 1070;
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
         IF NOT GET() THEN BEGIN
             MSPayPalStandardMgt.GetTemplate(TempMSPayPalStandardTemplate);

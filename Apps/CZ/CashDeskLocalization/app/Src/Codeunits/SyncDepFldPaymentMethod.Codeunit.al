@@ -1,3 +1,4 @@
+#if not CLEAN17
 #pragma warning disable AL0432
 codeunit 31125 "Sync.Dep.Fld-PaymentMethod CZP"
 {
@@ -23,3 +24,4 @@ codeunit 31125 "Sync.Dep.Fld-PaymentMethod CZP"
         end;
     end;
 }
+#endif

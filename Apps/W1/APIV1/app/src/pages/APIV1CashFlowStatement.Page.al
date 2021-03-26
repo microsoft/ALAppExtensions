@@ -56,7 +56,7 @@ page 20026 "APIV1 - Cash Flow Statement"
 
     trigger OnOpenPage()
     var
-        GraphMgtReports: Codeunit 5488;
+        GraphMgtReports: Codeunit "Graph Mgt - Reports";
         RecVariant: Variant;
         ReportAPIType: Option "Balance Sheet","Income Statement","Trial Balance","CashFlow Statement","Aged Accounts Payable","Aged Accounts Receivable","Retained Earnings";
     begin

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -216,7 +216,7 @@ codeunit 135034 "Filter Tokens Test"
         EXIT(STRSUBSTNO('%1|%2', Date1, Date2));
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 41, 'OnResolveDateTokenFromDateTimeFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Tokens", 'OnResolveDateTokenFromDateTimeFilter', '', false, false)]
     local procedure OnResolveDateTokenFromDateTimeFilter(DateToken: Text; var DateFilter: Date; var Handled: Boolean)
     var
         ChristmasTxt: Label 'CHRISTMAS';
@@ -231,7 +231,7 @@ codeunit 135034 "Filter Tokens Test"
             END;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 41, 'OnResolveTimeTokenFromDateTimeFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Tokens", 'OnResolveTimeTokenFromDateTimeFilter', '', false, false)]
     local procedure OnResolveTimeTokenFromDateTimeFilter(TimeToken: Text; var TimeFilter: Time; var Handled: Boolean)
     var
         LunchTxt: Label 'LUNCH';
@@ -246,7 +246,7 @@ codeunit 135034 "Filter Tokens Test"
             END;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 41, 'OnResolveDateFilterToken', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Tokens", 'OnResolveDateFilterToken', '', false, false)]
     local procedure OnResolveDateFilterToken(DateToken: Text; var FromDate: Date; var ToDate: Date; var Handled: Boolean)
     var
         SummerTxt: Label 'SUMMER';
@@ -262,7 +262,7 @@ codeunit 135034 "Filter Tokens Test"
             END;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 41, 'OnResolveTimeFilterToken', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Tokens", 'OnResolveTimeFilterToken', '', false, false)]
     local procedure OnResolveTimeFilterToken(TimeToken: Text; var TimeFilter: Time; var Handled: Boolean)
     var
         LunchTxt: Label 'LUNCH';
@@ -277,7 +277,7 @@ codeunit 135034 "Filter Tokens Test"
             END;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 41, 'OnResolveTextFilterToken', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Tokens", 'OnResolveTextFilterToken', '', false, false)]
     local procedure OnResolveTextFilterToken(TextToken: Text; var TextFilter: Text; var Handled: Boolean)
     var
         MyFilterTxt: Label 'MyFilter';

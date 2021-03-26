@@ -6,6 +6,7 @@
 codeunit 135157 "Library - Data Classification"
 {
     Subtype = Normal;
+    Permissions = tabledata "Fields Sync Status" = rid;
 
     /// <summary>
     /// Modifies the Last Sync Date Time field of the Field Sync Status table to LastFieldsSyncStatusDate.

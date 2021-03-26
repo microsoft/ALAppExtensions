@@ -457,7 +457,7 @@ Represents the salt to be used to initialize a new instance of System.Security.C
 #### Return Value
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
-
+Returns the encrypted text
 ### DecryptText (Method) <a name="DecryptText"></a> 
 
  Decrypts text with DotNet Cryptography.DESCryptoServiceProvider
@@ -484,7 +484,7 @@ Represents the salt to be used to initialize a new instance of System.Security.C
 #### Return Value
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
-
+Returns the decrypted text
 ### EncryptStream (Method) <a name="EncryptStream"></a> 
 
  Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider

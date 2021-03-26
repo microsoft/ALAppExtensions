@@ -123,6 +123,29 @@ codeunit 139833 "APIV2 - Attachments E2E"
     end;
 
     [Test]
+    procedure TestGetDraftOrderAttachments()
+    var
+        DocumentRecordRef: RecordRef;
+        AttachmentId: array[2] of Guid;
+        ResponseText: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] User can retrieve all records from the Attachments API.
+        // [GIVEN] 2 Attachments in the Incoming Document Attachment table
+        CreateDraftSalesOrder(DocumentRecordRef);
+        CreateAttachments(DocumentRecordRef, AttachmentId);
+        Commit();
+
+        // [WHEN] A GET request is made to the Attachment API.
+        TargetURL := CreateAttachmentsURLWithFilter(GetDocumentId(DocumentRecordRef), Format(AttachmentEntityBufferDocumentType::"Sales Order"));
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] The 2 Attachments should exist in the response
+        GetAndVerifyIDFromJSON(ResponseText, AttachmentId);
+    end;
+
+
+    [Test]
     procedure TestGetPostedPurchaseInvoiceAttachments()
     var
         DocumentRecordRef: RecordRef;
@@ -307,6 +330,28 @@ codeunit 139833 "APIV2 - Attachments E2E"
     end;
 
     [Test]
+    procedure TestGetDraftOrderAttachment()
+    var
+        DocumentRecordRef: RecordRef;
+        AttachmentId: Guid;
+        ResponseText: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] User can retrieve the Attachment record from the Attachment API.
+        // [GIVEN] Attachment exists in the Incoming Document Attachment table
+        CreateDraftSalesOrder(DocumentRecordRef);
+        AttachmentId := CreateAttachment(DocumentRecordRef);
+        Commit();
+
+        // [WHEN] A GET request is made to the Attachment API.
+        TargetURL := LibraryGraphMgt.CreateTargetURL(AttachmentId, Page::"APIV2 - Attachments", AttachmentServiceNameTxt);
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] The Attachment should exist in the response
+        LibraryGraphMgt.VerifyGUIDFieldInJson(ResponseText, 'id', AttachmentId);
+    end;
+
+    [Test]
     procedure TestGetQuoteAttachment()
     var
         DocumentRecordRef: RecordRef;
@@ -326,6 +371,28 @@ codeunit 139833 "APIV2 - Attachments E2E"
 
         // [THEN] The Attachment should exist in the response
         LibraryGraphMgt.VerifyGUIDFieldInJson(ResponseText, 'id', AttachmentId);
+    end;
+
+    [Test]
+    procedure TestGetDraftPurchaseOrderAttachments()
+    var
+        DocumentRecordRef: RecordRef;
+        AttachmentId: array[2] of Guid;
+        ResponseText: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] User can retrieve all records from the Attachments API.
+        // [GIVEN] 2 Attachments in the Incoming Document Attachment table
+        CreateDraftPurchaseOrder(DocumentRecordRef);
+        CreateAttachments(DocumentRecordRef, AttachmentId);
+        Commit();
+
+        // [WHEN] A GET request is made to the Attachment API.
+        TargetURL := CreateAttachmentsURLWithFilter(GetDocumentId(DocumentRecordRef), Format(AttachmentEntityBufferDocumentType::"Purchase Order"));
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] The 2 Attachments should exist in the response
+        GetAndVerifyIDFromJSON(ResponseText, AttachmentId);
     end;
 
     [Test]
@@ -432,6 +499,15 @@ codeunit 139833 "APIV2 - Attachments E2E"
     end;
 
     [Test]
+    procedure TestCreateDraftOrderAttachment()
+    var
+        DocumentRecordRef: RecordRef;
+    begin
+        CreateDraftSalesOrder(DocumentRecordRef);
+        TestCreateAttachment(DocumentRecordRef);
+    end;
+
+    [Test]
     procedure TestCreatePostedPurchaseInvoiceAttachment()
     var
         DocumentRecordRef: RecordRef;
@@ -447,6 +523,15 @@ codeunit 139833 "APIV2 - Attachments E2E"
         DocumentRecordRef: RecordRef;
     begin
         CreateDraftPurchaseInvoice(DocumentRecordRef);
+        TestCreateAttachment(DocumentRecordRef);
+    end;
+
+    [Test]
+    procedure TestCreateDraftPurchaseOrderAttachment()
+    var
+        DocumentRecordRef: RecordRef;
+    begin
+        CreateDraftPurchaseOrder(DocumentRecordRef);
         TestCreateAttachment(DocumentRecordRef);
     end;
 
@@ -576,7 +661,7 @@ codeunit 139833 "APIV2 - Attachments E2E"
         DocumentId: Guid;
     begin
         CreatePostedSalesInvoice(DocumentRecordRef, DocumentId);
-        TestDeleteAttachment(DocumentRecordRef, DocumentId);
+        TestDeleteAttachment2(DocumentRecordRef);
     end;
 
     [Test]
@@ -595,7 +680,7 @@ codeunit 139833 "APIV2 - Attachments E2E"
         DocumentId: Guid;
     begin
         CreatePostedPurchaseInvoice(DocumentRecordRef, DocumentId);
-        TestDeleteAttachment(DocumentRecordRef, DocumentId);
+        TestDeleteAttachment2(DocumentRecordRef);
     end;
 
     [Test]
@@ -621,11 +706,11 @@ codeunit 139833 "APIV2 - Attachments E2E"
         DocumentId: Guid;
     begin
         DocumentId := GetDocumentSystemId(DocumentRecordRef);
-        TestDeleteAttachment(DocumentRecordRef, DocumentId);
+        TestDeleteAttachment2(DocumentRecordRef);
     end;
 
     [Normal]
-    local procedure TestDeleteAttachment(var DocumentRecordRef: RecordRef; DocumentId: Guid)
+    local procedure TestDeleteAttachment2(var DocumentRecordRef: RecordRef)
     var
         IncomingDocumentAttachment: Record "Incoming Document Attachment";
         AttachmentId: Guid;
@@ -875,6 +960,22 @@ codeunit 139833 "APIV2 - Attachments E2E"
         DocumentRecordRef.GetTable(SalesHeader);
     end;
 
+    local procedure CreateDraftPurchaseOrder(var DocumentRecordRef: RecordRef)
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        LibraryPurchase.CreatePurchaseOrder(PurchaseHeader);
+        DocumentRecordRef.GetTable(PurchaseHeader);
+    end;
+
+    local procedure CreateDraftSalesOrder(var DocumentRecordRef: RecordRef)
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        LibrarySales.CreateSalesOrder(SalesHeader);
+        DocumentRecordRef.GetTable(SalesHeader);
+    end;
+
     local procedure CreatePostedSalesInvoice(var DocumentRecordRef: RecordRef; var DocumentId: Guid)
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -977,14 +1078,34 @@ codeunit 139833 "APIV2 - Attachments E2E"
     end;
 
     local procedure GetDocumentType(DocumentRecordRef: RecordRef): Text
+    var
+        PurchaseHeader: Record "Purchase Header";
+        SalesHeader: Record "Sales Header";
     begin
         case DocumentRecordRef.Number() of
             Database::"Sales Invoice Header":
                 exit(Format(AttachmentEntityBufferDocumentType::"Sales Invoice"));
             Database::"Sales Header":
-                exit(Format(AttachmentEntityBufferDocumentType::"Sales Quote"));
-            Database::"Purch. Inv. Header", Database::"Purchase Header":
+                begin
+                    DocumentRecordRef.SetTable(SalesHeader);
+                    if SalesHeader."Document Type" = SalesHeader."Document Type"::Quote then
+                        exit(Format(AttachmentEntityBufferDocumentType::"Sales Quote"));
+                    if SalesHeader."Document Type" = SalesHeader."Document Type"::Order then
+                        exit(Format(AttachmentEntityBufferDocumentType::"Sales Order"));
+                    if SalesHeader."Document Type" = SalesHeader."Document Type"::Invoice then
+                        exit(Format(AttachmentEntityBufferDocumentType::"Sales Invoice"));
+                end;
+            Database::"Purch. Inv. Header":
                 exit(Format(AttachmentEntityBufferDocumentType::"Purchase Invoice"));
+            Database::"Purchase Header":
+                begin
+                    DocumentRecordRef.SetTable(PurchaseHeader);
+
+                    if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Invoice then
+                        exit(Format(AttachmentEntityBufferDocumentType::"Purchase Invoice"));
+                    if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
+                        exit(Format(AttachmentEntityBufferDocumentType::"Purchase Order"));
+                end;
             Database::"Gen. Journal Line", Database::"G/L Entry":
                 exit(Format(AttachmentEntityBufferDocumentType::"Journal"));
         end;
@@ -1111,7 +1232,10 @@ codeunit 139833 "APIV2 - Attachments E2E"
         if DocumentRecordRef.Number() = Database::"Purchase Header" then begin
             DocumentRecordRef.SetTable(PurchaseHeader);
             IncomingDocument.Description := CopyStr(PurchaseHeader."Buy-from Vendor Name", 1, MaxStrLen(IncomingDocument.Description));
-            IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Purchase Invoice";
+            if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
+                IncomingDocument."Document Type" := IncomingDocument."Document Type"::" ";
+            if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Invoice then
+                IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Purchase Invoice";
             IncomingDocument."Document No." := PurchaseHeader."No.";
             IncomingDocument.Insert(true);
             PurchaseHeader.Find();

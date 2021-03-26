@@ -6,9 +6,9 @@ codeunit 139676 "MS - QB Payroll Import Test"
     TestPermissions = Disabled;
 
     var
-        FileMgt: Codeunit 419;
-        MSQuickbooksPayrollImport: Codeunit 1676;
-        Assert: Codeunit 130000;
+        FileMgt: Codeunit "File Management";
+        MSQuickbooksPayrollImport: Codeunit "MS - Quickbooks Payroll Import";
+        Assert: Codeunit "Assert";
         InvalidIIFTransFileErr: Label 'This is not a valid IIF transaction file. Required token %1 could not be found in the file.', Comment = '%1 - arbitrary text';
         NoGenJnlTransactionsMsg: Label 'No transactions with supported type were found in the imported file. Supported transaction types are: General Journal, Check, and Transfer.';
         NonGJTransactionsDetectedMsg: Label 'One or more transactions in the imported file were not imported because they are not of supported type. Supported transaction types are: General Journal, Check, and Transfer.';

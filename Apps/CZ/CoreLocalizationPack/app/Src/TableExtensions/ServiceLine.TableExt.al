@@ -2,6 +2,25 @@ tableextension 11763 "Service Line CZL" extends "Service Line"
 {
     fields
     {
+        field(11769; "Negative CZL"; Boolean)
+        {
+            Caption = 'Negative';
+            DataClassification = CustomerContent;
+        }
+        field(31064; "Physical Transfer CZL"; Boolean)
+        {
+            Caption = 'Physical Transfer';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Physical Transfer CZL" then begin
+                    TestField(Type, Type::Item);
+                    if "Document Type" = "Document Type"::"Credit Memo" then
+                        FieldError("Document Type");
+                end;
+            end;
+        }
         field(31065; "Tariff No. CZL"; Code[20])
         {
             Caption = 'Tariff No.';
@@ -26,6 +45,12 @@ tableextension 11763 "Service Line CZL" extends "Service Line"
         {
             Caption = 'Statistic Indication';
             TableRelation = "Statistic Indication CZL".Code WHERE("Tariff No." = FIELD("Tariff No. CZL"));
+            DataClassification = CustomerContent;
+        }
+        field(31067; "Country/Reg. of Orig. Code CZL"; Code[10])
+        {
+            Caption = 'Country/Region of Origin Code';
+            TableRelation = "Country/Region";
             DataClassification = CustomerContent;
         }
     }

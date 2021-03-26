@@ -56,7 +56,7 @@ report 31197 "Service Invoice CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                FormatAddr.Company(CompanyAddr, "Company Information");
+                FormatAddress.Company(CompanyAddr, "Company Information");
             end;
         }
         dataitem("Service Invoice Header"; "Service Invoice Header")
@@ -139,22 +139,22 @@ report 31197 "Service Invoice CZL"
             column(RegistrationNo_ServiceInvoiceHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_ServiceInvoiceHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_ServiceInvoiceHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_ServiceInvoiceHeader; "Bank Account No.")
+            column(BankAccountNo_ServiceInvoiceHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_ServiceInvoiceHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_ServiceInvoiceHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_ServiceInvoiceHeader; IBAN)
+            column(IBAN_ServiceInvoiceHeader; "IBAN CZL")
             {
             }
-            column(BIC_ServiceInvoiceHeaderCaption; FieldCaption("SWIFT Code"))
+            column(BIC_ServiceInvoiceHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(BIC_ServiceInvoiceHeader; "SWIFT Code")
+            column(BIC_ServiceInvoiceHeader; "SWIFT Code CZL")
             {
             }
             column(PostingDate_ServiceInvoiceHeaderCaption; FieldCaption("Posting Date"))
@@ -378,12 +378,12 @@ report 31197 "Service Invoice CZL"
                         AutoFormatExpression = "Service Invoice Header"."Currency Code";
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATBaseLCY; TempVATAmountLine."VAT Base (LCY)")
+                    column(VATAmtLineVATBaseLCY; TempVATAmountLine."VAT Base (LCY) CZL")
                     {
                         AutoFormatExpression = "Service Invoice Line".GetCurrencyCode();
                         AutoFormatType = 1;
                     }
-                    column(VATAmtLineVATAmtLCY; TempVATAmountLine."VAT Amount (LCY)")
+                    column(VATAmtLineVATAmtLCY; TempVATAmountLine."VAT Amount (LCY) CZL")
                     {
                         AutoFormatExpression = "Service Invoice Header"."Currency Code";
                         AutoFormatType = 1;
@@ -426,16 +426,16 @@ report 31197 "Service Invoice CZL"
                 dataitem(LineFee; "Integer")
                 {
                     DataItemTableView = sorting(Number) ORDER(Ascending) WHERE(Number = FILTER(1 ..));
-                    column(LineFeeCaptionLbl; TempLineFeeNoteOnReportHist.ReportText)
+                    column(LineFeeCaptionLbl; TempLineFeeNoteonReportHist.ReportText)
                     {
                     }
                     trigger OnAfterGetRecord()
                     begin
                         if Number = 1 then begin
-                            if not TempLineFeeNoteOnReportHist.FindSet() then
+                            if not TempLineFeeNoteonReportHist.FindSet() then
                                 CurrReport.Break()
                         end else
-                            if TempLineFeeNoteOnReportHist.Next() = 0 then
+                            if TempLineFeeNoteonReportHist.Next() = 0 then
                                 CurrReport.Break();
                     end;
 
@@ -443,7 +443,7 @@ report 31197 "Service Invoice CZL"
                     begin
                         if not DisplayAdditionalFeeNote then
                             CurrReport.Break();
-                        SetRange(Number, 1, TempLineFeeNoteOnReportHist.Count);
+                        SetRange(Number, 1, TempLineFeeNoteonReportHist.Count);
                     end;
                 }
                 dataitem("User Setup"; "User Setup")
@@ -453,7 +453,7 @@ report 31197 "Service Invoice CZL"
                     DataItemTableView = sorting("User ID");
                     dataitem(Employee; Employee)
                     {
-                        DataItemLink = "No." = field("Employee No.");
+                        DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
                         column(FullName_Employee; FullName())
                         {
@@ -493,12 +493,13 @@ report 31197 "Service Invoice CZL"
                     Clear(Customer);
 
                 ServiceInvLine.CalcVATAmountLines("Service Invoice Header", TempVATAmountLine);
+                TempVATAmountLine.UpdateVATEntryLCYAmountsCZL("Service Invoice Header");
                 if ("Currency Factor" <> 0) and ("Currency Factor" <> 1) then begin
-                    CurrExchRate.FindCurrency("Posting Date", "Currency Code", 1);
-                    CalculatedExchRate := Round(1 / "Currency Factor" * CurrExchRate."Exchange Rate Amount", 0.00001);
+                    CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
+                    CalculatedExchRate := Round(1 / "Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
                     ExchRateText :=
                       StrSubstNo(ExchRateLbl, CalculatedExchRate, "General Ledger Setup"."LCY Code",
-                        CurrExchRate."Exchange Rate Amount", "Currency Code");
+                        CurrencyExchangeRate."Exchange Rate Amount", "Currency Code");
                 end else
                     CalculatedExchRate := 1;
 
@@ -536,17 +537,18 @@ report 31197 "Service Invoice CZL"
             }
         }
     }
+
     var
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-        TempLineFeeNoteOnReportHist: Record "Line Fee Note on Report Hist." temporary;
+        TempLineFeeNoteonReportHist: Record "Line Fee Note on Report Hist." temporary;
         Customer: Record Customer;
         PaymentTerms: Record "Payment Terms";
         PaymentMethod: Record "Payment Method";
         ReasonCode: Record "Reason Code";
-        CurrExchRate: Record "Currency Exchange Rate";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
         VATClause: Record "VAT Clause";
         Language: Codeunit Language;
-        FormatAddr: Codeunit "Format Address";
+        FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         ExchRateText: Text[50];
@@ -585,34 +587,34 @@ report 31197 "Service Invoice CZL"
 
     local procedure GetLineFeeNoteOnReportHist(ServiceInvoiceHeaderNo: Code[20])
     var
-        LineFeeNoteOnReportHist: Record "Line Fee Note on Report Hist.";
+        LineFeeNoteonReportHist: Record "Line Fee Note on Report Hist.";
         CustLedgerEntry: Record "Cust. Ledger Entry";
-        CustomerLanguage: Record Customer;
+        LanguageCustomer: Record Customer;
     begin
-        TempLineFeeNoteOnReportHist.DeleteAll();
+        TempLineFeeNoteonReportHist.DeleteAll();
         CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::Invoice);
         CustLedgerEntry.SetRange("Document No.", ServiceInvoiceHeaderNo);
         if not CustLedgerEntry.FindFirst() then
             exit;
-        if not CustomerLanguage.Get(CustLedgerEntry."Customer No.") then
+        if not LanguageCustomer.Get(CustLedgerEntry."Customer No.") then
             exit;
 
-        LineFeeNoteOnReportHist.SetRange("Cust. Ledger Entry No", CustLedgerEntry."Entry No.");
-        LineFeeNoteOnReportHist.SetRange("Language Code", CustomerLanguage."Language Code");
-        if LineFeeNoteOnReportHist.FindSet() then
+        LineFeeNoteonReportHist.SetRange("Cust. Ledger Entry No", CustLedgerEntry."Entry No.");
+        LineFeeNoteonReportHist.SetRange("Language Code", LanguageCustomer."Language Code");
+        if LineFeeNoteonReportHist.FindSet() then
             repeat
-                TempLineFeeNoteOnReportHist.Init();
-                TempLineFeeNoteOnReportHist.Copy(LineFeeNoteOnReportHist);
-                TempLineFeeNoteOnReportHist.Insert();
-            until LineFeeNoteOnReportHist.Next() = 0
+                TempLineFeeNoteonReportHist.Init();
+                TempLineFeeNoteonReportHist.Copy(LineFeeNoteonReportHist);
+                TempLineFeeNoteonReportHist.Insert();
+            until LineFeeNoteonReportHist.Next() = 0
         else begin
-            LineFeeNoteOnReportHist.SetRange("Language Code", Language.GetUserLanguageCode());
-            if LineFeeNoteOnReportHist.FindSet() then
+            LineFeeNoteonReportHist.SetRange("Language Code", Language.GetUserLanguageCode());
+            if LineFeeNoteonReportHist.FindSet() then
                 repeat
-                    TempLineFeeNoteOnReportHist.Init();
-                    TempLineFeeNoteOnReportHist.Copy(LineFeeNoteOnReportHist);
-                    TempLineFeeNoteOnReportHist.Insert();
-                until LineFeeNoteOnReportHist.Next() = 0;
+                    TempLineFeeNoteonReportHist.Init();
+                    TempLineFeeNoteonReportHist.Copy(LineFeeNoteonReportHist);
+                    TempLineFeeNoteonReportHist.Insert();
+                until LineFeeNoteonReportHist.Next() = 0;
         end;
     end;
 
@@ -626,16 +628,16 @@ report 31197 "Service Invoice CZL"
             ReasonCode.Get(ServiceInvoiceHeader."Reason Code");
         FormatDocumentMgtCZL.SetPaymentSymbols(
           PaymentSymbol, PaymentSymbolLabel,
-          ServiceInvoiceHeader."Variable Symbol", ServiceInvoiceHeader.FieldCaption(ServiceInvoiceHeader."Variable Symbol"),
-          ServiceInvoiceHeader."Constant Symbol", ServiceInvoiceHeader.FieldCaption(ServiceInvoiceHeader."Constant Symbol"),
-          ServiceInvoiceHeader."Specific Symbol", ServiceInvoiceHeader.FieldCaption(ServiceInvoiceHeader."Specific Symbol"));
+          ServiceInvoiceHeader."Variable Symbol CZL", ServiceInvoiceHeader.FieldCaption(ServiceInvoiceHeader."Variable Symbol CZL"),
+          ServiceInvoiceHeader."Constant Symbol CZL", ServiceInvoiceHeader.FieldCaption(ServiceInvoiceHeader."Constant Symbol CZL"),
+          ServiceInvoiceHeader."Specific Symbol CZL", ServiceInvoiceHeader.FieldCaption(ServiceInvoiceHeader."Specific Symbol CZL"));
         DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText(ServiceInvoiceHeader."Language Code");
     end;
 
     local procedure FormatAddressFields(ServiceInvoiceHeader: Record "Service Invoice Header")
     begin
-        FormatAddr.ServiceInvBillTo(CustAddr, ServiceInvoiceHeader);
-        FormatAddr.ServiceInvShipTo(ShipToAddr, CustAddr, ServiceInvoiceHeader);
+        FormatAddress.ServiceInvBillTo(CustAddr, ServiceInvoiceHeader);
+        FormatAddress.ServiceInvShipTo(ShipToAddr, CustAddr, ServiceInvoiceHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

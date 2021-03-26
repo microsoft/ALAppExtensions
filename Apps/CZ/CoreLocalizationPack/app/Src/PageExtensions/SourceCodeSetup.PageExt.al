@@ -17,6 +17,11 @@ pageextension 11784 "Source Code Setup CZL" extends "Source Code Setup"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the source code for purchase VAT delay.';
             }
+            field("VAT LCY Correction CZL"; Rec."VAT LCY Correction CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the source code for VAT correction in LCY.';
+            }
         }
     }
 }

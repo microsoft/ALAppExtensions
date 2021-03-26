@@ -60,6 +60,48 @@ codeunit 139829 "APIV2 - Purchase Invoices E2E"
     end;
 
     [Test]
+    procedure TestGetInvoiceFromPostedOrderCorrectOrderIdAndNo()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        OrderId: Guid;
+        OrderNo: Code[20];
+        InvoiceId: Guid;
+        InvoiceNo: Code[20];
+        TargetURL: Text;
+        ResponseText: Text;
+        OrderIdValue: Text;
+        OrderNoValue: Text;
+    begin
+        // [SCENARIO] Create a Purchase Invoice from a Purchase Order and use GET method to retrieve them and check the orderId and orderNumber
+        // [GIVEN] A purchase invoice created by posting a purchase order
+        LibraryPurchase.CreatePurchaseOrder(PurchaseHeader);
+        OrderId := PurchaseHeader.SystemId;
+        OrderNo := PurchaseHeader."No.";
+        InvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        Commit();
+
+        PurchInvHeader.SetRange("No.", InvoiceNo);
+        PurchInvHeader.FindFirst();
+        InvoiceId := PurchInvHeader.SystemId;
+
+        // [WHEN] we get the invoice from the web service
+        TargetURL := LibraryGraphMgt.CreateTargetURL(InvoiceId, Page::"APIV2 - Purchase Invoices", InvoiceServiceNameTxt);
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] the orderId field exists in the response
+        Assert.AreNotEqual('', ResponseText, 'Response JSON should not be blank');
+        LibraryGraphMgt.VerifyIDFieldInJson(ResponseText, 'orderId');
+
+        // [THEN] The orderId and orderNumber fields correspond to the id and number of the sales order
+        LibraryGraphMgt.GetPropertyValueFromJSON(ResponseText, 'orderId', OrderIdValue);
+        Assert.AreEqual(OrderIdValue, Format(Lowercase(LibraryGraphMgt.StripBrackets(OrderId))), 'The order id value is wrong.');
+
+        LibraryGraphMgt.GetPropertyValueFromJSON(ResponseText, 'orderNumber', OrderNoValue);
+        Assert.AreEqual(OrderNoValue, Format(OrderNo), 'The order number value is wrong.');
+    end;
+
+    [Test]
     procedure TestPostInvoices()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -273,7 +315,7 @@ codeunit 139829 "APIV2 - Purchase Invoices E2E"
         RecordField: Record Field;
         ApiRecordRef: RecordRef;
         PageRecordRef: RecordRef;
-        PurchaseInvoice: TestPage 51;
+        PurchaseInvoice: TestPage "Purchase Invoice";
         VendorNo: Text;
         InvoiceDate: Date;
         ResponseText: Text;
@@ -417,7 +459,7 @@ codeunit 139829 "APIV2 - Purchase Invoices E2E"
         exit(InvoiceJSON);
     end;
 
-    local procedure CreateInvoiceThroughTestPage(var PurchaseInvoice: TestPage 51; Vendor: Record "Vendor"; DocumentDate: Date; PostingDate: Date)
+    local procedure CreateInvoiceThroughTestPage(var PurchaseInvoice: TestPage "Purchase Invoice"; Vendor: Record "Vendor"; DocumentDate: Date; PostingDate: Date)
     begin
         PurchaseInvoice.OpenNew();
         PurchaseInvoice."Buy-from Vendor No.".SetValue(Vendor."No.");
