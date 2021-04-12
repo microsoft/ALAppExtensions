@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en-US" target-language="en-US" original="Azure Storage Services Auth. Helper">
+    <body>
+      <group id="body">
+        <trans-unit id="Table 735573898 - Field 3348941625 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Key</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Temp. Sort Table - Field Key - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 735573898 - Field 1131619133 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Value</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Temp. Sort Table - Field Value - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1588530901 - Method 3087343453 - NamedType 2760667186" size-unit="char" translate="yes" xml:space="preserve">
+          <source>%1=%2</source>
+          <note from="Developer" annotates="general" priority="2">%1 = Key; %2 = Value</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Auth. Format Helper - Method CreateSasUrlString - NamedType KeyValueLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1588530901 - Method 2363636190 - NamedType 2190545488" size-unit="char" translate="yes" xml:space="preserve">
+          <source>%1:%2</source>
+          <note from="Developer" annotates="general" priority="2">%1 = Key; %2 = Value</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Auth. Format Helper - Method GetCanonicalizedHeaders - NamedType KeyValuePairLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1588530901 - Method 3982220544 - NamedType 2190545488" size-unit="char" translate="yes" xml:space="preserve">
+          <source>%1:%2</source>
+          <note from="Developer" annotates="general" priority="2">%1 = Key; %2 = Value</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Auth. Format Helper - Method GetCanonicalizedResource - NamedType KeyValuePairLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2468606708 - Method 1775191576 - NamedType 1444867455" size-unit="char" translate="yes" xml:space="preserve">
+          <source>SharedKey %1:%2</source>
+          <note from="Developer" annotates="general" priority="2">%1 = Account Name; %2 = Calculated Signature</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Storage Serv. Auth. Access Key - Method GetSharedKeySignature - NamedType SignaturePlaceHolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 2468606708 - Method 1775191576 - NamedType 4083372884" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Secret (Access Key) must be provided</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Storage Serv. Auth. Access Key - Method GetSharedKeySignature - NamedType SecretCanNotBeEmptyErr</note>
+        </trans-unit>
+        <trans-unit id="Enum 1347848970 - EnumValue 2910642922 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>2017-04-17</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service API Version - EnumValue 2017-04-17 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1347848970 - EnumValue 42618516 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>2017-07-29</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service API Version - EnumValue 2017-07-29 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1347848970 - EnumValue 2558125943 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>2017-11-09</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service API Version - EnumValue 2017-11-09 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1347848970 - EnumValue 2533704414 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>2018-03-28</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service API Version - EnumValue 2018-03-28 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1347848970 - EnumValue 3854118030 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>2018-11-09</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service API Version - EnumValue 2018-11-09 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1347848970 - EnumValue 2858870158 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>2019-02-02</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service API Version - EnumValue 2019-02-02 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1347848970 - EnumValue 2671212726 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>2019-07-07</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service API Version - EnumValue 2019-07-07 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1347848970 - EnumValue 2515687734 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>2019-12-12</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service API Version - EnumValue 2019-12-12 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1347848970 - EnumValue 825793741 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>2020-02-10</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service API Version - EnumValue 2020-02-10 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3083278329 - EnumValue 2865678901 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Access Key</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service Authorization Type - EnumValue AccessKey - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3083278329 - EnumValue 3398022750 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shared Access Signature</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service Authorization Type - EnumValue SasToken - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 4006516458 - EnumValue 394351785 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Container</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service Resource Type - EnumValue Container - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 4006516458 - EnumValue 2123958759 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Object</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service Resource Type - EnumValue Object - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 4006516458 - EnumValue 2187938695 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Service</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service Resource Type - EnumValue Service - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3180643872 - EnumValue 3926698677 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Blob</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service Type - EnumValue Blob - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3180643872 - EnumValue 3374690962 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>File</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service Type - EnumValue File - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3180643872 - EnumValue 3602863235 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Queue</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service Type - EnumValue Queue - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3180643872 - EnumValue 1500409770 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Table</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Storage Service Type - EnumValue Table - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="EnumExtension 2682523015 - EnumValue 525161284 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Enum 1379843859">
+          <source>HEAD</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">EnumExtension Storage Service Http Request Type - EnumValue HEAD - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="EnumExtension 2682523015 - EnumValue 2273553268 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Enum 1379843859">
+          <source>OPTIONS</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">EnumExtension Storage Service Http Request Type - EnumValue OPTIONS - Property Caption</note>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>
