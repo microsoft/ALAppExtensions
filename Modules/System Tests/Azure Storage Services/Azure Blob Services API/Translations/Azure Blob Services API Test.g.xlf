@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en-US" target-language="en-US" original="Azure Blob Services API Test">
+    <body>
+      <group id="body">
+        <trans-unit id="Codeunit 3792713338 - NamedType 2474979939" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Blob Service API Test Help Lib - NamedType AccessKeyLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3792713338 - NamedType 1759214852" size-unit="char" translate="yes" xml:space="preserve">
+          <source>?sv=2020-02-10&amp;ss=bfqt&amp;srt=sco&amp;sp=rwdlacuptfx&amp;se=2021-12-31T00:00:00Z&amp;st=2021-01-01T11:00:00Z&amp;spr=https,http&amp;sig=uoQFQrxzvi1PSCe0RTk0fbOXDBca0W29sGVrjhtEWV4%3D</source>
+          <note from="Developer" annotates="general" priority="2">%3 = Just to remove warning</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Blob Service API Test Help Lib - NamedType SasTokenLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3792713338 - NamedType 615382663" size-unit="char" translate="yes" xml:space="preserve">
+          <source>devstoreaccount1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Blob Service API Test Help Lib - NamedType StorageAccountNameLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 161588041 - NamedType 2969978981" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Operation "%1" failed. Status Code: %2</source>
+          <note from="Developer" annotates="general" priority="2">%1 = Operation, %2 = Status Code</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Blob Service Test Library - NamedType OperationFailedErr</note>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>
