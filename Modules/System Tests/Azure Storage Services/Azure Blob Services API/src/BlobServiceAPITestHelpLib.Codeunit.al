@@ -9,7 +9,7 @@ codeunit 88150 "Blob Service API Test Help Lib"
         Any: Codeunit Any;
         StorageAccountNameLbl: Label 'devstoreaccount1'; // Using Azurite Storage Emulator
         AccessKeyLbl: Label 'Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=='; // Using Azurite Storage Emulator
-        SasTokenLbl: Label '?sv=2020-02-10&ss=bfqt&srt=sco&sp=rwdlacuptfx&se=2021-12-31T00:00:00Z&st=2021-01-01T11:00:00Z&spr=https,http&sig=uoQFQrxzvi1PSCe0RTk0fbOXDBca0W29sGVrjhtEWV4%3D', Comment = '%3 = Just to remove warning'; // TODO: Validate
+        SasTokenLbl: Label '<TODO>'; // TODO: What SAS to use with Azurite?
 
     procedure InitializeRequestFromContext(TestContext: Codeunit "Blob Service API Test Context"; var OperationObject: Codeunit "Blob API Operation Object")
     begin
