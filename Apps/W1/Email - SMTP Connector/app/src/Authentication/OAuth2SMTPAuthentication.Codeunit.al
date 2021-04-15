@@ -7,7 +7,7 @@ codeunit 4516 "OAuth2 SMTP Authentication" implements "SMTP Authentication"
         CouldNotAuthenticateErr: Label 'Could not authenticate. To resolve the problem, choose the Authenticate action on the SMTP Account page.';
         AuthenticationSuccessfulMsg: Label '%1 was authenticated.', Comment = '%1 - user email, for example, admin@domain.com';
         AuthenticationFailedMsg: Label 'Could not authenticate.';
-        SMTP2NotAvailableMsg: Label 'The OAuth 2.0 authentication method is currently not available. Use either the Basic or Anonymous authentication method instead.';
+        SMTP2NotAvailableMsg: Label 'The OAuth 2.0 authentication method is currently not available. Use either the Basic, NTLM, or Anonymous authentication method instead.';
 
     procedure Validate(var SMTPAccount: Record "SMTP Account");
     begin

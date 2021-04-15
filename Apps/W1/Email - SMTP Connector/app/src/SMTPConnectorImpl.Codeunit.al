@@ -120,7 +120,7 @@ codeunit 4513 "SMTP Connector Impl."
                 SMTPAccount.Server,
                 SMTPAccount."Server Port"), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
-        if SMTPAccount.Authentication <> SMTPAccount.Authentication::Anonymous then begin // TODO how does NTLM authentication works?
+        if SMTPAccount.Authentication <> SMTPAccount.Authentication::Anonymous then begin
             ClearLastError();
             Result := SMTPClient.Authenticate();
 
@@ -246,6 +246,10 @@ codeunit 4513 "SMTP Connector Impl."
 
         // User Name is a mandatory field if the authentication type is Basic
         if (SMTPAccount.Authentication = SMTPAccount.Authentication::Basic) and (SMTPAccount."User Name" = '') then
+            exit(false);
+
+        // User Name is a mandatory field if the authentication type is NTLM
+        if (SMTPAccount.Authentication = SMTPAccount.Authentication::NTLM) and (SMTPAccount."User Name" = '') then
             exit(false);
 
         exit(true);
