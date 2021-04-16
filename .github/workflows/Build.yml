@@ -32,19 +32,13 @@ jobs:
 
       - name: Compile System Application  
         shell: powershell
-        run: >
-          $pathToJson = $Env:GITHUB_WORKSPACE\Modules\System\app.json;
-          $AppJsonFile = Get-Content $pathToJson | ConvertFrom-Json;
-          $AppJsonFile.version = [string]([int]($AppJsonFile.version.substring(0, 2)) + 1) + $AppJsonFile.version.substring(2);
-          $AppJsonFile | ConvertTo-Json | Set-Content $pathToJson;
+        run: |
+          $pathToJson = "$Env:GITHUB_WORKSPACE\Modules\System\app.json"
+          $AppJsonFile = Get-Content $pathToJson | ConvertFrom-Json
+          $AppJsonFile.version = [string]([int]($AppJsonFile.version.substring(0, 2)) + 1) + $AppJsonFile.version.substring(2)
+          $AppJsonFile | ConvertTo-Json | Set-Content $pathToJson
 
-          Compile-AppInBCContainer 
-          -containerName bcdev 
-          -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
-          -appProjectFolder $Env:GITHUB_WORKSPACE\Modules\System
-          -appOutputFolder $Env:GITHUB_WORKSPACE\Modules\System
-          -EnableCodeCop
-          -EnableUICop
+          Compile-AppInBCContainer -containerName bcdev -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) -appProjectFolder $Env:GITHUB_WORKSPACE\Modules\System -appOutputFolder $Env:GITHUB_WORKSPACE\Modules\System -EnableCodeCop -EnableUICop
 
       - name: Publish System Application  
         shell: powershell
