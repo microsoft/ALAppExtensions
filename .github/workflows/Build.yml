@@ -8,7 +8,7 @@ jobs:
   BuildSystemApplication:
     runs-on: windows-2019
     env:
-      BC_CONTAINER_NAME: $Env:BC_CONTAINER_NAME
+      BC_CONTAINER_NAME: bcdev
       BC_CONTAINER_USERNAME: admin
       BC_CONTAINER_PASSWORD: P@ssword1
       COMPILE_AND_PUBLISH: |
