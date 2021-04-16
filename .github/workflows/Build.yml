@@ -41,11 +41,23 @@ jobs:
           -EnableCodeCop
           -EnableUICop
 
+      - name: Unpublish System Application
+        shell: powershell
+        run: >
+          Unpublish-BcContainerApp
+          -containerName bcdev 
+          -name "System Application"
+          -uninstall
+          -force
+
       - name: Publish System Application  
         shell: powershell
         run: >
-          Publish-NewApplicationToNavContainer 
+          Publish-BcContainerApp  
           -containerName bcdev 
           -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
           -appFile (gci $Env:GITHUB_WORKSPACE\Modules\System -Filter "*.app").FullName
-          -useNewDatabase
+          -skipVerification
+          -install
+          -sync
+
