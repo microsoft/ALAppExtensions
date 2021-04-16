@@ -27,8 +27,16 @@ jobs:
           -auth NavUserPassword 
           -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
           -updateHosts
-          -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\Modules\System`:c:\project")
+          -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\Modules`:c:\project")
           -includeAL
+
+      - name: Unpublish all apps
+        shell: powershell
+        run: |
+          $installedApps = Get-BcContainerAppInfo -containerName $containerName -tenantSpecificProperties -sort DependenciesLast
+          $installedApps | % {
+            Unpublish-BcContainerApp -containerName bcdev -name $_.Name -unInstall -doNotSaveData -doNotSaveSchema -force
+          }
 
       - name: Compile System Application  
         shell: powershell
@@ -41,14 +49,6 @@ jobs:
           -EnableCodeCop
           -EnableUICop
 
-      - name: Unpublish all apps
-        shell: powershell
-        run: |
-          $installedApps = Get-BcContainerAppInfo -containerName $containerName -tenantSpecificProperties -sort DependenciesLast
-          $installedApps | % {
-            Unpublish-BcContainerApp -containerName bcdev -name $_.Name -unInstall -doNotSaveData -doNotSaveSchema -force
-          }
-
       - name: Publish System Application  
         shell: powershell
         run: >
@@ -60,3 +60,54 @@ jobs:
           -install
           -sync
 
+      - name: Build DevTools
+        shell: powershell
+        run: |
+          ("$Env:GITHUB_WORKSPACE\Modules\DevTools\TestFramework\TestLibraries\Any", "$Env:GITHUB_WORKSPACE\Modules\DevTools\TestFramework\TestLibraries\Assert", "$Env:GITHUB_WORKSPACE\Modules\DevTools\TestFramework\TestLibraries\Variable Storage") | % {
+            Compile-AppInBCContainer -containerName bcdev -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) -appProjectFolder $_ -appOutputFolder $_ -EnableCodeCop -EnableUICop
+            Publish-BcContainerApp -containerName bcdev -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) -appFile (gci $_ -Filter "*.app").FullName -skipVerification -install -sync
+          }
+
+      - name: Compile System Application Test Libraries
+        shell: powershell
+        run: >
+          Compile-AppInBCContainer 
+          -containerName bcdev 
+          -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
+          -appProjectFolder "$Env:GITHUB_WORKSPACE\Modules\System Test Libraries"
+          -appOutputFolder "$Env:GITHUB_WORKSPACE\Modules\System Test Libraries"
+          -EnableCodeCop
+          -EnableUICop
+
+      - name: Publish System Application Test Libraries
+        shell: powershell
+        run: >
+          Publish-BcContainerApp  
+          -containerName bcdev 
+          -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
+          -appFile (gci "$Env:GITHUB_WORKSPACE\Modules\System Test Libraries" -Filter "*.app").FullName
+          -skipVerification
+          -install
+          -sync
+
+      - name: Compile System Application Tests
+        shell: powershell
+        run: >
+          Compile-AppInBCContainer 
+          -containerName bcdev 
+          -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
+          -appProjectFolder "$Env:GITHUB_WORKSPACE\Modules\System Tests"
+          -appOutputFolder "$Env:GITHUB_WORKSPACE\Modules\System Tests"
+          -EnableCodeCop
+          -EnableUICop 
+
+      - name: Publish System Application Tests
+        shell: powershell
+        run: >
+          Publish-BcContainerApp  
+          -containerName bcdev 
+          -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
+          -appFile (gci "$Env:GITHUB_WORKSPACE\Modules\System Tests" -Filter "*.app").FullName
+          -skipVerification
+          -install
+          -sync
