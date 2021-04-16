@@ -40,3 +40,12 @@ jobs:
           -appOutputFolder $Env:GITHUB_WORKSPACE\Modules\System
           -EnableCodeCop
           -EnableUICop
+
+      - name: Publish System Application  
+        shell: powershell
+        run: >
+          Publish-NewApplicationToNavContainer 
+          -containerName bcdev 
+          -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) 
+          -appFile (gci $Env:GITHUB_WORKSPACE\Modules\System -Filter "*.app").FullName
+          -useNewDatabase
