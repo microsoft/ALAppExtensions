@@ -43,12 +43,11 @@ jobs:
 
       - name: Unpublish System Application
         shell: powershell
-        run: >
-          Unpublish-BcContainerApp
-          -containerName bcdev 
-          -name "Email - Current User Connector"
-          -uninstall
-          -force
+        run: |
+          $installedApps = Get-BcContainerAppInfo -containerName $containerName -tenantSpecificProperties -sort DependenciesLast
+          $installedApps | % {
+            Unpublish-BcContainerApp -containerName bcdev -name $_.Name -uninstall -force
+          }
 
       - name: Publish System Application  
         shell: powershell
