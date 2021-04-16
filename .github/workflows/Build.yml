@@ -29,6 +29,7 @@ jobs:
           -updateHosts
           -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\Modules\System`:c:\project")
           -includeAL
+          -useCleanDatabase
 
       - name: Compile System Application  
         shell: powershell
