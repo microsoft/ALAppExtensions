@@ -3,13 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-pageextension 132588 AssistedSetupVisibleTransName extends "Assisted Setup"
-{
-    layout
-    {
-        modify(TranslatedName)
-        {
-            Visible = true;
-        }
-    }
-}
+// Your program license does not allow you to publish 'AssistedSetupVisibleTransName' error
+// pageextension 132588 AssistedSetupVisibleTransName extends "Assisted Setup"
+// {
+//     layout
+//     {
+//         modify(TranslatedName)
+//         {
+//             Visible = true;
+//         }
+//     }
+// }
