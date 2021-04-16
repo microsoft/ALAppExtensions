@@ -41,12 +41,12 @@ jobs:
           -EnableCodeCop
           -EnableUICop
 
-      - name: Unpublish System Application
+      - name: Unpublish all apps
         shell: powershell
         run: |
           $installedApps = Get-BcContainerAppInfo -containerName $containerName -tenantSpecificProperties -sort DependenciesLast
           $installedApps | % {
-            Unpublish-BcContainerApp -containerName bcdev -name $_.Name -uninstall -force
+            Unpublish-BcContainerApp -containerName bcdev -name $_.Name -unInstall -doNotSaveData -doNotSaveSchema -force
           }
 
       - name: Publish System Application  
