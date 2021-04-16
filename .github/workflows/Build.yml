@@ -41,15 +41,6 @@ jobs:
           -EnableCodeCop
           -EnableUICop
 
-      - name: Unpublish System Application
-        shell: powershell
-        run: >
-          Unpublish-BcContainerApp
-          -containerName bcdev 
-          -name "System Application"
-          -uninstall
-          -force
-
       - name: Publish System Application  
         shell: powershell
         run: >
