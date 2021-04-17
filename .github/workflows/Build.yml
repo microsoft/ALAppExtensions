@@ -71,3 +71,12 @@ jobs:
       - name: Build System Application Tests
         shell: powershell
         run: Invoke-Expression "'$Env:GITHUB_WORKSPACE\Modules\System Tests' | % $Env:COMPILE_AND_PUBLISH"
+
+      - name: Run System Application Tests
+        shell: powershell
+        run: |
+          Run-TestsInBCContainer `
+            -containerName $Env:BC_CONTAINER_NAME `
+            -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) `
+            -extensionID "0d60b215-6ee1-4789-8e53-866cfa50c23c" `
+            -AzureDevOps error
