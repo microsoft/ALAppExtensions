@@ -61,7 +61,7 @@ jobs:
       - name: Build DevTools
         shell: powershell
         run: |
-          $DevToolsPath = $Env:GITHUB_WORKSPACE\Modules\DevTools\TestFramework\TestLibraries
+          $DevToolsPath = "$Env:GITHUB_WORKSPACE\Modules\DevTools\TestFramework\TestLibraries"
           Invoke-Expression '("$DevToolsPath\Any", "$DevToolsPath\Assert", "$DevToolsPath\Variable Storage") | % $COMPILE_AND_PUBLISH'
 
       - name: Build System Application Test Libraries
