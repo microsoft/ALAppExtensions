@@ -56,18 +56,18 @@ jobs:
 
       - name: Build System Application
         shell: powershell
-        run: Invoke-Expression '"$Env:GITHUB_WORKSPACE\Modules\System" | % $COMPILE_AND_PUBLISH'
+        run: Invoke-Expression '"$Env:GITHUB_WORKSPACE\Modules\System" | % $Env:COMPILE_AND_PUBLISH'
 
       - name: Build DevTools
         shell: powershell
         run: |
           $DevToolsPath = "$Env:GITHUB_WORKSPACE\Modules\DevTools\TestFramework\TestLibraries"
-          Invoke-Expression '("$DevToolsPath\Any", "$DevToolsPath\Assert", "$DevToolsPath\Variable Storage") | % $COMPILE_AND_PUBLISH'
+          Invoke-Expression '("$DevToolsPath\Any", "$DevToolsPath\Assert", "$DevToolsPath\Variable Storage") | % $Env:COMPILE_AND_PUBLISH'
 
       - name: Build System Application Test Libraries
         shell: powershell
-        run: Invoke-Expression '"$Env:GITHUB_WORKSPACE\Modules\System Test Libraries" | % $COMPILE_AND_PUBLISH'
+        run: Invoke-Expression '"$Env:GITHUB_WORKSPACE\Modules\System Test Libraries" | % $Env:COMPILE_AND_PUBLISH'
 
       - name: Build System Application Tests
         shell: powershell
-        run: Invoke-Expression '"$Env:GITHUB_WORKSPACE\Modules\System Tests" | % $COMPILE_AND_PUBLISH'
+        run: Invoke-Expression '"$Env:GITHUB_WORKSPACE\Modules\System Tests" | % $Env:COMPILE_AND_PUBLISH'
