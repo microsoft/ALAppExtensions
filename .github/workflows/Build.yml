@@ -35,6 +35,10 @@ jobs:
         shell: powershell
         run: Install-Module BcContainerHelper -Force
 
+      - name: Test
+        shell: powershell
+        run: Write-Host "$Env:COMPILE_AND_PUBLISH"
+
       - name: Set up Business Central container
         shell: powershell
         run: |
