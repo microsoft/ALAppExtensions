@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  BuildSystemApplication:
+  SystemApplication:
     runs-on: windows-2019
     env:
       BC_CONTAINER_NAME: bcdev
@@ -58,11 +58,12 @@ jobs:
         shell: powershell
         run: Invoke-Expression "'$Env:GITHUB_WORKSPACE\Modules\System' | % $Env:COMPILE_AND_PUBLISH"
 
-      - name: Build DevTools
+      - name: Build Test Framework
         shell: powershell
         run: |
-          $DevToolsPath = "$Env:GITHUB_WORKSPACE\Modules\DevTools\TestFramework\TestLibraries"
-          Invoke-Expression "('$DevToolsPath\Any', '$DevToolsPath\Assert', '$DevToolsPath\Variable Storage') | % $Env:COMPILE_AND_PUBLISH"
+          $LibrariesPath = "$Env:GITHUB_WORKSPACE\Modules\DevTools\TestFramework\TestLibraries"
+          $TestRunner = "$Env:GITHUB_WORKSPACE\Modules\DevTools\TestFramework\TestRunner"
+          Invoke-Expression "('$LibrariesPath\Any', '$LibrariesPath\Assert', '$LibrariesPath\Variable Storage', '$TestRunner') | % $Env:COMPILE_AND_PUBLISH"
 
       - name: Build System Application Test Libraries
         shell: powershell
