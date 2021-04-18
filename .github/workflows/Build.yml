@@ -83,10 +83,11 @@ jobs:
             -containerName $Env:BC_CONTAINER_NAME `
             -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) `
             -extensionID $SystemApplicationTestsAppID `
-            -JUnitResultFileName "$Env:GITHUB_WORKSPACE\Modules\System Tests\SystemApplicationTests.xml"
+            -JUnitResultFileName "$Env:GITHUB_WORKSPACE\Modules\System Tests\SystemApplicationTestResults.xml" `
+            -detailed
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         with:
-          files: "**/SystemApplicationTests.xml"
+          files: "**/SystemApplicationTestResults.xml"
           report_individual_runs: true
