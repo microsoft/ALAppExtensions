@@ -31,6 +31,7 @@ jobs:
         }
     steps:
       - uses: actions/checkout@v1
+
       - name: Install BcContainerHelper
         shell: powershell
         run: Install-Module BcContainerHelper -Force
@@ -46,6 +47,7 @@ jobs:
             -auth NavUserPassword `
             -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) `
             -updateHosts `
+            -enableTaskScheduler:$false `
             -additionalParameters @("--volume $Env:GITHUB_WORKSPACE\Modules`:c:\project") `
             -includeAL
 
@@ -76,6 +78,16 @@ jobs:
       - name: Run System Application Tests
         shell: powershell
         run: |
+          $SystemApplicationTestsAppID = "0d60b215-6ee1-4789-8e53-866cfa50c23c"
           Run-TestsInBCContainer `
             -containerName $Env:BC_CONTAINER_NAME `
-            -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force)))
+            -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) `
+            -extensionID $SystemApplicationTestsAppID `
+            -disabledTests @( @{ "codeunitName" = "Azure AD User Management Test"; "method" = "TestOfficeSyncWizard" }, @{ "codeunitName" = "Retention Policy Log Test"; "method" = "*" } ) `
+            -JUnitResultFileName "SystemApplicationTests.xml"
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        if: always()
+        with:
+          files: SystemApplicationTests.xml
