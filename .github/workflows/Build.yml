@@ -83,29 +83,10 @@ jobs:
             -containerName $Env:BC_CONTAINER_NAME `
             -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) `
             -extensionID $SystemApplicationTestsAppID `
-            -disabledTests @( `
-              @{ "codeunitName" = "Retention Policy Log Test"; "method" = "*" }, `
-              @{ "codeunitName" = "Assisted Setup Test"; "method" = "TestAssistedSetupsAreAdded" }, `
-              @{ "codeunitName" = "X509Certificate2 Test"; "method" = "VerifyCertificateExpirationFromBase64Cert" }, `
-              @{ "codeunitName" = "X509Certificate2 Test"; "method" = "VerifyCertificateNotBeforeFromBase64Cert" }, `
-              @{ "codeunitName" = "X509Certificate2 Test"; "method" = "VerifyJsonPropertiesWithCertificate" }, `
-              @{ "codeunitName" = "Navigation Bar Sub. Test"; "method" = "TestAdvancedSettingsShowsUpOnOpenRoleBasedSetupExperience" }, `
-              @{ "codeunitName" = "Navigation Bar Sub. Test"; "method" = "TestAssistedSetupShowsUpOnOpenRoleBasedSetupExperience" }, `
-              @{ "codeunitName" = "Azure AD User Management Test"; "method" = "TestOfficeSyncWizard" }, `
-              @{ "codeunitName" = "Azure AD User Management Test"; "method" = "TestCodeunitRunPlansAreRefreshed" }, `
-              @{ "codeunitName" = "Azure AD Graph User Test"; "method" = "TestUpdateUserFromAzureGraphForAValidUserWithUpdatedFullName" }, `
-              @{ "codeunitName" = "Azure AD Graph User Test"; "method" = "TestUpdateUserFromAzureGraphForAValidUserWithUpdatedContactEmail" }, `
-              @{ "codeunitName" = "Azure AD Graph User Test"; "method" = "TestUpdateUserFromAzureGraphForAValidUserWithUpdatedAuthenticationEmail" }, `
-              @{ "codeunitName" = "Azure AD Graph User Test"; "method" = "TestEnsureAuthenticationEmailIsNotInUse" }, `
-              @{ "codeunitName" = "Extension Management Test"; "method" = "*" }, `
-              @{ "codeunitName" = "Temp Blob Test"; "method" = "ReadFromFieldRefTest" }, `
-              @{ "codeunitName" = "User Selection Test"; "method" = "*" }, `
-              @{ "codeunitName" = "Cues And KPIs Test"; "method" = "*" } `
-              ) `
             -JUnitResultFileName "$Env:GITHUB_WORKSPACE\Modules\System Tests\SystemApplicationTests.xml"
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
-        if: always()
         with:
           files: "**/SystemApplicationTests.xml"
+          report_individual_runs: true
