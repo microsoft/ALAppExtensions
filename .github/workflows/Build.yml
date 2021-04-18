@@ -107,4 +107,4 @@ jobs:
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         with:
-          files: "$Env:GITHUB_WORKSPACE\Modules\System Tests\SystemApplicationTests.xml"
+          files: **/SystemApplicationTests.xml
