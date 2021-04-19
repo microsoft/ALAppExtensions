@@ -79,19 +79,25 @@ jobs:
         shell: powershell
         run: |
           $SystemApplicationTestsAppID = "0d60b215-6ee1-4789-8e53-866cfa50c23c"
+          $DisabledTests = "$Env:GITHUB_WORKSPACE\Modules\System Tests\DisabledTests.json"
           $ResultFileName = "$Env:GITHUB_WORKSPACE\Modules\System Tests\SystemApplicationTestResults.xml"
           Run-TestsInBCContainer `
             -containerName $Env:BC_CONTAINER_NAME `
             -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) `
             -extensionID $SystemApplicationTestsAppID `
+            -disabledTests (Get-Content $DisabledTests | ConvertFrom-Json) `
             -JUnitResultFileName $ResultFileName `
             -detailed
 
+          # The test result annotations will only contain the InnerText of nodes representing test failures.
+          # Change the InnerText of failed test nodes in the the JUnit XML file to include both error message and call stack.
           [xml]$JUnitDoc = Get-Content $ResultFileName
           $TestCaseResults = $JUnitDoc.testsuites.ChildNodes | % { $_.testcase.ChildNodes }
           $TestFailures = $TestCaseResults | ? { $_.Name -eq "failure" }
-          $nl = [Environment]::NewLine
-          $TestFailures | % { $_.InnerText = "Error:$nl  $($_.message)$($nl)Call Stack:$nl  $($_.InnerText)" }
+          $TestFailures | % {
+            $IndentedCallStack = ($_.InnerText).Replace("`n","`n  ")
+            $_.InnerText = "Error:`n  $($_.message)`nCall Stack:`n  $IndentedCallStack"
+          }
           $JUnitDoc.Save($ResultFileName)
 
       - name: Publish Test Results
