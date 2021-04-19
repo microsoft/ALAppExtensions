@@ -79,12 +79,20 @@ jobs:
         shell: powershell
         run: |
           $SystemApplicationTestsAppID = "0d60b215-6ee1-4789-8e53-866cfa50c23c"
+          $ResultFileName = "$Env:GITHUB_WORKSPACE\Modules\System Tests\SystemApplicationTestResults.xml"
           Run-TestsInBCContainer `
             -containerName $Env:BC_CONTAINER_NAME `
             -credential ([PSCredential]::new($Env:BC_CONTAINER_USERNAME, (ConvertTo-SecureString -String $Env:BC_CONTAINER_PASSWORD -AsPlainText -Force))) `
             -extensionID $SystemApplicationTestsAppID `
-            -JUnitResultFileName "$Env:GITHUB_WORKSPACE\Modules\System Tests\SystemApplicationTestResults.xml" `
+            -JUnitResultFileName $ResultFileName `
             -detailed
+
+          [xml]$JUnitDoc = Get-Content $ResultFileName
+          $TestCaseResults = $JUnitDoc.testsuites.ChildNodes | % { $_.testcase.ChildNodes }
+          $TestFailures = $TestCaseResults | ? { $_.Name -eq "failure" }
+          $nl = [Environment]::NewLine
+          $TestFailures | % { $_.InnerText = "Error:$nl  $($_.message)$($nl)Call Stack:$nl  $($_.InnerText)" }
+          $JUnitDoc.Save($ResultFileName)
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
