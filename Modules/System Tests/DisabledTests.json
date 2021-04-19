@@ -19,6 +19,7 @@
     { "codeunitName": "Extension Management Test", "method": "GetSpecificVersionPackageIdByAppId" },
     { "codeunitName": "Temp Blob Test", "method": "ReadFromFieldRefTest" },
     { "codeunitName": "User Selection Test", "method": "ExistingUserNameTest" },
+    { "codeunitName": "User Selection Test", "method": "NonExistingUserNameTest" },
     { "codeunitName": "User Selection Test", "method": "FiltersOnUserTableAreRespectedTest" },
     { "codeunitName": "User Selection Test", "method": "SelectUserOKTest" },
     { "codeunitName": "User Selection Test", "method": "SelectUserOKWithTemporaryRecordTest" },
