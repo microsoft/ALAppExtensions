@@ -9,6 +9,7 @@
 table 9203 "Barcode Encode Settings"
 {
     Access = Public;
+    Caption = 'Barcode Encode Settings';
     Extensible = true;
     TableType = Temporary;
     DataClassification = SystemMetadata;

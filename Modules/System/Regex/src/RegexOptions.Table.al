@@ -11,6 +11,7 @@
 /// </remark>
 table 3966 "Regex Options"
 {
+    Caption = 'Regex Options';
     Extensible = false;
     TableType = Temporary;
 

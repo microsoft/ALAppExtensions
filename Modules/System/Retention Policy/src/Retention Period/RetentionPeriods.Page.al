@@ -8,6 +8,7 @@
 /// </summary>
 page 3900 "Retention Periods"
 {
+    Caption = 'Retention Periods';
     PageType = List;
     SourceTable = "Retention Period";
     Extensible = false;

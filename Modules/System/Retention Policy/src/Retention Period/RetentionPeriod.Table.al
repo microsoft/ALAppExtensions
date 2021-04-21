@@ -10,6 +10,7 @@
 /// </summary>
 table 3900 "Retention Period"
 {
+    Caption = 'Retention Period';
     LookupPageId = "Retention Periods";
     Extensible = False;
     DataCaptionFields = Code, Description;

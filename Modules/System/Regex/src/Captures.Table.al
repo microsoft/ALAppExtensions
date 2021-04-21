@@ -11,6 +11,7 @@
 /// </remark>
 table 3963 Captures
 {
+    Caption = 'Captures';
     TableType = Temporary;
     Extensible = false;
 

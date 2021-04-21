@@ -8,6 +8,7 @@
 /// </summary>
 table 3901 "Retention Policy Setup"
 {
+    Caption = 'Retention Policy Setup';
     DataCaptionFields = "Table Name", "Retention Period";
 
     fields

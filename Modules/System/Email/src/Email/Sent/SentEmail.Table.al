@@ -7,6 +7,7 @@
 table 8889 "Sent Email"
 {
     Access = Public;
+    Caption = 'Sent Email';
     Extensible = true;
     Description = 'The table is public so that it can also be extensible. The table is one of the modules''s extensibility endpoints.';
 

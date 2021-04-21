@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,6 +8,7 @@
 /// </summary>
 page 2503 "Extension Installation"
 {
+    Caption = 'Extension Installation';
     Extensible = false;
     PageType = Card;
     SourceTable = "Published Application";

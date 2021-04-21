@@ -5,6 +5,7 @@
 
 table 8905 "Email Connector"
 {
+    Caption = 'Email Connector';
     TableType = Temporary;
     Access = Internal;
 

@@ -9,6 +9,7 @@
 table 3906 "Reten. Pol. Filtering Param"
 {
     Access = Public;
+    Caption = 'Reten. Pol. Filtering Param';
     Extensible = true;
     TableType = Temporary;
     DataClassification = SystemMetadata;

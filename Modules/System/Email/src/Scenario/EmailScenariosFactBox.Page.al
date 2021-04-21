@@ -8,6 +8,7 @@
 /// </summary>
 page 8895 "Email Scenarios FactBox"
 {
+    Caption = 'Email Scenarios FactBox';
     PageType = ListPart;
     Extensible = false;
     SourceTable = "Email Scenario";

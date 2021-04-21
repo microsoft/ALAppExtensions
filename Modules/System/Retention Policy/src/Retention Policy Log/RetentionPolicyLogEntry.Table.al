@@ -5,6 +5,7 @@
 
 table 3905 "Retention Policy Log Entry"
 {
+    Caption = 'Retention Policy Log Entry';
     Extensible = false;
     Access = Internal;
 

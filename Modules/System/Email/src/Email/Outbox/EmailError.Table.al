@@ -5,6 +5,7 @@
 
 table 8901 "Email Error"
 {
+    Caption = 'Email Error';
     Extensible = false;
     Access = Internal;
 

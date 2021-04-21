@@ -6,6 +6,7 @@
 table 4152 "Temp Media"
 {
     Access = Internal;
+    Caption = 'Temp Media';
 #pragma warning disable AS0034
     TableType = Temporary;
 #pragma warning restore AS0034

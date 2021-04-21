@@ -8,6 +8,7 @@
 /// </summary>
 table 2889 "Query Navigation Validation"
 {
+    Caption = 'Query Navigation Validation';
     DataClassification = SystemMetadata;
     Extensible = false;
     TableType = Temporary;

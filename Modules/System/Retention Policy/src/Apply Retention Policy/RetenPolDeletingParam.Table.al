@@ -22,6 +22,7 @@
 table 3907 "Reten. Pol. Deleting Param"
 {
     Access = Public;
+    Caption = 'Reten. Pol. Deleting Param';
     Extensible = true;
     TableType = Temporary;
     DataClassification = SystemMetadata;

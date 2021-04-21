@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,6 +8,7 @@
 /// </summary>
 page 2507 "Upload And Deploy Extension"
 {
+    Caption = 'Upload And Deploy Extension';
     Extensible = false;
     PageType = NavigatePage;
     SourceTable = "Published Application";

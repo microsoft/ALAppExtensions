@@ -8,6 +8,7 @@
 /// </summary>
 table 1461 "Signature Key"
 {
+    Caption = 'Signature Key';
     TableType = Temporary;
     Extensible = false;
 

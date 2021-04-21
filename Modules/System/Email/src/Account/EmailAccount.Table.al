@@ -8,6 +8,7 @@
 /// </summary>
 table 8902 "Email Account"
 {
+    Caption = 'Email Account';
     Extensible = false;
     TableType = Temporary;
 

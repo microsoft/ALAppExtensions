@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -21,6 +21,7 @@ page 2509 "Extn Deployment Status Detail"
     SourceTable = "NAV App Tenant Operation";
     SourceTableTemporary = true;
     ContextSensitiveHelpPage = 'ui-extensions';
+    Caption = 'Extn Deployment Status Detail';
 
     layout
     {

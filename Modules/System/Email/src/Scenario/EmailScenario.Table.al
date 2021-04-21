@@ -11,6 +11,7 @@
 table 8906 "Email Scenario"
 {
     Access = Internal;
+    Caption = 'Email Scenario';
 
     fields
     {

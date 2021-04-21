@@ -6,6 +6,7 @@
 table 1995 "Checklist Item Buffer"
 {
     Access = Internal;
+    Caption = 'Checklist Item Buffer';
     TableType = Temporary;
 
     fields

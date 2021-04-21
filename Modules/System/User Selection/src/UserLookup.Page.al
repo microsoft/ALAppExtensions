@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,6 +8,7 @@
 /// </summary>
 page 9843 "User Lookup"
 {
+    Caption = 'User Lookup';
     Extensible = false;
     DataCaptionExpression = '';
     DeleteAllowed = false;

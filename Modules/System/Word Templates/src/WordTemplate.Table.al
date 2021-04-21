@@ -8,6 +8,7 @@
 /// </summary>
 table 9988 "Word Template"
 {
+    Caption = 'Word Template';
     Access = Public;
     Extensible = false;
 

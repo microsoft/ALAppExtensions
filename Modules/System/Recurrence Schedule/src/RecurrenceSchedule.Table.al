@@ -5,6 +5,7 @@
 table 4690 "Recurrence Schedule"
 {
     Access = Internal;
+    Caption = 'Recurrence Schedule';
 
     fields
     {

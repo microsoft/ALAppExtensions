@@ -6,6 +6,7 @@
 table 1996 "Checklist Setup"
 {
     Access = Internal;
+    Caption = 'Checklist Setup';
 
     fields
     {

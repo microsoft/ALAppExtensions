@@ -5,6 +5,7 @@
 
 page 8889 "Email Attachments"
 {
+    Caption = 'Email Attachments';
     PageType = ListPart;
     SourceTable = "Email Message Attachment";
     InsertAllowed = false;

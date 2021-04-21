@@ -7,6 +7,7 @@
 table 8904 "Email Message Attachment"
 {
     Access = Internal;
+    Caption = 'Email Message Attachment';
 
     fields
     {

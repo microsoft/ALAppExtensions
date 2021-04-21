@@ -8,6 +8,7 @@
 /// </summary>
 page 9989 "Word Templates"
 {
+    Caption = 'Word Templates';
     PageType = List;
     ApplicationArea = All;
     UsageCategory = Administration;

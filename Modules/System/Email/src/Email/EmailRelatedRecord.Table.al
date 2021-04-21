@@ -8,6 +8,7 @@
 /// </summary>
 table 8909 "Email Related Record"
 {
+    Caption = 'Email Related Record';
     DataClassification = SystemMetadata;
     Access = Internal;
 

@@ -11,6 +11,7 @@
 /// </remark>
 table 3964 Groups
 {
+    Caption = 'Groups';
     TableType = Temporary;
     Extensible = false;
 

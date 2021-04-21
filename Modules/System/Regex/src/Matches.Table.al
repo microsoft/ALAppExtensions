@@ -11,6 +11,7 @@
 /// </remark>
 table 3965 Matches
 {
+    Caption = 'Matches';
     TableType = Temporary;
     Extensible = false;
 

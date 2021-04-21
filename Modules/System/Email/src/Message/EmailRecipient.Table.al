@@ -6,6 +6,7 @@
 table 8903 "Email Recipient"
 {
     Access = Internal;
+    Caption = 'Email Recipient';
 
     fields
     {

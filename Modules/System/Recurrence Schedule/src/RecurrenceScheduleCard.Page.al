@@ -8,6 +8,7 @@
 /// </summary>
 page 4690 "Recurrence Schedule Card"
 {
+    Caption = 'Recurrence Schedule Card';
     Extensible = false;
     DataCaptionExpression = FORMAT(Pattern);
     InsertAllowed = false;

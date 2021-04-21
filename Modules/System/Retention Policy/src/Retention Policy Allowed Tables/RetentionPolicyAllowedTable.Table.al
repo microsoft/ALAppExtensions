@@ -6,6 +6,7 @@
 table 3903 "Retention Policy Allowed Table"
 {
     Access = Internal;
+    Caption = 'Retention Policy Allowed Table';
     DataClassification = SystemMetadata;
 
     fields

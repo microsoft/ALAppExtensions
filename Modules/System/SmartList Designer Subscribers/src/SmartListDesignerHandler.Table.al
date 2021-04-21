@@ -11,6 +11,7 @@
 /// </summary>
 table 2888 "SmartList Designer Handler"
 {
+    Caption = 'SmartList Designer Handler';
     DataPerCompany = false;
     DataClassification = SystemMetadata;
     Extensible = false;

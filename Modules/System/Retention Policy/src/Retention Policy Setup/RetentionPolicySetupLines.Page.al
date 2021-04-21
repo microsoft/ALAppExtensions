@@ -8,6 +8,7 @@
 /// </summary>
 page 3902 "Retention Policy Setup Lines"
 {
+    Caption = 'Retention Policy Setup Lines';
     PageType = ListPart;
     SourceTable = "Retention Policy Setup Line";
     DelayedInsert = true;

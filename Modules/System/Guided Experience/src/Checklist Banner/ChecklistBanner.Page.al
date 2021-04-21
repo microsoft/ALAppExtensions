@@ -8,6 +8,7 @@
 /// </summary>
 page 1990 "Checklist Banner"
 {
+    Caption = 'Checklist Banner';
     PageType = CardPart;
     SourceTable = "Checklist Item Buffer";
     SourceTableTemporary = true;

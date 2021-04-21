@@ -8,6 +8,7 @@
 /// </summary>
 page 8894 "Email Scenarios for Account"
 {
+    Caption = 'Email Scenarios for Account';
     PageType = List;
     Extensible = false;
     SourceTable = "Email Account Scenario";

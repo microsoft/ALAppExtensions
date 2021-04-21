@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -7,7 +7,8 @@
 /// List page that contains all of the application objects.
 /// </summary>
 page 358 Objects
-{
+{ 
+    Caption = 'Objects';
     Extensible = false;
     Editable = false;
     PageType = List;

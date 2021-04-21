@@ -9,6 +9,7 @@
 table 8907 "Email Account Scenario"
 {
     Access = Internal;
+    Caption = 'Email Account Scenario';
     TableType = Temporary;
 
     fields

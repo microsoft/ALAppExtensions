@@ -8,6 +8,8 @@
 /// </summary>
 table 3902 "Retention Policy Setup Line"
 {
+    Caption = 'Retention Policy Setup Line';
+    
     fields
     {
         field(1; "Table ID"; Integer)

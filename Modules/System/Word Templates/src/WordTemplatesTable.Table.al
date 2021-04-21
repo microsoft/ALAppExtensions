@@ -9,6 +9,7 @@
 table 9987 "Word Templates Table"
 {
     Access = Internal;
+    Caption = 'Word Templates Table';
     Extensible = false;
 
     fields

@@ -8,6 +8,7 @@
 /// </summary>
 table 2610 "Feature Data Update Status"
 {
+    Caption = 'Feature Data Update Status';
     DataPerCompany = false;
 
     fields

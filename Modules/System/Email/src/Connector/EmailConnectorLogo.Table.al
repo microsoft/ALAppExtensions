@@ -5,6 +5,7 @@
 
 table 8887 "Email Connector Logo"
 {
+    Caption = 'Email Connector Logo';
     DataClassification = SystemMetadata;
     Access = Internal;
 
