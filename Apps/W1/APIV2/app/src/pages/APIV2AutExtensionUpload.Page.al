@@ -58,7 +58,6 @@ page 30006 "APIV2 - Aut. Extension Upload"
     var
         ExtensionManagement: Codeunit "Extension Management";
         FileStream: InStream;
-        ImportSessionID: Integer;
     begin
         if Content.HasValue() then begin
             Content.CreateInStream(FileStream);

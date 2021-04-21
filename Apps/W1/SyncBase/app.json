@@ -1,0 +1,23 @@
+{
+    "id":  "fbb56a54-4f3b-4d2f-9330-ed8921ec4ec7",
+    "name":  "_Exclude_SyncBaseApp_",
+    "publisher":  "Microsoft",
+    "brief":  "_Exclude_SyncBaseApp_",
+    "description":  "_Exclude_SyncBaseApp_",
+    "version":  "18.0.0.0",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "help": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo": "ExtensionLogo.png",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "18.0.0.0",
+    "showMyCode":  false,
+    "application":  "18.0.0.0"
+}

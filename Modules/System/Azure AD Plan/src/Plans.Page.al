@@ -16,6 +16,7 @@ page 9824 Plans
     ShowFilter = false;
     SourceTable = Plan;
     ContextSensitiveHelpPage = 'ui-how-users-permissions';
+    Permissions = tabledata Plan = r;
 
     layout
     {
@@ -23,7 +24,7 @@ page 9824 Plans
         {
             repeater(Group)
             {
-                field(Name; Name)
+                field(Name; Rec.Name)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the plan.';

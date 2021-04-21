@@ -56,7 +56,7 @@ xmlport 1661 "Import Ceridian Payroll"
 
                 trigger OnAfterInitRecord();
                 var
-                    MSCeridianPayrollSetup: Record 1665;
+                    MSCeridianPayrollSetup: Record "MS Ceridian Payroll Setup";
                 begin
                     I += 1;
                     "Import G/L Transaction"."Entry No." := I;

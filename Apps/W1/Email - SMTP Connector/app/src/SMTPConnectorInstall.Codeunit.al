@@ -21,7 +21,9 @@ codeunit 4515 "SMTP Connector Install"
 
         DataClassificationMgt.SetFieldToPersonal(Database::"SMTP Account", Account.FieldNo(Name));
         DataClassificationMgt.SetFieldToPersonal(Database::"SMTP Account", Account.FieldNo("Email Address"));
+#if not CLEAN17
         DataClassificationMgt.SetFieldToPersonal(Database::"SMTP Account", Account.FieldNo("Created By"));
+#endif
         DataClassificationMgt.SetFieldToPersonal(Database::"SMTP Account", Account.FieldNo("User Name"));
         DataClassificationMgt.SetFieldToNormal(Database::"SMTP Account", Account.FieldNo("Secure Connection"));
         DataClassificationMgt.SetFieldToNormal(Database::"SMTP Account", Account.FieldNo(Server));
@@ -99,8 +101,10 @@ codeunit 4515 "SMTP Connector Install"
         // Set Secure Connection 
         NewSMTPAccount."Secure Connection" := OldSMTPAccount."Secure Connection";
 
+#if not CLEAN17
         // Set Created By
         NewSMTPAccount."Created By" := CopyStr(UserId(), 1, MaxStrLen(NewSMTPAccount."Created By"));
+#endif
 
         if NewSMTPAccount.Insert() then begin
             // Set the newly added account as default

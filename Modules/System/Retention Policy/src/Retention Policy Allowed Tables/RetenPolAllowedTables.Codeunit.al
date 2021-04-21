@@ -10,7 +10,8 @@
 codeunit 3905 "Reten. Pol. Allowed Tables"
 {
     Access = Public;
-    Permissions = tabledata "Retention Policy Allowed Table" = r;
+    Permissions = tabledata Field = r,
+                  tabledata "Retention Policy Allowed Table" = r;
 
     var
         RetenPolAllowedTblRenameErr: Label 'Reten. Pol. Allowed Tables cannot be renamed. (From table ID %1 to %2.)', Comment = '%1, %2 = table number';

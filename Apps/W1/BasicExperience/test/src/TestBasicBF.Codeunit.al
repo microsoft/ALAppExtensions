@@ -11,7 +11,6 @@ codeunit 139502 "Test Basic BF"
     var
         Assert: Codeunit Assert;
         AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER', Locked = true, Comment = 'As default the profile "SALES AND RELATIONSHIP MANAGER" cannot disable because it is set up as a default profile for one or more users or user groups.';
-        NotSupportedLicensesErr: Label 'Validation error for Field: HasBCBasicLicense,  Message = ''At least one user must have the Basic license.''', Locked = true;
 
     trigger OnRun();
     begin
@@ -162,15 +161,16 @@ codeunit 139502 "Test Basic BF"
         IsBasicCountryTested: Boolean;
     begin
         ApplicationAreaSetup.Get(CompanyName, '', '');
-        CLEAR(ApplicationAreaSetupRecordRef);
-        CLEAR(ApplicationAreaSetupFieldRef);
+        Clear(ApplicationAreaSetupRecordRef);
+        Clear(ApplicationAreaSetupFieldRef);
         ApplicationAreaSetupRecordRef.Get(ApplicationAreaSetup.RecordId);
 
-        Field.SETRANGE(TableNo, ApplicationAreaSetupRecordRef.Number);
-        Field.SETRANGE(Type, Field.Type::Boolean);
-        if Field.FINDSET(FALSE, FALSE) then
+        Field.SetRange(TableNo, ApplicationAreaSetupRecordRef.Number);
+        Field.SetRange(Type, Field.Type::Boolean);
+        Field.SetFilter(ObsoleteState, '<>%1', Field.ObsoleteState::Removed);
+        if Field.FindSet(false, false) then
             repeat
-                ApplicationAreaSetupFieldRef := ApplicationAreaSetupRecordRef.FIELD(Field."No.");
+                ApplicationAreaSetupFieldRef := ApplicationAreaSetupRecordRef.Field(Field."No.");
                 case ApplicationAreaSetupFieldRef.Name() of
                     ApplicationAreaSetup.FieldName("BF Basic"),
                     ApplicationAreaSetup.FieldName(Basic),
@@ -193,7 +193,7 @@ codeunit 139502 "Test Basic BF"
 
                     // Only one Microsoft Basic Country Application Area must be true the others must be false         
                     ApplicationAreaSetup.FieldName("Basic DK"):
-                        If ApplicationAreaSetupFieldRef.Value then
+                        if ApplicationAreaSetupFieldRef.Value then
                             IsBasicCountryTested := true;
                     ApplicationAreaSetup.FieldName("Basic IS"):
                         if IsBasicCountryTested then

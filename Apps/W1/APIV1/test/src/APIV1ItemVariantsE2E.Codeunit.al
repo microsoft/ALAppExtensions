@@ -130,9 +130,6 @@ codeunit 139739 "APIV1 - Item Variants E2E"
     var
         Item1: Record Item;
         Item2: Record Item;
-        ItemVariant: Record "Item Variant";
-        ItemNo: Text;
-        ItemId: Text;
         ItemVariantCode: Text;
         ItemVariantJSON: Text;
         ResponseText: Text;
@@ -394,7 +391,6 @@ codeunit 139739 "APIV1 - Item Variants E2E"
 
     local procedure CreateItemVariantJsonWithItemNoAndCode(ItemNo: Text; ItemVariantCode: Text): Text
     var
-        ItemVariant: Record "Item Variant";
         ItemVariantJson: Text;
     begin
         ItemVariantJson := LibraryGraphMgt.AddPropertytoJSON('', 'code', ItemVariantCode);

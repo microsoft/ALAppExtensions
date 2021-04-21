@@ -34,6 +34,10 @@ table 10670 "SAF-T Setup"
             DataClassification = CustomerContent;
             Caption = 'Dimension No.';
         }
+        field(6; "Default Post Code"; Code[20])
+        {
+            Caption = 'Default Post Code';
+        }
         field(20; "Check Company Information"; Boolean)
         {
             DataClassification = CustomerContent;

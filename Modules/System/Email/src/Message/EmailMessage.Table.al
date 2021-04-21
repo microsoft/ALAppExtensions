@@ -7,6 +7,7 @@
 table 8900 "Email Message"
 {
     Access = Internal;
+    Description = 'Table is internal as it holds the payload that is sent to connectors. Extending it doesn''t make sense if the connectors don''t know how to consume the fields';
 
     fields
     {

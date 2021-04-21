@@ -493,8 +493,8 @@ page 30012 "APIV2 - Sales Invoices"
                 }
                 part(pdfDocument; "APIV2 - PDF Document")
                 {
-                    //TODO - WaitingModernDevProperty, Caption = 'PDF Document';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
+                    Caption = 'PDF Document';
+                    Multiplicity = ZeroOrOne;
                     EntityName = 'pdfDocument';
                     EntitySetName = 'pdfDocument';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const(5);
@@ -692,7 +692,6 @@ page 30012 "APIV2 - Sales Invoices"
         CancelingInvoiceFailedNothingCreatedErr: Label 'Canceling the invoice failed because of the following error: \\%1.';
         EmptyEmailErr: Label 'The send-to email is empty. Specify email either for the customer or for the invoice in email preview.';
         AlreadyCanceledErr: Label 'The invoice cannot be canceled because it has already been canceled.';
-        MailNotConfiguredErr: Label 'An email account must be configured to send emails.';
         InvoiceClosedErr: Label 'The invoice is closed. The corrective credit memo will not be applied to the invoice.';
         InvoicePartiallyPaidErr: Label 'The invoice is partially paid or credited. The corrective credit memo may not be fully closed by the invoice.';
         HasWritePermissionForDraft: Boolean;

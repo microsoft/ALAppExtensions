@@ -55,6 +55,61 @@ codeunit 135070 "Uri Test"
 
     [Test]
     [Scope('OnPrem')]
+    procedure GetHostTest()
+    begin
+        // [Given] A Url
+        Uri.Init('http://microsoft.com/test');
+
+        // [Then] The host should be 'microsoft.com'
+        Assert.AreEqual('microsoft.com', Uri.GetHost(), 'GetHost does not work as expected');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure GetPortTest()
+    begin
+        // [Given] A Url
+        Uri.Init('http://microsoft.com:3000/test');
+
+        // [Then] The port should be 3000
+        Assert.AreEqual(3000, Uri.GetPort(), 'GetPort does not work as expected');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure GetAbsolutePathTest()
+    begin
+        // [Given] A Url
+        Uri.Init('http://microsoft.com/segment2/segment3/?randomquery#main');
+
+        // [Then] The absolute path should be '/segment2/segment3/'
+        Assert.AreEqual('/segment2/segment3/', Uri.GetAbsolutePath(), 'GetAbsolutePath does not work as expected');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure GetQuery()
+    begin
+        // [Given] A Url
+        Uri.Init('http://microsoft.com/segment2/segment3/?randomquery#main');
+
+        // [Then] The query should be '?randomquery'
+        Assert.AreEqual('?randomquery', Uri.GetQuery(), 'GetQuery does not work as expected');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure GetFragment()
+    begin
+        // [Given] A Url
+        Uri.Init('http://microsoft.com/segment2/segment3/?randomquery#main');
+
+        // [Then] The fragment should be '#main'
+        Assert.AreEqual('#main', Uri.GetFragment(), 'GetFragment does not work as expected');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure GetAbsoluteURITest()
     var
         UriBuilder: Codeunit "Uri Builder";

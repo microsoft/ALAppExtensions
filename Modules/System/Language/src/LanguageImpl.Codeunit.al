@@ -7,6 +7,9 @@ codeunit 54 "Language Impl."
 {
     Access = Internal;
     SingleInstance = true;
+    Permissions = tabledata Language = rimd,
+                  tabledata "User Personalization" = rm,
+                  tabledata "Windows Language" = r;
 
     var
         LanguageNotFoundErr: Label 'The language %1 could not be found.', Comment = '%1 = Language ID';
@@ -85,7 +88,7 @@ codeunit 54 "Language Impl."
         exit('');
     end;
 
-    procedure GetApplicationLanguages(var TempLanguage: Record "Windows Language" temporary)
+    procedure GetApplicationLanguages(var TempWindowsLanguage: Record "Windows Language" temporary)
     var
         WindowsLanguage: Record "Windows Language";
     begin
@@ -94,8 +97,8 @@ codeunit 54 "Language Impl."
 
         if WindowsLanguage.FindSet() then
             repeat
-                TempLanguage := WindowsLanguage;
-                TempLanguage.Insert();
+                TempWindowsLanguage := WindowsLanguage;
+                TempWindowsLanguage.Insert();
             until WindowsLanguage.Next() = 0;
     end;
 
@@ -128,16 +131,28 @@ codeunit 54 "Language Impl."
 
     procedure LookupApplicationLanguageId(var LanguageId: Integer)
     var
-        TempLanguage: Record "Windows Language" temporary;
+        TempWindowsLanguage: Record "Windows Language" temporary;
     begin
-        GetApplicationLanguages(TempLanguage);
+        GetApplicationLanguages(TempWindowsLanguage);
 
-        TempLanguage.SetCurrentKey(Name);
+        TempWindowsLanguage.SetCurrentKey(Name);
 
-        if TempLanguage.Get(LanguageId) then;
+        if TempWindowsLanguage.Get(LanguageId) then;
 
-        if PAGE.RunModal(PAGE::"Windows Languages", TempLanguage) = ACTION::LookupOK then
-            LanguageId := TempLanguage."Language ID";
+        if PAGE.RunModal(PAGE::"Windows Languages", TempWindowsLanguage) = ACTION::LookupOK then
+            LanguageId := TempWindowsLanguage."Language ID";
+    end;
+
+    procedure LookupLanguageCode(var LanguageCode: Code[10])
+    var
+        Language: Record Language;
+    begin
+        Language.SetCurrentKey(Name);
+
+        if Language.Get(LanguageCode) then;
+
+        if Page.RunModal(Page::Languages, Language) = Action::LookupOK then
+            LanguageCode := Language.Code;
     end;
 
     procedure LookupWindowsLanguageId(var LanguageId: Integer)
@@ -184,7 +199,7 @@ codeunit 54 "Language Impl."
         UserPersonalization.Modify(true);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000004, 'GetApplicationLanguage', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"UI Helper Triggers", 'GetApplicationLanguage', '', false, false)]
     local procedure SetApplicationLanguageId(var language: Integer)
     begin
         language := GetDefaultApplicationLanguageId();

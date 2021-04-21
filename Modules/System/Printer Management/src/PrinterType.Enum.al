@@ -9,10 +9,18 @@
 enum 2619 "Printer Type"
 {
     Extensible = false;
+
+    /// <summary>
+    /// Specifies a local printer.
+    /// </summary>
     value(0; "Local Printer")
     {
         Caption = 'Local Printer';
     }
+
+    /// <summary>
+    /// Specifies a cloud printer.
+    /// </summary>
     value(1; "Network Printer")
     {
         Caption = 'Cloud Printer';

@@ -84,6 +84,9 @@ page 4511 "SMTP Account Wizard"
                 trigger OnValidate()
                 begin
                     IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
+                    SetProperties();
+                    if ShowMessageAboutSigningIn then
+                        Message(EveryUserShouldPressAuthenticateMsg);
                 end;
             }
 
@@ -104,7 +107,9 @@ page 4511 "SMTP Account Wizard"
 
                 trigger OnValidate()
                 begin
-                    AuthenticationOnAfterValidate();
+                    SetProperties();
+                    if ShowMessageAboutSigningIn then
+                        Message(EveryUserShouldPressAuthenticateMsg);
                 end;
             }
 
@@ -157,7 +162,7 @@ page 4511 "SMTP Account Wizard"
                     SMTPConnectorImpl.ApplyOffice365Smtp(Rec);
 
                     IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
-                    AuthenticationOnAfterValidate();
+                    SetProperties();
 
                     CurrPage.Update();
                 end;
@@ -208,26 +213,26 @@ page 4511 "SMTP Account Wizard"
         ConfirmApplyO365Qst: Label 'Do you want to override the current data?';
         IsNextEnabled: Boolean;
         TopBannerVisible: Boolean;
-
-    trigger OnInit()
-    begin
-        UserIDEditable := true;
-        PasswordEditable := true;
-    end;
+        ShowMessageAboutSigningIn: Boolean;
+        EveryUserShouldPressAuthenticateMsg: Label 'Before people can send email they must authenticate their email account. They can do that by choosing the Authenticate action on the SMTP Account page.';
 
     trigger OnOpenPage()
     begin
         Rec.Init();
         Rec.Insert();
+        SetProperties();
 
         if MediaResources.Get('ASSISTEDSETUP-NOTEXT-400PX.PNG') and (CurrentClientType() = ClientType::Web) then
             TopBannerVisible := MediaResources."Media Reference".HasValue();
     end;
 
-    local procedure AuthenticationOnAfterValidate()
+    local procedure SetProperties()
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        UserIDEditable := Rec.Authentication = Rec.Authentication::Basic;
+        UserIDEditable := (Rec.Authentication = Rec.Authentication::Basic) or (Rec.Authentication = Rec.Authentication::"OAuth 2.0");
         PasswordEditable := Rec.Authentication = Rec.Authentication::Basic;
+        ShowMessageAboutSigningIn := (not EnvironmentInformation.IsSaaSInfrastructure()) and (Rec.Authentication = Rec.Authentication::"OAuth 2.0") and (Rec.Server = SMTPConnectorImpl.GetO365SmtpServer());
     end;
 
     internal procedure GetAccount(var EmailAccount: Record "Email Account"): Boolean

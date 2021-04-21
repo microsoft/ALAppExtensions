@@ -12,7 +12,6 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
 
     var
         Assert: Codeunit "Assert";
-        SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
         SalesInvLinesE2E: Codeunit "APIV2 - Sales Inv. Lines E2E";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryGraphDocumentTools: Codeunit "Library - Graph Document Tools";
@@ -764,7 +763,6 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
         ResponseText: Text;
         TargetURL: Text;
         QuoteLineJSON: Text;
-        LineNoFromJSON: Text;
         QuoteId: Text;
     begin
         // [SCENARIO] POST a new line to a quote with wrong item variant

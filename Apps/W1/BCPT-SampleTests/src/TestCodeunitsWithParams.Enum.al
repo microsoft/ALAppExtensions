@@ -1,8 +1,3 @@
-// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See License.txt in the project root for license information.
-// ------------------------------------------------------------------------------------------------
-
 enumextension 149100 "Test Codeunits with Params" extends "BCPT Test Param. Enum"
 {
     value(149103; "149103")

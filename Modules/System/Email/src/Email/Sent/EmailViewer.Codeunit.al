@@ -12,11 +12,8 @@ codeunit 8907 "Email Viewer"
     var
         EmailViewer: Page "Email Viewer";
     begin
+        CheckPermissions(SentEmail);
         EmailViewer.SetRecord(SentEmail);
-
-        if SentEmail.Description <> '' then
-            EmailViewer.Caption := SentEmail.Description;
-
         EmailViewer.Run();
     end;
 
@@ -26,6 +23,8 @@ codeunit 8907 "Email Viewer"
         NewEmailMessageImpl, OldEmailMessageImpl : Codeunit "Email Message Impl.";
         NewEmailMessage: Codeunit "Email Message";
     begin
+        CheckPermissions(SentEmail);
+
         if not OldEmailMessageImpl.Get(SentEmail."Message Id") then
             Error(EmailMessageDoesNotExistMsg);
 
@@ -54,6 +53,8 @@ codeunit 8907 "Email Viewer"
         NewEmailMessageImpl, OldEmailMessageImpl : Codeunit "Email Message Impl.";
         NewEmailMessage: Codeunit "Email Message";
     begin
+        CheckPermissions(SentEmail);
+
         if not OldEmailMessageImpl.Get(SentEmail."Message Id") then
             Error(EmailMessageDoesNotExistMsg);
 

@@ -116,7 +116,7 @@ page 20049 "APIV1 - JournalLines"
                     Caption = 'LastModifiedDateTime', Locked = true;
                     Editable = false;
                 }
-                part(attachments; 20039)
+                part(attachments; "APIV1 - Attachments")
                 {
                     Caption = 'attachments', Locked = true;
                     EntityName = 'attachments';

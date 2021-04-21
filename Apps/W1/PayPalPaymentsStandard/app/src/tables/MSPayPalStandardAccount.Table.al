@@ -3,7 +3,7 @@ table 1070 "MS - PayPal Standard Account"
     Caption = 'PayPal Payments Standard Account';
     DrillDownPageID = 1070;
     LookupPageID = 1070;
-    Permissions = TableData 2000000199 = rimd;
+    Permissions = TableData "Webhook Subscription" = rimd;
     ReplicateData = false;
 
     fields
@@ -33,8 +33,8 @@ table 1070 "MS - PayPal Standard Account"
 
             trigger OnValidate();
             var
-                MSPayPalStandardAccount: Record 1070;
-                SalesHeader: Record 36;
+                MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+                SalesHeader: Record "Sales Header";
             begin
                 IF NOT "Always Include on Documents" THEN
                     EXIT;
@@ -97,7 +97,7 @@ table 1070 "MS - PayPal Standard Account"
     end;
 
     var
-        MSPayPalWebhooksMgt: Codeunit 1073;
+        MSPayPalWebhooksMgt: Codeunit "MS - PayPal Webhook Management";
         PayPalTelemetryCategoryTok: Label 'AL Paypal', Locked = true;
         AccountIDCannotBeBlankErr: Label 'You must specify an account ID for this payment service.';
         RefreshWebhooksSubscriptionMsg: Label 'Deleting and recreating Webhook Subscription.', Locked = true;
@@ -131,7 +131,7 @@ table 1070 "MS - PayPal Standard Account"
 
     procedure SetTargetURL(TargetURL: Text);
     var
-        MSPayPalStandardMgt: Codeunit 1070;
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
         OutStream: OutStream;
     begin
         if not MSPayPalStandardMgt.IsValidAndSecureURL(TargetURL) then
@@ -159,7 +159,7 @@ table 1070 "MS - PayPal Standard Account"
 
     local procedure UpdateWebhookOnModify();
     var
-        PrevMSPayPalStandardAccount: Record 1070;
+        PrevMSPayPalStandardAccount: Record "MS - PayPal Standard Account";
     begin
         PrevMSPayPalStandardAccount.GET("Primary Key");
 
@@ -177,9 +177,9 @@ table 1070 "MS - PayPal Standard Account"
 
     local procedure RegisterWebhookListenerForRec();
     var
-        WebhookSubscription: Record 2000000199;
-        MarketingSetup: Record 5079;
-        WebhookManagement: Codeunit 5377;
+        WebhookSubscription: Record "Webhook Subscription";
+        MarketingSetup: Record "Marketing Setup";
+        WebhookManagement: Codeunit "Webhook Management";
         WebhooksAdapterUri: Text[250];
         SubscriptionId: Text[150];
     begin
@@ -217,7 +217,7 @@ table 1070 "MS - PayPal Standard Account"
 
     local procedure DeleteWebhookSubscription(AccountId: Text[250]);
     var
-        WebhookSubscription: Record 2000000199;
+        WebhookSubscription: Record "Webhook Subscription";
         SubscriptionId: Text[150];
     begin
         SubscriptionId := CopyStr(LowerCase(AccountId), 1, MaxStrLen(SubscriptionId));
@@ -252,7 +252,7 @@ table 1070 "MS - PayPal Standard Account"
 
     LOCAL PROCEDURE CreatePaymentRegistrationSetupForCurrentUser();
     VAR
-        PaymentRegistrationSetup: Record 980;
+        PaymentRegistrationSetup: Record "Payment Registration Setup";
     BEGIN
         IF PaymentRegistrationSetup.GET(USERID()) THEN BEGIN
             Session.LogMessage('00008HA', PaymentRegistrationSetupAlreadyExistsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);

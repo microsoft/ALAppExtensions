@@ -359,14 +359,14 @@ page 20037 "APIV1 - Sales Quotes"
                         RegisterFieldSet(FIELDNO("Salesperson Code"));
                     end;
                 }
-                part(salesQuoteLines; 20045)
+                part(salesQuoteLines; "APIV1 - Sales Quote Lines")
                 {
                     Caption = 'Lines', Locked = true;
                     EntityName = 'salesQuoteLine';
                     EntitySetName = 'salesQuoteLines';
                     SubPageLink = "Document Id" = FIELD(Id);
                 }
-                part(pdfDocument; 5529)
+                part(pdfDocument; "APIV1 - PDF Document")
                 {
                     Caption = 'PDF Document', Locked = true;
                     EntityName = 'pdfDocument';

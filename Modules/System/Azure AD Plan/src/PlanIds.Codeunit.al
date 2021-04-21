@@ -15,6 +15,7 @@ codeunit 9027 "Plan Ids"
     begin
     end;
 
+#pragma warning disable AA0240
     var
         TeamMemberPlanGUIDTxt: Label '{d9a6391b-8970-4976-bd94-5f205007c8d8}', Locked = true;
         EssentialPlanGUIDTxt: Label '{920656a2-7dd8-4c83-97b6-a356414dbd36}', Locked = true;
@@ -33,6 +34,7 @@ codeunit 9027 "Plan Ids"
         AccountantHubPlanGuidTxt: Label '{5d60ea51-0053-458f-80a8-b6f426a1a0c1}', Locked = true;
         HelpDeskPlanGuidTxt: Label '{00000000-0000-0000-0000-000000000008}', Locked = true;
         InfrastructurePlanGuidTxt: Label '{996DEF3D-B36C-4153-8607-A6FD3C01B89F}', Locked = true;
+#pragma warning restore
 
     /// <summary>
     /// Returns the ID for the Dynamics 365 Business Central Basic Financials plan.

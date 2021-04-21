@@ -37,16 +37,16 @@ table 10677 "SAF-T Mapping Source"
 
     procedure ImportMappingSource()
     var
-        MediaResources: Record "Media Resources";
+        TenantMedia: Record "Tenant Media";
         SAFTMappingSource: Record "SAF-T Mapping Source";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
         testfield("Source Type");
-        SAFTXMLImport.ImportXmlFileIntoMediaResources(MediaResources);
-        if MediaResources.Code = '' then
+        SAFTXMLImport.ImportXmlFileIntoTenantMedia(TenantMedia);
+        if IsNullGuid(TenantMedia.ID) then
             exit;
 
-        "Source No." := MediaResources.Code;
+        "Source No." := CopyStr(TenantMedia."File Name", 1, MaxStrLen("Source No."));
         SAFTMappingSource.SetFilter(Id, '<>%1', ID);
         SAFTMappingSource.SetRange("Source No.", "Source No.");
         if not SAFTMappingSource.IsEmpty() then

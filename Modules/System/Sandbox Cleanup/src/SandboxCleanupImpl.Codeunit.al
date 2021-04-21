@@ -6,6 +6,7 @@
 codeunit 1885 "Sandbox Cleanup Impl."
 {
     Access = Internal;
+    Permissions = tabledata Company = r;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Triggers", 'OnAfterCopyEnvironmentToSandbox', '', false, false)]
     local procedure FireIntegrationEvent()

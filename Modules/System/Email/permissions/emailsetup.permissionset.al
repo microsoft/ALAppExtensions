@@ -1,0 +1,14 @@
+#if not CLEAN18
+permissionset 8904 "EMAIL SETUP"
+{
+    Access = Public;
+    Assignable = true;
+    Caption = '(Obsolete) Email Setup';
+
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This permission set is replaced with permission set Email - Admin';
+    ObsoleteTag = '18.0';
+
+    IncludedPermissionSets = "Email - Admin";
+}
+#endif

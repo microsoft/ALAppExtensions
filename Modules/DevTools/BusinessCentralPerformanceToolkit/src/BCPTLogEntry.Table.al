@@ -5,6 +5,7 @@
 table 149002 "BCPT Log Entry"
 {
     DataClassification = SystemMetadata;
+    DrillDownPageId = "BCPT Log Entries";
     Extensible = false;
     Access = Internal;
 
@@ -87,9 +88,9 @@ table 149002 "BCPT Log Entry"
         {
             Clustered = true;
         }
-        key(Key2; "BCPT Code", Version, "BCPT Line No.", Operation)
+        key(Key2; "BCPT Code", Version, "BCPT Line No.", Operation, "Duration (ms)", "No. of SQL Statements")
         {
-            SumIndexFields = "Duration (ms)", "No. of SQL Statements";
+            // Instead of a SIFT index. This will make both inserts and calculations faster - and non-blocking
         }
     }
 

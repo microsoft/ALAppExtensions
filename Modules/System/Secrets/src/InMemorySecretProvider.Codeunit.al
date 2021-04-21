@@ -11,6 +11,7 @@ codeunit 3802 "In Memory Secret Provider" implements "Secret Provider"
     Access = Public;
 
     var
+        [NonDebuggable]
         InMemorySecretProviderImpl: Codeunit "In Memory Secret Prov Impl.";
 
     /// <summary>
@@ -18,6 +19,7 @@ codeunit 3802 "In Memory Secret Provider" implements "Secret Provider"
     /// </summary>
     /// <param name="SecretName">The name of the secret.</param>
     /// <param name="SecretValue">The value of the secret.</param>
+    [NonDebuggable]
     procedure AddSecret(SecretName: Text; SecretValue: Text)
     begin
         InMemorySecretProviderImpl.AddSecret(SecretName, SecretValue);
@@ -29,6 +31,7 @@ codeunit 3802 "In Memory Secret Provider" implements "Secret Provider"
     /// <param name="SecretName">The name of the secret to retrieve.</param>
     /// <param name="SecretValue">The value of the secret, or the empty string if the value could not be retrieved.</param>
     /// <returns>True if the secret value could be retrieved; false otherwise.</returns>
+    [NonDebuggable]
     procedure GetSecret(SecretName: Text; var SecretValue: Text): Boolean
     begin
         exit(InMemorySecretProviderImpl.GetSecret(SecretName, SecretValue));

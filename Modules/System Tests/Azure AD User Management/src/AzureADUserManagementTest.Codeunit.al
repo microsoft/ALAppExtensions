@@ -537,7 +537,7 @@ codeunit 132909 "Azure AD User Management Test"
         AssignedPlans := GraphUser.AssignedPlans();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 9012, 'OnInitialize', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Graph", 'OnInitialize', '', false, false)]
     local procedure OnGraphInitialization(var GraphQuery: DotNet GraphQuery)
     begin
         GraphQuery := GraphQuery.GraphQuery(MockGraphQuery);

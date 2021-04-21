@@ -1,0 +1,31 @@
+{
+  "id": "7106d701-c601-4a5f-97c2-b8b323ae2c18",
+  "name": "QR Generator",
+  "publisher": "Microsoft",
+  "version": "18.0.0.0",
+  "brief": "Contains feature for QR Code Generation.",
+  "description": "Contains feature for QR Code Generation.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139720",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "features": [
+    "TranslationFile",
+    "GenerateCaptions"
+  ],
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "18.0.0.0",
+  "application": "18.0.0.0",
+  "idRanges": [
+    {
+      "from": 18650,
+      "to": 18660
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139720",
+  "showMyCode": true,
+  "target": "OnPrem",
+  "runtime": "7.0"
+}

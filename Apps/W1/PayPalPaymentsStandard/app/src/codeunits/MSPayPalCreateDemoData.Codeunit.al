@@ -37,7 +37,7 @@ codeunit 1072 "MS - PayPal Create Demo Data"
 
     procedure InsertDemoData();
     var
-        CompanyInformationMgt: Codeunit 1306;
+        CompanyInformationMgt: Codeunit "Company Information Mgt.";
     begin
         if not CompanyInformationMgt.IsDemoCompany() then
             exit;
@@ -51,8 +51,8 @@ codeunit 1072 "MS - PayPal Create Demo Data"
 
     local procedure InsertSandboxPayPalTemplate();
     var
-        MSPayPalStandardTemplate: Record 1071;
-        MSPayPalStandardMgt: Codeunit 1070;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
         IF MSPayPalStandardTemplate.GET() THEN
             EXIT;
@@ -66,9 +66,9 @@ codeunit 1072 "MS - PayPal Create Demo Data"
 
     local procedure InsertDemoPayPalAccount();
     var
-        MSPayPalStandardTemplate: Record 1071;
-        MSPayPalStandardAccount: Record 1070;
-        MSPayPalStandardMgt: Codeunit 1070;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
         if not MSPayPalStandardAccount.IsEmpty() then
             exit;

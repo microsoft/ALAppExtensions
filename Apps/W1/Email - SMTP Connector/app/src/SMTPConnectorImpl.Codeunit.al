@@ -108,7 +108,7 @@ codeunit 4513 "SMTP Connector Impl."
         if not Result then begin
             SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
 
-            Session.LogMessage('00009UM', StrSubstNo(SmtpConnectTelemetryErrorMsg,
+            Session.LogMessage('00009UB', StrSubstNo(SmtpConnectTelemetryErrorMsg,
                     SMTPAccount.Server,
                     SMTPAccount."Server Port",
                     SMTPErrorCode), Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
@@ -116,7 +116,7 @@ codeunit 4513 "SMTP Connector Impl."
             Error(ConnectionFailureErr, SMTPAccount.Server);
         end;
 
-        Session.LogMessage('00009UN', StrSubstNo(SmtpConnectedTelemetryMsg,
+        Session.LogMessage('00009UV', StrSubstNo(SmtpConnectedTelemetryMsg,
                 SMTPAccount.Server,
                 SMTPAccount."Server Port"), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
@@ -128,7 +128,7 @@ codeunit 4513 "SMTP Connector Impl."
                 Disconnect();
                 SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
 
-                Session.LogMessage('00009XS', StrSubstNo(SmtpAuthenticateTelemetryErrorMsg,
+                Session.LogMessage('00009XD', StrSubstNo(SmtpAuthenticateTelemetryErrorMsg,
                         SMTPAccount."User Name",
                         SMTPAccount.Server,
                         SMTPAccount."Server Port",
@@ -137,7 +137,7 @@ codeunit 4513 "SMTP Connector Impl."
                 Error(AuthenticationFailureErr, SMTPAccount.Server);
             end;
 
-            Session.LogMessage('00009XT', StrSubstNo(SmtpAuthenticateTelemetryMsg,
+            Session.LogMessage('00009XF', StrSubstNo(SmtpAuthenticateTelemetryMsg,
                     SMTPAccount."User Name",
                     SMTPAccount.Server,
                     SMTPAccount."Server Port"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
@@ -152,12 +152,12 @@ codeunit 4513 "SMTP Connector Impl."
             Disconnect();
 
             SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
-            Session.LogMessage('00009UO', StrSubstNo(SmtpSendTelemetryErrorMsg, SMTPErrorCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+            Session.LogMessage('00009UZ', StrSubstNo(SmtpSendTelemetryErrorMsg, SMTPErrorCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
             Error(SendingFailureErr);
         end;
 
-        Session.LogMessage('00009UP', SmtpSendTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+        Session.LogMessage('00009UX', SmtpSendTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
     end;
 
     procedure GetDescription(): Text[250]
@@ -194,7 +194,7 @@ codeunit 4513 "SMTP Connector Impl."
     begin
         // This might be changed by the Microsoft Office 365 team.
         // Current source: http://technet.microsoft.com/library/dn554323.aspx
-        SMTPAccountConfig.Server := 'smtp.office365.com';
+        SMTPAccountConfig.Server := CopyStr(GetO365SmtpServer(), 1, MaxStrLen(SMTPAccountConfig.Server));
         SMTPAccountConfig."Server Port" := 587;
         SMTPAccountConfig.Authentication := SMTPAccountConfig.Authentication::Basic;
         SMTPAccountConfig."Secure Connection" := true;
@@ -203,10 +203,7 @@ codeunit 4513 "SMTP Connector Impl."
     /// <summary>
     /// Transfers the addresses from InternetAddressList to into a List of [Text]
     /// </summary>
-    procedure InternetAddressListToList(IAList: DotNet InternetAddressList;
-
-    var
-        Addresses: List of [Text])
+    procedure InternetAddressListToList(IAList: DotNet InternetAddressList; var Addresses: List of [Text])
     var
         Mailbox: DotNet MimeMailboxAddress;
     begin
@@ -262,7 +259,9 @@ codeunit 4513 "SMTP Connector Impl."
 
         NewSMTPAccount.Id := CreateGuid();
         NewSMTPAccount.SetPassword(Password);
+#if not CLEAN17
         NewSMTPAccount."Created By" := CopyStr(UserId(), 1, MaxStrLen(NewSMTPAccount."Created By"));
+#endif
 
         NewSMTPAccount.Insert();
 
@@ -272,16 +271,23 @@ codeunit 4513 "SMTP Connector Impl."
         EmailAccount.Connector := Enum::"Email Connector"::SMTP;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnGetTestEmailBody', '', false, false)]
-    local procedure SetTestEmailBody(Connector: Enum "Email Connector"; var Body: Text)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnGetBodyForTestEmail', '', false, false)]
+    local procedure SetTestEmailBody(Connector: Enum "Email Connector"; AccountId: Guid; var Body: Text)
+    var
+        SMTPAccountForTestEmail: Record "SMTP Account";
     begin
-        if Connector = Connector::SMTP then
-            Body := StrSubstNo(TestEmailBodyTxt,
-                               UserId(),
-                               SMTPAccount.Server,
-                               Format(SMTPAccount."Server Port"),
-                               SMTPAccount.Authentication,
-                               SMTPAccount."Secure Connection");
+        if Connector <> Connector::SMTP then
+            exit;
+
+        if not SMTPAccountForTestEmail.Get(AccountId) then
+            exit;
+
+        Body := StrSubstNo(TestEmailBodyTxt,
+                           UserId(),
+                           SMTPAccountForTestEmail.Server,
+                           Format(SMTPAccountForTestEmail."Server Port"),
+                           SMTPAccountForTestEmail.Authentication,
+                           SMTPAccountForTestEmail."Secure Connection");
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"SMTP Account", 'OnOpenPageEvent', '', false, false)]
@@ -403,7 +409,6 @@ codeunit 4513 "SMTP Connector Impl."
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"My Notifications", 'OnInitializingNotificationWithDefaultState', '', false, false)]
-    [Scope('OnPrem')]
     local procedure OnInitializingNotificationWithDefaultState()
     var
         MyNotifications: Record "My Notifications";
@@ -447,5 +452,10 @@ codeunit 4513 "SMTP Connector Impl."
     internal procedure OpenSmtpMailSetup(Notification: Notification)
     begin
         Page.Run(Page::"SMTP Mail Setup");
+    end;
+
+    internal procedure GetO365SmtpServer(): Text
+    begin
+        exit('smtp.office365.com');
     end;
 }

@@ -397,7 +397,6 @@ page 30044 "APIV2 - Sales Order Lines"
         Item: Record "Item";
         LinesLoaded: Boolean;
         IDOrDocumentIdShouldBeSpecifiedForLinesErr: Label 'You must specify an Id or a Document Id to get the lines.';
-        CannotChangeIdNoErr: Label 'The value for "id" cannot be modified.', Comment = 'id is a field name and should not be translated.';
         CannotChangeDocumentIdNoErr: Label 'The value for "documentId" cannot be modified.', Comment = 'documentId is a field name and should not be translated.';
         CannotChangeLineNoErr: Label 'The value for sequence cannot be modified. Delete and insert the line again.';
         BothItemIdAndAccountIdAreSpecifiedErr: Label 'Both "itemId" and "accountId" are specified. Specify only one of them.', Comment = 'itemId and accountId are field names and should not be translated.';

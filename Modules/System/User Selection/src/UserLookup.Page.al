@@ -15,6 +15,7 @@ page 9843 "User Lookup"
     PageType = List;
     SourceTable = User;
     SourceTableView = SORTING("User Name");
+    Permissions = tabledata User = r;
 
     layout
     {

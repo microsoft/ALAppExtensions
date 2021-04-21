@@ -9,6 +9,7 @@
 
 page 9905 "Data Encryption Management"
 {
+    Caption = 'Data Encryption Management';
     Extensible = false;
     AccessByPermission = System "Tools, Restore" = X;
     AdditionalSearchTerms = 'data security management';

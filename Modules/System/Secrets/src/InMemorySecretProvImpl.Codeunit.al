@@ -11,8 +11,10 @@ codeunit 3803 "In Memory Secret Prov Impl."
     Access = Internal;
 
     var
+        [NonDebuggable]
         dict: Dictionary of [Text, Text];
 
+    [NonDebuggable]
     procedure AddSecret(SecretName: Text; SecretValue: Text)
     begin
         if dict.ContainsKey(SecretName) then
@@ -21,6 +23,7 @@ codeunit 3803 "In Memory Secret Prov Impl."
         dict.Add(SecretName, SecretValue);
     end;
 
+    [NonDebuggable]
     procedure GetSecret(SecretName: Text; var SecretValue: Text): Boolean
     begin
         if dict.ContainsKey(SecretName) then begin

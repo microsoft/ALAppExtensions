@@ -40,6 +40,7 @@ page 2503 "Extension Installation"
     begin
         GetDetailsFromFilters();
 
+        MarketplaceExtnDeployment.SetAppID(Rec.ID);
         MarketplaceExtnDeployment.RunModal();
         if MarketplaceExtnDeployment.GetInstalledSelected() then begin
             if NOT IsNullGuid(ID) then

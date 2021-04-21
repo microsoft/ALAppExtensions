@@ -55,7 +55,7 @@ page 8889 "Email Attachments"
                 Caption = 'Attach File';
                 ToolTip = 'Attach files, such as documents or images, to the email.';
                 Scope = Page;
-                Visible = not IsMessageReadOnly;
+                Visible = not IsMessageRead;
 
                 trigger OnAction()
                 var
@@ -78,7 +78,7 @@ page 8889 "Email Attachments"
                 Caption = 'Delete';
                 ToolTip = 'Delete the selected row.';
                 Scope = Repeater;
-                Visible = not IsMessageReadOnly;
+                Visible = not IsMessageRead;
 
                 trigger OnAction()
                 var
@@ -95,16 +95,13 @@ page 8889 "Email Attachments"
         }
     }
 
-    trigger OnOpenPage()
-    begin
-        EmailMessage.Get(EmailMessageId);
-        UpdateDeleteEnablement();
-        IsMessageReadOnly := EmailMessage.IsReadOnly();
-    end;
-
-    internal procedure SetEmailMessageId(MessageId: Guid)
+    internal procedure UpdateValues(MessageId: Guid)
     begin
         EmailMessageId := MessageId;
+
+        EmailMessage.Get(EmailMessageId);
+        UpdateDeleteEnablement();
+        IsMessageRead := EmailMessage.IsRead();
     end;
 
     internal procedure UpdateDeleteEnablement()
@@ -119,7 +116,7 @@ page 8889 "Email Attachments"
         EmailMessage: Codeunit "Email Message Impl.";
         [InDataSet]
         DeleteActionEnabled: Boolean;
-        IsMessageReadOnly: Boolean;
+        IsMessageRead: Boolean;
         EmailMessageId: Guid;
         DeleteQst: Label 'Go ahead and delete?';
 }

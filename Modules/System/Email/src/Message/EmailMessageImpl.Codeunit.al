@@ -11,7 +11,8 @@ codeunit 8905 "Email Message Impl."
                   tabledata "Email Message" = rimd,
                   tabledata "Email Error" = rd,
                   tabledata "Email Recipient" = rid,
-                  tabledata "Email Message Attachment" = rid;
+                  tabledata "Email Message Attachment" = rid,
+                  tabledata "Email Related Record" = rd;
 
     procedure Create(EmailMessage: Codeunit "Email Message Impl.")
     begin
@@ -118,7 +119,7 @@ codeunit 8905 "Email Message Impl."
         Message."HTML Formatted Body" := Value;
     end;
 
-    procedure IsReadOnly(): Boolean
+    procedure IsRead(): Boolean
     begin
         exit(not Message.Editable);
     end;
@@ -207,9 +208,10 @@ codeunit 8905 "Email Message Impl."
         AddAttachment(AttachmentName, ContentType, false, NullGuid, EmailAttachment);
         EmailAttachment.Attachment.CreateOutStream(AttachmentOutstream);
         CopyStream(AttachmentOutstream, AttachmentInStream);
+        EmailAttachment.Length := EmailAttachment.Attachment.Length();
         EmailAttachment.Insert();
 
-        exit(EmailAttachment.Attachment.Length);
+        exit(EmailAttachment.Length);
     end;
 
     local procedure ReplaceRgbaColorsWithRgb(var Body: Text)
@@ -340,7 +342,7 @@ codeunit 8905 "Email Message Impl."
 
     procedure Attachments_GetLength(): Integer
     begin
-        exit(Attachments.Attachment.Length);
+        exit(Attachments.Length);
     end;
 
     procedure GetId(): Guid
@@ -380,8 +382,23 @@ codeunit 8905 "Email Message Impl."
     local procedure OnAfterDeleteSentEmail(var Rec: Record "Sent Email"; RunTrigger: Boolean)
     var
         EmailMessage: Record "Email Message";
+        EmailOutbox: Record "Email Outbox";
+        SentEmail: Record "Sent Email";
     begin
         if Rec.IsTemporary() then
+            exit;
+
+        if Rec.CurrentCompany() <> CompanyName() then begin
+            EmailOutbox.ChangeCompany(Rec.CurrentCompany());
+            EmailMessage.ChangeCompany(Rec.CurrentCompany());
+        end;
+
+        EmailOutbox.SetRange("Message Id", Rec."Message Id");
+        if not EmailOutbox.IsEmpty() then
+            exit;
+
+        SentEmail.SetRange("Message Id", Rec."Message Id");
+        if not SentEmail.IsEmpty() then
             exit;
 
         if EmailMessage.Get(Rec."Message Id") then
@@ -392,17 +409,28 @@ codeunit 8905 "Email Message Impl."
     local procedure OnAfterDeleteEmailOutbox(var Rec: Record "Email Outbox"; RunTrigger: Boolean)
     var
         SentEmail: Record "Sent Email";
+        EmailOutbox: Record "Email Outbox";
         EmailMessage: Record "Email Message";
         EmailError: Record "Email Error";
     begin
         if Rec.IsTemporary() then
             exit;
 
+        if Rec.CurrentCompany() <> CompanyName() then begin
+            EmailError.ChangeCompany(Rec.CurrentCompany());
+            EmailMessage.ChangeCompany(Rec.CurrentCompany());
+            SentEmail.ChangeCompany(Rec.CurrentCompany());
+        end;
+
         EmailError.SetRange("Outbox Id", Rec.Id);
         EmailError.DeleteAll(true);
 
         SentEmail.SetRange("Message Id", Rec."Message Id");
         if not SentEmail.IsEmpty() then
+            exit;
+
+        EmailOutbox.SetRange("Message Id", Rec."Message Id");
+        if not EmailOutbox.IsEmpty() then
             exit;
 
         if EmailMessage.Get(Rec."Message Id") then
@@ -412,17 +440,27 @@ codeunit 8905 "Email Message Impl."
     [EventSubscriber(ObjectType::Table, Database::"Email Message", 'OnBeforeDeleteEvent', '', false, false)]
     local procedure OnBeforeDeleteEmailMessage(var Rec: Record "Email Message"; RunTrigger: Boolean)
     var
-        EmaiMessageAttachemnt: Record "Email Message Attachment";
+        EmailMessageAttachment: Record "Email Message Attachment";
         EmailRecipient: Record "Email Recipient";
+        EmailRelatedRecord: Record "Email Related Record";
     begin
         if Rec.IsTemporary() then
             exit;
 
-        EmaiMessageAttachemnt.SetRange("Email Message Id", Rec.Id);
-        EmaiMessageAttachemnt.DeleteAll();
+        if Rec.CurrentCompany() <> CompanyName() then begin
+            EmailMessageAttachment.ChangeCompany(Rec.CurrentCompany());
+            EmailRecipient.ChangeCompany(Rec.CurrentCompany());
+            EmailRelatedRecord.ChangeCompany(Rec.CurrentCompany());
+        end;
+
+        EmailMessageAttachment.SetRange("Email Message Id", Rec.Id);
+        EmailMessageAttachment.DeleteAll();
 
         EmailRecipient.SetRange("Email Message Id", Rec.Id);
         EmailRecipient.DeleteAll();
+
+        EmailRelatedRecord.SetRange("Email Message Id", Rec.Id);
+        EmailRelatedRecord.DeleteAll();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Email Message", 'OnBeforeModifyEvent', '', false, false)]
@@ -453,6 +491,11 @@ codeunit 8905 "Email Message Impl."
         if Rec.IsTemporary() then
             exit;
 
+        if Rec.CurrentCompany() <> CompanyName() then begin
+            EmailOutbox.ChangeCompany(Rec.CurrentCompany());
+            SentEmail.ChangeCompany(Rec.CurrentCompany());
+        end;
+
         EmailOutbox.SetRange("Message Id", Rec."Email Message Id");
         EmailOutbox.SetFilter(Status, '%1|%2', EmailOutbox.Status::Queued, EmailOutbox.Status::Processing);
         if not EmailOutbox.IsEmpty() then
@@ -471,6 +514,11 @@ codeunit 8905 "Email Message Impl."
     begin
         if Rec.IsTemporary() then
             exit;
+
+        if Rec.CurrentCompany() <> CompanyName() then begin
+            EmailOutbox.ChangeCompany(Rec.CurrentCompany());
+            SentEmail.ChangeCompany(Rec.CurrentCompany());
+        end;
 
         EmailOutbox.SetRange("Message Id", Rec."Email Message Id");
         EmailOutbox.SetFilter(Status, '%1|%2', EmailOutbox.Status::Queued, EmailOutbox.Status::Processing);
@@ -538,7 +586,7 @@ codeunit 8905 "Email Message Impl."
         exit(true);
     end;
 
-    procedure MarkAsReadOnly()
+    procedure MarkAsRead()
     begin
         if Message.Editable then begin
             Message.Editable := false;

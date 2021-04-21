@@ -679,6 +679,10 @@ dotnet
         {
         }
 
+        type("Microsoft.Dynamics.Nav.Runtime.CompoundTokenInfo"; "CompoundTokenInfo")
+        {
+        }
+
         type("Microsoft.Dynamics.Nav.Runtime.Designer.DesignerFieldProperty"; "DesignerFieldProperty")
         {
         }
@@ -760,6 +764,10 @@ dotnet
         }
 
         type("Microsoft.Dynamics.Nav.Runtime.Designer.NavDesignerALProfileExportResponse"; "NavDesignerALProfileExportResponse")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.Runtime.Designer.NavDesignerALCopyResponse"; "NavDesignerALCopyResponse")
         {
         }
     }
@@ -862,12 +870,16 @@ dotnet
         }
     }
 
-    assembly("Microsoft.Dynamics.Nav.PdfWriter")
+    assembly("Microsoft.BusinessCentral.DocumentProcessor")
     {
         Culture = 'neutral';
         PublicKeyToken = '31bf3856ad364e35';
 
-        type("Microsoft.Dynamics.Nav.PdfWriter.WordToPdf"; "WordToPdf")
+        type("Microsoft.BusinessCentral.DocumentProcessor.WordTransformation"; "WordTransformation")
+        {
+        }
+
+        type("Microsoft.BusinessCentral.DocumentProcessor.MailMerge"; "MailMerge")
         {
         }
     }
@@ -1099,15 +1111,23 @@ dotnet
         type("Microsoft.Office.Interop.Word.WdWindowState"; "WdWindowState")
         {
         }
+
+        type("Microsoft.Office.Interop.Word.Fields"; "Microsoft.Office.Interop.Word.Fields")
+        {
+        }
+
+        type("Microsoft.Office.Interop.Word.Range"; "Microsoft.Office.Interop.Word.Range")
+        {
+        }
     }
 
     assembly("mscorlib")
     {
-
+#if not CLEAN17
         type("Microsoft.Win32.Registry"; "Registry")
         {
         }
-
+#endif
         type("System.Activator"; "Activator")
         {
         }
@@ -1379,6 +1399,9 @@ dotnet
         type("System.Security.Cryptography.HashAlgorithm"; "HashAlgorithm")
         {
         }
+        type("System.Security.Cryptography.HashAlgorithmName"; "HashAlgorithmName")
+        {
+        }
 
         type("System.Security.Cryptography.KeyedHashAlgorithm"; "KeyedHashAlgorithm")
         {
@@ -1389,6 +1412,9 @@ dotnet
         }
 
         type("System.Security.Cryptography.RSACryptoServiceProvider"; "RSACryptoServiceProvider")
+        {
+        }
+        type("System.Security.Cryptography.DSACryptoServiceProvider"; "DSACryptoServiceProvider")
         {
         }
 
@@ -1538,11 +1564,11 @@ dotnet
         type("System.Diagnostics.FileVersionInfo"; "FileVersionInfo")
         {
         }
-
+#if not CLEAN17
         type("System.Diagnostics.Process"; "Process")
         {
         }
-
+#endif
         type("System.Diagnostics.Stopwatch"; "Stopwatch")
         {
         }
@@ -1922,6 +1948,9 @@ dotnet
         {
         }
 
+        type("System.Security.Cryptography.Xml.SignedInfo"; "SignedInfo")
+        {
+        }
         type("System.Security.Cryptography.Xml.SignedXml"; "SignedXml")
         {
         }
@@ -1996,14 +2025,6 @@ dotnet
         PublicKeyToken = 'b77a5c561934e089';
 
         type("System.Resources.ResXDataNode"; "ResXDataNode")
-        {
-        }
-
-        type("System.Resources.ResXResourceReader"; "ResXResourceReader")
-        {
-        }
-
-        type("System.Resources.ResXResourceWriter"; "ResXResourceWriter")
         {
         }
 
@@ -2201,6 +2222,10 @@ dotnet
         }
 
         type("MailKit.Security.SecureSocketOptions"; "SecureSocketOptions")
+        {
+        }
+
+        type("MailKit.Security.SaslMechanismOAuth2"; "SaslMechanismOAuth2")
         {
         }
     }

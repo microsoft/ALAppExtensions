@@ -18,7 +18,7 @@ page 8884 "Email User-Specified Address"
             group(EmailAddressGroup)
             {
                 ShowCaption = false;
-                field(EmailAddressField; EmailAddress)
+                field(EmailAddressField; EmailAddresses)
                 {
                     ApplicationArea = Basic, Suite, Invoicing;
                     Caption = 'Email Address';
@@ -31,7 +31,7 @@ page 8884 "Email User-Specified Address"
                     var
                         EmailAccount: Codeunit "Email Account";
                     begin
-                        EmailAccount.ValidateEmailAddress(EmailAddress);
+                        EmailAccount.ValidateEmailAddresses(EmailAddresses);
                     end;
                 }
             }
@@ -39,15 +39,15 @@ page 8884 "Email User-Specified Address"
     }
 
     var
-        EmailAddress: Text;
+        EmailAddresses: Text;
 
     /// <summary>
-    /// Gets the email address that has been entered.
+    /// Gets the email address(es) that has been entered.
     /// </summary>
-    /// <returns>An email address</returns>
+    /// <returns>Email address(es)</returns>
     procedure GetEmailAddress(): Text
     begin
-        exit(EmailAddress);
+        exit(EmailAddresses);
     end;
 
     /// <summary>
@@ -56,7 +56,7 @@ page 8884 "Email User-Specified Address"
     /// <param name="Address">The value to be prefilled</param>
     procedure SetEmailAddress(Address: Text)
     begin
-        EmailAddress := Address;
+        EmailAddresses := Address;
     end;
 }
 

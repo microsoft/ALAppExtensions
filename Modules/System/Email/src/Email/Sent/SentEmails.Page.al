@@ -9,6 +9,7 @@
 page 8883 "Sent Emails"
 {
     PageType = List;
+    Caption = 'Sent Emails';
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "Sent Email";
@@ -86,8 +87,16 @@ page 8883 "Sent Emails"
                 PromotedOnly = true;
 
                 trigger OnAction()
+                var
+                    SelectedSentEmail: Record "Sent Email";
                 begin
-                    EmailViewer.Resend(Rec);
+                    CurrPage.SetSelectionFilter(SelectedSentEmail);
+                    if not SelectedSentEmail.FindSet() then
+                        exit;
+
+                    repeat
+                        EmailViewer.Resend(SelectedSentEmail);
+                    until SelectedSentEmail.Next() = 0;
                 end;
             }
 
@@ -111,6 +120,7 @@ page 8883 "Sent Emails"
             action(Refresh)
             {
                 ApplicationArea = All;
+                Caption = 'Refresh';
                 ToolTip = 'Refresh';
                 Image = Refresh;
                 Promoted = true;
@@ -122,6 +132,24 @@ page 8883 "Sent Emails"
                     EmailViewer.RefreshSentMailForUser(EmailAccountId, NewerThanDate, Rec);
                     CurrPage.Update(false);
                     NoSentEmails := Rec.IsEmpty();
+                end;
+            }
+
+            action(ShowSourceRecord)
+            {
+                ApplicationArea = All;
+                Image = GetSourceDoc;
+                Caption = 'Show Source';
+                ToolTip = 'Open the page from where the email was sent.';
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+
+                trigger OnAction()
+                var
+                    EmailImpl: Codeunit "Email Impl";
+                begin
+                    EmailImpl.ShowSourceRecord(Rec."Message Id");
                 end;
             }
         }

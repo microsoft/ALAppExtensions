@@ -181,7 +181,7 @@ codeunit 27021 "DIOT Data Management"
         exit('');
     end;
 
-    local procedure InsertVendorBufferConditionally(var TempDIOTReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary; var TempErrorMessage: Record "Error Message" temporary; VendorNo: Code[20]; DIOTTypeOfOperation: Option)
+    local procedure InsertVendorBufferConditionally(var TempDIOTReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary; VendorNo: Code[20]; DIOTTypeOfOperation: Option)
     var
         Vendor: Record Vendor;
     begin
@@ -256,7 +256,7 @@ codeunit 27021 "DIOT Data Management"
                             TypeOfOperation := GetTypeOfOperationForEntry(VATEntry);
                             CalcAmount := CalcAmountForVATEntryAndDIOTConcept(VATEntry, CurrentDIOTConcept, CurrentVATPostingSetup);
                             InsertBufferConditionally(TempDIOTReportBuffer, VendorNo, TypeOfOperation, DIOTConceptLink."DIOT Concept No.", CalcAmount);
-                            InsertVendorBufferConditionally(TempDIOTReportVendorBuffer, TempErrorMessage, VendorNo, TypeOfOperation);
+                            InsertVendorBufferConditionally(TempDIOTReportVendorBuffer, VendorNo, TypeOfOperation);
                         until Next() = 0;
                 end;
             until DIOTConceptLink.Next() = 0;

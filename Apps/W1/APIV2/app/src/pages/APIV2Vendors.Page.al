@@ -244,8 +244,8 @@ page 30010 "APIV2 - Vendors"
                 }
                 part(picture; "APIV2 - Pictures")
                 {
-                    //TODO - WaitingModernDevProperty, Caption = 'Picture';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
+                    Caption = 'Picture';
+                    Multiplicity = ZeroOrOne;
                     EntityName = 'picture';
                     EntitySetName = 'pictures';
                     SubPageLink = Id = Field(SystemId), "Parent Type" = const(3);
@@ -259,11 +259,18 @@ page 30010 "APIV2 - Vendors"
                 }
                 part(agedAccountsPayable; "APIV2 - Aged AP")
                 {
-                    //TODO - WaitingModernDevProperty, Caption = 'Aged Accounts Payable';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
+                    Caption = 'Aged Accounts Payable';
+                    Multiplicity = ZeroOrOne;
                     EntityName = 'agedAccountsPayable';
                     EntitySetName = 'agedAccountsPayables';
                     SubPageLink = AccountId = Field(SystemId);
+                }
+                part(contactsInformation; "APIV2 - Contacts Information")
+                {
+                    Caption = 'Contacts Information';
+                    EntityName = 'contactInformation';
+                    EntitySetName = 'contactsInformation';
+                    SubPageLink = "Related Id" = field(SystemId), "Related Type" = const(2);
                 }
             }
         }

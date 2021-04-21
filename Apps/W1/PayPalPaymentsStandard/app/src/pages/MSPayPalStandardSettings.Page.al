@@ -7,7 +7,7 @@ page 1074 "MS - PayPal Standard Settings"
     ModifyAllowed = false;
     PageType = Card;
     ShowFilter = false;
-    SourceTable = 1070;
+    SourceTable = "MS - PayPal Standard Account";
 
     layout
     {
@@ -26,7 +26,7 @@ page 1074 "MS - PayPal Standard Settings"
 
                     trigger OnValidate();
                     var
-                        MSPayPalStandardMgt: Codeunit 1070;
+                        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
                     begin
                         MSPayPalStandardMgt.SetPaypalAccount(PayPalAccountID, false);
                         if FindFirst() then;
@@ -74,7 +74,7 @@ page 1074 "MS - PayPal Standard Settings"
     trigger OnOpenPage();
     var
         TempPaymentServiceSetup: Record 1060 temporary;
-        MSPayPalStandardTemplate: Record 1071;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
     begin
         IF ISEMPTY() THEN BEGIN
             MSPayPalStandardMgt.RegisterPayPalStandardTemplate(TempPaymentServiceSetup);
@@ -87,7 +87,7 @@ page 1074 "MS - PayPal Standard Settings"
     end;
 
     var
-        MSPayPalStandardMgt: Codeunit 1070;
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
         PayPalAccountID: Text[250];
         IsSandbox: Boolean;
         TermsOfServiceLbl: Label 'Terms of service';

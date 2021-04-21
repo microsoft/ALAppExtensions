@@ -9,6 +9,8 @@
 query 775 Plan
 {
     Caption = 'Plan';
+    Permissions = tabledata Plan = r,
+                  tabledata User = r;
 
     elements
     {

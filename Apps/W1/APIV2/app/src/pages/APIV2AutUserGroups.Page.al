@@ -13,6 +13,7 @@ page 30003 "APIV2 - Aut. User Groups"
     PageType = API;
     SourceTable = "User Group";
     Extensible = false;
+    ODataKeyFields = SystemId;
 
     layout
     {
@@ -20,6 +21,11 @@ page 30003 "APIV2 - Aut. User Groups"
         {
             repeater(Group)
             {
+                field(id; SystemId)
+                {
+                    Caption = 'Id';
+                    Editable = false;
+                }
                 field("code"; Code)
                 {
                     Caption = 'Code';

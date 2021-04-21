@@ -6,6 +6,9 @@
 codeunit 1753 "Data Classification Mgt. Impl."
 {
     Access = Internal;
+    Permissions = tabledata "Data Sensitivity" = rimd,
+                  tabledata Field = r,
+                  tabledata "Table Relations Metadata" = r;
 
     var
         DataSensitivityOptionStringTxt: Label 'Unclassified,Sensitive,Personal,Company Confidential,Normal', Comment = 'It needs to be translated as the field Data Sensitivity on Page 1751 Data Classification WorkSheet and field Data Sensitivity of Table 1180 Data Privacy Entities';

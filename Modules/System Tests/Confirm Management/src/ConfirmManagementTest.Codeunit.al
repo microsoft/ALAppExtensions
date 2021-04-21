@@ -20,7 +20,7 @@ codeunit 132509 "Confirm Management Test"
     [HandlerFunctions('HandleConfirmDialogByClickingNo')]
     procedure TestGetResponseOrDefaultUserClicksDefaultButton();
     VAR
-        ConfirmManagement: Codeunit 27;
+        ConfirmManagement: Codeunit "Confirm Management";
         Result: Boolean;
     begin
         // [WHEN] User clicks FALSE when Confirm dialog is raised with FALSE as the default button
@@ -34,7 +34,7 @@ codeunit 132509 "Confirm Management Test"
     procedure TestGetResponseOrDefaultWhenGuiNotAllowed();
     VAR
         ConfirmTestLibrary: Codeunit "Confirm Test Library";
-        ConfirmManagement: Codeunit 27;
+        ConfirmManagement: Codeunit "Confirm Management";
         Result: Boolean;
     begin
         // [GIVEN] UI disallowed
@@ -52,7 +52,7 @@ codeunit 132509 "Confirm Management Test"
     [HandlerFunctions('HandleConfirmDialogByClickingYes')]
     procedure TestGetResponseUserClicksNonDefaultButton();
     VAR
-        ConfirmManagement: Codeunit 27;
+        ConfirmManagement: Codeunit "Confirm Management";
         Result: Boolean;
     begin
         // [WHEN] User clicks true when Confirm dialog is raised with FALSE as the default button
@@ -66,7 +66,7 @@ codeunit 132509 "Confirm Management Test"
     procedure TestGetResponseWhenGuiNotAllowed();
     VAR
         ConfirmTestLibrary: Codeunit "Confirm Test Library";
-        ConfirmManagement: Codeunit 27;
+        ConfirmManagement: Codeunit "Confirm Management";
         Result: Boolean;
     begin
         // [GIVEN] UI disallowed

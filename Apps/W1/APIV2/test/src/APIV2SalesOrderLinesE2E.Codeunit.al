@@ -12,7 +12,6 @@ codeunit 139835 "APIV2 - Sales Order Lines E2E"
 
     var
         Assert: Codeunit "Assert";
-        SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
         SalesInvLinesE2E: Codeunit "APIV2 - Sales Inv. Lines E2E";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryUtility: Codeunit "Library - Utility";
@@ -345,7 +344,7 @@ codeunit 139835 "APIV2 - Sales Order Lines E2E"
         TempIgnoredFieldsForComparison: Record 2000000041 temporary;
         PageRecordRef: RecordRef;
         ApiRecordRef: RecordRef;
-        SalesOrder: TestPage 42;
+        SalesOrder: TestPage "Sales Order";
         ResponseText: Text;
         TargetURL: Text;
         OrderLineJSON: Text;
@@ -1059,7 +1058,7 @@ codeunit 139835 "APIV2 - Sales Order Lines E2E"
         exit(LineJsonText);
     end;
 
-    local procedure CreateOrderAndLinesThroughPage(var SalesOrder: TestPage 42; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
+    local procedure CreateOrderAndLinesThroughPage(var SalesOrder: TestPage "Sales Order"; CustomerNo: Text; ItemNo: Text; ItemQuantity: Integer)
     var
         SalesLine: Record "Sales Line";
     begin

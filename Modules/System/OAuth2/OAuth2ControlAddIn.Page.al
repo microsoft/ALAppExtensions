@@ -62,7 +62,7 @@ page 502 OAuth2ControlAddIn
     }
 
     [Scope('OnPrem')]
-    // [NonDebuggable]
+    [NonDebuggable]
     procedure SetOAuth2Properties(AuthRequestUrl: Text; AuthInitialState: Text)
     begin
         OAuthRequestUrl := AuthRequestUrl;
@@ -91,10 +91,15 @@ page 502 OAuth2ControlAddIn
     end;
 
     var
+        [NonDebuggable]
         OAuth2Impl: Codeunit OAuth2Impl;
+        [NonDebuggable]
         OAuthRequestUrl: Text;
+        [NonDebuggable]
         State: Text;
+        [NonDebuggable]
         AuthCode: Text;
+        [NonDebuggable]
         AuthError: Text;
         HasAdminConsentSucceded: Boolean;
         Oauth2CategoryLbl: Label 'OAuth2', Locked = true;

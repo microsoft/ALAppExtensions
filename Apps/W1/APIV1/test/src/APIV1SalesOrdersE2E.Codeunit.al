@@ -20,9 +20,6 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         LibrarySales: Codeunit "Library - Sales";
         LibraryERM: Codeunit "Library - ERM";
         OrderServiceNameTxt: Label 'salesOrders', Locked = true;
-        CustomerIdFieldTxt: Label 'customerId', Locked = true;
-        CustomerNameFieldTxt: Label 'customerName', Locked = true;
-        CustomerNumberFieldTxt: Label 'customerNumber', Locked = true;
         DiscountAmountFieldTxt: Label 'discountAmount', Locked = true;
         ActionShipAndInvoiceTxt: Label 'Microsoft.NAV.shipAndInvoice', Locked = true;
         NotEmptyResponseErr: Label 'Response body should be empty.', Locked = true;
@@ -30,11 +27,6 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         CannotFindInvoiceErr: Label 'Cannot find the invoice.', Locked = true;
         CannotFindShipmentErr: Label 'Cannot find the shipment.', Locked = true;
         InvoiceStatusErr: Label 'The invoice status is incorrect.';
-
-    local procedure Initialize()
-    begin
-        WorkDate := Today();
-    end;
 
     [Test]
     procedure TestGetOrders()
@@ -46,8 +38,8 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         TargetURL: Text;
     begin
         // [SCENARIO 184721] Create Sales Orders and use a GET method to retrieve them
+
         // [GIVEN] 2 orders in the table
-        Initialize();
         LibrarySales.CreateSalesOrder(SalesHeader);
         OrderNo[1] := SalesHeader."No.";
 
@@ -84,15 +76,14 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         OrderWithComplexJSON: Text;
     begin
         // [SCENARIO 184721] Create sales orders JSON and use HTTP POST to create them
-        Initialize();
 
         // [GIVEN] a customer
         LibrarySales.CreateCustomerWithAddress(SellToCustomer);
         LibrarySales.CreateCustomerWithAddress(BillToCustomer);
         LibrarySales.CreateCustomerWithAddress(ShipToCustomer);
         CustomerNo := SellToCustomer."No.";
-        OrderDate := Today();
-        PostingDate := Today();
+        OrderDate := WorkDate();
+        PostingDate := WorkDate();
 
         // [GIVEN] a JSON text with an order that contains the customer and an adress as complex type
         OrderWithComplexJSON := CreateOrderJSONWithAddress(SellToCustomer, BillToCustomer, ShipToCustomer, OrderDate, PostingDate);
@@ -134,7 +125,6 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         OrderJSON: Text;
     begin
         // [SCENARIO 184721] Create sales order for customer with location and use HTTP POST to create it
-        Initialize();
 
         // [GIVEN] an order with customer with location code
         LibrarySales.CreateCustomer(Customer);
@@ -178,7 +168,6 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         CurrencyCode: Code[10];
     begin
         // [SCENARIO 184721] Create sales order with specific currency set and use HTTP POST to create it
-        Initialize();
 
         // [GIVEN] an order with a non-LCY currencyCode set
         LibrarySales.CreateCustomer(Customer);
@@ -245,7 +234,6 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
     begin
         // [SCENARIO 184721] Create sales order, use a PATCH method to change it and then verify the changes
         // [GIVEN] a customer with address
-        Initialize();
 
         // [GIVEN] customers
         LibrarySales.CreateCustomerWithAddress(SellToCustomer);
@@ -301,8 +289,8 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         TargetURL: Text;
     begin
         // [SCENARIO 184721] Create sales orders and use HTTP DELETE to delete them
+
         // [GIVEN] 2 orders in the table
-        Initialize();
         LibrarySales.CreateSalesOrder(SalesHeader);
         OrderNo[1] := SalesHeader."No.";
         OrderId[1] := SalesHeader.SystemId;
@@ -338,39 +326,38 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         RecordField: Record Field;
         ApiRecordRef: RecordRef;
         PageRecordRef: RecordRef;
-        SalesOrder: TestPage 42;
+        SalesOrder: TestPage "Sales Order";
         CustomerNo: Text;
-        OrderDate: Date;
+        DocumentDate: Date;
         PostingDate: Date;
         ResponseText: Text;
         TargetURL: Text;
         OrderWithComplexJSON: Text;
     begin
         // [SCENARIO 184721] Create an order both through the client UI and through the API and compare them. They should be the same and have the same fields autocompleted wherever needed.
-        Initialize();
         LibraryGraphDocumentTools.InitializeUIPage();
 
         // [GIVEN] a customer
         LibrarySales.CreateCustomer(Customer);
         CustomerNo := Customer."No.";
-        OrderDate := Today();
-        PostingDate := Today();
+        DocumentDate := WorkDate();
+        PostingDate := WorkDate();
 
         // [GIVEN] a json describing our new order
-        OrderWithComplexJSON := CreateOrderJSONWithAddress(Customer, Customer, Customer, OrderDate, PostingDate);
+        OrderWithComplexJSON := CreateOrderJSONWithAddress(Customer, Customer, Customer, DocumentDate, PostingDate);
         Commit();
 
         // [WHEN] we POST the JSON to the web service and create another order through the test page
         TargetURL := LibraryGraphMgt.CreateTargetURL('', PAGE::"APIV1 - Sales Orders", OrderServiceNameTxt);
         LibraryGraphMgt.PostToWebService(TargetURL, OrderWithComplexJSON, ResponseText);
 
-        CreateOrderThroughTestPage(SalesOrder, Customer, OrderDate, OrderDate);
+        CreateOrderThroughTestPage(SalesOrder, Customer, DocumentDate, DocumentDate);
 
         // [THEN] the order should exist in the table and match the order created from the page
         ApiSalesHeader.Reset();
         ApiSalesHeader.SetRange("Document Type", ApiSalesHeader."Document Type"::Order);
         ApiSalesHeader.SetRange("Sell-to Customer No.", CustomerNo);
-        ApiSalesHeader.SetRange("Document Date", OrderDate);
+        ApiSalesHeader.SetRange("Document Date", DocumentDate);
         ApiSalesHeader.SetRange("Posting Date", PostingDate);
         Assert.IsTrue(ApiSalesHeader.FindFirst(), 'The order should exist');
 
@@ -379,6 +366,8 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         LibraryUtility.AddTempField(
           TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Posting Description"), DATABASE::"Sales Header");
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO(Id), DATABASE::"Sales Header");
+        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Order Date"), DATABASE::"Sales Header");    // it is always set as Today() in API
+        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Shipment Date"), DATABASE::"Sales Header"); // it is always set as Today() in API
         // Special ignore case for ES
         RecordField.SetRange(TableNo, DATABASE::"Sales Header");
         RecordField.SetRange(FieldName, 'Due Date Modified');
@@ -386,11 +375,8 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
             LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, RecordField."No.", DATABASE::"Sales Header");
 
         // Time zone will impact how the date from the page vs WebService is saved. If removed this will fail in snap between 12:00 - 1 AM
-        IF Time() < 020000T THEN BEGIN
-            LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Order Date"), DATABASE::"Sales Header");
-            LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Shipment Date"), DATABASE::"Sales Header");
+        IF Time() < 020000T THEN
             LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Posting Date"), DATABASE::"Sales Header");
-        END;
 
         PageSalesHeader.Get(PageSalesHeader."Document Type"::Order, SalesOrder."No.".VALUE());
         ApiRecordRef.GetTable(ApiSalesHeader);
@@ -409,8 +395,8 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         DiscountPct: Decimal;
     begin
         // [SCENARIO 184721] When an order is created, the GET Method should update the order and assign a total
+
         // [GIVEN] an order without totals assigned
-        Initialize();
         LibraryGraphDocumentTools.CreateDocumentWithDiscountPctPending(SalesHeader, DiscountPct, SalesHeader."Document Type"::Order);
         SalesHeader.CalcFields("Recalculate Invoice Disc.");
         Assert.IsTrue(SalesHeader."Recalculate Invoice Disc.", 'Setup error - recalculate Invoice disc. should be set');
@@ -438,8 +424,8 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         DiscountAmt: Decimal;
     begin
         // [SCENARIO 184721] When an order is created, the GET Method should update the order and redistribute the discount amount
+
         // [GIVEN] an order with discount amount that should be redistributed
-        Initialize();
         LibraryGraphDocumentTools.CreateDocumentWithDiscountPctPending(SalesHeader, DiscountPct, SalesHeader."Document Type"::Order);
         SalesHeader.CalcFields(Amount);
         DiscountAmt := LibraryRandom.RandDecInRange(1, ROUND(SalesHeader.Amount / 2, 1), 1);
@@ -472,7 +458,6 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         OrderId: Guid;
     begin
         // [SCENARIO 184721] Create Sales Order, use a PATCH method to change it and then verify the changes
-        Initialize();
 
         // [GIVEN] an order with lines
         CreateOrderWithLines(SalesHeader);
@@ -509,7 +494,6 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         OrderNo: Text;
     begin
         // [SCENARIO 184721] Clearing manually set discount
-        Initialize();
 
         // [GIVEN] an order
         CreateOrderWithLines(SalesHeader);
@@ -547,7 +531,6 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         TargetURL: Text;
     begin
         // [SCENARIO] User can ship and invoice a sales order through the API.
-        Initialize();
 
         // [GIVEN] a sales order with lines
         CreateOrderWithLines(SalesHeader);
@@ -573,6 +556,9 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
 
         // [THEN] Posted sales invoice is created
         VerifyPostedInvoiceCreated(OrderNo, OrderNoSeries);
+
+        // [THEN] Record was deleted from Sales Oreder Entity Buffer
+        VerifySalesOrderEntityBufferDeletedAfterPosting(OrderNo);
     end;
 
     local procedure CreateOrderWithLines(var SalesHeader: Record "Sales Header")
@@ -614,9 +600,16 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         SalesInvoiceHeader.SetRange("Order No. Series", OrderNoSeries);
         SalesInvoiceHeader.SetRange("Order No.", OrderNo);
         Assert.IsTrue(SalesInvoiceHeader.FindFirst(), CannotFindInvoiceErr);
-        SalesInvoiceEntityAggregate.SetRange(Id, SalesInvoiceHeader."Draft Invoice SystemId");
+        SalesInvoiceEntityAggregate.SetRange(Id, SalesInvoiceHeader.SystemId);
         Assert.IsTrue(SalesInvoiceEntityAggregate.FindFirst(), CannotFindInvoiceErr);
         Assert.AreEqual(SalesInvoiceEntityAggregate.Status::Open, SalesInvoiceEntityAggregate.Status, InvoiceStatusErr);
+    end;
+
+    local procedure VerifySalesOrderEntityBufferDeletedAfterPosting(OrderNo: Code[20])
+    var
+        SalesOrderEntityBuffer: Record "Sales Order Entity Buffer";
+    begin
+        Assert.IsFalse(SalesOrderEntityBuffer.Get(OrderNo), 'Sales Order Entity buffer was supposed to be deleted after posting.');
     end;
 
     local procedure CreateOrderJSONWithAddress(SellToCustomer: Record "Customer"; BillToCustomer: Record "Customer"; ShipToCustomer: Record "Customer"; OrderDate: Date; PostingDate: Date): Text
@@ -639,7 +632,7 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         exit(OrderWithComplexJSON);
     end;
 
-    local procedure CreateOrderThroughTestPage(var SalesOrder: TestPage 42; Customer: Record "Customer"; DocumentDate: Date; PostingDate: Date)
+    local procedure CreateOrderThroughTestPage(var SalesOrder: TestPage "Sales Order"; Customer: Record "Customer"; DocumentDate: Date; PostingDate: Date)
     begin
         SalesOrder.OpenNew();
         SalesOrder."Sell-to Customer No.".SetValue(Customer."No.");

@@ -519,7 +519,7 @@ codeunit 10672 "SAF-T Mapping Helper"
         SAFTSourceCode.Insert(true);
     end;
 
-    [EventSubscriber(ObjectType::Table, 348, 'OnBeforeInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Dimension", 'OnBeforeInsertEvent', '', false, false)]
     local procedure UpdateSAFAnalysisTypeOnBeforeDimensionInsert(var Rec: Record "Dimension"; RunTrigger: Boolean)
     begin
         if Rec.IsTemporary() then
@@ -527,7 +527,7 @@ codeunit 10672 "SAF-T Mapping Helper"
         Rec.UpdateSAFTAnalysisTypeFromNoSeries();
     end;
 
-    [EventSubscriber(ObjectType::Table, 325, 'OnBeforeInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"VAT Posting Setup", 'OnBeforeInsertEvent', '', false, false)]
     local procedure AssignSAFTaxCodesOnBeforeDimensionInsert(var Rec: Record "VAT Posting Setup"; RunTrigger: Boolean)
     begin
         if Rec.IsTemporary() then

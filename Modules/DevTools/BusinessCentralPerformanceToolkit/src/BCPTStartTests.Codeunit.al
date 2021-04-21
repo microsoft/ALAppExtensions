@@ -19,15 +19,19 @@ codeunit 149000 "BCPT Start Tests"
     local procedure StartBenchmarkTests(BCPTHeader: Record "BCPT Header")
     var
         BCPTLine: Record "BCPT Line";
+        BCPTHeaderCU: Codeunit "BCPT Header";
         NoOfInstances: Integer;
         i: integer;
         s: Integer;
     begin
+        ValidateLines(BCPTHeader);
         BCPTHeader.Validate("Started at", CurrentDateTime);
-        BCPTHeader.Status := BCPTHeader.Status::Running;
+        BCPTHeaderCU.SetRunStatus(BCPTHeader, BCPTHeader.Status::Running);
+
         BCPTHeader."No. of tests running" := 0;
         BCPTHeader.Version += 1;
-        BCPTHeader."No. of tests running" := 0;
+        BCPTHeader.Modify();
+        Commit();
 
         BCPTLine.SetRange("BCPT Code", BCPTHeader.Code);
         BCPTLine.SetFilter("Codeunit ID", '<>0');
@@ -49,8 +53,11 @@ codeunit 149000 "BCPT Start Tests"
         BCPTHeader.Modify();
         Commit();
         BCPTLine.SetRange("Run in Foreground", true);
-        if BCPTLine.FindSet() then
+        if BCPTLine.FindSet() then begin
+            BCPTLine.ModifyAll(Status, BCPTLine.Status::Running);
+            Commit();
             Codeunit.Run(Codeunit::"BCPT Role Wrapper", BCPTLine);
+        end;
     end;
 
     internal procedure StartBCPTSuite(var BCPTHeader: Record "BCPT Header")
@@ -63,6 +70,7 @@ codeunit 149000 "BCPT Start Tests"
         if not BCPTHeader2.IsEmpty then
             Error(CannotRunMultipleSuitesInParallelErr);
         Commit();
+
         Window.Open('Starting background tasks and running any foreground tasks...');
         Codeunit.Run(Codeunit::"BCPT Start Tests", BCPTHeader);
         Window.Close();
@@ -70,16 +78,17 @@ codeunit 149000 "BCPT Start Tests"
     end;
 
     internal procedure StopBCPTSuite(var BCPTHeader: Record "BCPT Header")
+    var
+        BCPTHeaderCU: Codeunit "BCPT Header";
     begin
-        BCPTHeader.Status := BCPTHeader.Status::Cancelled;
-        BCPTHeader.Modify();
-        Commit();
+        BCPTHeaderCU.SetRunStatus(BCPTHeader, BCPTHeader.Status::Cancelled);
     end;
 
     internal procedure StartNextBenchmarkTests(BCPTHeader: Record "BCPT Header")
     var
         BCPTHeader2: Record "BCPT Header";
         BCPTLine: Record "BCPT Line";
+        BCPTHeaderCU: Codeunit "BCPT Header";
     begin
         BCPTHeader2.SetRange(Status, BCPTHeader2.Status::Running);
         BCPTHeader2.SetFilter(Code, '<> %1', BCPTHeader.Code);
@@ -90,7 +99,8 @@ codeunit 149000 "BCPT Start Tests"
         BCPTHeader.Find();
         if BCPTHeader.Status <> BCPTHeader.Status::Running then begin
             BCPTHeader.Validate("Started at", CurrentDateTime);
-            BCPTHeader.Status := BCPTHeader.Status::Running;
+            BCPTHeaderCU.SetRunStatus(BCPTHeader, BCPTHeader.Status::Running);
+
             BCPTHeader."No. of tests running" := 0;
             BCPTHeader.Version += 1;
             BCPTHeader."No. of tests running" := 0;
@@ -104,7 +114,6 @@ codeunit 149000 "BCPT Start Tests"
                     BCPTLine."No. of Iterations" := 0;
                     BCPTLine."No. of Running Sessions" := 0;
                     BCPTLine."No. of SQL Statements" := 0;
-                    //BCPTLine.Version := BCPTHeader.Version;
                     BCPTLine.SetRange("Version Filter", BCPTHeader.Version);
                     BCPTLine.Modify(true);
                 until BCPTLine.Next() = 0;
@@ -119,25 +128,44 @@ codeunit 149000 "BCPT Start Tests"
                 BCPTHeader."No. of tests running" += 1;
                 BCPTLine."No. of Running Sessions" += 1;
 
-                if BCPTLine."No. of Running Sessions" < BCPTLine."No. of Sessions" then
-                    BCPTLine.Status := BCPTLine.Status::Starting
-                else
+                if BCPTLine."No. of Running Sessions" < BCPTLine."No. of Sessions" then begin
+                    if BCPTHeader.CurrentRunType = BCPTHeader.CurrentRunType::PRT then
+                        BCPTLine.Status := BCPTLine.Status::Running
+                    else
+                        BCPTLine.Status := BCPTLine.Status::Starting;
+                end else
                     BCPTLine.Status := BCPTLine.Status::Running;
                 BCPTHeader.Modify();
                 BCPTLine.Modify();
                 Commit();
                 BCPTLine.SetRange("Line No.", BCPTLine."Line No.");
+                BCPTLine.SetRange(Status);
                 Codeunit.Run(Codeunit::"BCPT Role Wrapper", BCPTLine);
 
                 BCPTLine.LockTable();
-                if BCPTLine.Get(BCPTLine."BCPT Code", BCPTLine."Line No.") then;
-                if BCPTLine."No. of Running Sessions" = BCPTLine."No. of Sessions" then begin
-                    BCPTLine.Status := BCPTLine.Status::Completed;
-                    BCPTLine.Modify();
-                end;
+                if BCPTLine.Get(BCPTLine."BCPT Code", BCPTLine."Line No.") then
+                    if BCPTLine."No. of Running Sessions" = BCPTLine."No. of Sessions" then begin
+                        BCPTLine.Status := BCPTLine.Status::Completed;
+                        BCPTLine.Modify();
+                    end;
             end;
             Commit();
         end else
             Error(NothingToRunErr);
+    end;
+
+    local procedure ValidateLines(BCPTHeader: Record "BCPT Header")
+    var
+        BCPTLine: Record "BCPT Line";
+        CodeunitMetadata: Record "CodeUnit Metadata";
+    begin
+        BCPTLine.SetRange("BCPT Code", BCPTHeader.Code);
+
+        if not BCPTLine.FindSet() then
+            Error('There is nothign to run.');
+
+        repeat
+            CodeunitMetadata.Get(BCPTLine."Codeunit ID");
+        until BCPTLine.Next() = 0;
     end;
 }

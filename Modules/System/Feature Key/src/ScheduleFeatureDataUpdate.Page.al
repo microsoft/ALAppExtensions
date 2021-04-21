@@ -9,13 +9,14 @@
 page 2612 "Schedule Feature Data Update"
 {
     Caption = 'Feature Data Update';
-    DataCaptionExpression = "Feature Key";
+    DataCaptionExpression = Rec."Feature Key";
     DeleteAllowed = false;
     InsertAllowed = false;
     LinksAllowed = false;
     PageType = NavigatePage;
     SourceTable = "Feature Data Update Status";
     SourceTableTemporary = true;
+    Permissions = tabledata "Feature Data Update Status" = rim;
 
     layout
     {

@@ -13,6 +13,7 @@ page 30004 "APIV2 - Aut. Users"
     PageType = API;
     SourceTable = User;
     Extensible = false;
+    ODataKeyFields = "User Security ID";
 
     layout
     {
@@ -43,19 +44,26 @@ page 30004 "APIV2 - Aut. Users"
                 {
                     Caption = 'Expiry Date';
                 }
-                part(userGroupMember; 5442)
+                part(userGroupMember; "APIV2 - Aut. User Gr. Members")
                 {
                     Caption = 'User Group Member';
                     EntityName = 'userGroupMember';
                     EntitySetName = 'userGroupMembers';
                     SubPageLink = "User Security ID" = Field("User Security ID");
                 }
-                part(userPermission; 5446)
+                part(userPermission; "APIV2 - Aut. User Permissions")
                 {
                     Caption = 'User Permission';
                     EntityName = 'userPermission';
                     EntitySetName = 'userPermissions';
                     SubPageLink = "User Security ID" = Field("User Security ID");
+                }
+                part(scheduledJobs; "APIV2 - Aut. Scheduled Jobs")
+                {
+                    Caption = 'Scheduled Jobs';
+                    EntityName = 'scheduledJob';
+                    EntitySetName = 'scheduledJobs';
+                    SubPageLink = "Job Queue Category Code" = const('APIUSERJOB');
                 }
             }
         }
@@ -67,7 +75,7 @@ page 30004 "APIV2 - Aut. Users"
 
     trigger OnOpenPage()
     var
-        EnvironmentInfo: Codeunit 457;
+        EnvironmentInfo: Codeunit "Environment Information";
     begin
         BindSubscription(AutomationAPIManagement);
         if EnvironmentInfo.IsSaaS() then
@@ -76,5 +84,45 @@ page 30004 "APIV2 - Aut. Users"
 
     var
         AutomationAPIManagement: Codeunit "Automation - API Management";
+        APIV2AutCreateNewUsers: Codeunit "APIV2 - Aut. Create New Users";
+        AlreadyScheduledCreateUsersJobLbl: Label 'You cannot get new users while a task is already in progress.';
+
+    [ServiceEnabled]
+    [Scope('Cloud')]
+    procedure GetNewUsersFromOffice365Async(var ActionContext: WebServiceActionContext)
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+        JobQueueEntryId: Guid;
+    begin
+        if IsPendingOperation() then
+            Error(AlreadyScheduledCreateUsersJobLbl);
+
+        JobQueueEntryId := APIV2AutCreateNewUsers.CreateNewUsersFromAzureADInBackground();
+
+        ActionContext.SetObjectType(ObjectType::Page);
+        ActionContext.SetObjectId(Page::"APIV2 - Aut. Scheduled Jobs");
+        ActionContext.AddEntityKey(JobQueueEntry.FieldNo(SystemId), JobQueueEntryId);
+        ActionContext.SetResultCode(WebServiceActionResultCode::Created);
+    end;
+
+    [ServiceEnabled]
+    [Scope('Cloud')]
+    procedure GetNewUsersFromOffice365(var ActionContext: WebServiceActionContext)
+    begin
+        if IsPendingOperation() then
+            Error(AlreadyScheduledCreateUsersJobLbl);
+
+        Codeunit.Run(Codeunit::"APIV2 - Aut. Create New Users");
+
+        ActionContext.SetObjectType(ObjectType::Page);
+        ActionContext.SetObjectId(Page::"APIV2 - Aut. Users");
+        ActionContext.AddEntityKey(FieldNo(SystemId), SystemId);
+        ActionContext.SetResultCode(WebServiceActionResultCode::Updated);
+    end;
+
+    local procedure IsPendingOperation(): Boolean
+    begin
+        exit(APIV2AutCreateNewUsers.IsJobScheduled());
+    end;
 }
 

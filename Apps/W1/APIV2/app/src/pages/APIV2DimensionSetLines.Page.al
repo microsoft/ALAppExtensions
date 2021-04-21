@@ -110,9 +110,6 @@ page 30022 "APIV2 - Dimension Set Lines"
     end;
 
     trigger OnDeleteRecord(): Boolean
-    var
-        ParentIdFilter: Text;
-        ParentTypeFilter: Text;
     begin
         Delete(true);
         SaveDimensions(GetFilter("Parent Id"), GetFilter("Parent Type"));
@@ -137,7 +134,7 @@ page 30022 "APIV2 - Dimension Set Lines"
                 Error(ParentNotSpecifiedErr);
         end;
 
-        exit(LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter));
+        exit(LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter, false));
     end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
@@ -153,16 +150,16 @@ page 30022 "APIV2 - Dimension Set Lines"
 
         CheckIfValuesAreProperlyFilled();
         AssignDimensionValueToRecord();
-        "Parent Type" := GetParentTypeFromFilter(ParentTypeFilter);
+        Evaluate("Parent Type", ParentTypeFilter);
 
         DimensionId := "Dimension Id";
         Insert(true);
 
-        LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter);
+        LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter, true);
         SaveDimensions(ParentIdFilter, ParentTypeFilter);
 
         if not NewDimensionSet then
-            LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter);
+            LoadLinesFromFilter(ParentIdFilter, ParentTypeFilter, true);
         Get(ParentIdFilter, DimensionId);
         SetCalculatedFields();
 
@@ -181,7 +178,7 @@ page 30022 "APIV2 - Dimension Set Lines"
         Modify(true);
 
         SaveDimensions(GetFilter("Parent Id"), GetFilter("Parent Type"));
-        LoadLinesFromFilter(GetFilter("Parent Id"), GetFilter("Parent Type"));
+        LoadLinesFromFilter(GetFilter("Parent Id"), GetFilter("Parent Type"), false);
         Get("Parent Id", Dimension.SystemId);
         SetCalculatedFields();
 
@@ -202,24 +199,26 @@ page 30022 "APIV2 - Dimension Set Lines"
         NewDimensionSet: Boolean;
         ParentNotSpecifiedErr: Label 'You must get to the parent first to get to the dimension set line.';
         ParentIDRequiredErr: Label 'You must get to the parent first to create a dimension set line.';
-        IdOrCodeShouldBeFilledErr: Label 'The id or code field must be filled in.', Comment = 'id and code are field names and should not be translated.';
-        ValueIdOrValueCodeShouldBeFilledErr: Label 'The valueId or valueCode field must be filled in.', Comment = 'valueId and valueCode are field names and should not be translated.';
-        IdAndCodeCannotBeModifiedErr: Label 'The ID and Code fields cannot be modified.', Comment = 'id and code are field names and should not be translated.';
-        RecordDoesntExistErr: Label 'Could not find the record.';
+        IdOrCodeShouldBeFilledErr: Label 'The "id" or "code" field must be filled in.', Comment = 'id and code are field names and should not be translated.';
+        ValueIdOrValueCodeShouldBeFilledErr: Label 'The "valueId" or "valueCode" field must be filled in.', Comment = 'valueId and valueCode are field names and should not be translated.';
+        IdAndCodeCannotBeModifiedErr: Label 'The "id" and "code" fields cannot be modified.', Comment = 'id and code are field names and should not be translated.';
+        ParentDoesntExistErr: Label 'Parent with ID %1 does not exist.', Comment = '%1 = Parent id';
         DimensionFieldsDontMatchErr: Label 'The dimension field values do not match to a specific Dimension.';
         DimensionIdDoesNotMatchADimensionErr: Label 'The "id" does not match to a Dimension.', Comment = 'id is a field name and should not be translated.';
         DimensionCodeDoesNotMatchADimensionErr: Label 'The "code" does not match to a Dimension.', Comment = 'id is a field name and should not be translated.';
-        DimensionValueFieldsDontMatchErr: Label 'The values of the Dimension Code field and the Dimension ID field do not refer to the same Dimension Value.';
+        DimensionValueFieldsDontMatchErr: Label 'The values of the "dimensionCode" field and the "dimensionId" field do not refer to the same Dimension Value.', Comment = 'dimensionCode and dimensionId are field names and should not be translated.';
         DimensionValueIdDoesNotMatchADimensionValueErr: Label 'The "valueId" does not match to a Dimension Value.', Comment = 'valueId is a field name and should not be translated.';
         DimensionValueCodeDoesNotMatchADimensionValueErr: Label 'The "valueCode" does not match to a Dimension Value.', Comment = 'valueCode is a field name and should not be translated.';
+        RecordAlreadyExistErr: Label 'The dimension set line already exists. Check existing dimension set lines and the default dimension set lines on the parent.';
+        ParentDoesNotExistOrReadOnlyErr: Label 'Parent with ID %1 does not exist or dimension set lines are read only for parent type %2.', Comment = '%1 = Parent id, %2 = Parent type';
 
-    local procedure LoadLinesFromFilter(ParentIdFilter: Text; ParentTypeFilter: Text): Boolean
+    local procedure LoadLinesFromFilter(ParentIdFilter: Text; ParentTypeFilter: Text; IsInsert: Boolean): Boolean
     var
         FilterView: Text;
     begin
         if not LinesLoaded then begin
             FilterView := GetView();
-            LoadLinesFromId(ParentIdFilter, ParentTypeFilter);
+            LoadLinesFromId(ParentIdFilter, ParentTypeFilter, IsInsert);
             SetView(FilterView);
             if not FindFirst() then
                 exit(false);
@@ -229,9 +228,10 @@ page 30022 "APIV2 - Dimension Set Lines"
         exit(true);
     end;
 
-    local procedure LoadLinesFromId(ParentIdFilter: Text; ParentTypeFilter: Text)
+    local procedure LoadLinesFromId(ParentIdFilter: Text; ParentTypeFilter: Text; IsInsert: Boolean)
     var
         TempDimensionSetEntry: Record "Dimension Set Entry" temporary;
+        Dimension: Record Dimension;
         DimensionManagement: Codeunit "DimensionManagement";
         DimensionSetId: Integer;
     begin
@@ -248,10 +248,15 @@ page 30022 "APIV2 - Dimension Set Lines"
             exit;
 
         repeat
+            if IsInsert then begin
+                Dimension.Get(TempDimensionSetEntry."Dimension Code");
+                if Rec.Get(ParentIdFilter, Dimension.SystemId) then
+                    Error(RecordAlreadyExistErr);
+            end;
             Clear(Rec);
             TransferFields(TempDimensionSetEntry, true);
             "Parent Id" := ParentIdFilter;
-            "Parent Type" := GetParentTypeFromFilter(ParentTypeFilter);
+            Evaluate("Parent Type", ParentTypeFilter);
             Insert(true);
         until TempDimensionSetEntry.Next() = 0;
     end;
@@ -274,15 +279,22 @@ page 30022 "APIV2 - Dimension Set Lines"
         SalesInvoiceLine: Record "Sales Invoice Line";
         PurchaseLine: Record "Purchase Line";
         PurchInvLine: Record "Purch. Inv. Line";
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        SalesShipmentLine: Record "Sales Shipment Line";
+        PurchRcptHeader: Record "Purch. Rcpt. Header";
+        PurchRcptLine: Record "Purch. Rcpt. Line";
+        DimensionSetEntryBufferParentType: Enum "Dimension Set Entry Buffer Parent Type";
+        ErrorMsg: Text;
     begin
-        case ParentTypeFilter of
-            'Journal Line':
+        Evaluate(DimensionSetEntryBufferParentType, ParentTypeFilter);
+        case DimensionSetEntryBufferParentType of
+            DimensionSetEntryBufferParentType::"Journal Line":
                 if GenJournalLine.GetBySystemId(ParentIdFilter) then
                     exit(GenJournalLine."Dimension Set ID");
-            'Sales Order', 'Sales Quote':
+            DimensionSetEntryBufferParentType::"Sales Order", DimensionSetEntryBufferParentType::"Sales Quote":
                 if SalesHeader.GetBySystemId(ParentIdFilter) then
                     exit(SalesHeader."Dimension Set ID");
-            'Sales Credit Memo':
+            DimensionSetEntryBufferParentType::"Sales Credit Memo":
                 begin
                     SalesCrMemoEntityBuffer.SetFilter(Id, ParentIdFilter);
                     if SalesCrMemoEntityBuffer.FindFirst() then
@@ -295,7 +307,7 @@ page 30022 "APIV2 - Dimension Set Lines"
                                 exit(SalesCrMemoHeader."Dimension Set ID");
                         end;
                 end;
-            'Sales Invoice':
+            DimensionSetEntryBufferParentType::"Sales Invoice":
                 begin
                     SalesInvoiceEntityAggregate.SetFilter(Id, ParentIdFilter);
                     if SalesInvoiceEntityAggregate.FindFirst() then
@@ -308,7 +320,7 @@ page 30022 "APIV2 - Dimension Set Lines"
                                 exit(SalesInvoiceHeader."Dimension Set ID");
                         end;
                 end;
-            'Purchase Invoice':
+            DimensionSetEntryBufferParentType::"Purchase Invoice":
                 begin
                     PurchInvEntityAggregate.SetFilter(Id, ParentIdFilter);
                     if PurchInvEntityAggregate.FindFirst() then
@@ -321,38 +333,57 @@ page 30022 "APIV2 - Dimension Set Lines"
                                 exit(PurchInvHeader."Dimension Set ID");
                         end;
                 end;
-            'General Ledger Entry':
+            DimensionSetEntryBufferParentType::"General Ledger Entry":
                 if GLEntry.GetBySystemId(ParentIdFilter) then
                     exit(GLEntry."Dimension Set ID");
-            'Time Registration Entry':
+            DimensionSetEntryBufferParentType::"Time Registration Entry":
                 if TimeSheetDetail.GetBySystemId(ParentIdFilter) then
                     exit(TimeSheetDetail."Dimension Set ID");
-            'Sales Order Line', 'Sales Quote Line':
+            DimensionSetEntryBufferParentType::"Sales Order Line", DimensionSetEntryBufferParentType::"Sales Quote Line":
                 if SalesLine.GetBySystemId(ParentIdFilter) then
                     exit(SalesLine."Dimension Set ID");
-            'Sales Credit Memo Line':
+            DimensionSetEntryBufferParentType::"Sales Credit Memo Line":
                 begin
                     if SalesLine.GetBySystemId(ParentIdFilter) then
                         exit(SalesLine."Dimension Set ID");
                     if SalesCrMemoLine.GetBySystemId(ParentIdFilter) then
                         exit(SalesCrMemoLine."Dimension Set ID");
                 end;
-            'Sales Invoice Line':
+            DimensionSetEntryBufferParentType::"Sales Invoice Line":
                 begin
                     if SalesLine.GetBySystemId(ParentIdFilter) then
                         exit(SalesLine."Dimension Set ID");
                     if SalesInvoiceLine.GetBySystemId(ParentIdFilter) then
                         exit(SalesInvoiceLine."Dimension Set ID");
                 end;
-            'Purchase Invoice Line':
+            DimensionSetEntryBufferParentType::"Purchase Invoice Line":
                 begin
                     if PurchaseLine.GetBySystemId(ParentIdFilter) then
                         exit(PurchaseLine."Dimension Set ID");
                     if PurchInvLine.GetBySystemId(ParentIdFilter) then
                         exit(PurchInvLine."Dimension Set ID");
                 end;
+            DimensionSetEntryBufferParentType::"Sales Shipment":
+                if SalesShipmentHeader.GetBySystemId(ParentIdFilter) then
+                    exit(SalesShipmentHeader."Dimension Set ID");
+            DimensionSetEntryBufferParentType::"Sales Shipment Line":
+                if SalesShipmentLine.GetBySystemId(ParentIdFilter) then
+                    exit(SalesShipmentLine."Dimension Set ID");
+            DimensionSetEntryBufferParentType::"Purchase Receipt":
+                if PurchRcptHeader.GetBySystemId(ParentIdFilter) then
+                    exit(PurchRcptHeader."Dimension Set ID");
+            DimensionSetEntryBufferParentType::"Purchase Receipt Line":
+                if PurchRcptLine.GetBySystemId(ParentIdFilter) then
+                    exit(PurchRcptLine."Dimension Set ID");
+            DimensionSetEntryBufferParentType::"Purchase Order":
+                if PurchaseHeader.GetBySystemId(ParentIdFilter) then
+                    exit(PurchaseHeader."Dimension Set ID");
+            DimensionSetEntryBufferParentType::"Purchase Order Line":
+                if PurchaseLine.GetBySystemId(ParentIdFilter) then
+                    exit(PurchaseLine."Dimension Set ID");
         end;
-        Error(RecordDoesntExistErr);
+        ErrorMsg := StrSubstNo(ParentDoesntExistErr, ParentIdFilter);
+        Error(ErrorMsg);
     end;
 
     local procedure SaveDimensions(ParentIdFilter: Text; ParentTypeFilter: Text)
@@ -367,7 +398,6 @@ page 30022 "APIV2 - Dimension Set Lines"
         SalesInvoiceHeader: Record "Sales Invoice Header";
         PurchInvEntityAggregate: Record "Purch. Inv. Entity Aggregate";
         PurchInvHeader: Record "Purch. Inv. Header";
-        GLEntry: Record "G/L Entry";
         TimeSheetDetail: Record "Time Sheet Detail";
         SalesLine: Record "Sales Line";
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
@@ -375,6 +405,8 @@ page 30022 "APIV2 - Dimension Set Lines"
         PurchaseLine: Record "Purchase Line";
         PurchaseInvLine: Record "Purch. Inv. Line";
         DimensionManagement: Codeunit "DimensionManagement";
+        DimensionSetEntryBufferParentType: Enum "Dimension Set Entry Buffer Parent Type";
+        ErrorMsg: Text;
     begin
         Reset();
         if FindFirst() then
@@ -384,8 +416,9 @@ page 30022 "APIV2 - Dimension Set Lines"
                 TempDimensionSetEntry.Insert(true);
             until Next() = 0;
 
-        case ParentTypeFilter of
-            'Journal Line':
+        Evaluate(DimensionSetEntryBufferParentType, ParentTypeFilter);
+        case DimensionSetEntryBufferParentType of
+            DimensionSetEntryBufferParentType::"Journal Line":
                 if GenJournalLine.GetBySystemId(ParentIdFilter) then begin
                     GenJournalLine."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
                     DimensionManagement.UpdateGlobalDimFromDimSetID(
@@ -393,7 +426,7 @@ page 30022 "APIV2 - Dimension Set Lines"
                     GenJournalLine.Modify(true);
                     exit;
                 end;
-            'Sales Order', 'Sales Quote':
+            DimensionSetEntryBufferParentType::"Sales Order", DimensionSetEntryBufferParentType::"Sales Quote":
                 if SalesHeader.GetBySystemId(ParentIdFilter) then begin
                     SalesHeader."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
                     DimensionManagement.UpdateGlobalDimFromDimSetID(
@@ -401,7 +434,7 @@ page 30022 "APIV2 - Dimension Set Lines"
                     SalesHeader.Modify(true);
                     exit;
                 end;
-            'Sales Credit Memo':
+            DimensionSetEntryBufferParentType::"Sales Credit Memo":
                 begin
                     SalesCrMemoEntityBuffer.SetFilter(Id, ParentIdFilter);
                     if SalesCrMemoEntityBuffer.FindFirst() then
@@ -424,7 +457,7 @@ page 30022 "APIV2 - Dimension Set Lines"
                             end;
                         end;
                 end;
-            'Sales Invoice':
+            DimensionSetEntryBufferParentType::"Sales Invoice":
                 begin
                     SalesInvoiceEntityAggregate.SetFilter(Id, ParentIdFilter);
                     if SalesInvoiceEntityAggregate.FindFirst() then
@@ -447,7 +480,7 @@ page 30022 "APIV2 - Dimension Set Lines"
                             end;
                         end;
                 end;
-            'Purchase Invoice':
+            DimensionSetEntryBufferParentType::"Purchase Invoice":
                 begin
                     PurchInvEntityAggregate.SetFilter(Id, ParentIdFilter);
                     if PurchInvEntityAggregate.FindFirst() then
@@ -470,13 +503,13 @@ page 30022 "APIV2 - Dimension Set Lines"
                             end;
                         end;
                 end;
-            'Time Registration Entry':
+            DimensionSetEntryBufferParentType::"Time Registration Entry":
                 if TimeSheetDetail.GetBySystemId(ParentIdFilter) then begin
                     TimeSheetDetail."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
                     TimeSheetDetail.Modify(true);
                     exit;
                 end;
-            'Sales Order Line', 'Sales Quote Line':
+            DimensionSetEntryBufferParentType::"Sales Order Line", DimensionSetEntryBufferParentType::"Sales Quote Line":
                 if SalesLine.GetBySystemId(ParentIdFilter) then begin
                     SalesLine."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
                     DimensionManagement.UpdateGlobalDimFromDimSetID(
@@ -484,7 +517,7 @@ page 30022 "APIV2 - Dimension Set Lines"
                     SalesLine.Modify(true);
                     exit;
                 end;
-            'Sales Credit Memo Line':
+            DimensionSetEntryBufferParentType::"Sales Credit Memo Line":
                 begin
                     if SalesLine.GetBySystemId(ParentIdFilter) then begin
                         SalesLine."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
@@ -501,7 +534,7 @@ page 30022 "APIV2 - Dimension Set Lines"
                         exit;
                     end;
                 end;
-            'Sales Invoice Line':
+            DimensionSetEntryBufferParentType::"Sales Invoice Line":
                 begin
                     if SalesLine.GetBySystemId(ParentIdFilter) then begin
                         SalesLine."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
@@ -518,7 +551,7 @@ page 30022 "APIV2 - Dimension Set Lines"
                         exit;
                     end;
                 end;
-            'Purchase Invoice Line':
+            DimensionSetEntryBufferParentType::"Purchase Invoice Line":
                 begin
                     if PurchaseLine.GetBySystemId(ParentIdFilter) then begin
                         PurchaseLine."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
@@ -535,8 +568,25 @@ page 30022 "APIV2 - Dimension Set Lines"
                         exit;
                     end;
                 end;
+            DimensionSetEntryBufferParentType::"Purchase Order":
+                if PurchaseHeader.GetBySystemId(ParentIdFilter) then begin
+                    PurchaseHeader."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
+                    DimensionManagement.UpdateGlobalDimFromDimSetID(
+                        PurchaseHeader."Dimension Set ID", PurchaseHeader."Shortcut Dimension 1 Code", PurchaseHeader."Shortcut Dimension 2 Code");
+                    PurchaseHeader.Modify(true);
+                    exit;
+                end;
+            DimensionSetEntryBufferParentType::"Purchase Order Line":
+                if PurchaseLine.GetBySystemId(ParentIdFilter) then begin
+                    PurchaseLine."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
+                    DimensionManagement.UpdateGlobalDimFromDimSetID(
+                        PurchaseLine."Dimension Set ID", PurchaseLine."Shortcut Dimension 1 Code", PurchaseLine."Shortcut Dimension 2 Code");
+                    PurchaseLine.Modify(true);
+                    exit;
+                end;
         end;
-        Error(RecordDoesntExistErr);
+        ErrorMsg := StrSubstNo(ParentDoesNotExistOrReadOnlyErr, ParentIdFilter, ParentTypeFilter);
+        Error(ErrorMsg);
     end;
 
     local procedure CheckIfValuesAreProperlyFilled()
@@ -566,44 +616,17 @@ page 30022 "APIV2 - Dimension Set Lines"
     end;
 
     local procedure ClearCalculatedFields()
+        FilterView: Text;
     begin
+        Clear(GlobalDimension);
+        Clear(GlobalDimensionValue);
         Clear(GlobalDimensionValueId);
         Clear(GlobalDimensionValueCode);
-    end;
-
-    local procedure GetParentTypeFromFilter(ParentTypeFilter: Text): Enum "Dimension Set Entry Buffer Parent Type"
-    var
-        DimensionSetEntryBufferParentType: Enum "Dimension Set Entry Buffer Parent Type";
-    begin
-        case ParentTypeFilter of
-            'Journal Line':
-                exit(DimensionSetEntryBufferParentType::"Journal Line");
-            'Sales Order':
-                exit(DimensionSetEntryBufferParentType::"Sales Order");
-            'Sales Order Line':
-                exit(DimensionSetEntryBufferParentType::"Sales Order Line");
-            'Sales Quote':
-                exit(DimensionSetEntryBufferParentType::"Sales Quote");
-            'Sales Quote Line':
-                exit(DimensionSetEntryBufferParentType::"Sales Quote Line");
-            'Sales Credit Memo':
-                exit(DimensionSetEntryBufferParentType::"Sales Credit Memo");
-            'Sales Credit Memo Line':
-                exit(DimensionSetEntryBufferParentType::"Sales Credit Memo Line");
-            'Sales Invoice':
-                exit(DimensionSetEntryBufferParentType::"Sales Invoice");
-            'Sales Invoice Line':
-                exit(DimensionSetEntryBufferParentType::"Sales Invoice Line");
-            'Purchase Invoice':
-                exit(DimensionSetEntryBufferParentType::"Purchase Invoice");
-            'Purchase Invoice Line':
-                exit(DimensionSetEntryBufferParentType::"Purchase Invoice Line");
-            'General Ledger Entry':
-                exit(DimensionSetEntryBufferParentType::"General Ledger Entry");
-            'Time Registration Entry':
-                exit(DimensionSetEntryBufferParentType::"Time Registration Entry");
-            ' ':
-                exit(DimensionSetEntryBufferParentType::" ");
-        end;
+        Clear(NewDimensionSet);
+        Clear(LinesLoaded);
+        FilterView := Rec.GetView();
+        Rec.Reset();
+        Rec.DeleteAll();
+        Rec.SetView(FilterView);
     end;
 }

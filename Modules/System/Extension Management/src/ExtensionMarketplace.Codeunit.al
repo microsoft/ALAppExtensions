@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -20,12 +20,13 @@
 codeunit 2501 "Extension Marketplace"
 {
     Access = Internal;
+    Permissions = tabledata "Published Application" = r;
 
     var
         HttpWebRequest: DotNet HttpWebRequest;
         GlobalPropertyValue: Text;
         ParseFailureErr: Label 'Failed to extract ''%1'' property from JSON object.', Comment = 'JSON parsing error. %1=target property name';
-        TelemetryBodyTxt: Label '{"acquisitionResult":"%1", "detail":"%2"}', Comment = '%1=AppSource operation result option, %2=details describing the context or reason for the result';
+        TelemetryBodyTxt: Label '{"acquisitionResult":"%1", "detail":"%2"}', Comment = '%1=AppSource operation result option, %2=details describing the context or reason for the result', Locked = true;
         ParseApplicationIdErr: Label 'Failed to extract ''%1'' token from Application Id.', Comment = '%1=Name of token that we expected   ';
         Token: Option PUBID,AID,PACKID,PAPPID;
         MarketplaceDisabledSecretTxt: Label 'extmgmt-marketplace-disable', Locked = true;
@@ -290,6 +291,7 @@ codeunit 2501 "Extension Marketplace"
     begin
         ID := MapMarketplaceIdToAppId(ApplicationID);
 
+        MarketplaceExtnDeployment.SetAppID(ID);
         MarketplaceExtnDeployment.RunModal();
 
         if MarketplaceExtnDeployment.GetInstalledSelected() then
@@ -394,7 +396,7 @@ codeunit 2501 "Extension Marketplace"
         EXIT(GetValue(TempObject, 'applicationId', true));
     END;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000006, 'InvokeExtensionInstallation', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'InvokeExtensionInstallation', '', false, false)]
     local procedure InvokeExtensionInstallation(AppId: Text; ResponseUrl: Text)
     begin
         if not InstallExtension(AppId, ResponseUrl) then
@@ -409,7 +411,7 @@ codeunit 2501 "Extension Marketplace"
 
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'OpenAppSourceMarket', '', false, false)]
-    local procedure OpenAppsourceMarket()
+    local procedure OpenAppSourceMarket()
     begin
         page.Run(Page::"Extension Marketplace");
     end;

@@ -92,7 +92,7 @@ codeunit 132911 "Azure AD Graph User Test"
         UnbindSubscription(AzureADGraphUserTest);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 9012, 'OnInitialize', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Graph", 'OnInitialize', '', false, false)]
     local procedure OnGraphInitialization(var GraphQuery: DotNet GraphQuery)
     begin
         GraphQuery := GraphQuery.GraphQuery(MockGraphQuery);

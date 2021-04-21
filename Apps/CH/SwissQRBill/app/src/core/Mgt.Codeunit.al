@@ -44,7 +44,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
             end;
     end;
 
-    internal procedure FindCustLedgerEntry(var LedgerEntryNo: Integer; CustomerNo: Code[20]; DocumentType: Enum "Gen. Journal Document Type"; DocumentNo: Code[20]; PostingDate: Date) Found: Boolean
+    procedure FindCustLedgerEntry(var LedgerEntryNo: Integer; CustomerNo: Code[20]; DocumentType: Enum "Gen. Journal Document Type"; DocumentNo: Code[20]; PostingDate: Date) Found: Boolean
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
     begin
@@ -53,7 +53,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         LedgerEntryNo := CustLedgerEntry."Entry No.";
     end;
 
-    internal procedure FilterCustLedgerEntry(var CustLedgerEntry: Record "Cust. Ledger Entry"; CustomerNo: Code[20]; DocumentType: Enum "Gen. Journal Document Type"; DocumentNo: Code[20]; PostingDate: Date): Boolean
+    procedure FilterCustLedgerEntry(var CustLedgerEntry: Record "Cust. Ledger Entry"; CustomerNo: Code[20]; DocumentType: Enum "Gen. Journal Document Type"; DocumentNo: Code[20]; PostingDate: Date): Boolean
     begin
         with CustLedgerEntry do begin
             SetRange("Customer No.", CustomerNo);
@@ -112,7 +112,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         exit(SwissQRBillPrint.SaveAs('', ReportFormat::Pdf, PDFFileOutStream));
     end;
 
-    internal procedure GenerateImage(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer")
+    procedure GenerateImage(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer")
     var
         TempBlob: Codeunit "Temp Blob";
         SwissQRBillImageMgt: Codeunit "Swiss QR-Bill Image Mgt.";
@@ -137,7 +137,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         exit(CurrencyCode);
     end;
 
-    internal procedure AllowedCurrencyCode(CurrencyCode: Code[10]): Boolean
+    procedure AllowedCurrencyCode(CurrencyCode: Code[10]): Boolean
     begin
         if CurrencyCode = '' then
             CurrencyCode := '''''';
@@ -415,7 +415,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         exit(CalcCreditorReferenceModule97(PaymentReference) = 1);
     end;
 
-    internal procedure FormatPaymentReference(ReferenceType: Enum "Swiss QR-Bill Payment Reference Type"; PaymentReference: Code[50]) Result: Code[50]
+    procedure FormatPaymentReference(ReferenceType: Enum "Swiss QR-Bill Payment Reference Type"; PaymentReference: Code[50]) Result: Code[50]
     begin
         PaymentReference := CopyStr(DelChr(PaymentReference), 1, MaxStrLen(PaymentReference));
         case ReferenceType of
@@ -448,7 +448,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         exit(PaymentReference);
     end;
 
-    internal procedure FormatIBAN(IBAN: Code[50]): Code[50]
+    procedure FormatIBAN(IBAN: Code[50]): Code[50]
     begin
         IBAN := CopyStr(DelChr(IBAN), 1, MaxStrLen(IBAN));
         if StrLen(IBAN) = 21 then
@@ -467,13 +467,13 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         exit(IBAN);
     end;
 
-    internal procedure AddLineIfNotBlanked(var TargetText: Text; LineText: Text)
+    procedure AddLineIfNotBlanked(var TargetText: Text; LineText: Text)
     begin
         if LineText <> '' then
             AddLine(TargetText, LineText);
     end;
 
-    internal procedure AddLine(var TargetText: Text; LineText: Text)
+    procedure AddLine(var TargetText: Text; LineText: Text)
     var
         CRLF: Text[2];
     begin

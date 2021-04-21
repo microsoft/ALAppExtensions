@@ -6,8 +6,6 @@ Use this module to do the following:
 - Add attributes to the elements
 - Add comments to the Xml Document
 - Transforms the Xml Document to Big Text
-
-
 # Public Objects
 ## XmlWriter (Codeunit 1483)
 

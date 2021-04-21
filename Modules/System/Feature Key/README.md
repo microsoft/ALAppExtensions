@@ -23,6 +23,76 @@ local procedure OnLogError(FeatureDataUpdateStatus: Record "Feature Data Update 
 
 
 
+## Feature Data Update (Interface)
+
+ Interface defines methods for feature data update task management.
+ 
+
+### IsDataUpdateRequired (Method) <a name="IsDataUpdateRequired"></a> 
+
+ Searches the database for data that must be updated before the feature can be enabled. 
+ 
+
+#### Syntax
+```
+procedure IsDataUpdateRequired(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+true if there is data to update
+### ReviewData (Method) <a name="ReviewData"></a> 
+
+ Opens the page showing the list of tables with counted records that require update.
+ 
+
+#### Syntax
+```
+procedure ReviewData()
+```
+### UpdateData (Method) <a name="UpdateData"></a> 
+
+ Runs the process that updates data for the feature.
+ 
+
+#### Syntax
+```
+procedure UpdateData(FeatureDataUpdateStatus: Record "Feature Data Update Status")
+```
+#### Parameters
+*FeatureDataUpdateStatus ([Record "Feature Data Update Status"]())* 
+
+the feature update status record
+
+### AfterUpdate (Method) <a name="AfterUpdate"></a> 
+
+ Method is called after the update is complete, e.g. to complete the setup for the feature.
+ 
+
+#### Syntax
+```
+procedure AfterUpdate(FeatureDataUpdateStatus: Record "Feature Data Update Status")
+```
+#### Parameters
+*FeatureDataUpdateStatus ([Record "Feature Data Update Status"]())* 
+
+the feature update status record
+
+### GetTaskDescription (Method) <a name="GetTaskDescription"></a> 
+
+ Retruns the detailed description of the data update required for the feature.
+ It is shown of the "Schedule Feature Data Update" page to explain the user what is going to happen.
+ 
+
+#### Syntax
+```
+procedure GetTaskDescription()TaskDescription: Text
+```
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The process description
+
 ## Feature Management Facade (Codeunit 2611)
 
  This codeunit provides public functions for feature management.

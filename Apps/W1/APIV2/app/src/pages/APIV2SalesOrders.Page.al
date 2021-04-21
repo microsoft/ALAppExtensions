@@ -393,10 +393,18 @@ page 30028 "APIV2 - Sales Orders"
                 field(pricesIncludeTax; "Prices Including VAT")
                 {
                     Caption = 'Prices Include Tax';
-                    Editable = false;
 
                     trigger OnValidate()
+                    var
+                        SalesLine: Record "Sales Line";
                     begin
+                        if "Prices Including VAT" then begin
+                            SalesLine.SetRange("Document No.", Rec."No.");
+                            SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+                            if SalesLine.FindFirst() then
+                                if SalesLine."VAT Calculation Type" = SalesLine."VAT Calculation Type"::"Sales Tax" then
+                                    Error(CannotEnablePricesIncludeTaxErr);
+                        end;
                         RegisterFieldSet(FieldNo("Prices Including VAT"));
                     end;
                 }
@@ -648,6 +656,7 @@ page 30028 "APIV2 - Sales Orders"
         PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.', Comment = 'paymentTermsId is a field name and should not be translated.';
         ShipmentMethodIdDoesNotMatchAShipmentMethodErr: Label 'The "shipmentMethodId" does not match to a Shipment Method.', Comment = 'shipmentMethodId is a field name and should not be translated.';
         CannotFindOrderErr: Label 'The order cannot be found.';
+        CannotEnablePricesIncludeTaxErr: Label 'The "pricesIncludeTax" cannot be set to true if VAT Calculation Type is Sales Tax.', Comment = 'pricesIncludeTax is a field name and should not be translated.';
         DiscountAmountSet: Boolean;
         InvoiceDiscountAmount: Decimal;
         BlankGUID: Guid;
@@ -658,8 +667,6 @@ page 30028 "APIV2 - Sales Orders"
         HasWritePermission: Boolean;
 
     local procedure SetCalculatedFields()
-    var
-        GraphMgtSalesOrder: Codeunit "Graph Mgt - Sales Order";
     begin
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
         PartialOrderShipping := ("Shipping Advice" = "Shipping Advice"::Partial);

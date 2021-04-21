@@ -8,7 +8,8 @@
 codeunit 153 "User Permissions Impl."
 {
     Access = Internal;
-    Permissions = TableData 2000000053 = rimd;
+    Permissions = TableData "Access Control" = rimd,
+                  TableData User = r;
 
     var
         SUPERTok: Label 'SUPER', Locked = true;

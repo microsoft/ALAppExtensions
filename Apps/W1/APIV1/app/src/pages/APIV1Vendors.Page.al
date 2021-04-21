@@ -198,14 +198,14 @@ page 20010 "APIV1 - Vendors"
                 {
                     Caption = 'lastModifiedDateTime', Locked = true;
                 }
-                part(picture; 5468)
+                part(picture; "APIV1 - Pictures")
                 {
                     Caption = 'picture';
                     EntityName = 'picture';
                     EntitySetName = 'picture';
                     SubPageLink = Id = FIELD(SystemId);
                 }
-                part(defaultDimensions; 5509)
+                part(defaultDimensions; "APIV1 - Default Dimensions")
                 {
                     Caption = 'DefaultDimensions', Locked = true;
                     EntityName = 'defaultDimensions';
@@ -293,6 +293,7 @@ page 20010 "APIV1 - Vendors"
         GraphMgtVendor: Codeunit "Graph Mgt - Vendor";
     begin
         PostalAddressJSON := GraphMgtVendor.PostalAddressToJSON(Rec);
+
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;
 

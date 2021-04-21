@@ -152,8 +152,7 @@ codeunit 149005 "BCPT Line"
         BCPTRoleWrapperImpl: Codeunit "BCPT Role Wrapper"; // single instance
     begin
         BCPTLine.Testfield("BCPT Code");
-        if BCPTHeader.Code = '' then
-            BCPTHeader.Get(BCPTLine."BCPT Code");
+        BCPTRoleWrapperImpl.GetBCPTHeader(BCPTHeader);
         Clear(BCPTLogEntry);
         BCPTLogEntry."BCPT Code" := BCPTLine."BCPT Code";
         BCPTLogEntry."BCPT Line No." := BCPTLine."Line No.";
@@ -176,6 +175,7 @@ codeunit 149005 "BCPT Line"
             BCPTLogEntry."No. of SQL Statements" -= BCPTRoleWrapperImpl.GetAndClearNoOfLogEntriesInserted();
         end;
         BCPTLogEntry.Insert(true);
+        Commit();
         AddLogAppInsights(BCPTLogEntry);
         BCPTRoleWrapperImpl.AddToNoOfLogEntriesInserted();
     end;
@@ -184,9 +184,11 @@ codeunit 149005 "BCPT Line"
     var
         BCPTRoleWrapperImpl: Codeunit "BCPT Role Wrapper"; // single instance
         Dimensions: Dictionary of [Text, Text];
+        TelemetryLogLbl: Label 'Performance Toolkit - %1 - %2 - %3', Locked = true;
     begin
         Dimensions.Add('code', BCPTLogEntry."BCPT Code");
         Dimensions.Add('codeunitId', Format(BCPTLogEntry."Codeunit ID"));
+        BCPTLogEntry.CalcFields("Codeunit Name");
         Dimensions.Add('codeunitName', BCPTLogEntry."Codeunit Name");
         Dimensions.Add('operation', BCPTLogEntry.Operation);
         Dimensions.Add('tag', BCPTLogEntry.Tag);
@@ -195,9 +197,10 @@ codeunit 149005 "BCPT Line"
         Dimensions.Add('startTime', Format(BCPTLogEntry."Start Time"));
         Dimensions.Add('endTime', Format(BCPTLogEntry."End Time"));
         Dimensions.Add('duration', Format(BCPTLogEntry."Duration (ms)"));
+        Dimensions.Add('sessionNo', Format(BCPTLogEntry."Session No."));
         Session.LogMessage(
             '0000DGF',
-            StrSubstNo(BCPTRoleWrapperImpl.GetScenarioLbl(), BCPTLogEntry."BCPT Code", BCPTLogEntry.Status),
+            StrSubstNo(TelemetryLogLbl, BCPTLogEntry."BCPT Code", BCPTRoleWrapperImpl.GetScenarioLbl(), BCPTLogEntry.Status),
             Verbosity::Normal,
             DataClassification::SystemMetadata,
             TelemetryScope::All,
@@ -253,12 +256,9 @@ codeunit 149005 "BCPT Line"
         clear(dict);
         if Params = '' then
             exit;
-        NoOfParams := 1;
-        p := StrPos(Params, ',');
-        while (p > 0) and (p < strlen(Params)) do begin
-            NoOfParams += 1;
-            p := StrPos(copystr(Params, p + 1), ',');
-        end;
+
+        NoOfParams := StrLen(Params) - strlen(DelChr(Params, '=', ',')) + 1;
+
         for i := 1 to NoOfParams do begin
             if NoOfParams = 1 then
                 KeyVal := Params
@@ -266,28 +266,10 @@ codeunit 149005 "BCPT Line"
                 KeyVal := SelectStr(i, Params);
             p := StrPos(KeyVal, '=');
             if p > 0 then
-                dict.Add(CopyStr(KeyVal, 1, p - 1), CopyStr(KeyVal, p + 1))
+                dict.Add(DelChr(CopyStr(KeyVal, 1, p - 1), '<>', ' '), DelChr(CopyStr(KeyVal, p + 1), '<>', ' '))
             else
-                dict.Add(KeyVal, '');
+                dict.Add(DelChr(KeyVal, '<>', ' '), '');
         end;
-    end;
-
-    // Pending: May not be needed after all.
-    local procedure ParameterDictionaryToString(dict: Dictionary of [Text, Text]): Text
-    var
-        ResultString: Text;
-        KeyStr: Text;
-        ValStr: Text;
-    begin
-        if dict.Count = 0 then
-            exit('');
-        foreach KeyStr in dict.Keys() do begin
-            ValStr := dict.Get(KeyStr);
-            if ResultString <> '' then
-                ResultString += ', ';
-            ResultString += KeyStr + '=' + ValStr;
-        end;
-        exit(ResultString);
     end;
 
     procedure EvaluateParameter(var Parm: Text; var ParmVal: Integer): Boolean

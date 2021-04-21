@@ -15,6 +15,7 @@ page 358 Objects
     InsertAllowed = false;
     ModifyAllowed = false;
     SourceTable = AllObjWithCaption;
+    Permissions = tabledata AllObjWithCaption = r, tabledata "Published Application" = r;
 
     layout
     {
@@ -23,27 +24,27 @@ page 358 Objects
             repeater(Control1)
             {
                 ShowCaption = false;
-                field("Object Type"; "Object Type")
+                field("Object Type"; Rec."Object Type")
                 {
                     ApplicationArea = All;
                     Caption = 'Type';
                     ToolTip = 'Specifies the object type.';
                     Visible = false;
                 }
-                field("Object ID"; "Object ID")
+                field("Object ID"; Rec."Object ID")
                 {
                     ApplicationArea = All;
                     Caption = 'ID';
                     ToolTip = 'Specifies the object ID.';
                 }
-                field("Object Caption"; "Object Caption")
+                field("Object Caption"; Rec."Object Caption")
                 {
                     ApplicationArea = All;
                     Caption = 'Object Caption';
                     DrillDown = false;
                     ToolTip = 'Specifies the caption of the object.';
                 }
-                field("Object Name"; "Object Name")
+                field("Object Name"; Rec."Object Name")
                 {
                     ApplicationArea = All;
                     Caption = 'Object Name';

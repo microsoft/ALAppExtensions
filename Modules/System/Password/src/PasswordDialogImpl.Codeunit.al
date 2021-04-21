@@ -9,7 +9,7 @@ codeunit 9811 "Password Dialog Impl."
 
     var
         PasswordMismatchErr: Label 'The passwords that you entered do not match.';
-        PasswordTooSimpleErr: Label 'The password that you entered does not meet the minimum requirements. It must be at least %1 characters long and contain at least one uppercase letter, one lowercase letter, and one number. It must not have a sequence of 3 or more ascending, descending or repeating characters.', Comment = '%1: The minimum number of characters required in the password';
+        PasswordTooSimpleErr: Label 'The password that you entered does not meet the minimum requirements. It must be at least %1 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character. It must not have a sequence of 3 or more ascending, descending or repeating characters.', Comment = '%1: The minimum number of characters required in the password';
         ConfirmBlankPasswordQst: Label 'Do you want to exit without entering a password?';
 
     procedure ValidatePasswordStrength(Password: Text)

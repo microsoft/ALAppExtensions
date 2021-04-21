@@ -382,6 +382,16 @@ page 30042 "APIV2 - Purchase Invoices"
                         RegisterFieldSet(FieldNo("Currency Code"));
                     end;
                 }
+                field(orderId; "Order Id")
+                {
+                    Caption = 'Order Id';
+                    Editable = false;
+                }
+                field(orderNumber; "Order No.")
+                {
+                    Caption = 'Order No.';
+                    Editable = false;
+                }
                 field(pricesIncludeTax; "Prices Including VAT")
                 {
                     Caption = 'Prices Include Tax';
@@ -400,8 +410,8 @@ page 30042 "APIV2 - Purchase Invoices"
                 }
                 part(pdfDocument; "APIV2 - PDF Document")
                 {
-                    //TODO - WaitingModernDevProperty, Caption = 'PDF Document';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
+                    Caption = 'PDF Document';
+                    Multiplicity = ZeroOrOne;
                     EntityName = 'pdfDocument';
                     EntitySetName = 'pdfDocument';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const(6);
@@ -561,8 +571,6 @@ page 30042 "APIV2 - Purchase Invoices"
         PurchaseInvoicePermissionsErr: Label 'You do not have permissions to read Purchase Invoices.';
 
     local procedure SetCalculatedFields()
-    var
-        GraphMgtPurchaseInvoice: Codeunit "Graph Mgt - Purchase Invoice";
     begin
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;

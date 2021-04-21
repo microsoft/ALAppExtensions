@@ -1,0 +1,64 @@
+tableextension 18392 "GST Transfer Line Ext" extends "Transfer Line"
+{
+    fields
+    {
+        field(18390; "Transfer Price"; Decimal)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Transfer Prcie';
+        }
+        field(18391; "Custom Duty Amount"; Decimal)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Custom Duty Amount';
+            MinValue = 0;
+        }
+        field(18392; Amount; Decimal)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Amount';
+            Editable = false;
+        }
+        field(18393; "GST Credit"; Enum "GST Credit")
+        {
+            DataClassification = CustomerContent;
+            Caption = 'GST Credit';
+        }
+        field(18394; "GST Group Code"; Code[20])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'GST Group Code';
+            Editable = false;
+        }
+        field(18395; "HSN/SAC Code"; Code[10])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'HSN/SAC Code';
+            Editable = false;
+        }
+        field(18396; Exempted; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Exempted';
+            Editable = false;
+        }
+        field(18397; "GST Assessable Value"; Decimal)
+        {
+            Caption = 'GST Assessable Value';
+            DataClassification = CustomerContent;
+            MinValue = 0;
+        }
+        field(18398; "Amount Added to Inventory"; Decimal)
+        {
+            Caption = 'Amount Added to Inventory';
+            Editable = False;
+            DataClassification = CustomerContent;
+        }
+        field(18399; "Charges to Transfer"; Decimal)
+        {
+            Caption = 'Charges to Transfer';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+    }
+}

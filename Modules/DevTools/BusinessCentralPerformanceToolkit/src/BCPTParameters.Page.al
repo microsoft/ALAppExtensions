@@ -54,20 +54,12 @@ page 149009 "BCPT Parameters"
         i: Integer;
         p: Integer;
         KeyVal: Text;
-        RemainingParams: Text;
         NoOfParams: Integer;
     begin
         Rec.DeleteAll();
         if Params = '' then
             exit;
-        NoOfParams := 1;
-        RemainingParams := Params;
-        p := StrPos(Params, ',');
-        while (p > 0) and (p < strlen(RemainingParams)) do begin
-            NoOfParams += 1;
-            RemainingParams := copystr(RemainingParams, p + 1);
-            p := StrPos(RemainingParams, ',');
-        end;
+        NoOfParams := StrLen(Params) - strlen(delchr(Params, '=', ',')) + 1;
         for i := 1 to NoOfParams do begin
             if NoOfParams = 1 then
                 KeyVal := Params

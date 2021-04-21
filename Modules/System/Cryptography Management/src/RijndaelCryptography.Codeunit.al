@@ -66,7 +66,7 @@ codeunit 1258 "Rijndael Cryptography"
     end;
 
     /// <summary>
-    /// Sets a new block size value for the RijnadaelManaged class.
+    /// Sets a new block size value for the RijndaelManaged class.
     /// </summary>
     /// <param name="BlockSize">Represents the block size, in bits, of the cryptographic operation.</param>
     procedure SetBlockSize(BlockSize: Integer)
@@ -75,7 +75,7 @@ codeunit 1258 "Rijndael Cryptography"
     end;
 
     /// <summary>
-    /// Sets a new cipher mode value for the RijnadaelManaged class.
+    /// Sets a new cipher mode value for the RijndaelManaged class.
     /// </summary>
     /// <param name="CipherMode">Represents the cipher mode used in the symmetric algorithm. Valid values: ECB,CBC,CFB,CTS,OFB</param>
     procedure SetCipherMode(CipherMode: Text)
@@ -84,7 +84,7 @@ codeunit 1258 "Rijndael Cryptography"
     end;
 
     /// <summary>
-    /// Sets a new padding mode value for the RijnadaelManaged class.
+    /// Sets a new padding mode value for the RijndaelManaged class.
     /// </summary>
     /// <param name="PaddingMode">Represents the padding mode used in the symmetric algorithm.. Valid values: None,ANSIX923,ISO10126,PKCS7,Zeros</param>
     procedure SetPaddingMode(PaddingMode: Text)
@@ -93,7 +93,7 @@ codeunit 1258 "Rijndael Cryptography"
     end;
 
     /// <summary>
-    /// Sets the key and vector for the RijnadaelManaged class.
+    /// Sets the key and vector for the RijndaelManaged class.
     /// </summary>
     /// <param name="KeyAsBase64">Represents the secret key for the symmetric algorithm encoded as Base64 Text</param>
     /// <param name="VectorAsBase64">Represents the initialization vector (IV) for the symmetric algorithm encoded as Base64 Text</param>
@@ -135,7 +135,7 @@ codeunit 1258 "Rijndael Cryptography"
     end;
 
     /// <summary>
-    /// Gets the key and vector from the RijnadaelManaged class
+    /// Gets the key and vector from the RijndaelManaged class
     /// </summary>
     /// <param name="KeyAsBase64">Represents the secret key for the symmetric algorithm encoded as Base64 Text</param>
     /// <param name="VectorAsBase64">Represents the initialization vector (IV) for the symmetric algorithm encoded as Base64 Text</param>

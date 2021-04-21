@@ -411,7 +411,7 @@ codeunit 130043 "Language Test"
         WindowsLanguages.OK().Invoke();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 43, 'OnGetUserLanguageCode', '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Language", 'OnGetUserLanguageCode', '', true, true)]
     local procedure VerifyOnGetUserLanguageCodeEventCalled(var UserLanguageCode: Code[10]; var Handled: Boolean)
     begin
         UserLanguageCode := 'RANDOM';

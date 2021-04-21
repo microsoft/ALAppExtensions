@@ -1,0 +1,688 @@
+#pragma warning disable AL0432,AL0603
+codeunit 31054 "Install Application CZP"
+{
+    Subtype = Install;
+
+    trigger OnInstallAppPerDatabase()
+    begin
+        CopyPermission();
+    end;
+
+    trigger OnInstallAppPerCompany()
+    begin
+        if not InitializeDone() then
+            CopyData();
+
+        CompanyInitialize();
+    end;
+
+    local procedure InitializeDone(): boolean
+    var
+        AppInfo: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(AppInfo);
+        exit(AppInfo.DataVersion() <> Version.Create('0.0.0.0'));
+    end;
+
+    local procedure CopyData()
+    begin
+        CopyCashDesk();
+        CopyCashDeskUser();
+        CopyCashDeskEvent();
+        CopyCashDocumentHeader();
+        CopyCashDocumentLine();
+        CopyPostedCashDocumentHeader();
+        CopyPostedCashDocumentLine();
+        CopyPaymentMethod();
+        CopyPurchaseHeader();
+        CopyPurchaseInvoiceHeader();
+        CopySalesCrMemoHeader();
+        CopyPurchaseHeader();
+        CopyPurchaseInvoiceHeader();
+        CopyPurchaseCrMemoHeader();
+        CopyServiceHeader();
+        CopyServiceInvoiceHeader();
+        CopyServiceCrMemoHeader();
+        CopySourceCodeSetup();
+        CopyUserSetup();
+        CopyGeneralLedgerSetup();
+        CopyCurrencyNominalValue();
+    end;
+
+    local procedure CopyPermission();
+    begin
+        InsertTableDataPermissions(Database::"Cash Document Header", Database::"Cash Document Header CZP");
+        InsertTableDataPermissions(Database::"Cash Document Line", Database::"Cash Document Line CZP");
+        InsertTableDataPermissions(Database::"Posted Cash Document Header", Database::"Posted Cash Document Hdr. CZP");
+        InsertTableDataPermissions(Database::"Posted Cash Document Line", Database::"Posted Cash Document Line CZP");
+        InsertTableDataPermissions(Database::"Currency Nominal Value", Database::"Currency Nominal Value CZP");
+        InsertTableDataPermissions(Database::"Bank Account", Database::"Cash Desk CZP");
+        InsertTableDataPermissions(Database::"Cash Desk User", Database::"Cash Desk User CZP");
+        InsertTableDataPermissions(Database::"Cash Desk Event", Database::"Cash Desk Event CZP");
+        InsertTableDataPermissions(Database::"Cash Desk Cue", Database::"Cash Desk Cue CZP");
+        InsertTableDataPermissions(Database::"Cash Desk Report Selections", Database::"Cash Desk Rep. Selections CZP");
+    end;
+
+    local procedure InsertTableDataPermissions(OldTableID: Integer; NewTableID: Integer)
+    var
+        Permission: Record Permission;
+        NewPermission: Record Permission;
+    begin
+        Permission.SetRange("Object Type", Permission."Object Type"::"Table Data");
+        Permission.SetRange("Object ID", OldTableID);
+        if not Permission.FindSet() then
+            exit;
+        repeat
+            if not NewPermission.Get(Permission."Role ID", Permission."Object Type", Permission."Object ID") then begin
+                NewPermission.Init();
+                NewPermission := Permission;
+                NewPermission."Object ID" := NewTableID;
+                NewPermission.Insert();
+            end;
+        until Permission.Next() = 0;
+    end;
+
+    local procedure CopyCashDesk();
+    var
+        BankAccount: Record "Bank Account";
+        CashDeskCZP: Record "Cash Desk CZP";
+        BankAccountCommentLine: Record "Comment Line";
+        CashDeskCommentLine: Record "Comment Line";
+        BankAccountDefaultDimension: Record "Default Dimension";
+        CashDeskDefaultDimension: Record "Default Dimension";
+    begin
+        BankAccount.SetRange("Account Type", BankAccount."Account Type"::"Cash Desk");
+        if BankAccount.FindSet(true) then
+            repeat
+                if not CashDeskCZP.Get(BankAccount."No.") then begin
+                    CashDeskCZP.Init();
+                    CashDeskCZP."No." := BankAccount."No.";
+                    CashDeskCZP.Insert();
+                end;
+                CashDeskCZP.Name := BankAccount.Name;
+                CashDeskCZP."Search Name" := BankAccount."Search Name";
+                CashDeskCZP."Name 2" := BankAccount."Name 2";
+                CashDeskCZP.Address := BankAccount.Address;
+                CashDeskCZP."Address 2" := BankAccount."Address 2";
+                CashDeskCZP.City := BankAccount.City;
+                CashDeskCZP.Contact := BankAccount.Contact;
+                CashDeskCZP."Phone No." := BankAccount."Phone No.";
+                CashDeskCZP."Global Dimension 1 Code" := BankAccount."Global Dimension 1 Code";
+                CashDeskCZP."Global Dimension 2 Code" := BankAccount."Global Dimension 2 Code";
+                CashDeskCZP."Bank Acc. Posting Group" := BankAccount."Bank Acc. Posting Group";
+                CashDeskCZP."Currency Code" := BankAccount."Currency Code";
+                CashDeskCZP."Language Code" := BankAccount."Language Code";
+                CashDeskCZP."Country/Region Code" := BankAccount."Country/Region Code";
+                CashDeskCZP."Post Code" := BankAccount."Post Code";
+                CashDeskCZP.County := BankAccount.County;
+                CashDeskCZP."E-Mail" := BankAccount."E-Mail";
+                CashDeskCZP.Blocked := BankAccount.Blocked;
+                CashDeskCZP."No. Series" := BankAccount."No. Series";
+                CashDeskCZP."Min. Balance" := BankAccount."Min. Balance";
+                CashDeskCZP."Min. Balance Checking" := BankAccount."Min. Balance Checking";
+                CashDeskCZP."Max. Balance" := BankAccount."Max. Balance";
+                CashDeskCZP."Max. Balance Checking" := BankAccount."Max. Balance Checking";
+                CashDeskCZP."Allow VAT Difference" := BankAccount."Allow VAT Difference";
+                CashDeskCZP."Payed To/By Checking" := BankAccount."Payed To/By Checking";
+                CashDeskCZP."Reason Code" := BankAccount."Reason Code";
+                CashDeskCZP."Amounts Including VAT" := BankAccount."Amounts Including VAT";
+                CashDeskCZP."Confirm Inserting of Document" := BankAccount."Confirm Inserting of Document";
+                CashDeskCZP."Debit Rounding Account" := BankAccount."Debit Rounding Account";
+                CashDeskCZP."Credit Rounding Account" := BankAccount."Credit Rounding Account";
+                CashDeskCZP."Rounding Method Code" := BankAccount."Rounding Method Code";
+                CashDeskCZP."Responsibility ID (Release)" := BankAccount."Responsibility ID (Release)";
+                CashDeskCZP."Responsibility ID (Post)" := BankAccount."Responsibility ID (Post)";
+                CashDeskCZP."Responsibility Center" := BankAccount."Responsibility Center";
+                CashDeskCZP."Amount Rounding Precision" := BankAccount."Amount Rounding Precision";
+                CashDeskCZP."Cash Document Receipt Nos." := BankAccount."Cash Document Receipt Nos.";
+                CashDeskCZP."Cash Document Withdrawal Nos." := BankAccount."Cash Document Withdrawal Nos.";
+                CashDeskCZP."Cash Receipt Limit" := BankAccount."Cash Receipt Limit";
+                CashDeskCZP."Cash Withdrawal Limit" := BankAccount."Cash Withdrawal Limit";
+                CashDeskCZP."Exclude from Exch. Rate Adj." := BankAccount."Exclude from Exch. Rate Adj.";
+                CashDeskCZP."Cashier No." := BankAccount."Cashier No.";
+                CashDeskCZP.Modify(false);
+
+                BankAccount."Account Type CZP" := BankAccount."Account Type CZP"::"Cash Desk";
+                BankAccount.Modify(false);
+
+                BankAccountCommentLine.SetRange("Table Name", BankAccountCommentLine."Table Name"::"Bank Account");
+                BankAccountCommentLine.SetRange("No.", BankAccount."No.");
+                if BankAccountCommentLine.FindSet() then
+                    repeat
+                        CashDeskCommentLine := BankAccountCommentLine;
+                        CashDeskCommentLine."Table Name" := BankAccountCommentLine."Table Name"::"Cash Desk CZP";
+                        CashDeskCommentLine.Insert(false);
+                    until BankAccountCommentLine.Next() = 0;
+
+                BankAccountDefaultDimension.SetRange("Table ID", Database::"Bank Account");
+                BankAccountDefaultDimension.SetRange("No.", BankAccount."No.");
+                if BankAccountDefaultDimension.FindSet() then
+                    repeat
+                        CashDeskDefaultDimension := BankAccountDefaultDimension;
+                        CashDeskDefaultDimension."Table ID" := Database::"Cash Desk CZP";
+                        CashDeskDefaultDimension.Insert(false);
+                    until BankAccountDefaultDimension.Next() = 0;
+            until BankAccount.Next() = 0;
+    end;
+
+    local procedure CopyCashDeskUser();
+    var
+        CashDeskUser: Record "Cash Desk User";
+        CashDeskUserCZP: Record "Cash Desk User CZP";
+    begin
+        if CashDeskUser.FindSet() then
+            repeat
+                if not CashDeskUserCZP.Get(CashDeskUser."Cash Desk No.", CashDeskUser."User ID") then begin
+                    CashDeskUserCZP.Init();
+                    CashDeskUserCZP."Cash Desk No." := CashDeskUser."Cash Desk No.";
+                    CashDeskUserCZP."User ID" := CashDeskUser."User ID";
+                    CashDeskUserCZP.Insert();
+                end;
+                CashDeskUserCZP.Create := CashDeskUser.Create;
+                CashDeskUserCZP.Issue := CashDeskUser.Issue;
+                CashDeskUserCZP.Post := CashDeskUser.Post;
+                CashDeskUserCZP."Post EET Only" := CashDeskUser."Post EET Only";
+                CashDeskUserCZP."User Full Name" := CashDeskUser."User Name";
+                CashDeskUserCZP.Modify(false);
+            until CashDeskUser.Next() = 0;
+    end;
+
+    local procedure CopyCashDeskEvent();
+    var
+        CashDeskEvent: Record "Cash Desk Event";
+        CashDeskEventCZP: Record "Cash Desk Event CZP";
+    begin
+        if CashDeskEvent.FindSet() then
+            repeat
+                if not CashDeskEventCZP.Get(CashDeskEvent.Code) then begin
+                    CashDeskEventCZP.Init();
+                    CashDeskEventCZP.Code := CashDeskEvent.Code;
+                    CashDeskEventCZP.Insert();
+                end;
+                CashDeskEventCZP."Cash Desk No." := CashDeskEvent."Cash Desk No.";
+                CashDeskEventCZP."Document Type" := CashDeskEvent."Cash Document Type";
+                CashDeskEventCZP.Description := CashDeskEvent.Description;
+                CashDeskEventCZP."Account Type" := CashDeskEvent."Account Type";
+                CashDeskEventCZP."Account No." := CashDeskEvent."Account No.";
+                CashDeskEventCZP."Gen. Document Type" := CashDeskEvent."Document Type";
+                CashDeskEventCZP."Global Dimension 1 Code" := CashDeskEvent."Global Dimension 1 Code";
+                CashDeskEventCZP."Global Dimension 2 Code" := CashDeskEvent."Global Dimension 2 Code";
+                CashDeskEventCZP."Gen. Posting Type" := CashDeskEvent."Gen. Posting Type";
+                CashDeskEventCZP."EET Transaction" := CashDeskEvent."EET Transaction";
+                CashDeskEventCZP."VAT Bus. Posting Group" := CashDeskEvent."VAT Bus. Posting Group";
+                CashDeskEventCZP."VAT Prod. Posting Group" := CashDeskEventCZP."VAT Prod. Posting Group";
+                CashDeskEventCZP.Modify(false);
+            until CashDeskEvent.Next() = 0;
+    end;
+
+    local procedure CopyCashDocumentHeader();
+    var
+        CashDocumentHeader: Record "Cash Document Header";
+        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
+    begin
+        if CashDocumentHeader.FindSet() then
+            repeat
+                if not CashDocumentHeaderCZP.Get(CashDocumentHeader."Cash Desk No.", CashDocumentHeader."No.") then begin
+                    CashDocumentHeaderCZP.Init();
+                    CashDocumentHeaderCZP."Cash Desk No." := CashDocumentHeader."Cash Desk No.";
+                    CashDocumentHeaderCZP."No." := CashDocumentHeader."No.";
+                    CashDocumentHeaderCZP.Insert();
+                end;
+                CashDocumentHeaderCZP."Pay-to/Receive-from Name" := CashDocumentHeader."Pay-to/Receive-from Name";
+                CashDocumentHeaderCZP."Pay-to/Receive-from Name 2" := CashDocumentHeader."Pay-to/Receive-from Name 2";
+                CashDocumentHeaderCZP."Posting Date" := CashDocumentHeader."Posting Date";
+                CashDocumentHeaderCZP.Status := CashDocumentHeader.Status;
+                CashDocumentHeaderCZP."No. Printed" := CashDocumentHeader."No. Printed";
+                CashDocumentHeaderCZP."Created ID" := CashDocumentHeader."Created ID";
+                CashDocumentHeaderCZP."Released ID" := CashDocumentHeader."Released ID";
+                CashDocumentHeaderCZP."Document Type" := CashDocumentHeader."Cash Document Type";
+                CashDocumentHeaderCZP."No. Series" := CashDocumentHeader."No. Series";
+                CashDocumentHeaderCZP."Currency Code" := CashDocumentHeader."Currency Code";
+                CashDocumentHeaderCZP."Shortcut Dimension 1 Code" := CashDocumentHeader."Shortcut Dimension 1 Code";
+                CashDocumentHeaderCZP."Shortcut Dimension 2 Code" := CashDocumentHeader."Shortcut Dimension 2 Code";
+                CashDocumentHeaderCZP."Currency Factor" := CashDocumentHeader."Currency Factor";
+                CashDocumentHeaderCZP."Document Date" := CashDocumentHeader."Document Date";
+                CashDocumentHeaderCZP."VAT Date" := CashDocumentHeader."VAT Date";
+                CashDocumentHeaderCZP."Created Date" := CashDocumentHeader."Created Date";
+                CashDocumentHeaderCZP.Description := CashDocumentHeader.Description;
+                CashDocumentHeaderCZP."Salespers./Purch. Code" := CashDocumentHeader."Salespers./Purch. Code";
+                CashDocumentHeaderCZP."Amounts Including VAT" := CashDocumentHeader."Amounts Including VAT";
+                CashDocumentHeaderCZP."Released Amount" := CashDocumentHeader."Released Amount";
+                CashDocumentHeaderCZP."Reason Code" := CashDocumentHeader."Reason Code";
+                CashDocumentHeaderCZP."External Document No." := CashDocumentHeader."External Document No.";
+                CashDocumentHeaderCZP."Responsibility Center" := CashDocumentHeader."Responsibility Center";
+                CashDocumentHeaderCZP."Payment Purpose" := CashDocumentHeader."Payment Purpose";
+                CashDocumentHeaderCZP."Received By" := CashDocumentHeader."Received By";
+                CashDocumentHeaderCZP."Identification Card No." := CashDocumentHeader."Identification Card No.";
+                CashDocumentHeaderCZP."Paid By" := CashDocumentHeader."Paid By";
+                CashDocumentHeaderCZP."Received From" := CashDocumentHeader."Received From";
+                CashDocumentHeaderCZP."Paid To" := CashDocumentHeader."Paid To";
+                CashDocumentHeaderCZP."Registration No." := CashDocumentHeader."Registration No.";
+                CashDocumentHeaderCZP."VAT Registration No." := CashDocumentHeader."VAT Registration No.";
+                CashDocumentHeaderCZP."Partner Type" := CashDocumentHeader."Partner Type";
+                CashDocumentHeaderCZP."Partner No." := CashDocumentHeader."Partner No.";
+                CashDocumentHeaderCZP."Canceled Document" := CashDocumentHeader."Canceled Document";
+                CashDocumentHeaderCZP."Dimension Set ID" := CashDocumentHeader."Dimension Set ID";
+                CashDocumentHeaderCZP.Modify(false);
+            until CashDocumentHeader.Next() = 0;
+    end;
+
+    local procedure CopyCashDocumentLine();
+    var
+        CashDocumentLine: Record "Cash Document Line";
+        CashDocumentLineCZP: Record "Cash Document Line CZP";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        if CashDocumentLine.FindSet() then
+            repeat
+                if not CashDocumentLineCZP.Get(CashDocumentLine."Cash Desk No.", CashDocumentLine."Cash Document No.", CashDocumentLine."Line No.") then begin
+                    CashDocumentLineCZP.Init();
+                    CashDocumentLineCZP."Cash Desk No." := CashDocumentLine."Cash Desk No.";
+                    CashDocumentLineCZP."Cash Document No." := CashDocumentLine."Cash Document No.";
+                    CashDocumentLineCZP."Line No." := CashDocumentLine."Line No.";
+                    CashDocumentLineCZP.Insert();
+                end;
+                CashDocumentLineCZP."Gen. Document Type" := CashDocumentLine."Document Type";
+                CashDocumentLineCZP."Account Type" := CashDocumentLine."Account Type";
+                CashDocumentLineCZP."Account No." := CashDocumentLine."Account No.";
+                CashDocumentLineCZP."External Document No." := CashDocumentLine."External Document No.";
+                CashDocumentLineCZP."Posting Group" := CashDocumentLine."Posting Group";
+                CashDocumentLineCZP."Applies-To Doc. Type" := CashDocumentLine."Applies-To Doc. Type";
+                CashDocumentLineCZP."Applies-To Doc. No." := CashDocumentLine."Applies-To Doc. No.";
+                CashDocumentLineCZP.Description := CashDocumentLine.Description;
+                CashDocumentLineCZP.Amount := CashDocumentLine.Amount;
+                CashDocumentLineCZP."Amount (LCY)" := CashDocumentLine."Amount (LCY)";
+                CashDocumentLineCZP."Description 2" := CashDocumentLine."Description 2";
+                CashDocumentLineCZP."Shortcut Dimension 1 Code" := CashDocumentLine."Shortcut Dimension 1 Code";
+                CashDocumentLineCZP."Shortcut Dimension 2 Code" := CashDocumentLine."Shortcut Dimension 2 Code";
+                CashDocumentLineCZP."Document Type" := CashDocumentLine."Cash Document Type";
+                CashDocumentLineCZP."Applies-to ID" := CashDocumentLine."Applies-to ID";
+                CashDocumentLineCZP."Currency Code" := CashDocumentLine."Currency Code";
+                CashDocumentLineCZP."Cash Desk Event" := CashDocumentLine."Cash Desk Event";
+                CashDocumentLineCZP."Salespers./Purch. Code" := CashDocumentLine."Salespers./Purch. Code";
+                CashDocumentLineCZP."Reason Code" := CashDocumentLine."Reason Code";
+                CashDocumentLineCZP."VAT Base Amount" := CashDocumentLine."VAT Base Amount";
+                CashDocumentLineCZP."Amount Including VAT" := CashDocumentLine."Amount Including VAT";
+                CashDocumentLineCZP."VAT Amount" := CashDocumentLine."VAT Amount";
+                CashDocumentLineCZP."VAT Base Amount (LCY)" := CashDocumentLine."VAT Base Amount (LCY)";
+                CashDocumentLineCZP."Amount Including VAT (LCY)" := CashDocumentLine."Amount Including VAT (LCY)";
+                CashDocumentLineCZP."VAT Amount (LCY)" := CashDocumentLine."VAT Amount (LCY)";
+                CashDocumentLineCZP."VAT Difference" := CashDocumentLine."VAT Difference";
+                CashDocumentLineCZP."VAT %" := CashDocumentLine."VAT %";
+                CashDocumentLineCZP."VAT Identifier" := CashDocumentLine."VAT Identifier";
+                CashDocumentLineCZP."VAT Difference (LCY)" := CashDocumentLine."VAT Difference (LCY)";
+                CashDocumentLineCZP."System-Created Entry" := CashDocumentLine."System-Created Entry";
+                CashDocumentLineCZP."Gen. Posting Type" := CashDocumentLine."Gen. Posting Type";
+                CashDocumentLineCZP."VAT Calculation Type" := CashDocumentLine."VAT Calculation Type";
+                CashDocumentLineCZP."VAT Bus. Posting Group" := CashDocumentLine."VAT Bus. Posting Group";
+                CashDocumentLineCZP."VAT Prod. Posting Group" := CashDocumentLine."VAT Prod. Posting Group";
+                CashDocumentLineCZP."Use Tax" := CashDocumentLine."Use Tax";
+                CashDocumentLineCZP."FA Posting Type" := CashDocumentLine."FA Posting Type";
+                CashDocumentLineCZP."Depreciation Book Code" := CashDocumentLine."Depreciation Book Code";
+                CashDocumentLineCZP."Maintenance Code" := CashDocumentLine."Maintenance Code";
+                CashDocumentLineCZP."Duplicate in Depreciation Book" := CashDocumentLine."Duplicate in Depreciation Book";
+                CashDocumentLineCZP."Use Duplication List" := CashDocumentLine."Use Duplication List";
+                CashDocumentLineCZP."Responsibility Center" := CashDocumentLine."Responsibility Center";
+                CashDocumentLineCZP."EET Transaction" := CashDocumentLine."EET Transaction";
+                CashDocumentLineCZP."Dimension Set ID" := CashDocumentLine."Dimension Set ID";
+#if not CLEAN18
+                if GeneralLedgerSetup."Prepayment Type" = GeneralLedgerSetup."Prepayment Type"::Advances then
+                    if CashDocumentLine.Prepayment then
+                        CashDocumentLineCZP."Advance Letter Link Code" := CashDocumentLine."Advance Letter Link Code";
+#endif
+                CashDocumentLineCZP.Modify(false);
+            until CashDocumentLine.Next() = 0;
+    end;
+
+    local procedure CopyPostedCashDocumentHeader();
+    var
+        PostedCashDocumentHeader: Record "Posted Cash Document Header";
+        PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
+    begin
+        if PostedCashDocumentHeader.FindSet() then
+            repeat
+                if not PostedCashDocumentHdrCZP.Get(PostedCashDocumentHeader."Cash Desk No.", PostedCashDocumentHeader."No.") then begin
+                    PostedCashDocumentHdrCZP.Init();
+                    PostedCashDocumentHdrCZP."Cash Desk No." := PostedCashDocumentHeader."Cash Desk No.";
+                    PostedCashDocumentHdrCZP."No." := PostedCashDocumentHeader."No.";
+                    PostedCashDocumentHdrCZP.Insert();
+                end;
+                PostedCashDocumentHdrCZP."Pay-to/Receive-from Name" := PostedCashDocumentHeader."Pay-to/Receive-from Name";
+                PostedCashDocumentHdrCZP."Pay-to/Receive-from Name 2" := PostedCashDocumentHeader."Pay-to/Receive-from Name 2";
+                PostedCashDocumentHdrCZP."Posting Date" := PostedCashDocumentHeader."Posting Date";
+                PostedCashDocumentHdrCZP."No. Printed" := PostedCashDocumentHeader."No. Printed";
+                PostedCashDocumentHdrCZP."Created ID" := PostedCashDocumentHeader."Created ID";
+                PostedCashDocumentHdrCZP."Released ID" := PostedCashDocumentHeader."Released ID";
+                PostedCashDocumentHdrCZP."Document Type" := PostedCashDocumentHeader."Cash Document Type";
+                PostedCashDocumentHdrCZP."No. Series" := PostedCashDocumentHeader."No. Series";
+                PostedCashDocumentHdrCZP."Currency Code" := PostedCashDocumentHeader."Currency Code";
+                PostedCashDocumentHdrCZP."Shortcut Dimension 1 Code" := PostedCashDocumentHeader."Shortcut Dimension 1 Code";
+                PostedCashDocumentHdrCZP."Shortcut Dimension 2 Code" := PostedCashDocumentHeader."Shortcut Dimension 2 Code";
+                PostedCashDocumentHdrCZP."Currency Factor" := PostedCashDocumentHeader."Currency Factor";
+                PostedCashDocumentHdrCZP."Document Date" := PostedCashDocumentHeader."Document Date";
+                PostedCashDocumentHdrCZP."VAT Date" := PostedCashDocumentHeader."VAT Date";
+                PostedCashDocumentHdrCZP."Created Date" := PostedCashDocumentHeader."Created Date";
+                PostedCashDocumentHdrCZP.Description := PostedCashDocumentHeader.Description;
+                PostedCashDocumentHdrCZP."Salespers./Purch. Code" := PostedCashDocumentHeader."Salespers./Purch. Code";
+                PostedCashDocumentHdrCZP."Amounts Including VAT" := PostedCashDocumentHeader."Amounts Including VAT";
+                PostedCashDocumentHdrCZP."Reason Code" := PostedCashDocumentHeader."Reason Code";
+                PostedCashDocumentHdrCZP."External Document No." := PostedCashDocumentHeader."External Document No.";
+                PostedCashDocumentHdrCZP."Responsibility Center" := PostedCashDocumentHeader."Responsibility Center";
+                PostedCashDocumentHdrCZP."Payment Purpose" := PostedCashDocumentHeader."Payment Purpose";
+                PostedCashDocumentHdrCZP."Received By" := PostedCashDocumentHeader."Received By";
+                PostedCashDocumentHdrCZP."Identification Card No." := PostedCashDocumentHeader."Identification Card No.";
+                PostedCashDocumentHdrCZP."Paid By" := PostedCashDocumentHeader."Paid By";
+                PostedCashDocumentHdrCZP."Received From" := PostedCashDocumentHeader."Received From";
+                PostedCashDocumentHdrCZP."Paid To" := PostedCashDocumentHeader."Paid To";
+                PostedCashDocumentHdrCZP."Registration No." := PostedCashDocumentHeader."Registration No.";
+                PostedCashDocumentHdrCZP."VAT Registration No." := PostedCashDocumentHeader."VAT Registration No.";
+                PostedCashDocumentHdrCZP."Partner Type" := PostedCashDocumentHeader."Partner Type";
+                PostedCashDocumentHdrCZP."Partner No." := PostedCashDocumentHeader."Partner No.";
+                PostedCashDocumentHdrCZP."Canceled Document" := PostedCashDocumentHeader."Canceled Document";
+                PostedCashDocumentHdrCZP."EET Entry No." := PostedCashDocumentHeader."EET Entry No.";
+                PostedCashDocumentHdrCZP."Dimension Set ID" := PostedCashDocumentHeader."Dimension Set ID";
+                PostedCashDocumentHdrCZP.Modify(false);
+            until PostedCashDocumentHeader.Next() = 0;
+    end;
+
+    local procedure CopyPostedCashDocumentLine();
+    var
+        PostedCashDocumentLine: Record "Posted Cash Document Line";
+        PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
+    begin
+        if PostedCashDocumentLine.FindSet() then
+            repeat
+                if not PostedCashDocumentLineCZP.Get(PostedCashDocumentLine."Cash Desk No.", PostedCashDocumentLine."Cash Document No.", PostedCashDocumentLine."Line No.") then begin
+                    PostedCashDocumentLineCZP.Init();
+                    PostedCashDocumentLineCZP."Cash Desk No." := PostedCashDocumentLine."Cash Desk No.";
+                    PostedCashDocumentLineCZP."Cash Document No." := PostedCashDocumentLine."Cash Document No.";
+                    PostedCashDocumentLineCZP."Line No." := PostedCashDocumentLine."Line No.";
+                    PostedCashDocumentLineCZP.Insert();
+                end;
+                PostedCashDocumentLineCZP."Gen. Document Type" := PostedCashDocumentLine."Document Type";
+                PostedCashDocumentLineCZP."Account Type" := PostedCashDocumentLine."Account Type";
+                PostedCashDocumentLineCZP."Account No." := PostedCashDocumentLine."Account No.";
+                PostedCashDocumentLineCZP."External Document No." := PostedCashDocumentLine."External Document No.";
+                PostedCashDocumentLineCZP."Posting Group" := PostedCashDocumentLine."Posting Group";
+                PostedCashDocumentLineCZP.Description := PostedCashDocumentLine.Description;
+                PostedCashDocumentLineCZP.Amount := PostedCashDocumentLine.Amount;
+                PostedCashDocumentLineCZP."Amount (LCY)" := PostedCashDocumentLine."Amount (LCY)";
+                PostedCashDocumentLineCZP."Description 2" := PostedCashDocumentLine."Description 2";
+                PostedCashDocumentLineCZP."Shortcut Dimension 1 Code" := PostedCashDocumentLine."Shortcut Dimension 1 Code";
+                PostedCashDocumentLineCZP."Shortcut Dimension 2 Code" := PostedCashDocumentLine."Shortcut Dimension 2 Code";
+                PostedCashDocumentLineCZP."Document Type" := PostedCashDocumentLine."Cash Document Type";
+                PostedCashDocumentLineCZP."Currency Code" := PostedCashDocumentLine."Currency Code";
+                PostedCashDocumentLineCZP."Cash Desk Event" := PostedCashDocumentLine."Cash Desk Event";
+                PostedCashDocumentLineCZP."Salespers./Purch. Code" := PostedCashDocumentLine."Salespers./Purch. Code";
+                PostedCashDocumentLineCZP."Reason Code" := PostedCashDocumentLine."Reason Code";
+                PostedCashDocumentLineCZP."VAT Base Amount" := PostedCashDocumentLine."VAT Base Amount";
+                PostedCashDocumentLineCZP."Amount Including VAT" := PostedCashDocumentLine."Amount Including VAT";
+                PostedCashDocumentLineCZP."VAT Amount" := PostedCashDocumentLine."VAT Amount";
+                PostedCashDocumentLineCZP."VAT Base Amount (LCY)" := PostedCashDocumentLine."VAT Base Amount (LCY)";
+                PostedCashDocumentLineCZP."Amount Including VAT (LCY)" := PostedCashDocumentLine."Amount Including VAT (LCY)";
+                PostedCashDocumentLineCZP."VAT Amount (LCY)" := PostedCashDocumentLine."VAT Amount (LCY)";
+                PostedCashDocumentLineCZP."VAT Difference" := PostedCashDocumentLine."VAT Difference";
+                PostedCashDocumentLineCZP."VAT %" := PostedCashDocumentLine."VAT %";
+                PostedCashDocumentLineCZP."VAT Identifier" := PostedCashDocumentLine."VAT Identifier";
+                PostedCashDocumentLineCZP."VAT Difference (LCY)" := PostedCashDocumentLine."VAT Difference (LCY)";
+                PostedCashDocumentLineCZP."System-Created Entry" := PostedCashDocumentLine."System-Created Entry";
+                PostedCashDocumentLineCZP."Gen. Posting Type" := PostedCashDocumentLine."Gen. Posting Type";
+                PostedCashDocumentLineCZP."VAT Calculation Type" := PostedCashDocumentLine."VAT Calculation Type";
+                PostedCashDocumentLineCZP."VAT Bus. Posting Group" := PostedCashDocumentLine."VAT Bus. Posting Group";
+                PostedCashDocumentLineCZP."VAT Prod. Posting Group" := PostedCashDocumentLine."VAT Prod. Posting Group";
+                PostedCashDocumentLineCZP."Use Tax" := PostedCashDocumentLine."Use Tax";
+                PostedCashDocumentLineCZP."FA Posting Type" := PostedCashDocumentLine."FA Posting Type";
+                PostedCashDocumentLineCZP."Depreciation Book Code" := PostedCashDocumentLine."Depreciation Book Code";
+                PostedCashDocumentLineCZP."Maintenance Code" := PostedCashDocumentLine."Maintenance Code";
+                PostedCashDocumentLineCZP."Duplicate in Depreciation Book" := PostedCashDocumentLine."Duplicate in Depreciation Book";
+                PostedCashDocumentLineCZP."Use Duplication List" := PostedCashDocumentLine."Use Duplication List";
+                PostedCashDocumentLineCZP."Responsibility Center" := PostedCashDocumentLine."Responsibility Center";
+                PostedCashDocumentLineCZP."EET Transaction" := PostedCashDocumentLine."EET Transaction";
+                PostedCashDocumentLineCZP."Dimension Set ID" := PostedCashDocumentLine."Dimension Set ID";
+                PostedCashDocumentLineCZP.Modify(false);
+            until PostedCashDocumentLine.Next() = 0;
+    end;
+
+    local procedure CopyPaymentMethod();
+    var
+        PaymentMethod: Record "Payment Method";
+    begin
+        if PaymentMethod.FindSet(true) then
+            repeat
+                PaymentMethod."Cash Desk Code CZP" := PaymentMethod."Cash Desk Code";
+                PaymentMethod."Cash Document Action CZP" := PaymentMethod."Cash Document Status";
+                PaymentMethod."Cash Desk Code" := '';
+                PaymentMethod."Cash Document Status" := PaymentMethod."Cash Document Status"::" ";
+                PaymentMethod.Modify(false);
+            until PaymentMethod.Next() = 0;
+    end;
+
+    local procedure CopySalesHeader();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        if SalesHeader.FindSet(true) then
+            repeat
+                SalesHeader."Cash Desk Code CZP" := SalesHeader."Cash Desk Code";
+                SalesHeader."Cash Document Action CZP" := SalesHeader."Cash Document Status";
+                SalesHeader.Modify(false);
+            until SalesHeader.Next() = 0;
+    end;
+
+    local procedure CopySalesInvoiceHeader();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+    begin
+        if SalesInvoiceHeader.FindSet(true) then
+            repeat
+                SalesInvoiceHeader."Cash Desk Code CZP" := SalesInvoiceHeader."Cash Desk Code";
+                SalesInvoiceHeader."Cash Document Action CZP" := SalesInvoiceHeader."Cash Document Status";
+                SalesInvoiceHeader.Modify(false);
+            until SalesInvoiceHeader.Next() = 0;
+    end;
+
+    local procedure CopySalesCrMemoHeader();
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+    begin
+        if SalesCrMemoHeader.FindSet(true) then
+            repeat
+                SalesCrMemoHeader."Cash Desk Code CZP" := SalesCrMemoHeader."Cash Desk Code";
+                SalesCrMemoHeader."Cash Document Action CZP" := SalesCrMemoHeader."Cash Document Status";
+                SalesCrMemoHeader.Modify(false);
+            until SalesCrMemoHeader.Next() = 0;
+    end;
+
+    local procedure CopyPurchaseHeader();
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        if PurchaseHeader.FindSet(true) then
+            repeat
+                PurchaseHeader."Cash Desk Code CZP" := PurchaseHeader."Cash Desk Code";
+                PurchaseHeader."Cash Document Action CZP" := PurchaseHeader."Cash Document Status";
+                PurchaseHeader.Modify(false);
+            until PurchaseHeader.Next() = 0;
+    end;
+
+    local procedure CopyPurchaseInvoiceHeader();
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+    begin
+        if PurchInvHeader.FindSet(true) then
+            repeat
+                PurchInvHeader."Cash Desk Code CZP" := PurchInvHeader."Cash Desk Code";
+                PurchInvHeader."Cash Document Action CZP" := PurchInvHeader."Cash Document Status";
+                PurchInvHeader.Modify(false);
+            until PurchInvHeader.Next() = 0;
+    end;
+
+    local procedure CopyPurchaseCrMemoHeader();
+    var
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+    begin
+        if PurchCrMemoHdr.FindSet(true) then
+            repeat
+                PurchCrMemoHdr."Cash Desk Code CZP" := PurchCrMemoHdr."Cash Desk Code";
+                PurchCrMemoHdr."Cash Document Action CZP" := PurchCrMemoHdr."Cash Document Status";
+                PurchCrMemoHdr.Modify(false);
+            until PurchCrMemoHdr.Next() = 0;
+    end;
+
+    local procedure CopyServiceHeader();
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        if ServiceHeader.FindSet(true) then
+            repeat
+                ServiceHeader."Cash Desk Code CZP" := ServiceHeader."Cash Desk Code";
+                ServiceHeader."Cash Document Action CZP" := ServiceHeader."Cash Document Status";
+                ServiceHeader.Modify(false);
+            until ServiceHeader.Next() = 0;
+    end;
+
+    local procedure CopyServiceInvoiceHeader();
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+    begin
+        if ServiceInvoiceHeader.FindSet(true) then
+            repeat
+                ServiceInvoiceHeader."Cash Desk Code CZP" := ServiceInvoiceHeader."Cash Desk Code";
+                ServiceInvoiceHeader."Cash Document Action CZP" := ServiceInvoiceHeader."Cash Document Status";
+                ServiceInvoiceHeader.Modify(false);
+            until ServiceInvoiceHeader.Next() = 0;
+    end;
+
+    local procedure CopyServiceCrMemoHeader();
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+    begin
+        if ServiceCrMemoHeader.FindSet(true) then
+            repeat
+                ServiceCrMemoHeader."Cash Desk Code CZP" := ServiceCrMemoHeader."Cash Desk Code";
+                ServiceCrMemoHeader."Cash Document Action CZP" := ServiceCrMemoHeader."Cash Document Status";
+                ServiceCrMemoHeader.Modify(false);
+            until ServiceCrMemoHeader.Next() = 0;
+    end;
+
+    local procedure CopySourceCodeSetup();
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+    begin
+        if SourceCodeSetup.Get() then begin
+            SourceCodeSetup."Cash Desk CZP" := SourceCodeSetup."Cash Desk";
+            SourceCodeSetup.Modify(false);
+        end;
+    end;
+
+    local procedure CopyUserSetup();
+    var
+        UserSetup: Record "User Setup";
+    begin
+        if UserSetup.FindSet(true) then
+            repeat
+                UserSetup."Cash Resp. Ctr. Filter CZP" := UserSetup."Cash Resp. Ctr. Filter";
+                UserSetup."Cash Desk Amt. Appr. Limit CZP" := UserSetup."Cash Desk Amt. Approval Limit";
+                UserSetup."Unlimited Cash Desk Appr. CZP" := UserSetup."Unlimited Cash Desk Approval";
+                UserSetup.Modify(false);
+            until UserSetup.Next() = 0;
+    end;
+
+    local procedure CopyGeneralLedgerSetup();
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        if GeneralLedgerSetup.Get() then begin
+            GeneralLedgerSetup."Cash Desk Nos. CZP" := GeneralLedgerSetup."Cash Desk Nos.";
+            GeneralLedgerSetup."Cash Payment Limit (LCY) CZP" := GeneralLedgerSetup."Cash Payment Limit (LCY)";
+            GeneralLedgerSetup.Modify(false);
+        end;
+    end;
+
+    local procedure CopyCurrencyNominalValue();
+    var
+        CurrencyNominalValue: Record "Currency Nominal Value";
+        CurrencyNominalValueCZP: Record "Currency Nominal Value CZP";
+    begin
+        if CurrencyNominalValue.FindSet() then
+            repeat
+                if not CurrencyNominalValueCZP.Get(CurrencyNominalValue."Currency Code", CurrencyNominalValue.Value) then begin
+                    CurrencyNominalValueCZP.Init();
+                    CurrencyNominalValueCZP."Currency Code" := CurrencyNominalValue."Currency Code";
+                    CurrencyNominalValueCZP."Nominal Value" := CurrencyNominalValue.Value;
+                    CurrencyNominalValueCZP.Insert();
+                end;
+            until CurrencyNominalValue.Next() = 0;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
+    local procedure CompanyInitialize()
+    var
+        DataClassEvalHandlerCZP: Codeunit "Data Class. Eval. Handler CZP";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        InitCashDeskSourceCode();
+        InitCashDeskReportSelections();
+
+        DataClassEvalHandlerCZP.ApplyEvaluationClassificationsForPrivacy();
+        UpgradeTag.SetAllUpgradeTags();
+    end;
+
+    local procedure InitCashDeskSourceCode()
+    var
+        CashDeskSourceCodeTxt: Label 'CASHDESK', MaxLength = 10;
+        CashDeskSourceDescriptionTxt: Label 'Cash Desk Evidence', MaxLength = 100;
+    begin
+        InsertSourceCode(CashDeskSourceCodeTxt, CashDeskSourceDescriptionTxt);
+        SetupSourceCode(CashDeskSourceCodeTxt);
+    end;
+
+    local procedure InsertSourceCode(SourceCodeCode: Code[10]; SourceCodeDescription: Text[100])
+    var
+        SourceCode: Record "Source Code";
+    begin
+        if SourceCode.Get(SourceCodeCode) then
+            exit;
+        SourceCode.Init();
+        SourceCode.Code := SourceCodeCode;
+        SourceCode.Description := SourceCodeDescription;
+        SourceCode.Insert();
+    end;
+
+    local procedure SetupSourceCode(SourceCodeCode: Code[10])
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+    begin
+        if not SourceCodeSetup.Get() then
+            exit;
+        if SourceCodeSetup."Cash Desk CZP" = SourceCodeCode then
+            exit;
+        SourceCodeSetup."Cash Desk CZP" := SourceCodeCode;
+        SourceCodeSetup.Modify();
+    end;
+
+    local procedure InitCashDeskReportSelections()
+    var
+        ReportUsage: Enum "Cash Desk Rep. Sel. Usage CZP";
+    begin
+        InsertCashDeskReportSelectionsCZP(ReportUsage::"Cash Receipt", '1', Report::"Receipt Cash Document CZP");
+        InsertCashDeskReportSelectionsCZP(ReportUsage::"Cash Withdrawal", '1', Report::"Withdrawal Cash Document CZP");
+        InsertCashDeskReportSelectionsCZP(ReportUsage::"Posted Cash Receipt", '1', Report::"Posted Rcpt. Cash Document CZP");
+        InsertCashDeskReportSelectionsCZP(ReportUsage::"Posted Cash Withdrawal", '1', Report::"Posted Wdrl. Cash Document CZP");
+    end;
+
+    local procedure InsertCashDeskReportSelectionsCZP(ReportUsage: Enum "Cash Desk Rep. Sel. Usage CZP"; ReportSequence: Code[10]; ReportID: Integer)
+    var
+        CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP";
+    begin
+        if CashDeskRepSelectionsCZP.Get(ReportUsage, ReportSequence) then
+            exit;
+
+        CashDeskRepSelectionsCZP.Init();
+        CashDeskRepSelectionsCZP.Validate(Usage, ReportUsage);
+        CashDeskRepSelectionsCZP.Validate(Sequence, ReportSequence);
+        CashDeskRepSelectionsCZP.Validate("Report ID", ReportID);
+        CashDeskRepSelectionsCZP.Insert();
+    end;
+}

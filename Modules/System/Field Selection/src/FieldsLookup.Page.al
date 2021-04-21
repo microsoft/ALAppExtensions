@@ -12,6 +12,7 @@ page 9806 "Fields Lookup"
     Editable = false;
     PageType = List;
     SourceTable = "Field";
+    Permissions = tabledata Field = r;
 
     layout
     {
@@ -20,33 +21,33 @@ page 9806 "Fields Lookup"
             repeater(Control2)
             {
                 ShowCaption = false;
-                field(TableNo; TableNo)
+                field(TableNo; Rec.TableNo)
                 {
                     ApplicationArea = All;
                     Caption = 'Table No.';
                     ToolTip = 'Specifies the number of the table this field belongs to.';
                     Visible = false;
                 }
-                field(TableName; TableName)
+                field(TableName; Rec.TableName)
                 {
                     ApplicationArea = All;
                     Caption = 'Table Name';
                     ToolTip = 'Specifies the name of the table this field belongs to.';
                     Visible = TableNameVisible;
                 }
-                field("No."; "No.")
+                field("No."; Rec."No.")
                 {
                     ApplicationArea = All;
                     Caption = 'No.';
                     ToolTip = 'Specifies the number of the field.';
                 }
-                field(FieldName; FieldName)
+                field(FieldName; Rec.FieldName)
                 {
                     ApplicationArea = All;
                     Caption = 'Field Name';
                     ToolTip = 'Specifies the name of the field.';
                 }
-                field("Field Caption"; "Field Caption")
+                field("Field Caption"; Rec."Field Caption")
                 {
                     ApplicationArea = All;
                     Caption = 'Field Caption';
@@ -64,10 +65,10 @@ page 9806 "Fields Lookup"
     var
         LastTableNo: Integer;
     begin
-        FindLast();
+        Rec.FindLast();
         LastTableNo := TableNo;
-        FindFirst();
-        TableNameVisible := LastTableNo <> TableNo;
+        Rec.FindFirst();
+        TableNameVisible := LastTableNo <> Rec.TableNo;
     end;
 
     var

@@ -109,9 +109,9 @@ table 3902 "Retention Policy Setup Line"
     /// </summary>
     procedure SetTableFilter()
     var
-        RetentionPolicy: Codeunit "Retention Policy Setup";
+        RetentionPolicySetup: Codeunit "Retention Policy Setup";
     begin
-        Rec."Table Filter Text" := RetentionPolicy.SetTableFilterView(Rec);
+        Rec."Table Filter Text" := RetentionPolicySetup.SetTableFilterView(Rec);
     end;
 
     /// <summary>
@@ -120,9 +120,9 @@ table 3902 "Retention Policy Setup Line"
     /// <returns>The filter in the view format. </returns>
     procedure GetTableFilterView(): Text
     var
-        RetentionPolicy: Codeunit "Retention Policy Setup";
+        RetentionPolicySetup: Codeunit "Retention Policy Setup";
     begin
-        exit(RetentionPolicy.GetTableFilterView(Rec));
+        exit(RetentionPolicySetup.GetTableFilterView(Rec));
     end;
 
     /// <summary>
@@ -131,9 +131,9 @@ table 3902 "Retention Policy Setup Line"
     /// <returns>The Filter in text format.</returns>
     procedure GetTableFilterText(): Text[2048]
     var
-        RetentionPolicy: Codeunit "Retention Policy Setup";
+        RetentionPolicySetup: Codeunit "Retention Policy Setup";
     begin
-        exit(RetentionPolicy.GetTableFilterText(Rec));
+        exit(RetentionPolicySetup.GetTableFilterText(Rec));
     end;
 
     /// <summary>

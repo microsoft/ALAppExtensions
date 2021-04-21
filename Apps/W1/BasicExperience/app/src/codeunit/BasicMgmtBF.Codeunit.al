@@ -3,11 +3,8 @@ codeunit 20601 "Basic Mgmt BF"
     Access = Internal;
 
     var
-        AzureADLicensing: codeunit "Azure AD Licensing";
-        NotSupportedLicenseErr: Label 'To deploy the Basic Experience extension the Business Central Basic license must be assigned to at least one user.';
         NotSupportedUserErr: Label 'The user who deploys the Basic Experience extension must have the Super User permission set.';
         AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER|SALES AND RELATIONSHIP MANAGER', Locked = true;
-        BFSKUIdTxt: Label '{2ec8b6ca-ab13-4753-a479-8c2ffe4c323b}', Locked = true, Comment = 'Dynamics 365 Business Central BASIC ISVEMB';
         UserSecurityIdTxt: Label '{00000000-0000-0000-0000-000000000001}', Locked = true, Comment = 'System user';
         NotSupportedSystemUserErr: Label 'The Basic Experience extension must be installed by a user who exists in the User table. The current user is the Microsoft System User.';
         UnknowUserErr: Label 'The current user is not found in the User table.The Basic Experience extension must be installed by a user who exists in the User table.';

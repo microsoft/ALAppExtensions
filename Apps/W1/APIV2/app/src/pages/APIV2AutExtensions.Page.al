@@ -83,7 +83,7 @@ page 30002 "APIV2 - Aut. Extensions"
 
     trigger OnOpenPage()
     var
-        EnvironmentInfo: codeunit 457;
+        EnvironmentInfo: codeunit "Environment Information";
     begin
 
         BindSubscription(AutomationAPIManagement);
@@ -97,7 +97,7 @@ page 30002 "APIV2 - Aut. Extensions"
     end;
 
     var
-        AutomationAPIManagement: Codeunit 5435;
+        AutomationAPIManagement: Codeunit "Automation - API Management";
 
         IsExtensionInstalled: Boolean;
         IsNotInstalledErr: Label 'The extension %1 is not installed.', Comment = '%1=name of app';
@@ -133,7 +133,22 @@ page 30002 "APIV2 - Aut. Extensions"
         ActionContext.SetResultCode(WebServiceActionResultCode::Updated);
     end;
 
+    [ServiceEnabled]
+    [Scope('Cloud')]
+    procedure uninstallAndDeleteExtensionData(var ActionContext: WebServiceActionContext)
+    begin
+        if not ExtensionManagement.IsInstalledByPackageId("Package ID") then
+            Error(IsNotInstalledErr, Name);
+
+        ExtensionManagement.UninstallExtensionAndDeleteExtensionData("Package ID", false);
+
+        ActionContext.SetObjectType(ObjectType::Page);
+        ActionContext.SetObjectId(Page::"APIV2 - Aut. Extensions");
+        ActionContext.AddEntityKey(FieldNo(ID), ID);
+        ActionContext.SetResultCode(WebServiceActionResultCode::Updated);
+    end;
+
     var
-        ExtensionManagement: Codeunit 2504;
+        ExtensionManagement: Codeunit "Extension Management";
 
 }

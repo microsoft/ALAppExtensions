@@ -395,14 +395,14 @@ page 20012 "APIV1 - Sales Invoices"
                     Caption = 'remainingAmount', Locked = true;
                     Editable = false;
                 }
-                part(salesInvoiceLines; 20043)
+                part(salesInvoiceLines; "APIV1 - Sales Invoice Lines")
                 {
                     Caption = 'Lines', Locked = true;
                     EntityName = 'salesInvoiceLine';
                     EntitySetName = 'salesInvoiceLines';
                     SubPageLink = "Document Id" = FIELD(Id);
                 }
-                part(pdfDocument; 5529)
+                part(pdfDocument; "APIV1 - PDF Document")
                 {
                     Caption = 'PDF Document', Locked = true;
                     EntityName = 'pdfDocument';
@@ -613,6 +613,7 @@ page 20012 "APIV1 - Sales Invoices"
         SellingPostalAddressJSONText := GraphMgtSalesInvoice.SellToCustomerAddressToJSON(Rec);
         BillingPostalAddressJSONText := GraphMgtSalesInvoice.BillToCustomerAddressToJSON(Rec);
         ShippingPostalAddressJSONText := GraphMgtSalesInvoice.ShipToCustomerAddressToJSON(Rec);
+
         GetRemainingAmount();
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;

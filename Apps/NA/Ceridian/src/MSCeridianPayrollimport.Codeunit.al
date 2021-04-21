@@ -10,12 +10,16 @@ codeunit 1666 "MS Ceridian Payroll import"
         CeridianTelemetryCategoryTok: Label 'AL Ceridian', Locked = true;
         TransactionsImportedTxt: Label '%1 Ceridian payroll transactions imported.', Locked = true;
 
-    [EventSubscriber(ObjectType::Codeunit, 1660, 'OnRegisterPayrollService', '', false, false)]
-    local procedure OnRegisterPayrollService(var TempServiceConnection: Record 1400 temporary);
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Payroll Management", 'OnRegisterPayrollService', '', false, false)]
+    local procedure OnRegisterPayrollService(var TempServiceConnection: Record "Service Connection" temporary);
     var
-        MSCeridianPayrollSetup: Record 1665;
+        MSCeridianPayrollSetup: Record "MS Ceridian Payroll Setup";
     begin
+        if not MSCeridianPayrollSetup.ReadPermission then 
+            exit;
         IF NOT MSCeridianPayrollSetup.GET() THEN BEGIN
+            if not MSCeridianPayrollSetup.WritePermission then 
+                exit;
             MSCeridianPayrollSetup.INSERT(TRUE);
             COMMIT();
         END;
@@ -26,10 +30,10 @@ codeunit 1666 "MS Ceridian Payroll import"
         TempServiceConnection.INSERT();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1660, 'OnImportPayroll', '', false, false)]
-    local procedure OnImportPayroll(var TempServiceConnection: Record 1400 temporary; GenJournalLine: Record 81);
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Payroll Management", 'OnImportPayroll', '', false, false)]
+    local procedure OnImportPayroll(var TempServiceConnection: Record "Service Connection" temporary; GenJournalLine: Record 81);
     var
-        PayrollImportTransactions: Page 1661;
+        PayrollImportTransactions: Page "Payroll Import Transactions";
     begin
         IF NOT AMSCeridanRequest(FORMAT(TempServiceConnection."Record ID")) THEN
             EXIT;
@@ -37,10 +41,10 @@ codeunit 1666 "MS Ceridian Payroll import"
         PayrollImportTransactions.RUNMODAL();
     end;
 
-    [EventSubscriber(ObjectType::Page, 1661, 'OnImportPayrollTransactions', '', false, false)]
-    local procedure OnImportPayrollTransactions(var TempServiceConnection: Record 1400; var TempImportGLTransaction: Record 1661 temporary);
+    [EventSubscriber(ObjectType::Page, Page::"Payroll Import Transactions", 'OnImportPayrollTransactions', '', false, false)]
+    local procedure OnImportPayrollTransactions(var TempServiceConnection: Record "Service Connection"; var TempImportGLTransaction: Record 1661 temporary);
     var
-        ImportCeridianPayroll: XMLport 1661;
+        ImportCeridianPayroll: XMLport "Import Ceridian Payroll";
     begin
         IF NOT AMSCeridanRequest(FORMAT(TempServiceConnection."Record ID")) THEN
             EXIT;
@@ -50,11 +54,11 @@ codeunit 1666 "MS Ceridian Payroll import"
         Session.LogMessage('00001SW', STRSUBSTNO(TransactionsImportedTxt, TempImportGLTransaction.COUNT()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CeridianTelemetryCategoryTok);
     end;
 
-    [EventSubscriber(ObjectType::Page, 1661, 'OnCreateSampleFile', '', false, false)]
-    local procedure OnCreateSampleFile(TempServiceConnection: Record 1400);
+    [EventSubscriber(ObjectType::Page, Page::"Payroll Import Transactions", 'OnCreateSampleFile', '', false, false)]
+    local procedure OnCreateSampleFile(TempServiceConnection: Record "Service Connection");
     var
         TempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit 419;
+        FileMgt: Codeunit "File Management";
         OutStream: OutStream;
     begin
         IF NOT AMSCeridanRequest(FORMAT(TempServiceConnection."Record ID")) THEN
@@ -99,7 +103,7 @@ codeunit 1666 "MS Ceridian Payroll import"
 
     local procedure GetRecordID(): Text;
     var
-        MSCeridianPayrollSetup: Record 1665;
+        MSCeridianPayrollSetup: Record "MS Ceridian Payroll Setup";
     begin
         MSCeridianPayrollSetup.GET();
         EXIT(FORMAT(MSCeridianPayrollSetup.RECORDID()));

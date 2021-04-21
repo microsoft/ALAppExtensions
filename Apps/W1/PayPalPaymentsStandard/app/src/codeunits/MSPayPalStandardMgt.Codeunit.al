@@ -1,7 +1,7 @@
 codeunit 1070 "MS - PayPal Standard Mgt."
 {
-    Permissions = TableData 289 = rimd, TableData 1062 = rimd;
-    TableNo = 1062;
+    Permissions = TableData "Payment Method" = rimd, TableData "Payment Reporting Argument" = rimd;
+    TableNo = "Payment Reporting Argument";
 
     trigger OnRun();
     begin
@@ -54,10 +54,10 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
     local procedure GenerateHyperlink(var PaymentReportingArgument: Record 1062): Boolean;
     var
-        SalesInvoiceHeader: Record 112;
-        MsPayPalStandardAccount: Record 1070;
-        MSPayPalStandardTemplate: Record 1071;
-        DataTypeManagement: Codeunit 701;
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        MsPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        DataTypeManagement: Codeunit "Data Type Management";
         DocumentRecordRef: RecordRef;
         BaseURL: Text;
         TargetURL: Text;
@@ -133,7 +133,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
     local procedure SetCaptionBasedOnLanguage(var PaymentReportingArgument: Record 1062);
     var
-        Language: Record 8;
+        Language: Record "Language";
         CurrentLanguage: Integer;
     begin
         CurrentLanguage := GLOBALLANGUAGE();
@@ -149,9 +149,9 @@ codeunit 1070 "MS - PayPal Standard Mgt."
             GLOBALLANGUAGE(CurrentLanguage);
     end;
 
-    procedure GetTemplate(var TempMsPayPalStandardTemplate: Record 1071 temporary);
+    procedure GetTemplate(var TempMsPayPalStandardTemplate: Record "MS - PayPal Standard Template" temporary);
     var
-        MsPayPalStandardTemplate: Record 1071;
+        MsPayPalStandardTemplate: Record "MS - PayPal Standard Template";
     begin
         IF MsPayPalStandardTemplate.GET() THEN BEGIN
             MsPayPalStandardTemplate.CALCFIELDS(Logo, "Target URL");
@@ -164,7 +164,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         TemplateAssignDefaultValues(TempMsPayPalStandardTemplate);
     end;
 
-    procedure TemplateAssignDefaultValues(var MsPayPalStandardTemplate: Record 1071);
+    procedure TemplateAssignDefaultValues(var MsPayPalStandardTemplate: Record "MS - PayPal Standard Template");
     begin
         MsPayPalStandardTemplate.VALIDATE(Name, PayPalStandardNameTxt);
         MsPayPalStandardTemplate.VALIDATE(Description, PayPalStandardDescriptionTxt);
@@ -175,12 +175,12 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         MsPayPalStandardTemplate.SetLogoURLNoVerification(LogoURLTxt);
     end;
 
-    procedure GetPayPalPaymentMethod(var PaymentMethod: Record 289);
+    procedure GetPayPalPaymentMethod(var PaymentMethod: Record "Payment Method");
     begin
         RegisterPayPalPaymentMethod(PaymentMethod);
     end;
 
-    local procedure RegisterPayPalPaymentMethod(var PaymentMethod: Record 289);
+    local procedure RegisterPayPalPaymentMethod(var PaymentMethod: Record "Payment Method");
     begin
         IF PaymentMethod.GET(PayPalPaymentMethodCodeTok) THEN begin
             InsertCanadaFrenchTranslation(); // we can remove this line after a while, as this is to batch existing tenants (lazy upgrade)
@@ -199,7 +199,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
     local PROCEDURE IsCanada(): Boolean;
     var
-        CompanyInformation: Record 79;
+        CompanyInformation: Record "Company Information";
     BEGIN
         IF CompanyInformation.GET() THEN
             EXIT(CompanyInformation."Country/Region Code" = 'CA');
@@ -208,7 +208,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
     local PROCEDURE InsertCanadaFrenchTranslation();
     VAR
-        PaymentmethodTranslation: Record 466;
+        PaymentmethodTranslation: Record "Payment Method Translation";
     BEGIN
         if not IsCanada() then
             exit;
@@ -218,18 +218,18 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         IF PaymentmethodTranslation.INSERT() THEN;
     END;
 
-    [EventSubscriber(ObjectType::Table, 1070, 'OnAfterInsertEvent', '', false, false)]
-    local procedure OnInsertPayPalStandardAccount(var Rec: Record 1070; RunTrigger: Boolean);
+    [EventSubscriber(ObjectType::Table, Database::"MS - PayPal Standard Account", 'OnAfterInsertEvent', '', false, false)]
+    local procedure OnInsertPayPalStandardAccount(var Rec: Record "MS - PayPal Standard Account"; RunTrigger: Boolean);
     var
-        PaymentMethod: Record 289;
+        PaymentMethod: Record "Payment Method";
     begin
         RegisterPayPalPaymentMethod(PaymentMethod);
     end;
 
-    [EventSubscriber(ObjectType::Table, 1060, 'OnRegisterPaymentServices', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnRegisterPaymentServices', '', false, false)]
     local procedure RegisterPayPalStandardAccounts(var PaymentServiceSetup: Record 1060);
     var
-        MSPayPalStandardAccount: Record 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
     begin
         IF NOT MSPayPalStandardAccount.FINDSET() THEN
             EXIT;
@@ -244,10 +244,10 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         UNTIL MSPayPalStandardAccount.NEXT() = 0;
     end;
 
-    [EventSubscriber(ObjectType::Table, 1060, 'OnRegisterPaymentServiceProviders', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnRegisterPaymentServiceProviders', '', false, false)]
     procedure RegisterPayPalStandardTemplate(var PaymentServiceSetup: Record 1060);
     var
-        TempMSPayPalStandardTemplate: Record 1071 temporary;
+        TempMSPayPalStandardTemplate: Record "MS - PayPal Standard Template" temporary;
     begin
         CLEAR(PaymentServiceSetup);
         GetTemplate(TempMSPayPalStandardTemplate);
@@ -260,11 +260,11 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         PaymentServiceSetup.INSERT(TRUE);
     end;
 
-    [EventSubscriber(ObjectType::Table, 1060, 'OnCreatePaymentService', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnCreatePaymentService', '', false, false)]
     local procedure NewPaymentAccount(var PaymentServiceSetup: Record 1060);
     var
-        MSPayPalStandardTemplate: Record 1071;
-        MSPayPalStandardAccount: Record 1070;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
     begin
         IF PaymentServiceSetup."Management Codeunit ID" <> CODEUNIT::"MS - PayPal Standard Mgt." THEN
             EXIT;
@@ -276,11 +276,11 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         PAGE.RUNMODAL(PAGE::"MS - PayPal Standard Setup", MSPayPalStandardAccount);
     end;
 
-    [EventSubscriber(ObjectType::Table, 1400, 'OnRegisterServiceConnection', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
     local procedure RegisterServiceConnection(var ServiceConnection: Record 1400);
     var
-        MSPayPalStandardAccount: Record 1070;
-        MSPayPalStandardTemplate: Record 1071;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
         RecRef: RecordRef;
         TargetURL: Text;
     begin
@@ -305,11 +305,11 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         UNTIL MSPayPalStandardAccount.NEXT() = 0
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1875, 'OnRegisterManualSetup', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
     local procedure RegisterBusinessSetup(var Sender: Codeunit 1875);
     var
-        MSPayPalStandardAccount: Record 1070;
-        MSPayPalStandardTemplate: Record 1071;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
         ManualSetupCategory: Enum "Manual Setup Category";
     begin
         IF NOT MSPayPalStandardAccount.FINDFIRST() THEN BEGIN
@@ -325,8 +325,8 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
     procedure ValidateChangeTargetURL();
     var
-        CompanyInformationMgt: Codeunit 1306;
-        EnvironmentInfo: Codeunit 457;
+        CompanyInformationMgt: Codeunit "Company Information Mgt.";
+        EnvironmentInfo: Codeunit "Environment Information";
     begin
         IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInfo.IsSaaS() THEN
             ERROR(TargetURLCannotBeChangedInDemoCompanyErr);
@@ -334,7 +334,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
     procedure IsValidAndSecureURL(URL: Text): Boolean;
     var
-        WebRequestHelper: Codeunit 1299;
+        WebRequestHelper: Codeunit "Web Request Helper";
     begin
         if WebRequestHelper.IsValidUri(URL) then
             if WebRequestHelper.IsHttpUrl(URL) then
@@ -345,7 +345,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
     procedure GetTargetURL(): Text;
     var
-        CompanyInformationMgt: Codeunit 1306;
+        CompanyInformationMgt: Codeunit "Company Information Mgt.";
     begin
         IF CompanyInformationMgt.IsDemoCompany() THEN
             EXIT(GetSandboxURL());
@@ -360,38 +360,38 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
     local procedure GetNotifyURL(): Text;
     var
-        WebhookManagement: Codeunit 5377;
+        WebhookManagement: Codeunit "Webhook Management";
         NotifyURL: Text;
     begin
         NotifyURL := WebhookManagement.GetNotificationUrl();
         EXIT(NotifyURL);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1060, 'GetPaypalAccount', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Paypal Account Proxy", 'GetPaypalAccount', '', false, false)]
     local procedure GetPaypalAccount(var Account: Text[250]);
     var
-        MSPayPalStandardAccount: Record 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
     begin
         IF MSPayPalStandardAccount.FINDFIRST() THEN
             Account := MSPayPalStandardAccount."Account ID";
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1060, 'SetAlwaysIncludePaypalOnDocuments', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Paypal Account Proxy", 'SetAlwaysIncludePaypalOnDocuments', '', false, false)]
     local procedure HandleSetAlwaysIncludePaypalOnDocuments(NewAlwaysIncludeOnDocuments: Boolean; HideDialogs: Boolean);
     begin
         SetAlwaysIncludeOnDocuments(NewAlwaysIncludeOnDocuments, HideDialogs);
     end;
 
-    [EventSubscriber(ObjectType::Table, 1060, 'OnDoNotIncludeAnyPaymentServicesOnAllDocuments', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnDoNotIncludeAnyPaymentServicesOnAllDocuments', '', false, false)]
     local procedure HandleOnDoNotIncludeAnyPaymentServicesOnAllDocuments();
     begin
         SetAlwaysIncludeOnDocuments(false, true);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1060, 'GetPaypalSetupOptions', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Paypal Account Proxy", 'GetPaypalSetupOptions', '', false, false)]
     local procedure HandleGetPaypalSetupOptions(var Enabled: Boolean; var IncludeInAllDocuments: Boolean);
     var
-        MSPayPalStandardAccount: Record 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
     begin
         if not MSPayPalStandardAccount.FindFirst() then
             exit;
@@ -402,7 +402,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
     local procedure SetAlwaysIncludeOnDocuments(NewAlwaysIncludeOnDocuments: Boolean; HideDialogs: Boolean);
     var
-        MSPayPalStandardAccount: Record 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
     begin
         if HideDialogs then
             MSPayPalStandardAccount.HideAllDialogs();
@@ -414,13 +414,13 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         MSPayPalStandardAccount.Modify(true);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 1060, 'SetPaypalAccount', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Paypal Account Proxy", 'SetPaypalAccount', '', false, false)]
     procedure SetPaypalAccount(Account: Text[250]; Silent: Boolean);
     var
-        MSPayPalStandardAccount: Record 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
         TempPaymentServiceSetup: Record 1060 temporary;
-        MSPayPalStandardTemplate: Record 1071;
-        O365SalesInvoicePayment: Codeunit 2105;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        O365SalesInvoicePayment: Codeunit "O365 Sales Invoice Payment";
         TargetURL: Text;
     begin
         MSPayPalStandardAccount.HideAllDialogs();
@@ -461,7 +461,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
     local procedure GetCountryCode(): Code[10];
     var
-        CompanyInformation: Record 79;
+        CompanyInformation: Record "Company Information";
     begin
         IF CompanyInformation.GET() THEN
             EXIT(CompanyInformation."Country/Region Code");

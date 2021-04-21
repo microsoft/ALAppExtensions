@@ -14,11 +14,13 @@ codeunit 139842 "APIV2 - Pictures E2E"
         LibrarySales: Codeunit "Library - Sales";
         LibraryHumanResource: Codeunit "Library - Human Resource";
         LibraryInventory: Codeunit "Library - Inventory";
+        LibraryMarketing: Codeunit "Library - Marketing";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
         EmployeeAPINameTxt: Label 'employees';
         VendorAPINameTxt: Label 'vendors';
         CustomerAPINameTxt: Label 'customers';
+        ContactAPINameTxt: Label 'contacts';
         PictureAPINameTxt: Label 'picture';
         ItemAPINameTxt: Label 'items';
 
@@ -73,7 +75,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request for the image is executed
-        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
 
         // [THEN] Image metadata matches the information of the image
@@ -117,7 +119,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request for the image is executed
-        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
 
         // [THEN] Image metadata matches the information of the image
@@ -150,7 +152,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 200);
         ValidateImageValue(TempBlobExpected, TempBlobResponse);
 
-        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateImageMetadata(Response);
     end;
@@ -182,7 +184,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 200);
         ValidateImageValue(TempBlobExpected, TempBlobResponse);
 
-        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateImageMetadata(Response);
     end;
@@ -206,11 +208,11 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request to delete the image is executed
-        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId, Customer.SystemId);
+        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId);
         LibraryGraphMgt.DeleteFromWebServiceAndCheckResponseCode(TargetURL, '', Response, 204);
 
         // [THEN] An image is deleted and metadata is updated
-        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(CustomerAPINameTxt, Page::"APIV2 - Customers", Customer.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateNoImageMetadata(Response);
     end;
@@ -256,7 +258,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request for the image is executed
-        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
 
         // [THEN] Image metadata matches the information of the image
@@ -300,7 +302,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request for the image is executed
-        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
 
         // [THEN] Image metadata matches the information of the image
@@ -333,7 +335,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 200);
         ValidateImageValue(TempBlobExpected, TempBlobResponse);
 
-        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateImageMetadata(Response);
     end;
@@ -365,7 +367,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 200);
         ValidateImageValue(TempBlobExpected, TempBlobResponse);
 
-        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateImageMetadata(Response);
     end;
@@ -389,11 +391,11 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request to delete the image is executed
-        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId, Vendor.SystemId);
+        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId);
         LibraryGraphMgt.DeleteFromWebServiceAndCheckResponseCode(TargetURL, '', Response, 204);
 
         // [THEN] An image is deleted and metadata is updated
-        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(VendorAPINameTxt, Page::"APIV2 - Vendors", Vendor.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateNoImageMetadata(Response);
     end;
@@ -439,7 +441,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request for the image is executed
-        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
 
         // [THEN] Image metadata matches the information of the image
@@ -483,7 +485,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request for the image is executed
-        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
 
         // [THEN] Image metadata matches the information of the image
@@ -516,7 +518,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 200);
         ValidateImageValue(TempBlobExpected, TempBlobResponse);
 
-        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateImageMetadata(Response);
     end;
@@ -548,7 +550,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 200);
         ValidateImageValue(TempBlobExpected, TempBlobResponse);
 
-        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateImageMetadata(Response);
     end;
@@ -572,11 +574,11 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request to delete the image is executed
-        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId, Employee.SystemId);
+        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId);
         LibraryGraphMgt.DeleteFromWebServiceAndCheckResponseCode(TargetURL, '', Response, 204);
 
         // [THEN] An image is deleted and metadata is updated
-        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(EmployeeAPINameTxt, Page::"APIV2 - Employees", Employee.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateNoImageMetadata(Response);
     end;
@@ -622,7 +624,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request for the image is executed
-        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
 
         // [THEN] Image metadata matches the information of the image
@@ -666,7 +668,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request for the image is executed
-        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
 
         // [THEN] Image metadata matches the information of the image
@@ -699,7 +701,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 200);
         ValidateImageValue(TempBlobExpected, TempBlobResponse);
 
-        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateImageMetadata(Response);
     end;
@@ -731,7 +733,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
         LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 200);
         ValidateImageValue(TempBlobExpected, TempBlobResponse);
 
-        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateImageMetadata(Response);
     end;
@@ -755,11 +757,194 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Commit();
 
         // [WHEN] A request to delete the image is executed
-        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId, Item.SystemId);
+        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId);
         LibraryGraphMgt.DeleteFromWebServiceAndCheckResponseCode(TargetURL, '', Response, 204);
 
         // [THEN] An image is deleted and metadata is updated
-        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId, '');
+        TargetURL := GeneratePictureSubPageURL(ItemAPINameTxt, Page::"APIV2 - Items", Item.SystemId);
+        LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
+        ValidateNoImageMetadata(Response);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGetPictureValueContact()
+    var
+        Contact: Record Contact;
+        TempBlobResponse: Codeunit "Temp Blob";
+        TempBlobExpected: Codeunit "Temp Blob";
+        TargetURL: Text;
+    begin
+        // [FEATURE] [Contact]
+        // [SCENARIO] Get value picture from Contact Record
+
+        // [GIVEN] a contact with image attached
+        CreateTestContactWithImage(Contact, TempBlobExpected);
+        Commit();
+
+        // [WHEN] A request for the image is executed
+        TargetURL := GeneratePictureValueURL(ContactAPINameTxt, Page::"APIV2 - Contacts", Contact.SystemId);
+        LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 200);
+
+        // [THEN] An image is returned that matches original image
+        ValidateImageValue(TempBlobExpected, TempBlobResponse);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGetPictureMetadataContact()
+    var
+        Contact: Record Contact;
+        TempBlobExpected: Codeunit "Temp Blob";
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [FEATURE] [Contact]
+        // [SCENARIO] Get a picture metadata from Contact Record
+
+        // [GIVEN] a contact with image attached
+        CreateTestContactWithImage(Contact, TempBlobExpected);
+        Commit();
+
+        // [WHEN] A request for the image is executed
+        TargetURL := GeneratePictureSubPageURL(ContactAPINameTxt, Page::"APIV2 - Contacts", Contact.SystemId);
+        LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
+
+        // [THEN] Image metadata matches the information of the image
+        ValidateImageMetadata(Response);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGetPictureValueContactWithoutPicture()
+    var
+        Contact: Record Contact;
+        TempBlobResponse: Codeunit "Temp Blob";
+        TargetURL: Text;
+    begin
+        // [FEATURE] [Contact]
+        // [SCENARIO] Get value picture from Contact Record when no image exist
+
+        // [GIVEN] a contact without image
+        LibraryMarketing.CreatePersonContact(Contact);
+        Commit();
+
+        // [WHEN] A request for the image is executed
+        // [THEN] 204 - No body is returned
+        TargetURL := GeneratePictureValueURL(ContactAPINameTxt, Page::"APIV2 - Contacts", Contact.SystemId);
+        LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 204);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGetPictureMetadataContactWithoutPicture()
+    var
+        Contact: Record Contact;
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [FEATURE] [Contact]
+        // [SCENARIO] Get a picture metadata from Contact Record when no image is present
+
+        // [GIVEN] a contact 
+        LibraryMarketing.CreateCompanyContact(Contact);
+        Commit();
+
+        // [WHEN] A request for the image is executed
+        TargetURL := GeneratePictureSubPageURL(ContactAPINameTxt, Page::"APIV2 - Contacts", Contact.SystemId);
+        LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
+
+        // [THEN] Image metadata matches the information of the image
+        ValidateNoImageMetadata(Response);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestPictureUploadContact()
+    var
+        Contact: Record Contact;
+        TempBlobResponse: Codeunit "Temp Blob";
+        TempBlobExpected: Codeunit "Temp Blob";
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [FEATURE] [Contact]
+        // [SCENARIO] Set Picture on a contact without picture
+
+        // [GIVEN] a contact with image attached
+        LibraryMarketing.CreatePersonContact(Contact);
+        GetRedImageTempBlob(TempBlobExpected);
+        Commit();
+
+        // [WHEN] A request to patch the image is executed
+        TargetURL := GeneratePictureValueURL(ContactAPINameTxt, Page::"APIV2 - Contacts", Contact.SystemId);
+        LibraryGraphMgt.BinaryUpdateToWebServiceAndCheckResponseCode(TargetURL, TempBlobExpected, 'PATCH', Response, 204);
+
+        // [THEN] An image is returned that matches original image and metadata is updated
+        LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 200);
+        ValidateImageValue(TempBlobExpected, TempBlobResponse);
+
+        TargetURL := GeneratePictureSubPageURL(ContactAPINameTxt, Page::"APIV2 - Contacts", Contact.SystemId);
+        LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
+        ValidateImageMetadata(Response);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestPictureReplaceContact()
+    var
+        Contact: Record Contact;
+        TempBlobResponse: Codeunit "Temp Blob";
+        TempBlobOriginal: Codeunit "Temp Blob";
+        TempBlobExpected: Codeunit "Temp Blob";
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [FEATURE] [Contact]
+        // [SCENARIO] Replace the Picture on a contact
+
+        // [GIVEN] a contact with image attached
+        CreateTestContactWithImage(Contact, TempBlobOriginal);
+        GetBlueImageTempBlob(TempBlobExpected);
+        Commit();
+
+        // [WHEN] A request to replace the image is executed
+        TargetURL := GeneratePictureValueURL(ContactAPINameTxt, Page::"APIV2 - Contacts", Contact.SystemId);
+        LibraryGraphMgt.BinaryUpdateToWebServiceAndCheckResponseCode(TargetURL, TempBlobExpected, 'PATCH', Response, 204);
+
+        // [THEN] An image is returned that matches new and metadata is updated
+        LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlobResponse, TargetURL, 'application/octet-stream', 200);
+        ValidateImageValue(TempBlobExpected, TempBlobResponse);
+
+        TargetURL := GeneratePictureSubPageURL(ContactAPINameTxt, Page::"APIV2 - Contacts", Contact.SystemId);
+        LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
+        ValidateImageMetadata(Response);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestPictureDeleteContact()
+    var
+        Contact: Record Contact;
+        TempBlobOriginal: Codeunit "Temp Blob";
+        TempBlobExpected: Codeunit "Temp Blob";
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [FEATURE] [Contact]
+        // [SCENARIO] Replace the Picture on a contact
+
+        // [GIVEN] a contact with image attached
+        CreateTestContactWithImage(Contact, TempBlobOriginal);
+        GetBlueImageTempBlob(TempBlobExpected);
+        Commit();
+
+        // [WHEN] A request to delete the image is executed
+        TargetURL := GeneratePictureSubPageURL(ContactAPINameTxt, Page::"APIV2 - Contacts", Contact.SystemId);
+        LibraryGraphMgt.DeleteFromWebServiceAndCheckResponseCode(TargetURL, '', Response, 204);
+
+        // [THEN] An image is deleted and metadata is updated
+        TargetURL := GeneratePictureSubPageURL(ContactAPINameTxt, Page::"APIV2 - Contacts", Contact.SystemId);
         LibraryGraphMgt.GetFromWebServiceAndCheckResponseCode(Response, TargetURL, 200);
         ValidateNoImageMetadata(Response);
     end;
@@ -808,6 +993,17 @@ codeunit 139842 "APIV2 - Pictures E2E"
         Customer.Modify(true);
     end;
 
+    local procedure CreateTestContactWithImage(var Contact: Record Contact; var TempBlob: Codeunit "Temp Blob")
+    var
+        ImageInStream: InStream;
+    begin
+        LibraryMarketing.CreatePersonContact(Contact);
+        GetRedImageTempBlob(TempBlob);
+        TempBlob.CreateInStream(ImageInStream);
+        Contact.Image.ImportStream(ImageInStream, Contact."No." + '.jpg');
+        Contact.Modify(true);
+    end;
+
     local procedure GetRedImageTempBlob(var TempBlob: Codeunit "Temp Blob")
     var
         Base64Convert: Codeunit "Base64 Convert";
@@ -840,7 +1036,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
           'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAAAxJREFUGFdjsPc4AwACHQFUQMUSiAAAAABJRU5ErkJggg==');
     end;
 
-    local procedure GeneratePictureSubPageURL(APIName: Text; APIPageNumber: Integer; ID: Text; SubPageID: Text): Text
+    local procedure GeneratePictureSubPageURL(APIName: Text; APIPageNumber: Integer; ID: Text): Text
     var
         TargetURL: Text;
     begin
@@ -853,7 +1049,7 @@ codeunit 139842 "APIV2 - Pictures E2E"
     var
         TargetURL: Text;
     begin
-        TargetURL := GeneratePictureSubPageURL(APIName, APIPageNumber, ID, '') + '/pictureContent';
+        TargetURL := GeneratePictureSubPageURL(APIName, APIPageNumber, ID) + '/pictureContent';
         exit(TargetURL);
     end;
 
@@ -902,5 +1098,6 @@ codeunit 139842 "APIV2 - Pictures E2E"
           Base64Convert.ToBase64(ImageInStream), Base64Convert.ToBase64(ExpectedInStream),
           'Recieved image is not the same as uploaded image');
     end;
+
 }
 

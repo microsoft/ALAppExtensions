@@ -17,6 +17,7 @@ page 1750 "Field Data Classification"
     PageType = List;
     SourceTable = "Field";
     ContextSensitiveHelpPage = 'admin-classifying-data-sensitivity';
+    Permissions = tabledata Field = r;
 
     layout
     {

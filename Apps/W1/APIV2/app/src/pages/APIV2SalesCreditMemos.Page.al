@@ -399,8 +399,8 @@ page 30038 "APIV2 - Sales Credit Memos"
                 }
                 part(pdfDocument; "APIV2 - PDF Document")
                 {
-                    //TODO - WaitingModernDevProperty, Caption = 'PDF Document';
-                    CaptionML = ENU = 'Multiplicity=ZeroOrOne';
+                    Caption = 'PDF Document';
+                    Multiplicity = ZeroOrOne;
                     EntityName = 'pdfDocument';
                     EntitySetName = 'pdfDocument';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const(4);
@@ -602,7 +602,6 @@ page 30038 "APIV2 - Sales Credit Memos"
         Currency: Record "Currency";
         PaymentTerms: Record "Payment Terms";
         ShipmentMethod: Record "Shipment Method";
-        GraphMgtSalesCreditMemo: Codeunit "Graph Mgt - Sales Credit Memo";
         GraphMgtSalCrMemoBuf: Codeunit "Graph Mgt - Sal. Cr. Memo Buf.";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         LCYCurrencyCode: Code[10];

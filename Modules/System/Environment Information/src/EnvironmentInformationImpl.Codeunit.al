@@ -62,13 +62,13 @@ codeunit 3702 "Environment Information Impl."
 
     procedure IsSaaS(): Boolean
     var
-        MembershipEntitlement: Record "Membership Entitlement";
+        ServerSettings: Codeunit "Server Setting";
     begin
         if TestabilitySoftwareAsAService then
             exit(true);
 
         if not IsSaasInitialized then begin
-            IsSaaSConfig := not MembershipEntitlement.IsEmpty();
+            IsSaaSConfig := IsSandbox() or ServerSettings.GetEnableMembershipEntitlement();
             IsSaasInitialized := true;
         end;
 

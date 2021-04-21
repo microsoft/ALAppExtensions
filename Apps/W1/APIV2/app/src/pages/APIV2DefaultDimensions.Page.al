@@ -62,6 +62,7 @@ page 30054 "APIV2 - Default Dimensions"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
+        DefaultDimensionParentType: Enum "Default Dimension Parent Type";
         ParentIdFilter: Text;
         ParentTypeFilter: Text;
     begin
@@ -69,7 +70,8 @@ page 30054 "APIV2 - Default Dimensions"
             ParentTypeFilter := GetFilter("Parent Type");
             if ParentTypeFilter = '' then
                 Error(ParentNotSpecifiedErr);
-            Validate("Parent Type", GetParentTypeFromFilter(ParentTypeFilter));
+            Evaluate(DefaultDimensionParentType, ParentTypeFilter);
+            Validate("Parent Type", DefaultDimensionParentType);
         end;
         if IsNullGuid(ParentId) then begin
             ParentIdFilter := GetFilter(ParentId);
@@ -82,18 +84,4 @@ page 30054 "APIV2 - Default Dimensions"
 
     var
         ParentNotSpecifiedErr: Label 'You must get to the parent first to get to the default dimensions.';
-
-    local procedure GetParentTypeFromFilter(ParentTypeFilter: Text): Enum "Default Dimension Parent Type"
-    begin
-        case ParentTypeFilter of
-            'Customer':
-                exit("Parent Type"::Customer);
-            'Employee':
-                exit("Parent Type"::Employee);
-            'Item':
-                exit("Parent Type"::Item);
-            'Vendor':
-                exit("Parent Type"::Vendor);
-        end;
-    end;
 }

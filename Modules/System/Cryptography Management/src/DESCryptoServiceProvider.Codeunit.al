@@ -22,7 +22,7 @@ codeunit 1379 DESCryptoServiceProvider
     /// <param name="Password">Represents the password to be used to initialize a new instance of DotNet System.Security.Cryptography.Rfc2898DeriveBytes</param>
     /// <param name="Salt">Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes</param>
     /// <param name="DecryptedText">Represents the text to encrypt</param>
-    /// <return name="EncryptedText">Returns the encrypted text</return>
+    /// <returns name="EncryptedText">Returns the encrypted text</returns>
     [NonDebuggable]
     procedure EncryptText(DecryptedText: Text; Password: Text; Salt: Text) EncryptedText: Text
     begin
@@ -35,7 +35,7 @@ codeunit 1379 DESCryptoServiceProvider
     /// <param name="Password">Represents the password to be used to initialize a new instance of DotNet System.Security.Cryptography.Rfc2898DeriveBytes</param>
     /// <param name="Salt">Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes</param>
     /// <param name="EncryptedText">Represents the text to decrypt</param>
-    /// <return name="DecryptedText">Returns the decrypted text</return>
+    /// <returns name="DecryptedText">Returns the decrypted text</returns>
     [NonDebuggable]
     procedure DecryptText(EncryptedText: Text; Password: Text; Salt: Text) DecryptedText: Text
     begin

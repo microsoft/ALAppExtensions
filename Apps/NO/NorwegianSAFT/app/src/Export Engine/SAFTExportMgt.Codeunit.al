@@ -523,10 +523,7 @@ codeunit 10675 "SAF-T Export Mgt."
         FileMgt: Codeunit "File Management";
         DataCompression: Codeunit "Data Compression";
         EntryTempBlob: Codeunit "Temp Blob";
-        ZipTempBlob: Codeunit "Temp Blob";
         EntryFileInStream: InStream;
-        ZipOutStream: OutStream;
-        ZipInStream: InStream;
         FilesPerZip: Integer;
         FilesHandled: Integer;
     begin
@@ -584,7 +581,6 @@ codeunit 10675 "SAF-T Export Mgt."
     local procedure SaveZipFile(var DataCompression: Codeunit "Data Compression"; var FilesHandled: Integer; SAFTExportHeader: Record "SAF-T Export Header")
     var
         SAFTExportFile: Record "SAF-T Export File";
-        ZipTempBlob: Codeunit "Temp Blob";
         ZipOutStream: OutStream;
     begin
         InitExportFile(SAFTExportFile, SAFTExportHeader);
@@ -599,7 +595,6 @@ codeunit 10675 "SAF-T Export Mgt."
     var
         ZipTempBlob: Codeunit "Temp Blob";
         ZipClientFile: File;
-        ZipArchiveFile: File;
         ZipOutStream: OutStream;
         ZipInStream: InStream;
     begin

@@ -9,6 +9,7 @@
 page 8887 "Email Accounts"
 {
     PageType = List;
+    Caption = 'Email Accounts';
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "Email Account";
@@ -98,6 +99,17 @@ page 8887 "Email Accounts"
                 }
             }
         }
+
+        area(factboxes)
+        {
+            part(Scenarios; "Email Scenarios FactBox")
+            {
+                Caption = 'Email Scenarios';
+                ToolTip = 'The email scenarios assigned to the selected account.';
+                SubPageLink = "Account Id" = field("Account Id"), Connector = field(Connector), Scenario = filter(<> 0); // Do not show Default scenario
+                ApplicationArea = All;
+            }
+        }
     }
 
     actions
@@ -150,6 +162,7 @@ page 8887 "Email Accounts"
                 Caption = 'Compose Email';
                 ToolTip = 'Compose a new email message.';
                 Visible = not LookupMode;
+                Enabled = HasEmailAccount;
 
                 trigger OnAction()
                 var
@@ -173,6 +186,7 @@ page 8887 "Email Accounts"
                 RunObject = codeunit "Email Test Mail";
                 RunPageOnRec = true;
                 Visible = not LookupMode;
+                Enabled = HasEmailAccount;
             }
 
             action(MakeDefault)
@@ -331,6 +345,8 @@ page 8887 "Email Accounts"
         end else
             if Rec.FindFirst() then;
 
+        HasEmailAccount := not Rec.IsEmpty();
+
         CurrPage.Update(false);
     end;
 
@@ -348,16 +364,27 @@ page 8887 "Email Accounts"
         Connector.ShowAccountInformation(Rec."Account Id");
     end;
 
+    /// <summary>
+    /// Gets the selected email account.
+    /// </summary>
+    /// <param name="Account">The selected email account</param>
     procedure GetAccount(var Account: Record "Email Account")
     begin
         Account := Rec;
     end;
 
+    /// <summary>
+    /// Sets an email account to be selected.
+    /// </summary>
+    /// <param name="Account">The email account to be initially selected on the page</param>
     procedure SetAccount(var Account: Record "Email Account")
     begin
         Rec := Account;
     end;
 
+    /// <summary>
+    /// Enables the lookup mode on the page.
+    /// </summary>
     procedure EnableLookupMode()
     begin
         LookupMode := true;
@@ -374,5 +401,6 @@ page 8887 "Email Accounts"
         UpdateAccounts: Boolean;
         ShowLogo: Boolean;
         LookupMode: Boolean;
+        HasEmailAccount: Boolean;
         EmailConnectorHasBeenUninstalledMsg: Label 'The selected email extension has been uninstalled. To view information about the email account, you must reinstall the extension.';
 }

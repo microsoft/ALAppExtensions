@@ -6,6 +6,9 @@
 codeunit 1432 "Satisfaction Survey Impl."
 {
     Access = Internal;
+    Permissions = tabledata "Net Promoter Score" =  rimd,
+                  tabledata "Net Promoter Score Setup" = rimd,
+                  tabledata "User Property" = r;
 
     var
         FinancialsUriSegmentTxt: Label 'financials', Locked = true;

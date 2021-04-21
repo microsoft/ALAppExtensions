@@ -8,6 +8,7 @@
 /// </summary>
 page 3904 "Retention Policy Log Entries"
 {
+    Caption = 'Retention Policy Log Entries';
     PageType = List;
     ApplicationArea = All;
     UsageCategory = Lists;

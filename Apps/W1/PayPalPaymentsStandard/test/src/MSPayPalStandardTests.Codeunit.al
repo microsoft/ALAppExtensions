@@ -7,16 +7,16 @@ codeunit 139500 "MS - PayPal Standard Tests"
     TestPermissions = Disabled;
 
     var
-        Assert: Codeunit 130000;
-        LibraryUtility: Codeunit 131000;
+        Assert: Codeunit "Assert";
+        LibraryUtility: Codeunit "Library - Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
-        LibrarySales: Codeunit 130509;
-        LibraryInventory: Codeunit 132201;
-        LibraryERM: Codeunit 131300;
-        LibraryRandom: Codeunit 130440;
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibraryERM: Codeunit "Library - ERM";
+        LibraryRandom: Codeunit "Library - Random";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
-        MSPayPalStdMockEvents: Codeunit 139503;
-        ActiveDirectoryMockEvents: Codeunit 131033;
+        MSPayPalStdMockEvents: Codeunit "MS - PayPal Std Mock Events";
+        ActiveDirectoryMockEvents: Codeunit "Active Directory Mock Events";
         DatasetFileName: Text;
         Initialized: Boolean;
         UpdateOpenInvoicesManuallyTxt: Label 'A link for the PayPal payment service will be included for new sales documents. To add it to existing sales documents, you must manually select it in the Payment Service field on the sales document.';
@@ -47,13 +47,13 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure Initialize();
     var
-        CompanyInfo: Record 79;
-        MSPayPalStandardAccount: Record 1070;
-        MSPayPalTransaction: Record 1077;
-        DummySalesHeader: Record 36;
-        DummyPaymentMethod: Record 289;
-        WebhookSubscription: Record 2000000199;
-        WebhookNotification: Record 2000000194;
+        CompanyInfo: Record "Company Information";
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        MSPayPalTransaction: Record "MS - PayPal Transaction";
+        DummySalesHeader: Record "Sales Header";
+        DummyPaymentMethod: Record "Payment Method";
+        WebhookSubscription: Record "Webhook Subscription";
+        WebhookNotification: Record "Webhook Notification";
     begin
         BindActiveDirectoryMockEvents();
 
@@ -87,8 +87,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('AccountSetupPageModalPageHandler,ConfirmHandler,SelectPaymentServiceTypeHandler')]
     procedure TestCreateNewPaymentService();
     var
-        ExpectedPaymentServiceSetup: Record 1060;
-        PaymentServices: TestPage 1060;
+        ExpectedPaymentServiceSetup: Record "Payment Service Setup";
+        PaymentServices: TestPage "Payment Services";
         ChangeValuesOnSetupPage: Boolean;
         Enabled: Boolean;
         AlwaysInclude: Boolean;
@@ -126,9 +126,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [Test]
     procedure TestExistingPaymentServicesAreShownInTheList();
     var
-        MSPayPalStandardAccount: Record 1070;
-        ExpectedPaymentServiceSetup: Record 1060;
-        PaymentServices: TestPage 1060;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        ExpectedPaymentServiceSetup: Record "Payment Service Setup";
+        PaymentServices: TestPage "Payment Services";
     begin
         // Setup
         Initialize();
@@ -154,9 +154,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('AccountSetupPageModalPageHandler,MessageHandler')]
     procedure TestSetupPaymentService();
     var
-        MSPayPalStandardAccount: Record 1070;
-        ExpectedMSPayPalStandardAccount: Record 1070;
-        PaymentServices: TestPage 1060;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        ExpectedMSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        PaymentServices: TestPage "Payment Services";
         ChangeValuesOnSetupPage: Boolean;
     begin
         // Setup
@@ -193,9 +193,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('AccountSetupPageModalPageHandler,ConfirmHandler')]
     procedure TestEnablingWhenClosingSetupPage();
     var
-        MSPayPalStandardAccount: Record 1070;
-        ExpectedMSPayPalStandardAccount: Record 1070;
-        PaymentServices: TestPage 1060;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        ExpectedMSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        PaymentServices: TestPage "Payment Services";
         ChangeValuesOnSetupPage: Boolean;
         EnableServiceWhenClosingCard: Boolean;
     begin
@@ -232,7 +232,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [Test]
     procedure TestCannotEnableWithoutAccountID();
     var
-        MSPayPalStandardAccount: Record 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
     begin
         // Setup
         Initialize();
@@ -247,7 +247,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [Test]
     procedure TestCannotBlankAccountIDWhenEnabled();
     var
-        MSPayPalStandardAccount: Record 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
     begin
         // Setup
         Initialize();
@@ -263,10 +263,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('AccountSetupPageModalPageHandler,ConfirmHandler,SelectPaymentServiceTypeHandler')]
     procedure TestEditPayPalTemplate();
     var
-        MSPayPalStandardTemplate: Record 1071;
-        ExpectedPaymentServiceSetup: Record 1060;
-        MSPayPalStandardMgt: Codeunit 1070;
-        PaymentServices: TestPage 1060;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        ExpectedPaymentServiceSetup: Record "Payment Service Setup";
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
+        PaymentServices: TestPage "Payment Services";
         ChangeValuesOnSetupPage: Boolean;
         Enabled: Boolean;
         AlwaysInclude: Boolean;
@@ -312,10 +312,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler,ConfirmHandler')]
     procedure TestResetToDefaultPayPalTemplate();
     var
-        MSPayPalStandardTemplate: Record 1071;
-        NewMSPayPalStandardTemplate: Record 1071;
-        MSPayPalStandardMgt: Codeunit 1070;
-        MSPayPalStandardTemplateSetupPage: TestPage 1071;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        NewMSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
+        MSPayPalStandardTemplateSetupPage: TestPage "MS - PayPal Standard Template";
         NewName: Text;
         NewDescription: Text;
         ExpectedTargetURL: Text;
@@ -344,11 +344,11 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler,ConfirmHandler')]
     procedure TestResetToDefaultPayPalTemplateInDemoCompany();
     var
-        MSPayPalStandardTemplate: Record 1071;
-        NewMSPayPalStandardTemplate: Record 1071;
-        CompanyInformation: Record 79;
-        MSPayPalStandardMgt: Codeunit 1070;
-        MSPayPalStandardTemplateSetupPage: TestPage 1071;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        NewMSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        CompanyInformation: Record "Company Information";
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
+        MSPayPalStandardTemplateSetupPage: TestPage "MS - PayPal Standard Template";
         NewName: Text;
         NewDescription: Text;
         ExpectedTargetURL: Text;
@@ -385,7 +385,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [Test]
     procedure TestServiceConnectionListShowsDisabledPaymentServices();
     var
-        MSPayPalStandardAccount: Record 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
     begin
         Initialize();
 
@@ -399,7 +399,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [Test]
     procedure TestServiceConnectionListShowsEnabledPaymentServices();
     var
-        MSPayPalStandardAccount: Record 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
     begin
         Initialize();
 
@@ -415,8 +415,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('AccountSetupPageModalPageHandler,MessageHandler')]
     procedure TestServiceConnectionListOpensPaymentServicesSetupCard();
     var
-        MSPayPalStandardAccount: Record 1070;
-        ServiceConnections: TestPage 1279;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        ServiceConnections: TestPage "Service Connections";
     begin
         Initialize();
 
@@ -441,10 +441,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('SelectPaymentServiceModalPageHandler')]
     procedure TestSelectingStandardPayPalService();
     var
-        MSPayPalStandardAccount: Record 1070;
-        SalesHeader: Record 36;
-        DummyPaymentMethod: Record 289;
-        SalesInvoice: TestPage 43;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        SalesHeader: Record "Sales Header";
+        DummyPaymentMethod: Record "Payment Method";
+        SalesInvoice: TestPage "Sales Invoice";
         NewAvailable: Boolean;
     begin
         // Setup
@@ -471,9 +471,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler')]
     procedure TestOnlyOneAlwaysIncludedStandardPayPalService();
     var
-        MSPayPalStandardAccount1: Record 1070;
-        MSPayPalStandardAccount2: Record 1070;
-        MSPayPalStandardAccount: Record 1070;
+        MSPayPalStandardAccount1: Record "MS - PayPal Standard Account";
+        MSPayPalStandardAccount2: Record "MS - PayPal Standard Account";
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
     begin
         // Setup
         Initialize();
@@ -520,11 +520,11 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('SalesInvoiceReportRequestPageHandler,MessageHandler')]
     procedure TestSalesInvoiceReportSingleInvoice();
     var
-        TempPaymentServiceSetup: Record 1060 temporary;
-        MSPayPalStandardAccount: Record 1070;
-        DummyPaymentMethod: Record 289;
-        SalesInvoiceHeader: Record 112;
-        TempPaymentReportingArgument: Record 1062 temporary;
+        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        DummyPaymentMethod: Record "Payment Method";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
     begin
         Initialize();
 
@@ -551,13 +551,13 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('SalesInvoiceReportRequestPageHandler,MessageHandler')]
     procedure TestSalesInvoiceReportMultipleInvoices();
     var
-        TempPaymentServiceSetup: Record 1060 temporary;
-        MSPayPalStandardAccount: Record 1070;
-        DummyPaymentMethod: Record 289;
-        SalesInvoiceHeader: Record 112;
-        SalesInvoiceHeader2: Record 112;
-        TempPaymentReportingArgument: Record 1062 temporary;
-        TempPaymentReportingArgument2: Record 1062 temporary;
+        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        DummyPaymentMethod: Record "Payment Method";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceHeader2: Record "Sales Invoice Header";
+        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
+        TempPaymentReportingArgument2: Record "Payment Reporting Argument" temporary;
     begin
         Initialize();
         SalesInvoiceHeader.DELETEALL();
@@ -593,11 +593,11 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('SalesInvoiceReportRequestPageHandler,MessageHandler')]
     procedure TestSalesInvoiceReportChangeTargetURL();
     var
-        TempPaymentServiceSetup: Record 1060 temporary;
-        MSPayPalStandardAccount: Record 1070;
-        DummyPaymentMethod: Record 289;
-        SalesInvoiceHeader: Record 112;
-        TempPaymentReportingArgument: Record 1062 temporary;
+        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        DummyPaymentMethod: Record "Payment Method";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
     begin
         Initialize();
 
@@ -641,15 +641,15 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     procedure TestCoverLetterPaymentLinkInternal();
     var
-        TempPaymentServiceSetup: Record 1060 temporary;
-        MSPayPalStandardAccount: Record 1070;
-        DummyPaymentMethod: Record 289;
-        SalesInvoiceHeader: Record 112;
-        TempPaymentReportingArgument: Record 1062 temporary;
+        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        DummyPaymentMethod: Record "Payment Method";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
         LibraryInvoicingApp: Codeunit "Library - Invoicing App";
         LibraryWorkflow: Codeunit "Library - Workflow";
         EmailFeature: Codeunit "Email Feature";
-        PostedSalesInvoice: TestPage 132;
+        PostedSalesInvoice: TestPage "Posted Sales Invoice";
     begin
         Initialize();
 
@@ -679,12 +679,12 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler')]
     procedure TestYourReferenceIsIncludedInTheLink();
     var
-        TempPaymentServiceSetup: Record 1060 temporary;
-        MSPayPalStandardAccount: Record 1070;
-        DummyPaymentMethod: Record 289;
-        SalesInvoiceHeader: Record 112;
-        SalesHeader: Record 36;
-        TempPaymentReportingArgument: Record 1062 temporary;
+        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        DummyPaymentMethod: Record "Payment Method";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesHeader: Record "Sales Header";
+        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
         YourReference: Text[20];
         TargetURL: Text;
     begin
@@ -711,8 +711,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('AccountSetupPageModalPageHandler,ConfirmHandler,SelectPaymentServiceTypeHandler')]
     procedure TestTermsOfService();
     var
-        MSPayPalStandardTemplate: Record 1071;
-        PaymentServices: TestPage 1060;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        PaymentServices: TestPage "Payment Services";
         EnableServiceWhenClosingCard: Boolean;
     begin
         // Setup
@@ -739,9 +739,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [Test]
     procedure TestInsertDemoPayPalAccount();
     var
-        MSPayPalStandardTemplate: Record 1071;
-        MSPayPalStandardAccount: Record 1070;
-        MSPayPalCreateDemoData: Codeunit 1072;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        MSPayPalCreateDemoData: Codeunit "MS - PayPal Create Demo Data";
     begin
         // Setup
         Initialize();
@@ -766,10 +766,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler')]
     procedure TestInsertDemoPayPalAccountDoesNothingIfTheAccountExist();
     var
-        MSPayPalStandardTemplate: Record 1071;
-        MSPayPalStandardAccount: Record 1070;
-        CompanyInformation: Record 79;
-        MSPayPalCreateDemoData: Codeunit 1072;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        CompanyInformation: Record "Company Information";
+        MSPayPalCreateDemoData: Codeunit "MS - PayPal Create Demo Data";
     begin
         Initialize();
 
@@ -799,9 +799,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler')]
     procedure TestWebhookIsCreatedWhenSettingupAccount();
     var
-        MSPayPalStandardAccount: Record 1070;
-        WebhookSubscription: Record 2000000199;
-        PayPalStandardSetup: TestPage 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        WebhookSubscription: Record "Webhook Subscription";
+        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
     begin
         Initialize();
         CreatePayPalStandardAccount(MSPayPalStandardAccount);
@@ -823,9 +823,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler')]
     procedure TestWebhookIsUpdatedAfterModifyingAccount();
     var
-        MSPayPalStandardAccount: Record 1070;
-        WebhookSubscription: Record 2000000199;
-        PayPalStandardSetup: TestPage 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        WebhookSubscription: Record "Webhook Subscription";
+        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
         newAcountId: Text[250];
     begin
         Initialize();
@@ -849,9 +849,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('ConfirmHandler,MessageHandler')]
     procedure TestWebhookIsDeletedAfterModifyingAccountToEmpty();
     var
-        MSPayPalStandardAccount: Record 1070;
-        WebhookSubscription: Record 2000000199;
-        PayPalStandardSetup: TestPage 1070;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        WebhookSubscription: Record "Webhook Subscription";
+        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
     begin
         Initialize();
         CreateDefaultPayPalStandardAccount(MSPayPalStandardAccount);
@@ -875,10 +875,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler')]
     procedure TestPaymentNotificationUrlIsIncludedInTheLink();
     var
-        TempPaymentServiceSetup: Record 1060 temporary;
-        MSPayPalStandardAccount: Record 1070;
-        SalesInvoiceHeader: Record 112;
-        TempPaymentReportingArgument: Record 1062 temporary;
+        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
         TypeHelper: Codeunit "Type Helper";
         NotifyUri: Text;
         TargetURL: Text;
@@ -905,10 +905,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler')]
     procedure TestPaymentNotificationDoesNothingIfPendingStatus();
     var
-        MSPayPalStandardAccount: Record 1070;
-        SalesInvoiceHeader: Record 112;
-        TempPaymentRegistrationBuffer: Record 981 temporary;
-        O365SalesInvoicePayment: Codeunit 2105;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempPaymentRegistrationBuffer: Record "Payment Registration Buffer" temporary;
+        O365SalesInvoicePayment: Codeunit "O365 Sales Invoice Payment";
     begin
         Initialize();
 
@@ -928,10 +928,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler')]
     procedure TestPaymentNotificationDoesNothingIfMissingInvoice();
     var
-        MSPayPalStandardAccount: Record 1070;
-        SalesInvoiceHeader: Record 112;
-        TempPaymentRegistrationBuffer: Record 981 temporary;
-        O365SalesInvoicePayment: Codeunit 2105;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempPaymentRegistrationBuffer: Record "Payment Registration Buffer" temporary;
+        O365SalesInvoicePayment: Codeunit "O365 Sales Invoice Payment";
     begin
         Initialize();
 
@@ -952,10 +952,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler')]
     procedure TestPaymentNotificationMarksInvoiceAsPartlyPaid();
     var
-        MSPayPalStandardAccount: Record 1070;
-        SalesInvoiceHeader: Record 112;
-        TempPaymentRegistrationBuffer: Record 981 temporary;
-        O365SalesInvoicePayment: Codeunit 2105;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempPaymentRegistrationBuffer: Record "Payment Registration Buffer" temporary;
+        O365SalesInvoicePayment: Codeunit "O365 Sales Invoice Payment";
         RemainingAmount: Decimal;
         ReceivedAmount: Decimal;
     begin
@@ -979,10 +979,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler')]
     procedure TestPaymentNotificationMarksInvoiceAsFullyPaid();
     var
-        MSPayPalStandardAccount: Record 1070;
-        SalesInvoiceHeader: Record 112;
-        TempPaymentRegistrationBuffer: Record 981 temporary;
-        O365SalesInvoicePayment: Codeunit 2105;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempPaymentRegistrationBuffer: Record "Payment Registration Buffer" temporary;
+        O365SalesInvoicePayment: Codeunit "O365 Sales Invoice Payment";
     begin
         Initialize();
 
@@ -1002,10 +1002,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
     [HandlerFunctions('MessageHandler')]
     procedure TestPaymentNotificationMarksInvoiceAsOverPaid();
     var
-        MSPayPalStandardAccount: Record 1070;
-        SalesInvoiceHeader: Record 112;
-        TempPaymentRegistrationBuffer: Record 981 temporary;
-        O365SalesInvoicePayment: Codeunit 2105;
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempPaymentRegistrationBuffer: Record "Payment Registration Buffer" temporary;
+        O365SalesInvoicePayment: Codeunit "O365 Sales Invoice Payment";
         ReceivedAmount: Decimal;
     begin
         Initialize();
@@ -1023,10 +1023,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
         VerifyPaymentEvent(OverpaymentTok, SalesInvoiceHeader."No.", ReceivedAmount);
     end;
 
-    local procedure SetupPaymentNotification(var MSPayPalStandardAccount: Record 1070; var SalesInvoiceHeader: Record 112);
+    local procedure SetupPaymentNotification(var MSPayPalStandardAccount: Record "MS - PayPal Standard Account"; var SalesInvoiceHeader: Record "Sales Invoice Header");
     var
-        SalesHeader: Record 36;
-        DummyPaymentMethod: Record 289;
+        SalesHeader: Record "Sales Header";
+        DummyPaymentMethod: Record "Payment Method";
     begin
         CreateDefaultPayPalStandardAccount(MSPayPalStandardAccount);
         SetupWebhookSubscription(MSPayPalStandardAccount."Account ID");
@@ -1041,8 +1041,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure SetupWebhookSubscription(AccountID: Text);
     var
-        WebhookSubscription: Record 2000000199;
-        WebhookManagement: Codeunit 5377;
+        WebhookSubscription: Record "Webhook Subscription";
+        WebhookManagement: Codeunit "Webhook Management";
         WebHooksAdapterUri: Text[250];
     begin
         WebHooksAdapterUri := WebhookManagement.GetNotificationUrl();
@@ -1057,7 +1057,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure GetPaymentNotificationURL(): Text;
     var
-        WebhookManagement: Codeunit 5377;
+        WebhookManagement: Codeunit "Webhook Management";
         NotifyURL: Text;
     begin
         NotifyURL := WebhookManagement.GetNotificationUrl();
@@ -1078,7 +1078,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure SendPaymentNotification(Receiver: Text; PaymentStatus: Text; InvoiceNo: Code[20]; Currency: Code[10]; Amount: Decimal);
     var
-        WebhookNotification: Record 2000000194;
+        WebhookNotification: Record "Webhook Notification";
         OutStream: OutStream;
         NotificationJson: Text;
     begin
@@ -1091,7 +1091,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         WebhookNotification.INSERT();
     end;
 
-    local procedure VerifyRemainingAmount(var TempPaymentRegistrationBuffer: Record 981 temporary; RemainingAmount: Decimal);
+    local procedure VerifyRemainingAmount(var TempPaymentRegistrationBuffer: Record "Payment Registration Buffer" temporary; RemainingAmount: Decimal);
     var
         Paid: Boolean;
     begin
@@ -1124,7 +1124,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure GetDefaultCurrencyCode(): Code[10];
     var
-        GeneralLedgerSetup: Record 98;
+        GeneralLedgerSetup: Record "General Ledger Setup";
         CurrencyCode: Code[10];
     begin
         GeneralLedgerSetup.GET();
@@ -1134,8 +1134,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure ModifyPayPalTemplate(var NewName: Text; var NewDescription: Text);
     var
-        MSPayPalStandardSetup: TestPage 1070;
-        MSPayPalStandardTemplate: TestPage 1071;
+        MSPayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
+        MSPayPalStandardTemplate: TestPage "MS - PayPal Standard Template";
         EnableServiceWhenClosingCard: Boolean;
     begin
         MSPayPalStandardSetup.OPENEDIT();
@@ -1188,10 +1188,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
         LibraryVariableStorage.Enqueue(NewAvailable);
     end;
 
-    local procedure CreatePayPalStandardAccount(var MSPayPalStandardAccount: Record 1070);
+    local procedure CreatePayPalStandardAccount(var MSPayPalStandardAccount: Record "MS - PayPal Standard Account");
     var
-        MSPayPalStandardTemplate: Record 1071;
-        MSPayPalStandardMgt: Codeunit 1070;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
         MSPayPalStandardMgt.GetTemplate(MSPayPalStandardTemplate);
         MSPayPalStandardAccount.INIT();
@@ -1205,13 +1205,13 @@ codeunit 139500 "MS - PayPal Standard Tests"
         MSPayPalStandardAccount.INSERT(TRUE);
     end;
 
-    local procedure EnablePayPalStandardAccount(var MSPayPalStandardAccount: Record 1070);
+    local procedure EnablePayPalStandardAccount(var MSPayPalStandardAccount: Record "MS - PayPal Standard Account");
     begin
         MSPayPalStandardAccount.VALIDATE(Enabled, TRUE);
         MSPayPalStandardAccount.MODIFY(TRUE);
     end;
 
-    local procedure CreateDefaultPayPalStandardAccount(var DefaultMSPayPalStandardAccount: Record 1070);
+    local procedure CreateDefaultPayPalStandardAccount(var DefaultMSPayPalStandardAccount: Record "MS - PayPal Standard Account");
     begin
         CreatePayPalStandardAccount(DefaultMSPayPalStandardAccount);
         EnablePayPalStandardAccount(DefaultMSPayPalStandardAccount);
@@ -1220,15 +1220,15 @@ codeunit 139500 "MS - PayPal Standard Tests"
         DefaultMSPayPalStandardAccount.MODIFY(TRUE);
     end;
 
-    local procedure CreateAndPostSalesInvoice(var SalesInvoiceHeader: Record 112; PaymentMethod: Record 289);
+    local procedure CreateAndPostSalesInvoice(var SalesInvoiceHeader: Record "Sales Invoice Header"; PaymentMethod: Record "Payment Method");
     var
-        SalesHeader: Record 36;
+        SalesHeader: Record "Sales Header";
     begin
         CreateSalesInvoice(SalesHeader, PaymentMethod);
         PostSalesInvoice(SalesHeader, SalesInvoiceHeader);
     end;
 
-    local procedure PostSalesInvoice(var SalesHeader: Record 36; var SalesInvoiceHeader: Record 112);
+    local procedure PostSalesInvoice(var SalesHeader: Record "Sales Header"; var SalesInvoiceHeader: Record "Sales Invoice Header");
     begin
         SalesInvoiceHeader.SETAUTOCALCFIELDS(Closed);
         SalesInvoiceHeader.GET(LibrarySales.PostSalesDocument(SalesHeader, TRUE, TRUE));
@@ -1236,16 +1236,17 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure SetupReportSelections();
     var
-        CustomReportLayout: Record 9650;
-        ReportSelections: Record 77;
-        NativeReports: Codeunit 2822;
+        CustomReportLayout: Record "Custom Report Layout";
+        ReportSelections: Record "Report Selections";
+        NativeReports: Codeunit "Native - Reports";
     begin
         ReportSelections.DELETEALL();
         CreateDefaultReportSelection();
 
         GetCustomBodyLayout(CustomReportLayout);
 
-        ReportSelections.FilterPrintUsage(NativeReports.PostedSalesInvoiceReportId());
+	ReportSelections.Reset();
+        ReportSelections.SetRange(Usage, NativeReports.PostedSalesInvoiceReportId());
         ReportSelections.FINDFIRST();
         ReportSelections.VALIDATE("Use for Email Attachment", TRUE);
         ReportSelections.VALIDATE("Use for Email Body", TRUE);
@@ -1255,8 +1256,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure CreateDefaultReportSelection();
     var
-        ReportSelections: Record 77;
-        NativeReports: Codeunit 2822;
+        ReportSelections: Record "Report Selections";
+        NativeReports: Codeunit "Native - Reports";
     begin
         ReportSelections.INIT();
         ReportSelections.Usage := NativeReports.PostedSalesInvoiceReportId();
@@ -1270,7 +1271,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         EXIT(REPORT::"Standard Sales - Invoice");
     end;
 
-    local procedure GetCustomBodyLayout(var CustomReportLayout: Record 9650);
+    local procedure GetCustomBodyLayout(var CustomReportLayout: Record "Custom Report Layout");
     begin
         CustomReportLayout.SETRANGE("Report ID", GetReportID());
         CustomReportLayout.SETRANGE(Type, CustomReportLayout.Type::Word);
@@ -1278,10 +1279,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
         CustomReportLayout.FINDLAST();
     end;
 
-    local procedure CreateSalesInvoice(var SalesHeader: Record 36; PaymentMethod: Record 289);
+    local procedure CreateSalesInvoice(var SalesHeader: Record "Sales Header"; PaymentMethod: Record "Payment Method");
     var
-        SalesLine: Record 37;
-        VATPostingSetup: Record 325;
+        SalesLine: Record "Sales Line";
+        VATPostingSetup: Record "VAT Posting Setup";
     begin
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
         LibrarySales.CreateSalesHeader(
@@ -1297,7 +1298,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure CreateCustomer(VATBusPostingGroup: Code[20]): Code[20];
     var
-        Customer: Record 18;
+        Customer: Record "Customer";
     begin
         LibrarySales.CreateCustomer(Customer);
         Customer.VALIDATE("VAT Bus. Posting Group", VATBusPostingGroup);
@@ -1307,7 +1308,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure CreateItem(VATProdPostingGroup: Code[20]): Code[20];
     var
-        Item: Record 27;
+        Item: Record "Item";
     begin
         LibraryInventory.CreateItem(Item);
         Item.VALIDATE("VAT Prod. Posting Group", VATProdPostingGroup);
@@ -1317,7 +1318,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         EXIT(Item."No.");
     end;
 
-    local procedure CreatePaymentMethod(var PaymentMethod: Record 289; SetBalancingAccount: Boolean);
+    local procedure CreatePaymentMethod(var PaymentMethod: Record "Payment Method"; SetBalancingAccount: Boolean);
     begin
         LibraryERM.CreatePaymentMethod(PaymentMethod);
         IF SetBalancingAccount THEN BEGIN
@@ -1329,8 +1330,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure CreateDefaultTemplate();
     var
-        MSPayPalStandardTemplate: Record 1071;
-        MSPayPalStandardMgt: Codeunit 1070;
+        MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
         MSPayPalStandardTemplate.DELETEALL();
 
@@ -1341,7 +1342,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         MSPayPalStandardTemplate.MODIFY();
     end;
 
-    local procedure VerifyPaymentServicePage(PaymentServices: TestPage 1060; ExpectedPaymentServiceSetup: Record 1060);
+    local procedure VerifyPaymentServicePage(PaymentServices: TestPage "Payment Services"; ExpectedPaymentServiceSetup: Record "Payment Service Setup");
     begin
         Assert.AreEqual(ExpectedPaymentServiceSetup.Name, PaymentServices.Name.VALUE(), 'Wrong value set for Name');
         Assert.AreEqual(ExpectedPaymentServiceSetup.Description, PaymentServices.Description.VALUE(), 'Wrong value set for Description');
@@ -1351,7 +1352,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
           'Wrong value set for Always Include on Documents');
     end;
 
-    local procedure VerifyPayPalAccountRecord(MSPayPalStandardAccount: Record 1070; ExpectedMSPayPalStandardAccount: Record 1070);
+    local procedure VerifyPayPalAccountRecord(MSPayPalStandardAccount: Record "MS - PayPal Standard Account"; ExpectedMSPayPalStandardAccount: Record "MS - PayPal Standard Account");
     var
         ExpectedTargetURL: Text;
         ActualTargetURL: Text;
@@ -1372,7 +1373,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         Assert.AreEqual(ExpectedTargetURL, ActualTargetURL, 'Wrong value set for Always Include on Documents');
     end;
 
-    local procedure VerifyPayPalTemplate(MSPayPalStandardTemplate: Record 1071; NewName: Text; NewDescription: Text; ExpectedTargetURL: Text; ExpectedLogoURL: Text);
+    local procedure VerifyPayPalTemplate(MSPayPalStandardTemplate: Record "MS - PayPal Standard Template"; NewName: Text; NewDescription: Text; ExpectedTargetURL: Text; ExpectedLogoURL: Text);
     var
         ActualTargetURL: Text;
         ActualLogoURL: Text;
@@ -1387,10 +1388,10 @@ codeunit 139500 "MS - PayPal Standard Tests"
         Assert.AreEqual(ExpectedLogoURL, ActualLogoURL, 'Wrong value set for Logo URL Txt');
     end;
 
-    local procedure VerifyPaymentServiceIsShownOnServiceConnectionsPage(MSPayPalStandardAccount: Record 1070);
+    local procedure VerifyPaymentServiceIsShownOnServiceConnectionsPage(MSPayPalStandardAccount: Record "MS - PayPal Standard Account");
     var
-        ServiceConnection: Record 1400;
-        ServiceConnections: TestPage 1279;
+        ServiceConnection: Record "Service Connection";
+        ServiceConnections: TestPage "Service Connections";
     begin
         ServiceConnections.OPENEDIT();
         ServiceConnections.FILTER.SETFILTER(Name, MSPayPalStandardAccount.Description);
@@ -1409,9 +1410,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
               'Status was not set correctly on Service Connections page');
     end;
 
-    local procedure VerifyPaymentServiceIsInReportDataset(var PaymentReportingArgument: Record 1062);
+    local procedure VerifyPaymentServiceIsInReportDataset(var PaymentReportingArgument: Record "Payment Reporting Argument");
     var
-        XMLBuffer: Record 1235;
+        XMLBuffer: Record "XML Buffer";
         ValueFound: Boolean;
     begin
         XMLBuffer.Load(DatasetFileName);
@@ -1432,9 +1433,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
         XMLBuffer.NEXT();
     end;
 
-    local procedure VerifyPayPalURL(var PaymentReportingArgument: Record 1062; MSPayPalStandardAccount: Record 1070; SalesInvoiceHeader: Record 112);
+    local procedure VerifyPayPalURL(var PaymentReportingArgument: Record "Payment Reporting Argument"; MSPayPalStandardAccount: Record "MS - PayPal Standard Account"; SalesInvoiceHeader: Record "Sales Invoice Header");
     var
-        GeneralLedgerSetup: Record 98;
+        GeneralLedgerSetup: Record "General Ledger Setup";
         TargetURL: Text;
         BaseURL: Text;
     begin
@@ -1453,9 +1454,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
           'Currency Code was not set correctly');
     end;
 
-    local procedure VerifyBodyText(MSPayPalStandardAccount: Record 1070; SalesInvoiceHeader: Record 112);
+    local procedure VerifyBodyText(MSPayPalStandardAccount: Record "MS - PayPal Standard Account"; SalesInvoiceHeader: Record "Sales Invoice Header");
     var
-        GeneralLedgerSetup: Record 98;
+        GeneralLedgerSetup: Record "General Ledger Setup";
         BaseURL: Text;
         BodyHTMLText: Text;
     begin
@@ -1475,7 +1476,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [ModalPageHandler]
-    procedure AccountSetupPageModalPageHandler(var PayPalStandardSetup: TestPage 1070);
+    procedure AccountSetupPageModalPageHandler(var PayPalStandardSetup: TestPage "MS - PayPal Standard Setup");
     var
         NewName: Text;
         NewDescription: Text;
@@ -1545,9 +1546,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [RequestPageHandler]
-    procedure SalesInvoiceReportRequestPageHandler(var SalesInvoice: TestRequestPage 206);
+    procedure SalesInvoiceReportRequestPageHandler(var SalesInvoice: TestRequestPage "Sales - Invoice");
     var
-        LibraryReportDataset: Codeunit 131007;
+        LibraryReportDataset: Codeunit "Library - Report Dataset";
     begin
         DatasetFileName := LibraryReportDataset.GetFileName();
         SalesInvoice.SAVEASXML(LibraryReportDataset.GetParametersFileName(), DatasetFileName);
@@ -1594,7 +1595,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     LOCAL PROCEDURE SetPaymentRegistrationSetup();
     VAR
-        PaymentRegistrationSetup: Record 980;
+        PaymentRegistrationSetup: Record "Payment Registration Setup";
     BEGIN
         WITH PaymentRegistrationSetup DO BEGIN
             DeleteAll();
@@ -1612,7 +1613,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     LOCAL PROCEDURE CreateGenJournalTemplate(): Code[10];
     VAR
-        GenJournalTemplate: Record 80;
+        GenJournalTemplate: Record "Gen. Journal Template";
     BEGIN
         GenJournalTemplate.INIT();
         GenJournalTemplate.Name := LibraryUtility.GenerateRandomCode(GenJournalTemplate.FIELDNO(Name), DATABASE::"Gen. Journal Template");
@@ -1623,7 +1624,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     LOCAL PROCEDURE CreateGenJournalBatch(TemplateName: Code[10]): Code[10];
     VAR
-        GenJournalBatch: Record 232;
+        GenJournalBatch: Record "Gen. Journal Batch";
     BEGIN
         GenJournalBatch.INIT();
         GenJournalBatch."Journal Template Name" := TemplateName;

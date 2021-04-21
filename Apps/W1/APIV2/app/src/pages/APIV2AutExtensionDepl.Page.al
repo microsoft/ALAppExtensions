@@ -83,7 +83,7 @@ page 30007 "APIV2 - Aut. Extension Depl."
     end;
 
     var
-        ExtensionManagement: Codeunit 2504;
+        ExtensionManagement: Codeunit "Extension Management";
         Version: Text;
         ExtensionSchedule: Text;
         ExtensionPublisher: Text;

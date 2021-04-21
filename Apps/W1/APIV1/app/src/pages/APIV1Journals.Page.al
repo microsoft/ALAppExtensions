@@ -45,7 +45,7 @@ page 20016 "APIV1 - Journals"
                     Editable = false;
                 }
             }
-            part(journalLines; 20049)
+            part(journalLines; "APIV1 - JournalLines")
             {
                 ApplicationArea = All;
                 Caption = 'JournalLines', Locked = true;

@@ -93,7 +93,7 @@ page 149003 "BCPT Log Entries"
                     ToolTip = 'Specifies the No. of SQL Statements of the iteration.';
                     ApplicationArea = All;
                 }
-                field(Status; Status)
+                field(Status; Rec.Status)
                 {
                     Caption = 'Status';
                     ToolTip = 'Specifies the status of the iteration.';

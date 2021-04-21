@@ -194,7 +194,7 @@ page 130451 "AL Test Tool"
                     PromotedCategory = Process;
                     PromotedIsBig = true;
                     PromotedOnly = true;
-                    ToolTip = 'Runs selected tests.';
+                    ToolTip = 'Runs tests.';
 
                     trigger OnAction()
                     var
@@ -215,6 +215,7 @@ page 130451 "AL Test Tool"
                     PromotedCategory = Process;
                     PromotedIsBig = true;
                     PromotedOnly = true;
+                    ToolTip = 'Runs selected tests.';
 
                     trigger OnAction()
                     var
@@ -278,7 +279,7 @@ page 130451 "AL Test Tool"
                     PromotedCategory = Process;
                     PromotedIsBig = true;
                     PromotedOnly = true;
-                    ToolTip = 'Updates the test methods for the test codeunits in the active filter set.';
+                    ToolTip = 'Updates the test methods for the entire test suite.';
 
                     trigger OnAction()
                     var
@@ -304,9 +305,29 @@ page 130451 "AL Test Tool"
                         TestMethodLine: Record "Test Method Line";
                         TestSuiteMgt: Codeunit "Test Suite Mgt.";
                     begin
+                        if GuiAllowed() then
+                            if not Confirm(DeleteQst, false) then
+                                exit;
+
                         CurrPage.SetSelectionFilter(TestMethodLine);
                         TestMethodLine.DeleteAll(true);
                         TestSuiteMgt.CalcTestResults(Rec, Success, Failure, Skipped, NotExecuted);
+                    end;
+                }
+                action(InvertRun)
+                {
+                    ApplicationArea = All;
+                    Caption = '&Invert Run Selection';
+                    Image = Change;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+                    PromotedOnly = true;
+                    ToolTip = 'Invert Run Selection on selected lines.';
+
+                    trigger OnAction()
+                    begin
+                        InvertRunSelection();
                     end;
                 }
             }
@@ -369,6 +390,7 @@ page 130451 "AL Test Tool"
         RunDuration: Duration;
         TestRunnerDisplayName: Text;
         ErrorMessageWithStackTraceTxt: Text;
+        DeleteQst: Label 'Are you sure you want to delete the selected lines?';
 
     local procedure ChangeTestSuite()
     var
@@ -426,5 +448,18 @@ page 130451 "AL Test Tool"
     begin
         RunDuration := "Finish Time" - "Start Time";
         ErrorMessageWithStackTraceTxt := TestSuiteMgt.GetErrorMessageWithStackTrace(Rec);
+    end;
+
+    local procedure  InvertRunSelection()
+    var
+        TestMethodLine: Record "Test Method Line";
+    begin
+        CurrPage.SetSelectionFilter(TestMethodLine);
+
+        if TestMethodLine.FindSet(true, false) then
+            repeat
+                TestMethodLine.Validate(Run, not TestMethodLine.Run);
+                TestMethodLine.Modify(true);
+            until TestMethodLine.Next() = 0;
     end;
 }

@@ -41,6 +41,56 @@ codeunit 3060 Uri
     end;
 
     /// <summary>
+    /// Gets the host name of the URI.
+    /// </summary>
+    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.host for more information.</remarks>
+    /// <returns>A text that contains the host name for this URI.</returns>
+    procedure GetHost(): Text
+    begin
+        exit(Uri.Host);
+    end;
+
+    /// <summary>
+    /// Gets the port number of the URI.
+    /// </summary>
+    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.port for more information.</remarks>
+    /// <returns>An integer that contains the port number for this URI.</returns>
+    procedure GetPort(): Integer
+    begin
+        exit(Uri.Port);
+    end;
+
+    /// <summary>
+    /// Gets the absolute path of the URI.
+    /// </summary>
+    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.absolutepath for more information.</remarks>
+    /// <returns>A text that contains the absolute path for this URI.</returns>
+    procedure GetAbsolutePath(): Text
+    begin
+        exit(Uri.AbsolutePath);
+    end;
+
+    /// <summary>
+    /// Gets any query information included in the specified URI.
+    /// </summary>
+    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.query for more information.</remarks>
+    /// <returns>A text that contains the query information for this URI.</returns>
+    procedure GetQuery(): Text
+    begin
+        exit(Uri.Query);
+    end;
+
+    /// <summary>
+    /// Gets the escaped URI fragment.
+    /// </summary>
+    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.fragment for more information.</remarks>
+    /// <returns>A text that contains the fragment portion for this URI.</returns>
+    procedure GetFragment(): Text
+    begin
+        exit(Uri.Fragment);
+    end;
+
+    /// <summary>
     /// Gets a list containing the path segments that make up the specified URI.
     /// </summary>
     /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.segments for more information.</remarks>

@@ -8,6 +8,7 @@ table 8888 "Email Outbox"
 {
     Access = Public;
     Extensible = true;
+    Description = 'The table is public so that it can also be extensible. The table is one of the modules''s extensibility endpoints.';
 
     fields
     {
@@ -22,24 +23,28 @@ table 8888 "Email Outbox"
             Access = Internal;
             DataClassification = SystemMetadata;
             TableRelation = "Email Message".Id;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 
         field(3; "Account Id"; Guid)
         {
             Access = Internal;
             DataClassification = SystemMetadata;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 
         field(4; Connector; Enum "Email Connector")
         {
             Access = Internal;
             DataClassification = SystemMetadata;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 
         field(5; "User Security Id"; Guid)
         {
             Access = Internal;
             DataClassification = EndUserPseudonymousIdentifiers;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 
         field(6; Description; Text[2048])
@@ -47,18 +52,21 @@ table 8888 "Email Outbox"
             Access = Internal;
             DataClassification = CustomerContent;
             Editable = false;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 
         field(8; Status; Enum "Email Status")
         {
             Access = Internal;
             DataClassification = SystemMetadata;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 
         field(9; "Task Scheduler Id"; Guid)
         {
             Access = Internal;
             DataClassification = SystemMetadata;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 
         field(10; Sender; Code[50])
@@ -66,30 +74,35 @@ table 8888 "Email Outbox"
             Access = Internal;
             FieldClass = FlowField;
             CalcFormula = Lookup(User."User Name" where("User Security ID" = field("User Security Id")));
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 
         field(11; "Date Queued"; DateTime)
         {
             Access = Internal;
             DataClassification = SystemMetadata;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 
         field(12; "Date Failed"; DateTime)
         {
             Access = Internal;
             DataClassification = SystemMetadata;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 
         field(13; "Send From"; Text[250])
         {
             Access = Internal;
             DataClassification = EndUserIdentifiableInformation;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 
         field(14; "Error Message"; Text[2048])
         {
             Access = Internal;
             DataClassification = CustomerContent;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
     }
 

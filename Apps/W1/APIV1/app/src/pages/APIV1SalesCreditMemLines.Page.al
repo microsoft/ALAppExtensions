@@ -474,7 +474,6 @@ page 20046 "APIV1 - Sales Credit Mem Lines"
         Item: Record "Item";
         UnitOfMeasureGlobal: Record "Unit of Measure";
         GraphMgtSalCrMemoBuf: Codeunit "Graph Mgt - Sal. Cr. Memo Buf.";
-        GraphMgtComplexTypes: Codeunit "Graph Mgt - Complex Types";
         UnitOfMeasureJSON: Text;
         LineObjectDetailsJSON: Text;
         LinesLoaded: Boolean;

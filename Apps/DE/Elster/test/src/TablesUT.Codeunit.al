@@ -447,6 +447,26 @@ codeunit 148165 "Elster Tables UT"
     end;
 
     [Test]
+    procedure CalcTaxFigures_Kz37()
+    var
+        ActualTaxAmount: Decimal;
+    begin
+        // [SCENARIO 386738] TAB 11021 "Sales VAT Advance Notif.".CalcTaxFigures() process Kz37
+        ActualTaxAmount := CalcTaxFiguresRowNoSalesVATAdvNotif('37');
+        Assert.AreNotEqual(0, ActualTaxAmount, 'CalcTaxFigures() for Kz37');
+    end;
+
+    [Test]
+    procedure CalcTaxFigures_Kz50()
+    var
+        ActualTaxAmount: Decimal;
+    begin
+        // [SCENARIO 386738] TAB 11021 "Sales VAT Advance Notif.".CalcTaxFigures() process Kz50
+        ActualTaxAmount := CalcTaxFiguresRowNoSalesVATAdvNotif('50');
+        Assert.AreNotEqual(0, ActualTaxAmount, 'CalcTaxFigures() for Kz50');
+    end;
+
+    [Test]
     procedure CalcTaxFiguresAmtTypeAmountSalesVATAdvNotif()
     var
         VATStatementLine: Record "VAT Statement Line";
@@ -549,7 +569,7 @@ codeunit 148165 "Elster Tables UT"
         Assert.ExpectedErrorCode('NCLCSRTS:TableErrorStr');
     end;
 
-    local procedure CalcTaxFiguresRowNoSalesVATAdvNotif(RowNo: Code[10]);
+    local procedure CalcTaxFiguresRowNoSalesVATAdvNotif(RowNo: Code[10]): Decimal
     var
         VATStatementName: Record "VAT Statement Name";
         VATStatementLine: Record "VAT Statement Line";
@@ -563,6 +583,7 @@ codeunit 148165 "Elster Tables UT"
         TotalLine: Decimal;
         TotalLine2: Decimal;
         TotalLine3: Decimal;
+        RowNoInt: Integer;
     begin
         // Create VAT Statement Line and VAT Entry.
         CreateVATStatementLine(VATStatementName, VATStatementLine, RowNo, VATStatementLine."Print with"::Sign, VATStatementLine."Amount Type"::Amount, VATStatementLine.Type::"VAT Entry Totaling");
@@ -573,6 +594,9 @@ codeunit 148165 "Elster Tables UT"
 
         // Verify: Verify Amount in VAT Entry.
         VerifyVATEntryAmount(VATEntry, RowNo, Continued, TotalLine, TotalLine2, TotalLine3);
+
+        Evaluate(RowNoInt, RowNo);
+        exit(TaxAmount[RowNoInt]);
     end;
 
     local procedure CheckVATNoTaxOfficeAreaSalesVATAdvNotif(TaxOfficeArea: Option);
@@ -677,7 +701,7 @@ codeunit 148165 "Elster Tables UT"
         VATStatementName.Insert();
     end;
 
-    local procedure CreateVATStatementLine(var VATStatementName: Record "VAT Statement Name"; var VATStatementLine: Record "VAT Statement Line"; RowNo: Code[10]; PrintWith: Option; AmountType: Option; Type: Option);
+    local procedure CreateVATStatementLine(var VATStatementName: Record "VAT Statement Name"; var VATStatementLine: Record "VAT Statement Line"; RowNo: Code[10]; PrintWith: Option; AmountType: Enum "VAT Statement Line Amount Type"; Type: Enum "VAT Statement Line Type");
     begin
         CreateVATStatementName(VATStatementName, LibraryUTUtility.GetNewCode10());
         VATStatementLine."Statement Template Name" := VATStatementName."Statement Template Name";

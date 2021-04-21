@@ -13,6 +13,8 @@ page 2511 "Extension Settings"
     PageType = Card;
     SourceTable = "NAV App Setting";
     ContextSensitiveHelpPage = 'ui-extensions';
+    Permissions = tabledata "Nav App Setting" = rm,
+                  tabledata "Published Application" = r;
 
     layout
     {
@@ -41,7 +43,7 @@ page 2511 "Extension Settings"
                     Editable = false;
                     ToolTip = 'Specifies the publisher of the extension.';
                 }
-                field(AllowHttpClientRequests; "Allow HttpClient Requests")
+                field(AllowHttpClientRequests; Rec."Allow HttpClient Requests")
                 {
                     ApplicationArea = All;
                     Caption = 'Allow HttpClient Requests';

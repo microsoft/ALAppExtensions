@@ -7,7 +7,11 @@ codeunit 3904 "Apply Retention Policy Impl."
 {
     Access = Internal;
     TableNo = "Retention Policy Setup";
-    Permissions = tabledata Permission = r, tabledata "Tenant Permission" = r;
+    Permissions = tabledata Permission = r,
+                  tabledata "Tenant Permission" = r,
+                  tabledata User = r,
+                  tabledata AllObjWithCaption = r,
+                  tabledata "Access Control" = r;
 
     var
         TotalNumberOfRecordsDeleted: Integer;
@@ -356,13 +360,13 @@ codeunit 3904 "Apply Retention Policy Impl."
     var
         TempDummyPermission: Record Permission temporary;
         User: Record User;
-        UserAccountHelper: DotNet NavUserAccountHelper;
+        NavUserAccountHelper: DotNet NavUserAccountHelper;
         EntitlementString: Text;
         DeleteEntitlement: Option;
     begin
         if not User.Get(UserSecurityId()) then
             exit(false);
-        EntitlementString := UserAccountHelper.GetEntitlementPermissionForObject(UserSecurityId(), TempDummyPermission."Object Type"::"Table Data", TableId);
+        EntitlementString := NavUserAccountHelper.GetEntitlementPermissionForObject(UserSecurityId(), TempDummyPermission."Object Type"::"Table Data", TableId);
         Evaluate(DeleteEntitlement, SelectStr(4, EntitlementString));
         if DeleteEntitlement = TempDummyPermission."Delete Permission"::Indirect then
             exit(true);
@@ -420,7 +424,7 @@ codeunit 3904 "Apply Retention Policy Impl."
 
         RecRef.FilterGroup := FilterGroup;
 
-        if ExpirationDate >= NullDateReplacementValue then
+        if (ExpirationDate >= NullDateReplacementValue) and (DateFieldNo in [RecRef.SystemCreatedAtNo, RecRef.SystemModifiedAtNo]) then
             FilterView := STRSUBSTNO(WhereOlderFilterExclWithNullTxt, DateFieldNo, '''''', CalcDate('<-1D>', ExpirationDate))
         else
             FilterView := STRSUBSTNO(WhereOlderFilterExclTxt, DateFieldNo, '''''', CalcDate('<-1D>', ExpirationDate));
@@ -437,7 +441,7 @@ codeunit 3904 "Apply Retention Policy Impl."
             RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(DateFieldNoMustHaveAValueErr, RecRef.Number, RecRef.Caption));
         RecRef.FilterGroup := FilterGroup;
 
-        if ExpirationDate <= NullDateReplacementValue then
+        if (ExpirationDate <= NullDateReplacementValue) and (DateFieldNo in [RecRef.SystemCreatedAtNo, RecRef.SystemModifiedAtNo]) then
             FilterView := STRSUBSTNO(WhereNewerFilterExclWithNullTxt, DateFieldNo, '''''', ExpirationDate)
         else
             FilterView := STRSUBSTNO(WhereNewerFilterExclTxt, DateFieldNo, '''''', ExpirationDate);

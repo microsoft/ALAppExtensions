@@ -79,6 +79,7 @@ codeunit 144741 "BCPT Setup Card Test"
         BCPTLogEntry: Record "BCPT Log Entry";
         BCPTSetupCardTest: Codeunit "BCPT Setup Card Test";
         BCPTSetupCard: TestPage "BCPT Setup Card";
+        UnexpectedNoOfSqlStmtsLbl: Label 'Unexpected value in %1. Expected %2, Actual %3';
     begin
         Initialize();
         BCPTSetupCard.OpenNew();
@@ -95,19 +96,21 @@ codeunit 144741 "BCPT Setup Card Test"
         NoOfIterationsToRun := 1;
         UnbindSubscription(BCPTSetupCardTest);
         BindSubscription(BCPTSetupCardTest);
-        BCPTSetupCard.Start.Invoke();
+        BCPTSetupCard.Start.Invoke(); //Warmup to ignore extra SQL called just for the first time
         BCPTSetupCard.Start.Invoke();
         UnbindSubscription(BCPTSetupCardTest);
 
         BCPTHeader.Find();
         BCPTLogEntry.SetRange("BCPT Code", BCPTHeader.Code);
         BCPTLogEntry.SetRange(Version, BCPTHeader.Version);
-        Assert.RecordCount(BCPTLogEntry, 1);
+        Assert.RecordIsNotEmpty(BCPTLogEntry);
 
         BCPTLogEntry.FindFirst();
         BCPTLogEntry.TestField("Codeunit ID", Codeunit::"BCPT Empty Codeunit");
         BCPTLogEntry.TestField(Message, '');
-        BCPTLogEntry.TestField("No. of SQL Statements", 0);
+        // A first run counts 2 sql statements from system tables. So the expected number is either 0 or 2
+        if not (BCPTLogEntry."No. of SQL Statements" in [0, 2]) then
+            Assert.Fail(StrSubstNo(UnexpectedNoOfSqlStmtsLbl, BCPTLogEntry.FieldCaption("No. of SQL Statements"), '0 or 2', Format(BCPTLogEntry."No. of SQL Statements")));
         BCPTLogEntry.TestField(Operation, 'Scenario');
         BCPTLogEntry.TestField(Status, BCPTLogEntry.Status::Success);
     end;
@@ -162,7 +165,7 @@ codeunit 144741 "BCPT Setup Card Test"
         BCPTHeader.Find();
         BCPTLogEntry.SetRange("BCPT Code", BCPTHeader.Code);
         BCPTLogEntry.SetRange(Version, BCPTHeader.Version);
-        Assert.RecordCount(BCPTLogEntry, 1);
+        Assert.RecordIsNotEmpty(BCPTLogEntry);
 
         BCPTLogEntry.FindFirst();
         BCPTLogEntry.TestField("Codeunit ID", Codeunit::"BCPT Codeunit With Error");
@@ -399,13 +402,17 @@ codeunit 144741 "BCPT Setup Card Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"BCPT Role Wrapper", 'OnBeforeExecuteIteration', '', false, false)]
     local procedure SetExitExecutionOnBeforeExecuteIteration(var BCPTHeader: Record "BCPT Header"; var BCPTLine: Record "BCPT Line"; var SkipDelay: Boolean)
+    var
+        BCPTHeaderCU: Codeunit "BCPT Header";
     begin
         SkipDelay := true;
 
         if CurrNoOfIterations >= (NoOfIterationsToRun - 1) then
             if CancelRun then begin
-                BCPTHeader.Status := BCPTHeader.Status::Cancelled;
-                BCPTHeader.Modify();
+                //BCPTHeader.Status := BCPTHeader.Status::Cancelled;
+                BCPTHeaderCU.SetRunStatus(BCPTHeader, BCPTHeader.Status::Cancelled);
+                //BCPTHeader.
+                //BCPTHeader.Modify();
                 Commit();
             end else
                 BCPTHeader."Started at" := BCPTHeader."Started at" - 60000 * BCPTHeader."Duration (minutes)";

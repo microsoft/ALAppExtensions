@@ -165,7 +165,7 @@ codeunit 4514 "SMTP Message"
     local procedure AddToInternetAddressList(InternetAddressList: DotNet InternetAddressList; Recipients: List of [Text])
     begin
         if not TryParseInternetAddressList(InternetAddressList, Recipients) then begin
-            Session.LogMessage('0000B5M', StrSubstNo(RecipientErr, FormatListToString(Recipients)), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+            Session.LogMessage('0000B5N', StrSubstNo(RecipientErr, FormatListToString(Recipients)), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
             Error(RecipientErr, FormatListToString(Recipients));
         end;
     end;

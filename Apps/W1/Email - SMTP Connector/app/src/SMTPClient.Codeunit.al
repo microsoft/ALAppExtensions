@@ -79,9 +79,9 @@ codeunit 4511 "SMTP Client" implements "SMTP Client"
     [TryFunction]
     local procedure TryAuthenticate()
     var
-        Password: Text;
+        SMTPAuthentication: Interface "SMTP Authentication";
     begin
-        Password := SMTPAccount.GetPassword(SMTPAccount."Password Key");
-        SmtpClient.Authenticate(SMTPAccount."User Name", Password, CancellationToken);
+        SMTPAuthentication := SMTPAccount.Authentication;
+        SMTPAuthentication.Authenticate(SmtpClient, SMTPAccount);
     end;
 }

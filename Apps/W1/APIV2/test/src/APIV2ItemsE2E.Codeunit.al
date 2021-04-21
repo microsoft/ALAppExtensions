@@ -16,8 +16,6 @@ codeunit 139800 "APIV2 - Items E2E"
         LibraryRandom: Codeunit "Library - Random";
         Assert: Codeunit "Assert";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
-        GraphCollectionMgtItem: Codeunit "Graph Collection Mgt - Item";
-        LibraryUtility: Codeunit "Library - Utility";
         IsInitialized: Boolean;
         ConditionTxt: Label 'ENU="<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?><ReportParameters><DataItems><DataItem name=""Item"">SORTING(Field1) WHERE(Field1=1(5))</DataItem></DataItems></ReportParameters>"';
         SampleTempCodeTxt: Label 'API000001';
@@ -222,16 +220,13 @@ codeunit 139800 "APIV2 - Items E2E"
         DummyItem: Record "Item";
         UnitOfMeasure: Record "Unit of Measure";
         ConfigTmplSelectionRules: Record "Config. Tmpl. Selection Rules";
-        ItemUnitOfMeasure: Record "Item Unit of Measure";
         Item: Record "Item";
-        ExpectedUnitOfMeasureCode: Code[10];
         ItemID: Text;
         ItemJSON: Text;
         ResponseText: Text;
         TargetURL: Text;
         ItemNumber: Text;
         UnitCost: Integer;
-        UnitofMeasureCode: Text;
     begin
         // [FEATURE] [Template]
         // [SCENARIO 184721] Create an item with a template through a POST method

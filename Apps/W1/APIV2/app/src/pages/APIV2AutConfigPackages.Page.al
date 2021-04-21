@@ -83,7 +83,7 @@ page 30000 "APIV2 - Aut. Config. Packages"
                     Caption = 'Apply Error';
                     Editable = false;
                 }
-                part(file; 5433)
+                part(packageFile; "APIV2 - Aut. Conf. Pack. File")
                 {
                     Caption = 'File';
                     EntityName = 'file';
@@ -100,7 +100,7 @@ page 30000 "APIV2 - Aut. Config. Packages"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
-        TenantConfigPackageFile: Record 5433;
+        TenantConfigPackageFile: Record "Tenant Config. Package File";
     begin
         Validate("Import Status", "Import Status"::No);
         Validate("Apply Status", "Apply Status"::No);
@@ -125,7 +125,7 @@ page 30000 "APIV2 - Aut. Config. Packages"
     [Scope('Cloud')]
     procedure Import(var ActionContext: WebServiceActionContext)
     var
-        TenantConfigPackageFile: Record 5433;
+        TenantConfigPackageFile: Record "Tenant Config. Package File";
         ImportSessionID: Integer;
     begin
         if IsImportOrApplyPending() then

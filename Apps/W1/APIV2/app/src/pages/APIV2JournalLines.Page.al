@@ -119,6 +119,7 @@ page 30049 "APIV2 - JournalLines"
                             Validate("Tax Group Code", TaxCode);
                     end;
                 }
+
                 field(balanceAccountType; "Bal. Account Type")
                 {
                     Caption = 'Balance Account Type';
@@ -143,6 +144,8 @@ page 30049 "APIV2 - JournalLines"
                                 Error(BalAccountIdDoesNotMatchAnAccountErr);
                         "Bal. Account No." := BankAccount."No."
                     end;
+
+
                 }
                 field(balancingAccountNumber; "Bal. Account No.")
                 {

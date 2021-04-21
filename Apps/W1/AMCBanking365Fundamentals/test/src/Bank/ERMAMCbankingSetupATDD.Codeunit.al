@@ -205,8 +205,10 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
     procedure UserCanChangeTheAMCServiceURL()
     var
         AMCBankingSetup: Record "AMC Banking Setup";
+        LibraryRandom: Codeunit "Library - Random";
         PasswordAMC: Text;
         ServiceURLAMC: Text[250];
+        UserNameAMC: Text[50];
     begin
         // [FEATURE] [URL]
         // [SCENARIO 4] As a an Administrator I will be able to update the Service URL for the AMC service,
@@ -214,12 +216,17 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         // [GIVEN] A Service URL and an existing AMC Bank Service Setup.
         // [WHEN] The Service URL is entered into the existing AMC Bank Service Setup
         // [THEN] The AMC Integration would be able to get the changed Service URL and use it to connect to the AMC service, User ID and Password
-        // will remain unchanged.
+        // will be reset.
         Initialize();
 
         // Setup: Optain password and Service URL
         AMCBankingSetup.Get();
+        AMCBankingSetup."User Name" := CopyStr(LibraryRandom.RandText(50), 1, MaxStrLen(AMCBankingSetup."User Name"));
+        AMCBankingSetup.SavePassword(LibraryRandom.RandText(50));
+        AMCBankingSetup.Modify();
+
         PasswordAMC := AMCBankingSetup.GetPassword();
+        UserNameAMC := AMCBankingSetup.GetUserName();
 
         ServiceURLAMC := GenerateRandomUrl(true);
 
@@ -230,7 +237,8 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
 
         // Validate
         AMCBankingSetup.Get();
-        Assert.AreEqual(PasswordAMC, AMCBankingSetup.GetPassword(), 'Password invalid');
+        Assert.AreNotEqual(PasswordAMC, AMCBankingSetup.GetPassword(), 'Password must be reset when changing service URL');
+        Assert.AreNotEqual(UserNameAMC, AMCBankingSetup.GetUserName(), 'Username must be reset when changing service URL');
         Assert.AreEqual(ServiceURLAMC, AMCBankingSetup."Service URL", 'Service URL invalid');
     end;
 

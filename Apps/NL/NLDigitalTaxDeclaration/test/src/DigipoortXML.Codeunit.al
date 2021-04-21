@@ -72,7 +72,7 @@ codeunit 148000 "Digipoort XML"
         GeneralLedgerSetup.Modify(true);
     end;
 
-    local procedure GenerateContent(VATReportHeader: Record "VAT Report Header") TempFile: Text
+    local procedure GenerateContent(VATReportHeader: Record "VAT Report Header"): Text
     var
         VATReturnPage: TestPage "VAT Report";
     begin
