@@ -74,6 +74,7 @@ page 1993 Checklist
                 ToolTip = 'Add a new task for the checklist.';
                 ShortcutKey = return;
                 Promoted = true;
+                Caption = 'Create checklist item';
 
                 trigger OnAction()
                 var

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -22,6 +22,7 @@ page 535 "Windows Languages"
             repeater(Control2)
             {
                 ShowCaption = false;
+                Caption = 'Control2';
                 field("Language ID"; "Language ID")
                 {
                     ApplicationArea = All;

@@ -84,6 +84,7 @@ page 2508 "Extension Deployment Status"
                 Scope = Repeater;
                 ShortCutKey = 'Return';
                 Visible = false;
+                Caption = 'View';
 
                 trigger OnAction()
                 var

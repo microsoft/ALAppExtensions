@@ -29,6 +29,7 @@ page 2509 "Extn Deployment Status Detail"
         {
             group(General)
             {
+                Caption = 'General';
                 group(Control16)
                 {
                     ShowCaption = false;
@@ -141,6 +142,7 @@ page 2509 "Extn Deployment Status Detail"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 PromotedOnly = true;
+                Caption = 'Refresh';
 
                 trigger OnAction()
                 var

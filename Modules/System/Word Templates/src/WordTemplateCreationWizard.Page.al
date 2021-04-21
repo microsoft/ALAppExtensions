@@ -300,6 +300,7 @@ page 9995 "Word Template Creation Wizard"
                 Image = PreviousRecord;
                 Visible = (Step <> Step::Select) and not (TableSetExternally and (Step = Step::Download));
                 InFooterBar = true;
+                Caption = 'Back';
 
                 trigger OnAction()
                 begin
@@ -325,6 +326,7 @@ page 9995 "Word Template Creation Wizard"
                 Image = NextRecord;
                 Visible = Step <> Step::Overview;
                 InFooterBar = true;
+                Caption = 'Next';
 
                 trigger OnAction()
                 begin
@@ -368,6 +370,7 @@ page 9995 "Word Template Creation Wizard"
                 Image = Stop;
                 Visible = Step = Step::Download;
                 InFooterBar = true;
+                Caption = 'Skip';
 
                 trigger OnAction()
                 begin
@@ -382,6 +385,7 @@ page 9995 "Word Template Creation Wizard"
                 Image = NextRecord;
                 Visible = Step = Step::Overview;
                 InFooterBar = true;
+                Caption = 'Finish';
 
                 trigger OnAction()
                 var

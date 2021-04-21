@@ -123,6 +123,7 @@ page 8887 "Email Accounts"
                 ToolTip = 'View settings for the email account.';
                 ShortcutKey = return;
                 Visible = false;
+                Caption = 'View';
 
                 trigger OnAction()
                 begin

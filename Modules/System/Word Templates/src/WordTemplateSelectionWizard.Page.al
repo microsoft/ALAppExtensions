@@ -217,6 +217,7 @@ page 9996 "Word Template Selection Wizard"
                 Image = NextRecord;
                 InFooterBar = true;
                 ToolTip = ' ';
+                Caption = 'Finish';
 
                 trigger OnAction()
                 var
@@ -236,6 +237,7 @@ page 9996 "Word Template Selection Wizard"
                 Image = NextRecord;
                 InFooterBar = true;
                 ToolTip = ' ';
+                Caption = 'Next';
 
                 trigger OnAction()
                 var
@@ -267,6 +269,7 @@ page 9996 "Word Template Selection Wizard"
                 Image = PreviousRecord;
                 InFooterBar = true;
                 ToolTip = ' ';
+                Caption = 'Back';
 
                 trigger OnAction()
                 begin

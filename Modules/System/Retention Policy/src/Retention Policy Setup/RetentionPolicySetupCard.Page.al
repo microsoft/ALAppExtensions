@@ -20,6 +20,7 @@ page 3901 "Retention Policy Setup Card"
         {
             group(General)
             {
+                Caption = 'General';
                 field(TableID; Rec."Table ID")
                 {
                     ApplicationArea = All;
