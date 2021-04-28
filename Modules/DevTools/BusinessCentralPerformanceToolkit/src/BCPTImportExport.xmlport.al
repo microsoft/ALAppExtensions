@@ -19,6 +19,10 @@ xmlport 149001 "BCPT Import/Export"
                 {
                     Occurrence = Optional;
                 }
+                fieldattribute(Tag; "BCPTSuite".Tag)
+                {
+                    Occurrence = Optional;
+                }
                 fieldattribute(Duration; "BCPTSuite"."Duration (minutes)")
                 {
                     Occurrence = Optional;
@@ -49,6 +53,10 @@ xmlport 149001 "BCPT Import/Export"
                     fieldattribute(CodeunitID; BCPTSuiteLine."Codeunit ID")
                     {
                         Occurrence = Required;
+                    }
+                    fieldattribute(Parameters; BCPTSuiteLine.Parameters)
+                    {
+                        Occurrence = Optional;
                     }
                     fieldattribute(DelayBetwnItr; BCPTSuiteLine."Delay (sec. btwn. iter.)")
                     {
