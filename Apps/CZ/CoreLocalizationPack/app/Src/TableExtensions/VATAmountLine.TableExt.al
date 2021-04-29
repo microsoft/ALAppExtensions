@@ -226,7 +226,7 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
         if TempTotalVATAmountLine.FindSet(true) then
             repeat
                 TempVATEntry.SetRange("VAT Identifier CZL", TempTotalVATAmountLine."VAT Identifier");
-                TempVATEntry.SetRange("VAT Calculation Type", TempTotalVATAmountLinev."VAT Calculation Type");
+                TempVATEntry.SetRange("VAT Calculation Type", TempTotalVATAmountLine."VAT Calculation Type");
                 TempVATEntry.SetRange("Tax Group Code", TempTotalVATAmountLine."Tax Group Code");
                 TempVATEntry.SetRange("Use Tax", TempTotalVATAmountLine."Use Tax");
                 if TempVATEntry.FindSet() then
