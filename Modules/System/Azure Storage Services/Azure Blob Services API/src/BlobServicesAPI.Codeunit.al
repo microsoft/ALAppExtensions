@@ -6,7 +6,7 @@
 /// <summary>
 /// Provides functionality to use the Blob Services REST API for Azure Storage Accounts
 /// </summary>
-codeunit 88000 "Blob Services API"
+codeunit 9040 "Blob Services API"
 {
     Access = Public;
 

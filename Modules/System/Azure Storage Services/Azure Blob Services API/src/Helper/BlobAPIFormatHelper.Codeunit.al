@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 88004 "Blob API Format Helper"
+codeunit 9044 "Blob API Format Helper"
 {
     Access = Internal;
 
@@ -207,14 +207,14 @@ codeunit 88004 "Blob API Format Helper"
 
     procedure ConvertToDateTime(PropertyValue: Text): DateTime
     var
-        TypeHelper: Codeunit "Type Helper";
+        // TypeHelper: Codeunit "Type Helper"; TODO: Break dependency on BaseApp
         NewDateTime: DateTime;
         ResultVariant: Variant;
     begin
         NewDateTime := 0DT;
         ResultVariant := NewDateTime;
-        if TypeHelper.Evaluate(ResultVariant, PropertyValue, '', '') then
-            NewDateTime := ResultVariant;
+        // if TypeHelper.Evaluate(ResultVariant, PropertyValue, '', '') then
+        NewDateTime := ResultVariant;
         exit(NewDateTime);
     end;
 

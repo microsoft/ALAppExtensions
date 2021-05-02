@@ -7,7 +7,7 @@
 /// Exposes functionality to handle the creation of a signature to sign requests to the Storage Services REST API
 /// More Information: https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
 /// </summary>
-codeunit 87001 "Storage Serv. Auth. Access Key"
+codeunit 9051 "Storage Serv. Auth. Access Key"
 {
     Access = Public;
 

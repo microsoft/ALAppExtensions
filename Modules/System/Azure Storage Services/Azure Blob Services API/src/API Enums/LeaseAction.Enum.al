@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-enum 88006 "Lease Action"
+enum 9046 "Lease Action"
 {
     Extensible = false;
 

@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-enum 88002 "Blob Access Tier"
+enum 9042 "Blob Access Tier"
 {
     Extensible = false;
     value(0; Hot)

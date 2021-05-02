@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-enum 88001 "Blob Type"
+enum 9041 "Blob Type"
 {
     Extensible = false;
 

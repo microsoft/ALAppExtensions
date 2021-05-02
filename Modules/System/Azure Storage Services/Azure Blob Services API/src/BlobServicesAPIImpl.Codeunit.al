@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 88001 "Blob Services API Impl."
+codeunit 9041 "Blob Services API Impl."
 {
     Access = Internal;
 

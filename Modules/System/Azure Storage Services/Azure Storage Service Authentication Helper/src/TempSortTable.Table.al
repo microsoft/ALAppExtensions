@@ -6,7 +6,7 @@
 /// <summary>
 /// Temporary Table to sort Text values alphabetically
 /// </summary>
-table 87000 "Temp. Sort Table"
+table 9081 "Temp. Sort Table"
 {
     Access = Public; // public, because it's needed in other (depending) modules as well
     Description = 'Used to bring Values in alphabetical order';

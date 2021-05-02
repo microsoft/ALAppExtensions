@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-enum 88005 "Blob Expiry Option"
+enum 9045 "Blob Expiry Option"
 {
     Extensible = false;
 

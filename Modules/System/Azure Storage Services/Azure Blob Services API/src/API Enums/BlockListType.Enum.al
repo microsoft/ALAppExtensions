@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-enum 88004 "Block List Type"
+enum 9044 "Block List Type"
 {
     Extensible = false;
 

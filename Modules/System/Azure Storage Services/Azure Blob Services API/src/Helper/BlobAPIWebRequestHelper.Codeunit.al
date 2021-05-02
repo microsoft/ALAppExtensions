@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 88005 "Blob API Web Request Helper"
+codeunit 9045 "Blob API Web Request Helper"
 {
     Access = Internal;
 

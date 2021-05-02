@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-enum 88007 "PageBlob Write Option"
+enum 9047 "PageBlob Write Option"
 {
     Extensible = false;
 

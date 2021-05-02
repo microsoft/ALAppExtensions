@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-table 88001 "Container Content"
+table 9041 "Container Content"
 {
     DataClassification = CustomerContent;
     TableType = Temporary;

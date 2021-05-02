@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 88009 "Blob API HttpContent Helper"
+codeunit 9049 "Blob API HttpContent Helper"
 {
     Access = Internal;
 
@@ -152,15 +152,16 @@ codeunit 88009 "Blob API HttpContent Helper"
     /// <returns>The length of the current stream</returns>
     local procedure GetContentLength(var SourceStream: InStream): Integer
     var
-        MemoryStream: Codeunit "MemoryStream Wrapper";
+        // MemoryStream: Codeunit "MemoryStream Wrapper";  TODO: Break dependency on BaseApp
         Length: Integer;
     begin
         // Load the memory stream and get the size
-        MemoryStream.Create(0);
-        MemoryStream.ReadFrom(SourceStream);
-        Length := MemoryStream.Length();
-        MemoryStream.GetInStream(SourceStream);
-        MemoryStream.SetPosition(0);
+        // MemoryStream.Create(0);
+        // MemoryStream.ReadFrom(SourceStream);
+        // Length := MemoryStream.Length();
+        // MemoryStream.GetInStream(SourceStream);
+        // MemoryStream.SetPosition(0);
+        Clear(SourceStream);
         exit(Length);
     end;
 

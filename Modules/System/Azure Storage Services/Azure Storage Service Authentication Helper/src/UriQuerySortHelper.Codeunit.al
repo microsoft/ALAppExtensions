@@ -8,7 +8,7 @@
 /// Uses "Temp Sort Table" to sort a splitted String alphabetically; works similar to a Record-type variable (methods "FindSet()", "Next()")
 /// but uses additionally a Dictionary to handle values longer than 250 characters
 /// </summary>
-codeunit 87003 "Uri Query Sort Helper"
+codeunit 9053 "Uri Query Sort Helper"
 {
     Access = Internal;
 

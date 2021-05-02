@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-enum 88000 "Blob Service API Operation"
+enum 9040 "Blob Service API Operation"
 {
     Extensible = false;
 

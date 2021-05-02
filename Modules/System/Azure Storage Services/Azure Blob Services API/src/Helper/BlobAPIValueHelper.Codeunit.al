@@ -6,7 +6,7 @@
 /// <summary>
 /// Exposes helper functionality to set values on or retrieve values from "Blob API Operation Object" 
 /// </summary>
-codeunit 88007 "Blob API Value Helper"
+codeunit 9047 "Blob API Value Helper"
 {
     Access = Public;
 

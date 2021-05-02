@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 88006 "Blob API URI Helper"
+codeunit 9046 "Blob API URI Helper"
 {
     Access = Internal;
 
