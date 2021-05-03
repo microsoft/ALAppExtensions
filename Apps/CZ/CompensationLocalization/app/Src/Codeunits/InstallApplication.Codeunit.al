@@ -297,6 +297,9 @@ codeunit 31270 "Install Application CZC"
     begin
         InitCompensationSourceCode();
         InitCompensationReportSelections();
+#if not CLEAN18
+        RecreateWorkflowEvents();
+#endif
 
         DataClassEvalHandlerCZC.ApplyEvaluationClassificationsForPrivacy();
         UpgradeTag.SetAllUpgradeTags();
@@ -356,4 +359,18 @@ codeunit 31270 "Install Application CZC"
         CompensReportSelectionsCZC.Validate("Report ID", ReportID);
         CompensReportSelectionsCZC.Insert();
     end;
+#if not CLEAN18
+
+    local procedure RecreateWorkflowEvents()
+    var
+        WorkflowEvent: Record "Workflow Event";
+        WorkflowEventHandling: Codeunit "Workflow Event Handling";
+    begin
+        WorkflowEvent.SetRange("Table ID", Database::"Credit Header");
+        if not WorkflowEvent.IsEmpty() then begin
+            WorkflowEvent.DeleteAll();
+            WorkflowEventHandling.CreateEventsLibrary();
+        end;
+    end;
+#endif
 }

@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
 {
+    Permissions = tabledata "VAT Statement Attachment" = rimd,
+                  tabledata "VAT Statement Attachment CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

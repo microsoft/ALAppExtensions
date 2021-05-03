@@ -12,6 +12,10 @@ codeunit 4001 "Hybrid Cloud Management"
         TelemetryCategoryTxt: Label 'CloudMigration', Locked = true;
         MigrationDisabledTelemetryTxt: Label 'Migration disabled. Source Product=%1; Reason=%2', Comment = '%1 - source product, %2 - reason for disabling', Locked = true;
         UserMustBeAbleToScheduleTasksMsg: Label 'You do not have the right permissions to schedule tasks, which is required for running the migration. Please check your permissions and license entitlements before you continue.';
+        IntelligentCloudTok: Label 'IntelligentCloud', Locked = true;
+
+        CreatingIntegrationRuntimeMsg: Label 'Creating Integration Runtime for Product ID: %1', Comment = '%1 - The source product id', Locked = true;
+        CreatedIntegrationRuntimeMsg: Label 'Created Integration Runtime, IRName" %1', Comment = '%1 - Name of Integration Runtime', Locked = true;
 
     procedure CanHandleNotification(SubscriptionId: Text; ProductId: Text): Boolean
     var
@@ -291,12 +295,15 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridDeployment: Codeunit "Hybrid Deployment";
         HandledExternally: Boolean;
     begin
+        Session.LogMessage('0000EV4', StrSubstNo(CreatingIntegrationRuntimeMsg, HybridProductType.ID), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+
         OnBeforeShowIRInstructionsStep(HybridProductType, IRName, PrimaryKey, HandledExternally);
         if HandledExternally OR (IRName <> '') then
             exit;
 
         HybridDeployment.Initialize(HybridProductType.ID);
         HybridDeployment.CreateIntegrationRuntime(IRName, PrimaryKey);
+        Session.LogMessage('0000EV5', StrSubstNo(CreatedIntegrationRuntimeMsg, IRName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
     end;
 
     procedure RefreshReplicationStatus()
@@ -383,17 +390,17 @@ codeunit 4001 "Hybrid Cloud Management"
 
     procedure ConstructTableName(Name: Text[30]; TableID: Integer) TableName: Text[250]
     var
-        AppObjectMetadata: Record "Application Object Metadata";
+        AllObj: Record AllObj;
         PublishedApp: Record "Published Application";
         AppID: Text[50];
     begin
         TableName := Name;
-        AppObjectMetadata.Reset();
-        AppObjectMetadata.SetRange("Object Type", AppObjectMetadata."Object Type"::Table);
-        AppObjectMetadata.SetRange("Object ID", TableID);
-        if AppObjectMetadata.FindFirst() then begin
+        AllObj.Reset();
+        AllObj.SetRange("Object Type", AllObj."Object Type"::Table);
+        AllObj.SetRange("Object ID", TableID);
+        if AllObj.FindFirst() then begin
             PublishedApp.Reset();
-            PublishedApp.SetRange("Runtime Package ID", AppObjectMetadata."Runtime Package ID");
+            PublishedApp.SetRange("Runtime Package ID", AllObj."App Runtime Package ID");
             If PublishedApp.FindFirst() then begin
                 AppID := CopyStr(Lowercase(CopyStr(PublishedApp.ID, 2, (StrLen(PublishedApp.ID) - 2))), 1, 50);
                 TableName := CopyStr(TableName + '$' + AppID, 1, 250);
@@ -434,6 +441,11 @@ codeunit 4001 "Hybrid Cloud Management"
 
     [IntegrationEvent(false, false)]
     procedure OnGetHybridProductName(ProductId: Text; var ProductName: Text)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnGetHybridProductDescription(ProductId: Text; var ProductDescription: Text)
     begin
     end;
 
@@ -485,15 +497,6 @@ codeunit 4001 "Hybrid Cloud Management"
     [IntegrationEvent(false, false)]
     local procedure OnCanCreateCompanies(var CanCreateCompanies: Boolean)
     begin
-    end;
-
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
-    local procedure AddIntelligentCloudActivityCueInCompany()
-    var
-        HybridCueSetupManagement: Codeunit "Hybrid Cue Setup Management";
-    begin
-        HybridCueSetupManagement.InsertDataForReplicationSuccessRateCue();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnBeforeEnableReplication', '', false, false)]

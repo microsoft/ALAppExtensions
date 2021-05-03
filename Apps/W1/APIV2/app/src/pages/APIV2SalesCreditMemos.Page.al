@@ -390,6 +390,13 @@ page 30038 "APIV2 - Sales Credit Memos"
                         RegisterFieldSet(FieldNo("Prices Including VAT"));
                     end;
                 }
+                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
+                {
+                    Caption = 'Dimension Set Lines';
+                    EntityName = 'dimensionSetLine';
+                    EntitySetName = 'dimensionSetLines';
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(6);
+                }
                 part(salesCreditMemoLines; "APIV2 - Sales Credit Mem Lines")
                 {
                     Caption = 'Lines';
@@ -521,12 +528,25 @@ page 30038 "APIV2 - Sales Credit Memos"
                         RegisterFieldSet(FieldNo("Sell-to E-Mail"));
                     end;
                 }
-                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
+
+                field(customerReturnReasonId; "Reason Code Id")
                 {
-                    Caption = 'Dimension Set Lines';
-                    EntityName = 'dimensionSetLine';
-                    EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(6);
+                    Caption = 'Customer Return Reason Id';
+
+                    trigger OnValidate()
+                    begin
+                        if "Reason Code Id" = BlankGUID then
+                            "Reason Code" := ''
+                        else begin
+                            if not ReasonCode.GetBySystemId("Reason Code Id") then
+                                Error(ReasonCodeIdDoesNotMatchAReasonCodeErr);
+
+                            "Reason Code" := ReasonCode.Code;
+                        end;
+
+                        RegisterFieldSet(FieldNo("Reason Code Id"));
+                        RegisterFieldSet(FieldNo("Reason Code"));
+                    end;
                 }
                 part(attachments; "APIV2 - Attachments")
                 {
@@ -602,6 +622,7 @@ page 30038 "APIV2 - Sales Credit Memos"
         Currency: Record "Currency";
         PaymentTerms: Record "Payment Terms";
         ShipmentMethod: Record "Shipment Method";
+        ReasonCode: Record "Reason Code";
         GraphMgtSalCrMemoBuf: Codeunit "Graph Mgt - Sal. Cr. Memo Buf.";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         LCYCurrencyCode: Code[10];
@@ -633,6 +654,7 @@ page 30038 "APIV2 - Sales Credit Memos"
         CancelingCreditMemoFailedNothingCreatedErr: Label 'Canceling the credit memo failed because of the following error: \\%1.';
         AlreadyCancelledErr: Label 'The credit memo cannot be cancelled because it has already been canceled.';
         NoLineErr: Label 'Please add at least one line item to the credit memo.';
+        ReasonCodeIdDoesNotMatchAReasonCodeErr: Label 'The "customerReturnReasonId" does not match to a Reason Code.', Comment = 'customerReturnReasonCodeId is a field name and should not be translated.';
         BlankGUID: Guid;
         DocumentDateSet: Boolean;
         DocumentDateVar: Date;

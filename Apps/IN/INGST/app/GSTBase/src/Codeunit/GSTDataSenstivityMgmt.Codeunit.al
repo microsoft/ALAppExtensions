@@ -139,6 +139,10 @@ codeunit 18020 "GST Data Senstivity Mgmt."
         SetTableFieldsToNormal(Database::"Sales Cr.Memo Header");
         SetTableFieldsToNormal(Database::"Sales Invoice Header");
         SetTableFieldsToNormal(Database::"Purchase Line Archive");
+        SetTableFieldsToNormal(Database::"GST Journal Template");
+        SetTableFieldsToNormal(Database::"GST Journal Batch");
+        SetTableFieldsToNormal(Database::"GST Journal Line");
+        SetTableFieldsToNormal(Database::"GST Adjustment Buffer");
     end;
 
     local procedure SetTableFieldsToNormal(TableNo: Integer)

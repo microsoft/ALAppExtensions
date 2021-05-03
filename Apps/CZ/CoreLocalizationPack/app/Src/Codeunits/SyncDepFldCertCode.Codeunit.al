@@ -1,6 +1,8 @@
 #pragma warning disable AL0432
 codeunit 31208 "Sync.Dep.Fld-CertCode CZL"
 {
+    Permissions = tabledata "Certificate CZ Code" = rimd,
+                  tabledata "Certificate Code CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '18.0';

@@ -2,6 +2,8 @@
 codeunit 31291 "Sync.Dep.Fld-CompensSetup CZC"
 {
     Access = Internal;
+    Permissions = tabledata "Credits Setup" = rimd,
+                  tabledata "Compensations Setup CZC" = rimd;
 
     [EventSubscriber(ObjectType::Table, Database::"Credits Setup", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenameCreditsSetup(var Rec: Record "Credits Setup"; var xRec: Record "Credits Setup")

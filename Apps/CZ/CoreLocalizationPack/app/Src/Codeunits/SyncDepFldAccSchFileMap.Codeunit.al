@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
 {
+    Permissions = tabledata "Statement File Mapping" = rimd,
+                  tabledata "Acc. Schedule File Mapping CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

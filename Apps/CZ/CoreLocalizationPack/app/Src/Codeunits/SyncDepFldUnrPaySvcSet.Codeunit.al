@@ -1,6 +1,8 @@
 #pragma warning disable AL0432
 codeunit 31210 "Sync.Dep.Fld-UnrPaySvcSet CZL"
 {
+    Permissions = tabledata "Electronically Govern. Setup" = rimd,
+                  tabledata "Unrel. Payer Service Setup CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '18.0';

@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31140 "Sync.Dep.Fld-VIESDeclHead CZL"
 {
+    Permissions = tabledata "VIES Declaration Header" = rimd,
+                  tabledata "VIES Declaration Header CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

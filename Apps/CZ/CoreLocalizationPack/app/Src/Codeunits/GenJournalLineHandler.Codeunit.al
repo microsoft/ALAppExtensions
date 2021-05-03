@@ -168,7 +168,9 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
                     VATDateNeeded := true;
             if VATDateNeeded then
                 VATDateHandlerCZL.CheckVATDateCZL(GenJournalLine);
-            if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) and (GenJournalLine."Document Type" <> GenJournalLine."Document Type"::" ") then
+            if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) and 
+               (GenJournalLine."Document Type" in [GenJournalLine."Document Type"::"Credit Memo", GenJournalLine."Document Type"::Invoice])
+            then
                 GenJournalLine.TestField("Original Doc. VAT Date CZL");
             if GenJournalLine."Original Doc. VAT Date CZL" > GenJournalLine."VAT Date CZL" then
                 GenJournalLine.FieldError("Original Doc. VAT Date CZL", StrSubstNo(MustBeLessOrEqualErr, GenJournalLine.FieldCaption(GenJournalLine."VAT Date CZL")));

@@ -82,6 +82,9 @@ codeunit 139806 "APIV2 - Company Info. E2E"
     local procedure VerifyCompanyInformationProperties(CompanyInformationJSON: Text; var CompanyInformation: Record "Company Information")
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
+        CompanyInformationRecordRef: RecordRef;
+        EnterpriseNoFieldRef: FieldRef;
+        TaxRegistrationNumber: Text;
     begin
         Assert.AreNotEqual('', CompanyInformationJSON, EmptyJSONErr);
         GeneralLedgerSetup.Get();
@@ -91,7 +94,16 @@ codeunit 139806 "APIV2 - Company Info. E2E"
         VerifyPropertyInJSON(CompanyInformationJSON, 'faxNumber', CompanyInformation."Fax No.");
         VerifyPropertyInJSON(CompanyInformationJSON, 'email', CompanyInformation."E-Mail");
         VerifyPropertyInJSON(CompanyInformationJSON, 'website', CompanyInformation."Home Page");
-        VerifyPropertyInJSON(CompanyInformationJSON, 'taxRegistrationNumber', CompanyInformation."VAT Registration No.");
+
+        TaxRegistrationNumber := CompanyInformation."VAT Registration No.";
+        CompanyInformationRecordRef.GetTable(CompanyInformation);
+        if CompanyInformationRecordRef.FieldExist(11310) then begin
+            EnterpriseNoFieldRef := CompanyInformationRecordRef.Field(11310);
+            if (EnterpriseNoFieldRef.Type = FieldType::Text) and (EnterpriseNoFieldRef.Name = 'Enterprise No.') then
+                TaxRegistrationNumber := EnterpriseNoFieldRef.Value();
+        end;
+
+        VerifyPropertyInJSON(CompanyInformationJSON, 'taxRegistrationNumber', TaxRegistrationNumber);
         VerifyPropertyInJSON(CompanyInformationJSON, 'industry', CompanyInformation."Industrial Classification");
         VerifyPropertyInJSON(CompanyInformationJSON, 'currencyCode', GeneralLedgerSetup."LCY Code");
         VerifyPropertyInJSON(CompanyInformationJSON, 'addressLine1', CompanyInformation.Address);

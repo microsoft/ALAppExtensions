@@ -203,6 +203,22 @@ pageextension 18148 "GST Sales Invoice Ext" extends "Sales Invoice"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if trading is applicable.';
             }
+            field("Date of Removal"; Rec."Posting Date")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Date of Removal';
+                ToolTip = 'Specifies the date of removal.';
+            }
+            field("Time of Removal"; Rec."Time of Removal")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the time of removal.';
+            }
+            field("Mode of Transport"; Rec."Mode of Transport")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the transportation mode e.g. by road, by air etc.';
+            }
         }
     }
     actions

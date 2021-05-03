@@ -2,7 +2,7 @@
     "id":  "f93c2c47-6485-40a7-91c8-a9e8e52d9aa5",
     "name":  "OnPrem Permissions (CZ)",
     "publisher":  "Microsoft",
-    "version":  "18.0.0.0",
+    "version":  "18.1.0.0",
     "brief":  "This extension includes permission set for on premise systems.",
     "description":  "This extension includes permission set for on premise systems.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -12,11 +12,13 @@
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2115702",
     "logo":  "ExtensionLogo.png",
     "dependencies":  [
+
                      ],
     "screenshots":  [
+
                     ],
     "platform":  "18.0.0.0",
     "showMyCode":  false,
     "target":  "OnPrem",
-    "application":  "18.0.0.0"
+    "application":  "18.1.0.0"
 }

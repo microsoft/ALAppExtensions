@@ -605,4 +605,24 @@ codeunit 18786 "Library-TDS"
         AllowedSections.Validate("Default Section", true);
         AllowedSections.Insert(true);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Test Publishers", 'CreateTDSSetupStale', '', false, false)]
+    local procedure CreateTDSSetupForStaleCheck(var Vendor: Record Vendor; var TDSSection: Code[10])
+    var
+        TDSPostingSetup: Record "TDS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        CreateTDSSetup(Vendor, TDSPostingSetup, ConcessionalCode);
+        TDSSection := TDSPostingSetup."TDS Section";
+        UpdateVendorWithPANWithOutConcessional(Vendor, true, true);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Test Publishers", 'CreateGenJournalLineWithTDSStale', '', false, false)]
+    local procedure CreateGenJournalLineWithTDS(var GenJournalLine: Record "Gen. Journal Line"; var Vendor: Record Vendor; var TDSSection: Code[10])
+    var
+        TDSOnGeneralJnl: Codeunit "TDS On General Jnl";
+    begin
+        TDSOnGeneralJnl.CreateTaxRateSetup(TDSSection, Vendor."Assessee Code", '', WorkDate());
+        TDSOnGeneralJnl.CreateTDSPaymentWithBankAccount(GenJournalLine, Vendor, WorkDate());
+    end;
 }

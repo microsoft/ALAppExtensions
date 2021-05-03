@@ -67,20 +67,17 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         TokenCache: Text;
         NewTokenCache: Text;
     begin
-        if not User.Get(UserSecurityId()) then begin
-            Session.LogMessage('AL00001', StrSubstNo(NoUserErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-            exit(false);
-        end;
+        User.Get(UserSecurityId());
 
         if not IsolatedStorage.Get(TokenCacheTok + UserSecurityId(), DataScope::Module, TokenCache) then begin
-            Session.LogMessage('AL00002', StrSubstNo(NoStoredTokenCacheErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            Session.LogMessage('000040A', StrSubstNo(NoStoredTokenCacheErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
             exit(false);
         end;
 
         if (not OAuth2.AcquireOnBehalfOfTokenByTokenCache(User."Authentication Email", '', GraphResourceURLTxt, TokenCache, AccessToken, NewTokenCache)) or (AccessToken = '') then begin
-            Session.LogMessage('AL00003', StrSubstNo(CouldNotAcquireAccessTokenFromCacheErr, User."Authentication Email"), Verbosity::Error, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            Session.LogMessage('000040B', StrSubstNo(CouldNotAcquireAccessTokenFromCacheErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
             if not IsolatedStorage.Delete(TokenCacheTok + UserSecurityId()) then
-                Session.LogMessage('AL00008', StrSubstNo(CouldNotDeleteTokenCacheTxt, User."Authentication Email"), Verbosity::Warning, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+                Session.LogMessage('000040C', StrSubstNo(CouldNotDeleteTokenCacheTxt, UserSecurityId()), Verbosity::Warning, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
             exit(false);
         end;
 
@@ -123,7 +120,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
             exit;
 
         if not StoreTokenCacheState() then
-            Session.LogMessage('AL00009', StrSubstNo(SoringTokenCacheFailedErr, GetLastErrorText()), Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            Session.LogMessage('000040D', StrSubstNo(SoringTokenCacheFailedErr, GetLastErrorText()), Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
 
         // populate the entry in isolated storage to not spend time on the next log in
         if not IsolatedStorage.Contains(TokenCacheTok + UserSecurityId()) then
@@ -137,7 +134,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         TokenCache: Text;
     begin
         if not OAuth2.AcquireOnBehalfAccessTokenAndTokenCache(OAuthAuthorityUrlTxt, '', GraphResourceURLTxt, AccessToken, TokenCache) then begin
-            Session.LogMessage('AL00004', StrSubstNo(CouldNotAcquireOnBehalfOfAccessTokenErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            Session.LogMessage('000040E', StrSubstNo(CouldNotAcquireOnBehalfOfAccessTokenErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
             exit(false);
         end else
             exit(StoreTokenCacheState(TokenCache));
@@ -147,14 +144,14 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
     local procedure StoreTokenCacheState(TokenCacheState: Text): Boolean
     begin
         if TokenCacheState = '' then begin
-            Session.LogMessage('AL00005', StrSubstNo(EmptyTokenCacheErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            Session.LogMessage('000040F', StrSubstNo(EmptyTokenCacheErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
             exit(false);
         end else begin
-            Session.LogMessage('AL00006', StrSubstNo(StoredTokenCacheTxt, UserSecurityId()), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            Session.LogMessage('000040G', StrSubstNo(StoredTokenCacheTxt, UserSecurityId()), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
             if IsolatedStorage.Set(TokenCacheTok + UserSecurityId(), TokenCacheState, DataScope::Module) then
                 exit(true);
 
-            Session.LogMessage('AL00007', StrSubstNo(FailedToSaveTokenCacheTxt, UserSecurityId()), Verbosity::Warning, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            Session.LogMessage('000040H', StrSubstNo(FailedToSaveTokenCacheTxt, UserSecurityId()), Verbosity::Warning, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
             exit(false);
         end;
     end;
@@ -197,7 +194,6 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         FailedToSaveTokenCacheTxt: Label 'Failed to save the token cache to isolated starage for user security ID: %1.', Locked = true;
         SoringTokenCacheFailedErr: Label 'Failed to run the storing token cache codeunit. Error: %1.', Locked = true;
         CouldNotDeleteTokenCacheTxt: Label 'Failed to delete the token cache from isolated starage for user security ID: %1.', Locked = true;
-        NoUserErr: Label 'Could not find user with security ID: %1.', Locked = true;
         CouldNotAcquireAccessTokenFromCacheErr: Label 'Could not acquire a new access token by token cache for user: %1.', Locked = true;
         EmptyTokenCacheErr: Label 'The acquired token cache is empty. User: %1.', Locked = true;
         CouldNotAcquireOnBehalfOfAccessTokenErr: Label 'Failed to acquire an on-belaf-of access token for user security ID: %1', Locked = true;

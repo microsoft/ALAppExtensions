@@ -2,6 +2,8 @@
 #pragma warning disable AL0432,AL0603
 codeunit 31131 "Sync.Dep.Fld-CashDeskEvent CZP"
 {
+    Permissions = tabledata "Cash Desk Event" = rimd,
+                  tabledata "Cash Desk Event CZP" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.5';

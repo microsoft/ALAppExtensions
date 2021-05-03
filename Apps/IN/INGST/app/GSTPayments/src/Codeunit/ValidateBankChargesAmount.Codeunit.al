@@ -165,6 +165,23 @@ codeunit 18247 "Validate Bank Charges Amount"
         InitPostedJnlBankCharge(GenJournalLine, 0);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostBankAccOnBeforeCheckLedgEntryInsert', '', false, false)]
+    local procedure UpdateChequeDetails(var GenJournalLine: Record "Gen. Journal Line"; var CheckLedgerEntry: Record "Check Ledger Entry")
+    var
+        JnlBankChargesSessionMgt: Codeunit "GST Bank Charge Session Mgt.";
+        TotalBankChargeAmount: Decimal;
+    begin
+        if not (GenJournalLine."Bank Payment Type" in [GenJournalLine."Bank Payment Type"::"Computer Check", GenJournalLine."Bank Payment Type"::"Manual Check"]) then
+            exit;
+
+        TotalBankChargeAmount := 0;
+        TotalBankChargeAmount := JnlBankChargesSessionMgt.GetBankChargeAmount();
+        if TotalBankChargeAmount = 0 then
+            exit;
+
+        CheckLedgerEntry.Amount := CheckLedgerEntry.Amount - Abs(TotalBankChargeAmount);
+    end;
+
     local procedure InsertDetaildGSTBufferBankCharge(var GenJnlLine: Record "Gen. Journal Line")
     var
         GLSetup: Record "General Ledger Setup";
@@ -315,10 +332,8 @@ codeunit 18247 "Validate Bank Charges Amount"
             end else
                 SignOfBankAccLedgAmount := Abs(BankAccountLedgerEntry.Amount) / BankAccountLedgerEntry.Amount;
 
-        BankAccountLedgerEntry.Amount += (SignOfBankAccLedgAmount * BankChargeAmount);
-        BankAccountLedgerEntry."Amount (LCY)" += (SignOfBankAccLedgAmount * BankChargeAmount);
-        BankAccountLedgerEntry."Remaining Amount" := BankAccountLedgerEntry.Amount;
-        BankAccountLedgerEntry.UpdateDebitCredit(GenJournalLine.Correction);
+        BankAccountLedgerEntry.Amount += (SignOfBankAccLedgAmount * BankChargeAmount) + BankChargeAmount;
+        BankAccountLedgerEntry."Amount (LCY)" += (SignOfBankAccLedgAmount * BankChargeAmount) + BankChargeAmount;
         BankChargeAmount := (SignOfBankAccLedgAmount * BankChargeAmount);
         GenJournalLine."Amount (LCY)" += BankChargeAmount;
     end;
@@ -476,10 +491,8 @@ codeunit 18247 "Validate Bank Charges Amount"
                     JnlBankChargesSessionMgt.CreateGSTBankChargesGenJournallLine(GenJnlLine, BankAccountPostingGroup."GST Rounding Account", GSTRounding, GSTRounding);
             end;
 
-            if DeleteJnlBankChgRecords then begin
+            if DeleteJnlBankChgRecords then
                 JnlBankCharges.DeleteAll();
-                JnlBankChargesSessionMgt.SetBankChargeAmount(0);
-            end;
         end;
     end;
 

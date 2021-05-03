@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "This extension includes permission set for on premise systems.",
     "description":  "This extension includes permission set for on premise systems.",
-    "version":  "18.0.0.0",
+    "version":  "18.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2009036",
@@ -19,5 +19,5 @@
                     ],
     "platform":  "18.0.0.0",
     "showMyCode":  false,
-    "application":  "18.0.0.0"
+    "application":  "18.1.0.0"
 }

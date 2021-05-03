@@ -10,6 +10,9 @@ codeunit 4021 "Hybrid BC Last Management"
         FailurePreparingDataErr: Label 'Failed to prepare data for the table. Inner error: %1';
         FailureCopyingTableErr: Label 'Failed to copy the table. Inner error: %1';
         UnsupportedVersionErr: Label 'The version of the on-premises deployment does not match the requirements of Business Central online. Check if the version was set correctly on the database. For more information, see the documentation - https://go.microsoft.com/fwlink/?linkid=2148701.';
+        IntelligentCloudTok: Label 'IntelligentCloud', Locked = true;
+        CompanyUpgradeFailedMsg: Label 'Company upgrade failed', Locked = true;
+        PerDatabaseUpgradeFailedMsg: Label 'Ped database upgrade failed', Locked = true;
 
     procedure GetAppId() AppId: Guid
     var
@@ -140,6 +143,8 @@ codeunit 4021 "Hybrid BC Last Management"
         SourceTableMapping: Record "Source Table Mapping";
         IntelligentCloudStatus: Record "Intelligent Cloud Status";
     begin
+        Session.LogMessage('0000EV2', CompanyUpgradeFailedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+
         // Need to reset synced version for failed tables and record the error
         if SourceTableMapping.FindSet() then
             repeat
@@ -161,6 +166,8 @@ codeunit 4021 "Hybrid BC Last Management"
         SourceTableMapping: Record "Source Table Mapping";
         IntelligentCloudStatus: Record "Intelligent Cloud Status";
     begin
+        Session.LogMessage('0000EV3', PerDatabaseUpgradeFailedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+
         // Need to reset synced version for failed tables and record the error
         if SourceTableMapping.FindSet() then
             repeat

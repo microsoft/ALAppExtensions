@@ -195,11 +195,19 @@ page 2752 "Add Universal Printers Wizard"
                 group("Para3.1")
                 {
                     Caption = 'That''s it!';
+                    Visible = TotalAddedPrinters <> 0;
 
                     label("Para3.1.1")
                     {
                         ApplicationArea = All;
                         Caption = 'Printers that are shared with you through Universal Print have been added to Business Central.';
+                    }
+                    field(NumberOfPrintersAddedField; NumberOfPrintersAddedText)
+                    {
+                        ShowCaption = false;
+                        ApplicationArea = All;
+                        Editable = false;
+                        Enabled = false;
                     }
                     label("Para3.1.2")
                     {
@@ -213,6 +221,28 @@ page 2752 "Add Universal Printers Wizard"
                         Caption = '';
                     }
                     group("Para3.1.3")
+                    {
+                        Caption = '';
+                        InstructionalText = 'Choose Finish to close this setup.';
+                    }
+                }
+                group("Para3.2")
+                {
+                    Caption = 'That''s it!';
+                    Visible = TotalAddedPrinters = 0;
+
+                    label("Para3.2.1")
+                    {
+                        ApplicationArea = All;
+                        Caption = 'The operation completed, but we could not find any new printer shared with you through Universal Print.';
+                    }
+                    label(EmptySpace4)
+                    {
+                        ApplicationArea = All;
+                        ShowCaption = false;
+                        Caption = '';
+                    }
+                    group("Para3.2.2")
                     {
                         Caption = '';
                         InstructionalText = 'Choose Finish to close this setup.';
@@ -325,7 +355,8 @@ page 2752 "Add Universal Printers Wizard"
     end;
 
     local procedure GoToNextStep(Forward: Boolean)
-    NextStep: Option;
+    var
+        NextStep: Option;
     begin
         if Forward then
             PerformOperationAfterStep(CurrentStep);
@@ -362,9 +393,9 @@ page 2752 "Add Universal Printers Wizard"
     end;
 
     local procedure StartAutoAdd()
-    var
     begin
-        UniversalPrinterSetup.AddAllPrintShares();
+        TotalAddedPrinters := UniversalPrinterSetup.AddAllPrintShares();
+        NumberOfPrintersAddedText := StrSubstNo(NumberOfPrintersAddedTemplateTxt, TotalAddedPrinters);
     end;
 
     local procedure ShowOnPremAadSetupStep(): Boolean
@@ -406,6 +437,9 @@ page 2752 "Add Universal Printers Wizard"
         FinishEnabled: Boolean;
         IsOnPrem: Boolean;
         HasLicense: Boolean;
+        TotalAddedPrinters: Integer;
+        NumberOfPrintersAddedText: Text;
+        NumberOfPrintersAddedTemplateTxt: Label 'Number of printers added: %1.', Comment = '%1: a number.';
         StepOutOfRangeErr: Label 'Wizard step out of range.';
         StepOutOfRangeTelemetryTxt: Label 'Step out of range from %1, Forward=%2', Locked = true;
         NoTokenForOnPremErr: Label 'We couldn''t connect to Universal Print using your Azure AD application registration. Run the Set Up Azure Active Directory assisted setup again, and make sure all the values are set correctly.';

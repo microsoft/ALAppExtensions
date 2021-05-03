@@ -104,17 +104,17 @@ report 18935 "Check Report"
                         AutoFormatExpression = GenJnlLine."Currency Code";
                         AutoFormatType = 1;
                     }
-                    column(TotalLineAmtLineAmt2; TotalLineAmount - LineAmount2)
+                    column(TDSAmt; TDSAmount)
                     {
                         AutoFormatExpression = GenJnlLine."Currency Code";
                         AutoFormatType = 1;
                     }
-                    column(TDSAmtWorkTaxAmt; 0)
+                    column(TotalLineAmtLineAmt2; TotalLineAmount - LineAmount2 - TDSAmount)
                     {
                         AutoFormatExpression = GenJnlLine."Currency Code";
                         AutoFormatType = 1;
                     }
-                    column(LineAmt; LineAmount)
+                    column(LineAmt; LineAmount - TDSAmount)
                     {
                         AutoFormatExpression = GenJnlLine."Currency Code";
                         AutoFormatType = 1;
@@ -140,17 +140,13 @@ report 18935 "Check Report"
                         AutoFormatExpression = GenJnlLine."Currency Code";
                         AutoFormatType = 1;
                     }
-                    column(CurrentLineAmt; LineAmount2)
+                    column(CurrentLineAmt; LineAmount2 - TDSAmount)
                     {
                         AutoFormatExpression = GenJnlLine."Currency Code";
                         AutoFormatType = 1;
                     }
                     column(ExtDocNo; ExtDocNo)
                     {
-                    }
-                    column(JnlBankChargesAmt; 0)
-                    {
-                        AutoFormatType = 1;
                     }
                     column(NetAmtCaption; NetAmtCaptionLbl)
                     {
@@ -174,9 +170,6 @@ report 18935 "Check Report"
                     {
                     }
                     column(TDSCaption; TDSCaptionLbl)
-                    {
-                    }
-                    column(BankChargeCaption; BankChargeCaptionLbl)
                     {
                     }
                     column(TransportCaption; TransportCaptionLbl)
@@ -424,7 +417,7 @@ report 18935 "Check Report"
                     column(CompanyAddr1; CompanyAddr[1])
                     {
                     }
-                    column(TotalLineAmount; TotalLineAmount)
+                    column(TotalLineAmount; TotalLineAmount - TDSAmount)
                     {
                         AutoFormatExpression = GenJnlLine."Currency Code";
                         AutoFormatType = 1;
@@ -464,7 +457,7 @@ report 18935 "Check Report"
                                       TotAmtPosLbl,
                                       UseCheckNo, TotalLineAmount);
                                 CheckLedgEntry."Entry Status" := CheckLedgEntry."Entry Status"::Printed;
-                                CheckLedgEntry.Amount := TotalLineAmount;
+                                CheckLedgEntry.Amount := TotalLineAmount - Abs(TDSAmount);
                             end else begin
                                 CheckLedgEntry."Entry Status" := CheckLedgEntry."Entry Status"::Voided;
                                 CheckLedgEntry.Amount := 0;
@@ -476,6 +469,8 @@ report 18935 "Check Report"
                                     CheckLedgEntry."Check Date" := GenJnlLine."Cheque Date"
                                 else
                                     CheckLedgEntry."Check Date" := GenJnlLine."Posting Date";
+                            CheckLedgEntry."Stale Cheque Expiry Date" :=
+                                CalcDate(BankAcc2."Stale Cheque Stipulated Period", CheckLedgEntry."Check Date");
                             CheckLedgEntry."Check No." := UseCheckNo;
                             CheckManagement.InsertCheck(CheckLedgEntry, RecordId);
 
@@ -506,29 +501,29 @@ report 18935 "Check Report"
                                 DescriptionLine[2] := DescriptionLine[1];
                                 VoidText := NonNegoLbl;
                             end;
-                        end else
+                        end else begin
                             CheckLedgEntry.Init();
-                        CheckLedgEntry."Bank Account No." := BankAcc2."No.";
-                        CheckLedgEntry."Posting Date" := GenJnlLine."Posting Date";
-                        CheckLedgEntry."Document No." := UseCheckNo;
-                        CheckLedgEntry.Description := TestPrintLbl;
-                        CheckLedgEntry."Bank Payment Type" := "Bank Payment Type"::"Computer Check";
-                        CheckLedgEntry."Entry Status" := CheckLedgEntry."Entry Status"::"Test Print";
-                        if not GLSetup."Activate Cheque No." then
-                            CheckLedgEntry."Check Date" := GenJnlLine."Posting Date"
-                        else
-                            if CheckLedgEntry."Check Date" <> 0D then
-                                CheckLedgEntry."Check Date" := GenJnlLine."Cheque Date"
+                            CheckLedgEntry."Bank Account No." := BankAcc2."No.";
+                            CheckLedgEntry."Posting Date" := GenJnlLine."Posting Date";
+                            CheckLedgEntry."Document No." := UseCheckNo;
+                            CheckLedgEntry.Description := TestPrintLbl;
+                            CheckLedgEntry."Bank Payment Type" := "Bank Payment Type"::"Computer Check";
+                            CheckLedgEntry."Entry Status" := CheckLedgEntry."Entry Status"::"Test Print";
+                            if not GLSetup."Activate Cheque No." then
+                                CheckLedgEntry."Check Date" := GenJnlLine."Posting Date"
                             else
-                                CheckLedgEntry."Check Date" := GenJnlLine."Posting Date";
-                        CheckLedgEntry."Check No." := UseCheckNo;
-                        CheckManagement.InsertCheck(CheckLedgEntry, RecordId);
+                                if CheckLedgEntry."Check Date" <> 0D then
+                                    CheckLedgEntry."Check Date" := GenJnlLine."Cheque Date"
+                                else
+                                    CheckLedgEntry."Check Date" := GenJnlLine."Posting Date";
+                            CheckLedgEntry."Check No." := UseCheckNo;
+                            CheckManagement.InsertCheck(CheckLedgEntry, RecordId);
 
-                        CheckAmountText := CheckAmttextLbl;
-                        DescriptionLine[1] := DescripLineLbl;
-                        DescriptionLine[2] := DescriptionLine[1];
-                        VoidText := NonNegoLbl;
-
+                            CheckAmountText := CheckAmttextLbl;
+                            DescriptionLine[1] := DescripLineLbl;
+                            DescriptionLine[2] := DescriptionLine[1];
+                            VoidText := NonNegoLbl;
+                        end;
                         ChecksPrinted := ChecksPrinted + 1;
                         FirstPage := false;
                     end;
@@ -680,6 +675,8 @@ report 18935 "Check Report"
             }
 
             trigger OnAfterGetRecord()
+            var
+                TaxBaseLibrary: Codeunit "Tax Base Library";
             begin
                 if OneCheckPrVendor and ("Currency Code" <> '') and
                    ("Currency Code" <> Currency.Code)
@@ -704,6 +701,7 @@ report 18935 "Check Report"
                         BalancingType := "Account Type";
                         BalancingNo := "Account No.";
                         RemainingAmount := Amount;
+                        TaxBaseLibrary.GetTDSAmount(GenJnlLine, TDSAmount);
                         if OneCheckPrVendor then begin
                             ApplyMethod := ApplyMethod::MoreLinesOneEntry;
                             GenJnlLine2.Reset();
@@ -944,6 +942,7 @@ report 18935 "Check Report"
         TensText: array[10] of Text[30];
         ExponentText: array[5] of Text[30];
         BalancingType: Enum "Gen. Journal Account Type";
+        TDSAmount: Decimal;
         BalancingNo: Code[20];
         ContactText: Text[30];
         CheckNoText: Text[30];
@@ -1051,7 +1050,6 @@ report 18935 "Check Report"
         CurrCodeCaptionLbl: Label 'Currency Code';
         YourDocNoCaptionLbl: Label 'Your Doc. No.';
         TDSCaptionLbl: Label 'TDS';
-        BankChargeCaptionLbl: Label 'Bank Charge';
         TransportCaptionLbl: Label 'Transport';
 
     procedure FormatNoText(var NoText: array[2] of Text[80]; No: Decimal; CurrencyCode: Code[10])

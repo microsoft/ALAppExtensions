@@ -15,19 +15,13 @@ codeunit 18685 "TDS Entity Management"
         else
             ToSection."Section Order" := 1;
 
-        if StrLen(TDSSection.Code) >= MaxStrLen(TDSSection.Code) then
-            ToSection.Code := Format(ToSection."Section Order")
+        if StrLen(TDSSection.Code) + 2 <= MaxStrLen(TDSSection.Code) then
+            ToSection.Code := Format(TDSSection.Code) + '-' + Format(ToSection."Section Order")
         else
-            ToSection.Code := Format(TDSSection.Code) + '-' + Format(ToSection."Section Order");
+            ToSection.Code := Format(ToSection."Section Order");
+
         ToSection.Description := TDSSection.Description;
         ToSection."Parent Code" := TDSSection.Code;
-        SubSection.Reset();
-        SubSection.SetCurrentKey("Presentation Order");
-        SubSection.SetRange("Parent Code", TDSSection.Code);
-        if SubSection.FindLast() then
-            ToSection."Presentation Order" := SubSection."Presentation Order" + 1
-        else
-            ToSection."Presentation Order" := TDSSection."Presentation Order" + 1;
         ToSection."Indentation Level" := TDSSection."Indentation Level" + 1;
         ToSection.Insert(true);
     end;
@@ -145,5 +139,28 @@ codeunit 18685 "TDS Entity Management"
             exit;
 
         TaxBaseSubscribers.GetTDSAmount(TempTransValue.Amount);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"TDS Section", 'OnAfterInsertEvent', '', false, false)]
+    local procedure OnAfterInsertTDSSection()
+    var
+        ParentSectionCode: Code[10];
+        PresentationOrder: Integer;
+    begin
+        ReAssignPresentationOrder(ParentSectionCode, PresentationOrder);
+    end;
+
+    local procedure ReAssignPresentationOrder(ParentSectionCode: Code[10]; var PresentationOrder: Integer)
+    var
+        TDSSection: Record "TDS Section";
+    begin
+        TDSSection.SetRange("Parent Code", ParentSectionCode);
+        if TDSSection.FindSet() then
+            repeat
+                PresentationOrder += 1;
+                TDSSection."Presentation Order" := PresentationOrder;
+                TDSSection.Modify();
+                ReAssignPresentationOrder(TDSSection.Code, PresentationOrder);
+            until TDSSection.Next() = 0;
     end;
 }

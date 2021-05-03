@@ -14,6 +14,7 @@ codeunit 4514 "SMTP Message"
         FailedToAddLinkResourceMsg: Label 'Failed to add linked resource. Content Type: %1', Comment = '%1 - The Content Type of the resource.';
         EmailParseFailureErr: Label 'The address %1 could not be parsed correctly.', Comment = '%1=The email address';
         SmtpCategoryLbl: Label 'Email SMTP', Locked = true;
+        ConcateLbl: Label '; %1', Locked = true;
 
     procedure Initialize()
     var
@@ -114,7 +115,7 @@ codeunit 4514 "SMTP Message"
         // Add Subject
         AddSubject(Message.GetSubject());
 
-        // Add Body and attachements
+        // Add Body and attachments
         Body := Message.GetBody();
         BodyBuilder := BodyBuilder.BodyBuilder();
 
@@ -165,8 +166,8 @@ codeunit 4514 "SMTP Message"
     local procedure AddToInternetAddressList(InternetAddressList: DotNet InternetAddressList; Recipients: List of [Text])
     begin
         if not TryParseInternetAddressList(InternetAddressList, Recipients) then begin
-            Session.LogMessage('0000B5N', StrSubstNo(RecipientErr, FormatListToString(Recipients)), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
-            Error(RecipientErr, FormatListToString(Recipients));
+            Session.LogMessage('0000B5N', StrSubstNo(RecipientErr, FormatListToString(Recipients, true)), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+            Error(RecipientErr, FormatListToString(Recipients, false));
         end;
     end;
 
@@ -222,19 +223,26 @@ codeunit 4514 "SMTP Message"
     /// <summary>
     /// Formats a list into a semicolon separated string.
     /// </summary>
+    /// <param name="List">List of email addresses.</param>
+    /// <param name="Obfuscate">Obfuscate the email addresses.</param>
     /// <returns>Semicolon separated string of list of texts.</returns>
-    procedure FormatListToString(List: List of [Text]) String: Text
+    local procedure FormatListToString(List: List of [Text]; Obfuscate: Boolean) String: Text
     var
+        SMTPConnectorImpl: Codeunit "SMTP Connector Impl.";
         Address: Text;
         Counter: Integer;
-        ConcateLbl: Label '; %2', Locked = true;
     begin
         if List.Count() = 0 then
             exit;
-        String += List.Get(1);
+
+        String := List.Get(1);
+        if Obfuscate then
+            String := SMTPConnectorImpl.ObsfuscateEmailAddress(String);
 
         for Counter := 2 to List.Count() do begin
             Address := List.Get(Counter);
+            if Obfuscate then
+                Address := SMTPConnectorImpl.ObsfuscateEmailAddress(Address);
             String += StrSubstNo(ConcateLbl, Address);
         end;
     end;

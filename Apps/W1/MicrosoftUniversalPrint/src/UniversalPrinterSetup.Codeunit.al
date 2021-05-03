@@ -93,7 +93,7 @@ codeunit 2750 "Universal Printer Setup"
         exit(Orientation = Orientation::landscape);
     end;
 
-    procedure AddAllPrintShares()
+    procedure AddAllPrintShares() TotalAddedPrinters: Integer
     var
         UniversalPrinterSettings: Record "Universal Printer Settings";
         PrintSharesArray: JsonArray;
@@ -104,11 +104,11 @@ codeunit 2750 "Universal Printer Setup"
             Error(GetPrintSharesErr, ErrorMessage);
 
         foreach JArrayElement in PrintSharesArray do
-            if JArrayElement.IsObject() then
-                InsertPrinterSetting(UniversalPrinterSettings, JArrayElement.AsObject())
+            if not JArrayElement.IsObject() then
+                Session.LogMessage('0000EG2', ParseWarningTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory())
             else
-                Session.LogMessage('0000EG2', ParseWarningTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
-        exit;
+                if InsertPrinterSetting(UniversalPrinterSettings, JArrayElement.AsObject()) then
+                    TotalAddedPrinters += 1;
     end;
 
     procedure AddAllPrintSharesToBuffer(var TempUniversalPrintShareBuffer: Record "Universal Print Share Buffer" temporary)
@@ -136,7 +136,7 @@ codeunit 2750 "Universal Printer Setup"
         exit(UniversalPrintGraphHelper.GetPrintShare(PrintShareID, PrintShareJsonObject, ErrorMessage));
     end;
 
-    local procedure InsertPrinterSetting(var UniversalPrinterSettings: Record "Universal Printer Settings"; PrintShareJsonObject: JsonObject)
+    local procedure InsertPrinterSetting(var UniversalPrinterSettings: Record "Universal Printer Settings"; PrintShareJsonObject: JsonObject): Boolean
     var
         PropertyBag: JsonToken;
         PrintShareNameValue: Text;
@@ -144,21 +144,21 @@ codeunit 2750 "Universal Printer Setup"
         PrinterDefaultsJsonObject: JsonObject;
     begin
         if not UniversalPrintGraphHelper.GetJsonKeyValue(PrintShareJsonObject, 'id', PrintShareIDValue) then
-            exit;
+            exit(false);
 
         if PrintShareIDValue = '' then
-            exit;
+            exit(false);
 
         // exit if printer setting already exist
         UniversalPrinterSettings.SetRange("Print Share ID", PrintShareIDValue);
         If UniversalPrinterSettings.FindFirst() then
-            exit;
+            exit(false);
 
         if not UniversalPrintGraphHelper.GetJsonKeyValue(PrintShareJsonObject, 'displayName', PrintShareNameValue) then
-            exit;
+            exit(false);
 
         if PrintShareNameValue = '' then
-            exit;
+            exit(false);
 
         UniversalPrinterSettings.Reset();
         UniversalPrinterSettings.Validate("Print Share ID", PrintShareIDValue);
@@ -172,9 +172,16 @@ codeunit 2750 "Universal Printer Setup"
         if PrintShareJsonObject.Get('defaults', PropertyBag) and PropertyBag.IsObject() then begin
             PrinterDefaultsJsonObject := PropertyBag.AsObject();
             UpdateDefaults(UniversalPrinterSettings, PrinterDefaultsJsonObject);
+        end else begin
+            // Bug 393946: Universal Print: Default settings for printers are not loaded
+            // According to documentation, the Graph APIs for the print share list should return capabilities and defaults, but that is not the case
+            // even if the fields are $select-ed explicitly. Getting the defaults for each single printer is slower but works.
+            // See docs: https://docs.microsoft.com/en-us/graph/api/print-list-shares?view=graph-rest-1.0&tabs=http
+            Session.LogMessage('0000EUQ', NoDefaultsAvailableTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
+            GetDefaults(UniversalPrinterSettings);
         end;
 
-        If UniversalPrinterSettings.Insert(true) then;
+        exit(UniversalPrinterSettings.Insert(true));
     end;
 
     procedure GetDefaults(var UniversalPrinterSettings: Record "Universal Printer Settings")
@@ -381,6 +388,7 @@ codeunit 2750 "Universal Printer Setup"
         DefaultDescriptionTxt: Label 'Sends print jobs to the %1.', Comment = '%1 = Print share name';
         PrinterIDMissingTelemetryTxt: Label 'Printer ID is missing during printer setup.', Locked = true;
         ParseWarningTelemetryTxt: Label 'Cannnot parse response.', Locked = true;
+        NoDefaultsAvailableTelemetryTxt: Label 'There are no defaults available from the list of print shares, checking the individual print share.', Locked = true;
         GetPrintSharesErr: Label 'There was an error fetching printers shared to you.\\%1', Comment = '%1 = a more detailed error message';
         GetPrintShareDetailsErr: Label 'There was an error fetching properties for the selected printer.\\%1', Comment = '%1 = a more detailed error message';
         HeightInputErr: Label 'The value in the Paper Height field must be greater than 0.';

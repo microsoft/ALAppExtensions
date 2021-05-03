@@ -3,7 +3,6 @@ codeunit 18391 "GST Transfer Order Shipment"
     SingleInstance = True;
 
     var
-
         TempGSTPostingBufferStage: Record "GST Posting Buffer" temporary;
         TempGSTPostingBufferFinal: Record "GST Posting Buffer" temporary;
         TempTransferBufferStage: Record "Transfer Buffer" temporary;
@@ -135,7 +134,6 @@ codeunit 18391 "GST Transfer Order Shipment"
         Location: Record Location;
         Location2: Record Location;
         TaxTransactionValue: Record "Tax Transaction Value";
-        DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
         ShipRcvQuantity: Decimal;
     begin
         if (TransferLine."GST Group Code" = '') or (TransferLine."HSN/SAC Code" = '') then
@@ -206,13 +204,6 @@ codeunit 18391 "GST Transfer Order Shipment"
 
                 InsertDetailedGSTEntryInfoTransfer(DetailedGSTLedgerEntry, DetailedGSTEntryBuffer, TransferHeader, DocTransferType);
             until DetailedGSTEntryBuffer.Next() = 0;
-
-        if DetailedGSTLedgerEntry."Transaction Type" = DetailedGSTLedgerEntry."Transaction Type"::Purchase then
-            UpdateGSTTrackingEntryFromTransferOrder(
-                DocumentNo,
-                TransferLine."Item No.",
-                TransferLine."Line No.",
-                DetailedGSTLedgerEntryInfo."Original Doc. Type"::"Transfer Receipt");
     end;
 
     local procedure InsertDetailedGSTEntryInfoTransfer(

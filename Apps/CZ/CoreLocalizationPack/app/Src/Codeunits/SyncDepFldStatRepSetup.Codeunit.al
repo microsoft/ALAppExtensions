@@ -1,6 +1,8 @@
 #pragma warning disable AL0432,AL0603
 codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
 {
+    Permissions = tabledata "Stat. Reporting Setup" = rimd,
+                  tabledata "Statutory Reporting Setup CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '18.0';

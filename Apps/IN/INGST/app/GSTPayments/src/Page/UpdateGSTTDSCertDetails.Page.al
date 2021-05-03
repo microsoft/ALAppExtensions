@@ -7,8 +7,6 @@ page 18249 "Update GST TDS Cert. Details"
     Permissions = TableData "GST TDS/TCS Entry" = rm;
     SourceTable = "GST TDS/TCS Entry";
     SourceTableView = sorting("Entry No.") order(ascending);
-    ApplicationArea = Basic, Suite;
-    UsageCategory = Lists;
 
     layout
     {

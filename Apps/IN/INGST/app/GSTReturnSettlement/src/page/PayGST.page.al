@@ -100,7 +100,7 @@ page 18322 "Pay GST"
                 field("UnAdjutsed Credit"; Rec."UnAdjutsed Credit")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Sepecifies the value of UnAdjusted Credit against the component code.';
+                    ToolTip = 'Specifies the value of UnAdjusted Credit against the component code.';
                 }
                 field("Credit Utilized"; Rec."Credit Utilized")
                 {

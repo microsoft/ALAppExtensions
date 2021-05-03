@@ -96,6 +96,8 @@ codeunit 130630 "No Transactions Subscriber"
                 exit(true);
             'Word Templates Table':
                 exit(true);
+            'Field Monitoring Setup':
+                exit(true);
         end;
 
         exit(false);

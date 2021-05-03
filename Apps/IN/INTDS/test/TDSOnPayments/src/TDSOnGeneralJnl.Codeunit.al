@@ -602,6 +602,25 @@ codeunit 18802 "TDS On General Jnl"
         GenJournalLine.Modify(true);
     end;
 
+    procedure CreateTDSPaymentWithBankAccount(var GenJournalLine: Record "Gen. Journal Line"; var Vendor: Record Vendor; PostingDate: Date)
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        LibraryJournals: Codeunit "Library - Journals";
+        TDSSectionCode: Code[10];
+    begin
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        LibraryJournals.CreateGenJournalLine(GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name,
+        GenJournalLine."Document Type"::Payment, GenJournalLine."Account Type"::Vendor, Vendor."No.",
+        GenJournalLine."Bal. Account Type"::"Bank Account", LibraryERM.CreateBankAccountNo(), 10000);
+        GenJournalLine.Validate("Posting Date", PostingDate);
+        TDSSectionCode := CopyStr(Storage.Get(SectionCodeLbl), 1, 10);
+        GenJournalLine.Validate("TDS Section Code", TDSSectionCode);
+        GenJournalLine.Validate(Amount, 10000);
+        GenJournalLine.Modify(true);
+    end;
+
     local procedure CreateGeneralJournalforTDSWithoutAccPeriod(var GenJournalLine: Record "Gen. Journal Line"; var Vendor: Record Vendor)
     var
         GenJournalTemplate: Record "Gen. Journal Template";
@@ -654,7 +673,7 @@ codeunit 18802 "TDS On General Jnl"
         Reply := true;
     end;
 
-    local procedure CreateTaxRateSetup(TDSSection: Code[10]; AssesseeCode: Code[10]; ConcessionlCode: Code[10]; EffectiveDate: Date)
+    procedure CreateTaxRateSetup(TDSSection: Code[10]; AssesseeCode: Code[10]; ConcessionlCode: Code[10]; EffectiveDate: Date)
     var
         Section: Code[10];
         TDSAssesseeCode: Code[10];

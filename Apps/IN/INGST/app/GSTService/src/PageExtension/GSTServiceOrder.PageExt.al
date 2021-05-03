@@ -49,7 +49,7 @@ pageextension 18440 "GST Service Order" extends "Service Order"
                 field("Time of Removal"; Rec."Time of Removal")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Sepecifies the time of removal.';
+                    ToolTip = 'Specifies the time of removal.';
                 }
                 field("Mode of Transport"; Rec."Mode of Transport")
                 {

@@ -75,10 +75,11 @@ page 4003 "Intelligent Cloud Management"
     {
         area(Processing)
         {
+#if not CLEAN19
             action(ManageSchedule)
             {
                 Enabled = IsSuper and IsSetupComplete;
-                Visible = not IsOnPrem;
+                Visible = false;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Manage Schedule';
                 ToolTip = 'Manage migration schedule.';
@@ -88,7 +89,7 @@ page 4003 "Intelligent Cloud Management"
                 RunPageMode = Edit;
                 Image = CalendarMachine;
             }
-
+#endif
             action(RunReplicationNow)
             {
                 Enabled = IsSuper and IsSetupComplete;

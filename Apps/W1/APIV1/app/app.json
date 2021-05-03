@@ -2,15 +2,15 @@
     "id":  "8afe7b40-8c87-4beb-ada0-451d1761bf95",
     "name":  "_Exclude_APIV1_",
     "publisher":  "Microsoft",
-    "version":  "18.0.0.0",
+    "version":  "18.1.0.0",
     "brief":  "APIV1",
     "description":  "APIV1",
-    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
-    "help": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
-    "contextSensitiveHelpUrl": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "help":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo": "ExtensionLogo.png",
+    "logo":  "ExtensionLogo.png",
     "dependencies":  [
 
                      ],
@@ -20,5 +20,5 @@
     "platform":  "18.0.0.0",
     "target":  "OnPrem",
     "showMyCode":  true,
-    "application":  "18.0.0.0"
+    "application":  "18.1.0.0"
 }

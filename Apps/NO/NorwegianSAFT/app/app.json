@@ -2,7 +2,7 @@
     "id":  "3d5fd255-4fb4-464b-9362-44cd85a883e7",
     "name":  "Standard Audit File - Tax Localization for Norway",
     "publisher":  "Microsoft",
-    "version":  "18.0.0.0",
+    "version":  "18.1.0.0",
     "brief":  "Easily configure and create SAF-T audit files for Norway",
     "description":  "As part of tax reporting in Norway, companies must be able to produce Standard Audit Files - Tax (SAF-T) in a specific format to be sent to Norwegian authorities. This feature enables configuration of account mapping and easy export of SAF-T files from Dynamics 365 Business Central.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -20,5 +20,5 @@
     "platform":  "18.0.0.0",
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "18.0.0.0"
+    "application":  "18.1.0.0"
 }

@@ -7,7 +7,6 @@ codeunit 4516 "OAuth2 SMTP Authentication" implements "SMTP Authentication"
         CouldNotAuthenticateErr: Label 'Could not authenticate. To resolve the problem, choose the Authenticate action on the SMTP Account page.';
         AuthenticationSuccessfulMsg: Label '%1 was authenticated.', Comment = '%1 - user email, for example, admin@domain.com';
         AuthenticationFailedMsg: Label 'Could not authenticate.';
-        SMTP2NotAvailableMsg: Label 'The OAuth 2.0 authentication method is currently not available. Use either the Basic or Anonymous authentication method instead.';
 
     procedure Validate(var SMTPAccount: Record "SMTP Account");
     begin
@@ -130,16 +129,5 @@ codeunit 4516 "OAuth2 SMTP Authentication" implements "SMTP Authentication"
     [NonDebuggable]
     local procedure OnSMTPOAuth2Authenticate(var UserName: Text; var AccessToken: Text; SMTPServer: Text)
     begin
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"SMTP Account", 'OnBeforeValidateEvent', 'Authentication', false, false)]
-    local procedure OnBeforeValidateSmtpAuthentication(var Rec: Record "SMTP Account")
-    var
-        EnvironmentInformation: Codeunit "Environment Information";
-    begin
-        if (EnvironmentInformation.IsSaaSInfrastructure() and (Rec.Authentication = Rec.Authentication::"OAuth 2.0")) then begin
-            Message(SMTP2NotAvailableMsg);
-            Rec.Authentication := Rec.Authentication::Basic;
-        end;
     end;
 }

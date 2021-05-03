@@ -215,6 +215,21 @@ codeunit 18390 "GST Transfer Order Receipt"
         TempTransferBufferfinal.DeleteAll();
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Receipt", 'OnAfterTransLineUpdateQtyReceived', '', false, false)]
+    local procedure CreateGSTTrackingEntry(var TransferLine: Record "Transfer Line")
+    var
+        TransferHeader: Record "Transfer Header";
+        OriginalDocType: Enum "Original Doc Type";
+    begin
+        ItemJournalCustom := 0;
+        ItemLedgerEntryNo := 0;
+        TransferHeader.Get(TransferLine."Document No.");
+        GSTTransferOrderShipment.UpdateGSTTrackingEntryFromTransferOrder(TransReceiptHeaderNo,
+            TransferLine."Item No.",
+            TransferLine."Line No.",
+            OriginalDocType::"Transfer Receipt");
+    end;
+
     local procedure PostGLEntries(var TransferHeader: Record "Transfer Header"; TempTransferBufferfinal: Record "Transfer Buffer")
     var
         InventoryPostingSetup: Record "Inventory Posting Setup";

@@ -5,7 +5,7 @@ tableextension 18392 "GST Transfer Line Ext" extends "Transfer Line"
         field(18390; "Transfer Price"; Decimal)
         {
             DataClassification = CustomerContent;
-            Caption = 'Transfer Prcie';
+            Caption = 'Transfer Price';
         }
         field(18391; "Custom Duty Amount"; Decimal)
         {

@@ -7,7 +7,7 @@ pageextension 18449 "GST Posted Service Shipment" extends "Posted Service Shipme
             field("Time of Removal"; Rec."Time of Removal")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Sepecifies the time of removal.';
+                ToolTip = 'Specifies the time of removal.';
             }
             field("Mode of Transport"; Rec."Mode of Transport")
             {
