@@ -23,8 +23,10 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
         DeletedFromAllowedTableLbl: Label 'Removed Table Id %1 from the list of allowed tables', Comment = '%1 = table number';
         AllowedAddingTableLbl: Label 'Allowed adding table %1 to the list of allowed tables.', Comment = '%1 = table number';
         RefusedAddingTableLbl: Label 'Did not allow adding table %1 to the list of allowed tables', Comment = '%1 = table number';
+        FailedAddingTableLbl: Label 'Failed to add table %1 %2 to the list of allowed tables', Comment = '%1 = table number, %2 = table name';
         AllowedModifyingTableLbl: Label 'Allowed modifying table %1 in the list of allowed tables.', Comment = '%1 = table number';
         RefusedModifyingTableLbl: Label 'Did not allow modifying of table %1 in the list of allowed tables', Comment = '%1 = table number';
+        FailedModifyingTableLbl: Label 'Failed to modify table %1 %2 in the list of allowed tables', Comment = '%1 = table number, %2 = table name';
         DefaultDateFieldDoesNotExistLbl: Label 'The retention policy allowed tables list has a default date field number %1 which does not exist in table %2.', Comment = '%1 = Field number, %2 = table number';
         MinExpirationDateFormulaLbl: Label '<-%1D>', Locked = true;
         MaxDateDateFormulaTxt: Label '<+CY+%1Y>', Locked = true;
@@ -68,16 +70,26 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
         AllObj.Get(AllObj."Object Type"::Table, TableId);
         if UpdateAllowedTables then begin
             BindSubscription(RetenPolAllowedTblImpl);
-            TableAllowed := RetentionPolicyAllowedTable.modify(true);
+            TableAllowed := RetentionPolicyAllowedTable.Modify(true);
             UnBindSubscription(RetenPolAllowedTblImpl);
-            RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(AllowedTablesModifiedLbl, RetentionPolicyAllowedTable."Table Id", AllObj."Object Name", RetentionPolicyAllowedTable."Default Date Field No."));
+
+            if TableAllowed then
+                RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(AllowedTablesModifiedLbl, RetentionPolicyAllowedTable."Table Id", AllObj."Object Name", RetentionPolicyAllowedTable."Default Date Field No."))
+            else
+                RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(FailedModifyingTableLbl, RetentionPolicyAllowedTable."Table Id", AllObj."Object Name"), false);
+
             exit(TableAllowed);
         end;
 
-        RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(AddTableToAllowedTablesLbl, RetentionPolicyAllowedTable."Table Id", AllObj."Object Name", RetentionPolicyAllowedTable."Default Date Field No."));
         BindSubscription(RetenPolAllowedTblImpl);
         TableAllowed := RetentionPolicyAllowedTable.Insert();
         UnBindSubscription(RetenPolAllowedTblImpl);
+
+        if TableAllowed then
+            RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(AddTableToAllowedTablesLbl, RetentionPolicyAllowedTable."Table Id", AllObj."Object Name", RetentionPolicyAllowedTable."Default Date Field No."))
+        else
+            RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(FailedAddingTableLbl, RetentionPolicyAllowedTable."Table Id", AllObj."Object Name"), false);
+
         exit(TableAllowed)
     end;
 

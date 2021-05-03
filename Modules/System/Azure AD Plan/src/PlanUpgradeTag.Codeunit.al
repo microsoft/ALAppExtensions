@@ -19,6 +19,8 @@ codeunit 9058 "Plan Upgrade Tag"
     local procedure RegisterPerDatabaseTags(var PerDatabaseUpgradeTags: List of [Code[250]])
     begin
         PerDatabaseUpgradeTags.Add(GetAddDeviceISVEmbUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetRenamePlansUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetRenameTeamMemberPlanUpgradeTag());
     end;
 
     /// <summary>
@@ -37,6 +39,24 @@ codeunit 9058 "Plan Upgrade Tag"
     internal procedure GetRenamePlansUpgradeTag(): Code[250]
     begin
         exit('MS-329421-RenamePlans-20191009');
+    end;
+
+    /// <summary>
+    /// Returns the rename team member plan upgrade tag.
+    /// </summary>
+    /// <returns>The rename team member plan upgrade tag.</returns>
+    internal procedure GetRenameTeamMemberPlanUpgradeTag(): Code[250]
+    begin
+        exit('MS-393309-RenameTeamMemberPlan-20210315');
+    end;
+
+    /// <summary>
+    /// Returns the rename device plan upgrade tag.
+    /// </summary>
+    /// <returns>The rename device plan upgrade tag.</returns>
+    internal procedure GetRenameDevicePlanUpgradeTag(): Code[250]
+    begin
+        exit('MS-394628-RenameDevicePlan-20210325');
     end;
 }
 

@@ -251,6 +251,7 @@ page 1990 "Checklist Banner"
     }
 
     var
+        ChecklistItemBuffer: Record "Checklist Item Buffer";
         ChecklistBanner: Codeunit "Checklist Banner";
         ChecklistImplementation: Codeunit "Checklist Implementation";
         ChecklistStatus: Enum "Checklist Status";
@@ -286,6 +287,8 @@ page 1990 "Checklist Banner"
 
         if Rec.Count > 0 then
             UpdateLabelTexts();
+
+        ChecklistItemBuffer.Copy(Rec, true);
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -382,13 +385,19 @@ page 1990 "Checklist Banner"
     end;
 
     local procedure ExecuteChecklistItem()
+    var
+        IsLastChecklistItem: Boolean;
     begin
         UpdateChecklistCountsAfterStatusUpdate(Status);
 
         Rec.Validate(Status, Status::Started);
         Modify();
 
-        if ChecklistBanner.ExecuteChecklistItem(Rec) then
+        if ChecklistItemBuffer.FindLast() then
+            if ChecklistItemBuffer.Code = Rec.Code then
+                IsLastChecklistItem := true;
+
+        if ChecklistBanner.ExecuteChecklistItem(Rec, IsLastChecklistItem) then
             ChecklistCompletionCount += 1;
 
         CheckForChecklistCompletion();

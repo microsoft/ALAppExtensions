@@ -12,9 +12,14 @@ codeunit 8905 "Email Message Impl."
                   tabledata "Email Error" = rd,
                   tabledata "Email Recipient" = rid,
                   tabledata "Email Message Attachment" = rid,
-                  tabledata "Email Related Record" = rd;
+                  tabledata "Email Related Record" = rd,
+                  tabledata "Tenant Media" = r;
 
     procedure Create(EmailMessage: Codeunit "Email Message Impl.")
+    var
+        EmailRelatedRecord: Record "Email Related Record";
+        EmailImpl: Codeunit "Email Impl";
+        AttachmentInStream: InStream;
     begin
         Create(EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::"To"),
                 EmailMessage.GetSubject(), EmailMessage.GetBody(), EmailMessage.IsBodyHTMLFormatted());
@@ -24,8 +29,15 @@ codeunit 8905 "Email Message Impl."
 
         if EmailMessage.Attachments_First() then
             repeat
-                AddAttachment(EmailMessage.Attachments_GetName(), EmailMessage.Attachments_GetContentType(), EmailMessage.Attachments_GetContentBase64());
+                EmailMessage.Attachments_GetContent(AttachmentInStream);
+                AddAttachment(EmailMessage.Attachments_GetName(), EmailMessage.Attachments_GetContentType(), AttachmentInStream);
             until EmailMessage.Attachments_Next() = 0;
+
+        EmailRelatedRecord.SetRange("Email Message Id", EmailMessage.GetId());
+        if EmailRelatedRecord.FindSet() then
+            repeat
+                EmailImpl.AddRelation(GetId(), EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailRelatedRecord."Relation Type");
+            until EmailRelatedRecord.Next() = 0;
     end;
 
     procedure Create(ToRecipients: Text; Subject: Text; Body: Text; HtmlFormatted: Boolean)
@@ -185,12 +197,16 @@ codeunit 8905 "Email Message Impl."
     var
         EmailAttachment: Record "Email Message Attachment";
         Base64Convert: Codeunit "Base64 Convert";
+        TempBlob: Codeunit "Temp Blob";
         AttachmentOutstream: OutStream;
+        AttachmentInStream: InStream;
         NullGuid: Guid;
     begin
         AddAttachment(AttachmentName, ContentType, false, NullGuid, EmailAttachment);
-        EmailAttachment.Attachment.CreateOutStream(AttachmentOutstream);
+        TempBlob.CreateOutStream(AttachmentOutstream);
         Base64Convert.FromBase64(AttachmentBase64, AttachmentOutstream);
+        TempBlob.CreateInStream(AttachmentInStream);
+        EmailAttachment.Data.ImportStream(AttachmentInStream, '', EmailAttachment."Content Type");
         EmailAttachment.Insert();
     end;
 
@@ -202,15 +218,15 @@ codeunit 8905 "Email Message Impl."
     procedure AddAttachmentInternal(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream) Size: Integer
     var
         EmailAttachment: Record "Email Message Attachment";
-        AttachmentOutstream: OutStream;
-        NullGuid: Guid;
+        NullGuid, MediaID : Guid;
     begin
         AddAttachment(AttachmentName, ContentType, false, NullGuid, EmailAttachment);
-        EmailAttachment.Attachment.CreateOutStream(AttachmentOutstream);
-        CopyStream(AttachmentOutstream, AttachmentInStream);
-        EmailAttachment.Length := EmailAttachment.Attachment.Length();
-        EmailAttachment.Insert();
 
+        MediaID := EmailAttachment.Data.ImportStream(AttachmentInStream, '', EmailAttachment."Content Type");
+        TenantMedia.Get(MediaID);
+        EmailAttachment.Length := TenantMedia.Content.Length;
+
+        EmailAttachment.Insert();
         exit(EmailAttachment.Length);
     end;
 
@@ -301,6 +317,7 @@ codeunit 8905 "Email Message Impl."
 
     procedure Attachments_Next(): Integer
     begin
+        Attachments.SetRange("Email Message Id", Message.Id);
         exit(Attachments.Next());
     end;
 
@@ -310,9 +327,13 @@ codeunit 8905 "Email Message Impl."
     end;
 
     procedure Attachments_GetContent(var InStream: InStream)
+    var
+        MediaID: Guid;
     begin
-        Attachments.CalcFields(Attachment);
-        Attachments.Attachment.CreateInStream(InStream);
+        MediaID := Attachments.Data.MediaId();
+        TenantMedia.Get(MediaID);
+        TenantMedia.CalcFields(Content);
+        TenantMedia.Content.CreateInStream(InStream)
     end;
 
     procedure Attachments_GetContentBase64(): Text
@@ -320,8 +341,7 @@ codeunit 8905 "Email Message Impl."
         Base64Convert: Codeunit "Base64 Convert";
         InStream: InStream;
     begin
-        Attachments.CalcFields(Attachment);
-        Attachments.Attachment.CreateInStream(InStream);
+        Attachments_GetContent(InStream);
         exit(Base64Convert.ToBase64(InStream));
     end;
 
@@ -391,6 +411,7 @@ codeunit 8905 "Email Message Impl."
         if Rec.CurrentCompany() <> CompanyName() then begin
             EmailOutbox.ChangeCompany(Rec.CurrentCompany());
             EmailMessage.ChangeCompany(Rec.CurrentCompany());
+            SentEmail.ChangeCompany(Rec.CurrentCompany());
         end;
 
         EmailOutbox.SetRange("Message Id", Rec."Message Id");
@@ -420,6 +441,7 @@ codeunit 8905 "Email Message Impl."
             EmailError.ChangeCompany(Rec.CurrentCompany());
             EmailMessage.ChangeCompany(Rec.CurrentCompany());
             SentEmail.ChangeCompany(Rec.CurrentCompany());
+            EmailOutbox.ChangeCompany(Rec.CurrentCompany());
         end;
 
         EmailError.SetRange("Outbox Id", Rec.Id);
@@ -568,24 +590,6 @@ codeunit 8905 "Email Message Impl."
             Error(EmailMessageSentCannotInsertRecipientErr);
     end;
 
-    local procedure UserHasPermissionToOpenMessage(): Boolean
-    var
-        SentEmail: Record "Sent Email";
-        EmailOutbox: Record "Email Outbox";
-    begin
-        EmailOutbox.SetRange("Message Id", Message.Id);
-        if EmailOutbox.FindFirst() then
-            if not (EmailOutbox."User Security Id" = UserSecurityId()) then
-                exit(false);
-
-        SentEmail.SetRange("Message Id", Message.Id);
-        if SentEmail.FindFirst() then
-            if not (SentEmail."User Security Id" = UserSecurityId()) then
-                exit(false);
-
-        exit(true);
-    end;
-
     procedure MarkAsRead()
     begin
         if Message.Editable then begin
@@ -602,6 +606,7 @@ codeunit 8905 "Email Message Impl."
     var
         Message: Record "Email Message";
         Attachments: Record "Email Message Attachment";
+        TenantMedia: Record "Tenant Media";
         EmailMessageQueuedCannotModifyErr: Label 'Cannot edit the email because it has been queued to be sent.';
         EmailMessageSentCannotModifyErr: Label 'Cannot edit the message because it has already been sent.';
         EmailMessageQueuedCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has been queued to be sent.';

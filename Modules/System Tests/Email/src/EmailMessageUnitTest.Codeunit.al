@@ -155,7 +155,7 @@ codeunit 134689 "Email Message Unit Test"
         Assert.IsTrue(Message.Attachments_First(), 'First attachment was not found');
         Message.Attachments_GetContent(InStream);
         InStream.ReadText(Result);
-        Assert.AreEqual('Attachment1', Message.Attachments_GetName(), 'A different attachement name was expected');
+        Assert.AreEqual('Attachment1', Message.Attachments_GetName(), 'A different attachment name was expected');
         Assert.AreEqual('Content', Result, 'A different attachment content was expected');
         Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
         Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');
@@ -164,7 +164,52 @@ codeunit 134689 "Email Message Unit Test"
         Assert.IsTrue(Message.Attachments_Next() <> 0, 'Second attachment was not found');
         Message.Attachments_GetContent(InStream);
         InStream.ReadText(Result);
-        Assert.AreEqual('Attachment1', Message.Attachments_GetName(), 'A different attachement name was expected');
+        Assert.AreEqual('Attachment1', Message.Attachments_GetName(), 'A different attachment name was expected');
+        Assert.AreEqual('Content', Result, 'A different attachment content was expected');
+        Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
+        Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');
+        Assert.AreEqual('text/plain', Message.Attachments_GetContentType(), 'A different attachment content type was expected');
+
+        Assert.IsTrue(Message.Attachments_Next() = 0, 'A third attachment was found.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure CreateMessageWithAttachmentsWithFindNextTest()
+    var
+        Message: Codeunit "Email Message";
+        TempBLob: Codeunit "Temp Blob";
+        Base64Convert: Codeunit "Base64 Convert";
+        Recipients: List of [Text];
+        Result: Text;
+        InStream: InStream;
+        OutStream: OutStream;
+    begin
+        // Initialize
+        Recipients.Add('recipient@test.com');
+        TempBLob.CreateOutStream(OutStream);
+        OutStream.WriteText('Content');
+        TempBLob.CreateInStream(InStream);
+
+        // Exercise
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Message.AddAttachment('Attachment1', 'text/plain', Base64Convert.ToBase64('Content'));
+        Message.AddAttachment('Attachment1', 'text/plain', InStream);
+
+        // Verify
+        Assert.IsTrue(Message.Attachments_Next() <> 0, 'First attachment was not found');
+        Message.Attachments_GetContent(InStream);
+        InStream.ReadText(Result);
+        Assert.AreEqual('Attachment1', Message.Attachments_GetName(), 'A different attachment name was expected');
+        Assert.AreEqual('Content', Result, 'A different attachment content was expected');
+        Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
+        Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');
+        Assert.AreEqual('text/plain', Message.Attachments_GetContentType(), 'A different attachment content type was expected');
+
+        Assert.IsTrue(Message.Attachments_Next() <> 0, 'Second attachment was not found');
+        Message.Attachments_GetContent(InStream);
+        InStream.ReadText(Result);
+        Assert.AreEqual('Attachment1', Message.Attachments_GetName(), 'A different attachment name was expected');
         Assert.AreEqual('Content', Result, 'A different attachment content was expected');
         Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
         Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');

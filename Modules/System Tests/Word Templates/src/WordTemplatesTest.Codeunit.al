@@ -174,6 +174,18 @@ codeunit 130443 "Word Templates Test"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGetTemplateName()
+    var
+        WordTemplateImpl: Codeunit "Word Template Impl.";
+    begin
+        // [SCENARIO] Check that reserved characters are removed from the template name.
+        WordTemplateImpl.Create(130443); // Caption = Word Templates Test / Table "<>:/\|?*
+        Assert.AreEqual('Word Templates Test _ Table __________Template.docx', WordTemplateImpl.GetTemplateName('docx'), 'Template name is incorrect.');
+    end;
+
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGenerateColumnName()
     var
         WordTemplateImpl: Codeunit "Word Template Impl.";

@@ -462,6 +462,116 @@ codeunit 134692 "Email E2E Tests"
     end;
 
     [Test]
+    procedure CopyRelatedRecordsWhenEditSend()
+    var
+        TempAccount: Record "Email Account" temporary;
+        SentEmail: Record "Sent Email";
+        EmailRelatedRecord: Record "Email Related Record";
+        Any: Codeunit Any;
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailEditor: TestPage "Email Editor";
+        SentEmails: TestPage "Sent Emails";
+        Recipients: List of [Text];
+        TableId, NumberOfRelations, i : Integer;
+        SystemId: Guid;
+    begin
+        // Initialize
+        EmailRelatedRecord.DeleteAll();
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+        Recipients.Add('recipient@test.com');
+        EmailMessage.Create(Recipients, 'Test subject', 'Test body', true);
+
+        NumberOfRelations := Any.IntegerInRange(2, 5);
+        TableId := Any.IntegerInRange(1, 10000);
+        for i := 1 to NumberOfRelations do begin
+            SystemId := Any.GuidValue();
+            Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source");
+        end;
+
+        // Send the email
+        Email.Send(EmailMessage, TempAccount."Account Id", TempAccount.Connector);
+
+        SentEmail.SetRange("Message Id", EmailMessage.GetId());
+        Assert.IsTrue(SentEmail.FindFirst(), 'A sent email record should have been created');
+
+        // Check if the email has a related record 
+        EmailRelatedRecord.SetRange("Table Id", TableId);
+        Assert.AreEqual(NumberOfRelations, EmailRelatedRecord.Count(), 'Not all related records were created for sent email');
+
+        // Exercise
+        SentEmails.Trap();
+        Page.Run(Page::"Sent Emails");
+
+        Assert.IsTrue(SentEmails.GoToRecord(SentEmail), 'The sent email record should be present on the Sent Emails page');
+
+        // Open the Sent Email by Edit and Send 
+        EmailEditor.Trap();
+        SentEmails.EditAndSend.Invoke();
+
+        // Send 
+        EmailEditor.Send.Invoke();
+
+        // Verify
+        EmailRelatedRecord.SetRange("Table Id", TableId);
+        Assert.AreEqual(2 * NumberOfRelations, EmailRelatedRecord.Count(), 'Not all related records were copied over when Edit and Send');
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageQueued')]
+    procedure CopyRelatedRecordsWhenResend()
+    var
+        TempAccount: Record "Email Account" temporary;
+        SentEmail: Record "Sent Email";
+        EmailRelatedRecord: Record "Email Related Record";
+        Any: Codeunit Any;
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        SentEmails: TestPage "Sent Emails";
+        Recipients: List of [Text];
+        TableId, NumberOfRelations, i : Integer;
+        SystemId: Guid;
+    begin
+        // Initialize
+        EmailRelatedRecord.DeleteAll();
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+        Recipients.Add('recipient@test.com');
+        EmailMessage.Create(Recipients, 'Test subject', 'Test body', true);
+
+        NumberOfRelations := Any.IntegerInRange(2, 5);
+        TableId := Any.IntegerInRange(1, 10000);
+        for i := 1 to NumberOfRelations do begin
+            SystemId := Any.GuidValue();
+            Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source");
+        end;
+
+        // Send the email
+        Email.Send(EmailMessage, TempAccount."Account Id", TempAccount.Connector);
+
+        SentEmail.SetRange("Message Id", EmailMessage.GetId());
+        Assert.IsTrue(SentEmail.FindFirst(), 'A sent email record should have been created');
+
+        // Check if the email has a related record 
+        EmailRelatedRecord.SetRange("Table Id", TableId);
+        Assert.AreEqual(NumberOfRelations, EmailRelatedRecord.Count(), 'Not all related records were created for sent email');
+
+        // Exercise
+        SentEmails.Trap();
+        Page.Run(Page::"Sent Emails");
+
+        Assert.IsTrue(SentEmails.GoToRecord(SentEmail), 'The sent email record should be present on the Sent Emails page');
+
+        // Open the Sent Email by Edit and Send 
+        SentEmails.Resend.Invoke();
+
+        // Verify
+        EmailRelatedRecord.SetRange("Table Id", TableId);
+        Assert.AreEqual(2 * NumberOfRelations, EmailRelatedRecord.Count(), 'Not all related records were copied over when resending');
+    end;
+
+    [Test]
     procedure EmailOutboxEntriesVisibilityTest()
     var
         EmailOutbox: Record "Email Outbox";
@@ -536,14 +646,14 @@ codeunit 134692 "Email E2E Tests"
         Assert.IsFalse(EmailEditor.Previous(), 'There should not be previous record');
     end;
 
-    local procedure CreateEmailOutbox(Recipient: Text; Subject: Text; Body: Text; AttachementName: Text[250]; AttachmentContent: Text; var EmailOutbox: Record "Email Outbox")
+    local procedure CreateEmailOutbox(Recipient: Text; Subject: Text; Body: Text; AttachmentName: Text[250]; AttachmentContent: Text; var EmailOutbox: Record "Email Outbox")
     var
         EmailMessage: Codeunit "Email Message";
         Base64Convert: Codeunit "Base64 Convert";
     begin
         Clear(EmailOutbox);
         EmailMessage.Create(Recipient, Subject, Body, false);
-        EmailMessage.AddAttachment(AttachementName, 'text/plain', Base64Convert.ToBase64(AttachmentContent));
+        EmailMessage.AddAttachment(AttachmentName, 'text/plain', Base64Convert.ToBase64(AttachmentContent));
         Email.SaveAsDraft(EmailMessage, EmailOutbox);
     end;
 

@@ -19,6 +19,11 @@ codeunit 1991 "Guided Experience Impl."
         CodeFormatLbl: Label '%1_%2_%3_%4', Locked = true;
         GuidedExperienceItemInsertedLbl: Label 'Guided Experience Item inserted.', Locked = true;
         GuidedExperienceItemDeletedLbl: Label 'Guided Experience Item deleted.', Locked = true;
+        TitleDimensionLbl: Label '%1ItemTitle', Locked = true;
+        ShortTitleDimensionLbl: Label '%1ItemShortTitle', Locked = true;
+        DescriptionDimensionLbl: Label '%1ItemDescription', Locked = true;
+        ExtensionIdDimensionLbl: Label '%1ItemExtensionId', Locked = true;
+        ExtensionNameDimensionLbl: Label '%1ItemExtensionName', Locked = true;
 
     procedure Insert(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; ExtensionId: Guid; GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; Link: Text[250]; AssistedSetupGroup: Enum "Assisted Setup Group"; VideoUrl: Text[250]; VideoCategory: Enum "Video Category"; HelpUrl: Text[250]; ManualSetupCategory: Enum "Manual Setup Category"; Keywords: Text[250]; CheckObjectValidity: Boolean)
     var
@@ -41,8 +46,13 @@ codeunit 1991 "Guided Experience Impl."
         Version := GetVersion(PrevGuidedExperienceItem, Code, Title, ShortTitle, Description, ExpectedDuration, ExtensionId, GuidedExperienceType,
             GuidedExperienceObjectType, ObjectIDToRun, Link, AssistedSetupGroup, VideoUrl, VideoCategory, HelpUrl, ManualSetupCategory, Keywords);
 
-        if Version = -1 then // this means that the record hasn't changed, so we shouldn't insert a new version
+        if Version = -1 then begin
+            // This means that the record hasn't changed, so we shouldn't insert a new version of the object.
+            // However, we might have to insert a new translation for the already existing version of the object.
+            InsertTranslations(PrevGuidedExperienceItem, Title, ShortTitle, Description, Keywords);
+
             exit;
+        end;
 
         if Version <> 0 then
             ChecklistImplementation.UpdateVersionForSkippedChecklistItems(Code, Version);
@@ -296,14 +306,20 @@ codeunit 1991 "Guided Experience Impl."
         exit(GuidedExperienceItem."Object ID to Run" > 0);
     end;
 
-    procedure GetTranslatedTitle(GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: Enum "Guided Experience Object Type"; ObjectIDToRun: Integer): Text
+    procedure GetTranslationForField(GuidedExperienceItem: Record "Guided Experience Item"; FieldNo: Integer): Text
+    begin
+        exit(GetTranslationForField(GuidedExperienceItem."Guided Experience Type", GuidedExperienceItem."Object Type to Run",
+            GuidedExperienceItem."Object ID to Run", GuidedExperienceItem.Link, FieldNo));
+    end;
+
+    procedure GetTranslationForField(GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: Enum "Guided Experience Object Type"; ObjectIDToRun: Integer; Link: Text[250]; FieldNo: Integer): Text
     var
         GuidedExperienceItem: Record "Guided Experience Item";
         Translation: Codeunit Translation;
     begin
-        FilterGuidedExperienceItem(GuidedExperienceItem, GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, '');
+        FilterGuidedExperienceItem(GuidedExperienceItem, GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, Link);
         if GuidedExperienceItem.FindLast() then
-            exit(Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title)));
+            exit(Translation.Get(GuidedExperienceItem, FieldNo, GlobalLanguage));
     end;
 
     procedure IsObjectToRunValid(GuidedExperienceObjectType: Enum "Guided Experience Object Type"; ObjectID: Integer): Boolean
@@ -338,6 +354,7 @@ codeunit 1991 "Guided Experience Impl."
         foreach i in "Assisted Setup Group".Ordinals() do begin
             GroupValue := "Assisted Setup Group".FromInteger(i);
             GuidedExperienceItem.SetRange("Assisted Setup Group", GroupValue);
+            GuidedExperienceItem.SetAscending(Version, false);
 
             if GuidedExperienceItem.FindSet() then begin
                 // this part is necessary to include the assisted setup group as a header on the page
@@ -415,11 +432,11 @@ codeunit 1991 "Guided Experience Impl."
     end;
 
     local procedure HasTheRecordChanged(GuidedExperienceItem: Record "Guided Experience Item"; Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; ExtensionId: Guid; GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: Enum "Guided Experience Object Type"; ObjectIDToRun: Integer; Link: Text[250]; AssistedSetupGroup: Enum "Assisted Setup Group"; VideoUrl: Text[250]; VideoCategory: Enum "Video Category"; HelpUrl: Text[250]; ManualSetupCategory: Enum "Manual Setup Category"; Keywords: Text[250]): Boolean
+    var
+        Translation: Codeunit Translation;
+        TranslatedString: Text;
     begin
-        if (GuidedExperienceItem.Title <> Title)
-            or (GuidedExperienceItem."Short Title" <> ShortTitle)
-            or (GuidedExperienceItem.Description <> Description)
-            or (GuidedExperienceItem."Expected Duration" <> ExpectedDuration)
+        if (GuidedExperienceItem."Expected Duration" <> ExpectedDuration)
             or (GuidedExperienceItem."Extension ID" <> ExtensionId)
             or (GuidedExperienceItem."Guided Experience Type" <> GuidedExperienceType)
             or (GuidedExperienceItem."Object Type to Run" <> ObjectTypeToRun)
@@ -430,8 +447,32 @@ codeunit 1991 "Guided Experience Impl."
             or (GuidedExperienceItem."Video Category" <> VideoCategory)
             or (GuidedExperienceItem."Help Url" <> HelpUrl)
             or (GuidedExperienceItem."Manual Setup Category" <> ManualSetupCategory)
-            or (GuidedExperienceItem.Keywords <> Keywords) then
+        then
             exit(true);
+
+        if GuidedExperienceItem.Title <> Title then begin
+            TranslatedString := Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title), GlobalLanguage);
+            if (TranslatedString <> '') and (TranslatedString <> Title) then
+                exit(true);
+        end;
+
+        if GuidedExperienceItem."Short Title" <> ShortTitle then begin
+            TranslatedString := Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"), GlobalLanguage);
+            if (TranslatedString <> '') and (TranslatedString <> ShortTitle) then
+                exit(true);
+        end;
+
+        if GuidedExperienceItem.Description <> Description then begin
+            TranslatedString := Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description), GlobalLanguage);
+            if (TranslatedString <> '') and (TranslatedString <> Description) then
+                exit(true);
+        end;
+
+        if GuidedExperienceItem.Keywords <> Keywords then begin
+            TranslatedString := Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Keywords), GlobalLanguage);
+            if (TranslatedString <> '') and (TranslatedString <> Keywords) then
+                exit(true);
+        end;
 
         exit(false);
     end;
@@ -465,17 +506,24 @@ codeunit 1991 "Guided Experience Impl."
         GuidedExperienceItem.Insert();
     end;
 
-    local procedure InsertTranslations(GuidedExperienceItem: Record "Guided Experience Item"; PrevVersionGuidedExperienceItem: Record "Guided Experience Item")
+    local procedure InsertTranslations(GuidedExperienceItem: Record "Guided Experience Item"; Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; Keywords: Text[250])
     var
         Translation: Codeunit Translation;
     begin
-        Translation.Set(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title), GuidedExperienceItem.Title);
-        Translation.Set(GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"), GuidedExperienceItem."Short Title");
-        Translation.Set(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description), GuidedExperienceItem.Description);
+        Translation.Set(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title), Title);
+        Translation.Set(GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"), ShortTitle);
+        Translation.Set(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description), Description);
+        Translation.Set(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Keywords), Keywords);
+    end;
+
+    local procedure InsertTranslations(GuidedExperienceItem: Record "Guided Experience Item"; PrevVersionGuidedExperienceItem: Record "Guided Experience Item")
+    begin
+        InsertTranslations(GuidedExperienceItem, GuidedExperienceItem.Title, GuidedExperienceItem."Short Title",
+            GuidedExperienceItem.Description, GuidedExperienceItem.Keywords);
 
         // if this isn't the first version of the record, copy all the existing translations for the title and the 
         // description if they haven't changed
-        if GuidedExperienceItem.Version <> 0 then begin
+        if GuidedExperienceItem.Version > 0 then begin
             if PrevVersionGuidedExperienceItem.Title = GuidedExperienceItem.Title then
                 CopyTranslations(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
             if PrevVersionGuidedExperienceItem."Short Title" = GuidedExperienceItem."Short Title" then
@@ -631,9 +679,24 @@ codeunit 1991 "Guided Experience Impl."
     end;
 
     local procedure InsertGuidedExperienceItemIfValid(var GuidedExperienceItemTemp: Record "Guided Experience Item" temporary; GuidedExperienceItem: Record "Guided Experience Item")
+    var
+        Translation: Text;
     begin
         if IsObjectToRunValid(GetObjectType(GuidedExperienceItem."Object Type to Run"), GuidedExperienceItem."Object ID to Run") then begin
             GuidedExperienceItemTemp.TransferFields(GuidedExperienceItem);
+
+            Translation := GetTranslationForField(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
+            if Translation <> '' then
+                GuidedExperienceItemTemp.Title := CopyStr(Translation, 1, MaxStrLen(GuidedExperienceItemTemp.Title));
+
+            Translation := GetTranslationForField(GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"));
+            if Translation <> '' then
+                GuidedExperienceItemTemp."Short Title" := CopyStr(Translation, 1, MaxStrLen(GuidedExperienceItemTemp."Short Title"));
+
+            Translation := GetTranslationForField(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description));
+            if Translation <> '' then
+                GuidedExperienceItemTemp.Description := CopyStr(Translation, 1, MaxStrLen(GuidedExperienceItemTemp.Description));
+
             GuidedExperienceItemTemp.Insert();
         end;
     end;
@@ -701,20 +764,40 @@ codeunit 1991 "Guided Experience Impl."
         exit(true);
     end;
 
-    local procedure GetGuidedExperienceItemDimensions(var Dimensions: Dictionary of [Text, Text]; Title: Text[2048]; ShortTitle: Text[1024]; Description: Text[1024]; ExtensionName: Text[250])
+    procedure AddGuidedExperienceItemDimensions(var Dimensions: Dictionary of [Text, Text]; GuidedExperienceItem: Record "Guided Experience Item"; DimensionName: Text)
+    var
+        Translation: Codeunit Translation;
+        Language: Codeunit Language;
+        DefaultLanguage: Integer;
     begin
-        Dimensions.Add('Guided experience item title', Title);
-        Dimensions.Add('Guided experience item short title', ShortTitle);
-        Dimensions.Add('Guided experience item description', Description);
-        Dimensions.Add('Guided experience item extension', ExtensionName);
+        DefaultLanguage := Language.GetDefaultApplicationLanguageId();
+
+        Dimensions.Add(StrSubstNo(TitleDimensionLbl, DimensionName), Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title), DefaultLanguage));
+        Dimensions.Add(StrSubstNo(ShortTitleDimensionLbl, DimensionName), Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"), DefaultLanguage));
+        Dimensions.Add(StrSubstNo(DescriptionDimensionLbl, DimensionName), Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description), DefaultLanguage));
+        Dimensions.Add(StrSubstNo(ExtensionIdDimensionLbl, DimensionName), GuidedExperienceItem."Extension ID");
+        Dimensions.Add(StrSubstNo(ExtensionNameDimensionLbl, DimensionName), GuidedExperienceItem."Extension Name");
+    end;
+
+    procedure AddCompanyNameDimension(var Dimensions: Dictionary of [Text, Text])
+    begin
+        Dimensions.Add('CompanyName', CompanyName);
+    end;
+
+    procedure AddRoleDimension(var Dimensions: Dictionary of [Text, Text]; var UserPersonalization: Record "User Personalization")
+    begin
+        Dimensions.Add('Role', UserPersonalization.Role);
+        Dimensions.Add('RoleExtension', UserPersonalization."App ID");
+        Dimensions.Add('RoleScope', Format(UserPersonalization.Scope));
     end;
 
     local procedure LogMessageOnDatabaseEvent(var Rec: Record "Guided Experience Item"; Tag: Text; Message: Text)
     var
         Dimensions: Dictionary of [Text, Text];
     begin
-        GetGuidedExperienceItemDimensions(Dimensions,
-            Rec.Title, Rec."Short Title", Rec.Description, rec."Extension Name");
+        AddGuidedExperienceItemDimensions(Dimensions, Rec, 'GuidedExperience');
+        AddCompanyNameDimension(Dimensions);
+
         Session.LogMessage(Tag, Message, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
             TelemetryScope::ExtensionPublisher, Dimensions);
     end;

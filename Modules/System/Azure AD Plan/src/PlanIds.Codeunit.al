@@ -46,9 +46,9 @@ codeunit 9027 "Plan Ids"
     end;
 
     /// <summary>
-    /// Returns the ID for the Dynamics 365 for Team Members plan.
+    /// Returns the ID for the Dynamics 365 Business Central Team Member plan.
     /// </summary>
-    /// <returns>The ID for the Dynamics 365 for Team Members plan.</returns>
+    /// <returns>The ID for the Dynamics 365 Business Central Team Member plan.</returns>
     procedure GetTeamMemberPlanId(): Guid
     begin
         exit(TeamMemberPlanGUIDTxt);

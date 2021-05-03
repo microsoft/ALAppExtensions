@@ -42,15 +42,14 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         UserCreatedMsg: Label 'User %1 has been created', Locked = true;
         AuthenticationEmailUpdateShouldBeTheFirstForANewUserErr: Label 'Authentication email should be the first entity to update.';
         ApplyingUserUpdateTxt: Label 'Applying update for user security ID [%1] with authentication object ID [%2]. Blank Guids indicate users not present in BC.', Comment = '%1 = user security ID (guid) and %2 = authentication object ID (guid)', Locked = true;
-        UserNotFoundWhenApplyingTxt: Label 'User not found. Creating a new user from authentication object ID [%1] and authentication email [%2].', Comment = '%1 = authentication object ID (guid), %2 = authentication email (email)', Locked = true;
-        UserCreatedTxt: Label 'A new user with security ID [%1] has been created.', Comment = '%1 = user security ID (guid)', Locked = true;
-        ApplyingEntityUpdateTxt: Label 'Updating %1 from [%2] to [%3] for user [%4]', Comment = '%1 = the update entity e.g. Full name, Plan etc.; %2 = current value of entity; %3 = new value of entity; %4 = user security ID (guid)', Locked = true;
-        NewUserChangesTxt: Label 'A new user [%1] has property [%2] set to [%3]. The original value from Graph is [%4].', Comment = '%1 = user security ID (guid); %2 = the update entity e.g. Full name, Plan etc.; %3 = new value of entity; %4 = original value of entity from Graph', Locked = true;
-        ExistingUserChangesTxt: Label 'Existing user [%1] has [%2] changed from [%3] to [%4]. The original value from Graph is [%5].', Comment = '%1 = user security ID (guid); %2 = the update entity e.g. Full name, Plan etc.; %3 = current value of entity; %4 = new value of entity; %5 = original value of entity from Graph', Locked = true;
+        UserCreatedTxt: Label 'A new user with authentication object ID [%1] and security ID [%2] has been created.', Comment = '%1 = authentication object ID (guid); %2 = user security ID (guid)', Locked = true;
+        ApplyingEntityUpdateTxt: Label 'Updating %1 for user [%2]', Comment = '%1 = the update entity e.g. Full name, Plan etc.; %2 = user security ID (guid)', Locked = true;
+        NewUserChangesTxt: Label 'A new user with authentication object ID [%1] received property [%2] from Graph.', Comment = '%1 = authentication object ID (guid); %2 = the update entity e.g. Full name, Plan etc.; %3 = new value of entity; %4 = original value of entity from Graph', Locked = true;
+        ExistingUserChangesTxt: Label 'Existing user [%1] has the property [%2] changed.', Comment = '%1 = user security ID (guid); %2 = the update entity e.g. Full name, Plan etc.', Locked = true;
         ExistingUserRemovedTxt: Label 'Existing user [%1] with authentication object ID [%2] does not have a BC plan in the office portal anymore. Current plan: [%3].', Comment = '%1 = user security ID (guid); %2 = authentication object ID (guid); %3 = plan name (text).', Locked = true;
-        AddingInformationForANewUserTxt: Label 'Adding changes for a new user [%1].', Comment = '%1 = user display name (text)', Locked = true;
-        AddingInformationForAnExistingUserTxt: Label 'Adding changes for an existing user [%1].', Comment = '%1 = user display name (text)', Locked = true;
-        AddingInformationForARemovedUserTxt: Label 'Adding changes for a user removed / de-licensed in Office with user name [%1].', Comment = '%1 = User name', Locked = true;
+        AddingInformationForANewUserTxt: Label 'Adding changes for a new user. Authentication object ID: [%1].', Comment = '%1 = authentication object ID', Locked = true;
+        AddingInformationForAnExistingUserTxt: Label 'Adding changes for an existing user [%1].', Comment = '%1 = user security ID', Locked = true;
+        AddingInformationForARemovedUserTxt: Label 'Adding changes for a user removed / de-licensed in Office with user security ID [%1].', Comment = '%1 = User security ID', Locked = true;
         PlanNamesPerUserFromGraphTxt: Label 'User with AAD Object ID [%1] has plans [%2].', Comment = '%1 = authentication object ID (guid); %2 = list of plans for the user (text)', Locked = true;
         ProcessingUserTxt: Label 'Procesing the user %1.', Comment = '%1 - Display name', Locked = true;
         DelimiterTxt: Label '|', Locked = true;
@@ -299,12 +298,12 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                     IsUserInternalAdminOnly := (CurrUserPlanIDs.Count() = 1) and CurrUserPlanIDs.Contains(PlanIDs.GetInternalAdminPlanId());
 
                     if AzureADGraphUser.GetUser(GraphUser.ObjectId(), User) then begin
-                        Session.LogMessage('0000BJS', StrSubstNo(AddingInformationForAnExistingUserTxt, Format(GraphUser.DisplayName())), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                        Session.LogMessage('0000BJS', StrSubstNo(AddingInformationForAnExistingUserTxt, User."User Security ID"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                         AddChangesForExistingUser(AzureADUserUpdate, GraphUser, User);
                         OfficeUsersInBC.Add(User."User Security ID");
                     end else
                         if not IsUserInternalAdminOnly then begin
-                            Session.LogMessage('0000BJR', StrSubstNo(AddingInformationForANewUserTxt, Format(GraphUser.DisplayName())), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                            Session.LogMessage('0000BJR', StrSubstNo(AddingInformationForANewUserTxt, GraphUser.ObjectId()), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                             AddChangesForNewUser(AzureADUserUpdate, GraphUser);
                         end;
 
@@ -328,7 +327,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                     // if user has delegated plans, skip
                     if not IsUserDelegated(User."User Security ID") then
                         if not OfficeUsersInBC.Contains(User."User Security ID") then begin
-                            Session.LogMessage('0000BNE', StrSubstNo(AddingInformationForARemovedUserTxt, User."User Name"), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                            Session.LogMessage('0000BNE', StrSubstNo(AddingInformationForARemovedUserTxt, User."User Security ID"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                             AddChangesForRemovedUser(AzureADUserUpdate, User);
                         end;
             until User.Next() = 0;
@@ -378,7 +377,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             repeat
                 ConvertTextToList(AzureADUserUpdate."New Value", PlanNameList);
                 PlanNamesPerUserFromGraph.Set(AzureADUserUpdate."Authentication Object ID", PlanNameList);
-                Session.LogMessage('0000BPM', StrSubstNo(PlanNamesPerUserFromGraphTxt, AzureADUserUpdate."Authentication Object ID", AzureADUserUpdate."New Value"), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                Session.LogMessage('0000BPM', StrSubstNo(PlanNamesPerUserFromGraphTxt, AzureADUserUpdate."Authentication Object ID", AzureADUserUpdate."New Value"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             until AzureADUserUpdate.Next() = 0;
         AzureADUserUpdate.SetRange("Update Entity");
     end;
@@ -391,7 +390,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         SetAuthenticationObjectID: Boolean;
         NavUserAuthenticationHelper: DotNet NavUserAccountHelper;
     begin
-        Session.LogMessage('0000BHN', StrSubstNo(ApplyingUserUpdateTxt, AzureADUserUpdate."User Security ID", AzureADUserUpdate."Authentication Object ID"), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+        Session.LogMessage('0000BHN', StrSubstNo(ApplyingUserUpdateTxt, AzureADUserUpdate."User Security ID", AzureADUserUpdate."Authentication Object ID"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
         repeat
             if ApplyUpdateFromAzureGraph(AzureADUserUpdate, User, ModifyUser, SetAuthenticationObjectID) then
@@ -432,7 +431,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                     User.Get(AzureADUserUpdate."User Security ID");
             end;
 
-        Session.LogMessage('0000BHO', StrSubstNo(ApplyingEntityUpdateTxt, AzureADUserUpdate."Update Entity", AzureADUserUpdate."Current Value", AzureADUserUpdate."New Value", User."User Security ID"), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+        Session.LogMessage('0000BHO', StrSubstNo(ApplyingEntityUpdateTxt, AzureADUserUpdate."Update Entity", User."User Security ID"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
         case AzureADUserUpdate."Update Entity" of
             Enum::"Azure AD User Update Entity"::"Authentication Email":
                 begin
@@ -469,12 +468,9 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     var
         CurrentUserSecurityId: Guid;
     begin
-        Session.LogMessage('0000BJT', StrSubstNo(UserNotFoundWhenApplyingTxt, AuthenticationObjectID, AuthenticationEmail), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
-
         CurrentUserSecurityId := CreateNewUserInternal(AuthenticationEmail, AuthenticationObjectID);
 
-        // update all AzureADUSerUpdate records to the new user security id created, as it is blank
-        Session.LogMessage('0000BJU', StrSubstNo(UserCreatedTxt, CurrentUserSecurityId), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+        Session.LogMessage('0000BJU', StrSubstNo(UserCreatedTxt, AuthenticationObjectID, CurrentUserSecurityId), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
         User.Get(CurrentUserSecurityId);
 
@@ -505,7 +501,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                 AzureADUserUpdate."New Value" := CopyStr(ValueFromGraph, 1, MaxStrLen(AzureADUserUpdate."New Value"));
                 AzureADUserUpdate."Display Name" := AzureADGraphUser.GetDisplayName(GraphUser);
 
-                Session.LogMessage('0000BHP', StrSubstNo(NewUserChangesTxt, AzureADUserUpdate."Authentication Object ID", CurrentUpdateEntity, AzureADUserUpdate."New Value", ValueFromGraph), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                Session.LogMessage('0000BHP', StrSubstNo(NewUserChangesTxt, AzureADUserUpdate."Authentication Object ID", CurrentUpdateEntity), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                 AzureADUserUpdate.Insert();
             end;
         end;
@@ -548,7 +544,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
                 AzureADUserUpdate."New Value" := CopyStr(ValueFromGraph, 1, MaxStrLen(AzureADUserUpdate."New Value"));
                 AzureADUserUpdate."Display Name" := AzureADGraphUser.GetDisplayName(GraphUser);
 
-                Session.LogMessage('0000BHQ', StrSubstNo(ExistingUserChangesTxt, User."User Security ID", CurrentUpdateEntity, AzureADUserUpdate."Current Value", AzureADUserUpdate."New Value", ValueFromGraph), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                Session.LogMessage('0000BHQ', StrSubstNo(ExistingUserChangesTxt, User."User Security ID", CurrentUpdateEntity), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                 AzureADUserUpdate.Insert();
             end;
         end;
@@ -570,7 +566,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         AzureADUserUpdate."Current Value" := CopyStr(GetUpdateEntityFromUser(Enum::"Azure AD User Update Entity"::Plan, User), 1, MaxStrLen(AzureADUserUpdate."Current Value"));
         AzureADUserUpdate."Display Name" := User."User Name";
 
-        Session.LogMessage('0000BNF', StrSubstNo(ExistingUserRemovedTxt, User."User Security ID", AzureADUserUpdate."Authentication Object ID", AzureADUserUpdate."Current Value"), Verbosity::Normal, DataClassification::EndUserIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+        Session.LogMessage('0000BNF', StrSubstNo(ExistingUserRemovedTxt, User."User Security ID", AzureADUserUpdate."Authentication Object ID", AzureADUserUpdate."Current Value"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
         AzureADUserUpdate.Insert();
     end;
 
