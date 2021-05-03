@@ -1,6 +1,8 @@
 #pragma warning disable AL0432
 codeunit 31201 "Sync.Dep.Fld-SubstCustPGrp CZL"
 {
+    Permissions = tabledata "Subst. Customer Posting Group" = rimd,
+                  tabledata "Subst. Cust. Posting Group CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '18.0';

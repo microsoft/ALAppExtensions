@@ -19,6 +19,8 @@ codeunit 148053 "Invt. Mvmt. Templates CZL"
         LibraryRandom: Codeunit "Library - Random";
         Assert: Codeunit Assert;
         isInitialized: Boolean;
+        TemplateNotFoundErr: Label 'The field Inventory Movement Template of table Item Document Header contains a value (%1) that cannot be found in the related table (Inventory Movement Template).', Comment = '%1 = name of Invt. Movement Template';
+        TemplateMustBeEmptyErr: Label 'Inventory Movement Template must be equal to %1  in Item Document Header', Comment = '%1 = expected value of template';
 
     local procedure Initialize();
     begin
@@ -140,5 +142,104 @@ codeunit 148053 "Invt. Mvmt. Templates CZL"
 
         // [THEN] Job Journal Line is updated
         Assert.AreEqual(NegativeInvtMovementTemplateCZL."Gen. Bus. Posting Group", JobJournalLine."Gen. Bus. Posting Group", JobJournalLine.FieldCaption(JobJournalLine."Gen. Bus. Posting Group"));
+    end;
+
+    [Test]
+    procedure ValidateInvtMovementPositiveTemplateInvtReceiptUT()
+    var
+        InvtDocumentHeader: Record "Invt. Document Header";
+    begin
+        // [SCENARIO] The Gen. Bus. Posting Group field is filled from Invt. Movement Template with entry type "Positive Adjmt." by validation of Invt. Movement Template CZL field.
+        Initialize();
+
+        // [GIVEN] The document type has been set to Receipt 
+        InvtDocumentHeader."Document Type" := Enum::"Invt. Doc. Document Type"::Receipt;
+
+        // [WHEN] Validate the Invt. Movement Template CZL with Invt. Movement Template with entry type "Positive Adjmt."
+        InvtDocumentHeader.Validate("Invt. Movement Template CZL", PositiveInvtMovementTemplateCZL.Name);
+
+        // [THEN] The Gen. Bus. Posting Group will be the same as Gen. Bus. Posting Group in Invt. Movement Template
+        InvtDocumentHeader.TestField("Gen. Bus. Posting Group", PositiveInvtMovementTemplateCZL."Gen. Bus. Posting Group");
+    end;
+
+    [Test]
+    procedure ValidateInvtMovementNegativeTemplateInvtReceiptUT()
+    var
+        InvtDocumentHeader: Record "Invt. Document Header";
+    begin
+        // [SCENARIO] The Gen. Bus. Posting Group field is empty and error occur when the Invt. Movement Template with entry type "Negative Adjmt." is validating.
+        Initialize();
+
+        // [GIVEN] The document type has been set to Receipt
+        InvtDocumentHeader."Document Type" := Enum::"Invt. Doc. Document Type"::Receipt;
+
+        // [WHEN] Validate the Invt. Movement Template CZL with Invt. Movement Template with entry type "Negative Adjmt."
+        asserterror InvtDocumentHeader.Validate("Invt. Movement Template CZL", NegativeInvtMovementTemplateCZL.Name);
+
+        // [THEN] The Gen. Bus. Posting Group will be empty
+        InvtDocumentHeader.TestField("Gen. Bus. Posting Group", '');
+
+        // [THEN] The error will occur
+        Assert.ExpectedError(StrSubstNo(TemplateNotFoundErr, NegativeInvtMovementTemplateCZL.Name));
+    end;
+
+    [Test]
+    procedure ValidateInvtMovementNegativeTemplateInvtShipmentUT()
+    var
+        InvtDocumentHeader: Record "Invt. Document Header";
+    begin
+        // [SCENARIO] The Gen. Bus. Posting Group field is filled from Invt. Movement Template with entry type "Negative Adjmt." by validation of Invt. Movement Template CZL field.
+        Initialize();
+
+        // [GIVEN] The document type has been set to Shipment 
+        InvtDocumentHeader."Document Type" := Enum::"Invt. Doc. Document Type"::Shipment;
+
+        // [WHEN] Validate the Invt. Movement Template CZL with Invt. Movement Template with entry type "Negative Adjmt."
+        InvtDocumentHeader.Validate("Invt. Movement Template CZL", NegativeInvtMovementTemplateCZL.Name);
+
+        // [THEN] The Gen. Bus. Posting Group will be the same as Gen. Bus. Posting Group in Invt. Movement Template
+        InvtDocumentHeader.TestField("Gen. Bus. Posting Group", NegativeInvtMovementTemplateCZL."Gen. Bus. Posting Group");
+    end;
+
+    [Test]
+    procedure ValidateInvtMovementPositiveTemplateInvtShipmentUT()
+    var
+        InvtDocumentHeader: Record "Invt. Document Header";
+    begin
+        // [SCENARIO] The Gen. Bus. Posting Group field is empty and error occur when the Invt. Movement Template with entry type "Postive Adjmt." is validating.
+        Initialize();
+
+        // [GIVEN] The document type has been set to Shipment
+        InvtDocumentHeader."Document Type" := Enum::"Invt. Doc. Document Type"::Shipment;
+
+        // [WHEN] Validate the Invt. Movement Template CZL with Invt. Movement Template with entry type "Positive Adjmt."
+        asserterror InvtDocumentHeader.Validate("Invt. Movement Template CZL", PositiveInvtMovementTemplateCZL.Name);
+
+        // [THEN] The Gen. Bus. Posting Group will be empty
+        InvtDocumentHeader.TestField("Gen. Bus. Posting Group", '');
+
+        // [THEN] The error will occur
+        Assert.ExpectedError(StrSubstNo(TemplateNotFoundErr, PositiveInvtMovementTemplateCZL.Name));
+    end;
+
+    [Test]
+    procedure ValidateGenBusPostingGroupInvtReceiptUT()
+    var
+        InvtDocumentHeader: Record "Invt. Document Header";
+    begin
+        // [SCENARIO] If the Gen. Bus. Posting Group is validating and Invt. Movement Template CZL is filled then error must occur.
+        Initialize();
+
+        // [GIVEN] The Gen. Bus. Posting Group has been filled
+        InvtDocumentHeader."Gen. Bus. Posting Group" := CopyStr(LibraryRandom.RandText(20), 1, 20);
+
+        // [GIVEN] The Invt. Movement Template CZL has been filled
+        InvtDocumentHeader."Invt. Movement Template CZL" := CopyStr(LibraryRandom.RandText(10), 1, 10);
+
+        // [WHEN] Validate the Gen. Bus. Posting Group with some value (empty string in this test case)
+        asserterror InvtDocumentHeader.Validate("Gen. Bus. Posting Group", '');
+
+        // [THEN] The error will occur
+        Assert.ExpectedError(StrSubstNo(TemplateMustBeEmptyErr, ''''''));
     end;
 }

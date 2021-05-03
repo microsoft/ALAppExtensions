@@ -6,7 +6,9 @@
 codeunit 8906 "Email Editor"
 {
     Access = Internal;
-    Permissions = tabledata "Email Outbox" = rimd;
+    Permissions = tabledata "Email Outbox" = rimd,
+                  tabledata "Tenant Media" = r,
+                  tabledata "Email Related Record" = r;
 
     procedure Open(EmailOutbox: Record "Email Outbox"; IsModal: Boolean): Enum "Email Action"
     var
@@ -114,6 +116,17 @@ codeunit 8906 "Email Editor"
         Session.LogMessage('0000CTX', StrSubstNo(UploadingAttachmentMsg, AttachamentSize, ContentType), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
     end;
 
+    procedure DownloadAttachment(MediaID: Guid; FileName: Text)
+    var
+        TenantMedia: Record "Tenant Media";
+        MediaInstream: InStream;
+    begin
+        TenantMedia.Get(MediaID);
+        TenantMedia.CalcFields(Content);
+        TenantMedia.Content.CreateInStream(MediaInstream);
+        DownloadFromStream(MediaInstream, '', '', '', Filename);
+    end;
+
     procedure ValidateEmailData(FromEmailAddress: Text; var EmailMessage: Codeunit "Email Message Impl."): Boolean
     begin
         // Validate email account
@@ -151,6 +164,40 @@ codeunit 8906 "Email Editor"
         exit(EmailOutbox.Delete(true)); // This should detele the email message, recipients and attachments as well.
     end;
 
+    procedure AttachFromRelatedRecords(EmailMessageID: Guid);
+    var
+        EmailRelatedAttachment: Record "Email Related Attachment";
+        Email: Codeunit "Email";
+        EmailRelatedAttachmentsPage: Page "Email Related Attachments";
+    begin
+        EmailRelatedAttachmentsPage.LookupMode(true);
+        EmailRelatedAttachmentsPage.SetMessageID(EmailMessageID);
+        if EmailRelatedAttachmentsPage.RunModal() <> Action::LookupOK then
+            exit;
+
+        EmailRelatedAttachmentsPage.GetSelectedAttachments(EmailRelatedAttachment);
+        if EmailRelatedAttachment.FindSet() then
+            repeat
+                Email.OnGetAttachment(EmailRelatedAttachment."Attachment Table ID", EmailRelatedAttachment."Attachment System ID", EmailMessageID);
+            until EmailRelatedAttachment.Next() = 0;
+    end;
+
+    procedure GetRelatedAttachments(EmailMessageId: Guid; var EmailRelatedAttachment: Record "Email Related Attachment")
+    var
+        EmailRelatedRecord: Record "Email Related Record";
+        Email: Codeunit "Email";
+        EmailImpl: Codeunit "Email Impl";
+    begin
+        EmailRelatedRecord.SetRange("Email Message Id", EmailMessageId);
+        EmailImpl.FilterRemovedSourceRecords(EmailRelatedRecord);
+        if EmailRelatedRecord.FindSet() then
+            repeat
+                Email.OnFindRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailRelatedAttachment);
+            until EmailRelatedRecord.Next() = 0
+        else
+            Error(NoRelatedAttachmentsErr);
+    end;
+
     var
         IsNewOutbox: Boolean;
         ConfirmDiscardEmailQst: Label 'Go ahead and discard?';
@@ -160,4 +207,5 @@ codeunit 8906 "Email Editor"
         UploadingAttachmentMsg: Label 'Attached file with size: %1, Content type: %2', Comment = '%1 - File size, %2 - Content type', Locked = true;
         EmailCategoryLbl: Label 'Email', Locked = true;
         SendingFailedErr: Label 'The email was not sent because of the following error: "%1" \\Depending on the error, you might need to contact your administrator.', Comment = '%1 - the error that occurred.';
+        NoRelatedAttachmentsErr: Label 'Did not find any attachments related to this email.';
 }

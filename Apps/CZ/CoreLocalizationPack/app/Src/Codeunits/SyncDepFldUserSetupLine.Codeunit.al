@@ -2,6 +2,8 @@
 #pragma warning disable AL0432,AL0603
 codeunit 31303 "Sync.Dep.Fld-UserSetupLine CZL"
 {
+    Permissions = tabledata "User Setup Line" = rimd,
+                  tabledata "User Setup Line CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '18.0';

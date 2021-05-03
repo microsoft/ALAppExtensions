@@ -103,23 +103,6 @@ codeunit 139653 "Replication Mgt Page Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ManageSchedulePageHandler')]
-    procedure TestManageSchedule()
-    var
-        ReplicationManagementPage: TestPage "Intelligent Cloud Management";
-    begin
-        // [SCENARIO] User Opens up the Hybrid Replication Management Page and clicks 'Get Service Key' button on the ribbon.
-
-        // [GIVEN] User Opens up the Hybrid Replication Management Page.
-        Initialize(true);
-        ReplicationManagementPage.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
-
-        // [WHEN] User clicks 'Manage Schedule' action in the ribbon.
-        ReplicationManagementPage.ManageSchedule.Invoke();
-    end;
-
-    [Test]
     [HandlerFunctions('ConfirmYesHandler,GeneralMessageHandler')]
     procedure TestRunReplication()
     var
@@ -795,32 +778,6 @@ codeunit 139653 "Replication Mgt Page Tests"
     end;
 
     [PageHandler]
-    procedure ManageSchedulePageHandler(var manageSchedule: TestPage "Intelligent Cloud Schedule")
-    begin
-        Assert.IsTrue(manageSchedule.Editable(), 'Manage schedule page should be enabled.'); //we can add more tests for the manage schedule page
-
-        // Verify Schedule days are not visible.
-        manageSchedule.Recurrence.SetValue(RecurrenceOption::Daily);
-        Assert.IsFalse(manageSchedule.Sunday.Visible(), 'Schedule window Sunday should be visable.');
-        Assert.IsFalse(manageSchedule.Monday.Visible(), 'Schedule window Monay should be disabled.');
-        Assert.IsFalse(manageSchedule.Tuesday.Visible(), 'Schedule window Tuesday should be disabled.');
-        Assert.IsFalse(manageSchedule.Wednesday.Visible(), 'Schedule window Wednesday should be disabled.');
-        Assert.IsFalse(manageSchedule.Thursday.Visible(), 'Schedule window Thursday should be disabled.');
-        Assert.IsFalse(manageSchedule.Friday.Visible(), 'Schedule window Friday should be disabled.');
-        Assert.IsFalse(manageSchedule.Saturday.Visible(), 'Schedule window Saturday should be disabled.');
-
-        // Verify Schedule days are visible.
-        manageSchedule.Recurrence.SetValue(RecurrenceOption::Weekly);
-        Assert.IsTrue(manageSchedule.Sunday.Visible(), 'Schedule window Sunday should be enabled. Run %1');
-        Assert.IsTrue(manageSchedule.Monday.Visible(), 'Schedule window Monay should be enabled. Run %1');
-        Assert.IsTrue(manageSchedule.Tuesday.Visible(), 'Schedule window Tuesday should be enabled. Run %1');
-        Assert.IsTrue(manageSchedule.Wednesday.Visible(), 'Schedule window Wednesday should be enabled. Run %1');
-        Assert.IsTrue(manageSchedule.Thursday.Visible(), 'Schedule window Thursday should be enabled. Run %1');
-        Assert.IsTrue(manageSchedule.Friday.Visible(), 'Schedule window Friday should be enabled. Run %1');
-        Assert.IsTrue(manageSchedule.Saturday.Visible(), 'Schedule window Saturday should be enabled. Run %1');
-    end;
-
-    [PageHandler]
     procedure DisableIntelligentCloudPageHandler(var hybridCloudReady: TestPage "Intelligent Cloud Ready")
     begin
         Assert.IsTrue(hybridCloudReady.Editable(), 'Intelligent Cloud Ready page should be enabled.');
@@ -829,7 +786,6 @@ codeunit 139653 "Replication Mgt Page Tests"
     local procedure VerifyActionsVisibleState(ReplicationManagementPage: TestPage "Intelligent Cloud Management"; IsSaas: Boolean)
     begin
         // Cloud only actions.
-        Assert.AreEqual(IsSaas, ReplicationManagementPage.ManageSchedule.Visible(), 'ManageSchedule should be visible.');
         Assert.AreEqual(IsSaas, ReplicationManagementPage.RefreshStatus.Visible(), 'RefreshStatus should be visible.');
         Assert.AreEqual(IsSaas, ReplicationManagementPage.GetRuntimeKey.Visible(), 'GetRuntimeKey should be visible.');
         Assert.AreEqual(IsSaas, ReplicationManagementPage.DisableIntelligentCloud.Visible(), 'DisableIntelligentCloud should be visible.');
@@ -892,7 +848,6 @@ codeunit 139653 "Replication Mgt Page Tests"
         Assert: Codeunit Assert;
         LibraryHybridManagement: Codeunit "Library - Hybrid Management";
         Initialized: Boolean;
-        RecurrenceOption: Option Daily,Weekly;
         RunReplicationTxt: Label 'Replication has been successfully triggered; you can track the status on the management page.';
         IntegrationKeyTxt: Label 'Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';
         NewIntegrationKeyTxt: Label 'New Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';

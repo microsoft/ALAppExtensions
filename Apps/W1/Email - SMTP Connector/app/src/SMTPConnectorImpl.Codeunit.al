@@ -16,11 +16,11 @@ codeunit 4513 "SMTP Connector Impl."
         SmtpCategoryLbl: Label 'Email SMTP', Locked = true;
         ConnectorDescriptionTxt: Label 'Use SMTP to send emails.';
 
-        SmtpConnectTelemetryErrorMsg: Label 'Unable to connect to SMTP server. Smtp server: %1, server port: %2, error code: %3', Comment = '%1=the smtp server, %2=the server port, %3=error code', Locked = true;
-        SmtpAuthenticateTelemetryErrorMsg: Label 'Unable to connect to SMTP server. Authentication email from: %1, smtp server: %2, server port: %3, error code: %4', Comment = '%1=the from address, %2=the smtp server, %3=the server port, %4=error code', Locked = true;
-        SmtpSendTelemetryErrorMsg: Label 'Unable to send email. Error code: %1', Comment = '%1=error code', Locked = true;
-        SmtpConnectedTelemetryMsg: Label 'Connected to SMTP server %1 on server port %2', Comment = '%1=the smtp server, %2=the server port', Locked = true;
-        SmtpAuthenticateTelemetryMsg: Label 'Authenticated to SMTP server.  Authentication email from: %1, smtp server: %2, server port: %3', Comment = '%1=the from address, %2=the smtp server, %3=the server port', Locked = true;
+        SmtpConnectTelemetryErrorMsg: Label 'Unable to connect to SMTP server. Smtp server: %1, server port: %2, authentication: %3, error code: %4', Comment = '%1=the smtp server, %2=the server port, %3=authentication, %4=error code', Locked = true;
+        SmtpAuthenticateTelemetryErrorMsg: Label 'Unable to connect to SMTP server. Authentication email from: %1, smtp server: %2, server port: %3, authentication: %4 error code: %5', Comment = '%1=the from address, %2=the smtp server, %3=the server port, %4=authentication, %5=error code', Locked = true;
+        SmtpSendTelemetryErrorMsg: Label 'Unable to send email. Authentication: %1. Error code: %2', Comment = '%1=authentication, %2=error code', Locked = true;
+        SmtpConnectedTelemetryMsg: Label 'Connected to SMTP server %1 on server port %2, authentication: %3', Comment = '%1=the smtp server, %2=the server port, %3=authentication', Locked = true;
+        SmtpAuthenticateTelemetryMsg: Label 'Authenticated to SMTP server.  Authentication email from: %1, smtp server: %2, server port: %3, authentication: %4', Comment = '%1=the from address, %2=the smtp server, %3=the server port, %4=authentication', Locked = true;
 
         ConnectionFailureErr: Label 'Cannot connect to server %1.', Comment = '%1 = The SMTP server address';
         AuthenticationFailureErr: Label 'Cannot authenticate the credentials on server %1.', Comment = '%1 = The SMTP server address';
@@ -40,6 +40,7 @@ codeunit 4513 "SMTP Connector Impl."
         LearnMoreUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2135107', Locked = true;
         SmtpNotificationNameTxt: Label 'Notify that legacy SMTP email setup was copied';
         SmtpNotificationDescTxt: Label 'The first time that the Email Accounts page is opened, show a notification saying that legacy SMTP settings has been copied to the new email setup.';
+        ObfuscateLbl: Label '%1*%2@%3', Comment = '%1 = First character of username , %2 = Last character of username, %3 = Host', Locked = true;
 
     procedure GetAccounts(var Accounts: Record "Email Account")
     var
@@ -111,6 +112,7 @@ codeunit 4513 "SMTP Connector Impl."
             Session.LogMessage('00009UB', StrSubstNo(SmtpConnectTelemetryErrorMsg,
                     SMTPAccount.Server,
                     SMTPAccount."Server Port",
+                    SMTPAccount.Authentication,
                     SMTPErrorCode), Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
             Error(ConnectionFailureErr, SMTPAccount.Server);
@@ -118,9 +120,10 @@ codeunit 4513 "SMTP Connector Impl."
 
         Session.LogMessage('00009UV', StrSubstNo(SmtpConnectedTelemetryMsg,
                 SMTPAccount.Server,
-                SMTPAccount."Server Port"), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+                SMTPAccount."Server Port",
+                SMTPAccount.Authentication), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
-        if SMTPAccount.Authentication <> SMTPAccount.Authentication::Anonymous then begin // TODO how does NTLM authentication works?
+        if SMTPAccount.Authentication <> SMTPAccount.Authentication::Anonymous then begin
             ClearLastError();
             Result := SMTPClient.Authenticate();
 
@@ -129,18 +132,20 @@ codeunit 4513 "SMTP Connector Impl."
                 SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
 
                 Session.LogMessage('00009XD', StrSubstNo(SmtpAuthenticateTelemetryErrorMsg,
-                        SMTPAccount."User Name",
+                        ObsfuscateEmailAddress(SMTPAccount."User Name"),
                         SMTPAccount.Server,
                         SMTPAccount."Server Port",
+                        SMTPAccount.Authentication,
                         SMTPErrorCode), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
                 Error(AuthenticationFailureErr, SMTPAccount.Server);
             end;
 
             Session.LogMessage('00009XF', StrSubstNo(SmtpAuthenticateTelemetryMsg,
-                    SMTPAccount."User Name",
+                    ObsfuscateEmailAddress(SMTPAccount."User Name"),
                     SMTPAccount.Server,
-                    SMTPAccount."Server Port"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+                    SMTPAccount."Server Port",
+                    SMTPAccount.Authentication), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
         end;
 
         SMTPMessage.BuildMessage(Message, SMTPAccount);
@@ -152,7 +157,7 @@ codeunit 4513 "SMTP Connector Impl."
             Disconnect();
 
             SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
-            Session.LogMessage('00009UZ', StrSubstNo(SmtpSendTelemetryErrorMsg, SMTPErrorCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+            Session.LogMessage('00009UZ', StrSubstNo(SmtpSendTelemetryErrorMsg, SMTPAccount.Authentication, SMTPErrorCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
             Error(SendingFailureErr);
         end;
@@ -457,5 +462,26 @@ codeunit 4513 "SMTP Connector Impl."
     internal procedure GetO365SmtpServer(): Text
     begin
         exit('smtp.office365.com');
+    end;
+
+    internal procedure ObsfuscateEmailAddress(Email: Text) ObfuscatedEmail: Text
+    var
+        Username: Text;
+        Domain: Text;
+        Position: Integer;
+    begin
+        Position := StrPos(Email, '@');
+        if Position > 0 then begin
+            Username := DelStr(Email, Position, StrLen(Email) - Position);
+            Domain := DelStr(Email, 1, Position);
+
+            ObfuscatedEmail := StrSubstNo(ObfuscateLbl, Username.Substring(1, 1), Username.Substring(Position - 1, 1), Domain);
+        end
+        else begin
+            if StrLen(Email) > 0 then
+                ObfuscatedEmail := Email.Substring(1, 1);
+
+            ObfuscatedEmail += '* (Not a valid email)';
+        end;
     end;
 }

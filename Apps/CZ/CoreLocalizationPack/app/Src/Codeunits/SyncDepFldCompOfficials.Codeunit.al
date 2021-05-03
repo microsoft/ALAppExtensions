@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
 {
+    Permissions = tabledata "Company Officials" = rimd,
+                  tabledata "Company Official CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

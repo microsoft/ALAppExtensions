@@ -319,12 +319,29 @@ page 30044 "APIV2 - Sales Order Lines"
                         RegisterFieldSet(FieldNo("Variant Code"));
                     end;
                 }
+                field(locationId; "Location Id")
+                {
+                    Caption = 'Location Id';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Location Code"));
+                    end;
+                }
                 part(dimensionSetLines; "APIV2 - Dimension Set Lines")
                 {
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
                     SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(3);
+                }
+                part(location; "APIV2 - Locations")
+                {
+                    Caption = 'Location';
+                    EntityName = 'location';
+                    EntitySetName = 'locations';
+                    Multiplicity = ZeroOrOne;
+                    SubPageLink = SystemId = field("Location Id");
                 }
             }
         }

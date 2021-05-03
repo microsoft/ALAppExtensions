@@ -119,7 +119,7 @@ page 12 "Email Viewer"
                 SubPageLink = "Email Message Id" = field("Message Id");
                 UpdatePropagation = SubPart;
                 Caption = 'Attachments';
-                Visible = HasAttachements;
+                Visible = HasAttachments;
             }
         }
     }
@@ -200,7 +200,7 @@ page 12 "Email Viewer"
             CurrPage.Caption(PageCaptionTxt); // fallback to default caption
 
         IsHTMLFormatted := EmailMessage.IsBodyHTMLFormatted();
-        HasAttachements := EmailMessage.Attachments_First();
+        HasAttachments := EmailMessage.Attachments_First();
         CurrPage.Attachments.Page.UpdateValues(EmailMessage.GetId());
     end;
 
@@ -232,7 +232,7 @@ page 12 "Email Viewer"
         EmailSubject: Text;
         EmailBody: Text;
         [InDataSet]
-        IsHTMLFormatted, HasAttachements : Boolean;
+        IsHTMLFormatted, HasAttachments : Boolean;
         FromDisplayNameLbl: Label '%1 (%2)', Comment = '%1 - Account Name, %2 - Email address', Locked = true;
         PageCaptionTxt: Label 'Sent Email';
 }

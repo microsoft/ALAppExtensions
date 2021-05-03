@@ -15,6 +15,7 @@ codeunit 3907 "Retention Policy Installer"
 
     var
         SixMonthsTok: Label 'Six Months', MaxLength = 20;
+        RetenPolInstallerAbortLbl: Label 'Retention Policy Installer aborted due to missing table Retention Policy Log Entry on: %1', Locked = true;
 
     trigger OnInstallAppPerCompany()
     begin
@@ -24,6 +25,7 @@ codeunit 3907 "Retention Policy Installer"
     procedure AddAllowedTables()
     var
         RetentionPolicyLogEntry: Record "Retention Policy Log Entry";
+        RetentionPolicyLog: Codeunit "Retention Policy Log";
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
@@ -31,7 +33,11 @@ codeunit 3907 "Retention Policy Installer"
         if UpgradeTag.HasUpgradeTag(GetRetenPolLogEntryAddedUpgradeTag()) then
             exit;
 
-        RetenPolAllowedTables.AddAllowedTable(Database::"Retention Policy Log Entry", RetentionPolicyLogEntry.FieldNo(SystemCreatedAt), 28); // minimum retention period of 28 days
+        if not RetenPolAllowedTables.IsAllowedTable(Database::"Retention Policy Log Entry") and not RetenPolAllowedTables.AddAllowedTable(Database::"Retention Policy Log Entry", RetentionPolicyLogEntry.FieldNo(SystemCreatedAt), 28) then begin // minimum retention period of 28 days
+            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(RetenPolInstallerAbortLbl, CompanyName()));
+            exit;
+        end;
+
         CreateRetentionPolicySetup(Database::"Retention Policy Log Entry", CreateSixMonthRetentionPeriod());
 
         UpgradeTag.SetUpgradeTag(GetRetenPolLogEntryAddedUpgradeTag());
@@ -71,6 +77,13 @@ codeunit 3907 "Retention Policy Installer"
     local procedure GetRetenPolLogEntryAddedUpgradeTag(): Code[250]
     begin
         exit('MS-334067-RetenPolLogEntryAdded-20200731');
+    end;
+
+    local procedure LogCategory(): Enum "Retention Policy Log Category"
+    var
+        RetentionPolicyLogCategory: Enum "Retention Policy Log Category";
+    begin
+        exit(RetentionPolicyLogCategory::"Retention Policy - Setup");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterInitialization', '', false, false)]

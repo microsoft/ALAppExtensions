@@ -61,6 +61,9 @@ codeunit 4026 "W1 Management"
 
         if HybridBCLastManagement.IsSupportedUpgrade(17.0) then
             TargetVersions.Add(17.0);
+
+        if HybridBCLastManagement.IsSupportedUpgrade(18.0) then
+            TargetVersions.Add(18.0);
     end;
 
     procedure PopulateTableMapping();

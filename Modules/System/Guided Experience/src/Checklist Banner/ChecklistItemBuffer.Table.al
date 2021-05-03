@@ -85,6 +85,11 @@ table 1995 "Checklist Item Buffer"
             Caption = 'Completion Requirements';
             DataClassification = SystemMetadata;
         }
+        field(16; "Assigned To"; Text[50])
+        {
+            Caption = 'Assigned To';
+            DataClassification = EndUserIdentifiableInformation;
+        }
     }
 
     keys

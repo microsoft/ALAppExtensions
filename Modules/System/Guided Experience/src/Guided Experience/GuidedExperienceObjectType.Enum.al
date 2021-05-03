@@ -9,22 +9,22 @@ enum 1991 "Guided Experience Object Type"
 
     value(0; Uninitialized)
     {
-        Caption = 'Uninitialized';
+        Caption = 'Uninitialized', Locked = true;
     }
     value(1; Codeunit)
     {
-        Caption = 'Codeunit';
+        Caption = 'Codeunit', Locked = true;
     }
     value(2; Page)
     {
-        Caption = 'Page';
+        Caption = 'Page', Locked = true;
     }
     value(3; Report)
     {
-        Caption = 'Report';
+        Caption = 'Report', Locked = true;
     }
     value(4; XmlPort)
     {
-        Caption = 'XmlPort';
+        Caption = 'XmlPort', Locked = true;
     }
 }

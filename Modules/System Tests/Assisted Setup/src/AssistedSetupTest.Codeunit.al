@@ -41,7 +41,7 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Expand(true);
 
         AssistedSetup.Next();
-        AssistedSetup.Name.AssertEquals('My Assisted Setup Test Page');
+        AssistedSetup.Name.AssertEquals('English translation');
         AssistedSetup.Completed.AssertEquals(false);
         AssistedSetup.Help.AssertEquals('Read');
         AssistedSetup.Video.AssertEquals('Watch');

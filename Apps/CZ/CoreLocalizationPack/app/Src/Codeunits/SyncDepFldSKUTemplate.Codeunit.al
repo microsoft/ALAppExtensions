@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
 {
+    Permissions = tabledata "Stockkeeping Unit Template" = rimd,
+                  tabledata "Stockkeeping Unit Template CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

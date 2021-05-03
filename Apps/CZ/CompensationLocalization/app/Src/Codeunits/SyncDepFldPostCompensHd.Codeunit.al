@@ -2,6 +2,8 @@
 codeunit 31292 "Sync.Dep.Fld-PostCompensHd CZC"
 {
     Access = Internal;
+    Permissions = tabledata "Posted Credit Header" = rimd,
+                  tabledata "Posted Compensation Header CZC" = rimd;
 
     [EventSubscriber(ObjectType::Table, Database::"Posted Credit Header", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenamePostedCreditHeader(var Rec: Record "Posted Credit Header"; var xRec: Record "Posted Credit Header")

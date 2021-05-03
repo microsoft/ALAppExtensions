@@ -1,4 +1,4 @@
-codeunit 1450 "MS - Yodlee Service Mgt."
+﻿codeunit 1450 "MS - Yodlee Service Mgt."
 {
     var
         ResponseTempBlob: Codeunit "Temp Blob";
@@ -59,14 +59,14 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         BankStmtServiceStaleIllegalArgumentValueExceptionTxt: Label 'IllegalArgumentValueException', Locked = true;
         RegisterConsumerVerifyLCYCodeTxt: Label 'Registering a consumer account failed because of an invalid argument value. Open General Ledger Setup window and verify that the field LCY Code contains the ISO standard code for your local currency.';
         StaleCredentialsErr: Label 'Your session has expired. Please try the operation again.';
-        BankAccountRefreshInvalidCredentialsTxt: Label 'Yodlee could not update your account because your username and/or password were reported to be incorrect. You must open the corresponding bank account card and choose action Refresh Online Bank Account.';
+        BankAccountRefreshInvalidCredentialsTxt: Label 'Yodlee could not update your account because your username and/or password were reported to be incorrect. You must open the corresponding bank account card and choose action Edit Online Bank Account Information.';
         BankAccountRefreshUnknownErrorTxt: Label 'We are sorry, Yodlee encountered a technical problem while updating your account. Please try again later.';
         BankAccountRefreshAccountLockedTxt: Label 'Yodlee could not update your account because it appears to be locked by your bank. This usually results from too many unsuccessful login attempts in a short period of time. Please visit the bank or contact its customer support to resolve this issue. Once done, please update your account credentials in case they are changed.';
         BankAccountRefreshBankDownTxt: Label 'Yodlee was unable to update your account as the online bank is experiencing technical difficulties. We apologize for the inconvenience. Please try again later.';
         BankAccountRefreshBankDownForMaintenanceTxt: Label 'Yodlee was unable to update your account as the online bank is temporarily down for maintenance. We apologize for the inconvenience. This problem is typically resolved in a few hours. Please try again later.';
         BankAccountRefreshBankInBetaMaintenanceTxt: Label 'Yodlee was unable to update your account because it has started providing data updates for this online bank, and it may take a few days to be successful. Please try again later.';
         BankAccountRefreshTimedOutTxt: Label 'Your request timed out due to technical reasons. Please try again.';
-        BankAccountRefreshAdditionalAuthInfoNeededTxt: Label 'Additional authentication information is required. Open the corresponding bank account card and choose action Refresh Online Bank Account.';
+        BankAccountRefreshAdditionalAuthInfoNeededTxt: Label 'Additional authentication information is required. Open the corresponding bank account card and choose action Edit Online Bank Account Information.';
         YodleeFastlinkUrlTxt: Label 'YODLEE_FASTLINKURL', Locked = true;
         GLBDisableRethrowException: Boolean;
         ErrorsIgnoredTxt: Label 'This failure has been ignored.';
@@ -399,6 +399,19 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         ExtraParams :=
           STRSUBSTNO(
             'siteAccountId=%1&flow=manageConsent&callback=%2', TypeHelper.UrlEncode(OnlineBankAccountId), TypeHelper.UrlEncode(CallbackUrl));
+
+        Data := GetFastlinkData(ExtraParams, ErrorText);
+        EXIT(ErrorText = '');
+    end;
+
+    procedure GetFastlinkDataForEditAccount(OnlineBankAccountId: Text; CallbackUrl: Text; var Data: Text; var ErrorText: Text): Boolean;
+    var
+        TypeHelper: Codeunit "Type Helper";
+        ExtraParams: Text;
+    begin
+        ExtraParams :=
+          STRSUBSTNO(
+            'providerAccountId=%1&flow=edit&callback=%2', TypeHelper.UrlEncode(OnlineBankAccountId), TypeHelper.UrlEncode(CallbackUrl));
 
         Data := GetFastlinkData(ExtraParams, ErrorText);
         EXIT(ErrorText = '');
@@ -747,6 +760,19 @@ codeunit 1450 "MS - Yodlee Service Mgt."
 
         COMMIT();
         PAGE.RUNMODAL(PAGE::"MS - Yodlee Access Consent", MSYodleeBankAccLink);
+    end;
+
+    local procedure OnlineBankAccountEdit(OnlineBankAccountId: Text);
+    var
+        MSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link";
+    begin
+        CheckServiceEnabled();
+
+        MSYodleeBankAccLink.SETRANGE("Online Bank Account ID", OnlineBankAccountId);
+        MSYodleeBankAccLink.FINDFIRST();
+
+        COMMIT();
+        PAGE.RUNMODAL(PAGE::"MS - Yodlee Edit Account", MSYodleeBankAccLink);
     end;
 
     local procedure PollRefreshBankDataState(OnlineBankId: Text; OnlineBankAccountId: Text);
@@ -2189,6 +2215,24 @@ codeunit 1450 "MS - Yodlee Service Mgt."
 
         MSYodleeBankAccLink.GET(BankAccount."No.");
         OnlineBankAccountAccessConsent(MSYodleeBankAccLink."Online Bank Account ID");
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Bank Account", 'OnEditAccountStatementProviderEvent', '', false, false)]
+    local procedure OnEditAccountStatementProvider(var BankAccount: Record "Bank Account"; StatementProvider: Text);
+    var
+        MSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link";
+    begin
+        IF StatementProvider <> YodleeServiceIdentifierTxt THEN
+            EXIT;
+
+        IF NOT ValidateNotDemoCompanyOnSaas() THEN
+            EXIT;
+
+        IF NOT IsLinkedToYodleeService(BankAccount) THEN
+            EXIT;
+
+        MSYodleeBankAccLink.GET(BankAccount."No.");
+        OnlineBankAccountEdit(MSYodleeBankAccLink."Online Bank Account ID");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Bank Account", 'OnSimpleLinkStatementProviderEvent', '', false, false)]

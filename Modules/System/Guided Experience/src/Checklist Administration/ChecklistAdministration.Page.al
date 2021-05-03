@@ -126,6 +126,61 @@ page 1992 "Checklist Administration"
         }
     }
 
+    actions
+    {
+        area(Processing)
+        {
+            action(TitleTranslation)
+            {
+                ApplicationArea = All;
+                Caption = 'Manage translations for the title';
+                ToolTip = 'Manage translations for the title';
+                Image = Translations;
+
+                trigger OnAction()
+                var
+                    GuidedExperienceItem: Record "Guided Experience Item";
+                    Translation: Codeunit Translation;
+                begin
+                    if GuidedExperienceItem.Get(Code, Version) then
+                        Translation.Show(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
+                end;
+            }
+            action(ShortTitleTranslation)
+            {
+                ApplicationArea = All;
+                Caption = 'Manage translations for the short title';
+                ToolTip = 'Manage translations for the short title';
+                Image = Translations;
+
+                trigger OnAction()
+                var
+                    GuidedExperienceItem: Record "Guided Experience Item";
+                    Translation: Codeunit Translation;
+                begin
+                    if GuidedExperienceItem.Get(Code, Version) then
+                        Translation.Show(GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"));
+                end;
+            }
+            action(DescriptionTranslation)
+            {
+                ApplicationArea = All;
+                Caption = 'Manage translations for the description';
+                ToolTip = 'Manage translations for the description';
+                Image = Translations;
+
+                trigger OnAction()
+                var
+                    GuidedExperienceItem: Record "Guided Experience Item";
+                    Translation: Codeunit Translation;
+                begin
+                    if GuidedExperienceItem.Get(Code, Version) then
+                        Translation.Show(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description));
+                end;
+            }
+        }
+    }
+
     var
         ChecklistAdministration: Codeunit "Checklist Administration";
         ChecklistImplementation: Codeunit "Checklist Implementation";

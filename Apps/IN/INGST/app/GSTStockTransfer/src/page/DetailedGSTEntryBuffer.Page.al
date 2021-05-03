@@ -7,8 +7,6 @@ page 18390 "Detailed GST Entry Buffer"
     ModifyAllowed = false;
     PageType = List;
     SourceTable = "Detailed GST Entry Buffer";
-    UsageCategory = Lists;
-    ApplicationArea = Basic, Suite;
 
     layout
     {

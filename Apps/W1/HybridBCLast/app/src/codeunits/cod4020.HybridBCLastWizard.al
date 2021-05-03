@@ -3,7 +3,8 @@ codeunit 4020 "Hybrid BC Last Wizard"
     var
         ProductIdTxt: Label 'DynamicsBCLast', Locked = true;
         ProductNameTxt: Label 'Dynamics 365 Business Central', Locked = true;
-        ProductNameQualifierTxt: Label '(Previous Version)';
+        ProductNameQualifierTxt: Label 'earlier versions';
+        ProductDescriptionTxt: Label 'Use this option if your on-premises deployment of %1 is an earlier major version than this %1 online environment. Because they are not the same version, the migration first copies the data and then runs the upgrade processes. Due to the upgrade processes, we recommend that you run the migration only once.';
 
     procedure ProductId(): Text[250]
     begin
@@ -18,6 +19,23 @@ codeunit 4020 "Hybrid BC Last Wizard"
         exit(CopyStr(Name, 1, 250));
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductDescription', '', false, false)]
+    local procedure HandleGetHybridProductDescription(ProductId: Text; var ProductDescription: Text)
+    begin
+        if ProductId = ProductIdTxt then
+            ProductDescription := StrSubstNo(ProductDescriptionTxt, ProductNameTxt);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanRunDiagnostic', '', false, false)]
+    local procedure OnCanRunDiagnostic(var CanRun: Boolean)
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if not (IntelligentCloudSetup.Get() and CanHandle(IntelligentCloudSetup."Product ID")) then
+            exit;
+
+        CanRun := true;
+    end;
 
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanShowMapUsers', '', false, false)]
     local procedure OnCanShowMapUsers(var Enabled: Boolean)
@@ -72,6 +90,22 @@ codeunit 4020 "Hybrid BC Last Wizard"
         ProductName := ProductName();
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductType', '', false, false)]
+    local procedure OnGetHybridProductType(var HybridProductType: Record "Hybrid Product Type")
+    var
+        extensionInfo: ModuleInfo;
+        extensionId: Guid;
+    begin
+        NavApp.GetCurrentModuleInfo(extensionInfo);
+        extensionId := extensionInfo.Id();
+        if not HybridProductType.Get(ProductIdTxt) then begin
+            HybridProductType.Init();
+            HybridProductType."App ID" := extensionId;
+            HybridProductType."Display Name" := ProductName();
+            HybridProductType.ID := ProductId();
+            HybridProductType.Insert(true);
+        end;
+    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Companies IC", 'OnBeforeCreateCompany', '', false, false)]
     local procedure HandleOnBeforeCreateCompany(ProductId: Text; var CompanyDataType: Option "Evaluation Data","Standard Data","None","Extended Data","Full No Data")

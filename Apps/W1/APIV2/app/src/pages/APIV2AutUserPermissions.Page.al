@@ -32,20 +32,6 @@ page 30059 "APIV2 - Aut. User Permissions"
                 field(roleId; "Role ID")
                 {
                     Caption = 'Role Id';
-
-                    trigger OnValidate()
-                    var
-                        AggregatePermissionSet: Record "Aggregate Permission Set";
-                    begin
-                        AggregatePermissionSet.SetRange("Role ID", "Role ID");
-                        AggregatePermissionSet.FindFirst();
-
-                        if AggregatePermissionSet.Count() > 1 then
-                            Error(MultipleRoleIDErr, "Role ID");
-
-                        Scope := AggregatePermissionSet.Scope;
-                        "App ID" := AggregatePermissionSet."App ID";
-                    end;
                 }
                 field(displayName; "Role Name")
                 {
@@ -68,6 +54,11 @@ page 30059 "APIV2 - Aut. User Permissions"
                 field(scope; Scope)
                 {
                     Caption = 'Scope';
+
+                    trigger OnValidate()
+                    begin
+                        ScopeDefined := true;
+                    end;
                 }
             }
         }
@@ -98,10 +89,30 @@ page 30059 "APIV2 - Aut. User Permissions"
         BindSubscription(AutomationAPIManagement);
     end;
 
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+    var
+        AggregatePermissionSet: Record "Aggregate Permission Set";
+    begin
+        if Rec."Role ID" <> '' then
+            AggregatePermissionSet.SetRange("Role ID", Rec."Role ID");
+        if not IsNullGuid(Rec."App ID") then
+            AggregatePermissionSet.SetRange("App ID", Rec."App ID");
+        if ScopeDefined then
+            AggregatePermissionSet.SetRange(Scope, Rec.Scope);
+
+        if AggregatePermissionSet.Count() > 1 then
+            Error(MultipleRoleIDErr, "Role ID");
+
+        AggregatePermissionSet.FindFirst();
+        Scope := AggregatePermissionSet.Scope;
+        "App ID" := AggregatePermissionSet."App ID";
+    end;
+
     var
         AutomationAPIManagement: Codeunit "Automation - API Management";
         MultipleRoleIDErr: Label 'The permission set %1 is defined multiple times in this context.', Comment = '%1 will be replaced with a Role ID code value from the Permission Set table';
         UserIDNotSpecifiedForLinesErr: Label 'You must specify a User Security ID to access user permissions.';
         LinesLoaded: Boolean;
+        ScopeDefined: Boolean;
 }
 

@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31190 "Sync.Dep.Fld-ExcelTemplate CZL"
 {
+    Permissions = tabledata "Excel Template" = rimd,
+                  tabledata "Excel Template CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

@@ -433,6 +433,8 @@ page 9515 "Azure AD User Update Wizard"
     end;
 
     local procedure ShowOverview()
+    var
+        GuidedExperience: Codeunit "Guided Experience";
     begin
         MakeAllGroupsInvisible();
         SetVisiblityOnActions();
@@ -443,8 +445,10 @@ page 9515 "Azure AD User Update Wizard"
             TotalUpdatesToConfirm := StrSubstNo(TotalUpdatesToConfirmPluralTxt, CountOfManagedPermissionUpdates);
         TotalUpdatesReadyToApplyVisible := (CountOfApplicableUpdates > 0) and (not TotalUpdatesToConfirmVisible);
         TotalUpdatesReadyToApply := StrSubstNo(TotalUpdatesReadyToApplyTxt, CountOfApplicableUpdates);
-        if (not TotalUpdatesReadyToApplyVisible) and (not TotalUpdatesToConfirmVisible) then
+        if (not TotalUpdatesReadyToApplyVisible) and (not TotalUpdatesToConfirmVisible) then begin
             NoAvailableUpdatesVisible := true;
+            GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Azure AD User Update Wizard");
+        end;
     end;
 
     local procedure SetVisiblityOnActions()

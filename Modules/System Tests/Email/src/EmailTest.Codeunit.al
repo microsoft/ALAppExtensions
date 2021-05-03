@@ -20,6 +20,7 @@ codeunit 134685 "Email Test"
         EmailMessageSentCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has already been sent.';
         SourceRecordErr: Label 'Could not find the source for this email.';
         AccountNameLbl: Label '%1 (%2)', Locked = true;
+        NoRelatedAttachmentsErr: Label 'Did not find any attachments related to this email.';
 
     [Test]
     [Scope('OnPrem')]
@@ -703,6 +704,47 @@ codeunit 134685 "Email Test"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('RelationPickerHandler')]
+    procedure ShowMultipleSourceRecords()
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailMessage: Codeunit "Email Message";
+        Any: Codeunit Any;
+        EmailTest: Codeunit "Email Test";
+        EmailOutboxPage: Page "Email Outbox";
+        EmailOutboxTestPage: TestPage "Email Outbox";
+        TableId: Integer;
+        SystemId: Guid;
+    begin
+        BindSubscription(EmailTest);
+
+        // [Scenario] Emails with multiple source documents, will see the email relation picker  
+        // [Given] An Email with table id and source system id
+        TableId := Any.IntegerInRange(1, 10000);
+        SystemId := Any.GuidValue();
+
+        // [And] The email is with a source and saved as draft
+        CreateEmailWithSource(EmailMessage, TableId, SystemId);
+        Email.SaveAsDraft(EmailMessage, EmailOutbox);
+
+        // [When] An extra relation is added - We use email outbox to have a record that actually exists
+        TableId := Database::"Email Outbox";
+        SystemId := EmailOutbox.SystemId;
+        Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source");
+
+        // [And] The Show Source Document button is clicked 
+        EmailOutboxTestPage.Trap();
+        EmailOutboxPage.SetRecord(EmailOutbox);
+        EmailOutboxPage.Run();
+
+        Assert.IsTrue(EmailOutboxTestPage.ShowSourceRecord.Visible(), 'Show Source Record action should be visible');
+        EmailOutboxTestPage.ShowSourceRecord.Invoke();
+
+        // [Then] Email picker modal appears
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure EmailWithoutSourceInOutbox()
     var
         EmailOutbox: Record "Email Outbox";
@@ -813,6 +855,68 @@ codeunit 134685 "Email Test"
             SentEmail.SetRange("Message Id", MessageIds.Get(i));
             Assert.RecordCount(SentEmail, 1); // Did not find the email in Sent Emails 
         end;
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('RelatedAttachmentsHandler,CloseEmailEditorHandler')]
+    procedure AttachFromRelatedRecords()
+    var
+        EmailMessageRec: Record "Email Message";
+        EmailMessageAttachments: Record "Email Message Attachment";
+        EmailMessage: Codeunit "Email Message";
+        EmailTest: Codeunit "Email Test";
+        Email: Codeunit Email;
+        EmailEditorPage: TestPage "Email Editor";
+        TableId: Integer;
+        SystemId: Guid;
+    begin
+        BindSubscription(EmailTest);
+
+        // [Given] A created email
+        CreateEmail(EmailMessage);
+
+        // [And] A related record to the email (in this case, the email is related to itself)
+        EmailMessageRec.Get(EmailMessage.GetId());
+        TableId := Database::"Email Message";
+        SystemId := EmailMessageRec.SystemId;
+        Email.AddRelation(EmailMessage, TableId, EmailMessageRec.SystemId, Enum::"Email Relation Type"::"Primary Source");
+
+        // [When] Opening the Email Related Attachments page
+        EmailEditorPage.Trap();
+        Email.OpenInEditor(EmailMessage);
+        EmailEditorPage.Attachments.SourceAttachments.Invoke();
+
+        // [Then] Attachments added through the 'OnFindRelatedAttachments' event are displayed 
+        // [And] A related attachment is added
+
+        // [Then] The related attachment is added as an attachment to the email 
+        EmailMessageAttachments.SetRange("Email Message Id", EmailMessage.GetId());
+        Assert.AreEqual(1, EmailMessageAttachments.Count(), 'Related attachment wasnt attached to the email.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('RelatedAttachmentsHandler,CloseEmailEditorHandler')]
+    procedure FailedAttachFromRelatedRecords()
+    var
+        EmailMessage: Codeunit "Email Message";
+        EmailTest: Codeunit "Email Test";
+        Email: Codeunit Email;
+        EmailEditorPage: TestPage "Email Editor";
+    begin
+        BindSubscription(EmailTest);
+
+        // [Given] A created email without source record
+        CreateEmail(EmailMessage);
+
+        // [When] Opening the Email Related Attachments page and getting related attachments 
+        EmailEditorPage.Trap();
+        Email.OpenInEditor(EmailMessage);
+        asserterror EmailEditorPage.Attachments.SourceAttachments.Invoke();
+
+        // [Then] An error message is displayed 
+        Assert.ExpectedError(NoRelatedAttachmentsErr);
     end;
 
     [Test]
@@ -1047,6 +1151,26 @@ codeunit 134685 "Email Test"
     end;
 
     [ModalPageHandler]
+    procedure RelationPickerHandler(var EmailRelationPickerTestPage: TestPage "Email Relation Picker")
+    begin
+        Assert.AreEqual(EmailRelationPickerTestPage."Relation Type".Value(), 'Primary Source', 'No source found on email relation picker page');
+
+        ClearLastError();
+        EmailRelationPickerTestPage."Source Name".Lookup();
+
+        Assert.AreEqual('', GetLastErrorText, 'An error occured - opening email relation from picker');
+    end;
+
+    [ModalPageHandler]
+    procedure RelatedAttachmentsHandler(var RelatedAttachmentsPage: TestPage "Email Related Attachments")
+    begin
+        RelatedAttachmentsPage.First();
+        Assert.AreEqual('Attachment 1', RelatedAttachmentsPage.FileName.Value(), 'Wrong Attachment');
+
+        RelatedAttachmentsPage.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
     procedure EmailEditorHandler(var EmailEditor: TestPage "Email Editor")
     begin
         Assert.IsTrue(EmailEditor.Account.Enabled(), 'Account field was not enabled');
@@ -1096,6 +1220,27 @@ codeunit 134685 "Email Test"
     local procedure OnShowSourceSubscriber(SourceTableId: Integer; SourceSystemId: Guid; var IsHandled: Boolean)
     begin
         IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnFindRelatedAttachments', '', true, true)]
+    local procedure OnFindRelatedAttachments(SourceTableId: Integer; SourceSystemID: Guid; var EmailRelatedAttachments: Record "Email Related Attachment")
+    var
+        Any: Codeunit Any;
+    begin
+        EmailRelatedAttachments."Attachment Name" := 'Attachment 1';
+        EmailRelatedAttachments."Attachment Table ID" := Any.IntegerInRange(1000);
+        EmailRelatedAttachments."Attachment System ID" := System.CreateGuid();
+        EmailRelatedAttachments.Insert();
+
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnGetAttachment', '', true, true)]
+    local procedure OnGetAttachment(AttachmentTableID: Integer; AttachmentSystemID: Guid; MessageID: Guid)
+    var
+        EmailMessage: Codeunit "Email Message";
+    begin
+        EmailMessage.Get(MessageID);
+        EmailMessage.AddAttachment('Attachment1', 'text/plain', Base64Convert.ToBase64('Content'));
     end;
 
     procedure ThrowErrorOnAfterSendEmail()

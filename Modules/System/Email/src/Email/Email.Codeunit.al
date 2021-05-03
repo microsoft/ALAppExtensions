@@ -233,7 +233,7 @@ codeunit 8901 "Email"
     ///</summary>
     ///<param name="TableId">The table ID of the record.</param>
     ///<param name="SystemId">The system ID of the record.</param>
-    ///<returns>The sent email related to a record.<returns>
+    ///<returns>The sent email related to a record.</returns>
     procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid) ResultSentEmails: Record "Sent Email" temporary;
     begin
         exit(EmailImpl.GetSentEmailsForRecord(TableId, SystemId));
@@ -241,7 +241,7 @@ codeunit 8901 "Email"
 
     ///<summary>
     /// Adds a relation between an email message and a record.
-    ///<summary>
+    ///</summary>
     ///<param name="EmailMessage">The email message for which to create the relation.</param>
     ///<param name="TableId">The table ID of the record.</param>
     ///<param name="SystemId">The system ID of the record.</param>
@@ -295,6 +295,28 @@ codeunit 8901 "Email"
     /// <param name="Status">True if the message was successfully sent.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnAfterSendEmail(MessageId: Guid; Status: Boolean)
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event to get the names and IDs of attachments related to a source record. 
+    /// </summary>
+    /// <param name="SourceTableId">The table number of the source record.</param>
+    /// <param name="SourceSystemID">The system ID of the source record.</param>
+    /// <param name="EmailRelatedAttachments">Out parameter to return attachments related to the source record.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnFindRelatedAttachments(SourceTableId: Integer; SourceSystemID: Guid; var EmailRelatedAttachments: Record "Email Related Attachment")
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event that requests an attachment to be added to an email.
+    /// </summary>
+    /// <param name="AttachmentTableID">The table number of the attachment.</param>
+    /// <param name="AttachmentSystemID">The system ID of the attachment.</param>
+    /// <param name="MessageID">The ID of the email to add an attachment to.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnGetAttachment(AttachmentTableID: Integer; AttachmentSystemID: Guid; MessageID: Guid)
     begin
     end;
 

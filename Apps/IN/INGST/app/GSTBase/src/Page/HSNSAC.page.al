@@ -58,13 +58,9 @@ page 18005 "HSN/SAC"
                     ODataUtility.EditWorksheetInExcel(
                         'HSNSAC',
                         CurrPage.ObjectId(false),
-                        StrSubstNo(CodeValueLbl,
-                        Rec."GST Group Code"));
+                        Rec.GetFilter(Code));
                 end;
             }
         }
     }
-
-    var
-        CodeValueLbl: Label 'Code %1', Comment = '%1 = GST Group Code';
 }

@@ -18,6 +18,8 @@ codeunit 9057 "Plan Upgrade"
     begin
         UpdateSubscriptionPlan();
         RenamePlansAndDeleteOldPlans();
+        RenameTeamMemberPlan();
+        RenameDevicePlan();
     end;
 
     [NonDebuggable]
@@ -59,7 +61,7 @@ codeunit 9057 "Plan Upgrade"
             exit;
 
         RenameOrCreatePlan(PlanIds.GetEssentialISVPlanId(), 'Dynamics 365 Business Central Essential - Embedded');
-        RenameOrCreatePlan(PlanIds.GetTeamMemberPlanId(), 'Dynamics 365 for Team Members');
+        RenameOrCreatePlan(PlanIds.GetTeamMemberPlanId(), 'Dynamics 365 Business Central Team Member');
         RenameOrCreatePlan(PlanIds.GetPremiumPlanId(), 'Dynamics 365 Business Central Premium');
         RenameOrCreatePlan(PlanIds.GetBasicFinancialsISVPlanId(), 'Dynamics 365 Business Central Basic Financials');
         RenameOrCreatePlan(PlanIds.GetEssentialPlanId(), 'Dynamics 365 Business Central Essential');
@@ -83,6 +85,36 @@ codeunit 9057 "Plan Upgrade"
         Session.LogMessage('0000AHN', 'Subscription Plans were renamed and old plans werer deleted.', Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', 'AL SaaS Upgrade');
 
         UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetRenamePlansUpgradeTag());
+    end;
+
+    [NonDebuggable]
+    local procedure RenameTeamMemberPlan()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        PlanUpgradeTag: Codeunit "Plan Upgrade Tag";
+        PlanIds: Codeunit "Plan Ids";
+    begin
+        if UpgradeTag.HasUpgradeTag(PlanUpgradeTag.GetRenameTeamMemberPlanUpgradeTag()) then
+            exit;
+
+        RenameOrCreatePlan(PlanIds.GetTeamMemberPlanId(), 'Dynamics 365 Business Central Team Member');
+
+        UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetRenameTeamMemberPlanUpgradeTag());
+    end;
+
+    [NonDebuggable]
+    local procedure RenameDevicePlan()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        PlanUpgradeTag: Codeunit "Plan Upgrade Tag";
+        PlanIds: Codeunit "Plan Ids";
+    begin
+        if UpgradeTag.HasUpgradeTag(PlanUpgradeTag.GetRenameDevicePlanUpgradeTag()) then
+            exit;
+
+        RenameOrCreatePlan(PlanIds.GetDevicePlanId(), 'Dynamics 365 Business Central Device - Embedded');
+
+        UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetRenameDevicePlanUpgradeTag());
     end;
 
     [NonDebuggable]

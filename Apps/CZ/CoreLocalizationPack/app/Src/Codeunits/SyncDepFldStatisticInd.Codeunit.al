@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
 {
+    Permissions = tabledata "Statistic Indication" = rimd,
+                  tabledata "Statistic Indication CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

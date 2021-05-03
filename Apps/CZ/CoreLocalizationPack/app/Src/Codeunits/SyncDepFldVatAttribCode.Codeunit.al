@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
 {
+    Permissions = tabledata "VAT Attribute Code" = rimd,
+                  tabledata "VAT Attribute Code CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

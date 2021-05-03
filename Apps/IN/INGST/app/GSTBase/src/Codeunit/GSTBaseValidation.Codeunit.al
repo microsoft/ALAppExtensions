@@ -293,6 +293,13 @@ codeunit 18001 "GST Base Validation"
                     Rec."Nature of Supply" := Rec."Nature of Supply"::B2C
                 else
                     Rec."Nature of Supply" := Rec."Nature of Supply"::B2B;
+
+        if (DetailedGSTLedgerEntry."Transaction Type" = DetailedGSTLedgerEntry."Transaction Type"::Purchase) and
+            (DetailedGSTLedgerEntry."Entry Type" = DetailedGSTLedgerEntry."Entry Type"::"Initial Entry") and
+            (DetailedGSTLedgerEntry.Type = DetailedGSTLedgerEntry.Type::Item) and
+            (Rec."Original Doc. Type" in [Rec."Original Doc. Type"::Invoice,Rec."Original Doc. Type"::"Credit Memo"])
+        then
+            UpdateGSTTrackingFromToEntryNo(DetailedGSTLedgerEntry."Entry No.");
     end;
 
     //Company Information Validation - Subscribers 
@@ -1083,6 +1090,22 @@ codeunit 18001 "GST Base Validation"
             repeat
                 CalculateTax.CallTaxEngineOnPurchaseLine(PurchaseLine, PurchaseLine);
             until PurchaseLine.Next() = 0;
+    end;
+
+    local procedure UpdateGSTTrackingFromToEntryNo(EntryNo: Integer)
+    var
+        GSTTrackingEntry: Record "GST Tracking Entry";
+        GSTPostingManagement: Codeunit "GST Posting Management";
+        GSTTrackingEntNo: Integer;
+    begin
+        GSTTrackingEntNo := GSTPostingManagement.GetGSTTrackingEntryNo();
+        if GSTTrackingEntry.Get(GSTTrackingEntNo) then begin
+            if GSTTrackingEntry."From Entry No." = 0 then
+                GSTTrackingEntry."From Entry No." := EntryNo;
+            if GSTTrackingEntry."From To No." < EntryNo then
+                GSTTrackingEntry."From To No." := EntryNo;
+            GSTTrackingEntry.Modify();
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Subscribers", 'OnAfterGetGSTAmountForSalesInvLines', '', false, false)]

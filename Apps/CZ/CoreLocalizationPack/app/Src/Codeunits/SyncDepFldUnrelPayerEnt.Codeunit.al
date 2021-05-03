@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31156 "Sync.Dep.Fld-UnrelPayerEnt CZL"
 {
+    Permissions = tabledata "Uncertainty Payer Entry" = rimd,
+                  tabledata "Unreliable Payer Entry CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

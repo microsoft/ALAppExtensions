@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Look up page for all of the application objects, including objects from installed extensions.",
     "description":  "",
-    "version":  "18.0.0.0",
+    "version":  "18.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -18,11 +18,11 @@
                     ],
     "platform":  "18.0.0.0",
     "idRanges":  [
-                {
-                    "from":  358,
-                    "to":  358
-                }
-            ],
+                     {
+                         "from":  358,
+                         "to":  358
+                     }
+                 ],
     "target":  "OnPrem",
     "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
 }

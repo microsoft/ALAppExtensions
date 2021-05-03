@@ -1134,7 +1134,7 @@ report 31006 "Get Item Ledger Entries CZL"
 
     local procedure CalculateExchangeAmount(Amount: Decimal; DocumentCurrencyFactor: Decimal; IntrastatCurrencyFactor: Decimal): Decimal
     begin
-        if IntrastatCurrencyFactor <> 0 then
+        if (IntrastatCurrencyFactor <> 0) and (DocumentCurrencyFactor <> 0) then
             exit(Amount * DocumentCurrencyFactor / IntrastatCurrencyFactor);
         exit(Amount);
     end;

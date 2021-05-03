@@ -31,8 +31,8 @@ codeunit 1996 "Checklist Banner"
         CollapsedBannerHeader75To100CompletedLbl: Label 'Complete the last steps to get ready for business', MaxLength = 60, Comment = '*Onboarding Checklist*';
         BannerDescriptionWelcomeLbl: Label 'We''ve prepared a few activities to get you and your team quickly started.', MaxLength = 125, Comment = '*Onboarding Checklist*';
         BannerDescriptionCompletedLbl: Label 'Start exploring Business Central now. You can revisit the checklist later and enable additional features as you need them.', MaxLength = 125, Comment = '*Onboarding Checklist*';
-        UserChecklistStatusUpdateLbl: Label 'The user checklist status has been updated.', Locked = true;
-        ChecklistItemStatusUpdateLbl: Label 'A checklist item status has been updated.', Locked = true;
+        UserChecklistStatusUpdateLbl: Label 'User checklist status updated: %1 to %2', Locked = true;
+        ChecklistItemStatusUpdateLbl: Label 'Checklist item status updated: %1 to %2', Locked = true;
 
     procedure GetAllChecklistItems(var ChecklistItemBufferTemp: Record "Checklist Item Buffer" temporary)
     var
@@ -64,9 +64,12 @@ codeunit 1996 "Checklist Banner"
         UserChecklistStatus: Record "User Checklist Status";
         UserPersonalization: Record "User Personalization";
         ChecklistImplementation: Codeunit "Checklist Implementation";
+        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         Dimensions: Dictionary of [Text, Text];
         OldStatus: Enum "Checklist Status";
         UserNameCode: Code[50];
+        OldStatusInDefaultLanguage: Text;
+        NewStatusInDefaultLanguage: Text;
     begin
         UserNameCode := CopyStr(UserName, 1, 50);
 
@@ -86,15 +89,25 @@ codeunit 1996 "Checklist Banner"
                     UserPersonalization."Profile ID", NewStatus, true);
         end;
 
-        GetCustomDimensionsForUserChecklistStatusUpdate(Dimensions, OldStatus, NewStatus);
-        Session.LogMessage('0000EIQ', UserChecklistStatusUpdateLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+        GetUserChecklistStatusDimensionsInDefaultLanguage(OldStatus, NewStatus, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
+        GetCustomDimensionsForUserChecklistStatusUpdate(Dimensions, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
+
+        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
+        GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
+
+        Session.LogMessage('0000EIQ', StrSubstNo(UserChecklistStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
+            Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
     end;
 
     procedure UpdateChecklistItemUserStatus(var ChecklistItemBuffer: Record "Checklist Item Buffer"; UserName: Text; NewStatus: Enum "Checklist Item Status")
     var
-        ChecklistImplementation: Codeunit "Checklist Implementation";
+        UserPersonalization: Record "User Personalization";
+        GuidedExperienceItem: Record "Guided Experience Item";
+        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         OldStatus: Enum "Checklist Item Status";
         Dimensions: Dictionary of [Text, Text];
+        OldStatusInDefaultLanguage: Text;
+        NewStatusInDefaultLanguage: Text;
     begin
         if not ShouldModifyStatus(ChecklistItemBuffer.Status, NewStatus) then
             exit;
@@ -104,14 +117,21 @@ codeunit 1996 "Checklist Banner"
 
         OldStatus := UpdateChecklistItemUserStatus(ChecklistItemBuffer.Code, ChecklistItemBuffer.Version, CopyStr(UserName, 1, 50), NewStatus);
 
-        GetCustomDimensionsForChecklistItemStatusUpdate(Dimensions, OldStatus, NewStatus);
-        Session.LogMessage('0000EIT', ChecklistItemStatusUpdateLbl, Verbosity::Normal,
-            DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+        GetChecklistItemStatusDimensionsInDefaultLanguage(OldStatus, NewStatus, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
+        GetCustomDimensionsForChecklistItemStatusUpdate(Dimensions, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
 
-        ChecklistImplementation.GetGuidedExperienceItemDimensions(Dimensions, ChecklistItemBuffer.Title, ChecklistItemBuffer."Short Title",
-            ChecklistItemBuffer.Description, ChecklistItemBuffer."Extension Name");
-        Session.LogMessage('0000EIR', ChecklistItemStatusUpdateLbl, Verbosity::Normal,
-            DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, Dimensions);
+        if UserPersonalization.Get(UserSecurityId()) then;
+        GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
+        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
+
+        Session.LogMessage('0000EIT', StrSubstNo(ChecklistItemStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
+            Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+
+        if GuidedExperienceItem.Get(ChecklistItemBuffer.Code, ChecklistItemBuffer.Version) then;
+
+        GuidedExperienceImpl.AddGuidedExperienceItemDimensions(Dimensions, GuidedExperienceItem, 'Checklist');
+        Session.LogMessage('0000EIR', StrSubstNo(ChecklistItemStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
+            Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, Dimensions);
     end;
 
     procedure IsUserChecklistStatusComplete(UserName: Text): Boolean
@@ -123,7 +143,7 @@ codeunit 1996 "Checklist Banner"
             exit(UserChecklistStatus."Checklist Status" = UserChecklistStatus."Checklist Status"::Completed);
     end;
 
-    procedure ExecuteChecklistItem(var ChecklistItemBuffer: Record "Checklist Item Buffer"): Boolean
+    procedure ExecuteChecklistItem(var ChecklistItemBuffer: Record "Checklist Item Buffer"; IsLastChecklistItem: Boolean): Boolean
     var
         GuidedExperienceItem: Record "Guided Experience Item";
     begin
@@ -136,7 +156,7 @@ codeunit 1996 "Checklist Banner"
             exit(RunObject(GuidedExperienceItem, ChecklistItemBuffer));
 
         if GuidedExperienceItem.Link <> '' then begin
-            RunLink(ChecklistItemBuffer);
+            RunLink(ChecklistItemBuffer, IsLastChecklistItem);
             exit(true);
         end;
     end;
@@ -269,11 +289,10 @@ codeunit 1996 "Checklist Banner"
         ChecklistItemBuffer."Object Type to Run" := GuidedExperienceItem."Object Type to Run";
         ChecklistItemBuffer."Object ID to Run" := GuidedExperienceItem."Object ID to Run";
         ChecklistItemBuffer.Link := GuidedExperienceItem.Link;
-        ChecklistItemBuffer.Title := GuidedExperienceItem.Title;
-        ChecklistItemBuffer."Short Title" := GuidedExperienceItem."Short Title";
-        ChecklistItemBuffer.Description := GuidedExperienceItem.Description;
         ChecklistItemBuffer."Expected Duration" := GuidedExperienceItem."Expected Duration";
         ChecklistItemBuffer."Guided Experience Type" := GuidedExperienceItem."Guided Experience Type";
+
+        GetTranslationsForTitlesAndDescription(ChecklistItemBuffer, GuidedExperienceItem);
 
         GuidedExperienceItem.CalcFields("Extension Name");
         ChecklistItemBuffer."Extension Name" := GuidedExperienceItem."Extension Name";
@@ -281,7 +300,93 @@ codeunit 1996 "Checklist Banner"
         ChecklistItemBuffer.Status := Status;
         ChecklistItemBuffer."Order ID" := ChecklistItem."Order ID";
         ChecklistItemBuffer."Completion Requirements" := ChecklistItem."Completion Requirements";
+
+        SetAssignedTo(ChecklistItemBuffer);
+
         ChecklistItemBuffer.Insert();
+    end;
+
+    local procedure GetTranslationsForTitlesAndDescription(var ChecklistItemBuffer: Record "Checklist Item Buffer"; GuidedExperienceItem: Record "Guided Experience Item")
+    var
+        Checklist: Codeunit Checklist;
+        Title: Text[2048];
+        ShortTitle: Text[50];
+        Description: Text[1024];
+    begin
+        GetTranslationsForTitlesAndDescription(GuidedExperienceItem, Title, ShortTitle, Description);
+
+        if (Title = '') or (ShortTitle = '') or (Description = '') then begin
+            Checklist.InitializeGuidedExperienceItems();
+            GetTranslationsForTitlesAndDescription(GuidedExperienceItem, Title, ShortTitle, Description);
+        end;
+
+        if Title <> '' then
+            ChecklistItemBuffer.Title := Title
+        else
+            ChecklistItemBuffer.Title := GuidedExperienceItem.Title;
+
+        if ShortTitle <> '' then
+            ChecklistItemBuffer."Short Title" := ShortTitle
+        else
+            ChecklistItemBuffer."Short Title" := GuidedExperienceItem."Short Title";
+
+        if Description <> '' then
+            ChecklistItemBuffer.Description := Description
+        else
+            ChecklistItemBuffer.Description := GuidedExperienceItem.Description;
+    end;
+
+    local procedure GetTranslationsForTitlesAndDescription(GuidedExperienceItem: Record "Guided Experience Item"; var Title: Text[2048]; var ShortTitle: Text[50]; var Description: Text[1024])
+    begin
+        Title := CopyStr(GetTranslationForField(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title)),
+            1, MaxStrLen(GuidedExperienceItem.Title));
+
+        ShortTitle := CopyStr(GetTranslationForField(GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title")),
+            1, MaxStrLen(GuidedExperienceItem."Short Title"));
+
+        Description := CopyStr(GetTranslationForField(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description)),
+            1, MaxStrLen(GuidedExperienceItem.Description));
+    end;
+
+    local procedure GetTranslationForField(GuidedExperienceItem: Record "Guided Experience Item"; FieldNo: Integer): Text
+    var
+        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
+    begin
+        exit(GuidedExperienceImpl.GetTranslationForField(GuidedExperienceItem."Guided Experience Type",
+            GuidedExperienceItem."Object Type to Run", GuidedExperienceItem."Object ID to Run", GuidedExperienceItem.Link, FieldNo));
+    end;
+
+    local procedure SetAssignedTo(var ChecklistItemBuffer: Record "Checklist Item Buffer")
+    var
+        ChecklistItemRole: Record "Checklist Item Role";
+        ChecklistItemUser: Record "Checklist Item User";
+        NumberOfAssignees: Integer;
+        Assignee: Text[50];
+    begin
+        if ChecklistItemBuffer."Completion Requirements" in
+            [ChecklistItemBuffer."Completion Requirements"::Anyone, ChecklistItemBuffer."Completion Requirements"::Everyone]
+        then begin
+            ChecklistItemRole.SetRange(Code, ChecklistItemBuffer.Code);
+            NumberOfAssignees := ChecklistItemRole.Count;
+            if NumberOfAssignees = 1 then
+                if ChecklistItemRole.FindFirst() then
+                    Assignee := ChecklistItemRole."Role ID";
+        end else begin
+            ChecklistItemUser.SetRange(Code, ChecklistItemBuffer.Code);
+            NumberOfAssignees := ChecklistItemUser.Count;
+            if NumberOfAssignees = 1 then
+                if ChecklistItemUser.FindFirst() then
+                    Assignee := ChecklistItemUser."User ID";
+        end;
+
+        case NumberOfAssignees of
+            0:
+                ChecklistItemBuffer."Assigned To" := 'No one';
+            1:
+                ChecklistItemBuffer."Assigned To" := Assignee;
+            else
+                ChecklistItemBuffer."Assigned To" := 'Multiple';
+        end;
     end;
 
     local procedure GetExpectedDurationText(ExpectedDuration: Duration): Text
@@ -360,15 +465,20 @@ codeunit 1996 "Checklist Banner"
         exit(ChecklistItemBuffer.Status = ChecklistItemBuffer.Status::Completed);
     end;
 
-    local procedure RunLink(var ChecklistItemBuffer: Record "Checklist Item Buffer")
+    local procedure RunLink(var ChecklistItemBuffer: Record "Checklist Item Buffer"; IsLastChecklistItem: Boolean)
     var
         ChecklistItemStatus: Enum "Checklist Item Status";
     begin
         OpenLink(ChecklistItemBuffer.Link);
 
-        UpdateChecklistItemUserStatus(ChecklistItemBuffer, UserId(), ChecklistItemStatus::Completed);
+        if IsLastChecklistItem then
+            ChecklistItemStatus := ChecklistItemStatus::Started
+        else
+            ChecklistItemStatus := ChecklistItemStatus::Completed;
 
-        ChecklistItemBuffer.Status := ChecklistItemBuffer.Status::Completed;
+        UpdateChecklistItemUserStatus(ChecklistItemBuffer, UserId(), ChecklistItemStatus);
+
+        ChecklistItemBuffer.Status := ChecklistItemStatus;
         ChecklistItemBuffer.Modify();
     end;
 
@@ -489,16 +599,44 @@ codeunit 1996 "Checklist Banner"
                 end;
     end;
 
-    local procedure GetCustomDimensionsForChecklistItemStatusUpdate(var Dimensions: Dictionary of [Text, Text]; OldStatus: Enum "Checklist Item Status"; NewStatus: Enum "Checklist Item Status")
+    local procedure GetChecklistItemStatusDimensionsInDefaultLanguage(OldStatus: Enum "Checklist Item Status"; NewStatus: Enum "Checklist Item Status"; var OldStatusInDefaultLanguage: Text; var NewStatusInDefaultLanguage: Text)
+    var
+        Language: Codeunit Language;
+        CurrentLanguageId: Integer;
     begin
-        Dimensions.Add('Old status', Format(OldStatus));
-        Dimensions.Add('New status', Format(NewStatus));
+        CurrentLanguageId := GlobalLanguage;
+        GlobalLanguage(Language.GetDefaultApplicationLanguageId());
+
+        OldStatusInDefaultLanguage := Format(OldStatus);
+        NewStatusInDefaultLanguage := Format(NewStatus);
+
+        GlobalLanguage(CurrentLanguageId);
     end;
 
-    local procedure GetCustomDimensionsForUserChecklistStatusUpdate(var Dimensions: Dictionary of [Text, Text]; OldStatus: Enum "Checklist Status"; NewStatus: Enum "Checklist Status")
+    local procedure GetCustomDimensionsForChecklistItemStatusUpdate(var Dimensions: Dictionary of [Text, Text]; OldStatus: Text; NewStatus: Text)
     begin
-        Dimensions.Add('Old status', Format(OldStatus));
-        Dimensions.Add('New status', Format(NewStatus));
+        Dimensions.Add('OldStatus', OldStatus);
+        Dimensions.Add('NewStatus', NewStatus);
+    end;
+
+    local procedure GetUserChecklistStatusDimensionsInDefaultLanguage(OldStatus: Enum "Checklist Status"; NewStatus: Enum "Checklist Status"; var OldStatusInDefaultLanguage: Text; var NewStatusInDefaultLanguage: Text)
+    var
+        Language: Codeunit Language;
+        CurrentLanguageId: Integer;
+    begin
+        CurrentLanguageId := GlobalLanguage;
+        GlobalLanguage(Language.GetDefaultApplicationLanguageId());
+
+        OldStatusInDefaultLanguage := Format(OldStatus);
+        NewStatusInDefaultLanguage := Format(NewStatus);
+
+        GlobalLanguage(CurrentLanguageId);
+    end;
+
+    local procedure GetCustomDimensionsForUserChecklistStatusUpdate(var Dimensions: Dictionary of [Text, Text]; OldStatus: Text; NewStatus: Text)
+    begin
+        Dimensions.Add('Old status', OldStatus);
+        Dimensions.Add('New status', NewStatus);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetRoleCenterBannerPartID', '', true, true)]

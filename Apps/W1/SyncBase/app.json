@@ -4,13 +4,13 @@
     "publisher":  "Microsoft",
     "brief":  "_Exclude_SyncBaseApp_",
     "description":  "_Exclude_SyncBaseApp_",
-    "version":  "18.0.0.0",
-    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
-    "help": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "version":  "18.1.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "help":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo": "ExtensionLogo.png",
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "ExtensionLogo.png",
     "dependencies":  [
 
                      ],
@@ -19,5 +19,5 @@
                     ],
     "platform":  "18.0.0.0",
     "showMyCode":  false,
-    "application":  "18.0.0.0"
+    "application":  "18.1.0.0"
 }

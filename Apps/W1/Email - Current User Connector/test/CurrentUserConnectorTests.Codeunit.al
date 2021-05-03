@@ -12,6 +12,7 @@ codeunit 139750 "Current User Connector Tests"
         Any: Codeunit Any;
         Assert: Codeunit "Library Assert";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+        CurrentUserTok: Label 'Current User', MaxLength = 250;
 
     [Test]
     [HandlerFunctions('CurrentUserCreateModalPageHandler')]
@@ -136,6 +137,9 @@ codeunit 139750 "Current User Connector Tests"
 
         // [GIVEN] The current user account is registered
         CurrentUserConnector.RegisterAccount(EmailAccount);
+
+        Assert.AreEqual('testemail@test.com', EmailAccount."Email Address", 'Wrong email address on the created account');
+        Assert.AreEqual(CurrentUserTok, EmailAccount.Name, 'Wrong name on the created account');
 
         // [GIVEN] Send test email is invoked on the current user account
         EmailAccounts.OpenView();

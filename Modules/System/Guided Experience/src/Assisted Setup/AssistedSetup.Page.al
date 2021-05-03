@@ -98,7 +98,6 @@ page 1801 "Assisted Setup"
                     Caption = 'Translated Name';
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name translated locally.';
-                    Visible = false;
 
                     trigger OnDrillDown()
                     var
@@ -212,7 +211,7 @@ page 1801 "Assisted Setup"
     var
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
     begin
-        TranslatedNameValue := GuidedExperienceImpl.GetTranslatedTitle("Guided Experience Type"::"Assisted Setup", "Object Type to Run", "Object ID to Run");
+        TranslatedNameValue := GuidedExperienceImpl.GetTranslationForField(Rec, FieldNo(Title));
         NameIndent := 1;
         NameEmphasize := false;
     end;

@@ -55,4 +55,14 @@ codeunit 18598 "Tax Base Test Publishers"
     procedure InsertVoucherCreditAccountNoWithLocationCode(VoucherType: Enum "Gen. Journal Template Type"; LocationCode: Code[20]; var AccountNo: Code[20])
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    procedure CreateTDSSetupStale(var TDSSection: Code[10]; var Vendor: Record Vendor)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure CreateGenJournalLineWithTDSStale(var GenJournalLine: Record "Gen. Journal Line"; var Vendor: Record Vendor; var TDSSection: Code[10])
+    begin
+    end;
 }

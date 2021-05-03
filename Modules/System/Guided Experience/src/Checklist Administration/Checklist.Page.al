@@ -54,6 +54,11 @@ page 1993 Checklist
                     ApplicationArea = All;
                     ToolTip = 'Specifies the completition requirements of the checklist item.';
                 }
+                field("Assigned To"; "Assigned To")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which users or roles the checklist item is assigned to.';
+                }
                 field("Order ID"; "Order ID")
                 {
                     ApplicationArea = All;

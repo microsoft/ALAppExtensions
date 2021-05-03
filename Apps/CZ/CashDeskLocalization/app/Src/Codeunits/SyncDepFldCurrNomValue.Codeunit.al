@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31127 "Sync.Dep.Fld-CurrNomValue CZP"
 {
+    Permissions = tabledata "Currency Nominal Value" = rimd,
+                  tabledata "Currency Nominal Value CZP" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';
