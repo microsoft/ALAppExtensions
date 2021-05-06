@@ -26,6 +26,7 @@ pageextension 18007 "GST Item Card Ext" extends "Item Card"
             }
             field("Price Exclusive of Tax"; Rec."Price Exclusive of Tax")
             {
+                Visible = false;
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies whether price inclusive of tax feature is applicable or not.';
             }

@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-pageextension 132588 AssistedSetupVisibleTransName extends "Assisted Setup"
+pageextension 132586 AssistedSetupVisibleTransName extends "Assisted Setup"
 {
     layout
     {

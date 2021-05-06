@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the C5 2012 Data Migration extension.",
     "description":  "Tests for the C5 2012 Data Migration extension.",
-    "version":  "18.0.0.0",
+    "version":  "18.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=859310",
@@ -16,13 +16,13 @@
                              "id":  "3d5b2137-eeeb-4014-8489-41d37f8fd4c3",
                              "name":  "C5 2012 Data Migration",
                              "publisher":  "Microsoft",
-                             "version":  "18.0.0.0"
+                             "version":  "18.1.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "18.0.0.0"
+                             "version":  "18.1.0.0"
                          }
                      ],
     "screenshots":  [
@@ -41,5 +41,5 @@
                  ],
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "18.0.0.0"
+    "application":  "18.1.0.0"
 }

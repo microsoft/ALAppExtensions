@@ -7,7 +7,7 @@ pageextension 18394 "GST Posted Trans. Shipment Ext" extends "Posted Transfer Sh
             Field("Time of Removal"; Rec."Time of Removal")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Sepecifies the time of removal.';
+                ToolTip = 'Specifies the time of removal.';
             }
             field("Mode of Transport"; Rec."Mode of Transport")
             {

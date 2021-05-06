@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Provides functionality to use the printer's email address to send print jobs to the printer.",
     "description":  "Provides functionality to use the printer's email address to send print jobs to the printer.",
-    "version":  "18.0.0.0",
+    "version":  "18.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -27,11 +27,11 @@
                          "to":  2655
                      },
                      {
-                        "from":  5650,
-                        "to":  5660
+                         "from":  5650,
+                         "to":  5660
                      }
                  ],
     "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/",
-    "application":  "18.0.0.0",
-    "showMyCode": true
+    "application":  "18.1.0.0",
+    "showMyCode":  true
 }

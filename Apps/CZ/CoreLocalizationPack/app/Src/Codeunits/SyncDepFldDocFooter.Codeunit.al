@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31157 "Sync.Dep.Fld-DocFooter CZL"
 {
+    Permissions = tabledata "Document Footer" = rimd,
+                  tabledata "Document Footer CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

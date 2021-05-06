@@ -1,6 +1,8 @@
 #pragma warning disable AL0432
 codeunit 31203 "Sync.Dep.Fld-ConstSymbol CZL"
 {
+    Permissions = tabledata "Constant Symbol" = rimd,
+                  tabledata "Constant Symbol CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '18.0';

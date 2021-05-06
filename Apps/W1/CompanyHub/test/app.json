@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Company Hub Tests.",
     "description":  "Company Hub Tests.",
-    "version":  "18.0.0.0",
+    "version":  "18.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?LinkId=847985",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2135559",
@@ -12,18 +12,18 @@
     "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/",
     "logo":  "ExtensionLogo.png",
     "dependencies":  [
-                        {
-                            "id":  "c512d720-63b9-4b26-b062-a0c09b4ed322",
-                            "name":  "Company Hub",
-                            "publisher":  "Microsoft",
-                            "version":  "18.0.0.0"
-                        },
-                        {
-                            "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-                            "name":  "Library Assert",
-                            "publisher":  "Microsoft",
-                            "version":  "18.0.0.0"
-                        }
+                         {
+                             "id":  "c512d720-63b9-4b26-b062-a0c09b4ed322",
+                             "name":  "Company Hub",
+                             "publisher":  "Microsoft",
+                             "version":  "18.1.0.0"
+                         },
+                         {
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "name":  "Library Assert",
+                             "publisher":  "Microsoft",
+                             "version":  "18.1.0.0"
+                         }
                      ],
     "screenshots":  [
 
@@ -31,5 +31,5 @@
     "platform":  "18.0.0.0",
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "18.0.0.0"
+    "application":  "18.1.0.0"
 }

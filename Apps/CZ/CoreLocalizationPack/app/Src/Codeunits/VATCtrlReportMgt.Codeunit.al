@@ -1186,6 +1186,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             repeat
                 TempVATEntry.Init();
                 TempVATEntry := VATEntry;
+                OnBeforeInsertTempVATEntryForForPeriod(TempVATEntry);
                 TempVATEntry.Insert();
             until VATEntry.Next() = 0;
     end;
@@ -1206,6 +1207,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                 if not SkipVATEntry(TempGlobalCopyVATEntry) then begin
                     TempVATEntry.Init();
                     TempVATEntry := TempGlobalCopyVATEntry;
+                    OnBeforeInsertTempVATEntryForStatementLine(TempVATEntry, VATStatementLine);
                     TempVATEntry.Insert();
                 end;
             until TempGlobalCopyVATEntry.Next() = 0;
@@ -1245,6 +1247,16 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeModifyVATCtrlReportBufferForExport(var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary; VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertTempVATEntryForForPeriod(var TempVATEntry: Record "VAT Entry" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertTempVATEntryForStatementLine(var TempVATEntry: Record "VAT Entry" temporary; VATStatementLine: Record "VAT Statement Line")
     begin
     end;
 }

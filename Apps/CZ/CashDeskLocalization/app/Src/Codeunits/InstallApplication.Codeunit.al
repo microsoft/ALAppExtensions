@@ -624,6 +624,9 @@ codeunit 31054 "Install Application CZP"
     begin
         InitCashDeskSourceCode();
         InitCashDeskReportSelections();
+#if not CLEAN17
+        RecreateWorkflowEvents();
+#endif
 
         DataClassEvalHandlerCZP.ApplyEvaluationClassificationsForPrivacy();
         UpgradeTag.SetAllUpgradeTags();
@@ -685,4 +688,18 @@ codeunit 31054 "Install Application CZP"
         CashDeskRepSelectionsCZP.Validate("Report ID", ReportID);
         CashDeskRepSelectionsCZP.Insert();
     end;
+#if not CLEAN17
+
+    local procedure RecreateWorkflowEvents()
+    var
+        WorkflowEvent: Record "Workflow Event";
+        WorkflowEventHandling: Codeunit "Workflow Event Handling";
+    begin
+        WorkflowEvent.SetRange("Table ID", Database::"Cash Document Header");
+        if not WorkflowEvent.IsEmpty() then begin
+            WorkflowEvent.DeleteAll();
+            WorkflowEventHandling.CreateEventsLibrary();
+        end;
+    end;
+#endif
 }

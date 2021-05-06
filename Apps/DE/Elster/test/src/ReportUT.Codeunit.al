@@ -179,6 +179,59 @@ codeunit 148164 "Elster Report UT"
             Format(VATEntry.Base, 0, '<Sign><Integer>'),
             LibraryXPathXMLReader.GetXmlElementValue('//ns:Anmeldungssteuern/ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz50'),
             'Kz50');
+
+        // Tear down
+        VATStatementName.Delete(true);
+
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageHandler')]
+    procedure CreateXMLFile_KZ21Order()
+    var
+        VATEntry: Record "VAT Entry";
+        VATStatementName: Record "VAT Statement Name";
+        VATStatementLine: Record "VAT Statement Line";
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        TempResultedXMLBuffer: Record "XML Buffer" temporary;
+        DocInStream: InStream;
+        VATProdPostingGroup: Code[20];
+    begin
+        // [SCENARIO 394388] Report 11016 "Create XML-File VAT Adv.Notif." exports "Kz21" after "Kz10" and before "Kz22"
+        Initialize();
+
+        // [GIVEN] VAT Statement setup for "Kz21"
+        VATProdPostingGroup := LibraryUtility.GenerateGUID();
+        CreateVATStatementName(VATStatementName);
+        CreateVATStatementLine(VATStatementName, '21', VATStatementLine."Amount Type"::Base, VATProdPostingGroup);
+        // [GIVEN] Posted VAT Entry for "Kz21"
+        MockVATEntry(VATEntry, VATProdPostingGroup);
+        // [GIVEN] Sales VAT Advance notification setup for "Kz10", "Kz21" and "Kz22"
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif, SalesVATAdvanceNotif.Period::Month, VATStatementName.Name);
+        SalesVATAdvanceNotif.Validate("Corrected Notification", true); // for "Kz10"
+        SalesVATAdvanceNotif.Validate("Documents Submitted Separately", true); // for "Kz22"
+        SalesVATAdvanceNotif.Modify(true);
+
+        // [WHEN] Run "Create XML File" action from sales VAT advance notification
+        Report.Run(Report::"Create XML-File VAT Adv.Notif.", false, false, SalesVATAdvanceNotif);
+
+        // [THEN] XML file has been generated with the following nodes in order:
+        // [THEN] "Anmeldungssteuern/Steuerfall/Umsatzsteuervoranmeldung/Kz10"
+        // [THEN] "Anmeldungssteuern/Steuerfall/Umsatzsteuervoranmeldung/Kz21"
+        // [THEN] "Anmeldungssteuern/Steuerfall/Umsatzsteuervoranmeldung/Kz22"
+        SalesVATAdvanceNotif.CalcFields("XML Submission Document");
+        SalesVATAdvanceNotif."XML Submission Document".CreateInStream(DocInStream);
+        TempXMLBuffer.LoadFromStream(DocInStream);
+        Assert.IsTrue(TempXMLBuffer.FindNodesByXPath(TempResultedXMLBuffer, 'Anmeldungssteuern/Steuerfall/Umsatzsteuervoranmeldung/Kz10'), '');
+        TempResultedXMLBuffer.Reset();
+        TempResultedXMLBuffer.Next();
+        TempResultedXMLBuffer.TestField(Name, 'Kz21');
+        TempResultedXMLBuffer.Next();
+        TempResultedXMLBuffer.TestField(Name, 'Kz22');
+
+        // Tear down
+        VATStatementName.Delete(true);
     end;
 
     local procedure Initialize()

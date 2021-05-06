@@ -376,12 +376,12 @@ report 11016 "Create XML-File VAT Adv.Notif."
 
     local procedure AddUseData(var XmlRootElem: XmlElement; var XmlNameSpace: Text)
     var
+        TempNameValueBuffer: Record "Name/Value Buffer" temporary;
         XmlElemNew: XmlElement;
-        i: Integer;
-        AmtToUse: Decimal;
-        TaxAmtText: Text[30];
         NotificationVersion: Text[2];
     begin
+        if TaxAmount[39] < 0 then
+            Error(ErrorKeyFigureErr, Format(39));
         if ("Sales VAT Advance Notif."."Starting Date" <= DMY2Date(31, 12, 2020)) then begin
             if not AddElement(XmlRootElem, XmlElemNew, 'Anmeldungssteuern', '', XmlNameSpace) then
                 exit;
@@ -456,6 +456,12 @@ report 11016 "Create XML-File VAT Adv.Notif."
         if "Sales VAT Advance Notif."."Corrected Notification" then
             if not AddElement(XmlRootElem, XmlElemNew, 'Kz10', '1', XmlNameSpace) then
                 exit;
+        FillLineAmountsBuffer(TempNameValueBuffer);
+        if TempNameValueBuffer.Get(21) then begin
+            if not AddElement(XmlRootElem, XmlElemNew, 'Kz' + Format(TempNameValueBuffer.ID), TempNameValueBuffer.Value, XmlNameSpace) then
+                exit;
+            TempNameValueBuffer.Delete();
+        end;
         if "Sales VAT Advance Notif."."Documents Submitted Separately" then
             if not AddElement(XmlRootElem, XmlElemNew, 'Kz22', '1', XmlNameSpace) then
                 exit;
@@ -465,30 +471,11 @@ report 11016 "Create XML-File VAT Adv.Notif."
         if "Sales VAT Advance Notif."."Offset Amount of Refund" then
             if not AddElement(XmlRootElem, XmlElemNew, 'Kz29', '1', XmlNameSpace) then
                 exit;
-        if TaxAmount[39] < 0 then
-            Error(ErrorKeyFigureErr, Format(39));
-        for i := 21 to 100 do begin
-            TaxAmtText := '';
-            case i of
-                21, 35, 41, 42, 43, 44, 45, 46, 48, 49, 50, 51, 52, 54, 55, 57, 60, 68, 73, 76, 77, 78, 81, 84, 86, 89, 91, 93, 94, 95, 97:
-                    AmtToUse := TaxBase[i];
-                else
-                    AmtToUse := TaxAmount[i];
-            end;
-            if (AmtToUse <> 0) or
-               (i = 83)
-            then begin
-                case i of
-                    21, 35, 41, 42, 43, 44, 45, 46, 48, 49, 50, 51, 52, 57, 60, 68, 73, 76, 77, 78, 81, 84, 86, 89, 91, 93, 94, 95, 97:
-                        TaxAmtText := Format(AmtToUse, 0, '<Sign><Integer>');
-                    36, 37, 39, 47, 53, 54, 55, 58, 59, 61, 62, 63, 64, 65, 66, 67, 69, 74, 79, 80, 83, 85, 96, 98:
-                        TaxAmtText := Format(AmtToUse, 0, '<precision,2:2><Sign><Integer><Decimals><comma,.>');
-                end;
-                if TaxAmtText <> '' then
-                    if not AddElement(XmlRootElem, XmlElemNew, 'Kz' + Format(i), TaxAmtText, XmlNameSpace) then
-                        exit;
-            end;
-        end;
+        if TempNameValueBuffer.FindSet() then
+            repeat
+                if not AddElement(XmlRootElem, XmlElemNew, 'Kz' + Format(TempNameValueBuffer.ID), TempNameValueBuffer.Value, XmlNameSpace) then
+                    exit;
+            until TempNameValueBuffer.Next() = 0;
     end;
 
     local procedure CheckAddressData(FieldID: Integer; TextToCheck: Text[250]; MaxLength: Integer)
@@ -632,6 +619,40 @@ report 11016 "Create XML-File VAT Adv.Notif."
     begin
         XmlNodeNew := XmlElement.Create(Name, NameSpace, NodeText);
         exit(XmlNodeCurr.Add(XmlNodeNew));
+    end;
+
+    local procedure FillLineAmountsBuffer(var TempNameValueBuffer: Record "Name/Value Buffer" temporary)
+    var
+        i: Integer;
+        AmtToUse: Decimal;
+        TaxAmtText: Text[30];
+    begin
+        TempNameValueBuffer.Reset();
+        TempNameValueBuffer.DeleteAll();
+        for i := 21 to 100 do begin
+            TaxAmtText := '';
+            case i of
+                21, 35, 41, 42, 43, 44, 45, 46, 48, 49, 50, 51, 52, 54, 55, 57, 60, 68, 73, 76, 77, 78, 81, 84, 86, 89, 91, 93, 94, 95, 97:
+                    AmtToUse := TaxBase[i];
+                else
+                    AmtToUse := TaxAmount[i];
+            end;
+            if (AmtToUse <> 0) or
+               (i = 83)
+            then begin
+                case i of
+                    21, 35, 41, 42, 43, 44, 45, 46, 48, 49, 50, 51, 52, 57, 60, 68, 73, 76, 77, 78, 81, 84, 86, 89, 91, 93, 94, 95, 97:
+                        TaxAmtText := Format(AmtToUse, 0, '<Sign><Integer>');
+                    36, 37, 39, 47, 53, 54, 55, 58, 59, 61, 62, 63, 64, 65, 66, 67, 69, 74, 79, 80, 83, 85, 96, 98:
+                        TaxAmtText := Format(AmtToUse, 0, '<precision,2:2><Sign><Integer><Decimals><comma,.>');
+                end;
+                if TaxAmtText <> '' then begin
+                    TempNameValueBuffer.ID := i;
+                    TempNameValueBuffer.Value := TaxAmtText;
+                    TempNameValueBuffer.Insert();
+                end;
+            end;
+        end;
     end;
 
     [IntegrationEvent(false, false)]

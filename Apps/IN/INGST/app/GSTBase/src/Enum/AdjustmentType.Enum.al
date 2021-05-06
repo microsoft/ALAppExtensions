@@ -4,9 +4,9 @@ enum 18001 "Adjustment Type"
     {
         Caption = ' ';
     }
-    value(1; "Lost/Distroyed")
+    value(1; "Lost/Destroyed")
     {
-        Caption = 'Lost/Distroyed';
+        Caption = 'Lost/Destroyed';
     }
     value(2; Consumed)
     {

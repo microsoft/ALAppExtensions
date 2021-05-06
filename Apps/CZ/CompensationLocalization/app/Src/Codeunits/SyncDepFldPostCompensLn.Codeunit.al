@@ -2,6 +2,8 @@
 codeunit 31293 "Sync.Dep.Fld-PostCompensLn CZC"
 {
     Access = Internal;
+    Permissions = tabledata "Posted Credit Line" = rimd,
+                  tabledata "Posted Compensation Line CZC" = rimd;
 
     [EventSubscriber(ObjectType::Table, Database::"Posted Credit Line", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenamePostedCreditLine(var Rec: Record "Posted Credit Line"; var xRec: Record "Posted Credit Line")

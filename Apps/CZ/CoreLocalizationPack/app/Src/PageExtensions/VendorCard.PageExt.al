@@ -25,6 +25,29 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
                 Importance = Additional;
             }
         }
+        addafter("Balance (LCY)")
+        {
+            field(BalanceOfCustomerCZL; BalanceAsCustomer)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Balance As Customer (LCY)';
+                Editable = false;
+                Enabled = BalanceOfCustomerEnabled;
+                ToolTip = 'Specifies the customer''s balance which is connected with certain vendor';
+
+                trigger OnDrillDown()
+                var
+                    DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
+                    CustLedgerEntry: Record "Cust. Ledger Entry";
+                begin
+                    DetailedCustLedgEntry.SetRange("Customer No.", Customer."No.");
+                    Rec.CopyFilter("Global Dimension 1 Filter", DetailedCustLedgEntry."Initial Entry Global Dim. 1");
+                    Rec.CopyFilter("Global Dimension 2 Filter", DetailedCustLedgEntry."Initial Entry Global Dim. 2");
+                    Rec.CopyFilter("Currency Filter", DetailedCustLedgEntry."Currency Code");
+                    CustLedgerEntry.DrillDownOnEntries(DetailedCustLedgEntry);
+                end;
+            }
+        }
         addlast(Invoicing)
         {
             field("Transaction Type CZL"; Rec."Transaction Type CZL")
@@ -123,4 +146,22 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        if Customer.Get(Rec.GetLinkedCustomerCZL()) then begin
+            Customer.CalcFields("Balance (LCY)");
+            BalanceAsCustomer := Customer."Balance (LCY)";
+            BalanceOfCustomerEnabled := true;
+        end else begin
+            BalanceAsCustomer := 0;
+            BalanceOfCustomerEnabled := false;
+        end;
+    end;
+
+    var
+        Customer: Record Customer;
+        BalanceAsCustomer: Decimal;
+        [InDataSet]
+        BalanceOfCustomerEnabled: Boolean;
 }

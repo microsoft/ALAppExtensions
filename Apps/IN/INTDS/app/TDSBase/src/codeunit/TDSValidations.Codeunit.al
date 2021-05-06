@@ -5,7 +5,8 @@ codeunit 18688 "TDS Validations"
         PANNOErr: Label 'The deductee P.A.N. No. is invalid.';
         PANReferenceNoErr: Label 'The P.A.N. Reference No. field must be filled for the Vendor No. %1', Comment = '%1 = Vendor No.';
         PANReferenceCustomerErr: Label 'The P.A.N. Reference No. field must be filled for the Customer No. %1', Comment = '%1 = Customer No.';
-        AccountingPeriodErr: Label 'The Posting Date doesn''t lie in Tax Accounting Period', Locked = true;
+        AccountingPeriodErr: Label 'The Posting Date doesn''t lie in Tax Accounting Period';
+        TDSReverseErr: Label 'You cannot reverse the transaction, because it has already been reversed.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforePostGenJnlLine', '', false, false)]
     local procedure CheckPANNoValidations(var GenJournalLine: Record "Gen. Journal Line")
@@ -131,5 +132,79 @@ codeunit 18688 "TDS Validations"
         TDSEntry."Invoice Amount" := InitialInvoiceAmount + Abs(GSTAmount);
         TDSEntry.Modify();
         TDSPreviewHandler.UpdateInvoiceAmountOnTempTDSEntry(TDSEntry);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Library", 'OnAfterGetTotalTDSIncludingSheCess', '', false, false)]
+    local procedure OnAfterGetTotalTDSIncludingSheCess(DocumentNo: Code[20]; var AccountNo: Code[20]; var EntryNo: Integer; var TotalTDSEncludingSheCess: Decimal)
+    var
+        TDSEntry: Record "TDS Entry";
+    begin
+        TDSEntry.Reset();
+        TDSEntry.SetCurrentKey("Document No.", "TDS Paid");
+        TDSEntry.SetRange("Document No.", DocumentNo);
+        TDSEntry.SetRange("TDS Paid", false);
+        if TDSEntry.FindFirst() then begin
+            AccountNo := TDSEntry."Account No.";
+            EntryNo := TDSEntry."Entry No.";
+            TotalTDSEncludingSheCess := TDSEntry."Total TDS Including SHE CESS";
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Library", 'OnGetTDSAmount', '', false, false)]
+    local procedure GetTDSAmount(GenJournalLine: Record "Gen. Journal Line"; var Amount: Decimal)
+    var
+        TaxTransactionValue: Record "Tax Transaction Value";
+        TDSSetup: Record "TDS Setup";
+    begin
+        if not TDSSetup.Get() then
+            exit;
+
+        TaxTransactionValue.SetRange("Tax Type", TDSSetup."Tax Type");
+        TaxTransactionValue.SetRange("Tax Record ID", GenJournalLine.RecordId);
+        TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);
+        TaxTransactionValue.SetFilter(Percent, '<>%1', 0);
+        if TaxTransactionValue.FindSet() then
+            repeat
+                Amount += Abs(TaxTransactionValue.Amount);
+            until TaxTransactionValue.Next() = 0;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Library", 'OnAfterReverseTDSEntry', '', false, false)]
+    local procedure ReverseTDSEntry(EntryNo: Integer; TransactionNo: Integer)
+    var
+        TDSEntry: Record "TDS Entry";
+        NewTDSEntry: Record "TDS Entry";
+    begin
+        if not TDSEntry.Get(EntryNo) then
+            exit;
+
+        if TDSEntry."Reversed by Entry No." <> 0 then
+            Error(TDSReverseErr);
+
+        NewTDSEntry := TDSEntry;
+        NewTDSEntry."Entry No." := 0;
+        NewTDSEntry."TDS Base Amount" := -NewTDSEntry."TDS Base Amount";
+        NewTDSEntry."TDS Amount" := -NewTDSEntry."TDS Amount";
+        NewTDSEntry."Surcharge Base Amount" := -NewTDSEntry."Surcharge Base Amount";
+        NewTDSEntry."Surcharge Amount" := -NewTDSEntry."Surcharge Amount";
+        NewTDSEntry."TDS Amount Including Surcharge" := -NewTDSEntry."TDS Amount Including Surcharge";
+        NewTDSEntry."eCESS Amount" := -NewTDSEntry."eCESS Amount";
+        NewTDSEntry."SHE Cess Amount" := -NewTDSEntry."SHE Cess Amount";
+        NewTDSEntry."Total TDS Including SHE CESS" := -NewTDSEntry."Total TDS Including SHE CESS";
+        NewTDSEntry."Bal. TDS Including SHE CESS" := -NewTDSEntry."Bal. TDS Including SHE CESS";
+        NewTDSEntry."Invoice Amount" := -NewTDSEntry."Invoice Amount";
+        NewTDSEntry."Remaining TDS Amount" := -NewTDSEntry."Remaining TDS Amount";
+        NewTDSEntry."Remaining Surcharge Amount" := -NewTDSEntry."Remaining Surcharge Amount";
+        NewTDSEntry."Reversed Entry No." := TDSEntry."Entry No.";
+        NewTDSEntry.Reversed := true;
+        NewTDSEntry."Transaction No." := TransactionNo;
+        if TDSEntry."Reversed Entry No." <> 0 then begin
+            TDSEntry."Reversed Entry No." := NewTDSEntry."Entry No.";
+            NewTDSEntry."Reversed by Entry No." := TDSEntry."Entry No.";
+        end;
+        TDSEntry."Reversed by Entry No." := NewTDSEntry."Entry No.";
+        TDSEntry.Reversed := true;
+        TDSEntry.Modify();
+        NewTDSEntry.Insert();
     end;
 }

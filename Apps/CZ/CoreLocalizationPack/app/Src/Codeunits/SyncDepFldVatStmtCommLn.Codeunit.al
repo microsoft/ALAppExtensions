@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31186 "Sync.Dep.Fld-VatStmtCommLn CZL"
 {
+    Permissions = tabledata "VAT Statement Comment Line" = rimd,
+                  tabledata "VAT Statement Comment Line CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

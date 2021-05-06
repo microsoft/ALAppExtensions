@@ -4,12 +4,19 @@ codeunit 4014 "Notification Handler"
         UpgradeAvailableServiceTypeTxt: Label 'UpgradeAvailable', Locked = true;
         TenantCleanedUpServiceTypeTxt: Label 'TenantCleanedUp', Locked = true;
         CleanupNotificationMsg: Label 'Cloud Migration has been automatically disabled due to prolonged inactivity.';
+        IntelligentCloudTok: Label 'IntelligentCloud', Locked = true;
+        RecievedWebhookNotificationMsg: Label 'Recieved Webhook Notification from Cloud Migration Service. Subscription ID %1', Locked = true;
+        ProcessingServiceNotificationMsg: Label 'Processing Service Notification', Locked = true;
+        ProcessingNotificationMsg: Label 'Processing Notification', Locked = true;
+        HybridReplicationStatusMsg: Label 'Parsing Replication Summary. Status is: %1', Locked = true;
+        ProcessingCleanupNotificationMsg: Label 'Recieved Cleanup Notification from Replication Service. Disabling Cloud Migration.', Locked = true;
 
     [EventSubscriber(ObjectType::Table, Database::"Webhook Notification", 'OnAfterInsertEvent', '', false, false)]
     local procedure HandleIntelligentCloudOnInsertWebhookNotification(var Rec: Record "Webhook Notification"; RunTrigger: Boolean)
     var
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
+        Session.LogMessage('0000EUX', StrSubstNo(RecievedWebhookNotificationMsg, Rec."Subscription ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
         SelectLatestVersion();
 
         case true of
@@ -27,6 +34,8 @@ codeunit 4014 "Notification Handler"
         NotificationStream: InStream;
         NotificationText: Text;
     begin
+        Session.LogMessage('0000EUY', ProcessingNotificationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+
         WebhookNotification.Notification.CreateInStream(NotificationStream);
         NotificationStream.ReadText(NotificationText);
 
@@ -41,6 +50,7 @@ codeunit 4014 "Notification Handler"
         NotificationText: Text;
         ServiceType: Text;
     begin
+        Session.LogMessage('0000EUZ', ProcessingServiceNotificationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
         WebhookNotification.Notification.CreateInStream(NotificationStream);
         NotificationStream.ReadText(NotificationText);
         JsonManagement.InitializeObject(NotificationText);
@@ -104,8 +114,10 @@ codeunit 4014 "Notification Handler"
         if JsonManagement.GetStringPropertyValueByName('ReplicationType', Value) and (HybridReplicationSummary.ReplicationType = 0) then
             if not Evaluate(HybridReplicationSummary.ReplicationType, Value) then;
 
-        if JsonManagement.GetStringPropertyValueByName('Status', Value) then
+        if JsonManagement.GetStringPropertyValueByName('Status', Value) then begin
+            Session.LogMessage('0000EV0', StrSubstNo(HybridReplicationStatusMsg, Format(Value)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
             if not Evaluate(HybridReplicationSummary.Status, Value) then;
+        end;
 
         if JsonManagement.GetStringPropertyValueByName('Details', Details) or JsonManagement.GetStringPropertyValueByName('Code', MessageCode) then begin
             if MessageCode <> '' then begin
@@ -145,6 +157,7 @@ codeunit 4014 "Notification Handler"
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         SourceProduct: Text;
     begin
+        Session.LogMessage('0000EV1', ProcessingCleanupNotificationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
         HybridCloudManagement.GetNotificationSource(SubscriptionID, SourceProduct);
         HybridCloudManagement.DisableMigration(SourceProduct, CleanupNotificationMsg, false);
     end;

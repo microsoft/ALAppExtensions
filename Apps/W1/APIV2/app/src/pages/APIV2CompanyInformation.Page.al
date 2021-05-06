@@ -69,9 +69,20 @@ page 30011 "APIV2 - Company Information"
                 {
                     Caption = 'Website';
                 }
-                field(taxRegistrationNumber; "VAT Registration No.")
+                field(taxRegistrationNumber; TaxRegistrationNumber)
                 {
                     Caption = 'Tax Registration No.';
+
+                    trigger OnValidate()
+                    var
+                        EnterpriseNoFieldRef: FieldRef;
+                    begin
+                        if IsEnterpriseNumber(EnterpriseNoFieldRef) then begin
+                            EnterpriseNoFieldRef.Validate(TaxRegistrationNumber);
+                            EnterpriseNoFieldRef.Record().SetTable(Rec);
+                        end else
+                            Rec.Validate("VAT Registration No.", TaxRegistrationNumber);
+                    end;
                 }
                 field(currencyCode; LCYCurrencyCode)
                 {
@@ -119,19 +130,16 @@ page 30011 "APIV2 - Company Information"
         SetCalculatedFields();
     end;
 
-    trigger OnNewRecord(BelowxRec: Boolean)
-    begin
-        ClearCalculatedFields();
-    end;
-
     var
         LCYCurrencyCode: Code[10];
+        TaxRegistrationNumber: Text[50];
         FiscalYearStart: Date;
 
     local procedure SetCalculatedFields()
     var
         AccountingPeriod: Record "Accounting Period";
         GeneralLedgerSetup: Record "General Ledger Setup";
+        EnterpriseNoFieldRef: FieldRef;
     begin
         GeneralLedgerSetup.Get();
         LCYCurrencyCode := GeneralLedgerSetup."LCY Code";
@@ -139,11 +147,23 @@ page 30011 "APIV2 - Company Information"
         AccountingPeriod.SetRange("New Fiscal Year", true);
         if AccountingPeriod.FindLast() then
             FiscalYearStart := AccountingPeriod."Starting Date";
+
+        if IsEnterpriseNumber(EnterpriseNoFieldRef) then
+            TaxRegistrationNumber := EnterpriseNoFieldRef.Value()
+        else
+            TaxRegistrationNumber := Rec."VAT Registration No.";
     end;
 
-    local procedure ClearCalculatedFields()
+    procedure IsEnterpriseNumber(var EnterpriseNoFieldRef: FieldRef): Boolean
+    var
+        CompanyInformationRecordRef: RecordRef;
     begin
-        Clear(SystemId);
+        CompanyInformationRecordRef.GetTable(Rec);
+        if CompanyInformationRecordRef.FieldExist(11310) then begin
+            EnterpriseNoFieldRef := CompanyInformationRecordRef.Field(11310);
+            exit((EnterpriseNoFieldRef.Type = FieldType::Text) and (EnterpriseNoFieldRef.Name = 'Enterprise No.'));
+        end else
+            exit(false);
     end;
 }
 

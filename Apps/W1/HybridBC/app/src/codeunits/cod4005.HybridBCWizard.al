@@ -3,6 +3,9 @@ codeunit 4005 "Hybrid BC Wizard"
     var
         ProductIdTxt: Label 'DynamicsBC', Locked = true;
         ProductNameTxt: Label 'Dynamics 365 Business Central', Locked = true;
+        ProductNamePlaceHolderTxt: Label '%1 current version', Comment = '%1 is name of the product - Dynamics 365 Business Central';
+        VersionPlaceHolderTxt: Label '%1 (v.%2)', Locked = true;
+        ProductDescriptionTxt: Label 'Use this option if your on-premises deployment of %1 is the same major version as this %1 online environment. Because they are the same version, the migration will only copy the data and not run any upgrade processes. Also, if you run the migration multiple times, the tool will synchronize the delta changes and not the full data set.', Comment = '%1 is name of the product - Dynamics 365 Business Central';
 
     procedure ProductId(): Text[250]
     begin
@@ -10,8 +13,15 @@ codeunit 4005 "Hybrid BC Wizard"
     end;
 
     procedure ProductName(): Text[250]
+    var
+        AppModuleInfo: ModuleInfo;
+        ProductDisplayName: Text;
     begin
-        exit(CopyStr(ProductNameTxt, 1, 250));
+        ProductDisplayName := StrSubstNo(ProductNamePlaceHolderTxt, ProductNameTxt);
+        if NavApp.GetCurrentModuleInfo(AppModuleInfo) then
+            ProductDisplayName := StrSubstNo(VersionPlaceHolderTxt, ProductDisplayName, AppModuleInfo.AppVersion.Major);
+
+        exit(CopyStr(ProductDisplayName, 1, 250));
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanRunDiagnostic', '', false, false)]
@@ -86,13 +96,20 @@ codeunit 4005 "Hybrid BC Wizard"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductDescription', '', false, false)]
+    local procedure HandleGetHybridProductDescription(ProductId: Text; var ProductDescription: Text)
+    begin
+        if ProductId = ProductIdTxt then
+            ProductDescription := StrSubstNo(ProductDescriptionTxt, ProductNameTxt);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductName', '', false, false)]
     local procedure HandleGetHybridProductName(ProductId: Text; var ProductName: Text)
     begin
         if not CanHandle(ProductId) then
             exit;
 
-        ProductName := ProductNameTxt;
+        ProductName := ProductName();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Companies IC", 'OnBeforeCreateCompany', '', false, false)]

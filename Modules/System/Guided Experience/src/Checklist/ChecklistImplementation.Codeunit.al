@@ -15,14 +15,15 @@ codeunit 1993 "Checklist Implementation"
                     tabledata "User Personalization" = r;
 
     var
-        ChecklistItemInsertedLbl: Label 'A new checklist item has been inserted.', Locked = true;
-        ChecklistItemDeletedLbl: Label 'A checklist item has been deleted.', Locked = true;
+        ChecklistItemInsertedLbl: Label 'Checklist item inserted.', Locked = true;
+        ChecklistItemDeletedLbl: Label 'Checklist item deleted.', Locked = true;
         ChangeBannerVisibilityLbl: Label 'Looking for your checklist to set up Business Central?';
-        UserResurfacedBannerLbl: Label 'The checklist banner has been resurfaced by a user';
-        ChecklistInitializedLbl: Label 'The checklist has been initialized', Locked = true;
+        UserResurfacedBannerLbl: Label 'Checklist banner resurfaced.', Locked = true;
+        ChecklistInitializedLbl: Label 'Checklist banner initialized.', Locked = true;
         MicrosoftLearnLongTitleLbl: Label 'Find training on Microsoft Learn', MaxLength = 53, Comment = '*Onboarding Checklist*';
         MicrosoftLearnShortTitleLbl: Label 'Microsoft Learn', MaxLength = 34, Comment = '*Onboarding Checklist*';
         MicrosoftLearnDescriptionLbl: Label 'Explore the free e-learning material for Business Central on the Microsoft Learn site in a new browser tab.', MaxLength = 180, Comment = '*Onboarding Checklist*';
+        ShowChecklistLbl: Label 'Show checklist on the role center';
 
     procedure Insert(GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; Link: Text[250]; ShouldEveryoneComplete: Boolean; OrderID: Integer; var TempAllProfile: Record "All Profile" temporary; var TempUsers: Record User temporary)
     var
@@ -160,6 +161,8 @@ codeunit 1993 "Checklist Implementation"
     procedure MarkChecklistSetupAsDone(CallerModuleInfo: ModuleInfo)
     var
         ChecklistSetup: Record "Checklist Setup";
+        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
+        Dimensions: Dictionary of [Text, Text];
     begin
         if not IsCallerModuleBaseApp(CallerModuleInfo) then
             exit;
@@ -172,14 +175,15 @@ codeunit 1993 "Checklist Implementation"
             ChecklistSetup.Insert();
         end;
 
-        Session.LogMessage('0000E9U', ChecklistInitializedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', 'Checklist');
+        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
+        Session.LogMessage('0000E9U', ChecklistInitializedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
     end;
 
     procedure InitializeGuidedExperienceItems(CallerModuleInfo: ModuleInfo)
     var
         GuidedExperience: Codeunit "Guided Experience";
     begin
-        if not IsCallerModuleBaseApp(CallerModuleInfo) then
+        if not (IsCallerModuleBaseApp(CallerModuleInfo) or IsCallerModuleSystemApp(CallerModuleInfo)) then
             exit;
 
         GuidedExperience.OnRegisterAssistedSetup();
@@ -202,27 +206,40 @@ codeunit 1993 "Checklist Implementation"
         ChangeBannerVisibilityNotification.Message(ChangeBannerVisibilityLbl);
         ChangeBannerVisibilityNotification.Scope := NotificationScope::LocalScope;
         ChangeBannerVisibilityNotification.SetData('UserName', UserId());
-        ChangeBannerVisibilityNotification.AddAction('Show checklist on the role center', Codeunit::"Checklist Implementation", 'SetChecklistVisibility');
+        ChangeBannerVisibilityNotification.AddAction(ShowChecklistLbl, Codeunit::"Checklist Implementation", 'SetChecklistVisibility');
         ChangeBannerVisibilityNotification.Send();
     end;
 
     procedure SetChecklistVisibility(ChangeVisibilityNotification: Notification)
     var
+        UserPersonalization: Record "User Personalization";
+        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
+        Dimensions: Dictionary of [Text, Text];
         UserName: Text;
         SessionSettings: SessionSettings;
     begin
         UserName := ChangeVisibilityNotification.GetData('UserName');
-        SetChecklistVisibility(UserName, true);
+        SetChecklistVisibility(UserName, true, UserPersonalization);
 
-        Session.LogMessage('0000EIS', UserResurfacedBannerLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', 'Checklist');
+        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
+        GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
+        Session.LogMessage('0000EIS', UserResurfacedBannerLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
 
         SessionSettings.RequestSessionUpdate(false);
     end;
 
     procedure SetChecklistVisibility(UserName: Text; Visible: Boolean)
     var
-        UserChecklistStatus: Record "User Checklist Status";
         UserPersonalization: Record "User Personalization";
+    begin
+        if UserPersonalization.Get(UserSecurityId()) then;
+
+        SetChecklistVisibility(UserName, Visible, UserPersonalization);
+    end;
+
+    local procedure SetChecklistVisibility(UserName: Text; Visible: Boolean; var UserPersonalization: Record "User Personalization")
+    var
+        UserChecklistStatus: Record "User Checklist Status";
         UserNameCode: Code[50];
     begin
         UserNameCode := CopyStr(UserName, 1, 50);
@@ -581,17 +598,15 @@ codeunit 1993 "Checklist Implementation"
         exit(CallerModuleInfo.Id = '437dbf0e-84ff-417a-965d-ed2bb9650972');
     end;
 
-    procedure GetGuidedExperienceItemDimensions(var Dimensions: Dictionary of [Text, Text]; Title: Text[2048]; ShortTitle: Text[1024]; Description: Text[1024]; ExtensionName: Text[250])
+    local procedure IsCallerModuleSystemApp(CallerModuleInfo: ModuleInfo): Boolean
     begin
-        Dimensions.Add('Checklist item title', Title);
-        Dimensions.Add('Checklist item short title', ShortTitle);
-        Dimensions.Add('Checklist item description', Description);
-        Dimensions.Add('Checklist item extension', ExtensionName);
+        exit(CallerModuleInfo.Id = '63ca2fa4-4f03-4f2b-a480-172fef340d3f');
     end;
 
     local procedure LogMessageOnDatabaseEvent(Code: Code[300]; Tag: Text; Message: Text)
     var
         GuidedExperienceItem: Record "Guided Experience Item";
+        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         Dimensions: Dictionary of [Text, Text];
     begin
         GuidedExperienceItem.SetRange(Code, Code);
@@ -600,8 +615,8 @@ codeunit 1993 "Checklist Implementation"
 
         GuidedExperienceItem.CalcFields("Extension Name");
 
-        GetGuidedExperienceItemDimensions(Dimensions, GuidedExperienceItem.Title, GuidedExperienceItem."Short Title",
-            GuidedExperienceItem.Description, GuidedExperienceItem."Extension Name");
+        GuidedExperienceImpl.AddGuidedExperienceItemDimensions(Dimensions, GuidedExperienceItem, 'Checklist');
+        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
         Session.LogMessage(Tag, Message, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
             TelemetryScope::All, Dimensions);
     end;

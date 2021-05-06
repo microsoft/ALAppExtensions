@@ -3,6 +3,8 @@
 codeunit 31301 "Sync.Dep.Fld-Classif. Code CZF"
 {
     Access = Internal;
+    Permissions = tabledata "Classification Code" = rimd,
+                  tabledata "Classification Code CZF" = rimd;
 
     [EventSubscriber(ObjectType::Table, Database::"Classification Code", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenameClassificationCode(var Rec: Record "Classification Code"; var xRec: Record "Classification Code")

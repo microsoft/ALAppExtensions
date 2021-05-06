@@ -33,97 +33,6 @@ Holds information about draft emails and email that are about to be sent.
 Holds information about the sent emails.
 
 
-## Email Account (Codeunit 8894)
-
- Provides functionality to work with email accounts.
- 
-
-### GetAllAccounts (Method) <a name="GetAllAccounts"></a> 
-
- Gets all of the email accounts registered in Business Central.
- 
-
-#### Syntax
-```
-procedure GetAllAccounts(LoadLogos: Boolean; var Accounts: Record "Email Account" temporary)
-```
-#### Parameters
-*LoadLogos ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
-
-Flag, used to determine whether to load the logos for the accounts.
-
-*Accounts ([Record "Email Account" temporary]())* 
-
-Out parameter holding the email accounts.
-
-### GetAllAccounts (Method) <a name="GetAllAccounts"></a> 
-
- Gets all of the email accounts registered in Business Central.
- 
-
-#### Syntax
-```
-procedure GetAllAccounts(var Accounts: Record "Email Account" temporary)
-```
-#### Parameters
-*Accounts ([Record "Email Account" temporary]())* 
-
-Out parameter holding the email accounts.
-
-### IsAnyAccountRegistered (Method) <a name="IsAnyAccountRegistered"></a> 
-
- Checks if there is at least one email account registered in Business Central.
- 
-
-#### Syntax
-```
-procedure IsAnyAccountRegistered(): Boolean
-```
-#### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
-
-True if there is any account registered in the system, otherwise - false.
-### ValidateEmailAddress (Method) <a name="ValidateEmailAddress"></a> 
-The email address "%1" is not valid.
-
-
- Validates an email address and throws an error if it is invalid.
- 
-
-If the provided email address is an empty string, the function will do nothing.
-
-#### Syntax
-```
-[TryFunction]
-procedure ValidateEmailAddress(EmailAddress: Text)
-```
-#### Parameters
-*EmailAddress ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
-
-The email address to validate.
-
-### ValidateEmailAddress (Method) <a name="ValidateEmailAddress"></a> 
-The email address "%1" is not valid.
-
-
- Validates an email address and throws an error if it is invalid.
- 
-
-#### Syntax
-```
-[TryFunction]
-procedure ValidateEmailAddress(EmailAddress: Text; AllowEmptyValue: Boolean)
-```
-#### Parameters
-*EmailAddress ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
-
-The email address to validate.
-
-*AllowEmptyValue ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
-
-Indicates whether to skip the validation if the provided email address is empty.
-
-
 ## Email Connector (Interface)
 
  An e-mail connector interface used to creating e-mail accounts and sending an e-mail.
@@ -242,6 +151,152 @@ procedure GetDescription(): Text[250]
 
 A more detailed desctiption of the connector.
 
+## Email Account (Codeunit 8894)
+
+ Provides functionality to work with email accounts.
+ 
+
+### GetAllAccounts (Method) <a name="GetAllAccounts"></a> 
+
+ Gets all of the email accounts registered in Business Central.
+ 
+
+#### Syntax
+```
+procedure GetAllAccounts(LoadLogos: Boolean; var Accounts: Record "Email Account" temporary)
+```
+#### Parameters
+*LoadLogos ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Flag, used to determine whether to load the logos for the accounts.
+
+*Accounts ([Record "Email Account" temporary]())* 
+
+Out parameter holding the email accounts.
+
+### GetAllAccounts (Method) <a name="GetAllAccounts"></a> 
+
+ Gets all of the email accounts registered in Business Central.
+ 
+
+#### Syntax
+```
+procedure GetAllAccounts(var Accounts: Record "Email Account" temporary)
+```
+#### Parameters
+*Accounts ([Record "Email Account" temporary]())* 
+
+Out parameter holding the email accounts.
+
+### IsAnyAccountRegistered (Method) <a name="IsAnyAccountRegistered"></a> 
+
+ Checks if there is at least one email account registered in Business Central.
+ 
+
+#### Syntax
+```
+procedure IsAnyAccountRegistered(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if there is any account registered in the system, otherwise - false.
+### ValidateEmailAddress (Method) <a name="ValidateEmailAddress"></a> 
+The email address "%1" is not valid.
+
+
+ Validates an email address and throws an error if it is invalid.
+ 
+
+If the provided email address is an empty string, the function will do nothing.
+
+#### Syntax
+```
+[TryFunction]
+procedure ValidateEmailAddress(EmailAddress: Text)
+```
+#### Parameters
+*EmailAddress ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The email address to validate.
+
+### ValidateEmailAddress (Method) <a name="ValidateEmailAddress"></a> 
+The email address "%1" is not valid.
+
+
+ Validates an email address and throws an error if it is invalid.
+ 
+
+#### Syntax
+```
+[TryFunction]
+procedure ValidateEmailAddress(EmailAddress: Text; AllowEmptyValue: Boolean)
+```
+#### Parameters
+*EmailAddress ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The email address to validate.
+
+*AllowEmptyValue ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Indicates whether to skip the validation if the provided email address is empty.
+
+### ValidateEmailAddresses (Method) <a name="ValidateEmailAddresses"></a> 
+The email address "%1" is not valid.
+
+
+ Validates email addresses and displays an error if any are invalid.
+ 
+
+If the provided email address is an empty string, the function will do nothing.
+
+#### Syntax
+```
+[TryFunction]
+procedure ValidateEmailAddresses(EmailAddresses: Text)
+```
+#### Parameters
+*EmailAddresses ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The email addresses to validate, separated by semicolons.
+
+### ValidateEmailAddresses (Method) <a name="ValidateEmailAddresses"></a> 
+The email address "%1" is not valid.
+
+
+ Validates email addresses and displays an error if any are invalid.
+ 
+
+#### Syntax
+```
+[TryFunction]
+procedure ValidateEmailAddresses(EmailAddresses: Text; AllowEmptyValue: Boolean)
+```
+#### Parameters
+*EmailAddresses ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The email addresses to validate, separated by semicolons.
+
+*AllowEmptyValue ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Indicates whether to skip the validation if no email address is provided.
+
+### OnAfterValidateEmailAddress (Event) <a name="OnAfterValidateEmailAddress"></a> 
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnAfterValidateEmailAddress(EmailAddress: Text; AllowEmptyValue: Boolean)
+```
+#### Parameters
+*EmailAddress ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+
+
+*AllowEmptyValue ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+
+
+
 ## Email (Codeunit 8901)
 
  Provides functionality to create and send emails.
@@ -356,6 +411,8 @@ The ID of the email account to use for sending the email.
 The email connector to use for sending the email.
 
 ### Send (Method) <a name="Send"></a> 
+The email message has already been queued.
+
 
  Sends the email in the current session.
  
@@ -376,6 +433,8 @@ The email message to use as payload.
 
 True if the email was successfully sent; otherwise - false.
 ### Send (Method) <a name="Send"></a> 
+The email message has already been queued.
+
 
  Sends the email in the current session.
  
@@ -398,6 +457,8 @@ The scenario to use in order to determine the email account to use for sending t
 
 True if the email was successfully sent; otherwise - false.
 ### Send (Method) <a name="Send"></a> 
+The email message has already been queued.
+
 
  Sends the email in the current session.
  
@@ -422,6 +483,8 @@ The email account to use for sending the email.
 
 True if the email was successfully sent; otherwise - false
 ### Send (Method) <a name="Send"></a> 
+The email message has already been queued.
+
 
  Sends the email in the current session.
  
@@ -611,6 +674,54 @@ The email connector to use on the page.
 *[Enum "Email Action"]()*
 
 The action that the user performed with the email message.
+### GetSentEmailsForRecord (Method) <a name="GetSentEmailsForRecord"></a> 
+
+ Gets the sent emails related to a record.
+
+
+#### Syntax
+```
+procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid)ResultSentEmails: Record "Sent Email" temporary
+```
+#### Parameters
+*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The table ID of the record.
+
+*SystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The system ID of the record.
+
+#### Return Value
+*[Record "Sent Email" temporary]()*
+
+The sent email related to a record.
+### AddRelation (Method) <a name="AddRelation"></a> 
+
+ Adds a relation between an email message and a record.
+
+
+#### Syntax
+```
+procedure AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type")
+```
+#### Parameters
+*EmailMessage ([Codeunit "Email Message"]())* 
+
+The email message for which to create the relation.
+
+*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The table ID of the record.
+
+*SystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The system ID of the record.
+
+*RelationType ([Enum "Email Relation Type"]())* 
+
+The relation type to set.
+
 ### OnGetTestEmailBody (Event) <a name="OnGetTestEmailBody"></a> 
 
  Integration event to override the default email body for test messages.
@@ -618,6 +729,7 @@ The action that the user performed with the email message.
 
 #### Syntax
 ```
+[Obsolete('The event will be removed. Subscribe to OnGetBodyForTestEmail instead', '17.3')]
 [IntegrationEvent(false, false)]
 procedure OnGetTestEmailBody(Connector: Enum "Email Connector"; var Body: Text)
 ```
@@ -629,6 +741,71 @@ The connector used to send the email message.
 *Body ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
 Out param to set the email body to a new value.
+
+### OnShowSource (Event) <a name="OnShowSource"></a> 
+
+ Integration event to show an email source record.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnShowSource(SourceTableId: Integer; SourceSystemId: Guid; var IsHandled: Boolean)
+```
+#### Parameters
+*SourceTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+
+
+*SourceSystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The system ID of the source record.
+
+*IsHandled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Out parameter to set if the event was handled.
+
+### OnGetBodyForTestEmail (Event) <a name="OnGetBodyForTestEmail"></a> 
+
+ Integration event to override the default email body for test messages.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnGetBodyForTestEmail(Connector: Enum "Email Connector"; AccountId: Guid; var Body: Text)
+```
+#### Parameters
+*Connector ([Enum "Email Connector"]())* 
+
+The connector used to send the email message.
+
+*AccountId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The account ID of the email account used to send the email message.
+
+*Body ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Out param to set the email body to a new value.
+
+### OnAfterSendEmail (Event) <a name="OnAfterSendEmail"></a> 
+
+ Integration event that notifies senders about whether their email was successfully sent in the background.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnAfterSendEmail(MessageId: Guid; Status: Boolean)
+```
+#### Parameters
+*MessageId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The ID of the email in the queue.
+
+*Status ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+True if the message was successfully sent.
 
 
 ## Email Message (Codeunit 8904)
@@ -970,6 +1147,19 @@ procedure Attachments_GetContentId(): Text[40]
 *[Text[40]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 The content ID of the current attachment.
+### Attachments_GetLength (Method) <a name="Attachments_GetLength"></a> 
+
+ Gets the content length of the current attachment.
+ 
+
+#### Syntax
+```
+procedure Attachments_GetLength(): Integer
+```
+#### Return Value
+*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+
+The content length of the current attachment.
 ### Attachments_IsInline (Method) <a name="Attachments_IsInline"></a> 
 
  Checks if the attachment is inline the message body.
@@ -1138,6 +1328,8 @@ procedure EnableLookupMode()
  
 
 
+## Email Relation Picker (Page 8910)
+
 ## Email Editor (Page 13)
 
  A page to create, edit and send e-mails.
@@ -1170,20 +1362,16 @@ procedure EnableLookupMode()
  
 
 
+## Email Scenarios FactBox (Page 8895)
+
+ Lists of all scenarios assigned to an account.
+ 
+
+
 ## Email Scenarios for Account (Page 8894)
 
  Displays the scenarios that could be linked to a provided e-mail account.
  
-
-### GetSelectedScenarios (Method) <a name="GetSelectedScenarios"></a> 
-#### Syntax
-```
-procedure GetSelectedScenarios(var Result: Record "Email Account Scenario")
-```
-#### Parameters
-*Result ([Record "Email Account Scenario"]())* 
-
-
 
 
 ## Email User-Specified Address (Page 8884)
@@ -1193,7 +1381,7 @@ procedure GetSelectedScenarios(var Result: Record "Email Account Scenario")
 
 ### GetEmailAddress (Method) <a name="GetEmailAddress"></a> 
 
- Gets the email address that has been entered.
+ Gets the email address(es) that has been entered.
  
 
 #### Syntax
@@ -1203,7 +1391,7 @@ procedure GetEmailAddress(): Text
 #### Return Value
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
-An email address
+Email address(es)
 ### SetEmailAddress (Method) <a name="SetEmailAddress"></a> 
 
  Sets the inital value to be displayed.
@@ -1222,6 +1410,24 @@ The value to be prefilled
 ## Email Connector (Enum 8889)
 
  Enum that holds all of the available email connectors.
+ 
+
+
+## Email Relation Type (Enum 8908)
+
+ Represent the type of relation between an email and a source record.
+ 
+
+### Primary Source (value: 0)
+
+
+ Primary source of an email. There should only be one primary source for an email.
+ 
+
+### Related Entity (value: 1)
+
+
+ Related entity of an email. An email can have many record relations of this type.
  
 
 

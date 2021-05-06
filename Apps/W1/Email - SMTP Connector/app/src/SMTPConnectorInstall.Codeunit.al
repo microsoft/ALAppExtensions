@@ -98,6 +98,9 @@ codeunit 4515 "SMTP Connector Install"
         if OldSMTPAccount.Authentication = OldSMTPAccount.Authentication::NTLM then
             NewSMTPAccount.Authentication := NewSMTPAccount.Authentication::NTLM;
 
+        if OldSMTPAccount.Authentication = OldSMTPAccount.Authentication::OAuth2 then
+            NewSMTPAccount.Authentication := NewSMTPAccount.Authentication::"OAuth 2.0";
+
         // Set Secure Connection 
         NewSMTPAccount."Secure Connection" := OldSMTPAccount."Secure Connection";
 

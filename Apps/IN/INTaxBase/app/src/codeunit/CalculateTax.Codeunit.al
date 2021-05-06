@@ -43,6 +43,16 @@ codeunit 18543 "Calculate Tax"
         OnAfterValidateServiceLineFields(ServiceLine);
     end;
 
+    procedure CallTaxEngineOnFinanceChargeMemoLine(
+            var FinanceChargeMemoLine: Record "Finance Charge Memo Line";
+            var xFinanceChargeMemoLine: Record "Finance Charge Memo Line")
+    begin
+        if (FinanceChargeMemoLine.Amount = 0) and (xFinanceChargeMemoLine.Amount = 0) then
+            exit;
+
+        OnAfterValidateFinChargeMemoLineFields(FinanceChargeMemoLine);
+    end;
+
     //Call General Journal Line Related Use Cases
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Use Case Event Library", 'OnAddUseCaseEventstoLibrary', '', false, false)]
     local procedure OnAddGenJnlLineUseCaseEventstoLibrary()
@@ -135,11 +145,54 @@ codeunit 18543 "Calculate Tax"
             ServiceHeader."Currency Factor");
     end;
 
+    //Call GST Finance Charge Memo Line Related Use Cases
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Use Case Event Library", 'OnAddUseCaseEventstoLibrary', '', false, false)]
+    local procedure OnAddFinanceUseCaseEventstoLibrary()
+    var
+        UseCaseEventLibrary: Codeunit "Use Case Event Library";
+    begin
+        UseCaseEventLibrary.AddUseCaseEventToLibrary('CallTaxEngineOnFinanceChargeMemoLine', Database::"Finance Charge Memo Line", 'Calculate Tax on Finance Charge Memo Line');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Tax", 'OnAfterValidateFinChargeMemoLineFields', '', false, false)]
+    local procedure HandleFinanceChargeMemoUseCase(var FinanceChargeMemoLine: Record "Finance Charge Memo Line")
+    var
+        FinanceChargeMemoHeader: Record "Finance Charge Memo Header";
+        UseCaseExecution: Codeunit "Use Case Execution";
+    begin
+        if not FinanceChargeMemoHeader.Get(FinanceChargeMemoLine."Finance Charge Memo No.") then
+            exit;
+
+        UseCaseExecution.HandleEvent(
+            'CallTaxEngineOnFinanceChargeMemoLine',
+            FinanceChargeMemoLine,
+            FinanceChargeMemoHeader."Currency Code",
+            UpdateCurrencyFactor(FinanceChargeMemoHeader));
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforePostVAT', '', false, false)]
     local procedure OnBeforePostVAT(VATPostingSetup: Record "VAT Posting Setup"; var IsHandled: Boolean)
     begin
         if (VATPostingSetup."VAT Bus. Posting Group" = '') and (VATPostingSetup."VAT Prod. Posting Group" = '') then
             IsHandled := true;
+    end;
+
+    local procedure UpdateCurrencyFactor(FinanceChargeMemoHeader: Record "Finance Charge Memo Header"): Decimal
+    var
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+        CurrencyDate: Date;
+        CurrencyFactor: Decimal;
+    begin
+        if FinanceChargeMemoHeader."Currency Code" <> '' then begin
+            if FinanceChargeMemoHeader."Posting Date" <> 0D then
+                CurrencyDate := FinanceChargeMemoHeader."Posting Date"
+            else
+                CurrencyDate := WorkDate();
+
+            CurrencyFactor := CurrencyExchangeRate.ExchangeRate(CurrencyDate, FinanceChargeMemoHeader."Currency Code");
+        end else
+            CurrencyFactor := 0;
+        exit(CurrencyFactor);
     end;
 
     [IntegrationEvent(false, false)]
@@ -159,6 +212,11 @@ codeunit 18543 "Calculate Tax"
 
     [IntegrationEvent(false, false)]
     procedure OnAfterValidateServiceLineFields(var ServiceLine: Record "Service Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnAfterValidateFinChargeMemoLineFields(var FinanceChargeMemoLine: Record "Finance Charge Memo Line")
     begin
     end;
 }

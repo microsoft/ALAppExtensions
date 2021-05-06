@@ -8,6 +8,7 @@ Codeunit 18015 "GST Posting Management"
         GSTAmountFCY: Decimal;
         GSTBaseAmountFCY: Decimal;
         UseCaseID: Guid;
+        GSTTrackingEntryNo: Integer;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Document GL Posting", 'OnPrepareTransValueToPost', '', false, false)]
     local procedure SetUseCaseID(var TempTransValue: Record "Tax Transaction Value")
@@ -70,6 +71,16 @@ Codeunit 18015 "GST Posting Management"
     procedure GetGSTBaseAmountFCY(): Decimal
     begin
         exit(GSTBaseAmountFCY);
+    end;
+
+    procedure SetGSTTrackingEntryNo(EntryNo: Integer)
+    begin
+        GSTTrackingEntryNo := EntryNo;
+    end;
+
+    procedure GetGSTTrackingEntryNo(): Integer
+    begin
+        exit(GSTTrackingEntryNo);
     end;
 }
 

@@ -131,15 +131,4 @@ codeunit 4516 "OAuth2 SMTP Authentication" implements "SMTP Authentication"
     local procedure OnSMTPOAuth2Authenticate(var UserName: Text; var AccessToken: Text; SMTPServer: Text)
     begin
     end;
-
-    [EventSubscriber(ObjectType::Table, Database::"SMTP Account", 'OnBeforeValidateEvent', 'Authentication', false, false)]
-    local procedure OnBeforeValidateSmtpAuthentication(var Rec: Record "SMTP Account")
-    var
-        EnvironmentInformation: Codeunit "Environment Information";
-    begin
-        if (EnvironmentInformation.IsSaaSInfrastructure() and (Rec.Authentication = Rec.Authentication::"OAuth 2.0")) then begin
-            Message(SMTP2NotAvailableMsg);
-            Rec.Authentication := Rec.Authentication::Basic;
-        end;
-    end;
 }

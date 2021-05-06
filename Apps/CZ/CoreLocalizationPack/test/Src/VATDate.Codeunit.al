@@ -22,12 +22,12 @@ codeunit 148054 "VAT Date CZL"
         LibraryService: Codeunit "Library - Service";
         LibraryRandom: Codeunit "Library - Random";
         Assert: Codeunit Assert;
-        DocumentType: Enum "Gen. Journal Document Type";
         AccountType: Enum "Gen. Journal Account Type";
         SalesDocumentType: Enum "Sales Document Type";
         PurchaseDocumentType: Enum "Purchase Document Type";
         ServiceDocumentType: Enum "Service Document Type";
         isInitialized: Boolean;
+        EmptyOrigDocVATDateErr: Label 'Original Document VAT Date must have a value in Gen. Journal Line';
 
     local procedure Initialize();
     var
@@ -39,7 +39,7 @@ codeunit 148054 "VAT Date CZL"
 
         GeneralLedgerSetup.Get();
 #if not CLEAN17
-        GeneralLedgerSetup."Use VAT Date" := false;
+        GeneralLedgerSetup."Use VAT Date" := true;
         GeneralLedgerSetup."Allow VAT Posting From" := 0D;
         GeneralLedgerSetup."Allow VAT Posting To" := 0D;
 #endif
@@ -211,7 +211,7 @@ codeunit 148054 "VAT Date CZL"
 
         // [GIVEN] New Gen. Journal Line created
         LibraryERM.CreateGeneralJnlLine(GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name,
-                        DocumentType::" ", AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(), LibraryRandom.RandDec(1000, 2));
+                        Enum::"Gen. Journal Document Type"::" ", AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(), LibraryRandom.RandDec(1000, 2));
 
         // [WHEN] Validate Posting Date
         GenJournalLine.Validate("Posting Date", LibraryRandom.RandDate(30));
@@ -238,7 +238,7 @@ codeunit 148054 "VAT Date CZL"
 
         // [GIVEN] New Gen. Journal Line created
         LibraryERM.CreateGeneralJnlLine(GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name,
-                        DocumentType::" ", AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(), LibraryRandom.RandDec(1000, 2));
+                        Enum::"Gen. Journal Document Type"::" ", AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(), LibraryRandom.RandDec(1000, 2));
 
         // [WHEN] Validate Posting Date
         GenJournalLine.Validate("Posting Date", LibraryRandom.RandDate(30));
@@ -269,7 +269,7 @@ codeunit 148054 "VAT Date CZL"
 
         // [GIVEN] New balanced Gen. Journal Line created
         LibraryERM.CreateGeneralJnlLineWithBalAcc(GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name,
-                        DocumentType::" ", AccountType::"G/L Account",
+                        Enum::"Gen. Journal Document Type"::" ", AccountType::"G/L Account",
                         LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, GeneralPostingType::Sale),
                         AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(), LibraryRandom.RandDec(1000, 2));
 
@@ -308,7 +308,7 @@ codeunit 148054 "VAT Date CZL"
 
         // [GIVEN] New balanced Gen. Journal Line created
         LibraryERM.CreateGeneralJnlLineWithBalAcc(
-            GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name, DocumentType::" ",
+            GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name, Enum::"Gen. Journal Document Type"::" ",
             AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(),
             AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(),
             LibraryRandom.RandDec(1000, 2));
@@ -357,7 +357,7 @@ codeunit 148054 "VAT Date CZL"
 
         // [GIVEN] New balanced Gen. Journal Line created
         LibraryERM.CreateGeneralJnlLineWithBalAcc(
-            GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name, DocumentType::" ",
+            GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name, Enum::"Gen. Journal Document Type"::" ",
             AccountType::"G/L Account", LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, Enum::"General Posting Type"::Sale),
             AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(), LibraryRandom.RandDec(1000, 2));
 
@@ -369,5 +369,117 @@ codeunit 148054 "VAT Date CZL"
 
         // [THEN] Error occur because VAT period must be open
         Assert.ExpectedError(StrSubstNo(TestClosedFieldErr, VATPeriodCZL."Starting Date"));
+    end;
+
+    [Test]
+    procedure CheckGenJnlLineWithoutOriginalDocVATDateForFinanceChargeMemo()
+    begin
+        // [SCENARIO] The posting of Gen. Journal Line without the Original Doc. VAT Date filled in must not cause an error if the type of document is Finance Charge Memo
+        Initialize();
+
+        // [GIVEN] The Gen. Journal Line without Original Doc. VAT Date has been created
+        CreateGenJournalLineWithoutOriginalDocVATDate(Enum::"Gen. Journal Document Type"::"Finance Charge Memo", -LibraryRandom.RandDec(1000, 2), GenJournalLine);
+
+        // [WHEN] Post created Gen. Journal Line
+        PostGenJournalLine(GenJournalLine);
+
+        // [THEN] Any error regarding empty Original Doc. VAT Date will occur
+    end;
+
+    [Test]
+    procedure CheckGenJnlLineWithoutOriginalDocVATDateForPayment()
+    begin
+        // [SCENARIO] The posting of Gen. Journal Line without the Original Doc. VAT Date filled in must not cause an error if the type of document is Payment
+        Initialize();
+
+        // [GIVEN] The Gen. Journal Line without Original Doc. VAT Date has been created
+        CreateGenJournalLineWithoutOriginalDocVATDate(Enum::"Gen. Journal Document Type"::Payment, LibraryRandom.RandDec(1000, 2), GenJournalLine);
+
+        // [WHEN] Post created Gen. Journal Line
+        PostGenJournalLine(GenJournalLine);
+
+        // [THEN] Any error regarding empty Original Doc. VAT Date will occur
+    end;
+
+    [Test]
+    procedure CheckGenJnlLineWithoutOriginalDocVATDateForRefund()
+    begin
+        // [SCENARIO] The posting of Gen. Journal Line without the Original Doc. VAT Date filled in must not cause an error if the type of document is Refund
+        Initialize();
+
+        // [GIVEN] The Gen. Journal Line without Original Doc. VAT Date has been created
+        CreateGenJournalLineWithoutOriginalDocVATDate(Enum::"Gen. Journal Document Type"::Refund, -LibraryRandom.RandDec(1000, 2), GenJournalLine);
+
+        // [WHEN] Post created Gen. Journal Line
+        PostGenJournalLine(GenJournalLine);
+
+        // [THEN] Any error regarding empty Original Doc. VAT Date will occur
+    end;
+
+    [Test]
+    procedure CheckGenJnlLineWithoutOriginalDocVATDateForReminder()
+    begin
+        // [SCENARIO] The posting of Gen. Journal Line without the Original Doc. VAT Date filled in must not cause an error if the type of document is Reminder
+        Initialize();
+
+        // [GIVEN] The Gen. Journal Line without Original Doc. VAT Date has been created
+        CreateGenJournalLineWithoutOriginalDocVATDate(Enum::"Gen. Journal Document Type"::Reminder, -LibraryRandom.RandDec(1000, 2), GenJournalLine);
+
+        // [WHEN] Post created Gen. Journal Line
+        PostGenJournalLine(GenJournalLine);
+
+        // [THEN] Any error regarding empty Original Doc. VAT Date will occur
+    end;
+
+    [Test]
+    procedure CheckGenJnlLineWithoutOriginalDocVATDateForCreditMemo()
+    begin
+        // [SCENARIO] The posting of Gen. Journal Line without the Original Doc. VAT Date filled in must cause an error if the type of document is Credit Memo
+        Initialize();
+
+        // [GIVEN] The Gen. Journal Line without Original Doc. VAT Date has been created
+        CreateGenJournalLineWithoutOriginalDocVATDate(Enum::"Gen. Journal Document Type"::"Credit Memo", LibraryRandom.RandDec(1000, 2), GenJournalLine);
+
+        // [WHEN] Post created Gen. Journal Line
+        asserterror PostGenJournalLine(GenJournalLine);
+
+        // [THEN] An error regarding empty Original Doc. VAT Date will occur
+        Assert.ExpectedError(EmptyOrigDocVATDateErr);
+    end;
+
+    [Test]
+    procedure CheckGenJnlLineWithoutOriginalDocVATDateForInvoice()
+    begin
+        // [SCENARIO] The posting of Gen. Journal Line without the Original Doc. VAT Date filled in must cause an error if the type of document is Invoice
+        Initialize();
+
+        // [GIVEN] The Gen. Journal Line without Original Doc. VAT Date has been created
+        CreateGenJournalLineWithoutOriginalDocVATDate(Enum::"Gen. Journal Document Type"::Invoice, LibraryRandom.RandDec(1000, 2), GenJournalLine);
+
+        // [WHEN] Post created Gen. Journal Line
+        asserterror PostGenJournalLine(GenJournalLine);
+
+        // [THEN] An error regarding empty Original Doc. VAT Date will occur
+        Assert.ExpectedError(EmptyOrigDocVATDateErr);
+    end;
+
+    local procedure CreateGenJournalLineWithoutOriginalDocVATDate(DocumentType: Enum "Gen. Journal Document Type"; Amount: Decimal; var GenJournalLine2: Record "Gen. Journal Line")
+    begin
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        LibraryERM.CreateGeneralJnlLineWithBalAcc(
+            GenJournalLine2, GenJournalTemplate.Name, GenJournalBatch.Name, DocumentType,
+            AccountType::Vendor, LibraryPurchase.CreateVendorNo(),
+            AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(), Amount);
+
+        GenJournalLine2.Validate("Original Doc. VAT Date CZL", 0D);
+        GenJournalLine2.Modify();
+    end;
+
+    local procedure PostGenJournalLine(GenJournalLine2: Record "Gen. Journal Line")
+    var
+        GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
+    begin
+        GenJnlPostLine.Run(GenJournalLine2);
     end;
 }

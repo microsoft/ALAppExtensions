@@ -1,3 +1,4 @@
+#if not CLEAN18
 page 4001 "Intelligent Cloud Schedule"
 {
     SourceTable = "Intelligent Cloud Setup";
@@ -83,3 +84,4 @@ page 4001 "Intelligent Cloud Schedule"
     var
         NoScheduleTimeMsg: Label 'You must set a schedule time to continue.';
 }
+#endif

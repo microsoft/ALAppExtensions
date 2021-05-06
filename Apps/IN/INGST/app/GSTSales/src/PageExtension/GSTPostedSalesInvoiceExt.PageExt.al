@@ -125,6 +125,22 @@ pageextension 18144 "GST Posted Sales Invoice Ext" extends "Posted Sales Invoice
                 Editable = false;
                 ToolTip = 'Specifies the vehicle number on the sales document.';
             }
+            field("Date of Removal"; Rec."Posting Date")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Date of Removal';
+                ToolTip = 'Specifies the date of removal.';
+            }
+            field("Time of Removal"; Rec."Time of Removal")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the time of removal.';
+            }
+            field("Mode of Transport"; Rec."Mode of Transport")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the transportation mode e.g. by road, by air etc.';
+            }
             field("Vehicle Type"; Rec."Vehicle Type")
             {
                 ApplicationArea = Basic, Suite;

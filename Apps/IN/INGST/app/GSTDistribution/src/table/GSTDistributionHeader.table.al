@@ -68,7 +68,7 @@ table 18203 "GST Distribution Header"
         {
             Caption = 'From Location Code';
             DataClassification = CustomerContent;
-            TableRelation = Location where("GST Input Service Distributor" = filter(true));
+            TableRelation = Location where("GST Input Service Distributor" = const(true));
         }
         field(16; "Dist. Credit Type"; Enum "GST Credit")
         {

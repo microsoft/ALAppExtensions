@@ -109,6 +109,7 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         {
             Caption = 'HSN/SAC Code';
             DataClassification = CustomerContent;
+            Editable = false;
         }
 
         field(18113; Subcontracting; Boolean)

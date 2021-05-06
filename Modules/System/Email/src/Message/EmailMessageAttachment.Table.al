@@ -21,12 +21,13 @@ table 8904 "Email Message Attachment"
             DataClassification = SystemMetadata;
             TableRelation = "Email Message".Id;
         }
-
         field(3; Attachment; Blob)
         {
             DataClassification = CustomerContent;
+            ObsoleteState = Removed;
+            ObsoleteReason = 'Field has been replaced with the media field, Data.';
+            ObsoleteTag = '18.1';
         }
-
         field(4; "Attachment Name"; Text[250])
         {
             DataClassification = CustomerContent;
@@ -50,6 +51,11 @@ table 8904 "Email Message Attachment"
         field(8; Length; Integer)
         {
             DataClassification = SystemMetadata;
+        }
+
+        field(9; Data; Media)
+        {
+            DataClassification = CustomerContent;
         }
     }
 

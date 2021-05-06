@@ -1,6 +1,8 @@
 #pragma warning disable AL0432
 codeunit 31137 "Sync.Dep.Fld-EETCashReg CZL"
 {
+    Permissions = tabledata "EET Cash Register" = rimd,
+                  tabledata "EET Cash Register CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '18.0';

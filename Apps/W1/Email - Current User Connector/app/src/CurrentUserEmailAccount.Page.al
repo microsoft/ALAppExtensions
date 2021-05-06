@@ -149,7 +149,7 @@ page 4500 "Current User Email Account"
         CurrentUserConnector: Codeunit "Current User Connector";
     begin
         if AccountAdded then begin
-            Account."Email Address" := CurrentUserConnector.GetCurrentUsersAccountEmailAddress();
+            Account."Email Address" := CurrentUserConnector.GetCurrentUserEmailAddress();
             Account.Name := CurrentUserConnector.GetCurrentUserAccountName();
             Account."Account Id" := Rec.Id;
             Account.Connector := Enum::"Email Connector"::"Current User";

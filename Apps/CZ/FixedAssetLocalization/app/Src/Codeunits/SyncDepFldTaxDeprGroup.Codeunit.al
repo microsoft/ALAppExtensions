@@ -2,6 +2,8 @@
 codeunit 31299 "Sync.Dep.Fld-TaxDeprGroup CZF"
 {
     Access = Internal;
+    Permissions = tabledata "Depreciation Group" = rimd,
+                  tabledata "Tax Depreciation Group CZF" = rimd;
 
     [EventSubscriber(ObjectType::Table, Database::"Depreciation Group", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenameDepreciationGroup(var Rec: Record "Depreciation Group"; var xRec: Record "Depreciation Group")

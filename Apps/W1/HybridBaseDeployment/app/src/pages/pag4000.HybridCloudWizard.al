@@ -1,7 +1,7 @@
 ﻿page 4000 "Hybrid Cloud Setup Wizard"
 {
-    Caption = 'Data Migration Setup';
-    AdditionalSearchTerms = 'migration,data migration,cloud migration,intelligent,cloud,sync,replication';
+    Caption = 'Cloud Migration Setup';
+    AdditionalSearchTerms = 'migration,data migration,cloud migration,intelligent,cloud,sync,replication,hybrid';
     DeleteAllowed = false;
     InsertAllowed = false;
     LinksAllowed = false;
@@ -9,6 +9,8 @@
     ShowFilter = false;
     SourceTable = "Intelligent Cloud Setup";
     Permissions = tabledata 4003 = rimd;
+    ApplicationArea = All;
+    UsageCategory = Administration;
 
     layout
     {
@@ -137,12 +139,27 @@
                                 else
                                     exit;
 
-
+                                HybridCloudManagement.OnGetHybridProductDescription(TempHybridProductType.ID, SelectedProductDescription);
+                                SelectedProductDescriptionVisible := SelectedProductDescription <> '';
                                 Rec."Product ID" := TempHybridProductType.ID;
 
                                 Rec.Modify();
                                 NextEnabled := true;
                             end;
+                        }
+                    }
+
+                    group("Para2.1.2")
+                    {
+                        Caption = '';
+                        Visible = SelectedProductDescriptionVisible;
+
+                        field(SelectedProductDescription; SelectedProductDescription)
+                        {
+                            ApplicationArea = Basic, Suite;
+                            Editable = false;
+                            MultiLine = true;
+                            ShowCaption = false;
                         }
                     }
                 }
@@ -297,10 +314,12 @@
                     }
                 }
             }
+
             group(Step6)
             {
                 Caption = '';
-                Visible = ScheduleVisible;
+                Visible = false;
+
                 group("Para6.1")
                 {
                     Caption = 'Schedule Data Migration';
@@ -441,6 +460,7 @@
                     }
                 }
             }
+
             group(StepFinish)
             {
                 Caption = '';
@@ -516,9 +536,6 @@
                             Error(CannotEnableReplicationForCompanyErr);
                     end;
 
-                    if Step = Step::Schedule then
-                        ScheduleReplication();
-
                     NextStep(false);
                 end;
             }
@@ -534,8 +551,18 @@
 
                 trigger OnAction()
                 var
+                    HybridCompany: Record "Hybrid Company";
                     AssistedSetup: Codeunit "Assisted Setup";
+                    TelemetryDimensions: Dictionary of [Text, Text];
                 begin
+                    HybridCompany.SetRange(Replicate, true);
+
+                    TelemetryDimensions.Add('Category', IntelligentCloudTok);
+                    TelemetryDimensions.Add('NumberOfCompanies', Format(HybridCompany.Count(), 0, 9));
+                    TelemetryDimensions.Add('TotalMigrationSize', Format(HybridCompany.GetTotalMigrationSize(), 0, 9));
+
+                    Session.LogMessage('0000EUR', CompletedCloudMigrationSetupMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
+
                     AssistedSetup.Complete(Page::"Hybrid Cloud Setup Wizard");
                     Rec.Validate("Replication User", UserId());
                     Rec.Modify();
@@ -643,14 +670,17 @@
         HybridNotSetupQst: Label 'Your Cloud Migration environment has not been set up.\\Are you sure that you want to exit?';
         NoProductSelectedErr: Label 'You must select a product to continue.';
         NoCompaniesSelectedErr: Label 'You must select at least one company to replicate to continue.';
-        NoScheduleTimeErr: Label 'You must set a schedule time to continue.';
         DoneWithSignupMsg: Label 'Redirecting to SaaS Business Central solution.';
         NotificationIdTxt: Label 'ce917438-506c-4724-9b01-13c1b860e851', Locked = true;
         RunWizardPermissionErr: Label 'You do not have permissions to execute this task. Contact your system administrator.';
-        CannotEnableReplicationForCompanyErr: Label 'The current company may not be enabled for replication.';
+        CannotEnableReplicationForCompanyErr: Label 'You must start the cloud migration from a different company than where you are currently signed in. Change the company to a different one.';
         OpenCloudMigrationPageQst: Label 'The migration has now been set up.\\ Would you like to open the Cloud Migration Management page to manage your data migrations?';
         BlankProductIdErr: Label 'The ID of the specified product is blank. If you see this message again, contact technical support.';
         BlankProductFoundTxt: Label 'Blank product ID found for %1.', Locked = true, Comment = '%1 - Record that was selected';
+        SelectedProductDescription: Text;
+        SelectedProductDescriptionVisible: Boolean;
+        IntelligentCloudTok: Label 'IntelligentCloud', Locked = true;
+        CompletedCloudMigrationSetupMsg: Label 'Completed Cloud Migration Setup.';
 
     local procedure NextStep(Backwards: Boolean)
     var
@@ -692,8 +722,7 @@
                     end else
                         ShowProductSpecificSettingsPage();
                 end;
-            Step::Schedule:
-                ShowScheduleStep(Backwards);
+            Step::Schedule,
             Step::Done:
                 ShowDoneStep(Backwards);
         end;
@@ -787,16 +816,6 @@
         NextEnabled := true;
     end;
 
-    local procedure ShowScheduleStep(Backwards: Boolean)
-
-    begin
-        if not Backwards then
-            HybridCloudManagement.OnShowScheduleStep(TempHybridProductType);
-        ResetWizardControls();
-        ScheduleVisible := true;
-        NextEnabled := true;
-    end;
-
     local procedure ShowDoneStep(Backwards: Boolean)
     begin
         if not Backwards then
@@ -816,17 +835,6 @@
         sendNotification.Message := DoneWithSignupMsg;
         sendNotification.Scope := NotificationScope::LocalScope;
         sendNotification.Send();
-    end;
-
-    local procedure ScheduleReplication()
-    begin
-        if "Replication Enabled" and (Format("Time to Run") = '') then
-            Error(NoScheduleTimeErr);
-        if IsChanged then begin
-            SetReplicationSchedule();
-            IsChanged := false;
-        end;
-        NextEnabled := true;
     end;
 
     local procedure ValidateSqlConnectionString()

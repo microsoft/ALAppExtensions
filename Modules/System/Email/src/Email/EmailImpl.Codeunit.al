@@ -250,6 +250,7 @@ codeunit 8900 "Email Impl"
     var
         EmailRelatedRecord: Record "Email Related Record";
         Email: Codeunit Email;
+        EmailRelationPicker: Page "Email Relation Picker";
         IsHandled: Boolean;
     begin
         EmailRelatedRecord.SetRange("Email Message Id", EmailMessageId);
@@ -258,10 +259,35 @@ codeunit 8900 "Email Impl"
         if not EmailRelatedRecord.FindFirst() then
             Error(SourceRecordErr);
 
+        if EmailRelatedRecord.Count() > 1 then begin
+            FilterRemovedSourceRecords(EmailRelatedRecord);
+            EmailRelationPicker.SetTableView(EmailRelatedRecord);
+            EmailRelationPicker.LookupMode(true);
+            if EmailRelationPicker.RunModal() <> Action::LookupOK then
+                exit;
+            EmailRelationPicker.GetRecord(EmailRelatedRecord);
+        end;
+
         Email.OnShowSource(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", IsHandled);
 
         if not IsHandled then
             Error(SourceRecordErr);
+    end;
+
+    procedure FilterRemovedSourceRecords(var EmailRelatedRecord: Record "Email Related Record")
+    var
+        AllObj: Record AllObj;
+        SourceReference: RecordRef;
+    begin
+        repeat
+            if AllObj.Get(AllObj."Object Type"::Table, EmailRelatedRecord."Table Id") then begin
+                SourceReference.Open(EmailRelatedRecord."Table Id");
+                if SourceReference.GetBySystemId(EmailRelatedRecord."System Id") then
+                    EmailRelatedRecord.Mark(true);
+                SourceReference.Close();
+            end;
+        until EmailRelatedRecord.Next() = 0;
+        EmailRelatedRecord.MarkedOnly(true);
     end;
 
     procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid) ResultSentEmails: Record "Sent Email" temporary;
@@ -308,13 +334,18 @@ codeunit 8900 "Email Impl"
     end;
 
     procedure AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type")
+    begin
+        AddRelation(EmailMessage.GetId(), TableId, SystemId, RelationType);
+    end;
+
+    procedure AddRelation(EmailMessageId: Guid; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type")
     var
         EmailRelation: Record "Email Related Record";
     begin
-        if EmailRelation.Get(TableId, SystemId, EmailMessage.GetId()) then
+        if EmailRelation.Get(TableId, SystemId, EmailMessageId) then
             exit;
 
-        EmailRelation."Email Message Id" := EmailMessage.GetId();
+        EmailRelation."Email Message Id" := EmailMessageId;
         EmailRelation."Table Id" := TableId;
         EmailRelation."System Id" := SystemId;
         EmailRelation."Relation Type" := RelationType;
