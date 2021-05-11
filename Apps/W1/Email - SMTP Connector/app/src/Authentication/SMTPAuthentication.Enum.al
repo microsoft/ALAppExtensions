@@ -34,4 +34,12 @@ enum 4511 "SMTP Authentication" implements "SMTP Authentication"
     {
         Implementation = "SMTP Authentication" = "OAuth2 SMTP Authentication";
     }
+
+    /// <summary>
+    /// NTLM SMTP authentication.
+    /// </summary>
+    value(5; NTLM)
+    {
+        Implementation = "SMTP Authentication" = "NTLM SMTP Authentication";
+    }
 }
