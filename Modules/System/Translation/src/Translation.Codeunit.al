@@ -110,6 +110,34 @@ codeunit 3711 Translation
     end;
 
     /// <summary>
+    /// Copies the translation for a field from on record to another record on a persisted (non temporary) record.
+    /// </summary>
+    /// <param name="FromRecVariant">The record from which the translations are copied.</param>
+    /// <param name="ToRecVariant">The record to which the translations are copied.</param>
+    /// <error>If the RecVariant parameter is the type Record, and it is temporary.</error>
+    /// <error>If the RecVariant parameter is the type Record, and the table number is 0.</error>
+    /// <error>If the FromRecVariant parameter is the type Record, the ToRecVariant parameter is the type Record and they are differnt.</error> 
+    procedure Copy(FromRecVariant: Variant; ToRecVariant: Variant)
+    begin
+        TranslationImplementation.Copy(FromRecVariant, ToRecVariant);
+    end;
+
+    /// <summary>
+    /// Copies the translation for a field from on record to another record on a persisted (non temporary) record.
+    /// </summary>
+    /// <param name="FromRecVariant">The record from which the translations are copied.</param>
+    /// <param name="ToRecVariant">The record to which the translations are copied.</param>
+    /// <param name="FieldId">Id of the field for which the translation will be copied.</param>
+    /// <error>If the RecVariant parameter is the type Record, and it is temporary.</error>
+    /// <error>If the RecVariant parameter is the type Record, and the table number is 0.</error> 
+    /// <error>If the FromRecVariant parameter is the type Record, the ToRecVariant parameter is the type Record and they are differnt.</error> 
+    /// <error>If the FieldId is 0.</error>
+    procedure Copy(FromRecVariant: Variant; ToRecVariant: Variant; FieldId: Integer)
+    begin
+        TranslationImplementation.Copy(FromRecVariant, ToRecVariant, FieldId);
+    end;
+
+    /// <summary>
     /// Shows all language translations that are available for a field in a new page.
     /// </summary>
     /// <param name="RecVariant">The record to get the translated value for.</param>
