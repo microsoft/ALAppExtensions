@@ -230,8 +230,8 @@ page 4511 "SMTP Account Wizard"
     var
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-        UserIDEditable := (Rec.Authentication = Rec.Authentication::Basic) or (Rec.Authentication = Rec.Authentication::"OAuth 2.0");
-        PasswordEditable := Rec.Authentication = Rec.Authentication::Basic;
+        UserIDEditable := (Rec.Authentication = Rec.Authentication::Basic) or (Rec.Authentication = Rec.Authentication::"OAuth 2.0") or (Rec.Authentication = Rec.Authentication::NTLM);
+        PasswordEditable := (Rec.Authentication = Rec.Authentication::Basic) or (Rec.Authentication = Rec.Authentication::NTLM);
         ShowMessageAboutSigningIn := (not EnvironmentInformation.IsSaaSInfrastructure()) and (Rec.Authentication = Rec.Authentication::"OAuth 2.0") and (Rec.Server = SMTPConnectorImpl.GetO365SmtpServer());
     end;
 

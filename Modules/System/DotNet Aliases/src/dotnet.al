@@ -2228,6 +2228,10 @@ dotnet
         type("MailKit.Security.SaslMechanismOAuth2"; "SaslMechanismOAuth2")
         {
         }
+
+        type("MailKit.Security.SaslMechanismNtlm"; "SaslMechanismNtlm")
+        {
+        }
     }
 
     assembly("MimeKit")
