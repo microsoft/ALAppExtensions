@@ -54,14 +54,24 @@ table 1461 "Signature Key"
     [NonDebuggable]
     procedure FromBase64String(CertBase64Value: Text; Password: Text; IncludePrivateParameters: Boolean)
     var
-        Convert: DotNet Convert;
         X509Certificate2: DotNet X509Certificate2;
+        CertInitializeErr: Label 'Unable to initialize certificate!';
+    begin
+        if not TryInitializeCertificate(CertBase64Value, Password, X509Certificate2) then
+            Error(CertInitializeErr);
+        FromXmlString(X509Certificate2.PrivateKey.ToXmlString(IncludePrivateParameters));
+    end;
+
+    [TryFunction]
+    [NonDebuggable]
+    local procedure TryInitializeCertificate(CertBase64Value: Text; Password: Text; var X509Certificate2: DotNet X509Certificate2)
+    var
         X509KeyStorageFlags: DotNet X509KeyStorageFlags;
+        Convert: DotNet Convert;
     begin
         X509Certificate2 := X509Certificate2.X509Certificate2(Convert.FromBase64String(CertBase64Value), Password, X509KeyStorageFlags.Exportable);
         if IsNull(X509Certificate2) then
             Error('');
-        FromXmlString(X509Certificate2.PrivateKey.ToXmlString(IncludePrivateParameters));
     end;
     /// <summary>
     /// Saves an key value from the key information from an XML string.
