@@ -253,6 +253,10 @@ codeunit 4513 "SMTP Connector Impl."
         if (SMTPAccount.Authentication = SMTPAccount.Authentication::Basic) and (SMTPAccount."User Name" = '') then
             exit(false);
 
+        // User Name is a mandatory field if the authentication type is NTLM
+        if (SMTPAccount.Authentication = SMTPAccount.Authentication::NTLM) and (SMTPAccount."User Name" = '') then
+            exit(false);
+
         exit(true);
     end;
 
