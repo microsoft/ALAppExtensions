@@ -413,8 +413,15 @@ codeunit 1991 "Guided Experience Impl."
     end;
 
     local procedure GetCode(Type: Enum "Guided Experience Type"; ObjectType: Enum "Guided Experience Object Type"; ObjectID: Integer; Link: Text[250]): Code[300]
+    var
+        Language: Codeunit Language;
+        Result: Code[300];
+        CurrentGlobalLanguage: Integer;
     begin
-        exit(StrSubstNo(CodeFormatLbl, Type, ObjectType, ObjectID, Link));
+        CurrentGlobalLanguage := GlobalLanguage();
+        GlobalLanguage(Language.GetDefaultApplicationLanguageId());
+        Result := StrSubstNo(CodeFormatLbl, Type, ObjectType, ObjectID, Link);
+        GlobalLanguage(CurrentGlobalLanguage);
     end;
 
     local procedure GetVersion(var GuidedExperienceItem: Record "Guided Experience Item"; Code: Code[300]; Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; ExtensionId: Guid; GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: Enum "Guided Experience Object Type"; ObjectIDToRun: Integer; Link: Text[250]; AssistedSetupGroup: Enum "Assisted Setup Group"; VideoUrl: Text[250]; VideoCategory: Enum "Video Category"; HelpUrl: Text[250]; ManualSetupCategory: Enum "Manual Setup Category"; Keywords: Text[250]): Integer

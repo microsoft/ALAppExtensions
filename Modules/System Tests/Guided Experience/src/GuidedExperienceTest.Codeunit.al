@@ -160,6 +160,20 @@ codeunit 132594 "Guided Experience Test"
 
         // [THEN] There shouln't be a record with version 2 in the Guided Experience Item table
         Assert.IsFalse(GuidedExperienceItem.Get(Code, 2), 'The Guided Experience Item should not contain a new version of the manual setup page');
+
+        // [WHEN] Inserting a new manual setup with a different globallanguage
+        GlobalLanguage(1030); // Danish
+        Title := 'This is the title of the guided experience item in another language';
+        ShortTitle := 'Short title 2';
+        Description := 'Description blah blah';
+        ExpectedDuration := 5;
+        PageID := 1875;
+        Keywords := 'Manual Setup';
+        GuidedExperience.InsertManualSetup(Title, ShortTitle, Description, ExpectedDuration, ObjectType::Page, PageID, ManualSetupCategory::Uncategorized, Keywords);
+        GlobalLanguage(1033); // English - United States
+
+        // [THEN] There should be a language independent code for this Guided Experience Item
+        Assert.IsTrue(GuidedExperienceItem.Get('MANUAL SETUP_PAGE_1875_', 0), 'The Guided Experience Item should contain an language independent code')
     end;
 
     [Test]
