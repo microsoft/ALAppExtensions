@@ -7,6 +7,8 @@ Helper functions on RecordLinks.
  
 
 ### CopyLinks (Method) <a name="CopyLinks"></a> 
+OnAfterCopyLinks
+
 
  Copies all the links from one record to the other and sets Notify to FALSE for them.
  
@@ -69,6 +71,25 @@ The note as a text.
 ```
 procedure RemoveOrphanedLinks()
 ```
+### OnAfterCopyLinks (Event) <a name="OnAfterCopyLinks"></a> 
+
+ Integration event for after copying links from one record to the other.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnAfterCopyLinks(FromRecord: Variant; ToRecord: Variant)
+```
+#### Parameters
+*FromRecord ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+The source record from which links are copied.
+
+*ToRecord ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+The destination record to which links are copied.
+
 
 ## Remove Orphaned Record Links (Codeunit 459)
 

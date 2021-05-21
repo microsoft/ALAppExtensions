@@ -192,3 +192,7 @@ Extensions can extend this enum to add custom categories.
 
 ### Uncategorized (value: 0)
 
+
+ A default category, specifying that the video is not categorized.
+ 
+

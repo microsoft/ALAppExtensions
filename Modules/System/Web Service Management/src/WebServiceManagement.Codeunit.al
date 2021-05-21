@@ -15,11 +15,13 @@ codeunit 9750 "Web Service Management"
 
     /// <summary>
     /// Creates a web service for a given object. If the web service already exists, it modifies the web service accordingly.
+    /// This method should be used for On-Prem scenarios only. Calling this method in SaaS will throw a runtime error.
     /// </summary>
     /// <param name="ObjectType">The type of the object.</param>
     /// <param name="ObjectId">The ID of the object.</param>
     /// <param name="ObjectName">The name of the object.</param>
     /// <param name="Published">Indicates whether the web service is published or not.</param>
+    [Obsolete('Method scope will be moved down to On-Prem. This function does not work in SaaS.', '16.0')]
     procedure CreateWebService(ObjectType: Option; ObjectId: Integer; ObjectName: Text; Published: Boolean)
     begin
         WebServiceManagementImpl.CreateWebService(ObjectType, ObjectId, ObjectName, Published);

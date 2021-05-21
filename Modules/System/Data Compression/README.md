@@ -5,6 +5,7 @@ The purpose of this module is to provide ability to create, update, read and dis
 ## Data Compression (Codeunit 425)
 
  Exposes functionality to provide ability to create, update, read and dispose a binary data compression archive.
+ This module supports compression and decompression with Zip format and GZip format.
  
 
 ### CreateZipArchive (Method) <a name="CreateZipArchive"></a> 
@@ -100,7 +101,7 @@ procedure SaveZipArchive(var TempBlob: Codeunit "Temp Blob")
 #### Parameters
 *TempBlob ([Codeunit "Temp Blob"]())* 
 
-
+The instance of the Temp Blob codeunit to which the ZipArchive is saved.
 
 ### CloseZipArchive (Method) <a name="CloseZipArchive"></a> 
 
@@ -111,25 +112,6 @@ procedure SaveZipArchive(var TempBlob: Codeunit "Temp Blob")
 ```
 procedure CloseZipArchive()
 ```
-### IsGZip (Method) <a name="IsGZip"></a> 
-
- Returns true if and only if the given InStream contains a GZip archive.
- 
-
-#### Syntax
-```
-[Scope('OnPrem')]
-procedure IsGZip(InStream: InStream): Boolean
-```
-#### Parameters
-*InStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
-
-The InStream that contains binary content.
-
-#### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
-
-
 ### GetEntryList (Method) <a name="GetEntryList"></a> 
 
  Returns the list of entries for the ZipArchive.
@@ -183,4 +165,58 @@ The InStream that contains the binary content that should be added as an entry i
 *PathInArchive ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
 The path that the added entry should have within the ZipArchive.
+
+### IsGZip (Method) <a name="IsGZip"></a> 
+
+ Determines whether the given InStream is compressed with GZip.
+ 
+
+#### Syntax
+```
+procedure IsGZip(InStream: InStream): Boolean
+```
+#### Parameters
+*InStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+An InStream that contains binary content.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+Returns true if and only if the given InStream is compressed with GZip
+### GZipCompress (Method) <a name="GZipCompress"></a> 
+
+ Compresses a stream with GZip algorithm.
+ The InStream that contains the content that should be compressed.The OutStream into which the compressed stream is copied to.
+
+#### Syntax
+```
+procedure GZipCompress(InputStream: InStream; CompressedStream: OutStream)
+```
+#### Parameters
+*InputStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The InStream that contains the content that should be compressed.
+
+*CompressedStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The OutStream into which the compressed stream is copied to.
+
+### GZipDecompress (Method) <a name="GZipDecompress"></a> 
+
+ Decompresses a GZipStream.
+ The InStream that contains the content that should be decompressed.The OutStream into which the decompressed stream is copied to.
+
+#### Syntax
+```
+procedure GZipDecompress(InputStream: InStream; DecompressedStream: OutStream)
+```
+#### Parameters
+*InputStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The InStream that contains the content that should be decompressed.
+
+*DecompressedStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The OutStream into which the decompressed stream is copied to.
 

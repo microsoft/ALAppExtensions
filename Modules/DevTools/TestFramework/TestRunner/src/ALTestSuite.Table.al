@@ -1,8 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 table 130451 "AL Test Suite"
 {
     DataCaptionFields = Name, Description;
     LookupPageID = "AL Test Suites";
     ReplicateData = false;
+    Permissions = TableData "AL Test Suite" = rimd, TableData "Test Method Line" = rimd;
 
     fields
     {

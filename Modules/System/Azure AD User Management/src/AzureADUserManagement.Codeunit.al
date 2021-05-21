@@ -11,6 +11,7 @@ codeunit 9010 "Azure AD User Management"
     Access = Public;
 
     var
+        [NonDebuggable]
         AzureADUserMgmtImpl: Codeunit "Azure AD User Mgmt. Impl.";
 
     trigger OnRun()
@@ -23,6 +24,7 @@ codeunit 9010 "Azure AD User Management"
     /// they are updated to match the ones from Azure AD; otherwise new users are inserted in the database.
     /// </summary>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure CreateNewUsersFromAzureAD()
     begin
         AzureADUserMgmtImpl.CreateNewUsersFromAzureAD();
@@ -33,9 +35,21 @@ codeunit 9010 "Azure AD User Management"
     /// </summary>
     /// <param name="GraphUser">The Azure AD user.</param>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure CreateNewUserFromGraphUser(GraphUser: DotNet UserInfo)
     begin
         AzureADUserMgmtImpl.CreateNewUserFromGraphUser(GraphUser);
+    end;
+
+    /// <summary>
+    /// Updates details about the user with information from Office 365.
+    /// </summary>
+    /// <param name="User">The user whose information will be updated.</param>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure UpdateUserFromGraph(var User: Record User)
+    begin
+        AzureADUserMgmtImpl.UpdateUserFromGraph(User);
     end;
 
     /// <summary>    
@@ -44,15 +58,17 @@ codeunit 9010 "Azure AD User Management"
     /// </summary>
     /// <param name="AuthenticationEmail">The user's authentication email.</param>
     /// <returns>True if there is a user in Azure AD corresponding to the authentication email; otherwise false.</returns>
+    [NonDebuggable]
     procedure SynchronizeLicensedUserFromDirectory(AuthenticationEmail: Text): Boolean
     begin
         AzureADUserMgmtImpl.SynchronizeLicensedUserFromDirectory(AuthenticationEmail);
     end;
 
     /// <summary>    
-    /// Synchronizes all the users from the database with the ones from Azure AD. If 
-    /// the users do not exist in the database, they get created.
+    /// Synchronizes all the users from the database with the ones from Azure AD.
+    /// Azure AD users that do not exist in the database are created.
     /// </summary>
+    [NonDebuggable]
     procedure SynchronizeAllLicensedUsersFromDirectory()
     begin
         AzureADUserMgmtImpl.SynchronizeAllLicensedUsersFromDirectory();
@@ -62,19 +78,31 @@ codeunit 9010 "Azure AD User Management"
     /// Checks if the user is a tenant admin.
     /// </summary>
     /// <returns>True if the user is a tenant admin; otherwise false.</returns>
+    [NonDebuggable]
     procedure IsUserTenantAdmin(): Boolean
     begin
         exit(AzureADUserMgmtImpl.IsUserTenantAdmin());
     end;
 
     /// <summary>
-    /// Sets a flag that is used to determine whether a test is in progress or not.
+    /// Sets a flag that is used to determine whether a test is in progress.
     /// </summary>
     /// <param name="TestInProgress">The value to be set to the flag.</param>
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure SetTestInProgress(TestInProgress: Boolean)
     begin
         AzureADUserMgmtImpl.SetTestInProgress(TestInProgress);
+    end;
+
+    /// <summary>
+    /// Integration event, raised from "Azure AD User Update Wizard" page when the changes are applied.
+    /// </summary>
+    /// <param name="UserSecurityID">The ID of the user whos permission sets will be restored.</param>
+    [IntegrationEvent(false, false)]
+    [NonDebuggable]
+    internal procedure OnRestoreDefaultPermissions(UserSecurityID: Guid)
+    begin
     end;
 }
 

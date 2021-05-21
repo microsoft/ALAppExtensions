@@ -249,6 +249,34 @@ A RecordRef variable attached to a Record.
 
 The field number of the Blob field to be written.
 
+### FromFieldRef (Method) <a name="FromFieldRef"></a> 
+
+ Copies the value of the FieldRef to the TempBlob.
+ 
+
+#### Syntax
+```
+procedure FromFieldRef(BlobFieldRef: FieldRef)
+```
+#### Parameters
+*BlobFieldRef ([FieldRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/fieldref/fieldref-data-type))* 
+
+A FieldRef variable attached to a field for a record.
+
+### ToFieldRef (Method) <a name="ToFieldRef"></a> 
+
+ Copies the value of the TempBlob to the specified FieldRef.
+ 
+
+#### Syntax
+```
+procedure ToFieldRef(var BlobFieldRef: FieldRef)
+```
+#### Parameters
+*BlobFieldRef ([FieldRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/fieldref/fieldref-data-type))* 
+
+A FieldRef variable attached to a field for a record.
+
 
 ## Temp Blob List (Codeunit 4102)
 

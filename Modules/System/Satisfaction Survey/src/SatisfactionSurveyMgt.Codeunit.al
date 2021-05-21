@@ -44,9 +44,9 @@ codeunit 1433 "Satisfaction Survey Mgt."
     /// <param name="Url">The URL of the request to the server for checking if the dialog has to be presented to the current user.</param>
     /// <returns>True if the check URL is valid, false otherwise.</returns>
     [Scope('OnPrem')]
-    procedure TryGetCheckUrl(var CheckUrl: Text): Boolean
+    procedure TryGetCheckUrl(var Url: Text): Boolean
     begin
-        exit(SatisfactionSurveyImpl.TryGetCheckUrl(CheckUrl));
+        exit(SatisfactionSurveyImpl.TryGetCheckUrl(Url));
     end;
 
     /// <summary>

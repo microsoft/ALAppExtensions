@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 130457 "Test Profile Management"
 {
     // Used to insert a profile into blank database
@@ -8,7 +13,7 @@ codeunit 130457 "Test Profile Management"
     begin
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000006, 'GetDefaultRoleCenterID', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetDefaultRoleCenterID', '', false, false)]
     local procedure OnGetDefaultRoleCenterId(var ID: Integer)
     var
         AllProfile: Record "All Profile";

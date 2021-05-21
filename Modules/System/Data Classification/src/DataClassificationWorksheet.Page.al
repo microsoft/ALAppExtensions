@@ -8,6 +8,7 @@
 /// </summary>
 page 1751 "Data Classification Worksheet"
 {
+    Caption = 'Data Classification Worksheet';
     Extensible = false;
     AccessByPermission = TableData "Data Sensitivity" = R;
     ApplicationArea = All;
@@ -20,7 +21,12 @@ page 1751 "Data Classification Worksheet"
     SourceTable = "Data Sensitivity";
     SourceTableView = WHERE("Field Caption" = FILTER(<> ''));
     UsageCategory = Administration;
+    AdditionalSearchTerms = 'GDPR,Data Privacy,Privacy,Personal Data';
     ContextSensitiveHelpPage = 'admin-classifying-data-sensitivity';
+    Permissions = tabledata Company = r,
+                  tabledata "Data Sensitivity" = rm,
+                  tabledata Field = r,
+                  tabledata User = r;
 
     layout
     {
@@ -213,6 +219,22 @@ page 1751 "Data Classification Worksheet"
                     trigger OnAction()
                     begin
                         SetSensitivityToSelection("Data Sensitivity"::"Company Confidential");
+                    end;
+                }
+                action("Set as Unclassified")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Set as Unclassified';
+                    Image = ApplyEntries;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+                    PromotedOnly = true;
+                    ToolTip = 'Set the data sensitivity of the selected fields to Unclassified.';
+
+                    trigger OnAction()
+                    begin
+                        SetSensitivityToSelection("Data Sensitivity"::Unclassified);
                     end;
                 }
             }

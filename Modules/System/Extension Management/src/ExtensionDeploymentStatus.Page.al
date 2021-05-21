@@ -14,6 +14,7 @@ page 2508 "Extension Deployment Status"
     RefreshOnActivate = true;
     SourceTable = "NAV App Tenant Operation";
     ContextSensitiveHelpPage = 'ui-extensions';
+    Permissions = tabledata "Nav App Tenant Operation" = r;
 
     layout
     {
@@ -38,6 +39,7 @@ page 2508 "Extension Deployment Status"
                     ApplicationArea = All;
                     Caption = 'Operation Type';
                     ToolTip = 'Specifies the deployment type.';
+                    OptionCaption = 'Upload,Install';
                 }
                 field(Status; Status)
                 {
@@ -76,6 +78,7 @@ page 2508 "Extension Deployment Status"
             action(View)
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the status of the deployment.';
                 Image = View;
                 Scope = Repeater;
                 ShortCutKey = 'Return';

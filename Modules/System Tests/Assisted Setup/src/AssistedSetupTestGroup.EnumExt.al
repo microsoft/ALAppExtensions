@@ -14,4 +14,9 @@ enumextension 132586 "Assisted Setup Test Group" extends "Assisted Setup Group"
     {
         Caption = 'WithoutLinks';
     }
+
+    value(300; ZZ)
+    {
+        Caption = 'Last group alphabetically';
+    }
 }

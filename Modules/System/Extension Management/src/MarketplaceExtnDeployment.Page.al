@@ -31,6 +31,7 @@ page 2510 "Marketplace Extn Deployment"
             {
                 ApplicationArea = All;
                 Caption = 'Language';
+                ToolTip = 'Choose the language of the extension.';
                 Editable = false;
 
                 trigger OnAssistEdit()
@@ -40,6 +41,24 @@ page 2510 "Marketplace Extn Deployment"
                     Language.LookupApplicationLanguageId(LanguageID);
                     LanguageName := Language.GetWindowsLanguageName(LanguageID);
                 end;
+            }
+            group(links)
+            {
+                ShowCaption = false;
+                field(BestPractices; 'Read more about the best practices for installing and publishing extensions')
+                {
+                    ApplicationArea = All;
+                    ShowCaption = false;
+                    Editable = false;
+                    ToolTip = 'Read more about the best practices for installing and publishing extensions.';
+
+                    trigger OnDrillDown()
+                    var
+                        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+                    begin
+                        Hyperlink(ExtensionInstallationImpl.GetInstallationBestPracticesURL());
+                    end;
+                }
             }
         }
     }
@@ -53,6 +72,7 @@ page 2510 "Marketplace Extn Deployment"
                 ApplicationArea = All;
                 Image = CarryOutActionMessage;
                 Caption = 'Install';
+                ToolTip = 'Install the extension.';
                 InFooterBar = true;
 
                 trigger OnAction()
@@ -77,6 +97,10 @@ page 2510 "Marketplace Extn Deployment"
         exit(InstallSelected);
     end;
 
+    internal procedure SetAppID(ID: Guid)
+    begin
+        AppID := ID;
+    end;
 
     trigger OnInit()
     var
@@ -87,9 +111,16 @@ page 2510 "Marketplace Extn Deployment"
         clear(InstallSelected);
     end;
 
+    trigger OnOpenPage()
+    var
+        DataOutOfGeoAppImpl: Codeunit "Data Out Of Geo. App Impl.";
+    begin
+        DataOutOfGeoAppImpl.CheckAndFireNotification(AppID);
+    end;
+
     var
         LanguageName: Text;
         LanguageID: Integer;
         InstallSelected: Boolean;
+        AppID: Guid;
 }
-

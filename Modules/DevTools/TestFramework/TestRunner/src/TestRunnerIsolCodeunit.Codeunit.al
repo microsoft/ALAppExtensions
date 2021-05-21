@@ -1,12 +1,18 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 130450 "Test Runner - Isol. Codeunit"
 {
     Subtype = TestRunner;
     TableNo = "Test Method Line";
     TestIsolation = Codeunit;
+    Permissions = TableData "AL Test Suite" = rimd, TableData "Test Method Line" = rimd;
 
     trigger OnRun()
     begin
-        ALTestSuite.Get("Test Suite");
+        ALTestSuite.Get(Rec."Test Suite");
         CurrentTestMethodLine.Copy(Rec);
         TestRunnerMgt.RunTests(Rec);
     end;

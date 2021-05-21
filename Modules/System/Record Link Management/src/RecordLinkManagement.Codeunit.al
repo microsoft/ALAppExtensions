@@ -14,11 +14,12 @@ codeunit 447 "Record Link Management"
     var
         RecordLinkImpl: Codeunit "Record Link Impl.";
 
-        /// <summary>
-        /// Copies all the links from one record to the other and sets Notify to FALSE for them.
-        /// </summary>
-        /// <param name="FromRecord">The source record from which links are copied.</param>
-        /// <param name="ToRecord">The destination record to which links are copied.</param>
+    /// <summary>
+    /// Copies all the links from one record to the other and sets Notify to FALSE for them.
+    /// </summary>
+    /// <raises>OnAfterCopyLinks</raises>
+    /// <param name="FromRecord">The source record from which links are copied.</param>
+    /// <param name="ToRecord">The destination record to which links are copied.</param>
     procedure CopyLinks(FromRecord: Variant; ToRecord: Variant)
     begin
         RecordLinkImpl.CopyLinks(FromRecord, ToRecord);
@@ -50,6 +51,16 @@ codeunit 447 "Record Link Management"
     procedure RemoveOrphanedLinks()
     begin
         RecordLinkImpl.RemoveOrphanedLinks();
+    end;
+
+    /// <summary>
+    /// Integration event for after copying links from one record to the other.
+    /// </summary>
+    /// <param name="FromRecord">The source record from which links are copied.</param>
+    /// <param name="ToRecord">The destination record to which links are copied.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterCopyLinks(FromRecord: Variant; ToRecord: Variant)
+    begin
     end;
 }
 

@@ -6,6 +6,7 @@
 codeunit 1757 "Fields Sync Status Management"
 {
     Access = Internal;
+    Permissions = tabledata "Fields Sync Status" = rim;
 
     procedure GetLastSyncStatusDate(): DateTime
     var

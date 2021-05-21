@@ -15,6 +15,7 @@ page 4690 "Recurrence Schedule Card"
     PageType = Card;
     ShowFilter = false;
     SourceTable = "Recurrence Schedule";
+    Permissions = tabledata "Recurrence Schedule" = rmd;
 
     layout
     {
@@ -27,6 +28,7 @@ page 4690 "Recurrence Schedule Card"
                 {
                     ApplicationArea = All;
                     Visible = false;
+                    ToolTip = 'Specifies the ID of the recurrence schedule.';
                 }
                 field(RecurrenceStartTime; "Start Time")
                 {
@@ -129,7 +131,7 @@ page 4690 "Recurrence Schedule Card"
             {
                 Caption = 'Monthly';
                 Visible = "Pattern" = RecurrencePatterns::Monthly;
-                field(MontlyFrequency; "Recurs Every")
+                field(MonthlyFrequency; "Recurs Every")
                 {
                     ApplicationArea = All;
                     Caption = 'Months Between';
@@ -322,7 +324,7 @@ page 4690 "Recurrence Schedule Card"
         RecurrenceMonthlyPattern: Enum "Recurrence - Monthly Pattern";
         [InDataSet]
         RecurrencePatterns: Enum "Recurrence - Pattern";
-        ConfirmLbl: Label 'Some months have fewer than %1 days. These months will not be included in the recurrence.\\Do you want to continue?';
+        ConfirmLbl: Label 'Some months have fewer than %1 days. These months will not be included in the recurrence.\\Do you want to continue?', Comment = '%1 - Number of days in month';
 
 
 }

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 135039 "Cues And KPIs Test"
 {
     Subtype = Test;
@@ -467,7 +472,7 @@ codeunit 135039 "Cues And KPIs Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cues And KPIs", 'OnConvertStyleToStyleText', '', true, true)]
     [Normal]
-    procedure OnConvertStyleToStyleText(CueStyle: Enum "Cues And KPIs Style"; VAR Result: Text[80]; VAR Resolved: Boolean)
+    procedure OnConvertStyleToStyleText(CueStyle: Enum "Cues And KPIs Style"; VAR Result: Text; VAR Resolved: Boolean)
     begin
         if CueStyle = 4 then begin
             Result := 'CustomValue';

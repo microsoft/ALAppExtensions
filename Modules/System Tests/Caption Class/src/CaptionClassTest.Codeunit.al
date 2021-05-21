@@ -91,7 +91,7 @@ codeunit 132577 "Caption Class Test"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Caption Class", 'OnAfterCaptionClassResolve', '', true, true)]
-    procedure OnAfterResolveCaptionClassSubscriber(Language: Integer; CaptionExpression: Text; Caption: Text[1024])
+    local procedure OnAfterResolveCaptionClassSubscriber(Language: Integer; CaptionExpression: Text; Caption: Text[1024])
     begin
         // Set global variables.
         CaptionLanguage := Language;
@@ -101,7 +101,7 @@ codeunit 132577 "Caption Class Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Caption Class", 'OnResolveCaptionClass', '', true, true)]
     [Normal]
-    procedure HandleOnResolveCaptionClass(CaptionArea: Text; CaptionExpr: Text; Language: Integer; var Caption: Text; var Resolved: Boolean)
+    local procedure HandleOnResolveCaptionClass(CaptionArea: Text; CaptionExpr: Text; Language: Integer; var Caption: Text; var Resolved: Boolean)
     begin
         Assert.AreEqual('Some caption area', CaptionArea, 'Wrong caption area');
         Assert.AreEqual('Some caption expression', CaptionExpr, 'Wrong caption expression');

@@ -13,7 +13,7 @@ Changes the language for Windows and applications, and converts language codes t
 
 #### Syntax
 ```
-[Obsolete('Please use function with the same name from this modules facade codeunit 43 - "Language".')]
+[Obsolete('Please use function with the same name from this modules facade codeunit 43 - "Language".', '16.0')]
 procedure GetLanguageId(LanguageCode: Code[10]): Integer
 ```
 #### Parameters
@@ -219,6 +219,42 @@ procedure LookupWindowsLanguageId(var LanguageId: Integer)
 *LanguageId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
 
 Exit parameter that holds the chosen language ID.
+
+### GetParentLanguageId (Method) <a name="GetParentLanguageId"></a> 
+
+ Gets the parent language ID based on Windows Culture Info.
+ 
+
+#### Syntax
+```
+procedure GetParentLanguageId(LanguageId: Integer): Integer
+```
+#### Parameters
+*LanguageId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+Exit parameter that holds the chosen language ID.
+
+#### Return Value
+*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+
+The ID of the parent language
+### SetPreferredLanguageID (Method) <a name="SetPreferredLanguageID"></a> 
+
+ Sets the preferred language for the provided user.
+ 
+
+#### Syntax
+```
+procedure SetPreferredLanguageID(UserSecID: Guid; NewLanguageID: Integer)
+```
+#### Parameters
+*UserSecID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The user security ID for the user for whom the preferred language is changed.
+
+*NewLanguageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The new preferred language for the user.
 
 ### OnGetUserLanguageCode (Event) <a name="OnGetUserLanguageCode"></a> 
 

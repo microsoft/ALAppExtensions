@@ -348,6 +348,118 @@ codeunit 1279 "Cryptography Management Impl."
         exit(ConvertByteHashToString(HashBytes));
     end;
 
+    procedure SignData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    var
+        TempBlob: Codeunit "Temp Blob";
+        DataOutStream: OutStream;
+        DataInStream: InStream;
+    begin
+        if InputString = '' then
+            exit;
+        TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
+        DataOutStream.WriteText(InputString);
+        SignData(DataInStream, SignatureKey, HashAlgorithm, SignatureOutStream);
+    end;
+
+#if not CLEAN18
+    procedure SignData(InputString: Text; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
+    var
+        TempBlob: Codeunit "Temp Blob";
+        DataOutStream: OutStream;
+        DataInStream: InStream;
+    begin
+        if InputString = '' then
+            exit;
+        TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
+        DataOutStream.WriteText(InputString);
+        SignData(DataInStream, KeyStream, HashAlgorithmType, SignatureStream);
+    end;
+#endif
+
+    procedure SignData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    var
+        ISignatureAlgorithm: Interface SignatureAlgorithm;
+    begin
+        if DataInStream.EOS() then
+            exit;
+        ISignatureAlgorithm := SignatureKey."Signature Algorithm";
+        if SignatureKey."Key Value Type" = SignatureKey."Key Value Type"::XmlString then
+            ISignatureAlgorithm.FromXmlString(SignatureKey.ToXmlString());
+        ISignatureAlgorithm.SignData(DataInStream, HashAlgorithm, SignatureOutStream);
+    end;
+
+#if not CLEAN18
+    procedure SignData(DataStream: InStream; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
+    var
+        SignatureKey: Record "Signature Key";
+    begin
+        if DataStream.EOS() then
+            exit;
+        SignatureKey."Signature Algorithm" := SignatureKey."Signature Algorithm"::RSA;
+        SignatureKey."Key Value Type" := SignatureKey."Key Value Type"::XmlString;
+        SignatureKey.WriteKeyValue(KeyStream);
+        SignData(DataStream, SignatureKey, "Hash Algorithm".FromInteger(HashAlgorithmType), SignatureStream);
+    end;
+#endif
+
+    procedure VerifyData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+    var
+        TempBlob: Codeunit "Temp Blob";
+        DataOutStream: OutStream;
+        DataInStream: InStream;
+    begin
+        if InputString = '' then
+            exit(false);
+        TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
+        DataOutStream.WriteText(InputString);
+        exit(VerifyData(DataInStream, SignatureKey, HashAlgorithm, SignatureInStream));
+    end;
+
+#if not CLEAN18
+    procedure VerifyData(InputString: Text; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+    var
+        TempBlob: Codeunit "Temp Blob";
+        DataOutStream: OutStream;
+        DataInStream: InStream;
+    begin
+        if InputString = '' then
+            exit(false);
+        TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
+        DataOutStream.WriteText(InputString);
+        exit(VerifyData(DataInStream, "Key", HashAlgorithmType, SignatureStream));
+    end;
+#endif
+
+    procedure VerifyData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+    var
+        ISignatureAlgorithm: Interface SignatureAlgorithm;
+    begin
+        if DataInStream.EOS() then
+            exit(false);
+        ISignatureAlgorithm := SignatureKey."Signature Algorithm";
+        if SignatureKey."Key Value Type" = SignatureKey."Key Value Type"::XmlString then
+            ISignatureAlgorithm.FromXmlString(SignatureKey.ToXmlString());
+        exit(ISignatureAlgorithm.VerifyData(DataInStream, HashAlgorithm, SignatureInStream));
+    end;
+
+#if not CLEAN18
+    procedure VerifyData(DataStream: InStream; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+    var
+        SignatureKey: Record "Signature Key";
+    begin
+        if DataStream.EOS() then
+            exit(false);
+        SignatureKey."Signature Algorithm" := SignatureKey."Signature Algorithm"::RSA;
+        SignatureKey."Key Value Type" := SignatureKey."Key Value Type"::XmlString;
+        SignatureKey.FromXmlString("Key");
+        exit(VerifyData(DataStream, SignatureKey, "Hash Algorithm".FromInteger(HashAlgorithmType), SignatureStream));
+    end;
+#endif
+
     procedure InitRijndaelProvider()
     begin
         RijndaelProvider := RijndaelProvider.RijndaelManaged();
@@ -485,7 +597,9 @@ codeunit 1279 "Cryptography Management Impl."
         DecMemoryStream := DecMemoryStream.MemoryStream(Convert.FromBase64String(EncryptedText));
         DecCryptoStream := DecCryptoStream.CryptoStream(DecMemoryStream, Decryptor, CryptoStreamMode.Read);
         DecStreamReader := DecStreamReader.StreamReader(DecCryptoStream);
+#pragma warning disable AA0205
         PlainText := DelChr(DecStreamReader.ReadToEnd(), '>', NullChar);
+#pragma warning restore
         DecStreamReader.Close();
         DecCryptoStream.Close();
         DecMemoryStream.Close();
@@ -495,5 +609,25 @@ codeunit 1279 "Cryptography Management Impl."
     begin
         if IsNull(RijndaelProvider) then
             InitRijndaelProvider();
+    end;
+
+    procedure HashRfc2898DeriveBytes(InputString: Text; Salt: Text; NoOfBytes: Integer; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text;
+    var
+        ByteArray: DotNet Array;
+        Convert: DotNet Convert;
+        Encoding: DotNet Encoding;
+        Rfc2898DeriveBytes: DotNet Rfc2898DeriveBytes;
+    begin
+        if Salt = '' then
+            exit;
+
+        //Implement password-based key derivation functionality, PBKDF2, by using a pseudo-random number generator based on HMACSHA1.
+        Rfc2898DeriveBytes := Rfc2898DeriveBytes.Rfc2898DeriveBytes(InputString, Encoding.ASCII.GetBytes(Salt));
+
+        //Return a Base64 encoded string of the hash of the first X bytes (X = NoOfBytes) returned from the generator.
+        if not TryGenerateHash(ByteArray, Rfc2898DeriveBytes.GetBytes(NoOfBytes), Format(HashAlgorithmType)) then
+            Error(GetLastErrorText());
+
+        exit(Convert.ToBase64String(ByteArray));
     end;
 }

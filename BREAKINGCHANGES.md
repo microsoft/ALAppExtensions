@@ -1,14 +1,47 @@
 # Breaking Changes
 ### ...and how to resolve them
-In this help document, you will find a list of known breaking changes which were introduced in the latest major release. You will also get help on the changes you need to do to your code to make it compile again against the latest version of the Business Central System Application and Base Application.
-
-# Work in progress
-The breaking changes are currently being identified. We will update this site with more help on this topic very soon.
+This document contains a list of the breaking changes that we know were introduced since 2019 release wave 2. For each breaking change we’ve provided some information about what you need to do to your code so that it will compile again against the latest version of the System Application and Base Application in Business central.
 
 # Can’t find what you’re looking for?
-We’re working hard to make this a comprehensive list, but there’s always a chance that something is missing. If you can’t find what you’re looking for here, we suggest that you engage with other members of the Business Central community on Yammer, or reach out to us on GitHub to let us know.
+This document is a work in progress because earlier changes are still being identified, and because sometimes a change can’t be avoided, for example, when addressing a performance issue. We will continue to update this list whenever we, or one of our partners, discover new issues. We’re working hard to make this a comprehensive list, but there’s always a chance that something is missing. If you can’t find what you’re looking for here, we suggest that you engage with other members of the Business Central community on [Yammer](https://www.yammer.com/dynamicsnavdev/), or reach out to us on [GitHub](https://github.com/microsoft/ALAppExtensions/issues) to let us know.
 
-# Modules
+# 2020 release wave 1
+
+## General
+
+**Error**: _Field * is removed. Reason: *_\
+**Error**: _Table * is removed. Reason: *_
+
+**Solution**: Please review the reason for how to resolve this error.
+
+**Error**: _cannot convert from 'Decimal' to the type of Argument 1 'Enum *'_
+
+**Solution**: Convert a Decimal through the Enum's FromInteger functionality.
+
+```
+procedure EnumFromDecimal()
+var
+    d: Decimal;
+    e: Enum MyEnum;
+begin
+    e := MyEnum.FromInteger(d);
+end;
+```
+
+**Error**: _cannot convert from 'Enum 1' to the type of Argument 1 'Enum 2'_\
+**Error**: _Cannot implicitly convert type 'Enum 1' to 'Enum 2'_
+
+**Solution**: Set the AssignmentCompatibility option on the Enum to true;
+
+**Error**: _A member of type Action with name * is already defined in Page * by the extension *_\
+**Error**: _A member of type Field with name * is already defined in Page * by the extension *_\
+**Error**: _A member of type Part with name * is already defined in Page * by the extension *_
+
+**Solution**: Rename your Action/Field/Part to avoid duplicating the name. Names of Action/Field/Part must be unique.
+
+# 2019 release wave 2
+
+We’ve organized the breaking changes in this list according to the modules that they apply to. For example, we moved the TextManagement codeunit to the Filter Tokens module, so we’ve included the description of the change in the group for the module.
 
 ## Assisted Setup Module
 **Error**: _'Assisted Setup' is inaccessible due to its protection level_
@@ -65,6 +98,18 @@ SaaS: access the table using the `query 774 "Users in Plans"`.
 
 **Solution**: Access the table through the facade APIs, `codeunit 9016 "Azure AD Plan"`, or using the `query 775 Plan`.
 
+**Error**: _'Codeunit \"Azure AD User Management\"' does not contain a definition for 'TryGetAzureUserPlanRoleCenterId'_
+
+**Solution**: Function has been moved to `codeunit 9016 "Azure AD Plan"`, function `TryGetAzureUserPlanRoleCenterId`.
+
+**Error**: _'Record Plan' does not contain a definition for 'GetInternalAdminPlanId'_
+
+**Solution**: Function has been moved to `codeunit 9027 "Plan Ids"`, function `GetInternalAdminPlanId`.
+
+**Error**: _'Record Plan' does not contain a definition for 'GetDelegatedAdminPlanId'_
+
+**Solution**: Function has been moved to `codeunit 9027 "Plan Ids"`, function `GetDelegatedAdminPlanId`.
+
 ---
 
 ## Azure AD Tenant Module
@@ -119,7 +164,7 @@ SaaS: access the table using the `query 774 "Users in Plans"`.
 **Solution**: Function has been removed. Replacement:
 
 ```
-TempBlob.CreateOutStream(OutStream);
+TempBlob.CreateOutStream(OutStream[, TextEncoding]);
 OutStream.WriteText(Text);
 ```
 
@@ -191,7 +236,7 @@ Xml.WriteTo(Text);
 ```
 HttClient.Get(url, HttpResponseMessage);
 HttpResponseMessage.Content.ReadAs(InStream);
-TempBlob.CreateOuStream(OutStream);
+TempBlob.CreateOutStream(OutStream);
 CopyStream(OutStream, InStream);
 ```
 
@@ -209,21 +254,36 @@ CopyStream(OutStream, InStream);
 ---
 
 ## Client Type Management Module
-**Error**: _Codeunit 'ClientTypeManagement' is missing_\
+**Error**: _Codeunit 'ClientTypeManagement' is missing_
 **Error**: _Codeunit '4' is missing_
 
 **Solution**: Codeunit has been renamed to `codeunit 4030 "Client Type Management"`.
 
 ---
 
+## Confirm Management Module
+**Error**: _'Codeunit "Confirm Management"' does not contain a definition for 'ConfirmProcess'_\
+
+**Solution**: Function has been renamed to `GetResponseOrDefault`.
+
+---
+
 ## Cryptography Management Module
-**Error**: _Codeunit 'Encryption Management' is missing_\
+**Error**: _Codeunit 'Encryption Management' is missing_
 
 **Solution**: Codeunit has been renamed to `codeunit 1266 "Cryptography Management"`.
 
 **Error**: _'Codeunit "Encryption Management"' does not contain a definition for 'GenerateKeyedHash'_
 
 **Solution**: Function has been moved to `codeunit 1266 "Cryptography Management"`, function `GenerateHash`.
+
+**Error**: _The event 'OnBeforeEncryptDataInAllCompaniesOnPrem' is not found in the target"_
+
+**Solution**: Use the event `OnBeforeEnableEncryptionOnPrem` instead.
+
+**Error**: _The event 'OnBeforeDecryptDataInAllCompaniesOnPrem' is not found in the target"_
+
+**Solution**: Use the event `OnBeforeDisableEncryptionOnPrem` instead.
 
 ---
 
@@ -281,10 +341,7 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Solution**: Function has been moved to `codeunit 457 "Environment Information"`, function `IsSaaS`.
 
-**Error**: _'Codeunit "Permission Manager"' does not contain a definition for 'IsSandboxConfiguration'_
-
-**Solution**: Function has been moved to `codeunit 457 "Environment Information"`, function `IsSandbox`.
-
+**Error**: _'Codeunit "Permission Manager"' does not contain a definition for 'IsSandboxConfiguration'_\
 **Error**: _'Codeunit "Tenant Settings"' does not contain a definition for 'IsSandbox'_
 
 **Solution**: Function has been moved to `codeunit 457 "Environment Information"`, function `IsSandbox`.
@@ -346,6 +403,34 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Solution**: Use the event `OnResolveTimeFilterToken` instead.
 
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeText'_
+
+**Solution**: Function has been removed as it had no callers.
+
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeDateText'_
+
+**Solution**: Function has been removed as it had no callers.
+
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeTimeText'_
+
+**Solution**: Function has been removed as it had no callers.
+
+**Error**: _'Codeunit "TextManagement"' does not contain a definition for 'MakeDateTimeText'_
+
+**Solution**: Function has been removed as it had no callers.
+
+**Error**: _'Filter Tokens' does not contain a definition for 'EvaluateIncStr'_
+
+**Solution**: The function has been removed. Please create a copy of the function if you need it.
+
+```
+procedure EvaluateIncStr(StringToIncrement: Code[50]; ErrorHint: Text)
+begin
+    if IncStr(StringToIncrement) = '' then
+        Error('%1 contains no number and cannot be incremented.', ErrorHint);
+end;
+```
+
 ---
 
 ## Headlines Module
@@ -360,13 +445,21 @@ DownloadFromStream(InStream, '', '', '', OutputFileName);
 
 **Solution**: Codeunit was renamed to `codeunit 43 Language`.
 
+**Error**: _'Codeunit "LanguageManagement"' does not contain a definition for 'ApplicationLanguage'_
+
+**Solution**: Function has been replaced by `GetDefaultApplicationLanguageId` in `codeunit 43 Language`.
+
+**Error**: _'Codeunit "LanguageManagement"' does not contain a definition for 'LookupApplicationLanguage'_
+
+**Solution**: Function has been replaced by `LookupApplicationLanguageId` in `codeunit 43 Language`.
+
 **Error**: _'Record Language' does not contain a definition for 'GetUserLanguage'_
 
-**Solution**: Function has been moved to `codeunit 43 Language`, function `GetUserLanguageCode`.
+**Solution**: Function has been replaced by `GetUserLanguageCode` in `codeunit 43 Language`.
 
 **Error**: _'Record Language' does not contain a definition for 'GetLanguageID'_
 
-**Solution**: Function has been moved to `codeunit 43 Language`, function `GetLanguageId`.
+**Solution**: Function has been moved to `codeunit 43 Language`, function `GetLanguageId`. If empty language code could be expected, use `GetLanguageIdOrDefault` instead.
 
 **Error**: _'Codeunit Language' does not contain a definition for 'TryGetCultureName'_
 
@@ -381,6 +474,18 @@ begin
     CultureName := DotNet_CultureInfo.Name();
 end;
 ```
+
+**Error**: _'Codeunit Language' does not contain a definition for 'GetWindowsLanguageNameFromLanguageID'_
+
+**Solution**: Function has been replaced by `GetWindowsLanguageName` in `codeunit 43 Language`.
+
+**Error**: _'Codeunit Language' does not contain a definition for 'LookupWindowsLocale'_
+
+**Solution**: Function has been replaced by `LookupWindowsLanguageId` in `codeunit 43 Language`
+
+**Error**: _'Codeunit Language' does not contain a definition for 'GetLanguageCodeFromLanguageID'_
+
+**Solution**: Function has been replaced by `GetLanguageCode` in `codeunit 43 Language`.
 
 ---
 
@@ -449,6 +554,15 @@ end;
 **Error**: _'Codeunit "System Initialization"' does not contain a definition for 'SetLogonInProgress'_
 
 **Solution**: Function has been removed.
+
+---
+
+## Tenant License State Module
+
+**Error**: _No overload for method 'GetStartDate' takes 1 arguments_\
+**Error**: _No overload for method 'GetEndDate' takes 1 arguments_\
+
+**Solution**: Method has been moved to `codeunit 2300 "Tenant License State"` without any parameters.
 
 ---
 
@@ -634,11 +748,16 @@ end;
 
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'IsAlphanumeric'_
 
-**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `IsAlphanumeric`.
+**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `IsMatch`.
+
+Example: `TypeHelper.IsAlphanumeric(InputString)` becomes `DotNet_Regex.IsMatch(InputString,'^[a-zA-Z0-9]*$')`
 
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'TextEndsWith'_
 
-**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `TextEndsWith`.
+**Solution**: Function has been removed. The alternative is in `codeunit 3001 DotNet_Regex`, function `IsMatch`.
+
+Example:
+`TypeHelper.TextEndsWith(InputString, EndingString)` becomes `DotNet_Regex.IsMatch(InputString, EndingString + '$')`
 
 **Error**:  _Codeunit "Item Tracking Management" does not contain a definition for 'CopyItemTracking2'_
 
@@ -706,6 +825,41 @@ end;
 
 ---
 
+**Error**: 'Codeunit "Reservation Management"' does not contain a definition for 'DeleteReservEntries2'.
+
+**Solution**: Is now an overload of DeleteReservEntries.
+
+**Error**: 'Codeunit "User Setup Management"' does not contain a definition for 'CheckRespCenter2'.
+
+**Solution**: Is now an overload of CheckRespCenter.
+
+**Error**: 'Codeunit "User Setup Management"' does not contain a definition for 'GetSalesFilter2'.
+
+**Solution**: Is now an overload of GetSalesFilter
+
+**Error**: No overload for method 'CalcDateBOC' takes 9 arguments.
+
+**Solution**: Has been changed to use a CustomCalendarChange: Array[2] of Record "Customized Calendar Change";
+```
+CustomCalendarChange[1].SetSource(CalChange."Source Type"::"Shipping Agent", "Shipping Agent Code", "Shipping Agent Service Code", '');
+CustomCalendarChange[2].SetSource(CalChange."Source Type"::Location, "Location Code", '', '');
+CalendarMgmt.CalcDateBOC2(Format("Shipping Time"), "Planned Delivery Date", CustomCalendarChange, true);
+```
+
+**Error**: 'Codeunit Language' does not contain a definition for 'SetGlobalLanguageByCode'
+
+**Solution**: Function has been moved to `codeunit 53 "Translation Helper"`, function `SetGlobalLanguageByCode`.
+
+**Error**: 'Codeunit Language' does not contain a definition for 'RestoreGlobalLanguage'
+
+**Solution**: Function has been moved to `codeunit 53 "Translation Helper"`, function `RestoreGlobalLanguage`.
+
+**Error**: 'Codeunit Language' does not contain a definition for 'GetTranslatedFieldCaption'
+
+**Solution**: Function has been moved to `codeunit 53 "Translation Helper"`, function `GetTranslatedFieldCaption`.
+
+---
+
 ## Removed Functionality
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'GetBlobString'_\
 **Error**: _'Codeunit "Type Helper"' does not contain a definition for 'SetBlobString'_\
@@ -763,3 +917,27 @@ end;
 **Error**: _'"System Indicator"' does not contain a definition for 'Company+Database'_
 
 **Solution**: Option has been removed. You may use the 'Custom' option and include 4 characters in "Custom System Indicator Text".
+
+**Error**: _'Codeunit Language' does not contain a definition for 'TrySetGlobalLanguage'_
+
+**Solution**: The function has been removed. If you require it, you can create a function that does the same functionality.
+
+```
+// <summary>
+// TryFunction for setting the global language.
+// </summary>
+// <param name="LanguageId">The id of the language to be set as global</param>
+[TryFunction]
+local procedure TrySetGlobalLanguage(LanguageId: Integer)
+begin
+    GlobalLanguage(LanguageId);
+end;
+```
+
+**Error**: _'Codeunit Language' does not contain a definition for 'TryGetCultureName'_
+
+**Solution**: The function has been removed.
+
+**Error**: _'Record "User Login"' does not contain a definition for 'UpdateLastLoginInfo'_
+
+**Solution**: The function has been moved to `codeunit 9026 "User Login Time Tracker"`, function `CreateOrUpdateLoginInfo` and has OnPrem scope. 

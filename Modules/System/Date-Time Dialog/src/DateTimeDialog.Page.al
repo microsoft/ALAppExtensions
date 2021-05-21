@@ -20,6 +20,7 @@ page 684 "Date-Time Dialog"
             {
                 ApplicationArea = All;
                 Caption = 'Date';
+                ToolTip = 'Specifies the date.';
 
                 trigger OnValidate()
                 begin
@@ -31,6 +32,7 @@ page 684 "Date-Time Dialog"
             {
                 ApplicationArea = All;
                 Caption = 'Time';
+                ToolTip = 'Specifies the time of day.';
             }
         }
     }

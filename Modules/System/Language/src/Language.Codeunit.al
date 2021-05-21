@@ -153,6 +153,41 @@ codeunit 43 Language
     end;
 
     /// <summary>
+    /// Opens a list of the languages that are available for the application so that the user can choose a language.
+    /// </summary>
+    /// <param name="LanguageCode">Exit parameter that holds the chosen language code.</param>
+    procedure LookupLanguageCode(var LanguageCode: Code[10])
+    var
+        LanguageImpl: Codeunit "Language Impl.";
+    begin
+        LanguageImpl.LookupLanguageCode(LanguageCode);
+    end;
+
+    /// <summary>
+    /// Gets the parent language ID based on Windows Culture Info.
+    /// </summary>
+    /// <param name="LanguageId">Exit parameter that holds the chosen language ID.</param>
+    /// <returns>The ID of the parent language</returns>
+    procedure GetParentLanguageId(LanguageId: Integer): Integer
+    var
+        LanguageImpl: Codeunit "Language Impl.";
+    begin
+        exit(LanguageImpl.GetParentLanguageId((LanguageId)));
+    end;
+
+    /// <summary>
+    /// Sets the preferred language for the provided user.
+    /// </summary>
+    /// <param name="UserSecID">The user security ID for the user for whom the preferred language is changed.</param>
+    /// <param name="NewLanguageID">The new preferred language for the user.</param>
+    procedure SetPreferredLanguageID(UserSecID: Guid; NewLanguageID: Integer)
+    var
+        LanguageImpl: Codeunit "Language Impl.";
+    begin
+        LanguageImpl.SetPreferredLanguageID(UserSecID, NewLanguageID);
+    end;
+
+    /// <summary>
     /// Integration event, emitted from <see cref="GetUserLanguageCode"/>.
     /// Subscribe to this event to change the default behavior by changing the provided parameter(s).
     /// </summary>

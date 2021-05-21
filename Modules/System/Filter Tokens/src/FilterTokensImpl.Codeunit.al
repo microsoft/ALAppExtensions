@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -250,6 +250,7 @@ codeunit 58 "Filter Tokens Impl."
         Text1: Text;
         Text2: Text;
         RangeStartPosition: Integer;
+        DateFilterRangeLbl: Label '%1..%2', Comment = '%1 - From date, %2 - Till date', Locked = true;
     begin
         DateFilter := DelChr(DateFilter, '<>');
         if DateFilter = '' then
@@ -263,7 +264,7 @@ codeunit 58 "Filter Tokens Impl."
             if Date1 = Date2 then
                 DateFilter := Format(Date1)
             else
-                DateFilter := StrSubstNo('%1..%2', Date1, Date2);
+                DateFilter := StrSubstNo(DateFilterRangeLbl, Date1, Date2);
             exit;
         end;
 
@@ -291,6 +292,7 @@ codeunit 58 "Filter Tokens Impl."
             RemainderOfText := DateFilter;
             DateFilter := '';
         end else begin
+            ClearLastError(); // When Evaluate fails, the error shows up in 'View the last known error'
             Position := StrPos(DateFilter, '+');
             if Position = 0 then
                 Position := StrPos(DateFilter, '-');
@@ -306,28 +308,29 @@ codeunit 58 "Filter Tokens Impl."
         Position := 1;
         FindText(DateToken, DateFilter, Position);
 
-        if DateToken <> '' then
-            case DateToken of
-                CopyStr('TODAY', 1, StrLen(DateToken)), CopyStr(TodayTxt, 1, StrLen(DateToken)):
-                    Handled := FindDate(Today(), Date1, Date2);
-                CopyStr('WORKDATE', 1, StrLen(DateToken)), CopyStr(WorkdateTxt, 1, StrLen(DateToken)):
-                    Handled := FindDate(WorkDate(), Date1, Date2);
-                CopyStr('NOW', 1, StrLen(DateToken)), CopyStr(NowTxt, 1, StrLen(DateToken)):
-                    Handled := FindDate(DT2Date(CurrentDateTime()), Date1, Date2);
-                CopyStr('YESTERDAY', 1, StrLen(DateToken)), CopyStr(YesterdayTxt, 1, StrLen(DateToken)):
-                    Handled := FindDate(CalcDate('<-1D>'), Date1, Date2);
-                CopyStr('TOMORROW', 1, StrLen(DateToken)), CopyStr(TomorrowTxt, 1, StrLen(DateToken)):
-                    Handled := FindDate(CalcDate('<1D>'), Date1, Date2);
-                CopyStr('WEEK', 1, StrLen(DateToken)), CopyStr(WeekTxt, 1, StrLen(DateToken)):
-                    Handled := FindDates('<-CW>', '<CW>', Date1, Date2);
-                CopyStr('MONTH', 1, StrLen(DateToken)), CopyStr(MonthTxt, 1, StrLen(DateToken)):
-                    Handled := FindDates('<-CM>', '<CM>', Date1, Date2);
-                CopyStr('QUARTER', 1, StrLen(DateToken)), CopyStr(QuarterTxt, 1, StrLen(DateToken)):
-                    Handled := FindDates('<-CQ>', '<CQ>', Date1, Date2);
-                else
-                    FilterTokens.OnResolveDateFilterToken(DateFilter, Date1, Date2, Handled);
-            end
-        else
+        if DateToken <> '' then begin
+            FilterTokens.OnResolveDateFilterToken(DateFilter, Date1, Date2, Handled);
+
+            if not Handled then
+                case DateToken of
+                    CopyStr('TODAY', 1, StrLen(DateToken)), CopyStr(TodayTxt, 1, StrLen(DateToken)):
+                        Handled := FindDate(Today(), Date1, Date2);
+                    CopyStr('WORKDATE', 1, StrLen(DateToken)), CopyStr(WorkdateTxt, 1, StrLen(DateToken)):
+                        Handled := FindDate(WorkDate(), Date1, Date2);
+                    CopyStr('NOW', 1, StrLen(DateToken)), CopyStr(NowTxt, 1, StrLen(DateToken)):
+                        Handled := FindDate(DT2Date(CurrentDateTime()), Date1, Date2);
+                    CopyStr('YESTERDAY', 1, StrLen(DateToken)), CopyStr(YesterdayTxt, 1, StrLen(DateToken)):
+                        Handled := FindDate(CalcDate('<-1D>'), Date1, Date2);
+                    CopyStr('TOMORROW', 1, StrLen(DateToken)), CopyStr(TomorrowTxt, 1, StrLen(DateToken)):
+                        Handled := FindDate(CalcDate('<1D>'), Date1, Date2);
+                    CopyStr('WEEK', 1, StrLen(DateToken)), CopyStr(WeekTxt, 1, StrLen(DateToken)):
+                        Handled := FindDates('<-CW>', '<CW>', Date1, Date2);
+                    CopyStr('MONTH', 1, StrLen(DateToken)), CopyStr(MonthTxt, 1, StrLen(DateToken)):
+                        Handled := FindDates('<-CM>', '<CM>', Date1, Date2);
+                    CopyStr('QUARTER', 1, StrLen(DateToken)), CopyStr(QuarterTxt, 1, StrLen(DateToken)):
+                        Handled := FindDates('<-CQ>', '<CQ>', Date1, Date2);
+                end
+        end else
             if (DateFilter <> '') and Evaluate(Date1, DateFilter) then begin
                 Date2 := Date1;
                 Handled := true;
@@ -441,31 +444,31 @@ codeunit 58 "Filter Tokens Impl."
             Position := Position + 1;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000007, 'MakeDateTimeFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeDateTimeFilter', '', false, false)]
     local procedure DoMakeDateTimeFilter(var DateTimeFilterText: Text)
     begin
         MakeDateTimeFilter(DateTimeFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000007, 'MakeDateFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeDateFilter', '', false, false)]
     local procedure DoMakeDateFilter(var DateFilterText: Text)
     begin
         MakeDateFilter(DateFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000007, 'MakeTextFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeTextFilter', '', false, false)]
     local procedure DoMakeTextFilter(var TextFilterText: Text)
     begin
         MakeTextFilter(TextFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000007, 'MakeCodeFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeCodeFilter', '', false, false)]
     local procedure DoMakeCodeFilter(var TextFilterText: Text)
     begin
         MakeTextFilter(TextFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 2000000007, 'MakeTimeFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeTimeFilter', '', false, false)]
     local procedure DoMakeTimeFilter(var TimeFilterText: Text)
     begin
         MakeTimeFilter(TimeFilterText);

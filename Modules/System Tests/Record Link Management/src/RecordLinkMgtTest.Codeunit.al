@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -20,23 +20,40 @@ codeunit 132508 "Record Link Mgt. Test"
     [Test]
     procedure TestWriteNote();
     var
-        RecordLink: Record 2000000068;
+        RecordLink: Record "Record Link";
+        Any: Codeunit Any;
         Instream: InStream;
+        LongText: Text;
         Text: Text;
+        Byte: Byte;
     begin
         // [WHEN] WriteNote is invoked with a text
         RecordLinkManagement.WriteNote(RecordLink, 'My note for the link');
 
         // [THEN] The Record Link variable has the text as a note
-        RecordLink.Note.CREATEINSTREAM(Instream, TEXTENCODING::UTF8);
-        Assert.IsTrue(Instream.READTEXT(Text) > 0, 'There are characters to read.');
-        Assert.IsTrue(STRPOS(Text, 'My note for the link') > 0, 'Mismatch in the text written.');
+        // [THEN] The Note contains a single special byte before the actual message.
+        RecordLink.Note.CreateInStream(Instream, TextEncoding::UTF8);
+        Assert.AreEqual(1, Instream.Read(Byte), 'A special byte was expected.');
+        Instream.ReadText(Text);
+        Assert.AreEqual('My note for the link', Text, 'Mismatch in the text written.');
+
+        // [WHEN] The text is bigger of 128 characters
+        LongText := Any.AlphanumericText(128 + Any.IntegerInRange(512));
+        RecordLinkManagement.WriteNote(RecordLink, LongText);
+
+        // [THEN] The Note contains 2 special bytes before the actual message
+        RecordLink.Note.CreateInStream(Instream, TextEncoding::UTF8);
+        Assert.AreEqual(1, Instream.Read(Byte), 'A special byte was expected.');
+        Assert.AreEqual(1, Instream.Read(Byte), 'A special byte was expected.');
+
+        Instream.ReadText(Text);
+        Assert.AreEqual(LongText, Text, 'Mismatch in the text written.');
     end;
 
     [Test]
     procedure TestReadNote();
     var
-        RecordLink: Record 2000000068;
+        RecordLink: Record "Record Link";
         Text: Text;
     begin
         // [GIVEN] Some text is written to the record Link
@@ -53,12 +70,15 @@ codeunit 132508 "Record Link Mgt. Test"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestCopyLinks();
     var
-        RecordLink: Record 2000000068;
-        FromRecordLinkRecordTest: Record 132508;
-        ToRecordLinkRecordTest: Record 132508;
-        NewRecordLink: Record 2000000068;
+        RecordLink: Record "Record Link";
+        FromRecordLinkRecordTest: Record "Record Link Record Test";
+        ToRecordLinkRecordTest: Record "Record Link Record Test";
+        NewRecordLink: Record "Record Link";
+        OnAfterCopyLinksMonitor: Codeunit "OnAfterCopyLinks Monitor";
         RecLinkCount: Integer;
     begin
+        BindSubscription(OnAfterCopyLinksMonitor);
+
         // [GIVEN] A new record is created to set record links on
         FromRecordLinkRecordTest.DeleteAll();
         FromRecordLinkRecordTest.Init();
@@ -67,7 +87,6 @@ codeunit 132508 "Record Link Mgt. Test"
         FromRecordLinkRecordTest.Insert();
 
         // [GIVEN] Some text is written to the record Link
-        RecordLink.Init();
         RecordLink.Type := RecordLink.Type::Note;
         // [GIVEN] Assign the record link to a record
         RecordLink."Record ID" := FromRecordLinkRecordTest.RecordId();
@@ -88,6 +107,7 @@ codeunit 132508 "Record Link Mgt. Test"
         // [WHEN] The record link is copied to the other instance
         RecLinkCount := NewRecordLink.Count();
         RecordLinkManagement.CopyLinks(FromRecordLinkRecordTest, ToRecordLinkRecordTest);
+        Assert.IsTrue(OnAfterCopyLinksMonitor.IsEventRaised(), 'OnAfterCopyLinks event was not raised');
 
         // [THEN] A new record link has been created
         Assert.AreEqual(RecLinkCount + 1, NewRecordLink.Count(), 'No new record links created');
@@ -106,11 +126,11 @@ codeunit 132508 "Record Link Mgt. Test"
     [HandlerFunctions('HandleConfirm,HandleMessage')]
     procedure TestRemoveOrphanedLinks();
     var
-        RecordLink: Record 2000000068;
+        RecordLink: Record "Record Link";
         EmptyRecordId: RecordID;
     begin
         // [GIVEN] Some text is written to the record Link
-        RecordLink.Init();
+        RecordLink.DeleteAll();
         RecordLinkManagement.WriteNote(RecordLink, 'My note for the link');
 
         // [GIVEN] Insert the record link

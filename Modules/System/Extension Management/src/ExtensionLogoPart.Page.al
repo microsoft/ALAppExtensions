@@ -18,8 +18,11 @@ page 2506 "Extension Logo Part"
     PopulateAllFields = true;
     RefreshOnActivate = true;
     ShowFilter = false;
-    SourceTable = "NAV App";
+    SourceTable = "Published Application";
+    SourceTableView = WHERE("Package Type" = FILTER(= Extension | Designer),
+                            "Tenant Visible" = CONST(true));
     ContextSensitiveHelpPage = 'ui-extensions';
+    Permissions = tabledata "Published Application" = r;
 
     layout
     {

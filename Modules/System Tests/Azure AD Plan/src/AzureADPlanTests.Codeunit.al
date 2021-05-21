@@ -12,6 +12,17 @@ codeunit 132912 "Azure AD Plan Tests"
         LibraryAssert: Codeunit "Library Assert";
 
     [Test]
+    [Scope('OnPrem')]
+    procedure CheckPlansNumber()
+    var
+        AzureADPlan: Codeunit "Azure AD Plan";
+    begin
+        // [SCENARIO] There should be 15 Plans
+        LibraryAssert.AreEqual(16, AzureADPlan.GetAvailablePlansCount(),
+            'The number of available plans has changed. Make sure that you have added or removed tests on these changes in Plan-Based tests and then update the number of plans in this test.');
+    end;
+
+    [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure TestIsPlanAssigned()
@@ -82,7 +93,7 @@ codeunit 132912 "Azure AD Plan Tests"
         UserId := CreateGuid();
         CreateGraphUser(GraphUser, UserId);
         PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlan');
-        PopulateMockGraph(GraphUser, PlanID, 'TestPlan', UserId);
+        PopulateMockGraph(GraphUser, PlanID, 'TestPlan');
 
         // [WHEN] checking if the user is entitled to a service plan
         // [THEN] the result should be true
@@ -113,7 +124,7 @@ codeunit 132912 "Azure AD Plan Tests"
         UserId := CreateGuid();
         CreateGraphUser(GraphUser, UserId);
         PlanID := CreateGuid();
-        PopulateMockGraph(GraphUser, PlanID, 'TestPlan', UserId);
+        PopulateMockGraph(GraphUser, PlanID, 'TestPlan');
 
         LibraryAssert.AreEqual(false, AzureADPlan.DoesPlanExist(PlanID), 'The new Plan should not exist in the table Plan');
         LibraryAssert.AreEqual(false, AzureADPlan.IsPlanAssignedToUser(PlanID, UserID), 'The new Plan should not be assigned to the user');
@@ -274,7 +285,7 @@ codeunit 132912 "Azure AD Plan Tests"
         LibraryAssert.AreEqual(1, AzureADPlan.GetAvailablePlansCount(), 'The Plan table should have only 1 Plan');
     end;
 
-    local procedure PopulateMockGraph(GraphUser: DotNet UserInfo; PlanId: Guid; PlanName: Text; UserId: Guid)
+    local procedure PopulateMockGraph(GraphUser: DotNet UserInfo; PlanId: Guid; PlanName: Text)
     var
         MockGraphQuery: DotNet MockGraphQuery;
     begin

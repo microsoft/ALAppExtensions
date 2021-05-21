@@ -42,6 +42,14 @@ table 9900 "Web Service Aggregate"
         {
             Caption = 'Published';
         }
+        field(13; ExcludeFieldsOutsideRepeater; Boolean)
+        {
+            Caption = 'Exclude Fields Outside of the Repeater';
+        }
+        field(14; ExcludeNonEditableFlowFields; Boolean)
+        {
+            Caption = 'Exclude Non-Editable FlowFields';
+        }
         field(15; "All Tenants"; Boolean)
         {
             Caption = 'All Tenants';

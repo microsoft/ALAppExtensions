@@ -18,14 +18,14 @@ Advanced Encryption Standard functionality:
 - Initializes a new instance of the RijndaelManaged class providing the encryption key and block size.
 - Initializes a new instance of the RijndaelManaged class providing the encryption key, block size and cipher mode.
 - Initializes a new instance of the RijndaelManaged class providing the encryption key, block size, cipher mode and padding mode.
-- Set a new block size value for the RijnadaelManaged class.
-- Set a new cipher mode value for the RijnadaelManaged class.
-- Set a new padding mode value for the RijnadaelManaged class.
-- Set the key and vector for the RijnadaelManaged class.
+- Set a new block size value for the RijndaelManaged class.
+- Set a new cipher mode value for the RijndaelManaged class.
+- Set a new padding mode value for the RijndaelManaged class.
+- Set the key and vector for the RijndaelManaged class.
 - Determine whether the specified key size is valid for the current algorithm.
 - Specify the key sizes, in bits, that are supported by the symmetric algorithm.
 - Specify the block sizes, in bits, that are supported by the symmetric algorithm.
-- Get the key and vector from the RijnadaelManaged class.
+- Get the key and vector from the RijndaelManaged class.
 - Return plain text as an encrypted value.
 - Return encrypted text as plain text.
 
@@ -313,6 +313,318 @@ The available hash algorithms include HMACMD5, HMACSHA1, HMACSHA256, HMACSHA384,
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 Base64 hashed value.
+### SignData (Method) <a name="SignData"></a> 
+
+ Computes the hash value of the specified string and signs it.
+ 
+
+#### Syntax
+```
+procedure SignData(InputString: Text; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
+```
+#### Parameters
+*InputString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Input string.
+
+*KeyStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of the private key to use in the hash algorithm.
+
+*HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA512]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The stream to write the output to.
+
+### SignData (Method) <a name="SignData"></a> 
+
+ Computes the hash value of the specified data and signs it.
+ 
+
+#### Syntax
+```
+procedure SignData(DataStream: InStream; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA5122; SignatureStream: OutStream)
+```
+#### Parameters
+*DataStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of input data.
+
+*KeyStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of the private key to use in the hash algorithm.
+
+*HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA5122]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The stream to write the output to.
+
+### VerifyData (Method) <a name="VerifyData"></a> 
+
+ Verifies that a digital signature is valid.
+ 
+
+#### Syntax
+```
+procedure VerifyData(InputString: Text; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+```
+#### Parameters
+*InputString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Input string.
+
+*Key ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Public key to use in the hash algorithm.
+
+*HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA512]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of signature.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the digital signature is valid.
+### VerifyData (Method) <a name="VerifyData"></a> 
+
+ Verifies that a digital signature is valid.
+ 
+
+#### Syntax
+```
+procedure VerifyData(DataStream: InStream; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+```
+#### Parameters
+*DataStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of input data.
+
+*Key ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Public key to use in the hash algorithm.
+
+*HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA512]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of digital signature.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the digital signature is valid.
+
+## DESCryptoServiceProvider (Codeunit 1379)
+
+ Provides helper functions for the Data Encryption Standard (DES)
+ 
+
+### EncryptText (Method) <a name="EncryptText"></a> 
+
+ Encrypts text with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure EncryptText(DecryptedText: Text; Password: Text; Salt: Text)EncryptedText: Text
+```
+#### Parameters
+*DecryptedText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the text to encrypt
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of DotNet System.Security.Cryptography.Rfc2898DeriveBytes
+
+*Salt ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes
+
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+Returns the encrypted text
+### DecryptText (Method) <a name="DecryptText"></a> 
+
+ Decrypts text with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure DecryptText(EncryptedText: Text; Password: Text; Salt: Text)DecryptedText: Text
+```
+#### Parameters
+*EncryptedText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the text to decrypt
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of DotNet System.Security.Cryptography.Rfc2898DeriveBytes
+
+*Salt ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes
+
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+Returns the decrypted text
+### EncryptStream (Method) <a name="EncryptStream"></a> 
+
+ Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[Obsolete('Replaced, add the salt parameter to continue using this function', '18.0')]
+procedure EncryptStream(Password: Text; InputInstream: InStream; var OutputOutstream: Outstream)
+```
+#### Parameters
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes
+
+*InputInstream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+Represents the input instream data to encrypt
+
+*OutputOutstream ([Outstream]())* 
+
+Represents the output instream encrypted data
+
+### DecryptStream (Method) <a name="DecryptStream"></a> 
+
+ Decrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+[Obsolete('Replaced, add the salt parameter to continue using this function', '18.0')]
+procedure DecryptStream(Password: Text; InputInstream: InStream; var OutputOutstream: Outstream)
+```
+#### Parameters
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes
+
+*InputInstream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+Represents the input instream data to decrypt
+
+*OutputOutstream ([Outstream]())* 
+
+Represents the output instream decrypted data
+
+### EncryptStream (Method) <a name="EncryptStream"></a> 
+
+ Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure EncryptStream(Password: Text; Salt: Text; InputInstream: InStream; var OutputOutstream: Outstream)
+```
+#### Parameters
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes
+
+*Salt ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes
+
+*InputInstream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+Represents the input instream data to encrypt
+
+*OutputOutstream ([Outstream]())* 
+
+Represents the output instream encrypted data
+
+### DecryptStream (Method) <a name="DecryptStream"></a> 
+
+ Decrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure DecryptStream(Password: Text; Salt: Text; InputInstream: InStream; var OutputOutstream: Outstream)
+```
+#### Parameters
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes
+
+*Salt ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes
+
+*InputInstream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+Represents the input instream data to decrypt
+
+*OutputOutstream ([Outstream]())* 
+
+Represents the output instream decrypted data
+
+
+## Rfc2898DeriveBytes (Codeunit 1378)
+
+ Provides helper functions for the Advanced Encryption Standard.
+ 
+
+### HashRfc2898DeriveBytes (Method) <a name="HashRfc2898DeriveBytes"></a> 
+If generating the hash fails, it throws a dotnet error.
+
+
+ Generates a base64 encoded hash from a string based on the provided hash algorithm.
+ 
+
+#### Syntax
+```
+procedure HashRfc2898DeriveBytes(InputString: Text; Salt: Text; NoOfBytes: Integer; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
+```
+#### Parameters
+*InputString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the input to be hashed
+
+*Salt ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The salt used to derive the key
+
+*NoOfBytes ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The number of pseudo-random key bytes to generate
+
+*HashAlgorithmType ([Option MD5,SHA1,SHA256,SHA384,SHA512]())* 
+
+Represents the HashAlgorithmType, which returns the encrypted hash in the desired algorithm type
+
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+Hash of input
 
 ## Rijndael Cryptography (Codeunit 1258)
 
@@ -410,7 +722,7 @@ Represents the padding mode used in the symmetric algorithm.. Valid values: None
 
 ### SetBlockSize (Method) <a name="SetBlockSize"></a> 
 
- Sets a new block size value for the RijnadaelManaged class.
+ Sets a new block size value for the RijndaelManaged class.
  
 
 #### Syntax
@@ -424,7 +736,7 @@ Represents the block size, in bits, of the cryptographic operation.
 
 ### SetCipherMode (Method) <a name="SetCipherMode"></a> 
 
- Sets a new cipher mode value for the RijnadaelManaged class.
+ Sets a new cipher mode value for the RijndaelManaged class.
  
 
 #### Syntax
@@ -438,7 +750,7 @@ Represents the cipher mode used in the symmetric algorithm. Valid values: ECB,CB
 
 ### SetPaddingMode (Method) <a name="SetPaddingMode"></a> 
 
- Sets a new padding mode value for the RijnadaelManaged class.
+ Sets a new padding mode value for the RijndaelManaged class.
  
 
 #### Syntax
@@ -452,7 +764,7 @@ Represents the padding mode used in the symmetric algorithm.. Valid values: None
 
 ### SetEncryptionData (Method) <a name="SetEncryptionData"></a> 
 
- Sets the key and vector for the RijnadaelManaged class.
+ Sets the key and vector for the RijndaelManaged class.
  
 
 #### Syntax
@@ -466,7 +778,7 @@ Represents the secret key for the symmetric algorithm encoded as Base64 Text
 
 *VectorAsBase64 ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
-
+Represents the initialization vector (IV) for the symmetric algorithm encoded as Base64 Text
 
 ### IsValidKeySize (Method) <a name="IsValidKeySize"></a> 
 
@@ -485,7 +797,7 @@ Key Size.
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
-
+True if the key size is valid; false otherwise.
 ### GetLegalKeySizeValues (Method) <a name="GetLegalKeySizeValues"></a> 
 
  Specifies the key sizes, in bits, that are supported by the symmetric algorithm.
@@ -532,7 +844,7 @@ Skip Size in bits
 
 ### GetEncryptionData (Method) <a name="GetEncryptionData"></a> 
 
- Gets the key and vector from the RijnadaelManaged class
+ Gets the key and vector from the RijndaelManaged class
  
 
 #### Syntax
@@ -546,7 +858,7 @@ Represents the secret key for the symmetric algorithm encoded as Base64 Text
 
 *VectorAsBase64 ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
-
+Represents the initialization vector (IV) for the symmetric algorithm encoded as Base64 Text
 
 ### Encrypt (Method) <a name="Encrypt"></a> 
 
@@ -585,8 +897,273 @@ The value to decrypt.
 
 Plain text.
 
+## X509Certificate2 (Codeunit 1286)
+
+ Provides helper functions to work with the X509Certificate2 class.
+ 
+
+### VerifyCertificate (Method) <a name="VerifyCertificate"></a> 
+When certificate cannot be initialized
+
+
+ Verifes that a certificate is initialized and can be exported.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure VerifyCertificate(var CertBase64Value: Text; Password: Text; X509ContentType: Enum "X509 Content Type"): Boolean
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*X509ContentType ([Enum "X509 Content Type"]())* 
+
+Specifies the format of an X.509 certificate
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if certificate is verified
+### GetCertificateFriendlyName (Method) <a name="GetCertificateFriendlyName"></a> 
+
+ Specifies the friendly name of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateFriendlyName(CertBase64Value: Text; Password: Text; var FriendlyName: Text)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*FriendlyName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents certificate Friendly Name
+
+### GetCertificateSubject (Method) <a name="GetCertificateSubject"></a> 
+
+ Specifies the subject of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateSubject(CertBase64Value: Text; Password: Text; var Subject: Text)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*Subject ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate subject distinguished name
+
+### GetCertificateThumbprint (Method) <a name="GetCertificateThumbprint"></a> 
+
+ Specifies the thumbprint of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateThumbprint(CertBase64Value: Text; Password: Text; var Thumbprint: Text)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*Thumbprint ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Thumbprint
+
+### GetCertificateIssuer (Method) <a name="GetCertificateIssuer"></a> 
+
+ Specifies the issuer of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateIssuer(CertBase64Value: Text; Password: Text; var Issuer: Text)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*Issuer ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Issuer
+
+### GetCertificateExpiration (Method) <a name="GetCertificateExpiration"></a> 
+
+ Specifies the expiration date of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateExpiration(CertBase64Value: Text; Password: Text; var Expiration: DateTime)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*Expiration ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+
+Certificate Expiration Date
+
+### GetCertificateNotBefore (Method) <a name="GetCertificateNotBefore"></a> 
+
+ Specifies the NotBefore date of the certificate based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificateNotBefore(CertBase64Value: Text; Password: Text; var NotBefore: DateTime)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*NotBefore ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+
+Certificate NotBefore Date
+
+### HasPrivateKey (Method) <a name="HasPrivateKey"></a> 
+
+ Checks whether the certificate has a private key based on it's Base64 value.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure HasPrivateKey(CertBase64Value: Text; Password: Text): Boolean
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the certificate has private key
+### GetCertificatePropertiesAsJson (Method) <a name="GetCertificatePropertiesAsJson"></a> 
+
+ Specifies the certificate details in Json object
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure GetCertificatePropertiesAsJson(CertBase64Value: Text; Password: Text; var CertPropertyJson: Text)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate Password
+
+*CertPropertyJson ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Certificate details in json
+
+
 ## Data Encryption Management (Page 9905)
 
  Exposes functionality that allows super users for on-premises versions to enable or disable encryption, import, export or change the encryption key.
+ 
+
+
+## X509 Content Type (Enum 1286)
+Specifies the format of an X.509 certificate.
+
+### Unknown (value: 0)
+
+
+ Specifies unknown X.509 certificate.
+ 
+
+### Cert (value: 1)
+
+
+ Specifies a single X.509 certificate.
+ 
+
+### PFXSerializedCert (value: 2)
+
+
+ Specifies a single serialized X.509 certificate.
+ 
+
+### Pkcs12 (value: 3)
+
+
+ Specifies a PKCS #12-formatted certificate. The Pkcs12 value is identical to the Pfx value.
+ 
+
+### SerializedStore (value: 4)
+
+
+ Specifies a serialized store.
+ 
+
+### Pkcs7 (value: 5)
+
+
+ Specifies a PKCS #7-formatted certificate.
+ 
+
+### Authenticode (value: 6)
+
+
+ Specifies an Authenticode X.509 certificate.
  
 

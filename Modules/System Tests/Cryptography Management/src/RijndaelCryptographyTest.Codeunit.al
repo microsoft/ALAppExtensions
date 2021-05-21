@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 132575 "Rijnadael Cryptography Test"
+codeunit 132575 "Rijndael Cryptography Test"
 {
     Subtype = Test;
 

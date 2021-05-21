@@ -35,7 +35,7 @@ codeunit 26 "Confirm Management Impl."
     /// <summary>
     /// Raises an event to be able to change the return of IsGuiAllowed function. Used for testing.
     /// </summary>
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     procedure OnBeforeGuiAllowed(var Result: Boolean; var Handled: Boolean)
     begin
     end;

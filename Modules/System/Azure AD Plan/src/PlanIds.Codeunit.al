@@ -9,12 +9,14 @@
 codeunit 9027 "Plan Ids"
 {
 
+    Access = Public;
+
     trigger OnRun()
     begin
     end;
 
+#pragma warning disable AA0240
     var
-        BasicPlanGUIDTxt: Label '{7e8e26a8-91a4-4590-961d-d12b61c16a43}', Locked = true;
         TeamMemberPlanGUIDTxt: Label '{d9a6391b-8970-4976-bd94-5f205007c8d8}', Locked = true;
         EssentialPlanGUIDTxt: Label '{920656a2-7dd8-4c83-97b6-a356414dbd36}', Locked = true;
         PremiumPlanGUIDTxt: Label '{8e9002c0-a1d8-4465-b952-817d2948e6e2}', Locked = true;
@@ -28,77 +30,83 @@ codeunit 9027 "Plan Ids"
         PremiumISVPlanGUIDTxt: Label '{4c52d56d-5121-425a-91a5-dd0de136ca17}', Locked = true;
         DeviceISVPlanGUIDTxt: Label '{a98d0c4a-a52f-4771-a609-e20366102d2a}', Locked = true;
         DevicePlanGUIDTxt: Label '{100e1865-35d4-4463-aaff-d38eee3a1116}', Locked = true;
+        BasicPlanGUIDTxt: Label '{2ec8b6ca-ab13-4753-a479-8c2ffe4c323b}', Locked = true;
+        AccountantHubPlanGuidTxt: Label '{5d60ea51-0053-458f-80a8-b6f426a1a0c1}', Locked = true;
+        HelpDeskPlanGuidTxt: Label '{00000000-0000-0000-0000-000000000008}', Locked = true;
+        InfrastructurePlanGuidTxt: Label '{996DEF3D-B36C-4153-8607-A6FD3C01B89F}', Locked = true;
+#pragma warning restore
 
     /// <summary>
-    /// Returns the ID for the Basic plan.
+    /// Returns the ID for the Dynamics 365 Business Central Basic Financials plan.
     /// </summary>
-    /// <returns>The ID for the Basic plan.</returns>
+    /// <returns>The ID for the Dynamics 365 Business Central Basic Financials plan.</returns>
     procedure GetBasicPlanId(): Guid
     begin
-        EXIT(BasicPlanGUIDTxt);
+        exit(BasicPlanGUIDTxt);
     end;
 
     /// <summary>
-    /// Returns the ID for the Finance and Operations, Team Member plan.
+    /// Returns the ID for the Dynamics 365 Business Central Team Member plan.
     /// </summary>
-    /// <returns>The ID for the Finance and Operations, Team Member plan.</returns>
+    /// <returns>The ID for the Dynamics 365 Business Central Team Member plan.</returns>
     procedure GetTeamMemberPlanId(): Guid
     begin
-        EXIT(TeamMemberPlanGUIDTxt);
+        exit(TeamMemberPlanGUIDTxt);
     end;
 
     /// <summary>
-    /// Returns the ID for the Finance and Operations plan.
+    /// Returns the ID for the Dynamics 365 Business Central Essentials plan.
     /// </summary>
-    /// <returns>The ID for the Finance and Operations plan.</returns>
+    /// <returns>The ID for the Dynamics 365 Business Central Essentials plan.</returns>
     procedure GetEssentialPlanId(): Guid
     begin
-        EXIT(EssentialPlanGUIDTxt);
+        exit(EssentialPlanGUIDTxt);
     end;
 
     /// <summary>
-    /// Returns the ID for the Dynamics 365 Business Central, Premium User plan.
+    /// Returns the ID for the Dynamics 365 Business Central Premium plan.
     /// </summary>
-    /// <returns>The ID for the Dynamics 365 Business Central, Premium User plan.</returns>
+    /// <returns>The ID for the Dynamics 365 Business Central Premium plan.</returns>
     procedure GetPremiumPlanId(): Guid
     begin
-        EXIT(PremiumPlanGUIDTxt);
+        exit(PremiumPlanGUIDTxt);
     end;
 
     /// <summary>
     /// Returns the ID for the Microsoft Invoicing plan.
     /// </summary>
     /// <returns>The ID for the Microsoft Invoicing plan.</returns>
+    [Obsolete('Invoicing product has been retired.', '16.0')]
     procedure GetInvoicingPlanId(): Guid
     begin
-        EXIT(InvoicingPlanGUIDTxt);
+        exit(InvoicingPlanGUIDTxt);
     end;
 
     /// <summary>
-    /// Returns the ID for the Finance and Operations for IWs plan.
+    /// Returns the ID for the Dynamics 365 Business Central for IWs plan.
     /// </summary>
-    /// <returns>The ID for the Finance and Operations for IWs plan.</returns>
+    /// <returns>The ID for the Dynamics 365 Business Central for IWs plan.</returns>
     procedure GetViralSignupPlanId(): Guid
     begin
-        EXIT(ViralSignupPlanGUIDTxt);
+        exit(ViralSignupPlanGUIDTxt);
     end;
 
     /// <summary>
-    /// Returns the ID for the Finance and Operations, External Accountant plan.
+    /// Returns the ID for the Dynamics 365 Business Central External Accountant plan.
     /// </summary>
-    /// <returns>The ID for the Finance and Operations, External Accountant plan.</returns>
+    /// <returns>The ID for the Dynamics 365 Business Central External Accountant plan.</returns>
     procedure GetExternalAccountantPlanId(): Guid
     begin
-        EXIT(ExternalAccountantPlanGUIDTxt);
+        exit(ExternalAccountantPlanGUIDTxt);
     end;
 
     /// <summary>
-    /// Returns the ID for the Administrator plan.
+    /// Returns the ID for the Delegated Admin agent - Partner plan.
     /// </summary>
-    /// <returns>The ID for the Administrator plan.</returns>
+    /// <returns>The ID for the Delegated Admin agent - Partner plan.</returns>
     procedure GetDelegatedAdminPlanId(): Guid
     begin
-        EXIT(DelegatedAdminGUIDTxt);
+        exit(DelegatedAdminGUIDTxt);
     end;
 
     /// <summary>
@@ -107,34 +115,34 @@ codeunit 9027 "Plan Ids"
     /// <returns>The ID for the Internal Administrator plan.</returns>
     procedure GetInternalAdminPlanId(): Guid
     begin
-        EXIT(InternalAdminGUIDTxt);
+        exit(InternalAdminGUIDTxt);
     end;
 
     /// <summary>
-    /// Returns the ID for the Dynamics 365 Business Central, Team Member ISV plan.
+    /// Returns the ID for the D365 Business Central Team Member - Embedded plan.
     /// </summary>
-    /// <returns>The ID for the Dynamics 365 Business Central, Team Member ISV plan.</returns>
+    /// <returns>The ID for the D365 Business Central Team Member - Embedded plan.</returns>
     procedure GetTeamMemberISVPlanId(): Guid
     begin
-        EXIT(TeamMemberISVPlanGUIDTxt);
+        exit(TeamMemberISVPlanGUIDTxt);
     end;
 
     /// <summary>
-    /// Returns the ID for the Dynamics 365 Business Central, Essential ISV User plan.
+    /// Returns the ID for the Dynamics 365 Business Central Essential - Embedded plan.
     /// </summary>
-    /// <returns>The ID for the Dynamics 365 Business Central, Essential ISV User plan.</returns>
+    /// <returns>The ID for the Dynamics 365 Business Central Essential - Embedded plan.</returns>
     procedure GetEssentialISVPlanId(): Guid
     begin
-        EXIT(EssentialISVPlanGUIDTxt);
+        exit(EssentialISVPlanGUIDTxt);
     end;
 
     /// <summary>
-    /// Returns the ID for the Dynamics 365 Business Central, Premium ISV User plan.
+    /// Returns the ID for the Dynamics 365 Business Central Premium - Embedded plan.
     /// </summary>
-    /// <returns>The ID for the Dynamics 365 Business Central, Premium ISV User plan.</returns>
+    /// <returns>The ID for the Dynamics 365 Business Central Premium - Embedded plan.</returns>
     procedure GetPremiumISVPlanId(): Guid
     begin
-        EXIT(PremiumISVPlanGUIDTxt);
+        exit(PremiumISVPlanGUIDTxt);
     end;
 
     /// <summary>
@@ -147,12 +155,47 @@ codeunit 9027 "Plan Ids"
     end;
 
     /// <summary>
-    /// Returns the ID for the Finance and Operations, Device plan.
+    /// Returns the ID for the Dynamics 365 Business Central Device plan.
     /// </summary>
-    /// <returns>The ID for the Finance and Operations, Device plan.</returns>
+    /// <returns>The ID for the Dynamics 365 Business Central Device plan.</returns>
     procedure GetDevicePlanId(): Guid
     begin
         exit(DevicePlanGUIDTxt);
     end;
-}
 
+    /// <summary>
+    /// Returns the ID for the Dynamics 365 Business Central Basic Financials - Embedded plan.
+    /// </summary>
+    /// <returns>The ID for the Dynamics 365 Business Central Basic Financials - Embedded plan.</returns>
+    procedure GetBasicFinancialsISVPlanId(): Guid
+    begin
+        exit(BasicPlanGUIDTxt);
+    end;
+
+    /// <summary>
+    /// Returns the ID for the Microsoft Dynamics 365 - Accountant Hub plan.
+    /// </summary>
+    /// <returns>The ID for the Microsoft Dynamics 365 - Accountant Hub plan.</returns>
+    procedure GetAccountantHubPlanId(): Guid
+    begin
+        exit(AccountantHubPlanGuidTxt);
+    end;
+
+    /// <summary>
+    /// Returns the ID for the Delegated Helpdesk agent - Partner plan.
+    /// </summary>
+    /// <returns>The ID for the Delegated Helpdesk agent - Partner plan.</returns>
+    procedure GetHelpDeskPlanId(): Guid
+    begin
+        exit(HelpDeskPlanGuidTxt);
+    end;
+
+    /// <summary>
+    /// Returns the ID for the D365 Business Central Infrastructure plan.
+    /// </summary>
+    /// <returns>The ID for the D365 Business Central Infrastructure plan.</returns>
+    procedure GetInfrastructurePlanId(): Guid
+    begin
+        exit(InfrastructurePlanGuidTxt);
+    end;
+}

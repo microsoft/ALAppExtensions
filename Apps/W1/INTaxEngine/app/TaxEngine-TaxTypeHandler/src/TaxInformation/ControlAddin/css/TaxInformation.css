@@ -1,0 +1,40 @@
+#components, #attributes {
+	overflow: auto;
+}
+
+.container,
+body * {
+  font-family: "Segoe UI", "Segoe WP", Segoe, device-segoe, Tahoma, Helvetica,
+    Arial, sans-serif !important;
+  font-size: 10.5pt !important;
+  color: rgb(80, 92, 109) !important;
+}
+
+table {
+  width: 100%;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+td,
+th {
+  padding-bottom: 3px;
+  line-height: 13pt;
+  text-align: left;
+}
+
+th.decimal-column,
+td.decimal-column {
+  text-align: right;
+}
+
+.hidden {
+  display: none;
+}
+
+#nothing-to-show p {
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  margin: 2rem 0;
+}

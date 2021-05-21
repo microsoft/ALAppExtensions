@@ -39,10 +39,12 @@ Use this module to do the following:
 ### CreateWebService (Method) <a name="CreateWebService"></a> 
 
  Creates a web service for a given object. If the web service already exists, it modifies the web service accordingly.
+ This method should be used for On-Prem scenarios only. Calling this method in SaaS will throw a runtime error.
  
 
 #### Syntax
 ```
+[Obsolete('Method scope will be moved down to On-Prem. This function does not work in SaaS.', '16.0')]
 procedure CreateWebService(ObjectType: Option; ObjectId: Integer; ObjectName: Text; Published: Boolean)
 ```
 #### Parameters

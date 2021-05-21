@@ -102,5 +102,5 @@ internal procedure OnAfterCreateorUpdateLoginInfo(UserSecurityId: Guid)
 #### Parameters
 *UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
 
-
+The User Security ID of the user that is being created or updated.
 

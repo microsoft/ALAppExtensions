@@ -1,0 +1,88 @@
+tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
+{
+    fields
+    {
+        field(31081; "Declaration No. CZL"; Code[20])
+        {
+            Caption = 'Declaration No.';
+
+            trigger OnValidate()
+            begin
+                TestField("Statistics Period");
+                CheckUniqueDeclarationNoCZL();
+                if xRec."Declaration No. CZL" <> '' then
+                    CheckJnlLinesExistCZL(FieldNo("Declaration No. CZL"));
+            end;
+        }
+        field(31082; "Statement Type CZL"; Enum "Intrastat Statement Type CZL")
+        {
+            Caption = 'Statement Type';
+
+            trigger OnValidate()
+            begin
+                CheckJnlLinesExistCZL(FieldNo("Statement Type CZL"));
+            end;
+        }
+    }
+
+    var
+        IntrastatJnlLine: Record "Intrastat Jnl. Line";
+        DeclarationAlreadyExistsErr: Label 'Declaration No. %1 already exists for Statistics Period %2.', Comment = '%1 = declaration number, %2 = statistics period';
+        CannotChangeFieldErr: Label 'You cannot change %1 value after Intrastat Journal Batch %2 was exported.', Comment = '%1 = field caption, %2 = intrastat journal batch name';
+
+    procedure CheckUniqueDeclarationNoCZL()
+    var
+        IntrastatJnlBatch: Record "Intrastat Jnl. Batch";
+    begin
+        if "Declaration No. CZL" <> '' then begin
+            IntrastatJnlBatch.Reset();
+            IntrastatJnlBatch.SetRange("Journal Template Name", "Journal Template Name");
+            IntrastatJnlBatch.SetRange("Statistics Period", "Statistics Period");
+            IntrastatJnlBatch.SetRange("Declaration No. CZL", "Declaration No. CZL");
+            IntrastatJnlBatch.SetFilter(Name, '<>%1', Name);
+            if not IntrastatJnlBatch.IsEmpty() then
+                Error(DeclarationAlreadyExistsErr, "Declaration No. CZL", "Statistics Period");
+        end;
+    end;
+
+    procedure CheckJnlLinesExistCZL(CurrentFieldNo: Integer)
+    begin
+        IntrastatJnlLine.Reset();
+        IntrastatJnlLine.SetRange("Journal Template Name", "Journal Template Name");
+        IntrastatJnlLine.SetRange("Journal Batch Name", Name);
+        case CurrentFieldNo of
+            FieldNo("Statistics Period"):
+                begin
+                    IntrastatJnlLine.SetRange("Statistics Period CZL", xRec."Statistics Period");
+                    if IntrastatJnlLine.FindFirst() then
+                        Error(CannotChangeFieldErr, FieldCaption("Statistics Period"), Name);
+                end;
+            FieldNo("Declaration No. CZL"):
+                begin
+                    IntrastatJnlLine.SetRange("Declaration No. CZL", xRec."Declaration No. CZL");
+                    if IntrastatJnlLine.FindFirst() then
+                        Error(CannotChangeFieldErr, FieldCaption("Declaration No. CZL"), Name);
+                end;
+            FieldNo("Statement Type CZL"):
+                begin
+                    IntrastatJnlLine.SetRange("Statement Type CZL", xRec."Statement Type CZL");
+                    if IntrastatJnlLine.FindFirst() then
+                        Error(CannotChangeFieldErr, FieldCaption("Statement Type CZL"), Name);
+                end;
+        end;
+    end;
+
+    procedure AssistEditCZL(): Boolean
+    var
+        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+        NoSeriesManagement: Codeunit NoSeriesManagement;
+    begin
+        if "Declaration No. CZL" = '' then begin
+            StatutoryReportingSetupCZL.Get();
+            StatutoryReportingSetupCZL.TestField("Intrastat Declaration Nos.");
+            "Declaration No. CZL" := NoSeriesManagement.GetNextNo(StatutoryReportingSetupCZL."Intrastat Declaration Nos.", 0D, true);
+            exit(true);
+        end;
+        exit(false);
+    end;
+}

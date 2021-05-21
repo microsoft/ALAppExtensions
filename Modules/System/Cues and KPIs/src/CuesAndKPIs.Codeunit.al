@@ -55,9 +55,10 @@ codeunit 9701 "Cues And KPIs"
     /// <summary>
     /// Converts a Cues And KPIs Style enum to a style text.
     /// Enum values 0,7,8,9,10 are defined by default, if custom values are needed take a look at OnConvertStyleToStyleText event.
+    /// </summary>
     /// <seealso cref="OnConvertStyleToStyleText"/>
     /// <param name="CueStyle">A Cues And KPIs Style enum from which the style text will be converted.</param>
-    /// </summary>
+    /// <returns>The converted style</returns>
     procedure ConvertStyleToStyleText(CueStyle: enum "Cues And KPIs Style"): Text
     begin
         exit(CuesAndKPIsImpl.ConvertStyleToStyleText(CueStyle));
@@ -67,7 +68,7 @@ codeunit 9701 "Cues And KPIs"
     /// Inserts cue setup data. The entries inserted via this method will have no value for the userid field.
     /// </summary>
     /// <param name="TableID">The ID of the table where the cue is defined.</param>
-    /// <param name="FieldID">The ID of the field which the cue is based on.</param>
+    /// <param name="FieldNo">The ID of the field which the cue is based on.</param>
     /// <param name="LowRangeStyle">A Cues And KPIs Style enum representing the style that cues which have a value under threshold 1 will take.</param>
     /// <param name="Threshold1">The lower amount which defines which style cues get based on their value</param>
     /// <param name="MiddleRangeStyle">A Cues And KPIs Style enum representing the style that cues which have a value over threshold 1 but under threshold 2 will take.</param>
@@ -90,6 +91,20 @@ codeunit 9701 "Cues And KPIs"
     [IntegrationEvent(false, false)]
     [Scope('OnPrem')]
     internal procedure OnConvertStyleToStyleText(CueStyle: Enum "Cues And KPIs Style"; var Result: Text; var Resolved: Boolean)
+    begin
+    end;
+
+    /// <summary>
+    /// Event that allows definition of cue style for a cue using style enum without the usage of a cue setup table.
+    /// Subscribe to this event if you want to define a cue style for a cue using custom prerequisites.
+    /// </summary>
+    /// <param name="TableID">The ID of the table where the cue is defined.</param>
+    /// <param name="FieldNo">The ID of the field which the cue is based on.</param>
+    /// <param name="CueValue">Cue value parameter that can be used to determine cue style.</param>
+    /// <param name="CueStyle">Exit parameter that holds newly determined cue style based on custom prerequisites.</param>
+    /// <param name="Resolved">A boolean value that describes whether or not the cue style has been determined.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeGetCustomizedCueStyleOption(TableID: Integer; FieldNo: Integer; CueValue: Decimal; var CueStyle: Enum "Cues And KPIs Style"; var Resolved: Boolean)
     begin
     end;
 }

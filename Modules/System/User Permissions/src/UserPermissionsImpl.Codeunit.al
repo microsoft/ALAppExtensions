@@ -8,11 +8,13 @@
 codeunit 153 "User Permissions Impl."
 {
     Access = Internal;
-    Permissions = TableData 2000000053 = rimd;
+    Permissions = TableData "Access Control" = rimd,
+                  TableData User = r;
 
     var
         SUPERTok: Label 'SUPER', Locked = true;
         SUPERPermissionErr: Label 'There should be at least one enabled ''SUPER'' user.';
+        SECURITYPermissionSetTxt: Label 'SECURITY', Locked = true;
 
     procedure IsSuper(UserSecurityId: Guid): Boolean
     var
@@ -74,7 +76,7 @@ codeunit 153 "User Permissions Impl."
         if IsAnyoneElseSuper(Rec."User Security ID") then
             exit;
 
-        Error(SUPERPermissionErr)
+        Error(SUPERPermissionErr);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::User, 'OnBeforeModifyEvent', '', true, true)]
@@ -159,6 +161,53 @@ codeunit 153 "User Permissions Impl."
     begin
         // Sync Deamon is the only user with license "External User"
         exit(User."License Type" = User."License Type"::"External User");
+    end;
+
+    procedure CanManageUsersOnTenant(UserSID: Guid) Result: Boolean
+    var
+        AccessControl: Record "Access Control";
+        User: Record User;
+    begin
+        if User.IsEmpty() then
+            exit(true);
+
+        OnCanManageUsersOnTenant(UserSID, Result);
+        if Result then
+            exit;
+
+        if IsSuper(UserSID) then
+            exit(true);
+
+        AccessControl.SetRange("Role ID", SECURITYPermissionSetTxt);
+        AccessControl.SetFilter("Company Name", '%1|%2', '', CompanyName);
+        AccessControl.SetRange("User Security ID", UserSID);
+        exit(not AccessControl.IsEmpty());
+    end;
+
+    procedure HasUserCustomPermissions(UserSecId: Guid): Boolean
+    var
+        AccessControl: Record "Access Control";
+        BlankGuid: Guid;
+    begin
+        // Check if the user is assigned any custom permission sets
+        AccessControl.SetRange("User Security ID", UserSecId);
+        AccessControl.SetRange(Scope, AccessControl.Scope::Tenant);
+        AccessControl.SetRange("App ID", BlankGuid);
+        if not AccessControl.IsEmpty() then
+            exit(true);
+    end;
+
+    /// <summary>
+    /// An event that indicates that subscribers should set the result that should be returned when the CanManageUsersOnTenant is called.
+    /// </summary>
+    /// <remarks>
+    /// Subscribe to this event from tests if you need to verify a different flow.
+    /// This feature is for testing and is subject to a different SLA than production features.
+    /// Do not use this event in a production environment. This should be subscribed to only in tests.
+    /// </remarks>
+    [InternalEvent(false)]
+    local procedure OnCanManageUsersOnTenant(UserSID: Guid; var Result: Boolean)
+    begin
     end;
 }
 

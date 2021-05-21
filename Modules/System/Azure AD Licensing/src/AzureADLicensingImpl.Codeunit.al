@@ -6,6 +6,7 @@
 codeunit 460 "Azure AD Licensing Impl."
 {
     Access = Internal;
+    Permissions = tabledata "Membership Entitlement" = r;
 
     var
         AzureADGraph: Codeunit "Azure AD Graph";
@@ -16,67 +17,69 @@ codeunit 460 "Azure AD Licensing Impl."
         DoIncludeUnknownPlans: Boolean;
         IsInitialized: Boolean;
 
-    procedure ResetSubscribedSKU()
+    [NonDebuggable]
+    procedure ResetSubscribedSKU(): Boolean
     var
         SubscribedSkus: DotNet GenericIEnumerable1;
     begin
-
         if IsNull(SubscribedSkuEnumerator) then begin
             AzureADGraph.GetDirectorySubscribedSkus(SubscribedSkus);
+
+            if IsNull(SubscribedSkus) then
+                exit(false);
+
             SubscribedSkuEnumerator := SubscribedSkus.GetEnumerator()
         end else
             SubscribedSkuEnumerator.Reset();
+
+        exit(true);
     end;
 
+    [NonDebuggable]
     procedure NextSubscribedSKU(): Boolean
     var
-        MembershipEntitlement: Record "Membership Entitlement";
+        AzureADPlan: Codeunit "Azure AD Plan";
         TempSubscribedSku: DotNet SkuInfo;
         TempServicePlanEnumerator: DotNet IEnumerator;
         FoundKnownPlan: Boolean;
     begin
         if not IsInitialized then begin
-            ResetSubscribedSKU();
+            if not ResetSubscribedSKU() then
+                exit(false);
+
             IsInitialized := true;
         end;
 
-        MembershipEntitlement.SetRange(Type, MembershipEntitlement.Type::"Azure AD Plan");
+        if not SubscribedSkuEnumerator.MoveNext() then
+            exit(false);
+        SubscribedSku := SubscribedSkuEnumerator.Current();
+        ServicePlanEnumerator := SubscribedSku.ServicePlans().GetEnumerator();
+
+        if DoIncludeUnknownPlans then
+            exit(true);
 
         TempSubscribedSku := SubscribedSku;
         TempServicePlanEnumerator := ServicePlanEnumerator;
 
-        if SubscribedSkuEnumerator.MoveNext() then begin
-            SubscribedSku := SubscribedSkuEnumerator.Current();
-            ServicePlanEnumerator := SubscribedSku.ServicePlans().GetEnumerator();
-
-            if not DoIncludeUnknownPlans then begin
-                FoundKnownPlan := false;
-                while NextServicePlan() do begin
-                    MembershipEntitlement.SetFilter(ID, LowerCase(ServicePlanId()));
-                    if MembershipEntitlement.Count() > 0 then
-                        FoundKnownPlan := true
-                    else begin
-                        MembershipEntitlement.SetFilter(ID, UpperCase(ServicePlanId()));
-                        if MembershipEntitlement.Count() > 0 then
-                            FoundKnownPlan := true;
-                    end;
-                end;
-
-                if not FoundKnownPlan then begin
-                    SubscribedSku := TempSubscribedSku;
-                    ServicePlanEnumerator := TempServicePlanEnumerator;
-                    exit(NextSubscribedSKU());
-                end;
-
-                ServicePlanEnumerator.Reset();
+        FoundKnownPlan := false;
+        while NextServicePlan() do
+            if AzureADPlan.IsBCServicePlan(ServicePlanId()) then begin
+                FoundKnownPlan := true;
+                break;
             end;
 
-            exit(true);
+        if not FoundKnownPlan then begin
+            SubscribedSku := TempSubscribedSku;
+            ServicePlanEnumerator := TempServicePlanEnumerator;
+            exit(false);
         end;
 
-        exit(false)
+        ServicePlanEnumerator.Reset();
+
+        exit(true);
     end;
 
+    [NonDebuggable]
     procedure SubscribedSKUCapabilityStatus(): Text
     begin
         if IsNull(SubscribedSku) then
@@ -85,6 +88,7 @@ codeunit 460 "Azure AD Licensing Impl."
         exit(SubscribedSku.CapabilityStatus());
     end;
 
+    [NonDebuggable]
     procedure SubscribedSKUConsumedUnits(): Integer
     begin
         if IsNull(SubscribedSku) then
@@ -93,6 +97,7 @@ codeunit 460 "Azure AD Licensing Impl."
         exit(SubscribedSku.ConsumedUnits());
     end;
 
+    [NonDebuggable]
     procedure SubscribedSKUObjectId(): Text
     begin
         if IsNull(SubscribedSku) then
@@ -101,6 +106,7 @@ codeunit 460 "Azure AD Licensing Impl."
         exit(SubscribedSku.ObjectId());
     end;
 
+    [NonDebuggable]
     procedure SubscribedSKUPrepaidUnitsInEnabledState(): Integer
     begin
         if IsNull(SubscribedSku) then
@@ -109,6 +115,7 @@ codeunit 460 "Azure AD Licensing Impl."
         exit(SubscribedSku.PrepaidUnits().Enabled());
     end;
 
+    [NonDebuggable]
     procedure SubscribedSKUPrepaidUnitsInSuspendedState(): Integer
     begin
         if IsNull(SubscribedSku) then
@@ -117,6 +124,7 @@ codeunit 460 "Azure AD Licensing Impl."
         exit(SubscribedSku.PrepaidUnits().Suspended());
     end;
 
+    [NonDebuggable]
     procedure PrepaidUnitsInWarningState(): Integer
     begin
         if IsNull(SubscribedSku) then
@@ -125,6 +133,7 @@ codeunit 460 "Azure AD Licensing Impl."
         exit(SubscribedSku.PrepaidUnits().Warning());
     end;
 
+    [NonDebuggable]
     procedure SubscribedSKUId(): Text
     begin
         if IsNull(SubscribedSku) then
@@ -133,6 +142,7 @@ codeunit 460 "Azure AD Licensing Impl."
         exit(SubscribedSku.SkuId());
     end;
 
+    [NonDebuggable]
     procedure SubscribedSKUPartNumber(): Text
     begin
         if IsNull(SubscribedSku) then
@@ -141,12 +151,14 @@ codeunit 460 "Azure AD Licensing Impl."
         exit(SubscribedSku.SkuPartNumber());
     end;
 
+    [NonDebuggable]
     procedure ResetServicePlans()
     begin
         if not IsNull(ServicePlanEnumerator) then
             ServicePlanEnumerator.Reset();
     end;
 
+    [NonDebuggable]
     procedure NextServicePlan(): Boolean
     begin
         if IsNull(ServicePlanEnumerator) then
@@ -160,6 +172,7 @@ codeunit 460 "Azure AD Licensing Impl."
         exit(false);
     end;
 
+    [NonDebuggable]
     procedure ServicePlanCapabilityStatus(): Text
     begin
         if IsNull(ServicePlan) then
@@ -168,6 +181,7 @@ codeunit 460 "Azure AD Licensing Impl."
         exit(ServicePlan.CapabilityStatus());
     end;
 
+    [NonDebuggable]
     procedure ServicePlanId() FoundServicePlanId: Text
     begin
         if IsNull(ServicePlan) then
@@ -178,6 +192,7 @@ codeunit 460 "Azure AD Licensing Impl."
             FoundServicePlanId := CopyStr(FoundServicePlanId, 2, StrLen(FoundServicePlanId) - 2);
     end;
 
+    [NonDebuggable]
     procedure ServicePlanName(): Text
     begin
         if IsNull(ServicePlan) then
@@ -186,16 +201,19 @@ codeunit 460 "Azure AD Licensing Impl."
         exit(ServicePlan.ServicePlanName());
     end;
 
+    [NonDebuggable]
     procedure IncludeUnknownPlans(): Boolean
     begin
         exit(DoIncludeUnknownPlans);
     end;
 
+    [NonDebuggable]
     procedure SetIncludeUnknownPlans(IncludeUnknownPlans: Boolean)
     begin
         DoIncludeUnknownPlans := IncludeUnknownPlans;
     end;
 
+    [NonDebuggable]
     procedure SetTestInProgress(TestInProgress: Boolean)
     begin
         AzureADGraph.SetTestInProgress(TestInProgress);

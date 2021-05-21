@@ -2,34 +2,14 @@
 This topic provides answers to frequently asked questions, and will be updated regularly.
 
 ## How do I getting started as a contributer?
-1. Become familiar with development in AL. For more information, see https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-get-started.  
-2. Choose the sandbox option that's right for you. For more information, see https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-sandbox-overview.  
-3. Clone the repository where Microsoft extensions are available : https://github.com/Microsoft/ALAppExtensions.  
-4. Objects are in the Microsoft ID range, which means you cannot upload the app to your sandbox. For the app to work you must renumber the object IDs (for more information, see https://blogs.msdn.microsoft.com/nav/2018/04/05/business-central-object-ranges/).  
-    
-    You can renumber objects in several ways. The following steps describe one of them.  
-    
-	1. Get the RenumberNavObjectIds tool from https://github.com/NAVDEMO/RenumberNavObjectIds.  
-    2. Clone the project and open it in Visual Studio 2015. Build the project, and you are off to a good start.  
-    3. Run the following PowerShell Script in PowerShell ISE:  
-       ```
-       Import-module "C:\...\RenumberObjectIds.dll"  
-	   $RenumberList = @{}  
-	   0..1000 | % { $RenumberList += @{ (1800+$_) = (80000+$_) } }  
-	   0..20 | % { $RenumberList += @{ (136630+$_) = (82000+$_) } }  
-		 
-	   Renumber-NavObjectIds -SourceFolder "C:\...\C52012DataMigration\" -DestinationFolder "C:\...\C52012DataMigrationReID" -RenumberList $RenumberList -Verbose  
-       ```
-5. In Visual Studio Code, connect to your sandbox (follow the steps in the documentation that step 2 refers to) and open the C:\...\C52012DataMigration folder. Now you are ready to go. You can modify the code and build your extension.  
-6. To submit your changes, create a new branch. Remember to revert the change of IDs, and then create a pull request. 
+ Visit the [Getting Started with Modules](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-getting-started) documentation. 
 
-Have a look at the following articles for detailed walkthroughs:  
-* https://blogs.msdn.microsoft.com/nav/2018/08/28/become-a-contributor-to-business-central/  
-* https://community.dynamics.com/business/b/businesscentraldevitpro/archive/2018/10/26/quot-git-quot-going-with-extensions  
-* https://community.dynamics.com/business/b/businesscentraldevitpro/archive/2018/11/27/walkthrough-contributing-to-an-extension-on-github
+Have a look at the following articles for detailed walkthroughs:
+* https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-new-module
+* https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-change-a-module
 
 ## Can I contribute by submiting my own app?
-Currently we are accepting code contributions for published apps and modules only.
+We are accepting code contributions for published apps and modules, as well as new relevant modules for the System Application that adhere to the [Module Architecture](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-blueprint) guide.
  
 ## Some APIs files aren't available in Extensions V2. What to do?
 Code that relies on temporary files must be rewritten to rely on InStream and OutStream data types instead. Code that relied on permanent files must be rewritten to use another form of permanent storage.
@@ -46,7 +26,7 @@ DotNet interop is not available due to safety issues in running arbitrary .NET c
 * [AL support for REST Web Services](http://www.kauffmann.nl/2017/06/24/al-support-for-rest-web-services/)  
 * [Invoking Azure Functions from AL](http://vjeko.com/invoking-azure-functions-al/)  
 
-3. We offer an open source GitHub repository where you can submit .NET type wrappers that, if accepted, will be included in the base application. Here's a link to the repo [C/AL Open Library](https://github.com/Microsoft/cal-open-library).
+3. You can submit .NET type wrapper pull requests that, if accepted, will be included in the System Application. 
 
 On-Premise:  
 
@@ -55,30 +35,29 @@ We still encourage you to use the resources above to minimize your reliance on D
 ## Why can't I use the type or method 'XYZ' for 'Extension' development?
 We've blocked a certain set of functions from being directly called from app code. Our approach was based on a conservative static analysis, and the result was that some functions are unnecessarily blocked. If you need to use one or more of these functions please log an issue and provide a full list. We will analyze your request and unblock the functions we deem to be safe.
 
-## Will features from the latest release be back-ported to earlier releases?
-Short answer: Only selected features.  
-
-We have decided to focus our development efforts on a single, latest version of the product. Having said that, we will back-port selected features to the current release on a case-by-case basis. The decision depends on the costs/benefits of doing so and finding a balance between fixing issues that are truly blocking vs. developing new features for the latest version.
+## When are my reported issues going be released?
+We’ve decided to focus our development efforts on delivering a single, latest version of the product. Having said that, we will backport selected requests related to extensibility, such as events, to the current release on a case-by-case basis. The decision depends on the costs and benefits of backporting the new things, and whether the issue is truly blocking. For more information about what we backport, see the label definitions in the next section.
 
 ## What do all the labels assigned to issues mean?
-We use labels for categorizing issues into types and tracking the issue lifecycle. Issues fall into the following types:  
+We use labels for categorizing issues into types and tracking the issue lifecycle. Issues fall into the following types:
 
-* Enum-request - request an enum  
-* Request-for-external - request to mark a function as external  
-* Event-request - request for a new event  
-* Extensibility-enhancement - larger suggestion improving extensibility, something we might want to consider in the future  
+* **Enum-request:** Request an enum. We implement these only in major releases.
+* **Request-for-external:** Request to mark a function as external. We normally only implement these in major releases.
+* **Event-request:** Request a new event. We implement these in major and usually next minor releases.
+* **Extensibility-enhancement:** Larger suggestions for improving extensibility. We consider these for future releases.
+* **Extensibility-bug:** Smaller suggestions for improving extensibility. We consider these for the current release.
 
-The lifecycle for issues is (mix of label + milestone + open/closed state):  
+The lifecycle for issues is a mix of label + milestone + open/closed state:
 
-* Ships-in-future-update  - the issue was fixed in our source code repository and ships in the next major release
-* Call-for-contributors - we are looking for contributors willing to address reported bug/suggestion
-* Wontfix - the issue will not be fixed probably because it is our of scope of the current repository
+* **Ships-in-future-update:** The issue was fixed in our source code repository and ships in the next major release or, for events, the next minor update.
+* **Call-for-contributors:** We're looking for contributors who are willing to address a reported bug or request.
+* **Wontfix:** The issue will not be fixed, probably because it is out of the scope of the current repository.
 
 ## How do I report an issue?
 This GitHub repository is dedicated to handling issues with published apps and extensibility requests for the latest release of Business Central. If you run into an issue, open a support case. You can open Support Request to CSS through PartnerSource portal or contact your Service Account Manager (SAM) in the local subsidiary to understand what is included in your contract as of support incident and PAH (Partner Advisory Hours). Your SAM might also step by step direct you how to open a support request or how to get credentials if this is the first time for you or your company.
 
 ## How do I offer a suggestion?
-Similar to the previous question, issues that aren't related to published apps or extensibility are not what this GitHub repository is intended for. In those cases please register your idea in one of the following resources:  
+Similar to the previous question, issues that aren't related to published apps, system application or extensibility are not what this GitHub repository is intended for. In those cases please register your idea in one of the following resources:  
 
 * For functional improvements, go to [Business Central - Ideas](https://experience.dynamics.com/ideas/list/?forum=e288ef32-82ed-e611-8101-5065f38b21f1)  
 * For feature suggestions for AL compiler and developer tools, see [Github.com/Microsoft/AL](https://github.com/Microsoft/AL/issues)  

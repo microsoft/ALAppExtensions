@@ -15,6 +15,7 @@ page 9822 "User Plan Members"
     PageType = List;
     SourceTable = "User Plan";
     ContextSensitiveHelpPage = 'ui-how-users-permissions';
+    permissions = tabledata "User Plan" = r;
 
     layout
     {
@@ -22,17 +23,17 @@ page 9822 "User Plan Members"
         {
             repeater(Group)
             {
-                field("User Name"; "User Name")
+                field("User Name"; Rec."User Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the short name for the user.';
                 }
-                field("User Full Name"; "User Full Name")
+                field("User Full Name"; Rec."User Full Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the full name of the user.';
                 }
-                field("Plan Name"; "Plan Name")
+                field("Plan Name"; Rec."Plan Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the subscription plan.';

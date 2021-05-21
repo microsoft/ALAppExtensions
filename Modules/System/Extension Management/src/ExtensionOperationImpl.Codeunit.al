@@ -7,6 +7,9 @@ codeunit 2503 "Extension Operation Impl"
 {
     Access = Internal;
     SingleInstance = false;
+    Permissions = tabledata "NAV App Setting" = rm,
+                  tabledata "NAV App Tenant Operation" = r,
+                  tabledata "Published Application" = r;
 
     var
         DotNetALNavAppOperationInvoker: DotNet ALNavAppOperationInvoker;
@@ -50,7 +53,7 @@ codeunit 2503 "Extension Operation Impl"
         DotNetALNavAppOperationInvoker.UploadPackage(PackageStream, DotNetALPackageDeploymentSchedule, Format(lcid));
     end;
 
-    procedure DeployAndUploadExtension(PackageStream: InStream; lcid: Integer; DeployTo: Option "Current version","Next minor version","Next major version")
+    procedure DeployAndUploadExtension(PackageStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To")
     var
         DotNetALPackageDeploymentSchedule: DotNet ALPackageDeploymentSchedule;
     begin
@@ -80,13 +83,14 @@ codeunit 2503 "Extension Operation Impl"
 
     procedure UnpublishExtension(PackageID: Guid): Boolean
     var
-        NavApp: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
     begin
-        if not (NavApp.Get(PackageID)) then
-            exit(false);
+        PublishedApplication.SetRange("Package ID", PackageID);
+        PublishedApplication.SetRange("Tenant Visible", true);
+        PublishedApplication.SetFilter("Published As", '<>%1', PublishedApplication."Published As"::Global);
 
-        if (NavApp.Scope <> 1) then
+        if PublishedApplication.IsEmpty() then
             exit(false);
 
         if ExtensionInstallationImpl.IsInstalledByPackageId(PackageID) then
@@ -103,40 +107,48 @@ codeunit 2503 "Extension Operation Impl"
         DotNetNavAppALInstaller.ALUnpublishNavTenantApp(PackageID);
     end;
 
-    procedure DownloadExtensionSource(PackageId: Guid): Boolean
+    procedure GetExtensionSource(PackageId: Guid; var ExtensionSourceTempBlob: Codeunit "Temp Blob"; var CleanFileName: Text): Boolean
     var
-        NAVApp: Record "NAV App";
-        TempBlob: Codeunit "Temp Blob";
+        PublishedApplication: Record "Published Application";
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         DotNetNavDesignerALFunctions: DotNet NavDesignerALFunctions;
         NvOutStream: OutStream;
-        NvInStream: InStream;
         FileName: Text;
         VersionString: Text;
-        CleanFileName: Text;
     begin
         CheckPermissions();
-        if not NAVApp.Get(PackageId) then
+
+        PublishedApplication.SetRange("Package ID", PackageID);
+        PublishedApplication.SetRange("Tenant Visible", true);
+        PublishedApplication.SetRange("Show My Code", true);
+        PublishedApplication.SetFilter("Published As", '<>%1', PublishedApplication."Published As"::Global);
+
+        if not PublishedApplication.FindFirst() then
             exit(false);
 
-        if (NavApp.Scope <> 1) then
-            exit(false);
+        ExtensionSourceTempBlob.CreateOutStream(NvOutStream);
+        VersionString := ExtensionInstallationImpl.GetVersionDisplayString(PublishedApplication);
 
-        if (NAVApp."Show My Code" = false) then
-            exit(false);
+        DotNetNavDesignerALFunctions.GenerateDesignerPackageZipStreamByVersion(NvOutStream, PublishedApplication.ID, VersionString);
 
-        TempBlob.CreateOutStream(NvOutStream);
-        VersionString :=
-          ExtensionInstallationImpl.GetVersionDisplayString(NAVApp);
-
-        DotNetNavDesignerALFunctions.GenerateDesignerPackageZipStreamByVersion(NvOutStream, NAVApp.ID, VersionString);
-        FileName := StrSubstNo(ExtensionFileNameTxt, NAVApp.Name, NAVApp.Publisher, VersionString);
+        FileName := StrSubstNo(ExtensionFileNameTxt, PublishedApplication.Name, PublishedApplication.Publisher, VersionString);
         CleanFileName := DotNetNavDesignerALFunctions.SanitizeDesignerFileName(FileName, '_');
+
+        exit(true);
+    end;
+
+    procedure DownloadExtensionSource(PackageId: Guid): Boolean
+    var
+        TempBlob: Codeunit "Temp Blob";
+        NvInStream: InStream;
+        CleanFileName: Text;
+    begin
+        if not GetExtensionSource(PackageId, TempBlob, CleanFileName) then
+            exit(false);
 
         TempBlob.CreateInStream(NvInStream);
 
         exit(DownloadFromStream(NvInStream, DialogTitleTxt, '', '*.*', CleanFileName));
-
     end;
 
     procedure DownloadDeploymentStatusDetails(OperationId: Guid)
@@ -162,22 +174,27 @@ codeunit 2503 "Extension Operation Impl"
 
     procedure ConfigureExtensionHttpClientRequestsAllowance(PackageId: Text; AreHttpClientRqstsAllowed: Boolean): Boolean
     var
-        NavApp: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         NavAppSetting: Record "NAV App Setting";
+        PackageIDGuid: Guid;
     begin
         CheckPermissions();
-        if not NavApp.Get(PackageId) then
+
+        Evaluate(PackageIDGuid, PackageId);
+
+        PublishedApplication.SetRange("Package ID", PackageIdGuid);
+        PublishedApplication.SetRange("Tenant Visible", true);
+
+        if not PublishedApplication.FindFirst() then
             exit(false);
 
-        if not NavAppSetting.get(NavApp.ID) then
+        if not NavAppSetting.Get(PublishedApplication.ID) then
             exit(false);
-
 
         NavAppSetting.Validate("Allow HttpClient Requests", AreHttpClientRqstsAllowed);
         NavAppSetting.Modify(true);
 
         exit(true);
-
     end;
 
     local procedure InitializeOperationInvoker()
@@ -190,15 +207,29 @@ codeunit 2503 "Extension Operation Impl"
 
     local procedure CheckPermissions()
     var
-        NAVAppObjectMetadata: Record "NAV App Object Metadata";
+        ApplicationObjectMetadata: Record "Application Object Metadata";
     begin
-        if not NavAppObjectMetadata.ReadPermission() then
+        if not ApplicationObjectMetadata.ReadPermission() then
             Error(NotSufficientPermissionErr);
     end;
 
+    [Obsolete('This is the implementation of a method for which the required parameter is not accessible for Cloud development', '17.0')]
     procedure GetAllExtensionDeploymentStatusEntries(var NavAppTenantOperation: Record "NAV App Tenant Operation")
     begin
-        NavAppTenantOperation.FindSet();
+        if not NavAppTenantOperation.FindSet() then
+            exit;
+    end;
+
+    procedure GetAllExtensionDeploymentStatusEntries(var TempExtensionDeploymentStatus: Record "Extension Deployment Status" temporary)
+    var
+        NavAppTenantOperation: Record "NAV App Tenant Operation";
+    begin
+        if not NavAppTenantOperation.FindSet() then
+            exit;
+        repeat
+            TempExtensionDeploymentStatus.TransferFields(NavAppTenantOperation, true);
+            TempExtensionDeploymentStatus.Insert();
+        until NavAppTenantOperation.Next() = 0;
     end;
 
     procedure GetDeploymentDetailedStatusMessageAsStream(OperationId: Guid; OutStream: OutStream)
@@ -256,14 +287,16 @@ codeunit 2503 "Extension Operation Impl"
 
     procedure GetLatestVersionPackageIdByAppId(AppId: Guid): Guid
     var
-        NavAppTable: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         NullGuid: Guid;
     begin
-        NavAppTable.SetRange(ID, AppId);
-        NavAppTable.SetCurrentKey(Name, "Version Major", "Version Minor", "Version Build", "Version Revision");
-        NavAppTable.Ascending(false);
-        if NavAppTable.FindFirst() then
-            exit(NavAppTable."Package ID");
+        PublishedApplication.SetRange(ID, AppId);
+        PublishedApplication.SetRange("Tenant Visible", true);
+        PublishedApplication.SetCurrentKey(Name, "Version Major", "Version Minor", "Version Build", "Version Revision");
+        PublishedApplication.Ascending(false);
+
+        if PublishedApplication.FindFirst() then
+            exit(PublishedApplication."Package ID");
 
         exit(NullGuid);
     end;
@@ -281,41 +314,45 @@ codeunit 2503 "Extension Operation Impl"
 
     procedure GetSpecificVersionPackageIdByAppId(AppId: Guid; Name: Text; VersionMajor: Integer; VersionMinor: Integer; VersionBuild: Integer; VersionRevision: Integer): Guid
     var
-        NavAppTable: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         NullGuid: Guid;
     begin
         if AppId = NullGuid then
             exit(NullGuid);
-        NavAppTable.SetRange(ID, AppId);
-        if Name <> '' then
-            NavAppTable.SetRange(Name, Name);
-        if VersionMajor <> 0 then
-            NavAppTable.SetRange("Version Major", VersionMajor);
-        if VersionMinor <> 0 then
-            NavAppTable.SetRange("Version Minor", VersionMinor);
-        if VersionBuild <> 0 then
-            NavAppTable.SetRange("Version Build", VersionBuild);
-        if VersionRevision <> 0 then
-            NavAppTable.SetRange("Version Revision", VersionRevision);
 
-        if NavAppTable.Count() <> 1 then
+        PublishedApplication.SetRange(ID, AppId);
+        PublishedApplication.SetRange("Tenant Visible", true);
+
+        if Name <> '' then
+            PublishedApplication.SetRange(Name, Name);
+        if VersionMajor <> 0 then
+            PublishedApplication.SetRange("Version Major", VersionMajor);
+        if VersionMinor <> 0 then
+            PublishedApplication.SetRange("Version Minor", VersionMinor);
+        if VersionBuild <> 0 then
+            PublishedApplication.SetRange("Version Build", VersionBuild);
+        if VersionRevision <> 0 then
+            PublishedApplication.SetRange("Version Revision", VersionRevision);
+
+        if PublishedApplication.Count() <> 1 then
             exit(NullGuid);
 
-        if NavAppTable.FindFirst() then
-            exit(NavAppTable."Package ID");
+        if PublishedApplication.FindFirst() then
+            exit(PublishedApplication."Package ID");
     end;
 
     procedure GetExtensionLogo(AppId: Guid; var Logo: Codeunit "Temp Blob")
     var
-        Extension: Record "NAV App";
+        PublishedApplication: Record "Published Application";
         Media: Record Media;
         LogoInStream: Instream;
         LogoOutStream: Outstream;
     begin
-        Extension.SetRange(ID, AppId);
+        PublishedApplication.SetRange(ID, AppId);
+        PublishedApplication.SetRange("Tenant Visible", true);
 
-        if Extension.FindFirst() then begin
-            Media.SetRange(ID, Extension.Logo.MediaId());
+        if PublishedApplication.FindFirst() then begin
+            Media.SetRange(ID, PublishedApplication.Logo.MediaId());
 
             if not Media.FindFirst() then
                 exit;

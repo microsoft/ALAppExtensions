@@ -67,6 +67,8 @@ page 1752 "Data Classification Wizard"
                 field(HelpLbl; LearnMoreTok)
                 {
                     ApplicationArea = All;
+                    Caption = 'Learn more';
+                    ToolTip = 'Click here to learn more.';
                     DrillDown = true;
                     Editable = false;
                     ShowCaption = false;
@@ -86,11 +88,11 @@ page 1752 "Data Classification Wizard"
                 group("Let's Get Started")
                 {
                     Caption = 'Let''s Get Started';
-                    InstructionalText = 'You can export data to an Excel worksheet, add the classifications, and then import the worksheet. For example, this is great for:';
+                    InstructionalText = 'You can export data to an Excel worksheet, specify classifications for unclassified fields, and then import the worksheet. For example, this is great for:';
                     label("- Adding classifications in bulk.")
                     {
                         ApplicationArea = All;
-                        Caption = '- Adding classifications in bulk.';
+                        Caption = '- Classifying data in bulk.';
                         Importance = Additional;
                         MultiLine = true;
                     }
@@ -108,20 +110,28 @@ page 1752 "Data Classification Wizard"
                     {
                         ApplicationArea = All;
                         Caption = 'Export Classification Data to Excel';
+                        ToolTip = 'Specifies that you want to export all of your data sensitivity classifications to an Excel worksheet. You can edit the sensitivity settings, and then import the file to apply your changes. You can also use the same worksheet to classify data sensitivities in other companies.';
 
                         trigger OnValidate()
                         begin
-                            DisableOtherModes(IsExportModeSelectedValue, IsExpertModeSelectedValue, IsImportModeSelectedValue);
+                            if IsExportModeSelected() then begin
+                                SetExpertModeSelected(false);
+                                SetImportModeSelected(false);
+                            end;
                         end;
                     }
                     field(ImportModeSelected; IsImportModeSelectedValue)
                     {
                         ApplicationArea = All;
                         Caption = 'Import Classification Data from Excel';
+                        ToolTip = 'Specifies that you want to import and apply data sensitivity classifications from an Excel worksheet.';
 
                         trigger OnValidate()
                         begin
-                            DisableOtherModes(IsImportModeSelectedValue, IsExportModeSelectedValue, IsExpertModeSelectedValue);
+                            if IsImportModeSelected() then begin
+                                SetExpertModeSelected(false);
+                                SetExportModeSelected(false);
+                            end;
                         end;
                     }
                     group(ExpertModeGroup)
@@ -132,10 +142,14 @@ page 1752 "Data Classification Wizard"
                         {
                             ApplicationArea = All;
                             Caption = 'Classify Data Manually';
+                            ToolTip = 'Specifies that you want to classify data sensitivity yourself. If you choose this option, you can specify data sensitivity for individual fields and data subjects. Note that this includes only data related to setups, posting, templates, and data subjects. There are fields that you must classify either in the Classification Worksheet page or in Excel.';
 
                             trigger OnValidate()
                             begin
-                                DisableOtherModes(IsExpertModeSelectedValue, IsImportModeSelectedValue, IsExportModeSelectedValue);
+                                if IsExpertModeSelected() then begin
+                                    SetExportModeSelected(false);
+                                    SetImportModeSelected(false);
+                                end;
                             end;
                         }
                     }
@@ -162,15 +176,18 @@ page 1752 "Data Classification Wizard"
                         {
                             ApplicationArea = All;
                             Caption = 'Data from posting is:';
+                            ToolTip = 'Specifies the default sensitivity classifications to apply to fields that are related to posting. You can view the fields to classify them individually.';
+                            OptionCaption = 'Unclassified,Sensitive,Personal,Company Confidential,Normal';
                         }
                         field(ViewFieldsLbl; ViewFieldsTok)
                         {
                             ApplicationArea = All;
+                            ToolTip = 'View a list of fields that are used to post transactions.';
                             DrillDown = true;
                             Editable = false;
                             ShowCaption = false;
                             Style = StrongAccent;
-                            StyleExpr = TRUE;
+                            StyleExpr = true;
 
                             trigger OnDrillDown()
                             var
@@ -183,15 +200,18 @@ page 1752 "Data Classification Wizard"
                         {
                             ApplicationArea = All;
                             Caption = 'Data on templates is:';
+                            TooltIp = 'Specifies the default sensitivity classifications to apply to templates that are used to create new records, such as customers or items. You can view the fields to classify them individually.';
+                            OptionCaption = 'Unclassified,Sensitive,Personal,Company Confidential,Normal';
                         }
                         field(Control38; ViewFieldsTok)
                         {
                             ApplicationArea = All;
+                            ToolTip = 'View a list of fields that are used on templates.';
                             DrillDown = true;
                             Editable = false;
                             ShowCaption = false;
                             Style = StrongAccent;
-                            StyleExpr = TRUE;
+                            StyleExpr = true;
 
                             trigger OnDrillDown()
                             var
@@ -204,15 +224,18 @@ page 1752 "Data Classification Wizard"
                         {
                             ApplicationArea = All;
                             Caption = 'Data on setup tables is:';
+                            Tooltip = 'Specifies the default sensitivity classifications to apply to data on setup tables that control how you will use features, such as the tables used by the general ledger. You can view the fields to classify them individually.';
+                            OptionCaption = 'Unclassified,Sensitive,Personal,Company Confidential,Normal';
                         }
                         field(Control56; ViewFieldsTok)
                         {
                             ApplicationArea = All;
+                            ToolTip = 'View a list of fields that are used on setup tables.';
                             DrillDown = true;
                             Editable = false;
                             ShowCaption = false;
                             Style = StrongAccent;
-                            StyleExpr = TRUE;
+                            StyleExpr = true;
 
                             trigger OnDrillDown()
                             var
@@ -244,6 +267,7 @@ page 1752 "Data Classification Wizard"
                         field(Include; Include)
                         {
                             ApplicationArea = All;
+                            ToolTip = 'Specifies whether to apply the classification to the type of data subjects.';
                         }
                         field(Entity; "Table Caption")
                         {
@@ -251,10 +275,12 @@ page 1752 "Data Classification Wizard"
                             Caption = 'Data Subject';
                             DrillDown = false;
                             Editable = false;
+                            ToolTip = 'Specifies the type of data subjects to apply the data classification to.';
                         }
                         field("Default Data Sensitivity"; "Default Data Sensitivity")
                         {
                             ApplicationArea = All;
+                            ToolTip = 'Specifies the sensitivity classification to apply to the type of data subjects.';
                         }
                     }
                 }
@@ -281,13 +307,15 @@ page 1752 "Data Classification Wizard"
                         Caption = 'Data Subject';
                         DrillDown = false;
                         Editable = false;
+                        ToolTip = 'Specifies the type of data subjects to apply the data classification to.';
                     }
                     field("Fields"; Fields)
                     {
                         ApplicationArea = All;
                         Editable = false;
                         Style = StandardAccent;
-                        StyleExpr = TRUE;
+                        StyleExpr = true;
+                        ToolTip = 'Specifies the number of fields that the data classification will be applied to.';
 
                         trigger OnDrillDown()
                         begin
@@ -299,6 +327,7 @@ page 1752 "Data Classification Wizard"
                         ApplicationArea = All;
                         Editable = false;
                         StyleExpr = StatusStyle;
+                        ToolTip = 'Specifies if you have reviewed the classifications that will be applied to the data subjects.';
 
                         trigger OnDrillDown()
                         begin
@@ -323,6 +352,7 @@ page 1752 "Data Classification Wizard"
                     {
                         ApplicationArea = All;
                         Caption = 'Fields';
+                        ToolTip = 'Specifies the number of fields that the data classification will be applied to.';
                         Editable = false;
 
                         trigger OnDrillDown()
@@ -334,6 +364,7 @@ page 1752 "Data Classification Wizard"
                     {
                         ApplicationArea = All;
                         Caption = 'Status';
+                        ToolTip = 'Specifies if you have reviewed the classifications that will be applied to the data subjects.';
                         Editable = false;
                         StyleExpr = SimilarFieldsStatusStyle;
 
@@ -356,6 +387,7 @@ page 1752 "Data Classification Wizard"
                     {
                         ApplicationArea = All;
                         Caption = 'Open Data Classification Worksheet';
+                        ToolTip = 'Specifies that you want to open the Data Classification Worksheet to review the classifications that you applied. For example, this is useful for verifying that a classification is specified for all fields.';
                     }
                 }
             }
@@ -380,6 +412,7 @@ page 1752 "Data Classification Wizard"
             {
                 ApplicationArea = All;
                 Caption = 'Back';
+                ToolTip = 'Back';
                 Enabled = BackEnabled;
                 Image = PreviousRecord;
                 InFooterBar = true;
@@ -395,6 +428,7 @@ page 1752 "Data Classification Wizard"
             {
                 ApplicationArea = All;
                 Caption = 'Finish';
+                ToolTip = 'Finish';
                 Enabled = FinishEnabled;
                 Image = Approve;
                 InFooterBar = true;
@@ -434,7 +468,7 @@ page 1752 "Data Classification Wizard"
     end;
 
     var
-        HelpUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=869249', Comment = 'Locked';
+        HelpUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=869249', Locked = true;
         LearnMoreTok: Label 'Learn more';
         Step: Option Welcome,"Choose Mode","Set Rules",Apply,Verify,"Verify Related Fields",Finish;
         StatusStyle: Text;
@@ -515,14 +549,31 @@ page 1752 "Data Classification Wizard"
         exit(IsImportModeSelectedValue or IsExpertModeSelectedValue or IsExportModeSelectedValue);
     end;
 
-    local procedure DisableOtherModes(IsModeSelected: Boolean; Mode1ToDisable: Boolean; Mode2ToDisable: Boolean)
+    /// <summary>
+    /// Setter for the IsExportModeSelectedValue.
+    /// </summary>
+    /// <param name="Value">The Value to set.</param>
+    procedure SetExportModeSelected(Value: Boolean)
     begin
-        if IsModeSelected then begin
-            Mode1ToDisable := false;
-            Mode2ToDisable := false;
-        end;
+        IsExportModeSelectedValue := Value;
+    end;
 
-        NextEnabled := ShouldEnableNext();
+    /// <summary>
+    /// Setter for the IsExpertModeSelectedValue.
+    /// </summary>
+    /// <param name="Value">The Value to set.</param>
+    procedure SetExpertModeSelected(Value: Boolean)
+    begin
+        IsExpertModeSelectedValue := Value;
+    end;
+
+    /// <summary>
+    /// Setter for the SetImportModeSelected.
+    /// </summary>
+    /// <param name="Value">The Value to set.</param>
+    procedure SetImportModeSelected(Value: Boolean)
+    begin
+        IsImportModeSelectedValue := Value;
     end;
 
     /// <summary>

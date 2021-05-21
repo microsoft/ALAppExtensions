@@ -5,6 +5,7 @@
 
 /// <summary>
 /// Exposes functionality to provide ability to create, update, read and dispose a binary data compression archive.
+/// This module supports compression and decompression with Zip format and GZip format.
 /// </summary>
 codeunit 425 "Data Compression"
 {
@@ -64,7 +65,7 @@ codeunit 425 "Data Compression"
     /// <summary>
     /// Saves the ZipArchive to the given instance of Temp Blob codeunit.
     /// </summary>
-    /// <param name="Temp Blob">The instance of the Temp Blob codeunit to which the ZipArchive is saved.</param>
+    /// <param name="TempBlob">The instance of the Temp Blob codeunit to which the ZipArchive is saved.</param>
     procedure SaveZipArchive(var TempBlob: Codeunit "Temp Blob")
     begin
         DataCompressionImpl.SaveZipArchive(TempBlob);
@@ -76,16 +77,6 @@ codeunit 425 "Data Compression"
     procedure CloseZipArchive()
     begin
         DataCompressionImpl.CloseZipArchive();
-    end;
-
-    /// <summary>
-    /// Returns true if and only if the given InStream contains a GZip archive.
-    /// </summary>
-    /// <param name="InStream">The InStream that contains binary content.</param>
-    [Scope('OnPrem')]
-    procedure IsGZip(InStream: InStream): Boolean
-    begin
-        EXIT(DataCompressionImpl.IsGZip(InStream));
     end;
 
     /// <summary>
@@ -116,6 +107,37 @@ codeunit 425 "Data Compression"
     procedure AddEntry(StreamToAdd: InStream; PathInArchive: Text)
     begin
         DataCompressionImpl.AddEntry(StreamToAdd, PathInArchive);
+    end;
+
+
+    /// <summary>
+    /// Determines whether the given InStream is compressed with GZip.
+    /// </summary>
+    /// <param name="InStream">An InStream that contains binary content.</param>
+    /// <returns>Returns true if and only if the given InStream is compressed with GZip</returns>
+    procedure IsGZip(InStream: InStream): Boolean
+    begin
+        EXIT(DataCompressionImpl.IsGZip(InStream));
+    end;
+
+    /// <summary>
+    /// Compresses a stream with GZip algorithm.
+    /// <param name="InputStream">The InStream that contains the content that should be compressed.</param>
+    /// <param name="CompressedStream">The OutStream into which the compressed stream is copied to.</param>
+    /// </summary>
+    procedure GZipCompress(InputStream: InStream; CompressedStream: OutStream)
+    begin
+        DataCompressionImpl.GZipCompress(InputStream, CompressedStream);
+    end;
+
+    /// <summary>
+    /// Decompresses a GZipStream.
+    /// <param name="InputStream">The InStream that contains the content that should be decompressed.</param>
+    /// <param name="DecompressedStream">The OutStream into which the decompressed stream is copied to.</param>
+    /// </summary>
+    procedure GZipDecompress(InputStream: InStream; DecompressedStream: OutStream)
+    begin
+        DataCompressionImpl.GZipDecompress(InputStream, DecompressedStream);
     end;
 }
 

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Provides a standard set of capabilities that serve as a foundation for developing business apps.",
     "description":  "Contains an expansive set of open source modules that make it easier to build, maintain, and easily upgrade on-premises and online apps. These modules let you focus on the business logic, and the needs of your users or customers.",
-    "version":  "16.0.0.0",
+    "version":  "18.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,12 +15,12 @@
                      ],
     "internalsVisibleTo":  [
                                {
-                                   "appId":  "0d60b215-6ee1-4789-8e53-866cfa50c23c",
+                                   "id":  "0d60b215-6ee1-4789-8e53-866cfa50c23c",
                                    "name":  "System Application Test",
                                    "publisher":  "Microsoft"
                                },
                                {
-                                   "appId":  "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+                                   "id":  "9856ae4f-d1a7-46ef-89bb-6ef056398228",
                                    "name":  "System Application Test Library",
                                    "publisher":  "Microsoft"
                                }
@@ -28,12 +28,12 @@
     "screenshots":  [
 
                     ],
-    "platform":  "15.0.0.0",
+    "platform":  "18.0.0.0",
     "target":  "OnPrem",
     "idRanges":  [
                      {
                          "from":  1,
-                         "to":  100000
+                         "to":  9999
                      }
                  ],
     "showMyCode":  false,

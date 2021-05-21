@@ -16,6 +16,7 @@ page 9824 Plans
     ShowFilter = false;
     SourceTable = Plan;
     ContextSensitiveHelpPage = 'ui-how-users-permissions';
+    Permissions = tabledata Plan = r;
 
     layout
     {
@@ -23,19 +24,22 @@ page 9824 Plans
         {
             repeater(Group)
             {
-                field(Name; Name)
+                field(Name; Rec.Name)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the plan.';
                 }
             }
         }
-        area(factboxes) { }
-    }
-
-    actions
-    {
-        area(navigation) { }
+        area(factboxes)
+        {
+            part("Users in the Plan"; "User Plan Members FactBox")
+            {
+                Caption = 'Users in Plan';
+                ApplicationArea = All;
+                SubPageLink = "Plan ID" = field("Plan ID");
+            }
+        }
     }
 }
 

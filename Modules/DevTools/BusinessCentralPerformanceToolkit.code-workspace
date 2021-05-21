@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "BusinessCentralPerformanceToolkit"
+		},
+		{
+			"path": "TestFramework/TestRunner"
+		},
+		{
+			"path": "BusinessCentralPerformanceToolkit Tests"
+		}
+	],
+	"settings": {}
+}

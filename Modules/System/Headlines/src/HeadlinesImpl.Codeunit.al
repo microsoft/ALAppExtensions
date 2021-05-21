@@ -6,6 +6,7 @@
 codeunit 1470 "Headlines Impl."
 {
     Access = Internal;
+    Permissions = tabledata User = r;
 
     var
         MorningGreetingWithUsernameTxt: Label 'Good morning, %1!', Comment = 'Displayed between 00:00 and 10:59. %1 is the user name.';
@@ -37,9 +38,11 @@ codeunit 1470 "Headlines Impl."
     end;
 
     procedure Emphasize(TextToEmphasize: Text): Text;
+    var
+        EmphasizeLbl: Label '<emphasize>%1</emphasize>', Comment = '%1 - Text to be emphasized', Locked = true;
     begin
         if TextToEmphasize <> '' then
-            exit(StrSubstNo('<emphasize>%1</emphasize>', TextToEmphasize));
+            exit(StrSubstNo(EmphasizeLbl, TextToEmphasize));
     end;
 
     procedure GetHeadlineText(Qualifier: Text; Payload: Text; var ResultText: Text): Boolean;
@@ -63,15 +66,19 @@ codeunit 1470 "Headlines Impl."
     end;
 
     local procedure GetPayloadText(PayloadText: Text): Text;
+    var
+        PayloadLbl: Label '<payload>%1</payload>', Comment = '%1 - The payload', Locked = true;
     begin
         if PayloadText <> '' then
-            exit(StrSubstNo('<payload>%1</payload>', PayloadText));
+            exit(StrSubstNo(PayloadLbl, PayloadText));
     end;
 
     local procedure GetQualifierText(QualifierText: Text): Text;
+    var
+        QualifierLbl: Label '<qualifier>%1</qualifier>', Comment = '%1 - The qualifier', Locked = true;
     begin
         if QualifierText <> '' then
-            exit(StrSubstNo('<qualifier>%1</qualifier>', QualifierText));
+            exit(StrSubstNo(QualifierLbl, QualifierText));
     end;
 
     procedure GetUserGreetingText(): Text
@@ -122,8 +129,10 @@ codeunit 1470 "Headlines Impl."
     var
         LogInManagement: Codeunit "User Login Time Tracker";
         LimitDateTime: DateTime;
+        TenMinutesInMilliseconds: Integer;
     begin
-        LimitDateTime := CreateDateTime(Today(), Time() - (10 * 60 * 1000)); // greet if login is in the last 10 minutes, then stop greeting
+        TenMinutesInMilliseconds := 10 * 60 * 1000;
+        LimitDateTime := CurrentDateTime() - TenMinutesInMilliseconds; // greet if login is in the last 10 minutes, then stop greeting
         exit(LogInManagement.UserLoggedInSinceDateTime(LimitDateTime));
     end;
 

@@ -1,0 +1,650 @@
+codeunit 18427 "GST Stock Transfer Tests"
+{
+
+    Subtype = Test;
+
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure PostTransferOrderwithInterStateStockTransferITC()
+    var
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        GSTGroupType: Enum "GST Group Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] [354811] Check if the system is calculating GST in case of Inter-State Stock Transfer Shipment and Receipt.
+        // [GIVEN] Created GST Setup ,Transfer Locations with ITC
+        CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+        CreateGSTSetup(GSTGroupType::Goods, false, true);
+
+        // [WHEN] Create and Post Interstate Transfer Order with ITC
+        PostedDocumentNo := CreateandPostTransferOrder(
+            TransferHeader,
+            TransferLine);
+
+        // [THEN] GLEntries Verified 
+        VerifyGSTEntries(PostedDocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure PostFromTransferOrderwithIntraStateStockTransferITC()
+    var
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        GSTGroupType: Enum "GST Group Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] [354826] Check if the system is calculating GST in case of Intra-State Stock Transfer Shipment and Receipt.
+        // [GIVEN] Created GST Setup ,SharedSetps Location ,Inventory Setup
+        CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+        CreateGSTSetup(GSTGroupType::Goods, true, true);
+
+        // [WHEN] Create and Post Intrastate Transfer Order with ITC
+        PostedDocumentNo := CreateandPostTransferOrder(
+            TransferHeader,
+            TransferLine);
+
+        // [THEN] GLEntries Verified 
+        VerifyGSTEntries(PostedDocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure PostFromTransferOrderwithInterStateStockTransferWithoutITC()
+    var
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        GSTGroupType: Enum "GST Group Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] [385430] Check if the system is calculating GST in case of Inter-State Stock Transfer Shipment and Receipt with ITC Non-Availment.
+        // [GIVEN] Created GST Setup ,Transfer Locations with ITC
+        CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+        CreateGSTSetup(GSTGroupType::Goods, false, false);
+
+        // [WHEN] Create and Post Interstate Transfer Order without ITC
+        PostedDocumentNo := CreateandPostTransferOrder(
+            TransferHeader,
+            TransferLine);
+
+        // [THEN] GLEntries Verified 
+        VerifyGSTEntries(PostedDocumentNo);
+    end;
+
+    local procedure CreateItemWithInventory(): Code[20]
+    var
+        Item: Record Item;
+        ItemJournalLine: Record "Item Journal Line";
+        InputCreditAvailment: Boolean;
+    begin
+        InputCreditAvailment := StorageBoolean.Get(AvailmentLbl);
+
+        CreateNoVatSetup();
+
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("GST Group Code", LibraryStorage.Get(GSTGroupCodeLbl));
+        Item.Validate("HSN/SAC Code", LibraryStorage.Get(HSNSACCodeLbl));
+        if InputCreditAvailment then
+            Item.Validate("GST Credit", Item."GST Credit"::Availment)
+        else
+            Item.Validate("GST Credit", Item."GST Credit"::"Non-Availment");
+        Item.Modify(true);
+
+        UpdateInventoryPostingSetup((LibraryStorage.Get(InTransitLocationLbl)), Item."Inventory Posting Group");
+        UpdateInventoryPostingSetup((LibraryStorage.Get(FromLocationLbl)), Item."Inventory Posting Group");
+        UpdateInventoryPostingSetup((LibraryStorage.Get(ToLocationLbl)), Item."Inventory Posting Group");
+        LibraryInventory.CreateItemJournalLineInItemTemplate(
+            ItemJournalLine, Item."No.",
+            (LibraryStorage.Get(FromLocationLbl)),
+            '', LibraryRandom.RandInt(100));
+        Codeunit.Run(Codeunit::"Item Jnl.-Post Batch", ItemJournalLine);
+        exit(Item."No.");
+    end;
+
+    local procedure CreateNoVatSetup()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        VATPostingSetup.Reset();
+        VATPostingSetup.SetRange("VAT Bus. Posting Group", '');
+        VATPostingSetup.SetRange("VAT Prod. Posting Group", '');
+        if VATPostingSetup.IsEmpty() then begin
+            VATPostingSetup.Init();
+            VATPostingSetup.Validate("VAT Bus. Posting Group", '');
+            VATPostingSetup.Validate("VAT Prod. Posting Group", '');
+            VATPostingSetup.Validate("VAT Identifier", LibraryRandom.RandText(10));
+            VATPostingSetup.Insert(true);
+        end;
+    end;
+
+    local procedure CreateandPostTransferOrder(var TransferHeader: Record "Transfer Header";
+        var TransferLine: Record "Transfer Line"): Code[20]
+    var
+        DocumentNo: Code[20];
+        PostedDocumentNo: Code[20];
+    begin
+        LibraryWarehouse.CreateTransferHeader(
+            TransferHeader,
+            (LibraryStorage.Get(FromLocationLbl)),
+            (LibraryStorage.Get(ToLocationLbl)),
+            (LibraryStorage.Get(InTransitLocationLbl)));
+        CreateTransferLineWithGST(TransferHeader, TransferLine, StorageBoolean.Get(AvailmentLbl));
+        DocumentNo := TransferHeader."No.";
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, true);
+        PostedDocumentNo := GetPostedTransferShipmentNo(DocumentNo);
+        exit(PostedDocumentNo);
+    end;
+
+    local procedure CreateTransferLineWithGST(var TransferHeader: Record "Transfer Header";
+        var TransferLine: Record "Transfer Line";
+        Availment: Boolean)
+    begin
+        LibraryWarehouse.CreateTransferLine(
+             TransferHeader,
+             Transferline,
+             CreateItemWithInventory(),
+             LibraryRandom.RandIntInRange(1, 5));
+        TransferLine.Validate("Transfer Price", LibraryRandom.RandDecInRange(100, 1000, 0));
+        if Availment then
+            Transferline.Validate("GST Credit", Transferline."GST Credit"::Availment)
+        else
+            TransferLine.Validate("GST Credit", TransferLine."GST Credit"::"Non-Availment");
+        TransferLine.Modify(true);
+    end;
+
+    local procedure GetPostedTransferShipmentNo(DocumentNo: Code[20]): Code[20]
+    var
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+    begin
+        TransferShipmentHeader.SetRange("Transfer Order No.", DocumentNo);
+        if TransferShipmentHeader.FindFirst() then
+            exit(TransferShipmentHeader."No.")
+    end;
+
+    local procedure FillCompanyInformation()
+    var
+        CompanyInformation: Record "Company information";
+        LocationStateCode: Code[10];
+        LocationGSTRegNo: Code[15];
+        LocPan: Code[20];
+    begin
+        CompanyInformation.Get();
+        if CompanyInformation."P.A.N. No." = '' then begin
+            CompanyInformation."P.A.N. No." := LibraryGST.CreatePANNos();
+            CompanyInformation.Modify();
+        end else
+            LocPan := CompanyInformation."P.A.N. No.";
+        LocPan := CompanyInformation."P.A.N. No.";
+
+        LocationStateCode := LibraryGST.CreateInitialSetup();
+        LibraryStorage.Set(LocationStateCodeLbl, LocationStateCode);
+
+        LocationGSTRegNo := LibraryGST.CreateGSTRegistrationNos(LocationStateCode, LocPan);
+        LibraryStorage.Set(LocGSTRegNoLbl, LocationGSTRegNo);
+
+        if CompanyInformation."GST Registration No." = '' then begin
+            CompanyInformation."GST Registration No." := LocationGSTRegNo;
+            CompanyInformation.Modify(true);
+        end;
+    end;
+
+    local procedure CreateTransferLocations(var FromLocation: Record Location; var ToLocation: Record Location; var InTransitLocation: Record Location)
+    var
+    begin
+        LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+        LibraryStorage.Set(FromLocationLbl, FromLocation.Code);
+        LibraryStorage.Set(ToLocationLbl, ToLocation.Code);
+        LibraryStorage.Set(InTransitLocationLbl, InTransitLocation.Code);
+    end;
+
+    local procedure CreateGSTSetup(
+        GSTGroupType: Enum "GST Group Type";
+        IntraState: Boolean;
+        Availment: Boolean)
+    var
+        GSTGroup: Record "GST Group";
+        HSNSAC: Record "HSN/SAC";
+        HSNSACCode: Code[10];
+        GSTGroupCode: Code[20];
+        HsnSacType: Enum "GST Goods And Services Type";
+    begin
+        LibraryGST.CreateInitialSetup();
+        FillCompanyInformation();
+
+        GSTGroupCode := LibraryGST.CreateGSTGroup(GSTGroup, GSTGroupType, GSTGroup."GST Place Of Supply"::" ", false);
+        LibraryStorage.Set(GSTGroupCodeLbl, GSTGroupCode);
+
+        HSNSACCode := LibraryGST.CreateHSNSACCode(HSNSAC, GSTGroupCode, HsnSacType::HSN);
+        LibraryStorage.Set(HSNSACCodeLbl, HSNSACCode);
+
+        LibraryGST.CreateNoVatSetup();
+
+        if IntraState then
+            IntraStateSetup()
+        else
+            InterStateSetup();
+
+        StorageBoolean.Set(AvailmentLbl, Availment);
+        CreateTaxRate();
+    end;
+
+    local procedure IntraStateSetup()
+    var
+        TaxComponent: Record "Tax Component";
+        Location: Record Location;
+        GSTComponentCode: Text[30];
+    begin
+        Location.Reset();
+        Location.Get(LibraryStorage.Get(FromLocationLbl));
+        Location."State Code" := (LibraryStorage.Get(LocationStateCodeLbl));
+        Location."GST Registration No." := (LibraryStorage.Get(LocGSTRegNoLbl));
+        Location."Location ARN No." := Format(LibraryRandom.RandIntInRange(1000, 9999));
+        Location.Modify(true);
+
+        Location.Reset();
+        Location.Get(LibraryStorage.Get(ToLocationLbl));
+        Location."State Code" := (LibraryStorage.Get(LocationStateCodeLbl));
+        Location."GST Registration No." := (LibraryStorage.Get(LocGSTRegNoLbl));
+        Location."Location ARN No." := Format(LibraryRandom.RandIntInRange(1000, 9999));
+        Location.Modify(true);
+
+        CreateGSTSetupTaxRateParameters(true, Location."State Code", Location."State Code");
+        CreateGSTComponentAndPostingSetup(true, Location."State Code", TaxComponent, GSTComponentCode);
+    end;
+
+    local procedure InterStateSetup()
+    var
+        TaxComponent: Record "Tax Component";
+        Location: Record Location;
+        State: Record State;
+        GSTComponentCode: Text[30];
+        FromStateCode, ToStateCode : Code[10];
+    begin
+        Location.Reset();
+        Location.Get(LibraryStorage.Get(FromLocationLbl));
+        Location."State Code" := (LibraryStorage.Get(LocationStateCodeLbl));
+        FromStateCode := Location."State Code";
+        Location."GST Registration No." := (LibraryStorage.Get(LocGSTRegNoLbl));
+        Location."Location ARN No." := Format(LibraryRandom.RandIntInRange(1000, 9999));
+        Location.Modify(true);
+
+        Location.Reset();
+        Location.Get(LibraryStorage.Get(ToLocationLbl));
+        LibraryGST.CreateState(State);
+        Location."State Code" := State.Code;
+        ToStateCode := Location."State Code";
+        Location."GST Registration No." := (LibraryStorage.Get(LocGSTRegNoLbl));
+        Location."Location ARN No." := Format(LibraryRandom.RandIntInRange(1000, 9999));
+        Location.Modify(true);
+
+        CreateGSTSetupTaxRateParameters(false, FromStateCode, ToStateCode);
+        CreateGSTComponentAndPostingSetup(false, FromStateCode, TaxComponent, GSTComponentCode);
+        CreateGSTComponentAndPostingSetup(false, ToStateCode, TaxComponent, GSTComponentCode);
+    end;
+
+    local procedure CreateGSTSetupTaxRateParameters(IntraState: Boolean; FromState: Code[10]; ToState: Code[10])
+    var
+        GSTTaxPercent: Decimal;
+    begin
+        LibraryStorage.Set(FromStateCodeLbl, FromState);
+        LibraryStorage.Set(ToStateCodeLbl, ToState);
+
+        GSTTaxPercent := LibraryRandom.RandDecInRange(10, 18, 0);
+
+        if IntraState then begin
+            ComponentPerArray[1] := (GSTTaxPercent / 2);
+            ComponentPerArray[2] := (GSTTaxPercent / 2);
+            ComponentPerArray[3] := 0.00;
+        end else
+            ComponentPerArray[4] := GSTTaxPercent;
+    end;
+
+    local procedure CreateGSTComponentAndPostingSetup(IntraState: Boolean; LocationStateCode: Code[10]; TaxComponent: Record "Tax Component"; GSTcomponentcode: Text[30]);
+    begin
+        IF IntraState then begin
+            GSTcomponentcode := CGSTLbl;
+            LibraryGST.CreateGSTComponent(TaxComponent, GSTcomponentcode);
+            LibraryGST.CreateGSTPostingSetup(TaxComponent, LocationStateCode);
+
+            GSTcomponentcode := SGSTLbl;
+            LibraryGST.CreateGSTComponent(TaxComponent, GSTcomponentcode);
+            LibraryGST.CreateGSTPostingSetup(TaxComponent, LocationStateCode);
+        end else begin
+            GSTcomponentcode := IGSTLbl;
+            LibraryGST.CreateGSTComponent(TaxComponent, GSTcomponentcode);
+            LibraryGST.CreateGSTPostingSetup(TaxComponent, LocationStateCode);
+        end;
+    end;
+
+    local procedure CreateTaxRate()
+    var
+        GSTSetup: Record "GST Setup";
+        TaxTypes: TestPage "Tax Types";
+    begin
+        GSTSetup.Get();
+        TaxTypes.OpenEdit();
+        TaxTypes.Filter.SetFilter(Code, GSTSetup."GST Tax Type");
+        TaxTypes.TaxRates.Invoke();
+    end;
+
+    local procedure UpdateInventoryPostingSetup(Location: Code[20]; InventoryPostingGroup: Code[20])
+    var
+        InventoryPostingSetup: Record "Inventory Posting Setup";
+        LibraryERM: Codeunit "Library - ERM";
+    begin
+        InventoryPostingSetup.SetRange("Location Code", Location);
+        InventoryPostingSetup.SetRange("Invt. Posting Group Code", InventoryPostingGroup);
+        if InventoryPostingSetup.FindFirst() then
+            InventoryPostingSetup.Validate("Unrealized Profit Account", LibraryERM.CreateGLAccountNo());
+        InventoryPostingSetup.Modify(true);
+    end;
+
+    local procedure VerifyGSTEntries(DocumentNo: Code[20])
+    var
+        TransferShipmentLine: Record "Transfer Shipment Line";
+        ComponentList: List of [Code[30]];
+    begin
+        TransferShipmentLine.SetRange("Document No.", DocumentNo);
+        TransferShipmentLine.SetFilter("Item No.", '<>%1', '');
+        TransferShipmentLine.FindSet();
+        repeat
+            FillComponentList(ComponentList, TransferShipmentLine."GST Group Code");
+            VerifyGSTEntriesForTransfer(TransferShipmentLine, DocumentNo, ComponentList);
+            VerifyDetailedGSTEntriesForTransfer(TransferShipmentLine, DocumentNo, ComponentList);
+        until TransferShipmentLine.Next() = 0;
+    end;
+
+    local procedure FillComponentList(
+       var ComponentList: List of [Code[30]];
+       GSTGroupCode: Code[20])
+    var
+        GSTGroup: Record "GST Group";
+    begin
+        GSTGroup.Get(GSTGroupCode);
+        Clear(ComponentList);
+        if LibraryStorage.Get(FromStateCodeLbl) = LibraryStorage.Get(ToStateCodeLbl) then begin
+            ComponentList.Add(CGSTLbl);
+            ComponentList.Add(SGSTLbl);
+        end else
+            ComponentList.Add(IGSTLbl);
+    end;
+
+    local procedure GetTransactionNo(DocumentNo: Code[20]; PostingDate: Date; DocumentType: Enum "Gen. Journal Document Type"): Integer
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        GLEntry.SetRange("Document No.", DocumentNo);
+        GLEntry.SetRange("Posting Date", PostingDate);
+        GLEntry.SetRange("Document Type", DocumentType);
+        GLEntry.FindFirst();
+
+        exit(GLEntry."Transaction No.");
+    end;
+
+    local procedure VerifyGSTEntriesForTransfer(
+        TransferShipmentLine: Record "Transfer Shipment Line";
+        DocumentNo: Code[20];
+        ComponentList: List of [Code[30]])
+    var
+        GSTLedgerEntry: Record "GST Ledger Entry";
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+        SourceCodeSetup: Record "Source Code Setup";
+        GSTAmount: Decimal;
+        ComponentCode: Code[30];
+        TransactionNo: Integer;
+        DocumentType: Enum "Gen. Journal Document Type";
+    begin
+        TransferShipmentHeader.Get(DocumentNo);
+
+        TransferShipmentLine.SetRange("Document No.", DocumentNo);
+        TransferShipmentLine.SetFilter("Item No.", '<>%1', '');
+        TransferShipmentLine.FindFirst();
+
+        SourceCodeSetup.Get();
+
+        TransactionNo := GetTransactionNo(DocumentNo, TransferShipmentHeader."Posting Date", DocumentType::Invoice);
+
+        foreach ComponentCode in ComponentList do begin
+            GSTLedgerEntry.Reset();
+            GSTLedgerEntry.SetRange("GST Component Code", ComponentCode);
+            GSTLedgerEntry.SetRange("Document No.", DocumentNo);
+            GSTLedgerEntry.SetRange("Posting Date", TransferShipmentHeader."Posting Date");
+            GSTLedgerEntry.SetRange("Document Type", GSTLedgerEntry."Document Type"::Invoice);
+            GSTLedgerEntry.FindFirst();
+
+            if LibraryStorage.Get(FromStateCodeLbl) <> LibraryStorage.Get(ToStateCodeLbl) then
+                GSTAmount := (TransferShipmentLine.Amount * ComponentPerArray[4]) / 100
+            else
+                GSTAmount := TransferShipmentLine.Amount * ComponentPerArray[1] / 100;
+
+            Assert.AreEqual(TransferShipmentLine."Gen. Prod. Posting Group", GSTLedgerEntry."Gen. Prod. Posting Group",
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("Gen. Prod. Posting Group"), GSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransferShipmentHeader."Posting Date", GSTLedgerEntry."Posting Date",
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("Posting Date"), GSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(DocumentNo, GSTLedgerEntry."Document No.",
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("Posting Date"), GSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(GSTLedgerEntry."Document Type"::Invoice, GSTLedgerEntry."Document Type",
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("Document Type"), GSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(GSTLedgerEntry."Transaction Type"::Sales, GSTLedgerEntry."Transaction Type",
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("Transaction Type"), GSTLedgerEntry.TableCaption));
+
+            Assert.AreNearlyEqual(-TransferShipmentLine.Amount, GSTLedgerEntry."GST Base Amount", LibraryGST.GetGSTRoundingPrecision(GSTLedgerEntry."GST Component Code"),
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("GST Base Amount"), GSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(UserId, GSTLedgerEntry."User ID",
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("User ID"), GSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(SourceCodeSetup.Transfer, GSTLedgerEntry."Source Code",
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("Source Code"), GSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransferShipmentHeader."Transfer Order No.", GSTLedgerEntry."External Document No.",
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("External Document No."), GSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(ComponentCode, GSTLedgerEntry."GST Component Code",
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("GST Component Code"), GSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransactionNo, GSTLedgerEntry."Transaction No.",
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("Transaction No."), GSTLedgerEntry.TableCaption));
+
+            Assert.AreNearlyEqual(-GSTAmount, GSTLedgerEntry."GST Amount", LibraryGST.GetGSTRoundingPrecision(GSTLedgerEntry."GST Component Code"),
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("GST Amount"), GSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(GSTLedgerEntry."Entry Type"::"Initial Entry", GSTLedgerEntry."Entry Type",
+                StrSubstNo(GSTLEVerifyErr, GSTLedgerEntry.FieldCaption("Entry Type"), GSTLedgerEntry.TableCaption));
+        end;
+    end;
+
+    local procedure VerifyDetailedGSTEntriesForTransfer(TransferShipmentLine: Record "Transfer Shipment Line";
+        DocumentNo: Code[20];
+        ComponentList: List of [Code[30]])
+    var
+        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+        SourceCodeSetup: Record "Source Code Setup";
+        FromLocation: Record Location;
+        ToLocation: Record Location;
+        GSTAmount: Decimal;
+        TransactionNo: Integer;
+        DocumentType: Enum "Gen. Journal Document Type";
+        ComponentCode: Code[30];
+    begin
+        TransferShipmentHeader.Get(DocumentNo);
+
+        TransferShipmentLine.SetRange("Document No.", DocumentNo);
+        TransferShipmentLine.SetFilter("Item No.", '<>%1', '');
+        TransferShipmentLine.FindFirst();
+
+        SourceCodeSetup.Get();
+        FromLocation.Get(LibraryStorage.Get(FromLocationLbl));
+        ToLocation.Get(LibraryStorage.Get(ToLocationLbl));
+
+        TransactionNo := GetTransactionNo(DocumentNo, TransferShipmentHeader."Posting Date", DocumentType::Invoice);
+
+        foreach ComponentCode in ComponentList do begin
+            DetailedGSTLedgerEntry.Reset();
+            DetailedGSTLedgerEntry.SetRange("GST Component Code", ComponentCode);
+            DetailedGSTLedgerEntry.SetRange("Document No.", DocumentNo);
+            DetailedGSTLedgerEntry.SetRange("Posting Date", TransferShipmentHeader."Posting Date");
+            DetailedGSTLedgerEntry.SetRange("Document Type", DetailedGSTLedgerEntry."Document Type"::Invoice);
+            DetailedGSTLedgerEntry.FindFirst();
+
+            DetailedGSTLedgerEntryInfo.Get(DetailedGSTLedgerEntry."Entry No.");
+
+            if LibraryStorage.Get(FromStateCodeLbl) <> LibraryStorage.Get(ToStateCodeLbl) then
+                GSTAmount := (TransferShipmentLine.Amount * ComponentPerArray[4]) / 100
+            else
+                GSTAmount := TransferShipmentLine.Amount * ComponentPerArray[1] / 100;
+
+            Assert.AreEqual(DetailedGSTLedgerEntry."Entry Type"::"Initial Entry", DetailedGSTLedgerEntry."Entry Type",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("Entry Type"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(DetailedGSTLedgerEntry."Transaction Type"::Sales, DetailedGSTLedgerEntry."Transaction Type",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("Transaction Type"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(DetailedGSTLedgerEntry."Document Type"::Invoice, DetailedGSTLedgerEntry."Document Type",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("Document Type"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransferShipmentHeader."Posting Date", DetailedGSTLedgerEntry."Posting Date",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("Posting Date"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(DetailedGSTLedgerEntry.Type::Item, DetailedGSTLedgerEntry.Type,
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption(Type), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransferShipmentLine."Item No.", DetailedGSTLedgerEntry."No.",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("No."), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(LibraryGST.GetGSTPayableAccountNo((LibraryStorage.Get(FromStateCodeLbl)), DetailedGSTLedgerEntry."GST Component Code"), DetailedGSTLedgerEntry."G/L Account No.",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("G/L Account No."), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(DetailedGSTLedgerEntry."Product Type"::Item, DetailedGSTLedgerEntry."Product Type",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("Product Type"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(DetailedGSTLedgerEntry."Source Type"::" ", DetailedGSTLedgerEntry."Source Type",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("Source Type"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual('', DetailedGSTLedgerEntry."Source No.",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("Source No."), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransferShipmentLine."HSN/SAC Code", DetailedGSTLedgerEntry."HSN/SAC Code",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("HSN/SAC Code"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransferShipmentLine."GST Group Code", DetailedGSTLedgerEntry."GST Group Code",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("GST Group Code"), DetailedGSTLedgerEntry.TableCaption));
+
+            if LibraryStorage.Get(FromStateCodeLbl) <> LibraryStorage.Get(ToStateCodeLbl) then
+                Assert.AreEqual(DetailedGSTLedgerEntry."GST Jurisdiction Type"::Interstate, DetailedGSTLedgerEntry."GST Jurisdiction Type",
+                    StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("GST Jurisdiction Type"), DetailedGSTLedgerEntry.TableCaption))
+            else
+                Assert.AreEqual(DetailedGSTLedgerEntry."GST Jurisdiction Type"::Intrastate, DetailedGSTLedgerEntry."GST Jurisdiction Type",
+                    StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("GST Jurisdiction Type"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreNearlyEqual(-TransferShipmentLine.Amount, DetailedGSTLedgerEntry."GST Base Amount", LibraryGST.GetGSTRoundingPrecision(DetailedGSTLedgerEntry."GST Component Code"),
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("GST Base Amount"), DetailedGSTLedgerEntry.TableCaption));
+
+            if DetailedGSTLedgerEntry."GST Jurisdiction Type" = DetailedGSTLedgerEntry."GST Jurisdiction Type"::Interstate then
+                Assert.AreEqual(ComponentPerArray[4], DetailedGSTLedgerEntry."GST %",
+                    StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("GST %"), DetailedGSTLedgerEntry.TableCaption))
+            else
+                Assert.AreEqual(ComponentPerArray[1], DetailedGSTLedgerEntry."GST %",
+                    StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("GST %"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreNearlyEqual(-GSTAmount, DetailedGSTLedgerEntry."GST Amount", LibraryGST.GetGSTRoundingPrecision(DetailedGSTLedgerEntry."GST Component Code"),
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("GST Amount"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransferShipmentHeader."Transfer Order No.", DetailedGSTLedgerEntry."External Document No.",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("External Document No."), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransferShipmentHeader."Transfer Order No.", DetailedGSTLedgerEntryInfo."Original Doc. No.",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntryInfo.FieldCaption("Original Doc. No."), DetailedGSTLedgerEntryInfo.TableCaption));
+
+            Assert.AreEqual(-TransferShipmentLine.Quantity, DetailedGSTLedgerEntry.Quantity,
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldName(Quantity), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransferShipmentLine."Line No.", DetailedGSTLedgerEntry."Document Line No.",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("Reverse Charge"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(LibraryStorage.Get(FromStateCodeLbl), DetailedGSTLedgerEntryInfo."Location State Code",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntryInfo.FieldCaption("Location State Code"), DetailedGSTLedgerEntryInfo.TableCaption));
+
+            Assert.AreEqual(LibraryStorage.Get(ToStateCodeLbl), DetailedGSTLedgerEntryInfo."Buyer/Seller State Code",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntryInfo.FieldCaption("Buyer/Seller State Code"), DetailedGSTLedgerEntryInfo.TableCaption));
+
+            Assert.AreEqual(FromLocation."GST Registration No.", DetailedGSTLedgerEntry."Location  Reg. No.",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldName("Location  Reg. No."), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(ToLocation."GST Registration No.", DetailedGSTLedgerEntry."Buyer/Seller Reg. No.",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldName("Buyer/Seller Reg. No."), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(DetailedGSTLedgerEntry."GST Group Type"::Goods, DetailedGSTLedgerEntry."GST Group Type",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldName("GST Group Type"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransferShipmentLine."GST Credit"::" ", DetailedGSTLedgerEntry."GST Credit",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldName("GST Credit"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(TransactionNo, DetailedGSTLedgerEntry."Transaction No.",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("Transaction No."), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(DetailedGSTLedgerEntryInfo."Original Doc. Type"::"Transfer Shipment", DetailedGSTLedgerEntryInfo."Original Doc. Type",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntryInfo.FieldCaption("Original Doc. Type"), DetailedGSTLedgerEntryInfo.TableCaption));
+
+            Assert.AreEqual(LibraryStorage.Get(FromLocationLbl), DetailedGSTLedgerEntry."Location Code",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("Location Code"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(UserId, DetailedGSTLedgerEntryInfo."User ID",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntryInfo.FieldCaption("User ID"), DetailedGSTLedgerEntryInfo.TableCaption));
+
+            Assert.AreEqual(TransferShipmentLine."Unit of Measure Code", DetailedGSTLedgerEntryInfo.UOM,
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntryInfo.FieldCaption(UOM), DetailedGSTLedgerEntry.TableCaption));
+        end;
+    end;
+
+    [PageHandler]
+    procedure TaxRatesPage(var TaxRates: TestPage "Tax Rates")
+    begin
+        TaxRates.New();
+        TaxRates.AttributeValue1.SetValue(LibraryStorage.Get(GSTGroupCodeLbl));
+        TaxRates.AttributeValue2.SetValue(LibraryStorage.Get(HSNSACCodeLbl));
+        TaxRates.AttributeValue3.SetValue(LibraryStorage.Get(FromStateCodeLbl));
+        TaxRates.AttributeValue4.SetValue(LibraryStorage.Get(ToStateCodeLbl));
+        TaxRates.AttributeValue5.SetValue(Today);
+        TaxRates.AttributeValue6.SetValue(CALCDATE('<10Y>', Today));
+        TaxRates.AttributeValue7.SetValue(ComponentPerArray[1]);
+        TaxRates.AttributeValue8.SetValue(ComponentPerArray[2]);
+        TaxRates.AttributeValue9.SetValue(ComponentPerArray[4]);
+        TaxRates.AttributeValue10.SetValue(ComponentPerArray[3]);
+        TaxRates.OK().Invoke();
+    end;
+
+    var
+        LibraryGST: Codeunit "Library GST";
+        LibraryRandom: Codeunit "Library - Random";
+        Assert: Codeunit Assert;
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibraryWarehouse: Codeunit "Library - Warehouse";
+        LibraryStorage: Dictionary of [Text, Text];
+        StorageBoolean: Dictionary of [Text, Boolean];
+        ComponentPerArray: array[20] of Decimal;
+        LocationStateCodeLbl: Label 'LocationStateCode';
+        GSTGroupCodeLbl: Label 'GSTGroupCode';
+        HSNSACCodeLbl: Label 'HSNSACCode';
+        FromStateCodeLbl: Label 'FromStateCode';
+        ToStateCodeLbl: Label 'ToStateCode';
+        AvailmentLbl: Label 'Availment';
+        CGSTLbl: Label 'CGST';
+        SGSTLbl: Label 'SGST';
+        IGSTLbl: Label 'IGST';
+        FromLocationLbl: Label 'FromLocation';
+        ToLocationLbl: Label 'ToLocation';
+        LocGSTRegNoLbl: Label 'LocGSTRegNo';
+        InTransitLocationLbl: Label 'InTransitLocation';
+        GSTLEVerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
+}

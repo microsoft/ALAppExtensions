@@ -11,6 +11,7 @@ codeunit 421 "Data Compression Impl."
         TempBlobZip: Codeunit "Temp Blob";
         ZipArchive: DotNet ZipArchive;
         ZipArchiveMode: DotNet ZipArchiveMode;
+        GZipStream: DotNet GZipStream;
 
     procedure CreateZipArchive()
     var
@@ -19,6 +20,24 @@ codeunit 421 "Data Compression Impl."
         Clear(TempBlobZip);
         TempBlobZip.CreateOutStream(OutputStream);
         ZipArchive := ZipArchive.ZipArchive(OutputStream, ZipArchiveMode.Create);
+    end;
+
+    procedure GZipCompress(InputStream: InStream; CompressedStream: OutStream)
+    var
+        DotNetCompressionMode: DotNet CompressionMode;
+    begin
+        GZipStream := GZipStream.GZipStream(CompressedStream, DotNetCompressionMode::Compress);
+        CopyStream(GZipStream, InputStream);
+        GZipStream.Dispose();
+    end;
+
+    procedure GZipDecompress(InputStream: InStream; DecompressedStream: OutStream)
+    var
+        DotNetCompressionMode: DotNet CompressionMode;
+    begin
+        GZipStream := GZipStream.GZipStream(InputStream, DotNetCompressionMode::Decompress);
+        GZipStream.CopyTo(DecompressedStream);
+        GZipStream.Dispose();
     end;
 
     procedure OpenZipArchive(InputStream: InStream; OpenForUpdate: Boolean)
@@ -60,6 +79,8 @@ codeunit 421 "Data Compression Impl."
     var
         InputStream: InStream;
     begin
+        if IsNull(ZipArchive) then
+            exit;
         ZipArchive.Dispose();
         TempBlobZip.CreateInStream(InputStream);
         CopyStream(OutputStream, InputStream);
@@ -70,6 +91,8 @@ codeunit 421 "Data Compression Impl."
     var
         OutputStream: OutStream;
     begin
+        if IsNull(ZipArchive) then
+            exit;
         Clear(TempBlob);
         TempBlob.CreateOutStream(OutputStream);
         SaveZipArchive(OutputStream);
@@ -77,16 +100,20 @@ codeunit 421 "Data Compression Impl."
 
     procedure CloseZipArchive()
     begin
-        if not IsNull(ZipArchive) then
+        if not IsNull(ZipArchive) then begin
             ZipArchive.Dispose();
+            Clear(TempBlobZip);
+        end;
     end;
 
-    procedure IsGZip(InStream: InStream): Boolean
+    procedure IsGZip(InputStream: InStream): Boolean
     var
+        OriginalStream: DotNet Stream;
         ID: array[2] of Byte;
     begin
-        InStream.Read(ID[1]);
-        InStream.Read(ID[2]);
+        OriginalStream := InputStream;
+        InputStream.Read(ID[1]);
+        InputStream.Read(ID[2]);
 
         // from GZIP file format specification version 4.3
         // Member header and trailer
@@ -94,6 +121,8 @@ codeunit 421 "Data Compression Impl."
         // ID2 (IDentification 2)
         // These have the fixed values ID1 = 31 (0x1f, \037), ID2 = 139 (0x8b, \213), to identify the file as being in gzip format.
 
+        OriginalStream.Position := 0;
+        InputStream := OriginalStream;
         exit((ID[1] = 31) and (ID[2] = 139));
     end;
 

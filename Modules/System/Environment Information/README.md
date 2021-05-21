@@ -84,6 +84,20 @@ procedure IsFinancials(): Boolean
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if the application family is Financials, false otherwise.
+### IsSaaSInfrastructure (Method) <a name="IsSaaSInfrastructure"></a> 
+
+ Checks if the deployment infrastucture is SaaS (Software as a Service). 
+ Note: This function will return false in a Docker container.
+ 
+
+#### Syntax
+```
+procedure IsSaaSInfrastructure(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the deployment infrastructure type is a SaaS, false otherwise.
 ### GetApplicationFamily (Method) <a name="GetApplicationFamily"></a> 
 
  Gets the application family.
@@ -96,7 +110,25 @@ procedure GetApplicationFamily(): Text
 #### Return Value
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
+The application family.
+### VersionInstalled (Method) <a name="VersionInstalled"></a> 
 
+ Gets the version which a given app was installed in.
+ 
+
+#### Syntax
+```
+procedure VersionInstalled(AppID: Guid): Integer
+```
+#### Parameters
+*AppID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The module ID of the app.
+
+#### Return Value
+*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+
+The major version number when the app was installed.
 
 ## Tenant Information (Codeunit 417)
 

@@ -13,7 +13,7 @@ codeunit 2504 "Extension Management"
     var
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
-
+        ExtensionMarketplace: Codeunit "Extension Marketplace";
 
     /// <summary>
     /// Installs an extension, based on its PackageId and Locale Identifier.
@@ -21,6 +21,7 @@ codeunit 2504 "Extension Management"
     /// <param name="PackageId">The ID of the extension package.</param>
     /// <param name="lcid">The Locale Identifier.</param>
     /// <param name="IsUIEnabled">Indicates whether the install operation is invoked through the UI.</param>
+    /// <returns>True if the extention is installed successfully; false otherwise.</returns>
     procedure InstallExtension(PackageId: Guid; lcid: Integer; IsUIEnabled: Boolean): Boolean
     begin
         exit(ExtensionInstallationImpl.InstallExtension(PackageId, lcid, IsUIEnabled));
@@ -31,9 +32,21 @@ codeunit 2504 "Extension Management"
     /// </summary>
     /// <param name="PackageId">The ID of the extension package.</param>
     /// <param name="IsUIEnabled">Indicates if the uninstall operation is invoked through the UI.</param>
+    /// <returns>True if the extention is uninstalled successfully; false otherwise.</returns>
     procedure UninstallExtension(PackageId: Guid; IsUIEnabled: Boolean): Boolean
     begin
         exit(ExtensionInstallationImpl.UninstallExtension(PackageId, IsUIEnabled));
+    end;
+
+    /// <summary>
+    /// Uninstalls an extension, based on its PackageId and permanently deletes the tables that contain data for the extension.
+    /// </summary>
+    /// <param name="PackageId">The ID of the extension package.</param>
+    /// <param name="IsUIEnabled">Indicates if the uninstall operation is invoked through the UI.</param>
+    /// <returns>True if the extention is uninstalled successfully; false otherwise.</returns>
+    procedure UninstallExtensionAndDeleteExtensionData(PackageId: Guid; IsUIEnabled: Boolean): Boolean
+    begin
+        exit(ExtensionInstallationImpl.UninstallExtension(PackageId, IsUIEnabled, true));
     end;
 
     /// <summary>
@@ -48,7 +61,7 @@ codeunit 2504 "Extension Management"
     end;
 
     /// <summary>
-    /// Deploys an extension, based on its PackageId and Locale Identifier.
+    /// Deploys an extension, based on its ID and Locale Identifier.
     /// This method is only applicable in SaaS environment.
     /// </summary>
     /// <param name="AppId">The AppId of the extension.</param>
@@ -64,6 +77,7 @@ codeunit 2504 "Extension Management"
     /// An extension can only be unpublished, if it is a per-tenant one and it has been uninstalled first.
     /// </summary>
     /// <param name="PackageId">The PackageId of the extension.</param>
+    /// <returns>True if the extention is unpublished successfully; false otherwise.</returns>
     procedure UnpublishExtension(PackageId: Guid): Boolean
     begin
         exit(ExtensionOperationImpl.UnpublishExtension(PackageId));
@@ -73,9 +87,23 @@ codeunit 2504 "Extension Management"
     /// Downloads the source of an extension, based on its PackageId.
     /// </summary>
     /// <param name="PackageId">The PackageId of the extension.</param>
+    /// <returns>True if the operation was successful; false otherwise.</returns>
     procedure DownloadExtensionSource(PackageId: Guid): Boolean
     begin
         exit(ExtensionOperationImpl.DownloadExtensionSource(PackageId));
+    end;
+
+    /// <summary>
+    /// Retrives the source of an extension, based on its PackageId.
+    /// </summary>
+    /// <param name="PackageId">The PackageId of the extension.</param>
+    /// <param name="ExtensionSourceTempBlob">TempBlob where the zip is stored.</param>
+    /// <returns>True if the operation was successful; false otherwise.</returns>
+    procedure GetExtensionSource(PackageId: Guid; var ExtensionSourceTempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        FileName: Text;
+    begin
+        exit(ExtensionOperationImpl.GetExtensionSource(PackageId, ExtensionSourceTempBlob, FileName));
     end;
 
     /// <summary>
@@ -102,9 +130,19 @@ codeunit 2504 "Extension Management"
     /// Retrieves a list of all the Deployment Status Entries
     /// </summary>
     /// <param name="NavAppTenantOperation">Gets the list of all the Deployment Status Entries.</param>
+    [Obsolete('Required parameter is not accessible for Cloud development', '17.0')]
     procedure GetAllExtensionDeploymentStatusEntries(var NavAppTenantOperation: Record "NAV App Tenant Operation")
     begin
         ExtensionOperationImpl.GetAllExtensionDeploymentStatusEntries(NavAppTenantOperation);
+    end;
+
+    /// <summary>
+    /// Retrieves a list of all the Deployment Status Entries
+    /// </summary>
+    /// <param name="TempExtensionDeploymentStatus">Gets the list of all the Deployment Status Entries in a temporary record.</param>
+    procedure GetAllExtensionDeploymentStatusEntries(var TempExtensionDeploymentStatus: Record "Extension Deployment Status" temporary)
+    begin
+        ExtensionOperationImpl.GetAllExtensionDeploymentStatusEntries(TempExtensionDeploymentStatus);
     end;
 
     /// <summary>
@@ -134,31 +172,35 @@ codeunit 2504 "Extension Management"
     /// Allows or disallows Http Client requests against the specified extension.
     /// </summary>
     /// <param name="PackageId">The Id of the extension to configure.</param>
+    /// <param name="AreHttpClientRqstsAllowed">The value to set for "Allow HttpClient Requests".</param>
+    /// <returns>True configuration was successful; false otherwise.</returns>
     procedure ConfigureExtensionHttpClientRequestsAllowance(PackageId: Text; AreHttpClientRqstsAllowed: Boolean): Boolean
     begin
         ExtensionOperationImpl.ConfigureExtensionHttpClientRequestsAllowance(PackageId, AreHttpClientRqstsAllowed);
     end;
 
     /// <summary>
-    /// Returns the PackageId of the latest Extension Version by the Extension AppId.
+    /// Gets the PackageId of the latest Extension Version by the Extension AppId.
     /// </summary>
     /// <param name="AppId">The AppId of the extension.</param>
+    /// <returns>The package ID by app ID. Empty GUID, if package with the provided app ID does not exist.</returns>
     procedure GetLatestVersionPackageIdByAppId(AppId: Guid): Guid
     begin
         exit(ExtensionOperationImpl.GetLatestVersionPackageIdByAppId(AppId));
     end;
 
     /// <summary>
-    /// Returns the PackageId of the latest version of the extension by the extension's AppId.
+    /// Gets the PackageId of the latest version of the extension by the extension's AppId.
     /// </summary>
     /// <param name="AppId">The AppId of the installed extension.</param>
+    /// <returns>The package ID of the installed version of an extenstion. Empty GUID, if package with the provided app ID does not exist.</returns>
     procedure GetCurrentlyInstalledVersionPackageIdByAppId(AppId: Guid): Guid
     begin
         exit(ExtensionOperationImpl.GetCurrentlyInstalledVersionPackageIdByAppId(AppId));
     end;
 
     /// <summary>
-    /// Returns the PackageId of the version of the extension by the extension's AppId, Name, Version Major, Version Minor, Version Build, Version Revision.
+    /// Gets the package ID of the version of the extension by the extension's AppId, Name, Version Major, Version Minor, Version Build, Version Revision.
     /// </summary>
     /// <param name="AppId">The AppId of the extension.</param>
     /// <param name="Name">The input/output Name parameter of the extension. If there is no need to filter by this parameter, the default value is ''.</param>
@@ -166,6 +208,7 @@ codeunit 2504 "Extension Management"
     /// <param name="VersionMinor">The input/output Version Minor parameter  of the extension. If there is no need to filter by this parameter, the default value is "0"..</param>
     /// <param name="VersionBuild">The input/output Version Build parameter  of the extension. If there is no need to filter by this parameter, the default value is "0".</param>
     /// <param name="VersionRevision">The input/output Version Revision parameter  of the extension. If there is no need to filter by this parameter, the default value is "0".</param>
+    /// <returns>The package ID of the extension with the specified paramters.</returns>
     procedure GetSpecificVersionPackageIdByAppId(AppId: Guid; Name: Text; VersionMajor: Integer; VersionMinor: Integer; VersionBuild: Integer; VersionRevision: Integer): Guid
     begin
         exit(ExtensionOperationImpl.GetSpecificVersionPackageIdByAppId(AppId, Name,
@@ -181,5 +224,82 @@ codeunit 2504 "Extension Management"
     begin
         ExtensionOperationImpl.GetExtensionLogo(AppId, Logo);
     end;
+
+    /// <summary>
+    /// Uploads an extension to current version, next minor or next major, using a File Stream and based on the Locale Identifier.
+    /// This method is only applicable in SaaS environment.
+    /// </summary>
+    /// <param name="FileStream">The File Stream containing the extension to be uploaded.</param>
+    /// <param name="lcid">The Locale Identifier.</param>
+    /// <param name="DeployTo">The version that the extension will be deployed to.</param>
+    procedure UploadExtensionToVersion(FileStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To")
+    begin
+        ExtensionOperationImpl.DeployAndUploadExtension(FileStream, lcid, DeployTo);
+    end;
+
+    /// <summary>
+    /// Returns a link to appsource market page
+    /// </summary>
+    /// <returns></returns>
+    [Obsolete('Replaced by "Extension Marketplace".GetMarketplaceEmbeddedUrl procedure.', '17.0')]
+    PROCEDURE GetMarketplaceEmbeddedUrl(): Text;
+    BEGIN
+        EXIT(ExtensionMarketplace.GetMarketplaceEmbeddedUrl());
+    END;
+
+    /// <summary>
+    /// Extraxts the message type from appsource response.
+    /// </summary>
+    /// <param name="JObject">Appsourece response payload as a json object</param>
+    /// <returns></returns>
+    [Obsolete('Replaced by "Extension Marketplace".GetMessageType procedure.', '17.0')]
+    PROCEDURE GetMessageType(JObject: DotNet JObject): Text;
+    BEGIN
+        EXIT(ExtensionMarketplace.GetMessageType(JObject));
+    END;
+
+    /// <summary>
+    /// Extraxts the appsource application ID from appsource response.
+    /// </summary>
+    /// <param name="JObject">Appsourece response payload as a json object</param>
+    /// <returns>Application Id in text format</returns>
+    [Obsolete('Replaced by "Extension Marketplace".GetApplicationIdFromData procedure.', '17.0')]
+    PROCEDURE GetApplicationIdFromData(JObject: DotNet JObject): Text;
+    BEGIN
+        exit(ExtensionMarketplace.GetApplicationIdFromData(JObject));
+    END;
+
+    /// <summary>
+    /// Extraxts the package ID from appsource response.
+    /// </summary>
+    /// <param name="ApplicationId">Appsource market application ID</param>
+    /// <returns>Package ID as a GUID</returns>
+    [Obsolete('Replaced by "Extension Marketplace".MapMarketplaceIdToPackageId procedure.', '17.0')]
+    PROCEDURE MapMarketplaceIdToPackageId(ApplicationId: Text): GUID;
+    BEGIN
+        exit(ExtensionMarketplace.MapMarketplaceIdToPackageId(ApplicationId));
+    END;
+
+    /// <summary>
+    /// Extracts the telemetry URL from appsource response.
+    /// </summary>
+    /// <param name="JObject">Appsourece response payload as a json object</param>
+    /// <returns></returns>
+    [Obsolete('Replaced by "Extension Marketplace".GetTelementryUrlFromData procedure.', '17.0')]
+    PROCEDURE GetTelementryUrlFromData(JObject: DotNet JObject): Text;
+    BEGIN
+        exit(ExtensionMarketplace.GetTelementryUrlFromData(JObject));
+    END;
+
+    /// <summary>
+    /// Extraxts the app ID from appsource response.
+    /// </summary>
+    /// <param name="ApplicationId">Appsource market application ID</param>
+    /// <returns></returns>
+    [Obsolete('Replaced by "Extension Marketplace".MapMarketplaceIdToAppId procedure.', '17.0')]
+    PROCEDURE MapMarketplaceIdToAppId(ApplicationId: Text): GUID;
+    BEGIN
+        exit(ExtensionMarketplace.MapMarketplaceIdToAppId(ApplicationId));
+    END;
 }
 

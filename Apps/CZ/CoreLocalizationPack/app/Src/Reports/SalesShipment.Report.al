@@ -1,0 +1,442 @@
+report 31191 "Sales Shipment CZL"
+{
+    DefaultLayout = RDLC;
+    RDLCLayout = './Src/Reports/SalesShipment.rdl';
+    Caption = 'Sales Shipment';
+    PreviewMode = PrintLayout;
+
+    dataset
+    {
+        dataitem("Company Information"; "Company Information")
+        {
+            DataItemTableView = sorting("Primary Key");
+            column(CompanyAddr1; CompanyAddr[1])
+            {
+            }
+            column(CompanyAddr2; CompanyAddr[2])
+            {
+            }
+            column(CompanyAddr3; CompanyAddr[3])
+            {
+            }
+            column(CompanyAddr4; CompanyAddr[4])
+            {
+            }
+            column(CompanyAddr5; CompanyAddr[5])
+            {
+            }
+            column(CompanyAddr6; CompanyAddr[6])
+            {
+            }
+            column(RegistrationNo_CompanyInformation; "Registration No.")
+            {
+            }
+            column(VATRegistrationNo_CompanyInformation; "VAT Registration No.")
+            {
+            }
+            column(HomePage_CompanyInformation; "Home Page")
+            {
+            }
+            column(Picture_CompanyInformation; Picture)
+            {
+            }
+            dataitem("Sales & Receivables Setup"; "Sales & Receivables Setup")
+            {
+                DataItemTableView = sorting("Primary Key");
+                column(LogoPositiononDocuments_SalesReceivablesSetup; Format("Logo Position on Documents", 0, 2))
+                {
+                }
+                dataitem("General Ledger Setup"; "General Ledger Setup")
+                {
+                    DataItemTableView = sorting("Primary Key");
+                    column(LCYCode_GeneralLedgerSetup; "LCY Code")
+                    {
+                    }
+                }
+            }
+            trigger OnAfterGetRecord()
+            begin
+                FormatAddress.Company(CompanyAddr, "Company Information");
+            end;
+        }
+        dataitem("Sales Shipment Header"; "Sales Shipment Header")
+        {
+            column(DocumentLbl; DocumentLbl)
+            {
+            }
+            column(PageLbl; PageLbl)
+            {
+            }
+            column(CopyLbl; CopyLbl)
+            {
+            }
+            column(VendorLbl; VendLbl)
+            {
+            }
+            column(CustomerLbl; CustLbl)
+            {
+            }
+            column(ShipToLbl; ShipToLbl)
+            {
+            }
+            column(PaymentTermsLbl; PaymentTermsLbl)
+            {
+            }
+            column(PaymentMethodLbl; PaymentMethodLbl)
+            {
+            }
+            column(ShipmentMethodLbl; ShipmentMethodLbl)
+            {
+            }
+            column(SalespersonLbl; SalespersonLbl)
+            {
+            }
+            column(UoMLbl; UoMLbl)
+            {
+            }
+            column(CreatorLbl; CreatorLbl)
+            {
+            }
+            column(SubtotalLbl; SubtotalLbl)
+            {
+            }
+            column(DiscPercentLbl; DiscPercentLbl)
+            {
+            }
+            column(TotalLbl; TotalLbl)
+            {
+            }
+            column(VATLbl; VATLbl)
+            {
+            }
+            column(No_SalesShipmentHeader; "No.")
+            {
+            }
+            column(VATRegistrationNo_SalesShipmentHeaderCaption; FieldCaption("VAT Registration No."))
+            {
+            }
+            column(VATRegistrationNo_SalesShipmentHeader; "VAT Registration No.")
+            {
+            }
+            column(RegistrationNo_SalesShipmentHeaderCaption; FieldCaption("Registration No. CZL"))
+            {
+            }
+            column(RegistrationNo_SalesShipmentHeader; "Registration No. CZL")
+            {
+            }
+            column(DocumentDate_SalesShipmentHeaderCaption; FieldCaption("Document Date"))
+            {
+            }
+            column(DocumentDate_SalesShipmentHeader; "Document Date")
+            {
+            }
+            column(ShipmentDate_SalesShipmentHeaderCaption; FieldCaption("Shipment Date"))
+            {
+            }
+            column(ShipmentDate_SalesShipmentHeader; "Shipment Date")
+            {
+            }
+            column(OrderNo_SalesShipmentHeaderCaption; FieldCaption("Order No."))
+            {
+            }
+            column(OrderNo_SalesShipmentHeader; "Order No.")
+            {
+            }
+            column(YourReference_SalesShipmentHeaderCaption; FieldCaption("Your Reference"))
+            {
+            }
+            column(YourReference_SalesShipmentHeader; "Your Reference")
+            {
+            }
+            column(ShipmentMethod; ShipmentMethod.Description)
+            {
+            }
+            column(DocFooterText; DocFooterText)
+            {
+            }
+            column(CustAddr1; CustAddr[1])
+            {
+            }
+            column(CustAddr2; CustAddr[2])
+            {
+            }
+            column(CustAddr3; CustAddr[3])
+            {
+            }
+            column(CustAddr4; CustAddr[4])
+            {
+            }
+            column(CustAddr5; CustAddr[5])
+            {
+            }
+            column(CustAddr6; CustAddr[6])
+            {
+            }
+            column(ShipToAddr1; ShipToAddr[1])
+            {
+            }
+            column(ShipToAddr2; ShipToAddr[2])
+            {
+            }
+            column(ShipToAddr3; ShipToAddr[3])
+            {
+            }
+            column(ShipToAddr4; ShipToAddr[4])
+            {
+            }
+            column(ShipToAddr5; ShipToAddr[5])
+            {
+            }
+            column(ShipToAddr6; ShipToAddr[6])
+            {
+            }
+            dataitem(CopyLoop; "Integer")
+            {
+                DataItemTableView = sorting(Number);
+                column(CopyNo; Number)
+                {
+                }
+                dataitem("Salesperson/Purchaser"; "Salesperson/Purchaser")
+                {
+                    DataItemLink = Code = field("Salesperson Code");
+                    DataItemLinkReference = "Sales Shipment Header";
+                    DataItemTableView = sorting(Code);
+                    column(Name_SalespersonPurchaser; Name)
+                    {
+                    }
+                    column(EMail_SalespersonPurchaser; "E-Mail")
+                    {
+                    }
+                    column(PhoneNo_SalespersonPurchaser; "Phone No.")
+                    {
+                    }
+                }
+                dataitem("Sales Shipment Line"; "Sales Shipment Line")
+                {
+                    DataItemLink = "Document No." = field("No.");
+                    DataItemLinkReference = "Sales Shipment Header";
+                    DataItemTableView = sorting("Document No.", "Line No.");
+                    column(LineNo_SalesShipmentLine; "Line No.")
+                    {
+                    }
+                    column(Type_SalesShipmentLine; Format(Type, 0, 2))
+                    {
+                    }
+                    column(No_SalesShipmentLineCaption; FieldCaption("No."))
+                    {
+                    }
+                    column(No_SalesShipmentLine; "No.")
+                    {
+                    }
+                    column(Description_SalesShipmentLineCaption; FieldCaption(Description))
+                    {
+                    }
+                    column(Description_SalesShipmentLine; Description)
+                    {
+                    }
+                    column(Quantity_SalesShipmentLineCaption; FieldCaption(Quantity))
+                    {
+                    }
+                    column(Quantity_SalesShipmentLine; Quantity)
+                    {
+                    }
+                    column(UnitofMeasure_SalesShipmentLine; "Unit of Measure")
+                    {
+                    }
+                    dataitem(ItemTrackingLine; "Integer")
+                    {
+                        DataItemTableView = sorting(Number);
+                        column(LotNo_TrackingSpecBuffer; TempTrackingSpecification."Lot No.")
+                        {
+                        }
+                        column(SerNo_TrackingSpecBuffer; TempTrackingSpecification."Serial No.")
+                        {
+                        }
+                        column(Expiration_TrackingSpecBuffer; TempTrackingSpecification."Expiration Date")
+                        {
+                        }
+                        column(Quantity_TrackingSpecBuffer; TempTrackingSpecification."Quantity (Base)")
+                        {
+                        }
+                        trigger OnAfterGetRecord()
+                        begin
+                            if Number = 1 then
+                                TempTrackingSpecification.FindSet()
+                            else
+                                TempTrackingSpecification.Next();
+                        end;
+
+                        trigger OnPreDataItem()
+                        begin
+                            TempTrackingSpecification.SetRange("Source Ref. No.", "Sales Shipment Line"."Line No.");
+
+                            TrackingSpecCount := TempTrackingSpecification.Count();
+                            if TrackingSpecCount = 0 then
+                                CurrReport.Break();
+
+                            SetRange(Number, 1, TrackingSpecCount);
+                            TempTrackingSpecification.SetCurrentKey("Source ID", "Source Type", "Source Subtype", "Source Batch Name",
+                              "Source Prod. Order Line", "Source Ref. No.");
+                        end;
+                    }
+                }
+                dataitem("User Setup"; "User Setup")
+                {
+                    DataItemLink = "User ID" = field("User ID");
+                    DataItemLinkReference = "Sales Shipment Header";
+                    DataItemTableView = sorting("User ID");
+                    dataitem(Employee; Employee)
+                    {
+                        DataItemLink = "No." = field("Employee No. CZL");
+                        DataItemTableView = sorting("No.");
+                        column(FullName_Employee; FullName())
+                        {
+                        }
+                        column(PhoneNo_Employee; "Phone No.")
+                        {
+                        }
+                        column(CompanyEMail_Employee; "Company E-Mail")
+                        {
+                        }
+                    }
+                }
+                trigger OnPostDataItem()
+                begin
+                    if not IsReportInPreviewMode() then
+                        Codeunit.Run(Codeunit::"Sales Shpt.-Printed", "Sales Shipment Header");
+                end;
+
+                trigger OnPreDataItem()
+                begin
+                    NoOfLoops := Abs(NoOfCopies) + 1;
+                    if NoOfLoops <= 0 then
+                        NoOfLoops := 1;
+
+                    SetRange(Number, 1, NoOfLoops);
+                end;
+            }
+            trigger OnAfterGetRecord()
+            begin
+                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+
+                FormatAddress.SalesShptShipTo(ShipToAddr, "Sales Shipment Header");
+                FormatAddress.SalesShptBillTo(CustAddr, ShipToAddr, "Sales Shipment Header");
+                FormatDocument.SetShipmentMethod(ShipmentMethod, "Shipment Method Code", "Language Code");
+                DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
+
+                if LogInteraction and not IsReportInPreviewMode() then
+                    SegManagement.LogDocument(
+                      5, "No.", 0, 0, Database::Customer, "Sell-to Customer No.", "Salesperson Code",
+                      "Campaign No.", "Posting Description", '');
+                if ShowLotSN then begin
+                    ItemTrackingDocManagement.SetRetrieveAsmItemTracking(true);
+                    TrackingSpecCount :=
+                      ItemTrackingDocManagement.RetrieveDocumentItemTracking(TempTrackingSpecification,
+                        "No.", Database::"Sales Shipment Header", 0);
+                    ItemTrackingDocManagement.SetRetrieveAsmItemTracking(false);
+                end;
+
+                if "Currency Code" = '' then
+                    "Currency Code" := "General Ledger Setup"."LCY Code";
+            end;
+        }
+    }
+    requestpage
+    {
+        SaveValues = true;
+
+        layout
+        {
+            area(content)
+            {
+                group(Options)
+                {
+                    Caption = 'Options';
+                    field(NoOfCopiesCZL; NoOfCopies)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'No. of Copies';
+                        ToolTip = 'Specifies the number of copies to print.';
+                    }
+                    field(LogInteractionCZL; LogInteraction)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Log Interaction';
+                        Enabled = LogInteractionEnable;
+                        ToolTip = 'Specifies if you want the program to record the sales shipment you print as Interactions and add them to the Interaction Log Entry table.';
+                    }
+                    field(ShowLotSNCZL; ShowLotSN)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Show Serial/Lot Number Appendix';
+                        ToolTip = 'Specifies when the show serial/lot number appendixis to be show';
+                    }
+                }
+            }
+        }
+        trigger OnInit()
+        begin
+            LogInteractionEnable := true;
+        end;
+
+        trigger OnOpenPage()
+        begin
+            InitLogInteraction();
+            LogInteractionEnable := LogInteraction;
+        end;
+    }
+    trigger OnPreReport()
+    begin
+        if not CurrReport.UseRequestPage then
+            InitLogInteraction();
+    end;
+
+    var
+        ShipmentMethod: Record "Shipment Method";
+        TempTrackingSpecification: Record "Tracking Specification" temporary;
+        Language: Codeunit Language;
+        FormatAddress: Codeunit "Format Address";
+        FormatDocument: Codeunit "Format Document";
+        FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
+        SegManagement: Codeunit SegManagement;
+        ItemTrackingDocManagement: Codeunit "Item Tracking Doc. Management";
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        ShipToAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+        LogInteraction: Boolean;
+        [InDataSet]
+        LogInteractionEnable: Boolean;
+        ShowLotSN: Boolean;
+        TrackingSpecCount: Integer;
+        DocumentLbl: Label 'Shipment';
+        PageLbl: Label 'Page';
+        CopyLbl: Label 'Copy';
+        VendLbl: Label 'Vendor';
+        CustLbl: Label 'Customer';
+        ShipToLbl: Label 'Ship-to';
+        PaymentTermsLbl: Label 'Payment Terms';
+        PaymentMethodLbl: Label 'Payment Method';
+        ShipmentMethodLbl: Label 'Shipment Method';
+        SalespersonLbl: Label 'Salesperson';
+        UoMLbl: Label 'UoM';
+        CreatorLbl: Label 'Posted by';
+        SubtotalLbl: Label 'Subtotal';
+        DiscPercentLbl: Label 'Discount %';
+        TotalLbl: Label 'total';
+        VATLbl: Label 'VAT';
+
+    procedure InitLogInteraction()
+    begin
+        LogInteraction := SegManagement.FindInteractTmplCode(5) <> '';
+    end;
+
+    local procedure IsReportInPreviewMode(): Boolean
+    var
+        MailManagement: Codeunit "Mail Management";
+    begin
+        exit(CurrReport.Preview or MailManagement.IsHandlingGetEmailBody());
+    end;
+}

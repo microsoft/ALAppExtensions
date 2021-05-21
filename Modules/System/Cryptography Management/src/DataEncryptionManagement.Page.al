@@ -9,6 +9,7 @@
 
 page 9905 "Data Encryption Management"
 {
+    Caption = 'Data Encryption Management';
     Extensible = false;
     AccessByPermission = System "Tools, Restore" = X;
     AdditionalSearchTerms = 'data security management';
@@ -48,6 +49,7 @@ page 9905 "Data Encryption Management"
                 Caption = 'Enable Encryption';
                 Enabled = EnableEncryptionActionEnabled;
                 Image = CreateDocument;
+                PromotedOnly = true;
                 Promoted = true;
                 PromotedCategory = Process;
                 ToolTip = 'Generate an encryption key on the server to enable encryption.';
@@ -65,6 +67,7 @@ page 9905 "Data Encryption Management"
                 ApplicationArea = All;
                 Caption = 'Import Encryption Key';
                 Image = Import;
+                PromotedOnly = true;
                 Promoted = true;
                 PromotedCategory = Process;
                 ToolTip = 'Import the encryption key to a server instance from an encryption key file that was exported from another server instance or saved as a copy when the encryption was enabled.';
@@ -83,6 +86,7 @@ page 9905 "Data Encryption Management"
                 Caption = 'Change Encryption Key';
                 Enabled = ChangeKeyActionEnabled;
                 Image = Import;
+                PromotedOnly = true;
                 Promoted = true;
                 PromotedCategory = Process;
                 ToolTip = 'Change to a different encryption key file.';
@@ -101,6 +105,7 @@ page 9905 "Data Encryption Management"
                 Caption = 'Export Encryption Key';
                 Enabled = ExportKeyActionEnabled;
                 Image = Export;
+                PromotedOnly = true;
                 Promoted = true;
                 PromotedCategory = Process;
                 ToolTip = 'Export the encryption key to make a copy of the key or so that it can be imported on another server instance.';
@@ -118,6 +123,7 @@ page 9905 "Data Encryption Management"
                 Caption = 'Disable Encryption';
                 Enabled = DisableEncryptionActionEnabled;
                 Image = Delete;
+                PromotedOnly = true;
                 Promoted = true;
                 PromotedCategory = Process;
                 ToolTip = 'Decrypt encrypted data.';

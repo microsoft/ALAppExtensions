@@ -8,7 +8,7 @@
 /// </summary>
 page 9 Languages
 {
-    Extensible = false;
+    Caption = 'Languages';
     AdditionalSearchTerms = 'multilanguage';
     ApplicationArea = All;
     PageType = List;

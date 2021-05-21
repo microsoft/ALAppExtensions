@@ -1,0 +1,106 @@
+{
+  "QueryResponse": {
+    "CreditMemo": [
+      {
+        "RemainingCredit": 229.34,
+        "domain": "QBO",
+        "sparse": false,
+        "Id": "186",
+        "SyncToken": "0",
+        "MetaData": {
+          "CreateTime": "2017-06-05T14:27:32-07:00",
+          "LastUpdatedTime": "2017-06-05T14:27:32-07:00"
+        },
+        "CustomField": [
+          {
+            "DefinitionId": "1",
+            "Name": "Event Rep",
+            "Type": "StringType"
+          }
+        ],
+        "DocNumber": "1020",
+        "TxnDate": "2017-06-05",
+        "CurrencyRef": {
+          "value": "USD",
+          "name": "United States Dollar"
+        },
+        "ExchangeRate": 1.34735,
+        "Line": [
+          {
+            "Id": "1",
+            "LineNum": 1,
+            "Description": "Promotional items - engraved padfolios",
+            "Amount": 222.66,
+            "DetailType": "SalesItemLineDetail",
+            "SalesItemLineDetail": {
+              "ItemRef": {
+                "value": "12",
+                "name": "Promotional items:Pad folios"
+              },
+              "UnitPrice": 11.1329647,
+              "Qty": 20,
+              "TaxCodeRef": {
+                "value": "6"
+              }
+            }
+          },
+          {
+            "Amount": 222.66,
+            "DetailType": "SubTotalLineDetail",
+            "SubTotalLineDetail": {}
+          }
+        ],
+        "TxnTaxDetail": {
+          "TotalTax": 6.68,
+          "TaxLine": [
+            {
+              "Amount": 6.68,
+              "DetailType": "TaxLineDetail",
+              "TaxLineDetail": {
+                "TaxRateRef": {
+                  "value": "13"
+                },
+                "PercentBased": true,
+                "TaxPercent": 3,
+                "NetAmountTaxable": 222.66
+              }
+            }
+          ]
+        },
+        "CustomerRef": {
+          "value": "61",
+          "name": "Abercrombie International Group"
+        },
+        "CustomerMemo": {
+          "value": "It's a pleasure doing business with you.  Remember, referrals are appreciated!"
+        },
+        "BillAddr": {
+          "Id": "51",
+          "Line1": "Boveney",
+          "City": "Windsor",
+          "PostalCode": "SL4 6QP",
+          "Lat": "51.4910429",
+          "Long": "-0.651005"
+        },
+        "ShipAddr": {
+          "Id": "51",
+          "Line1": "Boveney",
+          "City": "Windsor",
+          "PostalCode": "SL4 6QP",
+          "Lat": "51.4910429",
+          "Long": "-0.651005"
+        },
+        "GlobalTaxCalculation": "TaxExcluded",
+        "TotalAmt": 229.34,
+        "HomeTotalAmt": 309.0,
+        "PrintStatus": "NotSet",
+        "EmailStatus": "NotSet",
+        "Balance": 229.34,
+        "HomeBalance": 309.0
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 1
+  },
+  "time": "2017-06-05T14:30:06.837-07:00"
+}
