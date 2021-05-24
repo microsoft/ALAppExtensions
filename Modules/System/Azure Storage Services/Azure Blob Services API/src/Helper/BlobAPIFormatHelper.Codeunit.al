@@ -207,14 +207,12 @@ codeunit 9044 "Blob API Format Helper"
 
     procedure ConvertToDateTime(PropertyValue: Text): DateTime
     var
-        // TypeHelper: Codeunit "Type Helper"; TODO: Break dependency on BaseApp
         NewDateTime: DateTime;
-        ResultVariant: Variant;
     begin
         NewDateTime := 0DT;
-        ResultVariant := NewDateTime;
-        // if TypeHelper.Evaluate(ResultVariant, PropertyValue, '', '') then
-        NewDateTime := ResultVariant;
+        // PropertyValue is something like the following: 'Mon, 24 May 2021 12:25:27 GMT'
+        // 'Evaluate' converts these correctly
+        Evaluate(NewDateTime, PropertyValue);
         exit(NewDateTime);
     end;
 

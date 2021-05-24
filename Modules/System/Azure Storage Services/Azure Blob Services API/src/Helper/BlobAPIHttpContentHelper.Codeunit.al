@@ -152,15 +152,13 @@ codeunit 9049 "Blob API HttpContent Helper"
     /// <returns>The length of the current stream</returns>
     local procedure GetContentLength(var SourceStream: InStream): Integer
     var
-        // MemoryStream: Codeunit "MemoryStream Wrapper";  TODO: Break dependency on BaseApp
+        MemoryStream: DotNet MemoryStream;
         Length: Integer;
     begin
         // Load the memory stream and get the size
-        // MemoryStream.Create(0);
-        // MemoryStream.ReadFrom(SourceStream);
-        // Length := MemoryStream.Length();
-        // MemoryStream.GetInStream(SourceStream);
-        // MemoryStream.SetPosition(0);
+        MemoryStream := MemoryStream.MemoryStream();
+        CopyStream(MemoryStream, SourceStream);
+        Length := MemoryStream.Length();
         Clear(SourceStream);
         exit(Length);
     end;
