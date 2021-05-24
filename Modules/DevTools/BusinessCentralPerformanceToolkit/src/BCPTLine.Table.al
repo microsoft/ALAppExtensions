@@ -56,7 +56,7 @@ table 149001 "BCPT Line"
                 Parameters := GetDefaultParametersIfAvailable();
             end;
         }
-        field(4; "Codeunit Name"; Text[80])
+        field(4; "Codeunit Name"; Text[249])
         {
             Caption = 'Codeunit Name';
             Editable = false;
