@@ -265,6 +265,6 @@ page 149004 "BCPT Lines"
     internal procedure Refresh()
     begin
         CurrPage.Update(false);
-        if Find() then;
+        if Rec.Find() then;
     end;
 }

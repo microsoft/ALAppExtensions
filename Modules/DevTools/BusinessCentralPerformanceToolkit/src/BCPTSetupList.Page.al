@@ -113,6 +113,6 @@ page 149000 "BCPT Setup List"
 
     trigger OnAfterGetCurrRecord()
     begin
-        ValidRecord := Code <> '';
+        ValidRecord := Rec.Code <> '';
     end;
 }
