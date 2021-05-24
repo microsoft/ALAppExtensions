@@ -242,10 +242,9 @@ page 149004 "BCPT Lines"
             exit(true);
         if Rec."BCPT Code" <> BCPTHeader.Code then
             if BCPTHeader.Get(Rec."BCPT Code") then;
-        if Rec."Min. User Delay (ms)" = 0 then
-            Rec."Min. User Delay (ms)" := BCPTHeader."Default Min. User Delay (ms)";
-        if Rec."Max. User Delay (ms)" = 0 then
-            Rec."Max. User Delay (ms)" := BCPTHeader."Default Max. User Delay (ms)";
+        Rec."Min. User Delay (ms)" := BCPTHeader."Default Min. User Delay (ms)";
+
+        Rec."Max. User Delay (ms)" := BCPTHeader."Default Max. User Delay (ms)";
     end;
 
     local procedure GetAvg(NoOfIterations: Integer; TotalNo: Integer): Integer
