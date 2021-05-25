@@ -296,7 +296,7 @@ codeunit 8905 "Email Message Impl."
             EmailRecipientRecord.DeleteAll();
 
         foreach Recipient in Recipients do begin
-            Recipient := DelChr(Recipient, '<>'); // trim the whitespaces around
+            Recipient := DelChr(Recipient, '<>').ToLower(); // trim the whitespaces around
             if Recipient <> '' then
                 if UniqueRecipients.Add(Recipient, Recipient) then begin
                     EmailRecipientRecord.Init();
