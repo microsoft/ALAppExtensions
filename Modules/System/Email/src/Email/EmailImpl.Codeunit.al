@@ -147,31 +147,10 @@ codeunit 8900 "Email Impl"
     local procedure Send(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"; InBackground: Boolean; var EmailOutbox: Record "Email Outbox"): Boolean
     var
         Accounts: Record "Email Account";
+        EmailAccount: Codeunit "Email Account";
         EmailMessageImpl: Codeunit "Email Message Impl.";
         EmailDispatcher: Codeunit "Email Dispatcher";
         TaskId: Guid;
-    begin
-        ValidateEmailMessage(EmailMessage, EmailAccountId, EmailConnector, EmailOutbox, Accounts);
-
-        CreateOrUpdateEmailOutbox(EmailMessageImpl, EmailAccountId, EmailConnector, Enum::"Email Status"::Queued, Accounts."Email Address", EmailOutbox);
-
-        if InBackground then begin
-            TaskId := TaskScheduler.CreateTask(Codeunit::"Email Dispatcher", Codeunit::"Email Error Handler", true, CompanyName(), CurrentDateTime(), EmailOutbox.RecordId());
-            EmailOutbox."Task Scheduler Id" := TaskId;
-            EmailOutbox.Modify();
-        end else begin // Send the email in foreground
-            Commit();
-
-            if EmailDispatcher.Run(EmailOutbox) then;
-            exit(EmailDispatcher.GetSuccess());
-        end;
-    end;
-
-    local procedure ValidateEmailMessage(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"; var EmailOutbox: Record "Email Outbox"; var Accounts: Record "Email Account"): Boolean
-    var
-        Email: Codeunit Email;
-        EmailAccount: Codeunit "Email Account";
-        EmailMessageImpl: Codeunit "Email Message Impl.";
     begin
         CheckRequiredPermissions();
         if not EmailMessageImpl.Get(EmailMessage.GetId()) then
@@ -192,11 +171,22 @@ codeunit 8900 "Email Impl"
         if not Accounts.Get(EmailAccountId, EmailConnector) then
             Error(InvalidEmailAccountErr);
 
-        Email.OnAfterValidateEmailMessage(EmailMessage.GetId());
+        CreateOrUpdateEmailOutbox(EmailMessageImpl, EmailAccountId, EmailConnector, Enum::"Email Status"::Queued, Accounts."Email Address", EmailOutbox);
+
+        if InBackground then begin
+            TaskId := TaskScheduler.CreateTask(Codeunit::"Email Dispatcher", Codeunit::"Email Error Handler", true, CompanyName(), CurrentDateTime(), EmailOutbox.RecordId());
+            EmailOutbox."Task Scheduler Id" := TaskId;
+            EmailOutbox.Modify();
+        end else begin // Send the email in foreground
+            Commit();
+
+            if EmailDispatcher.Run(EmailOutbox) then;
+            exit(EmailDispatcher.GetSuccess());
+        end;
     end;
 
     local procedure CreateOrUpdateEmailOutbox(EmailMessage: Codeunit "Email Message Impl."; AccountId: Guid; EmailConnector: Enum "Email Connector"; Status: Enum "Email Status";
-                                                            SentFrom: Text; var EmailOutbox: Record "Email Outbox")
+                                                                SentFrom: Text; var EmailOutbox: Record "Email Outbox")
     begin
         if not GetEmailOutbox(EmailMessage.GetId(), EmailOutbox) then begin
             EmailOutbox."Message Id" := EmailMessage.GetId();
