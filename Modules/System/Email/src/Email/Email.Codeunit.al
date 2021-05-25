@@ -289,6 +289,15 @@ codeunit 8901 "Email"
     end;
 
     /// <summary>
+    /// Integration event to implement additional checks after the email message has been validated for sending
+    /// </summary>
+    /// <param name="MessageId">The ID of the email message in the queue.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterValidateEmailMessage(MessageId: Guid)
+    begin
+    end;
+
+    /// <summary>
     /// Integration event that notifies senders about whether their email was successfully sent in the background.
     /// </summary>
     /// <param name="MessageId">The ID of the email in the queue.</param>
