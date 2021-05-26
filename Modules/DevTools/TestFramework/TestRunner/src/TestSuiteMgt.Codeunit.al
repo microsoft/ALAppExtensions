@@ -207,13 +207,12 @@ codeunit 130456 "Test Suite Mgt."
     procedure SelectTestMethodsByExtension(var ALTestSuite: Record "AL Test Suite"; ExtensionID: Text)
     var
         AllObjWithCaption: Record AllObjWithCaption;
-        NAVAppInstalledApp: Record "NAV App Installed App";
+        AppModuleInfo: ModuleInfo;
         AppExtensionId: Guid;
     begin
         Evaluate(AppExtensionId, ExtensionID);
-        NAVAppInstalledApp.SetRange("App ID", AppExtensionId);
-        NAVAppInstalledApp.FindFirst();
-        AllObjWithCaption.SetRange("App Package ID", NAVAppInstalledApp."Package ID");
+        NavApp.GetModuleInfo(ExtensionID, AppModuleInfo);
+        AllObjWithCaption.SetRange("App Package ID", AppModuleInfo.PackageID);
         AllObjWithCaption.SetRange("Object Type", AllObjWithCaption."Object Type"::Codeunit);
         AllObjWithCaption.SetRange("Object Subtype", GetTestObjectSubtype());
         GetTestMethods(ALTestSuite, AllObjWithCaption);

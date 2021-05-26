@@ -64,6 +64,13 @@ page 2501 "Extension Details"
                         Caption = 'App ID';
                         ToolTip = 'Specifies the app ID of the extension.';
                     }
+                    field(In_PublishedAs; "Published As")
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Published As';
+                        Editable = false;
+                        ToolTip = 'Specifies whether the extension is published as a per-tenant, development, or a global extension.';
+                    }
                     field(In_Url; UrlLbl)
                     {
                         ApplicationArea = All;
@@ -135,6 +142,13 @@ page 2501 "Extension Details"
                         Caption = 'App ID';
                         ToolTip = 'Specifies the app ID of the extension.';
                         Editable = false;
+                    }
+                    field(Un_PublishedAs; "Published As")
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Published As';
+                        Editable = false;
+                        ToolTip = 'Specifies whether the extension is published as a per-tenant, development, or a global extension.';
                     }
                     field(Un_ClearSchema; ClearSchema)
                     {

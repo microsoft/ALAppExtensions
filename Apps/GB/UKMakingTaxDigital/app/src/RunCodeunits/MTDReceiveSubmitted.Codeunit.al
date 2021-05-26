@@ -15,7 +15,7 @@ codeunit 10536 "MTD Receive Submitted"
         NewCount: Integer;
         ModifiedCount: Integer;
     begin
-        MTDMgt.RetrieveVATReturns(Rec, ResponseJson, TotalCount, NewCount, ModifiedCount, true);
+        MTDMgt.RetrieveVATReturns(Rec, ResponseJson, TotalCount, NewCount, ModifiedCount, true, true);
     end;
 
 }

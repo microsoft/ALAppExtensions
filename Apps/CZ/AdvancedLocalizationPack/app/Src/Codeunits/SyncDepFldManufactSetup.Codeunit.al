@@ -30,5 +30,7 @@ codeunit 31281 "Sync.Dep.Fld-ManufactSetup CZA"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Default Gen.Bus. Posting Group", PreviousRecord."Default Gen.Bus.Post. Grp. CZA");
         Rec."Default Gen.Bus. Posting Group" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Default Gen.Bus. Posting Group"));
         Rec."Default Gen.Bus.Post. Grp. CZA" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Default Gen.Bus.Post. Grp. CZA"));
+
+        SyncDepFldUtilities.SyncFields(Rec."Exact Cost Rev.Manda. (Cons.)", Rec."Exact Cost Rev.Mand. Cons. CZA", PreviousRecord."Exact Cost Rev.Manda. (Cons.)", PreviousRecord."Exact Cost Rev.Mand. Cons. CZA");
     end;
 }

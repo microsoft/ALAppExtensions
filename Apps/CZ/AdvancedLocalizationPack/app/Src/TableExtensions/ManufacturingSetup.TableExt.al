@@ -8,5 +8,10 @@ tableextension 31256 "Manufacturing Setup CZA" extends "Manufacturing Setup"
             TableRelation = "Gen. Business Posting Group";
             DataClassification = CustomerContent;
         }
+        field(31068; "Exact Cost Rev.Mand. Cons. CZA"; Boolean)
+        {
+            Caption = 'Exact Cost Rev.Manda. (Cons.)';
+            DataClassification = CustomerContent;
+        }
     }
 }

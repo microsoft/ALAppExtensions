@@ -352,20 +352,6 @@ codeunit 8900 "Email Impl"
         EmailRelation.Insert();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sandbox Cleanup", 'OnClearCompanyConfiguration', '', false, false)]
-    local procedure DeleteEmailsForSandbox(CompanyName: Text)
-    var
-        SentEmail: Record "Sent Email";
-        EmailOutbox: Record "Email Outbox";
-    begin
-        SentEmail.ChangeCompany(CompanyName);
-        SentEmail.DeleteAll();
-
-        EmailOutbox.ChangeCompany(CompanyName);
-        EmailOutbox.ModifyAll(Status, Enum::"Email Status"::" ");
-        EmailOutbox.DeleteAll();
-    end;
-
     local procedure CheckRequiredPermissions()
     var
         SentEmail: Record "Sent Email";

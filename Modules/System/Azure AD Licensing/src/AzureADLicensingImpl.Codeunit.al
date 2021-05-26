@@ -71,7 +71,7 @@ codeunit 460 "Azure AD Licensing Impl."
         if not FoundKnownPlan then begin
             SubscribedSku := TempSubscribedSku;
             ServicePlanEnumerator := TempServicePlanEnumerator;
-            exit(false);
+            exit(NextSubscribedSKU());
         end;
 
         ServicePlanEnumerator.Reset();

@@ -67,12 +67,12 @@ codeunit 10530 "MTD Mgt."
         OriginalRequestJson: Text;
     begin
         OriginalRequestJson := RequestJson;
-        Result := MTDConnection.InvokeRequest_SubmitVATReturn(ResponseJson, RequestJson, HttpError);
+        Result := MTDConnection.InvokeRequest_SubmitVATReturn(ResponseJson, RequestJson, HttpError, true);
 
         if not Result and MTDConnection.IsError408Timeout(ResponseJson) then begin
-            Result := MTDConnection.InvokeRequest_RefreshAccessToken(HttpError);
+            Result := MTDConnection.InvokeRequest_RefreshAccessToken(HttpError, false);
             if Result then
-                Result := MTDConnection.InvokeRequest_SubmitVATReturn(ResponseJson, OriginalRequestJson, HttpError);
+                Result := MTDConnection.InvokeRequest_SubmitVATReturn(ResponseJson, OriginalRequestJson, HttpError, false);
         end;
 
         if not Result then begin
@@ -85,11 +85,13 @@ codeunit 10530 "MTD Mgt."
         end;
     end;
 
-    internal procedure RetrieveVATReturns(VATReturnPeriod: Record "VAT Return Period"; var ResponseJson: Text; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean) Result: Boolean
+    internal procedure RetrieveVATReturns(VATReturnPeriod: Record "VAT Return Period"; var ResponseJson: Text; var TotalCount: Integer; var NewCount: Integer; var ModifiedCount: Integer; ShowMessage: Boolean; ResetFraudPreventionSessionHeaders: Boolean) Result: Boolean
     var
         HttpError: Text;
     begin
-        if MTDConnection.InvokeRequest_RetrieveVATReturns(VATReturnPeriod."Period Key", ResponseJson, ShowMessage, HttpError) then
+        if MTDConnection.InvokeRequest_RetrieveVATReturns(
+            VATReturnPeriod."Period Key", ResponseJson, ShowMessage, HttpError, ResetFraudPreventionSessionHeaders)
+        then
             Result := ParseVATReturns(VATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount);
         if Result then
             MarkSubmittedVATReturnAsAccepted(VATReturnPeriod."VAT Return No.", ResponseJson);

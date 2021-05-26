@@ -23,7 +23,7 @@ codeunit 2610 "Feature Management Impl."
         SignInAgainNotificationGuidTok: Label '63b6f5ec-6db4-4e87-b103-c4bcb539f09e', Locked = true;
         PreviewFeatureParameterTxt: Label 'previewfeatures=%1', Comment = '%1 = the feature ID for the feature to be previewed', Locked = true;
         ErrorTraceTagMsg: Label 'Error on the feature data update task for feature %1 in company %2: %3', Comment = '%1- Feature id; %2 - CompanyName; %3 - error message', Locked = true;
-        ScheduledTraceTagMsg: Label 'The task for updating data for feature %1 in company %2 is scheduled to start at %3.', Comment = '%1- Feature id; %2 - CompanyName; %3 - datetime', Locked = true;
+        ScheduledTraceTagMsg: Label 'The task for updating data for feature %1 in company %2 is scheduled to start at %3.', Comment = '%1- Feature id; %2 - CompanyName; %3 - DateTime', Locked = true;
         StartedTraceTagMsg: Label 'The task for updating data for feature %1 in company %2 is started.', Comment = '%1- Feature id; %2 - CompanyName', Locked = true;
         FinishedTraceTagMsg: Label 'Data is updated for feature %1 in company %2.', Comment = '%1- Feature id; %2 - CompanyName', Locked = true;
         TagCategoryTxt: Label 'Feature Data Update', Locked = true;
@@ -91,7 +91,9 @@ codeunit 2610 "Feature Management Impl."
                 else
                     FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Enabled;
         end;
-        FeatureDataUpdateStatus.Insert();
+        // If the table extension is not in sync during upgrade then Get() always returns False, 
+        // so the following insert will fail if the record does exist.
+        if FeatureDataUpdateStatus.Insert() then;
     end;
 
     /// <summary>
@@ -148,7 +150,7 @@ codeunit 2610 "Feature Management Impl."
     /// Opens the "Schedule Feature Data Update" page where user can confirm the update or schedule it.
     /// </summary>
     /// <param name="FeatureDataUpdateStatus">the current feature status</param>
-    /// <returns>if the datat update has been confirmed</returns>
+    /// <returns>if the data update has been confirmed</returns>
     procedure ConfirmDataUpdate(var FeatureDataUpdateStatus: Record "Feature Data Update Status") Confirmed: Boolean;
     var
         ScheduleFeatureDataUpdate: Page "Schedule Feature Data Update";
@@ -173,7 +175,7 @@ codeunit 2610 "Feature Management Impl."
     end;
 
     /// <summary>
-    /// Retrurns the result of the interface's GetTaskDescription method.
+    /// Returns the result of the interface's GetTaskDescription method.
     /// </summary>
     procedure GetTaskDescription(FeatureDataUpdateStatus: Record "Feature Data Update Status") TaskDescription: Text;
     begin
@@ -212,7 +214,7 @@ codeunit 2610 "Feature Management Impl."
     end;
 
     /// <summary>
-    /// Runs the interface's data updata method and updates the feature status.
+    /// Runs the interface's data update method and updates the feature status.
     /// </summary>
     procedure UpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
     var
@@ -226,7 +228,7 @@ codeunit 2610 "Feature Management Impl."
     end;
 
     /// <summary>
-    /// Runs the interface's data updata method and updates the feature status.
+    /// Runs the interface's data update method and updates the feature status.
     /// </summary>
     procedure UpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; FeatureDataUpdate: Interface "Feature Data Update")
     begin
@@ -362,7 +364,7 @@ codeunit 2610 "Feature Management Impl."
     /// <summary>
     /// Creates the task bu the task scheduler.
     /// </summary>
-    /// <param name="FeatureDataUpdateStatus">curret status record</param>
+    /// <param name="FeatureDataUpdateStatus">current status record</param>
     /// <returns>id of the scheduled task</returns>
     procedure CreateTask(var FeatureDataUpdateStatus: Record "Feature Data Update Status") TaskId: Guid
     begin
@@ -421,8 +423,8 @@ codeunit 2610 "Feature Management Impl."
     /// <summary>
     /// Opens the dialog for entering a date and time values.
     /// </summary>
-    /// <param name="InitDateTime">default datatime value</param>
-    /// <returns>the new datetime value enterred by user</returns>
+    /// <param name="InitDateTime">default DataTime value</param>
+    /// <returns>the new DataTime value entered by user</returns>
     procedure LookupDateTime(InitDateTime: DateTime) NewDateTime: DateTime
     var
         DateTimeDialog: Page "Date-Time Dialog";

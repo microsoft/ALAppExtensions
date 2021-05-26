@@ -47,6 +47,8 @@ table 3902 "Retention Policy Setup Line"
                 RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
             begin
                 RetentionPolicySetupImpl.ValidateRetentionPeriod(Rec);
+                if Rec."Retention Period" <> '' then
+                    Rec.Validate(Enabled, true);
             end;
         }
         field(7; "Date Field No."; Integer)

@@ -613,12 +613,10 @@ codeunit 1993 "Checklist Implementation"
         if not GuidedExperienceItem.FindLast() then
             exit;
 
-        GuidedExperienceItem.CalcFields("Extension Name");
-
         GuidedExperienceImpl.AddGuidedExperienceItemDimensions(Dimensions, GuidedExperienceItem, 'Checklist');
         GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
         Session.LogMessage(Tag, Message, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
-            TelemetryScope::All, Dimensions);
+            TelemetryScope::ExtensionPublisher, Dimensions);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Checklist Item", 'OnAfterInsertEvent', '', true, true)]

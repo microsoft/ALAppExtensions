@@ -2,7 +2,7 @@
     "id":  "8730dafb-13cd-42c9-987c-decb6354269d",
     "name":  "Banking Documents Localization for Czech",
     "publisher":  "Microsoft",
-    "version":  "18.1.0.0",
+    "version":  "18.2.0.0",
     "brief":  "Banking Documents local functionality of Business Central for the Czech Republic",
     "description":  "Banking Documents features for your Business Central in the Czech Republic.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,7 +16,7 @@
                              "id":  "267b59d3-7302-44c5-ba77-c87000380514",
                              "name":  "Core Localization Pack for Czech",
                              "publisher":  "Microsoft",
-                             "version":  "18.1.0.0"
+                             "version":  "18.2.0.0"
                          }
                      ],
     "screenshots":  [
@@ -25,5 +25,5 @@
     "platform":  "18.0.0.0",
     "target":  "Cloud",
     "showMyCode":  false,
-    "application":  "18.1.0.0"
+    "application":  "18.2.0.0"
 }

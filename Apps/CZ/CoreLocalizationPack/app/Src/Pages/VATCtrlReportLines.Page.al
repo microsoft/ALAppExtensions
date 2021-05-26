@@ -152,7 +152,7 @@ page 31116 "VAT Ctrl. Report Lines CZL"
                 field("Closed Date"; Rec."Closed Date")
                 {
                     ApplicationArea = VAT;
-                    ToolTip = 'Specifies the document date whitch the document was closed.';
+                    ToolTip = 'Specifies the document date of the document that was closed.';
                 }
             }
         }

@@ -35,7 +35,7 @@ codeunit 1164 "COHUB API Request"
         COHUBEnviroment.Get(COHUBCompanyEndpoint."Enviroment No.");
         COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnviromentName, EnviromentNameAndEnviroment);
 
-        if not GetGuestAccessToken(COHUBCore.GetResoureUrl(), EnviromentName, AccessToken, RecRef) then
+        if not GetGuestAccessToken(COHUBCore.GetResourceUrl(), EnviromentName, AccessToken, RecRef) then
             exit(false);
 
         exit(InvokeSecuredWebApiPostRequest(UserTaskUrl, AccessToken, APIResponse, RecRef))
@@ -54,7 +54,7 @@ codeunit 1164 "COHUB API Request"
         ResourceUrl: Text;
     begin
         RecRef.GetTable(COHUBEnviroment);
-        ResourceUrl := COHUBCore.GetResoureUrl();
+        ResourceUrl := COHUBCore.GetResourceUrl();
         COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnviromentName, EnviromentNameAndEnviroment);
         CompanyAPIUrl := COHUBCore.GetFixedWebServicesUrl() + 'v2.0/' + EnviromentNameAndEnviroment + '/ODataV4/Company';
         if not GetGuestAccessToken(ResourceUrl, EnviromentName, AccessToken, RecRef) then
@@ -104,7 +104,7 @@ codeunit 1164 "COHUB API Request"
         COHUBEnviroment.Get(COHUBCompanyEndpoint."Enviroment No.");
         COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnviromentName, EnviromentNameAndEnviroment);
 
-        if not GetGuestAccessToken(COHUBCore.GetResoureUrl(), EnviromentName, AccessToken, RecRef) then
+        if not GetGuestAccessToken(COHUBCore.GetResourceUrl(), EnviromentName, AccessToken, RecRef) then
             exit(false);
 
         exit(InvokeSecuredWebApiGetRequest(CuesAPIUrl, AccessToken, APIResponse, RecRef));

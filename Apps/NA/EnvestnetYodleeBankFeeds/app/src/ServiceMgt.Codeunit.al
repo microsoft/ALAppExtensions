@@ -1,4 +1,4 @@
-﻿codeunit 1450 "MS - Yodlee Service Mgt."
+codeunit 1450 "MS - Yodlee Service Mgt."
 {
     var
         ResponseTempBlob: Codeunit "Temp Blob";
@@ -126,7 +126,7 @@
         MissingCredentialsErr: Label 'The password is missing in the Envestnet Yodlee Bank Feeds Service Setup window.';
         ProgressWindowMsg: Label 'Waiting for Envestnet Yodlee to complete the bank account refresh #1';
         ProgressWindowUpdateTxt: Label '%1 seconds', Comment = '%1 - an integer';
-        RefreshTakingTooLongTxt: Label 'Refreshing the bank account on Envestnet Yodlee is taking longer than expected.\\You can import transactions up to the last successful refresh date while the refresh is running.';
+        RefreshTakingTooLongTxt: Label 'Refreshing the bank account on Envestnet Yodlee is taking longer than expected.\\The refresh on Envestnet Yodlee can take up to 5 minutes to complete. You can import transactions up to the last successful refresh date while the refresh is running.';
         RefreshingBankAccountsTooLongTelemetryTxt: Label 'Refreshing bank accounts data for bank %1 is taking more than 90 seconds.', Locked = true;
         ServiceKeyTooLongErr: Label 'The name of the key is too long. The maximum length is 50 characters.';
         InvalidKeyErr: Label 'The name of the key is not valid.';
@@ -873,6 +873,7 @@
 
     local procedure GetRefreshBankDate(OnlineBankID: Text; OnlineBankAccountID: Text; var AccountNode: XmlNode): DateTime;
     var
+        MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         RefreshDateTime: DateTime;
         RefreshDateTimeTxt: Text;
         ProviderId: Text;
@@ -884,6 +885,8 @@
         ProviderId := FindNodeText(AccountNode, '/root/root/account/providerId');
         Session.LogMessage('0000A07', ProviderName, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         Session.LogMessage('0000A08', ProviderId, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+        if MSYodleeBankServiceSetup.Get() then
+            Session.LogMessage('0000F76', MSYodleeBankServiceSetup."Consumer Name", Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         Session.LogMessage('00006PN', OnlineBankID, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         RefreshDateTimeTxt := FindNodeText(AccountNode, '/root/root/account/lastUpdated');
         if Evaluate(RefreshDateTime, RefreshDateTimeTxt, 9) then;

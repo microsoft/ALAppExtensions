@@ -30,7 +30,9 @@ codeunit 10540 "MTD Upgrade"
             if Get() then begin
                 IsModify := MTDInstall.InitProductionMode(VATReportSetup);
                 IsModify := IsModify or MTDInstall.InitPeriodReminderCalculation(VATReportSetup);
+#if not CLEAN19
                 IsModify := IsModify or UpgradeFPSavedHeaders(VATReportSetup);
+#endif
                 if IsModify then
                     if Modify() then;
             end;
@@ -51,6 +53,7 @@ codeunit 10540 "MTD Upgrade"
         UpgradeTag.SetUpgradeTag(MTDMgt.GetDailyLimitUpgradeTag());
     end;
 
+#if not CLEAN19
     local procedure UpgradeFPSavedHeaders(var VATReportSetup: Record "VAT Report Setup") Result: Boolean
     var
         CurrentDT: DateTime;
@@ -77,9 +80,5 @@ codeunit 10540 "MTD Upgrade"
             end;
         end;
     end;
-
-    local procedure GetCleanupElsterTag(): Code[250];
-    begin
-        exit('MS-332065-CleanupElster-20191029');
-    end;
+#endif
 }

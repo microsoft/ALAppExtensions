@@ -36,7 +36,7 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
         RetenPolFiltering: Enum "Reten. Pol. Filtering";
         RetenPolDeleting: Enum "Reten. Pol. Deleting";
     begin
-        AddToAllowedTables(TableId, DefaultDateFieldNo, CallerModuleInfo, MandatoryMinRetenDays, RetenPolFiltering::Default, RetenPolDeleting::Default, TableFilters);
+        exit(AddToAllowedTables(TableId, DefaultDateFieldNo, CallerModuleInfo, MandatoryMinRetenDays, RetenPolFiltering::Default, RetenPolDeleting::Default, TableFilters));
     end;
 
     procedure AddToAllowedTables(TableId: Integer; DefaultDateFieldNo: Integer; CallerModuleInfo: ModuleInfo; MandatoryMinRetenDays: Integer; RetenPolFiltering: Enum "Reten. Pol. Filtering"; RetenPolDeleting: Enum "Reten. Pol. Deleting"; TableFilters: JsonArray): Boolean
@@ -137,7 +137,7 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
         exit(RetentionPolicyAllowedTable.Delete());
     end;
 
-    Procedure IsAllowedTable(TableId: Integer): boolean
+    procedure IsAllowedTable(TableId: Integer): boolean
     var
         RetentionPolicyAllowedTable: Record "Retention Policy Allowed Table";
         AllObjWithCaption: Record AllObjWithCaption;

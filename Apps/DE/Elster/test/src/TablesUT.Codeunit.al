@@ -20,6 +20,7 @@ codeunit 148165 "Elster Tables UT"
         LibraryRandom: Codeunit "Library - Random";
         SameValueMsg: Label 'Value must be same.';
         WrongPlaceErr: Label 'Places of %1 in area %2 must be %3.';
+        CannotChangeXMLFileErr: Label 'You cannot change the value of this field anymore after the XML-File for the %1 has been created.';
 
     [Test]
     procedure OnInsertVATStatNameError()
@@ -691,6 +692,24 @@ codeunit 148165 "Elster Tables UT"
         Assert.ExpectedError(
             StrSubstNo(WrongPlaceErr, CompanyInformation.FieldCaption("Registration No."), CompanyInformation."Tax Office Area", 11));
         Assert.ExpectedErrorCode('Dialog');
+    end;
+
+    [Test]
+    procedure NotPossibleToDeleteSalesVATAdvNotificationWithXMLGenerated();
+    var
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+    begin
+        // [SCENARIO 359432] Stan cannot delete a sales VAT advance notification with the XML file generated
+
+        // [GIVEN] Sales VAT advance notification with "XML File Create Date" = 01.01.20
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif, WorkDate());
+
+        // [WHEN] Stan delete Sales VAT advance notification
+        asserterror SalesVATAdvanceNotif.Delete(true);
+
+        // [THEN] An error message "You cannot change the value of this field anymore after the XML-File has been created" thrown
+        Assert.ExpectedErrorCode('Dialog');
+        Assert.ExpectedError(StrSubstNo(CannotChangeXMLFileErr, SalesVATAdvanceNotif.TableCaption()));
     end;
 
     local procedure CreateVATStatementName(var VATStatementName: Record "VAT Statement Name"; StatementTemplateName: Code[10])

@@ -304,6 +304,171 @@ codeunit 132594 "Guided Experience Test"
         Assert.IsFalse(GuidedExperienceItem.Get(Code, 2), 'The Guided Experience Item should not contain a new version of the learn link');
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestRemoveAssistedSetup()
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+        GuidedExperience: Codeunit "Guided Experience";
+        GuidedExperienceType: Enum "Guided Experience Type";
+        AssistedSetupGroup: Enum "Assisted Setup Group";
+        VideoCategory: Enum "Video Category";
+        ObjectTypeToRun1: ObjectType;
+        ObjectTypeToRun2: ObjectType;
+        ObjectIDToRun1: Integer;
+        ObjectIDToRun2: Integer;
+        Title1: Text[2048];
+        Title2: Text[2048];
+        ShortTitle1: Text[30];
+        ShortTitle2: Text[30];
+        Description1: Text[1024];
+        Description2: Text[1024];
+    begin
+        // [GIVEN] The Guided Experience Item table contains 2 assisted setups
+        GuidedExperienceItem.DeleteAll();
+
+        Title1 := 'Title123';
+        ShortTitle1 := 'Short title';
+        Description1 := 'Description blah blah';
+        ObjectTypeToRun1 := ObjectType::Page;
+        ObjectIDToRun1 := Page::"Checklist Banner";
+        GuidedExperience.InsertAssistedSetup(Title1, ShortTitle1, Description1, 5, ObjectTypeToRun1,
+            ObjectIDToRun1, AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '');
+
+        Title2 := 'Title';
+        ShortTitle2 := 'Short title hggfd';
+        Description2 := 'Description 2';
+        ObjectTypeToRun2 := ObjectType::Page;
+        ObjectIDToRun2 := Page::"Assisted Setup";
+        GuidedExperience.InsertAssistedSetup(Title2, ShortTitle2, Description2, 5, ObjectTypeToRun2,
+            ObjectIDToRun2, AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '');
+
+        // [WHEN] Trying to remove a guided experience item that does not exist
+        GuidedExperience.Remove(GuidedExperienceType::"Assisted Setup", ObjectTypeToRun1, Page::"Manual Setup");
+
+        // [THEN] The Guided Experience Item table contains exactly 2 records
+        Assert.AreEqual(2, GuidedExperienceItem.Count, 'None of the records should have been deleted.');
+
+        // [WHEN] Removing one of the existing assisted setups
+        GuidedExperience.Remove(GuidedExperienceType::"Assisted Setup", ObjectTypeToRun1, ObjectIDToRun1);
+
+        // [THEN] The Guided Experience Item table contains exactly 1 record
+        Assert.AreEqual(1, GuidedExperienceItem.Count, 'The Guided Experience Item table should contain exactly 1 record.');
+
+        // [THEN] The fields of the existing record are correct
+        if GuidedExperienceItem.FindFirst() then;
+        Assert.AreEqual(Title2, GuidedExperienceItem.Title, 'The title is incorrect.');
+        Assert.AreEqual(ShortTitle2, GuidedExperienceItem."Short Title", 'The short title is incorrect.');
+        Assert.AreEqual(Description2, GuidedExperienceItem.Description, 'The description is incorrect.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestRemoveManualSetup()
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+        GuidedExperience: Codeunit "Guided Experience";
+        GuidedExperienceType: Enum "Guided Experience Type";
+        ManualSetupCategory: Enum "Manual Setup Category";
+        ObjectTypeToRun1: ObjectType;
+        ObjectTypeToRun2: ObjectType;
+        ObjectIDToRun1: Integer;
+        ObjectIDToRun2: Integer;
+        Title1: Text[2048];
+        Title2: Text[2048];
+        ShortTitle1: Text[30];
+        ShortTitle2: Text[30];
+        Description1: Text[1024];
+        Description2: Text[1024];
+    begin
+        // [GIVEN] The Guided Experience Item table contains 2 assisted setups
+        GuidedExperienceItem.DeleteAll();
+
+        Title1 := 'Title123';
+        ShortTitle1 := 'Short title';
+        Description1 := 'Description blah blah';
+        ObjectTypeToRun1 := ObjectType::Page;
+        ObjectIDToRun1 := Page::Checklist;
+        GuidedExperience.InsertManualSetup(Title1, ShortTitle1, Description1, 2,
+            ObjectTypeToRun1, ObjectIDToRun1, ManualSetupCategory::Uncategorized, '');
+
+        Title2 := 'Title';
+        ShortTitle2 := 'Short title hggfd';
+        Description2 := 'Description 2';
+        ObjectTypeToRun2 := ObjectType::Page;
+        ObjectIDToRun2 := Page::"Checklist Administration";
+        GuidedExperience.InsertManualSetup(Title2, ShortTitle2, Description2, 2,
+            ObjectTypeToRun2, ObjectIDToRun2, ManualSetupCategory::Uncategorized, '');
+
+        // [WHEN] Trying to remove a guided experience item that does not exist
+        GuidedExperience.Remove(GuidedExperienceType::"Assisted Setup", ObjectTypeToRun1, ObjectIDToRun1);
+
+        // [THEN] The Guided Experience Item table contains exactly 2 records
+        Assert.AreEqual(2, GuidedExperienceItem.Count, 'None of the records should have been deleted.');
+
+        // [WHEN] Removing one of the manual setups
+        GuidedExperience.Remove(GuidedExperienceType::"Manual Setup", ObjectTypeToRun1, ObjectIDToRun1);
+
+        // [THEN] The Guided Experience Item table contains exactly 1 record
+        Assert.AreEqual(1, GuidedExperienceItem.Count, 'The Guided Experience Item table should contain exactly 1 record.');
+
+        // [THEN] The fields of the existing record are correct
+        if GuidedExperienceItem.FindFirst() then;
+        Assert.AreEqual(Title2, GuidedExperienceItem.Title, 'The title is incorrect.');
+        Assert.AreEqual(ShortTitle2, GuidedExperienceItem."Short Title", 'The short title is incorrect.');
+        Assert.AreEqual(Description2, GuidedExperienceItem.Description, 'The description is incorrect.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestRemoveLink()
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+        GuidedExperience: Codeunit "Guided Experience";
+        GuidedExperienceType: Enum "Guided Experience Type";
+        Title1: Text[2048];
+        Title2: Text[2048];
+        ShortTitle1: Text[30];
+        ShortTitle2: Text[30];
+        Description1: Text[1024];
+        Description2: Text[1024];
+        Link1: Text[250];
+        Link2: Text[250];
+    begin
+        // [GIVEN] The Guided Experience Item table contains 2 learn links
+        GuidedExperienceItem.DeleteAll();
+        Title1 := 'Title1';
+        ShortTitle1 := 'Short title 1';
+        Description1 := 'Description 1';
+        Link1 := 'Link 1';
+        GuidedExperience.InsertLearnLink(Title1, ShortTitle1, Description1, 2, Link1);
+
+        Title2 := 'Title 2';
+        ShortTitle2 := 'Short title 2';
+        Description2 := 'Description 2';
+        Link2 := 'Link 2';
+        GuidedExperience.InsertLearnLink(Title2, ShortTitle2, Description2, 5, Link2);
+
+        // [WHEN] Trying to remove a guided experience item that does not exist
+        GuidedExperience.Remove(GuidedExperienceType::"Assisted Setup", ObjectType::Page, Page::"Checklist Item Roles");
+
+        // [THEN] The Guided Experience Item table contains exactly 2 records
+        Assert.AreEqual(2, GuidedExperienceItem.Count, 'None of the records should have been deleted.');
+
+        // [WHEN] Removing one of the links
+        GuidedExperience.Remove(GuidedExperienceType::Learn, Link1);
+
+        // [THEN] The Guided Experience Item table contains exactly 1 record
+        Assert.AreEqual(1, GuidedExperienceItem.Count, 'The Guided Experience Item table should contain exactly 1 record.');
+
+        // [THEN] The fields of the existing record are correct
+        if GuidedExperienceItem.FindFirst() then;
+        Assert.AreEqual(Title2, GuidedExperienceItem.Title, 'The title is incorrect.');
+        Assert.AreEqual(ShortTitle2, GuidedExperienceItem."Short Title", 'The short title is incorrect.');
+        Assert.AreEqual(Description2, GuidedExperienceItem.Description, 'The description is incorrect.');
+        Assert.AreEqual(Link2, GuidedExperienceItem.Link, 'The link is incorrect.');
+    end;
+
     local procedure VerifyGuidedExperienceItemFields(GuidedExperienceItem: Record "Guided Experience Item"; Code: Code[300]; Version: Integer; ObjectTypeToRun: Enum "Guided Experience Object Type"; ObjectID: Integer; Link: Text[250]; Title: Text[2048]; ShortTitle: Text[2048]; Description: Text[1024]; ExpectedDuration: Integer; Extension: Guid; ExtensionName: Text[250]; Completed: Boolean; GuidedExperienceType: Enum "Guided Experience Type"; AssistedSetupGroup: Enum "Assisted Setup Group"; HelpUrl: Text[250]; VideoUrl: Text[250]; VideoCategory: Enum "Video Category"; ManualSetupCategory: Enum "Manual Setup Category"; Keywords: Text[250])
     begin
         Assert.AreEqual(Code, GuidedExperienceItem.Code, 'The Code field of the Guided Experience Item is incorrect.');

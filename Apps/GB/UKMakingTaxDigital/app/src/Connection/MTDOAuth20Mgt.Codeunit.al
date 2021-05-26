@@ -127,6 +127,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRequestAccessToken', '', true, true)]
     local procedure OnBeforeRequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
+        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
         RequestJSON: Text;
         AccessToken: Text;
         RefreshToken: Text;
@@ -137,7 +138,8 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
-        AddFraudPreventionHeaders(RequestJSON);
+        MTDSessionFraudPrevHdr.DeleteAll();
+        AddFraudPreventionHeaders(RequestJSON, false);
 
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
 
@@ -178,7 +180,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
-        AddFraudPreventionHeaders(RequestJSON);
+        AddFraudPreventionHeaders(RequestJSON, true);
 
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
         RefreshToken := GetToken(OAuth20Setup."Refresh Token", TokenDataScope);
@@ -219,7 +221,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
-        AddFraudPreventionHeaders(RequestJSON);
+        AddFraudPreventionHeaders(RequestJSON, true);
 
         Result :=
             OAuth20Mgt.InvokeRequest(
@@ -321,7 +323,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
                 GetOAuthPRODSetupCode():
                     TestField("Service URL", CopyStr(ServiceURLPRODTxt, 1, MaxStrLen("Service URL")));
                 GetOAuthSandboxSetupCode():
-                    IF StrPos("Service URL", ServiceURLMockServiceTxt) <> 1 THEN
+                    IF StrPos("Service URL", ServiceURLMockServiceTxt) <> 1 then
                         TestField("Service URL", CopyStr(ServiceURLSandboxTxt, 1, MaxStrLen("Service URL")));
                 else
                     TestField("Service URL", '');
@@ -337,23 +339,18 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         end;
     end;
 
-    local procedure AddFraudPreventionHeaders(var RequestJSON: Text)
+    local procedure AddFraudPreventionHeaders(var RequestJSON: Text; ConfirmHeaders: Boolean)
     var
-        FraudPreventionMgt: Codeunit "MTD Fraud Prevention Mgt.";
-        JToken: JsonToken;
-        JToken2: JsonToken;
-        JObject: JsonObject;
-        DummyJObject: JsonObject;
+        MTDFraudPreventionMgt: Codeunit "MTD Fraud Prevention Mgt.";
     begin
-        if JObject.ReadFrom(RequestJSON) then;
-        if not JObject.Contains('Header') then
-            JObject.Add('Header', DummyJObject);
-        if JObject.SelectToken('Header', JToken) then
-            if JToken2.ReadFrom(FraudPreventionMgt.GenerateFraudPreventionHeaders()) then begin
-                foreach JToken2 in JToken2.AsObject().Values() do
-                    if not JToken.AsObject().Contains(JToken2.Path()) then
-                        JToken.AsObject().Add(JToken2.Path(), JToken2.AsValue().AsText());
-                JObject.WriteTo(RequestJSON);
-            end;
+        MTDFraudPreventionMgt.AddFraudPreventionHeaders(RequestJSON, ConfirmHeaders);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"OAuth 2.0 Setup", 'OnBeforeActionEvent', 'RefreshAccessToken', false, false)]
+    local procedure OnBeforeRefreshAccessTokenFromPage()
+    var
+        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
+    begin
+        MTDSessionFraudPrevHdr.DeleteAll();
     end;
 }

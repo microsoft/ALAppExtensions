@@ -203,12 +203,13 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     end;
 
     [NonDebuggable]
-    local procedure IsUserDelegated(UserSecID: Guid): Boolean
+    procedure IsUserDelegated(UserSecID: Guid): Boolean
     var
         PlanIds: Codeunit "Plan Ids";
     begin
         exit(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetDelegatedAdminPlanId(), UserSecID) or
-                    AzureADPlan.IsPlanAssignedToUser(PlanIds.GetHelpDeskPlanId(), UserSecID));
+            AzureADPlan.IsPlanAssignedToUser(PlanIds.GetHelpDeskPlanId(), UserSecID) or
+            AzureADPlan.IsPlanAssignedToUser(PlanIds.GetD365AdminPartnerPlanId(), UserSecID))
     end;
 
     [NonDebuggable]

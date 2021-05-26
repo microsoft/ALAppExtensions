@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 3913 "System Application Logs Delete"
+codeunit 3913 "Retention Policy Logs Delete"
 {
     Access = Internal;
     Permissions = tabledata "Retention Policy Log Entry" = rd;
