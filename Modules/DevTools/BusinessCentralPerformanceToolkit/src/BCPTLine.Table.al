@@ -56,7 +56,9 @@ table 149001 "BCPT Line"
                 Parameters := GetDefaultParametersIfAvailable();
             end;
         }
-        field(4; "Codeunit Name"; Text[80])
+#pragma warning disable AS0086
+        field(4; "Codeunit Name"; Text[249])
+#pragma warning restore AS0086
         {
             Caption = 'Codeunit Name';
             Editable = false;
