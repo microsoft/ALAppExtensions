@@ -33,10 +33,11 @@ codeunit 3907 "Retention Policy Installer"
         if UpgradeTag.HasUpgradeTag(GetRetenPolLogEntryAddedUpgradeTag()) then
             exit;
 
-        if not RetenPolAllowedTables.IsAllowedTable(Database::"Retention Policy Log Entry") and not RetenPolAllowedTables.AddAllowedTable(Database::"Retention Policy Log Entry", RetentionPolicyLogEntry.FieldNo(SystemCreatedAt), 28) then begin // minimum retention period of 28 days
-            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(RetenPolInstallerAbortLbl, CompanyName()));
-            exit;
-        end;
+        if not RetenPolAllowedTables.IsAllowedTable(Database::"Retention Policy Log Entry") then
+            if not RetenPolAllowedTables.AddAllowedTable(Database::"Retention Policy Log Entry", RetentionPolicyLogEntry.FieldNo(SystemCreatedAt), 28) then begin // minimum retention period of 28 days
+                RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(RetenPolInstallerAbortLbl, CompanyName()));
+                exit;
+            end;
 
         CreateRetentionPolicySetup(Database::"Retention Policy Log Entry", CreateSixMonthRetentionPeriod());
 

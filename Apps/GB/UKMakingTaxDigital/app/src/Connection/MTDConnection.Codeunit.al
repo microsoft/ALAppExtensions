@@ -48,20 +48,23 @@ codeunit 10537 "MTD Connection"
         EmptyStatusCodeErr: Label 'Empty status code in json response', Locked = true;
         CannotParseResponseErr: Label 'Cannot parse the http error response', Locked = true;
 
-    internal procedure InvokeRequest_SubmitVATReturn(var ResponseJson: Text; var RequestJson: Text; var HttpError: Text): Boolean
+    internal procedure InvokeRequest_SubmitVATReturn(var ResponseJson: Text; var RequestJson: Text; var HttpError: Text; ResetFraudPreventionSessionHeaders: Boolean): Boolean
     begin
         CheckOAuthConfigured(false);
         Session.LogMessage('0000CC0', StrSubstNo(InvokeReqMsg, 'submit VAT return'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
-        exit(InvokeRequest('POST', SubmitVATReturnPath(), ResponseJson, RequestJson, HttpError, SubmitVATReturnTxt));
+        exit(InvokeRequest('POST', SubmitVATReturnPath(), ResponseJson, RequestJson, HttpError, SubmitVATReturnTxt, ResetFraudPreventionSessionHeaders));
     end;
 
-    internal procedure InvokeRequest_RetrieveVATReturns(PeriodKey: Code[10]; var ResponseJson: Text; ShowMessage: Boolean; var HttpError: Text): Boolean
+    internal procedure InvokeRequest_RetrieveVATReturns(PeriodKey: Code[10]; var ResponseJson: Text; ShowMessage: Boolean; var HttpError: Text; ResetFraudPreventionSessionHeaders: Boolean): Boolean
     var
         RequestJson: Text;
     begin
         CheckOAuthConfigured(ShowMessage);
         Session.LogMessage('0000CC0', StrSubstNo(InvokeReqMsg, 'retrieve VAT return'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
-        exit(InvokeRequest('GET', RetrieveVATReturnPath(PeriodKey), ResponseJson, RequestJson, HttpError, RetrieveVATReturnTxt));
+        exit(
+            InvokeRequest(
+                'GET', RetrieveVATReturnPath(PeriodKey), ResponseJson, RequestJson, HttpError,
+                RetrieveVATReturnTxt, ResetFraudPreventionSessionHeaders));
     end;
 
     internal procedure InvokeRequest_RetrieveVATReturnPeriods(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text; OpenOAuthSetup: Boolean): Boolean
@@ -70,7 +73,7 @@ codeunit 10537 "MTD Connection"
     begin
         CheckOAuthConfigured(OpenOAuthSetup);
         Session.LogMessage('0000CC0', StrSubstNo(InvokeReqMsg, 'retrieve VAT return periods'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
-        exit(InvokeRequest('GET', RetrieveObligationsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATReturnPeriodsTxt));
+        exit(InvokeRequest('GET', RetrieveObligationsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATReturnPeriodsTxt, true));
     end;
 
     internal procedure InvokeRequest_RetrieveLiabilities(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text): Boolean
@@ -79,7 +82,7 @@ codeunit 10537 "MTD Connection"
     begin
         CheckOAuthConfigured(true);
         Session.LogMessage('0000CC0', StrSubstNo(InvokeReqMsg, 'retrieve liabilities'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
-        exit(InvokeRequest('GET', RetrieveLiabilitiesPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATLiabilitiesTxt));
+        exit(InvokeRequest('GET', RetrieveLiabilitiesPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATLiabilitiesTxt, true));
     end;
 
     internal procedure InvokeRequest_RetrievePayments(StartDate: Date; EndDate: Date; var ResponseJson: Text; var HttpError: Text): Boolean
@@ -88,16 +91,19 @@ codeunit 10537 "MTD Connection"
     begin
         CheckOAuthConfigured(true);
         Session.LogMessage('0000CC0', StrSubstNo(InvokeReqMsg, 'retrieve payments'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
-        exit(InvokeRequest('GET', RetrievePaymentsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATPaymentsTxt));
+        exit(InvokeRequest('GET', RetrievePaymentsPath(StartDate, EndDate), ResponseJson, RequestJson, HttpError, RetrieveVATPaymentsTxt, true));
     end;
 
-    internal procedure InvokeRequest_RefreshAccessToken(var HttpError: Text): Boolean;
+    internal procedure InvokeRequest_RefreshAccessToken(var HttpError: Text; ResetFraudPreventionSessionHeaders: Boolean): Boolean;
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
+        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
     begin
         CheckOAuthConfigured(false);
-        OAuth20Setup.GET(GetOAuthSetupCode());
+        OAuth20Setup.Get(GetOAuthSetupCode());
         Session.LogMessage('0000CCE', RefreshAccessTokenMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
+        if ResetFraudPreventionSessionHeaders then
+            MTDSessionFraudPrevHdr.DeleteAll();
         exit(OAuth20Setup.RefreshAccessToken(HttpError));
     end;
 
@@ -145,10 +151,11 @@ codeunit 10537 "MTD Connection"
         end;
     end;
 
-    local procedure InvokeRequest(Method: Text; RequestPath: Text; var ResponseJson: Text; var RequestJson: Text; var HttpError: Text; ActivityLogContext: Text) Result: Boolean
+    local procedure InvokeRequest(Method: Text; RequestPath: Text; var ResponseJson: Text; var RequestJson: Text; var HttpError: Text; ActivityLogContext: Text; ResetFraudPreventionSessionHeaders: Boolean) Result: Boolean
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
         VATReportSetup: Record "VAT Report Setup";
+        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
         JObject: JsonObject;
         JObject2: JsonObject;
         HttpLogError: Text;
@@ -172,6 +179,8 @@ codeunit 10537 "MTD Connection"
 
         JObject.WriteTo(RequestJson);
 
+        IF ResetFraudPreventionSessionHeaders then
+            MTDSessionFraudPrevHdr.DeleteAll();
         Result := OAuth20Setup.InvokeRequest(RequestJson, ResponseJson, HttpError, true);
 
         if not Result then
@@ -367,29 +376,29 @@ codeunit 10537 "MTD Connection"
 
     local procedure SubmitVATReturnPath(): Text
     begin
-        exit(STRSUBSTNO('/organisations/vat/%1/returns', GetVATRegNo()));
+        exit(StrSubstNo('/organisations/vat/%1/returns', GetVATRegNo()));
     end;
 
     local procedure RetrieveVATReturnPath(PeriodNo: Text): Text
     var
         TypeHelper: Codeunit "Type Helper";
     begin
-        exit(STRSUBSTNO('/organisations/vat/%1/returns/%2', GetVATRegNo(), TypeHelper.UrlEncode(PeriodNo)));
+        exit(StrSubstNo('/organisations/vat/%1/returns/%2', GetVATRegNo(), TypeHelper.UrlEncode(PeriodNo)));
     end;
 
     local procedure RetrieveObligationsPath(FromDate: Date; ToDate: Date): Text
     begin
-        exit(STRSUBSTNO('/organisations/vat/%1/obligations?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
+        exit(StrSubstNo('/organisations/vat/%1/obligations?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
     end;
 
     local procedure RetrieveLiabilitiesPath(FromDate: Date; ToDate: Date): Text
     begin
-        exit(STRSUBSTNO('/organisations/vat/%1/liabilities?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
+        exit(StrSubstNo('/organisations/vat/%1/liabilities?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
     end;
 
     local procedure RetrievePaymentsPath(FromDate: Date; ToDate: Date): Text
     begin
-        exit(STRSUBSTNO('/organisations/vat/%1/payments?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
+        exit(StrSubstNo('/organisations/vat/%1/payments?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
     end;
 
     local procedure FormatValue(Value: Variant): Text

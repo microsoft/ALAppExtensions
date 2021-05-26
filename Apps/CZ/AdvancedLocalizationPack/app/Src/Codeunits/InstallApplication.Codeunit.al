@@ -3,6 +3,11 @@ codeunit 31250 "Install Application CZA"
 {
     Subtype = Install;
 
+    trigger OnInstallAppPerDatabase()
+    begin
+        CopyPermission();
+    end;
+
     trigger OnInstallAppPerCompany()
     begin
         if not InitializeDone() then
@@ -40,6 +45,32 @@ codeunit 31250 "Install Application CZA"
         CopyTransferShipmentLine();
         CopyTransferReceiptHeader();
         CopyTransferReceiptLine();
+        CopyDetailedGLEntry();
+        CopyGLEntry();
+    end;
+
+    local procedure CopyPermission();
+    begin
+        InsertTableDataPermissions(Database::"Detailed G/L Entry", Database::"Detailed G/L Entry CZA");
+    end;
+
+    local procedure InsertTableDataPermissions(OldTableID: Integer; NewTableID: Integer)
+    var
+        Permission: Record Permission;
+        NewPermission: Record Permission;
+    begin
+        Permission.SetRange("Object Type", Permission."Object Type"::"Table Data");
+        Permission.SetRange("Object ID", OldTableID);
+        if not Permission.FindSet() then
+            exit;
+        repeat
+            if not NewPermission.Get(Permission."Role ID", Permission."Object Type", NewTableID) then begin
+                NewPermission.Init();
+                NewPermission := Permission;
+                NewPermission."Object ID" := NewTableID;
+                if NewPermission.Insert() then;
+            end;
+        until Permission.Next() = 0;
     end;
 
     local procedure CopyInventorySetup();
@@ -49,6 +80,7 @@ codeunit 31250 "Install Application CZA"
         if InventorySetup.Get() then begin
             InventorySetup."Use GPPG from SKU CZA" := InventorySetup."Use GPPG from SKU";
             InventorySetup."Skip Update SKU on Posting CZA" := InventorySetup."Skip Update SKU on Posting";
+            InventorySetup."Exact Cost Revers. Mandat. CZA" := InventorySetup."Exact Cost Reversing Mandatory";
             InventorySetup.Modify(false);
         end;
     end;
@@ -59,6 +91,7 @@ codeunit 31250 "Install Application CZA"
     begin
         if ManufacturingSetup.Get() then begin
             ManufacturingSetup."Default Gen.Bus.Post. Grp. CZA" := ManufacturingSetup."Default Gen.Bus. Posting Group";
+            ManufacturingSetup."Exact Cost Rev.Mand. Cons. CZA" := ManufacturingSetup."Exact Cost Rev.Manda. (Cons.)";
             ManufacturingSetup.Modify(false);
         end;
     end;
@@ -146,27 +179,27 @@ codeunit 31250 "Install Application CZA"
 
     local procedure CopyValueEntry();
     var
-        ItemLedgerEntry: Record "Value Entry";
+        ValueEntry: Record "Value Entry";
     begin
-        if ItemLedgerEntry.FindSet(true) then
+        if ValueEntry.FindSet(true) then
             repeat
-                ItemLedgerEntry."Invoice-to Source No. CZA" := ItemLedgerEntry."Source No. 2";
-                ItemLedgerEntry."Delivery-to Source No. CZA" := ItemLedgerEntry."Source No. 3";
-                ItemLedgerEntry."Currency Code CZA" := ItemLedgerEntry."Currency Code";
-                ItemLedgerEntry."Currency Factor CZA" := ItemLedgerEntry."Currency Factor";
-                ItemLedgerEntry.Modify(false);
-            until ItemLedgerEntry.Next() = 0;
+                ValueEntry."Invoice-to Source No. CZA" := ValueEntry."Source No. 2";
+                ValueEntry."Delivery-to Source No. CZA" := ValueEntry."Source No. 3";
+                ValueEntry."Currency Code CZA" := ValueEntry."Currency Code";
+                ValueEntry."Currency Factor CZA" := ValueEntry."Currency Factor";
+                ValueEntry.Modify(false);
+            until ValueEntry.Next() = 0;
     end;
 
     local procedure CopyCapacityLedgerEntry();
     var
-        ItemLedgerEntry: Record "Capacity Ledger Entry";
+        CapacityLedgerEntry: Record "Capacity Ledger Entry";
     begin
-        if ItemLedgerEntry.FindSet(true) then
+        if CapacityLedgerEntry.FindSet(true) then
             repeat
-                ItemLedgerEntry."User ID CZA" := ItemLedgerEntry."User ID";
-                ItemLedgerEntry.Modify(false);
-            until ItemLedgerEntry.Next() = 0;
+                CapacityLedgerEntry."User ID CZA" := CapacityLedgerEntry."User ID";
+                CapacityLedgerEntry.Modify(false);
+            until CapacityLedgerEntry.Next() = 0;
     end;
 
     local procedure CopyItemJournalLine();
@@ -264,6 +297,45 @@ codeunit 31250 "Install Application CZA"
                 TransferReceiptLine."Gen.Bus.Post.Group Receive CZA" := TransferReceiptLine."Gen. Bus. Post. Group Receive";
                 TransferReceiptLine.Modify(false);
             until TransferReceiptLine.Next() = 0;
+    end;
+
+    local procedure CopyDetailedGLEntry()
+    var
+        DetailedGLEntry: Record "Detailed G/L Entry";
+        DetailedGLEntryCZA: Record "Detailed G/L Entry CZA";
+    begin
+        if DetailedGLEntry.FindSet() then
+            repeat
+                if not DetailedGLEntryCZA.Get(DetailedGLEntry."Entry No.") then begin
+                    DetailedGLEntryCZA.Init();
+                    DetailedGLEntryCZA."Entry No." := DetailedGLEntry."Entry No.";
+                    DetailedGLEntryCZA.Insert();
+                end;
+                DetailedGLEntryCZA."G/L Entry No." := DetailedGLEntry."G/L Entry No.";
+                DetailedGLEntryCZA."Applied G/L Entry No." := DetailedGLEntry."Applied G/L Entry No.";
+                DetailedGLEntryCZA."G/L Account No." := DetailedGLEntry."G/L Account No.";
+                DetailedGLEntryCZA."Posting Date" := DetailedGLEntry."Posting Date";
+                DetailedGLEntryCZA."Document No." := DetailedGLEntry."Document No.";
+                DetailedGLEntryCZA."Transaction No." := DetailedGLEntry."Transaction No.";
+                DetailedGLEntryCZA.Amount := DetailedGLEntry.Amount;
+                DetailedGLEntryCZA.Unapplied := DetailedGLEntry.Unapplied;
+                DetailedGLEntryCZA."Unapplied by Entry No." := DetailedGLEntry."Unapplied by Entry No.";
+                DetailedGLEntryCZA."User ID" := DetailedGLEntry."User ID";
+                DetailedGLEntryCZA.Modify(false);
+            until DetailedGLEntry.Next() = 0;
+    end;
+
+    local procedure CopyGLEntry();
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        if GLEntry.FindSet(true) then
+            repeat
+                GLEntry."Closed CZA" := GLEntry.Closed;
+                GLEntry."Closed at Date CZA" := GLEntry."Closed at Date";
+                GLEntry."Applied Amount CZA" := GLEntry."Applied Amount";
+                GLEntry.Modify(false);
+            until GLEntry.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

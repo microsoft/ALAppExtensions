@@ -164,7 +164,7 @@ page 11016 "Sales VAT Adv. Notif. Card"
                     Image = ElectronicDoc;
                     Promoted = true;
                     PromotedCategory = Process;
-                    ToolTip = 'Create the XML file to be sent to the tax authorities.';
+                    ToolTip = 'Prepares information which are to be included in the xml file when the data will be exported using the Export action.';
 
                     trigger OnAction()
                     var
@@ -180,7 +180,7 @@ page 11016 "Sales VAT Adv. Notif. Card"
                     ApplicationArea = Basic, Suite;
                     Caption = '&Delete XML-File';
                     Ellipsis = true;
-                    ToolTip = 'Create the XML file to be sent to the tax authorities.';
+                    ToolTip = 'Deletes the file information which have been stored inside BC when the file got created. The xml file will not get deleted from the file location where it has been saved before.';
                     Image = DeleteXML;
 
                     trigger OnAction()
@@ -198,10 +198,23 @@ page 11016 "Sales VAT Adv. Notif. Card"
                     Image = "Report";
                     Promoted = true;
                     PromotedCategory = Process;
-                    RunObject = Page "VAT Statement Preview";
-                    RunPageLink = "Statement Template Name" = field("Statement Template Name"),
-                                  Name = field("Statement Name");
                     ToolTip = 'Preview the sales VAT advance notification that you will send to the tax authorities.';
+
+                    trigger OnAction()
+                    var
+                        VATStatementName: Record "VAT Statement Name";
+                        VATStatementPreviewPage: Page "VAT Statement Preview";
+                    begin
+                        if "Statement Template Name" = '' then begin
+                            VATStatementName.SetRange("Sales VAT Adv. Notif.", true);
+                            VATStatementName.FindFirst();
+                        end else
+                            VATStatementName.Get("Statement Template Name", "Statement Name");
+                        VATStatementPreviewPage.SetRecord(VATStatementName);
+                        VATStatementPreviewPage.SetParameters(
+                            "Incl. VAT Entries (Closing)", "Incl. VAT Entries (Period)", StrSubstNo(DateFilterLbl, "Starting Date"));
+                        VATStatementPreviewPage.Run();
+                    end;
                 }
                 separator("2")
                 {
@@ -277,6 +290,7 @@ page 11016 "Sales VAT Adv. Notif. Card"
         ReportPrint: Codeunit "Test Report-Print";
         Text1140000Lbl: Label 'Selection of the XSL-File';
         Text1140001Lbl: Label 'Extensible Stylesheet-Files|*.xsl|All Files|*.*';
+        DateFilterLbl: Label '%1..', Locked = true;
         IsWindowsClient: Boolean;
 }
 

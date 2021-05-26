@@ -28,25 +28,25 @@ page 8700 "Table Information"
         {
             repeater(General)
             {
-                field("Company Name"; "Company Name")
+                field("Company Name"; Rec."Company Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'The name of the company the table belongs to';
                 }
 
-                field("Table Name"; "Table Name")
+                field("Table Name"; Rec."Table Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'The name of the table';
                 }
 
-                field("Table No."; "Table No.")
+                field("Table No."; Rec."Table No.")
                 {
                     ApplicationArea = All;
                     ToolTip = 'The ID number for the table';
                 }
 
-                field("No. of Records"; "No. of Records")
+                field("No. of Records"; Rec."No. of Records")
                 {
                     ApplicationArea = All;
                     ToolTip = 'The number of records in the table';
@@ -57,31 +57,31 @@ page 8700 "Table Information"
                     end;
                 }
 
-                field("Record Size (Byte)"; "Record Size")
+                field("Record Size (Byte)"; Rec."Record Size")
                 {
                     ApplicationArea = All;
                     ToolTip = 'The average size of a record (in bytes)';
                 }
 
-                field("Size (KB)"; "Size (KB)")
+                field("Size (KB)"; Rec."Size (KB)")
                 {
                     ApplicationArea = All;
                     ToolTip = 'How much space the table occupies in the database (in kilobytes)';
                 }
 
-                field("Data Size (KB)"; "Data Size (KB)")
+                field("Data Size (KB)"; Rec."Data Size (KB)")
                 {
                     ApplicationArea = All;
                     ToolTip = 'How much space the table data occupies in the database (in kilobytes)';
                 }
 
-                field("Index Size (KB)"; "Index Size (KB)")
+                field("Index Size (KB)"; Rec."Index Size (KB)")
                 {
                     ApplicationArea = All;
                     ToolTip = 'How much space the table indexes occupy in the database (in kilobytes)';
                 }
 
-                field("Compression"; "Compression")
+                field("Compression"; Rec."Compression")
                 {
                     ApplicationArea = All;
                     OptionCaption = 'None,Row,Page,,';
@@ -95,11 +95,11 @@ page 8700 "Table Information"
     var
         UserPermissions: codeunit "User Permissions";
     begin
-        FilterGroup(2);
+        Rec.FilterGroup(2);
         if UserPermissions.IsSuper(UserSecurityId()) then
-            SetRange("Company Name")
+            Rec.SetRange("Company Name")
         else
-            SetRange("Company Name", CompanyName);
+            Rec.SetFilter("Company Name", '%1|%2', '', CompanyName);
         FilterGroup(0);
     end;
 }

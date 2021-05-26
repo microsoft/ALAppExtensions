@@ -9,7 +9,7 @@ codeunit 149108 "BCPT Make Web Call"
         ResponseMessage: HttpResponseMessage;
         Client: HttpClient;
     begin
-        NewUrl := 'https://www.microsoft.com';
+        NewUrl := 'https://wwww.microsoft.com';
 
         RequestMessage.SetRequestUri(NewUrl);
         RequestMessage.Method('GET');

@@ -54,7 +54,7 @@ codeunit 10532 "MTD Submit Return"
 
             // Perform GET request for VAT Return submission. Write Response Json into Response Archive
             if VATReturnPeriod.GET("Return Period No.") then
-                if MTDMgt.RetrieveVATReturns(VATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount, false) then
+                if MTDMgt.RetrieveVATReturns(VATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount, false, false) then
                     MTDMgt.ArchiveResponseMessage(Rec, ResponseJson);
         end;
     end;

@@ -124,7 +124,7 @@ codeunit 9999 "Upgrade Tag"
     /// </param>
     procedure GetPerCompanyUpgradeTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
-        OnGetPerDatabaseUpgradeTags(PerCompanyUpgradeTags);
+        OnGetPerCompanyUpgradeTags(PerCompanyUpgradeTags);
     end;
 
     /// <summary>

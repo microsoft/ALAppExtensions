@@ -28,7 +28,6 @@ page 18003 "GST Posting Setup"
                     trigger OnLookup(var Text: Text): Boolean
                     var
                         GSTSetup: Record "GST Setup";
-                        ComponentName: Variant;
                     begin
                         if not GSTSetup.Get() then
                             exit;
@@ -45,7 +44,6 @@ page 18003 "GST Posting Setup"
                     trigger OnValidate()
                     var
                         GSTSetup: Record "GST Setup";
-                        ComponentName: Variant;
                     begin
                         if not GSTSetup.Get() then
                             exit;

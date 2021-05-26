@@ -64,6 +64,8 @@ table 3901 "Retention Policy Setup"
                 RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
             begin
                 RetentionPolicySetupImpl.ValidateRetentionPeriod(Rec);
+                if Rec."Retention Period" <> '' then
+                    Rec.Validate(Enabled, true);
             end;
         }
         field(5; Enabled; Boolean)

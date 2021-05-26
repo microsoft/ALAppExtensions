@@ -14,6 +14,11 @@ pageextension 31250 "Inventory Setup CZA" extends "Inventory Setup"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies skiping Update SKU on Posting';
             }
+            field("Exact Cost Revers. Mandat. CZA"; Rec."Exact Cost Revers. Mandat. CZA")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies that a storno transaction cannot be posted unless the Applies-from Entry field on the item journal line specifies an entry.';
+            }
         }
     }
 }

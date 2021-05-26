@@ -155,7 +155,7 @@ codeunit 148099 "SAF-T Test Helper"
         Amount := LibraryRandom.RandDec(100, 2);
         for i := 1 to NumberOfMasterDataRecords do begin
             MockCustLedgEntry(PostingDate, Customer."No.", Amount);
-            MockVendLedgEntry(PostingDate, Vendor."No.", -Amount);
+            MockVendLedgEntrySimple(PostingDate, Vendor."No.", -Amount);
             MockGLEntry(PostingDate, LibraryUtility.GenerateGUID(), GLAccount."No.", i, 0, '', '', 0, '', GetGLSourceCode(), Amount, 0);
             GLAccount.Next();
             Customer.Next();
@@ -280,7 +280,7 @@ codeunit 148099 "SAF-T Test Helper"
         DetailedCustLedgEntry.Insert();
     end;
 
-    local procedure MockVendLedgEntry(PostingDate: Date; VendNo: Code[20]; Amount: Decimal)
+    local procedure MockVendLedgEntrySimple(PostingDate: Date; VendNo: Code[20]; Amount: Decimal)
     begin
         MockVendLedgEntry(PostingDate, VendNo, Amount, Amount, "Gen. Journal Document Type"::" ");
     end;
@@ -288,15 +288,29 @@ codeunit 148099 "SAF-T Test Helper"
     procedure MockVendLedgEntry(PostingDate: Date; VendNo: Code[20]; Amount: Decimal; AmountDtldVendLedgEntry: Decimal; DocumentType: Enum "Gen. Journal Document Type")
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        MockVendLedgEntryLocal(LibraryUtility.GetNewRecNo(VendorLedgerEntry, VendorLedgerEntry.FieldNo("Entry No.")), PostingDate, VendNo, 0, '', Amount, AmountDtldVendLedgEntry, AmountDtldVendLedgEntry, DocumentType);
+    end;
+
+    procedure MockVendLedgEntry(EntryNo: Integer; PostingDate: Date; VendNo: Code[20]; TransactionNo: Integer; CurrencyCode: Code[10]; PurchAmount: Decimal; Amount: Decimal; AmountDtldVendLedgEntry: Decimal; DocumentType: Enum "Gen. Journal Document Type")
+    begin
+        MockVendLedgEntryLocal(EntryNo, PostingDate, VendNo, TransactionNo, CurrencyCode, PurchAmount, Amount, AmountDtldVendLedgEntry, DocumentType);
+    end;
+
+    local procedure MockVendLedgEntryLocal(EntryNo: Integer; PostingDate: Date; VendNo: Code[20]; TransactionNo: Integer; CurrencyCode: Code[10]; PurchAmount: Decimal; Amount: Decimal; AmountLCY: Decimal; DocumentType: Enum "Gen. Journal Document Type")
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
     begin
         VendorLedgerEntry.Init();
-        VendorLedgerEntry."Entry No." := LibraryUtility.GetNewRecNo(VendorLedgerEntry, VendorLedgerEntry.FieldNo("Entry No."));
+        VendorLedgerEntry."Entry No." := EntryNo;
         VendorLedgerEntry."Posting Date" := PostingDate;
         VendorLedgerEntry."Vendor No." := VendNo;
         if not (DocumentType in ["Gen. Journal Document Type"::Payment, "Gen. Journal Document Type"::Refund]) then
-            VendorLedgerEntry."Purchase (LCY)" := Amount;
+            VendorLedgerEntry."Purchase (LCY)" := PurchAmount;
         VendorLedgerEntry."Document Type" := DocumentType;
+        VendorLedgerEntry."Transaction No." := TransactionNo;
+        VendorLedgerEntry."Currency Code" := CurrencyCode;
         VendorLedgerEntry.Insert();
         DetailedVendorLedgEntry.Init();
         DetailedVendorLedgEntry."Entry No." :=
@@ -304,8 +318,11 @@ codeunit 148099 "SAF-T Test Helper"
         DetailedVendorLedgEntry."Vendor Ledger Entry No." := VendorLedgerEntry."Entry No.";
         DetailedVendorLedgEntry."Posting Date" := VendorLedgerEntry."Posting Date";
         DetailedVendorLedgEntry."Vendor No." := VendorLedgerEntry."Vendor No.";
-        DetailedVendorLedgEntry."Amount (LCY)" := AmountDtldVendLedgEntry;
+        DetailedVendorLedgEntry.Amount := Amount;
+        DetailedVendorLedgEntry."Ledger Entry Amount" := true;
+        DetailedVendorLedgEntry."Amount (LCY)" := AmountLCY;
         DetailedVendorLedgEntry.Insert();
+
     end;
 
     procedure GetGLSourceCode(): Code[10]
@@ -579,6 +596,11 @@ codeunit 148099 "SAF-T Test Helper"
     procedure AssertElementName(var TempXMLBuffer: Record "XML Buffer" temporary; ElementName: Text)
     begin
         FindNextElement(TempXMLBuffer);
+        AssertCurrentElementName(TempXMLBuffer, ElementName);
+    end;
+
+    procedure AssertCurrentElementName(var TempXMLBuffer: Record "XML Buffer" temporary; ElementName: Text)
+    begin
         Assert.AreEqual(ElementName, TempXMLBuffer.GetElementName(),
             StrSubstNo(UnexpectedElementNameErr, ElementName, TempXMLBuffer.GetElementName()));
     end;

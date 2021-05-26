@@ -166,6 +166,11 @@ table 10682 "SAF-T Export Header"
                     "Disable Zip File Generation" := false;
             end;
         }
+        field(35; "Export Currency Information"; Boolean)
+        {
+            Caption = 'Export Currency Information';
+            InitValue = true;
+        }
     }
 
     keys

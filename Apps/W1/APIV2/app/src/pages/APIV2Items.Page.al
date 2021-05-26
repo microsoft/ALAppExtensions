@@ -190,7 +190,14 @@ page 30008 "APIV2 - Items"
 
                     trigger OnValidate()
                     begin
+                        if not IsNullGuid("Unit of Measure Id") then
+                            if not ValidateUnitOfMeasure.GetBySystemId("Unit of Measure Id") then
+                                Error(UnitOfMeasureIdDoesNotMatchAUnitOfMeasureErr);
+
+                        BaseUnitOfMeasureIdValidated := true;
+
                         RegisterFieldSet(FieldNo("Unit of Measure Id"));
+                        RegisterFieldSet(FieldNo("Base Unit of Measure"));
                     end;
                 }
                 field(baseUnitOfMeasureCode; "Base Unit of Measure")
@@ -199,6 +206,13 @@ page 30008 "APIV2 - Items"
 
                     trigger OnValidate()
                     begin
+                        if ("Base Unit of Measure" <> '') and (ValidateUnitOfMeasure.Code <> '') then
+                            if ValidateUnitOfMeasure.Code <> "Base Unit of Measure" then
+                                Error(UnitOfMeasureValuesDontMatchErr);
+
+                        BaseUnitOfMeasureCodeValidated := true;
+
+                        RegisterFieldSet(FieldNo("Unit of Measure Id"));
                         RegisterFieldSet(FieldNo("Base Unit of Measure"));
                     end;
                 }
@@ -255,7 +269,14 @@ page 30008 "APIV2 - Items"
         if TempFieldSet.Get(Database::Item, FieldNo(Inventory)) then
             Error(InventoryCannotBeChangedInAPostRequestErr);
 
-        GraphCollectionMgtItem.InsertItem(Rec, TempFieldSet);
+        if not BaseUnitOfMeasureCodeValidated then
+            if BaseUnitOfMeasureIdValidated then begin
+                Rec.Validate("Base Unit of Measure", Rec."Base Unit of Measure");
+                GraphCollectionMgtItem.ModifyItem(Rec, TempFieldSet);
+            end else
+                GraphCollectionMgtItem.InsertItem(Rec, TempFieldSet)
+        else
+            GraphCollectionMgtItem.ModifyItem(Rec, TempFieldSet);
 
         SetCalculatedFields();
         exit(false);
@@ -298,9 +319,12 @@ page 30008 "APIV2 - Items"
         TempFieldSet: Record 2000000041 temporary;
         ItemCategory: Record "Item Category";
         TaxGroup: Record "Tax Group";
+        ValidateUnitOfMeasure: Record "Unit of Measure";
         GraphCollectionMgtItem: Codeunit "Graph Collection Mgt - Item";
         InventoryValue: Decimal;
         BlankGUID: Guid;
+        BaseUnitOfMeasureIdValidated: Boolean;
+        BaseUnitOfMeasureCodeValidated: Boolean;
         TaxGroupValuesDontMatchErr: Label 'The tax group values do not match to a specific Tax Group.';
         TaxGroupIdDoesNotMatchATaxGroupErr: Label 'The "taxGroupId" does not match to a Tax Group.', Comment = 'taxGroupId is a field name and should not be translated.';
         TaxGroupCodeDoesNotMatchATaxGroupErr: Label 'The "taxGroupCode" does not match to a Tax Group.', Comment = 'taxGroupCode is a field name and should not be translated.';
@@ -308,6 +332,8 @@ page 30008 "APIV2 - Items"
         ItemCategoriesValuesDontMatchErr: Label 'The item categories values do not match to a specific item category.';
         ItemCategoryCodeDoesNotMatchATaxGroupErr: Label 'The "itemCategoryCode" does not match to a Item Category.', Comment = 'itemCategoryCode is a field name and should not be translated.';
         InventoryCannotBeChangedInAPostRequestErr: Label 'Inventory cannot be changed during on insert.';
+        UnitOfMeasureIdDoesNotMatchAUnitOfMeasureErr: Label 'The "baseUnitOfMeasureId" does not match to a Unit of Measure.', Comment = 'baseUnitOfMeasureId is a field name and should not be translated.';
+        UnitOfMeasureValuesDontMatchErr: Label 'The unit of measure values do not match to a specific Unit of Measure.';
 
     local procedure SetCalculatedFields()
     begin
@@ -319,6 +345,8 @@ page 30008 "APIV2 - Items"
     begin
         Clear(SystemId);
         Clear(InventoryValue);
+        Clear(BaseUnitOfMeasureCodeValidated);
+        Clear(BaseUnitOfMeasureIdValidated);
         TempFieldSet.DeleteAll();
     end;
 

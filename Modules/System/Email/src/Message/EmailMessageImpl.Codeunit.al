@@ -206,7 +206,7 @@ codeunit 8905 "Email Message Impl."
         TempBlob.CreateOutStream(AttachmentOutstream);
         Base64Convert.FromBase64(AttachmentBase64, AttachmentOutstream);
         TempBlob.CreateInStream(AttachmentInStream);
-        EmailAttachment.Data.ImportStream(AttachmentInStream, '', EmailAttachment."Content Type");
+        EmailAttachment.Data.ImportStream(AttachmentInStream, AttachmentName, EmailAttachment."Content Type");
         EmailAttachment.Insert();
     end;
 
@@ -408,12 +408,6 @@ codeunit 8905 "Email Message Impl."
         if Rec.IsTemporary() then
             exit;
 
-        if Rec.CurrentCompany() <> CompanyName() then begin
-            EmailOutbox.ChangeCompany(Rec.CurrentCompany());
-            EmailMessage.ChangeCompany(Rec.CurrentCompany());
-            SentEmail.ChangeCompany(Rec.CurrentCompany());
-        end;
-
         EmailOutbox.SetRange("Message Id", Rec."Message Id");
         if not EmailOutbox.IsEmpty() then
             exit;
@@ -436,13 +430,6 @@ codeunit 8905 "Email Message Impl."
     begin
         if Rec.IsTemporary() then
             exit;
-
-        if Rec.CurrentCompany() <> CompanyName() then begin
-            EmailError.ChangeCompany(Rec.CurrentCompany());
-            EmailMessage.ChangeCompany(Rec.CurrentCompany());
-            SentEmail.ChangeCompany(Rec.CurrentCompany());
-            EmailOutbox.ChangeCompany(Rec.CurrentCompany());
-        end;
 
         EmailError.SetRange("Outbox Id", Rec.Id);
         EmailError.DeleteAll(true);
@@ -468,12 +455,6 @@ codeunit 8905 "Email Message Impl."
     begin
         if Rec.IsTemporary() then
             exit;
-
-        if Rec.CurrentCompany() <> CompanyName() then begin
-            EmailMessageAttachment.ChangeCompany(Rec.CurrentCompany());
-            EmailRecipient.ChangeCompany(Rec.CurrentCompany());
-            EmailRelatedRecord.ChangeCompany(Rec.CurrentCompany());
-        end;
 
         EmailMessageAttachment.SetRange("Email Message Id", Rec.Id);
         EmailMessageAttachment.DeleteAll();
@@ -513,11 +494,6 @@ codeunit 8905 "Email Message Impl."
         if Rec.IsTemporary() then
             exit;
 
-        if Rec.CurrentCompany() <> CompanyName() then begin
-            EmailOutbox.ChangeCompany(Rec.CurrentCompany());
-            SentEmail.ChangeCompany(Rec.CurrentCompany());
-        end;
-
         EmailOutbox.SetRange("Message Id", Rec."Email Message Id");
         EmailOutbox.SetFilter(Status, '%1|%2', EmailOutbox.Status::Queued, EmailOutbox.Status::Processing);
         if not EmailOutbox.IsEmpty() then
@@ -536,11 +512,6 @@ codeunit 8905 "Email Message Impl."
     begin
         if Rec.IsTemporary() then
             exit;
-
-        if Rec.CurrentCompany() <> CompanyName() then begin
-            EmailOutbox.ChangeCompany(Rec.CurrentCompany());
-            SentEmail.ChangeCompany(Rec.CurrentCompany());
-        end;
 
         EmailOutbox.SetRange("Message Id", Rec."Email Message Id");
         EmailOutbox.SetFilter(Status, '%1|%2', EmailOutbox.Status::Queued, EmailOutbox.Status::Processing);

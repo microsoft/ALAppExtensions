@@ -84,6 +84,16 @@ codeunit 9010 "Azure AD User Management"
         exit(AzureADUserMgmtImpl.IsUserTenantAdmin());
     end;
 
+    /// <summary>    
+    /// Checks if the user is a delegated user.
+    /// </summary>
+    /// <returns>True if the user is a delegated user; otherwise false.</returns>
+    [NonDebuggable]
+    procedure IsUserDelegated(UserSecID: Guid): Boolean
+    begin
+        exit(AzureADUserMgmtImpl.IsUserDelegated(UserSecID));
+    end;
+
     /// <summary>
     /// Sets a flag that is used to determine whether a test is in progress.
     /// </summary>

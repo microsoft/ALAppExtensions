@@ -25,6 +25,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATLiabilitiesAndShowResult_Negative_DisabledOutput()
     var
         DummyMTDLiability: Record "MTD Liability";
@@ -37,10 +38,12 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
 
         Assert.RecordIsEmpty(DummyMTDLiability);
         VerifyLatestHttpLogFailure('HTTP error 400 (Bad Request)');
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATLiabilitiesAndShowResult_Negative_Reason()
     var
         DummyMTDLiability: Record "MTD Liability";
@@ -56,10 +59,13 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(StrSubstNo('%1\%2%3', RetrieveLiabilitiesErr, LibraryMakingTaxDigital.GetResonLbl(), HttpError));
         VerifyLatestHttpLogFailure('HTTP error 400 (Bad Request). The provided VRN is invalid.');
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATLiabilitiesAndShowResult_Negative_BlankedJsonResponse()
     var
         DummyMTDLiability: Record "MTD Liability";
@@ -75,6 +81,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATLiabilitiesAndShowResult_Negative_WrongJsonResponse()
     var
         DummyMTDLiability: Record "MTD Liability";
@@ -90,6 +97,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATLiabilitiesAndShowResult_OneNewLbl_DisabledOutput()
     var
         DummyMTDLiability: Record "MTD Liability";
@@ -102,10 +110,11 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
 
         VerifyOneLiability(DummyMTDLiability);
         VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(1, 0));
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
-    [HandlerFunctions('GetMTDRecords_RPH,MessageHandler')]
+    [HandlerFunctions('GetMTDRecords_RPH,MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATLiabilitiesAndShowResult_OneNewLbl_UI()
     var
@@ -122,12 +131,14 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         VerifyOneLiability(DummyMTDLiability);
         VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(1, 0));
         Assert.ExpectedMessage(GetLiabilitiesLbl, LibraryVariableStorage.DequeueText());
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         Assert.ExpectedMessage(LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(1, 0), LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATLiabilitiesAndShowResult_OneNew_ExpiredToken()
     var
         DummyMTDLiability: Record "MTD Liability";
@@ -144,10 +155,11 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
 
         VerifyOneLiability(DummyMTDLiability);
         VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrieveLiabilitiesMsg(1, 0));
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATLiabilitiesAndShowResult_OneUpToDateLbl()
     var
@@ -165,7 +177,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATLiabilitiesAndShowResult_OneModifiedLbl_OrgAmt()
     var
@@ -183,7 +195,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATLiabilitiesAndShowResult_OneModifiedLbl_OutstAmt()
     var
@@ -201,7 +213,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATLiabilitiesAndShowResult_OneModifiedLbl_DueDate()
     var
@@ -219,7 +231,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATLiabilitiesAndShowResult_TwoNewLbl()
     var
@@ -235,7 +247,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATLiabilitiesAndShowResult_TwoUpToDateLbl()
     var
@@ -255,7 +267,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATLiabilitiesAndShowResult_TwoModifiedLbl()
     var
@@ -275,7 +287,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATLiabilitiesAndShowResult_TwoLblInclOneNew()
     var
@@ -293,7 +305,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATLiabilitiesAndShowResult_TwoLblInclOneModified()
     var
@@ -313,7 +325,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATLiabilitiesAndShowResult_TwoLblInclOneNewAndOneModified()
     var
@@ -340,7 +352,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         IsInitialized := true;
 
         LibraryMakingTaxDigital.SetOAuthSetupSandbox(true);
-        LibraryMakingTaxDigital.DisableFraudPreventionHeaders(true);
+        LibraryMakingTaxDigital.SetupDefaultFPHeaders();
     end;
 
     local procedure ClearRecords()
@@ -362,25 +374,25 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         Initialize();
         InitDummyVATLiability(MTDLiability[1]);
         MTDLiability[2] := MTDLiability[1];
-        with MTDLiability[2] DO BEGIN
+        with MTDLiability[2] DO begin
             "From Date" += 1;
             "To Date" += 1;
             "Original Amount" += 0.01;
             "Outstanding Amount" += 0.01;
             "Due Date" += 1;
-        END;
+        end;
         LibraryMakingTaxDigital.UpdateCompanyInformation(VATRegNo);
     end;
 
     local procedure InitDummyVATLiability(var MTDLiability: Record "MTD Liability")
     begin
-        with MTDLiability DO BEGIN
+        with MTDLiability DO begin
             "From Date" := LibraryMakingTaxDigital.HttpStartDate();
             "To Date" := LibraryMakingTaxDigital.HttpEndDate();
             "Original Amount" := LibraryMakingTaxDigital.HttpAmount1();
             "Outstanding Amount" := LibraryMakingTaxDigital.HttpAmount2();
             "Due Date" := LibraryMakingTaxDigital.HttpDueDate();
-        END;
+        end;
     end;
 
     local procedure MockAndGetVATLiability(var MTDLiability: Record "MTD Liability"; StartDate: Date; EndDate: Date; OriginalAmount: Decimal; OutstandingAmount: Decimal; DueDate: Date)
@@ -409,6 +421,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         NewCount: Integer;
         ModifiedCount: Integer;
     begin
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         Assert.AreEqual(
           ExpectedResult,
           MTDMgt.RetrieveLiabilities(
@@ -417,6 +430,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         Assert.AreEqual(ExpectedTotalCount, TotalCount, 'MTDMgt.RetrieveLiabilities - TotalCount');
         Assert.AreEqual(ExpectedNewCount, NewCount, 'MTDMgt.RetrieveLiabilities - NewCount');
         Assert.AreEqual(ExpectedModifiedCount, ModifiedCount, 'MTDMgt.RetrieveLiabilities - ModifiedCount');
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
     end;
 
     local procedure GetVATLiabilitiesAndShowResultViaPage(DummyMTDLiability: Record "MTD Liability")
@@ -426,6 +440,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         Commit();
         LibraryVariableStorage.Enqueue(DummyMTDLiability."From Date");
         LibraryVariableStorage.Enqueue(DummyMTDLiability."To Date");
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         MTDLiabilities.OpenEdit();
         MTDLiabilities."Get VAT Liabilities".Invoke();
         MTDLiabilities.Close();
@@ -458,6 +473,8 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(ExpectedMessage);
         VerifyLatestHttpLogFailure(ExpectedMessage);
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure VerifyGetOneLblScenario(DummyMTDLiability: Record "MTD Liability"; ExpectedMessage: Text)
@@ -466,6 +483,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         Assert.ExpectedMessage(ExpectedMessage, LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
         VerifyLatestHttpLogSucess(ExpectedMessage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure VerifyGetTwoLblScenario(DummyMTDLiability: array[2] of Record "MTD Liability"; ExpectedMessage: Text)
@@ -474,6 +492,7 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
         Assert.ExpectedMessage(ExpectedMessage, LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
         VerifyLatestHttpLogSucess(ExpectedMessage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure VerifyOneLiability(DummyMTDLiability: Record "MTD Liability")
@@ -540,5 +559,12 @@ codeunit 148083 "MTDTestLiabilitiesWebService"
     procedure MessageHandler(Message: Text[1024])
     begin
         LibraryVariableStorage.Enqueue(Message);
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text; var Reply: Boolean)
+    begin
+        LibraryVariableStorage.Enqueue(Question);
+        Reply := LibraryVariableStorage.DequeueBoolean();
     end;
 }

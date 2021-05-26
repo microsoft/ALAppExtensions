@@ -55,25 +55,29 @@ page 31138 "VIES Declaration CZL"
                 field(Name; Rec.Name)
                 {
                     ApplicationArea = Basic, Suite;
-                    Editable = NameEditable;
+                    Editable = false;
                     ToolTip = 'Specifies company name.';
+                    Importance = Additional;
                 }
                 field("VAT Registration No."; Rec."VAT Registration No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    Editable = VATRegNoEditable;
+                    Editable = false;
                     ShowMandatory = true;
                     ToolTip = 'Specifies company VAT Registration No.';
+                    Importance = Additional;
                 }
                 field("Tax Office Number"; Rec."Tax Office Number")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the tax office number for reporting.';
+                    Visible = false;
                 }
                 field("Tax Office Region Number"; Rec."Tax Office Region Number")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the tax office region number for reporting.';
+                    Visible = false;
                 }
                 field("Trade Type"; Rec."Trade Type")
                 {
@@ -92,6 +96,7 @@ page 31138 "VIES Declaration CZL"
                     ApplicationArea = Basic, Suite;
                     Editable = CompanyTradeNameAppendixEditable;
                     ToolTip = 'Specifies type of the company.';
+                    Visible = false;
                 }
                 field("Document Date"; Rec."Document Date")
                 {
@@ -149,6 +154,7 @@ page 31138 "VIES Declaration CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies company type.';
+                    Visible = false;
 
                     trigger OnValidate()
                     begin
@@ -425,8 +431,6 @@ page 31138 "VIES Declaration CZL"
         CompanyTradeNameAppendixEditable := true;
         EUGoodsServicesEditable := true;
         TradeTypeEditable := true;
-        VATRegNoEditable := true;
-        NameEditable := true;
         YearEditable := true;
         PeriodNoEditable := true;
         CorrectedDeclarationNoEditable := true;
@@ -447,10 +451,6 @@ page 31138 "VIES Declaration CZL"
         [InDataSet]
         YearEditable: Boolean;
         [InDataSet]
-        NameEditable: Boolean;
-        [InDataSet]
-        VATRegNoEditable: Boolean;
-        [InDataSet]
         TradeTypeEditable: Boolean;
         [InDataSet]
         EUGoodsServicesEditable: Boolean;
@@ -468,20 +468,16 @@ page 31138 "VIES Declaration CZL"
         CorrectedDeclarationNoEditable := Corrective;
         PeriodNoEditable := not Corrective;
         YearEditable := not Corrective;
-        NameEditable := not Corrective;
-        VATRegNoEditable := not Corrective;
         TradeTypeEditable := not Corrective;
         EUGoodsServicesEditable := not Corrective;
         case Rec."Company Type" of
             Rec."Company Type"::Individual:
                 begin
-                    NameEditable := false;
                     CompanyTradeNameAppendixEditable := false;
                     IndividualEmployeeNoEditable := true;
                 end;
             Rec."Company Type"::Corporate:
                 begin
-                    NameEditable := true;
                     CompanyTradeNameAppendixEditable := true;
                     IndividualEmployeeNoEditable := false;
                 end;

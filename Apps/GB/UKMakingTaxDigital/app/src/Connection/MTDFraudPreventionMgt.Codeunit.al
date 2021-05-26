@@ -5,15 +5,43 @@
 
 codeunit 10541 "MTD Fraud Prevention Mgt."
 {
+    // Hardcoded:
+    // Gov-Client-Connection-Method
+    // Gov-Vendor-Version
+    // Gov-Vendor-Product-Name
+
+    // Calculated on APP level:
+    // Gov-Vendor-License-IDs
+    // Gov-Client-Local-IPs-Timestamp
+    // Gov-Client-Public-IP-Timestamp
+    // Gov-Client-Timezone
+    // Gov-Client-Multi-Factor
+
+    // Calculated using WMI queries:
+    // Gov-Client-Public-IP = Win32_NetworkAdapterConfiguration.IPAddress
+    // Gov-Client-Local-IPs = Win32_NetworkAdapterConfiguration.IPAddress
+    // Gov-Client-Device-ID = Win32_ComputerSystemProduct.UUID
+    // Gov-Client-User-IDs = Win32_ComputerSystem.UserName
+    // Gov-Client-MAC-Addresses = Win32_NetworkAdapterConfiguration.MACAddress
+    // Gov-Client-Screens = Win32_DesktopMonitor + Win32_VideoController
+    // Gov-Client-User-Agent = Win32_OperatingSystem.Version + Win32_ComputerSystemProduct.[Vendor,Version,Name]
+    // Gov-Vendor-Public-IP = Win32_NetworkAdapterConfiguration.IPAddress
+
+    // None:
+    // Gov-Client-Public-Port
+    // Gov-Client-Window-Size
+    // Gov-Client-Browser-Plugins
+    // Gov-Client-Browser-JS-User-Agent
+    // Gov-Client-Browser-Do-Not-Track
+    // Gov-Vendor-Forwarded
+
     var
-        VATReportSetup: Record "VAT Report Setup";
         ClientWMIBuffer: Record "Name/Value Buffer" temporary;
         ServerWMIBuffer: Record "Name/Value Buffer" temporary;
         ClientPublicIPsBuffer: Record "Name/Value Buffer" temporary;
         ClientLocalIPsBuffer: Record "Name/Value Buffer" temporary;
         ServerPublicIPsBuffer: Record "Name/Value Buffer" temporary;
         TypeHelper: Codeunit "Type Helper";
-        JObject: JsonObject;
         OnPrem: Boolean;
         WebClient: Boolean;
         WinClient: Boolean;
@@ -21,9 +49,9 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         ConnectionMethodWinClientTxt: Label 'DESKTOP_APP_VIA_SERVER', Locked = true;
         ConnectionMethodWebClientTxt: Label 'WEB_APP_VIA_SERVER', Locked = true;
         ConnectionMethodBatchClientTxt: Label 'BATCH_PROCESS_DIRECT', Locked = true;
-        ProdNameTxt: Label 'Microsoft_Dynamics_365_Business_Central', Locked = true;
-        ProdNameOnPremSuffixTxt: Label '_OnPrem', Locked = true;
-        DefaultProdVersionTxt: Label '16.0.0.0', Locked = true;
+        ProdNameTxt: Label 'Microsoft Dynamics 365 Business Central', Locked = true;
+        ProdNameOnPremSuffixTxt: Label ' OnPrem', Locked = true;
+        DefaultProdVersionTxt: Label '18.0.0.0', Locked = true;
         DefaultOSFamilyTxt: Label 'Windows', Locked = true;
         WMI_OSInfo_FieldTxt: Label 'Version,CurrentTimeZone', Locked = true;
         WMI_OSInfo_WhereTxt: Label 'Primary=''true'' and Name like ''%Windows%''', Locked = true;
@@ -43,13 +71,135 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         WMI_Win32_DesktopMonitorTxt: Label 'Win32_DesktopMonitor', Locked = true;
         WMI_Win32_VideoControllerTxt: Label 'Win32_VideoController', Locked = true;
         WMI_Win32_NetworkAdapterConfigurationTxt: Label 'Win32_NetworkAdapterConfiguration', Locked = true;
+        TimeStamp: Text;
+        GovClientPublicIPDescTxt: Label 'The public IPv4 or IPv6 address from which the originating device makes the request.';
+        GovClientPublicIPTimestampDescTxt: Label 'A timestamp to show when Gov-Client-Public-IP is collected.';
+        GovClientPublicPortDescTxt: Label 'The public TCP port used by the originating device when initiating the request.';
+        GovClientScreensDescTxt: Label 'Information about the originating device''s screens.';
+        GovClientTimezoneDescTxt: Label 'The local timezone of the originating device.';
+        GovClientUserAgentDescTxt: Label 'Identifies the operating system and device.';
+        GovClientUserIDsDescTxt: Label 'A key-value data structure containing user identifiers.';
+        GovClientWindowSizeDescTxt: Label 'The number of pixels of the window on the originating device.';
+        GovVendorForwardedDescTxt: Label 'A list that details hops over the internet between services that terminate Transport Layer Security (TLS).';
+        GovVendorPublicIPDescTxt: Label 'The public IP address of the servers the originating device sent their requests to.';
+        GovClientDeviceIDDescTxt: Label 'An identifier unique to the originating device.';
+        GovClientLocalIPsDescTxt: Label 'A list of all local IPv4 and IPv6 addresses available to the originating device.';
+        GovClientLocalIPsTimestampDescTxt: Label 'A timestamp to show when Gov-Client-Local-IPs is collected.';
+        GovClientMACAddressesDescTxt: Label 'The list of MAC addresses available on the originating device.';
+        GovClientMultiFactorDescTxt: Label 'A list of key-value data structures containing details of the multi-factor authentication (MFA) statuses related to the API call.';
+        GovClientBrowserDoNotTrackDescTxt: Label 'A true or false value describing if the Do Not Track option is enabled on the browser.';
+        GovClientBrowserJSUserAgentDescTxt: Label 'JavaScript-reported user agent string from the originating device.';
+        GovClientBrowserPluginsDescTxt: Label 'A list of browser plugins on the originating device.';
+        MissingHeadersMsg: Label 'The following fraud prevention headers were missing in the latest HMRC request:\\%1', Comment = '%1 - a list of the missing headers';
+        OpenHeadersSetupMsg: Label 'Communication with HMRC without fraud prevention headers is not allowed. Set up the missing headers in the HMRC Fraud Prevention Headers Setup page, and specify a default value for each of them. Choose the Get Current Headers action to see which headers cannot be retrieved automatically.';
+        NoMissingHeaderMsg: Label 'All required fraud prevention headers were provided in the latest HMRC request.';
+        ConfirmHeadersQst: Label 'HMRC requires additional information that will be used to uniquely identify your request. The following fraud prevention headers will be sent:\\%1\If you accept that the data in the list is sent, choose the Yes button to continue. If you do not continue, the current HMRC communication will be cancelled, and no data will be sent or received.\Do you want to continue?', Comment = '%1 - a list of missing headers';
+
+    internal procedure CheckInitDefaultHeadersList()
+    var
+        MTDDefaultFraudPrevHdr: Record "MTD Default Fraud Prev. Hdr";
+    begin
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Public-IP', GovClientPublicIPDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Local-IPs', GovClientLocalIPsDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Public-IP-Timestamp', GovClientPublicIPTimestampDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Local-IPs-Timestamp', GovClientLocalIPsTimestampDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-MAC-Addresses', GovClientMACAddressesDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Device-ID', GovClientDeviceIDDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-User-IDs', GovClientUserIDsDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Timezone', GovClientTimezoneDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Screens', GovClientScreensDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-User-Agent', GovClientUserAgentDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Multi-Factor', GovClientMultiFactorDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Vendor-Public-IP', GovVendorPublicIPDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Public-Port', GovClientPublicPortDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Window-Size', GovClientWindowSizeDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-Plugins', GovClientBrowserPluginsDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-JS-User-Agent', GovClientBrowserJSUserAgentDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-Do-Not-Track', GovClientBrowserDoNotTrackDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Vendor-Forwarded', GovVendorForwardedDescTxt, '');
+    end;
+
+    procedure CheckForMissingHeadersFromSetup()
+    var
+        MTDMissingFraudPrevHdr: Record "MTD Missing Fraud Prev. Hdr";
+        MsgBuffer: Text;
+    begin
+        if MTDMissingFraudPrevHdr.IsEmpty() then begin
+            Message(NoMissingHeaderMsg);
+            exit;
+        end;
+
+        MsgBuffer := StrSubstNo(MissingHeadersMsg, MTDMissingFraudPrevHdr.GetHeadersListString());
+        Message(MsgBuffer);
+    end;
+
+    procedure GenerateSampleValues(var TempSampleMTDDefaultFraudPrevHdr: Record "MTD Default Fraud Prev. Hdr" temporary)
+    var
+        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
+    begin
+        Init();
+        MTDSessionFraudPrevHdr.DeleteAll();
+        InvokeWMIQueries();
+        GenerateSessionHeaders();
+
+        TempSampleMTDDefaultFraudPrevHdr.DeleteAll();
+        if MTDSessionFraudPrevHdr.FindSet() then
+            repeat
+                TempSampleMTDDefaultFraudPrevHdr.FromSessionHeader(MTDSessionFraudPrevHdr);
+            until MTDSessionFraudPrevHdr.Next() = 0;
+        MTDSessionFraudPrevHdr.DeleteAll();
+    end;
+
+    internal procedure AddFraudPreventionHeaders(var RequestJSON: Text; ConfirmHeaders: Boolean)
+    var
+        MTDMissingFraudPrevHdr: Record "MTD Missing Fraud Prev. Hdr";
+        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
+        JToken: JsonToken;
+        JObject: JsonObject;
+        ErrorMessage: Text;
+    begin
+        if JObject.ReadFrom(RequestJSON) then;
+        if JObject.SelectToken('Header', JToken) then
+            if JToken.AsObject().Contains('GOV-CLIENT-CONNECTION-METHOD') then
+                exit;
+
+        Init();
+        MTDMissingFraudPrevHdr.DeleteAll();
+        ConfirmHeaders := ConfirmHeaders and GuiAllowed() and MTDSessionFraudPrevHdr.IsEmpty();
+        if MTDSessionFraudPrevHdr.IsEmpty() then begin
+            InvokeWMIQueries();
+            GenerateSessionHeaders();
+            ApplyDefaultToMissing();
+        end;
+
+        if ConfirmHeaders then
+            if not CheckForMissingHeadersAndConfirm(ErrorMessage) then begin
+                MTDSessionFraudPrevHdr.DeleteAll();
+                Commit();
+                Error(ErrorMessage);
+            end;
+
+        CopySessionHeaders(JObject);
+        JObject.WriteTo(RequestJSON);
+    end;
+
+    procedure CheckForMissingHeadersAndConfirm(var ErrorMessage: Text): Boolean
+    var
+        MTDMissingFraudPrevHdr: Record "MTD Missing Fraud Prev. Hdr";
+        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
+    begin
+        if MTDMissingFraudPrevHdr.IsEmpty() then
+            exit(Confirm(StrSubstNo(ConfirmHeadersQst, MTDSessionFraudPrevHdr.GetHeadersListString()), false));
+
+        ErrorMessage := StrSubstNo(MissingHeadersMsg, MTDMissingFraudPrevHdr.GetHeadersListString());
+        ErrorMessage := StrSubstNo('%1\%2', ErrorMessage, OpenHeadersSetupMsg);
+    end;
 
     local procedure Init()
     var
         EnvironmentInfo: Codeunit "Environment Information";
         ClientTypeMgt: Codeunit "Client Type Management";
     begin
-        VATReportSetup.Get();
         OnPrem := EnvironmentInfo.IsOnPrem();
 
         case ClientTypeMgt.GetCurrentClientType() of
@@ -62,122 +212,133 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
             else
                 BatchClient := true;
         end;
+        TimeStamp := GetTimeStamp();
     end;
 
-    internal procedure GenerateFraudPreventionHeaders() Result: Text
+    local procedure GenerateSessionHeaders()
     var
-        ConnectionMethod: Text;
+        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
+        TextValue: Text;
     begin
-        Init();
-        if VATReportSetup."MTD Disable FraudPrev. Headers" then
-            exit;
+        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Connection-Method', GetConnectionMethod());
+        MTDSessionFraudPrevHdr.SafeInsert('Gov-Vendor-Version', GetVendorVersion());
+        MTDSessionFraudPrevHdr.SafeInsert('Gov-Vendor-Product-Name', GetProdName());
+        MTDSessionFraudPrevHdr.SafeInsert('Gov-Vendor-License-IDs', GetVendorLicenseIDs());
 
-        if not GetConnectionMethod(ConnectionMethod) then
-            exit;
+        if GetClientPublicIPs(TextValue) then
+            MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Public-IP', TextValue);
+        if GetClientDeviceID(TextValue) then
+            MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Device-ID', TextValue);
+        if GetClientUserIDs(TextValue) then
+            MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-User-IDs', TextValue);
+        if GetClientTimezone(TextValue) then
+            MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Timezone', TextValue);
 
-        CollectData();
-        JObject.Add('Gov-Client-Connection-Method', ConnectionMethod);
-        JObject.Add('Gov-Vendor-Version', GetVendorVersion());
-        JObject.WriteTo(Result);
-    end;
+        if not BatchClient then begin
+            if GetClientLocalIPs(TextValue) then
+                MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Local-IPs', TextValue);
+            if GetClientScreens(TextValue) then
+                MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Screens', TextValue);
+            if GetClientMultiFactor(TextValue) then
+                MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Multi-Factor', TextValue);
+            if GetVendorPublicIPs(TextValue) then
+                MTDSessionFraudPrevHdr.SafeInsert('Gov-Vendor-Public-IP', TextValue);
+        end;
 
-    local procedure CollectData()
-    begin
-        with VATReportSetup do
-            case true of
-                WinClient:
-                    CollectDataForClient("MTD FP WinClient Due DateTime", FieldNo("MTD FP WinClient Json"));
-                WebClient:
-                    CollectDataForClient("MTD FP WebClient Due DateTime", FieldNo("MTD FP WebClient Json"));
-                BatchClient:
-                    CollectDataForClient("MTD FP Batch Due DateTime", FieldNo("MTD FP Batch Json"));
-            end;
-    end;
-
-    local procedure CollectDataForClient(var DueDateTime: DateTime; JsonFieldNo: Integer)
-    var
-        TempBlob: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
-        Expired: Boolean;
-        OutStream: OutStream;
-        InStream: InStream;
-        JsonText: Text;
-    begin
-        Expired := true;
-        if DueDateTime <> 0DT then
-            Expired := DueDateTime < CurrentDateTime();
-        TempBlob.FromRecord(VATReportSetup, JsonFieldNo);
-        if not TempBlob.HasValue() or Expired then begin
-            InvokeWMIQueries();
-            CreateSourceJson();
-            TempBlob.CreateOutStream(OutStream);
-            if JObject.WriteTo(JsonText) then
-                OutStream.Write(JsonText);
-            RecordRef.GetTable(VATReportSetup);
-            TempBlob.ToRecordRef(RecordRef, JsonFieldNo);
-            RecordRef.SetTable(VATReportSetup);
-            DueDateTime := CalcNextDueDateTime();
-            VATReportSetup.Modify();
-        end else begin
-            TempBlob.CreateInStream(InStream);
-            if InStream.Read(JsonText) <> 0 then
-                JObject.ReadFrom(JsonText);
+        if not WebClient then begin
+            if GetClientMACAddresses(TextValue) then
+                MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-MAC-Addresses', TextValue);
+            if GetClientUserAgent(TextValue) then
+                MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-User-Agent', TextValue);
         end;
     end;
 
-    local procedure CalcNextDueDateTime(): DateTime
-    begin
-        exit(TypeHelper.AddHoursToDateTime(CurrentDateTime(), 12));
-    end;
-
-    local procedure CreateSourceJson()
+    local procedure ApplyDefaultToMissing()
     var
-        TextValue: Text;
+        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
     begin
-        if GetClientPublicIPs(TextValue) then
-            JObject.Add('Gov-Client-Public-IP', TextValue);
-        if GetClientDeviceID(TextValue) then
-            JObject.Add('Gov-Client-Device-ID', TextValue);
-        if GetClientUserIDs(TextValue) then
-            JObject.Add('Gov-Client-User-IDs', TextValue);
-        if GetClientTimezone(TextValue) then
-            JObject.Add('Gov-Client-Timezone', TextValue);
-        if GetClientLocalIPs(TextValue) then
-            JObject.Add('Gov-Client-Local-IPs', TextValue);
-        if GetClientMACAddresses(TextValue) then
-            JObject.Add('Gov-Client-MAC-Addresses', TextValue);
-        if GetClientScreens(TextValue) then
-            JObject.Add('Gov-Client-Screens', TextValue);
-        if GetClientUserAgent(TextValue) then
-            JObject.Add('Gov-Client-User-Agent', TextValue);
-        if GetVendorLicenseIDs(TextValue) then
-            JObject.Add('Gov-Vendor-License-IDs', TextValue);
-        if GetVendorPublicIPs(TextValue) then
-            JObject.Add('Gov-Vendor-Public-IP', TextValue);
+        if CheckApplyDefault('Gov-Client-Public-IP') then
+            MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Public-IP-Timestamp', TimeStamp);
+        CheckApplyDefault('Gov-Client-Device-ID');
+        CheckApplyDefault('Gov-Client-User-IDs');
+        CheckApplyDefault('Gov-Client-Timezone');
+
+        if not BatchClient then begin
+            CheckApplyDefault('Gov-Client-Public-Port');
+            if CheckApplyDefault('Gov-Client-Local-IPs') then
+                MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Local-IPs-Timestamp', TimeStamp);
+            CheckApplyDefault('Gov-Client-Screens');
+            CheckApplyDefault('Gov-Client-Window-Size');
+            CheckApplyDefault('Gov-Client-Multi-Factor');
+            CheckApplyDefault('Gov-Vendor-Public-IP');
+            CheckApplyDefault('Gov-Vendor-Forwarded');
+        end;
+
+        if WebClient then begin
+            CheckApplyDefault('Gov-Client-Browser-Plugins');
+            CheckApplyDefault('Gov-Client-Browser-JS-User-Agent');
+            CheckApplyDefault('Gov-Client-Browser-Do-Not-Track');
+        end else begin
+            CheckApplyDefault('Gov-Client-MAC-Addresses');
+            CheckApplyDefault('Gov-Client-User-Agent');
+        end;
     end;
 
-    local procedure GetConnectionMethod(var Result: Text): Boolean
+    local procedure CopySessionHeaders(var JObject: JsonObject)
+    var
+        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
+        JToken: JsonToken;
+        DummyJObject: JsonObject;
+    begin
+        if not JObject.Contains('Header') then
+            JObject.Add('Header', DummyJObject);
+        if JObject.SelectToken('Header', JToken) then
+            if MTDSessionFraudPrevHdr.FindSet() then
+                repeat
+                    if not JToken.AsObject().Contains(MTDSessionFraudPrevHdr.Header) then
+                        JToken.AsObject().Add(MTDSessionFraudPrevHdr.Header, MTDSessionFraudPrevHdr.Value);
+                until MTDSessionFraudPrevHdr.Next() = 0;
+    end;
+
+    local procedure CheckApplyDefault(Header: Code[100]): Boolean
+    var
+        MTDMissingFraudPrevHdr: Record "MTD Missing Fraud Prev. Hdr";
+        MTDDefaultFraudPrevHdr: Record "MTD Default Fraud Prev. Hdr";
+        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
+        Value: Text;
+    begin
+        Value := '';
+        if MTDSessionFraudPrevHdr.Get(Header) then
+            Value := MTDSessionFraudPrevHdr.Value;
+        if Value = '' then begin
+            if MTDDefaultFraudPrevHdr.Get(Header) then
+                Value := MTDDefaultFraudPrevHdr.Value;
+            if Value <> '' then
+                MTDSessionFraudPrevHdr.SafeInsert(Header, Value)
+            else
+                MTDMissingFraudPrevHdr.SafeInsert(Header);
+        end;
+        exit(Value <> '');
+    end;
+
+    local procedure GetConnectionMethod(): Text
     begin
         case true of
             WinClient:
-                Result := ConnectionMethodWinClientTxt;
+                exit(ConnectionMethodWinClientTxt);
             WebClient:
-                Result := ConnectionMethodWebClientTxt;
+                exit(ConnectionMethodWebClientTxt);
             BatchClient:
-                Result := ConnectionMethodBatchClientTxt;
+                exit(ConnectionMethodBatchClientTxt);
         end;
-
-        exit(Result <> '');
     end;
 
     local procedure GetVendorVersion(): Text
     var
-        ProdName: Text;
         ProdVersion: Text;
     begin
-        ProdName := GetProdName();
         ProdVersion := GetProdVersion();
-        exit(StrSubstNo('%1=%2', TypeHelper.UrlEncode(ProdName), TypeHelper.UrlEncode(ProdVersion)));
+        exit(StrSubstNo('%1=%2', GetProdName(), TypeHelper.UrlEncode(ProdVersion)));
     end;
 
     local procedure GetProdName() Result: Text
@@ -185,6 +346,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         Result := ProdNameTxt;
         if OnPrem then
             Result += ProdNameOnPremSuffixTxt;
+        TypeHelper.UrlEncode(Result);
     end;
 
     local procedure GetProdVersion(): Text
@@ -206,25 +368,21 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
     end;
 
     local procedure GetClientDeviceID(var Result: Text): Boolean
-    var
     begin
         if not GetBufferValue(Result, 'Win32_ComputerSystemProduct.UUID') then
             exit(false);
         Result := TypeHelper.UrlEncode(Result);
-        exit(true);
+        exit(Result <> '');
     end;
 
     local procedure GetClientUserIDs(var Result: Text): Boolean
     begin
-        if WebClient then
-            exit;
-
         if not GetBufferValue(Result, 'Win32_ComputerSystem.UserName') then
-            if not GetCurrentNAVUserName(Result) then
+            if not GetUserId(Result) then
                 exit(false);
 
         Result := StrSubstNo('os=%1', TypeHelper.UrlEncode(Result));
-        exit(true);
+        exit(Result <> '');
     end;
 
     local procedure GetClientTimezone(var Result: Text): Boolean
@@ -241,7 +399,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
                 Format(Hours, 0, '<Integer,2><Filler Character,0>'),
                 Format(Minutes, 0, '<Integer,2><Filler Character,0>'));
 
-        exit(true);
+        exit(Result <> '');
     end;
 
     local procedure GetClientLocalIPs(var Result: Text): Boolean
@@ -277,8 +435,8 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
             if not Evaluate(Height, Result) then
                 exit(false);
 
-        Result := StrSubstNo('width=%1&height=%2', Width, Height);
-        exit(true);
+        Result := StrSubstNo('width=%1&height=%2&scaling-factor=1', Width, Height);
+        exit(Result <> '');
     end;
 
     local procedure GetClientVideoScreens(var Result: Text): Boolean
@@ -299,11 +457,11 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         if (Width = 0) or (Height = 0) then
             exit(false);
 
-        Result := StrSubstNo('width=%1&height=%2', Width, Height);
+        Result := StrSubstNo('width=%1&height=%2&scaling-factor=1', Width, Height);
         if BPP <> 0 then
             Result += StrSubstNo('&colour-depth=%1', BPP);
 
-        exit(true);
+        exit(Result <> '');
     end;
 
     local procedure GetClientUserAgent(var Result: Text): Boolean
@@ -315,7 +473,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         DeviceName: Text;
     begin
         if WebClient then
-            exit;
+            exit(false);
 
         OSFamily := DefaultOSFamilyTxt;
         GetBufferValue(OSVersion, 'Win32_OperatingSystem.Version');
@@ -327,19 +485,17 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
             DeviceName := StrSubstNo('%1_%2', DeviceVersion, DeviceName);
 
         Result :=
-            StrSubstNo('%1/%2 (%3/%4)',
+            StrSubstNo('os-family=%1&os-version=%2&device-manufacturer=%3&device-model=%4',
                 TypeHelper.UrlEncode(OSFamily), TypeHelper.UrlEncode(OSVersion),
                 TypeHelper.UrlEncode(DeviceVendor), TypeHelper.UrlEncode(DeviceName));
-        exit(true);
+        exit(Result <> '');
     end;
 
-    local procedure GetVendorLicenseIDs(var Result: Text): Boolean
+    local procedure GetVendorLicenseIDs(): Text
     var
         TenantSettings: Codeunit "Tenant Information";
         AzureADTenant: Codeunit "Azure AD Tenant";
         TenantLicenseState: Codeunit "Tenant License State";
-        CryptographyManagement: Codeunit "Cryptography Management";
-        HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512;
         ProdName: Text;
         Hashed: Text;
     begin
@@ -349,9 +505,16 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
                 'Microsoft_Dynamics_365_Business_Central,AadTenantId=%1,TenantId=%2,Start=%3,End=%4',
                 AzureADTenant.GetAadTenantId(), TenantSettings.GetTenantId(),
                 TenantLicenseState.GetStartDate(), TenantLicenseState.GetEndDate());
-        Hashed := CryptographyManagement.GenerateHash(Hashed, HashAlgorithmType::SHA256);
-        Result := StrSubstNo('%1=%2', TypeHelper.UrlEncode(ProdName), Hashed);
-        exit(true);
+        Hashed := GenerateHash(Hashed);
+        exit(StrSubstNo('%1=%2', TypeHelper.UrlEncode(ProdName), Hashed));
+    end;
+
+    local procedure GenerateHash(InputString: Text): Text
+    var
+        CryptographyManagement: Codeunit "Cryptography Management";
+        HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512;
+    begin
+        exit(CryptographyManagement.GenerateHash(InputString, HashAlgorithmType::SHA256));
     end;
 
     local procedure GetVendorPublicIPs(var Result: Text): Boolean
@@ -362,7 +525,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         exit(GetBufferValues(Result, ServerPublicIPsBuffer, 'Win32_NetworkAdapterConfiguration.IPAddress', 1));
     end;
 
-    local procedure GetCurrentNAVUserName(var Result: Text): Boolean
+    local procedure GetUserId(var Result: Text): Boolean
     begin
         Result := UserId();
         exit(Result <> '');
@@ -370,15 +533,27 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
 
     local procedure GetTimezoneOffset(var Hours: Integer; var Minutes: Integer): Boolean
     var
-        MinutesTxt: Text;
+        dur: Duration;
     begin
-        if not GetBufferValue(MinutesTxt, 'Win32_OperatingSystem.CurrentTimeZone') then
+        if not TypeHelper.GetUserTimezoneOffset(dur) then
             exit(false);
-        if not Evaluate(Minutes, MinutesTxt) then
-            exit(false);
+
+        Minutes := dur / 60000;
         Hours := Minutes div 60;
         Minutes := Minutes mod 60;
         exit(true);
+    end;
+
+    local procedure GetClientMultiFactor(var Result: Text): Boolean
+    begin
+        if not GetBufferValue(Result, 'Win32_ComputerSystem.UserName') then
+            if not GetUserId(Result) then
+                exit(false);
+
+        Result := StrSubstNo('%1 %2', ProdNameTxt, Result);
+        Result := GenerateHash(Result);
+        Result := StrSubstNo('type=OTHER&timestamp=%1&unique-reference=%2', TypeHelper.UrlEncode(TimeStamp), Result);
+        exit(Result <> '');
     end;
 
     local procedure InvokeWMIQueries()
@@ -528,7 +703,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
     var
         BufferSource: Record "Name/Value Buffer" temporary;
         [RunOnClient]
-        ClientMgtObjSearcher: dotnet MTD_ManagementObjectSearcher;
+        ClientMgtObjSearcher: DotNet MTD_ManagementObjectSearcher;
         [RunOnClient]
         ClientMgtObj: DotNet MTD_ManagementObject;
         [RunOnClient]
@@ -541,7 +716,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         ClientIEnumerator2: DotNet IEnumerator;
         [RunOnClient]
         ClientIEnumerator3: DotNet IEnumerator;
-        ServerMgtObjSearcher: dotnet MTD_ManagementObjectSearcher;
+        ServerMgtObjSearcher: DotNet MTD_ManagementObjectSearcher;
         ServerMgtObj: DotNet MTD_ManagementObject;
         ServerProperty: DotNet MTD_PropertyData;
         ServerIEnumerable: DotNet IEnumerable;
@@ -628,5 +803,10 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         Buffer2.SetRange(Value, ValueLcl);
         if Buffer2.IsEmpty() then
             Buffer2.AddNewEntry(NameLcl, ValueLcl);
+    end;
+
+    local procedure GetTimeStamp(): Text
+    begin
+        exit(Format(TypeHelper.GetCurrUTCDateTime(), 0, 9));
     end;
 }

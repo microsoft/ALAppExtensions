@@ -30,6 +30,7 @@ codeunit 148085 "MTDTestReturnsWebService"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATReturns_Negative_DisabledOutput()
     var
         DummyMTDReturnDetails: Record "MTD Return Details";
@@ -42,10 +43,12 @@ codeunit 148085 "MTDTestReturnsWebService"
 
         Assert.RecordIsEmpty(DummyMTDReturnDetails);
         VerifyLatestHttpLogFailure('HTTP error 400 (Bad Request)');
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATReturns_Negative_Reason()
     var
         DummyMTDReturnDetails: Record "MTD Return Details";
@@ -61,10 +64,13 @@ codeunit 148085 "MTDTestReturnsWebService"
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(StrSubstNo('%1\%2%3', RetrieveReturnsErr, LibraryMakingTaxDigital.GetResonLbl(), HttpError));
         VerifyLatestHttpLogFailure('HTTP error 400 (Bad Request). The provided VRN is invalid.');
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATReturns_Negative_BlankedJsonResponse()
     var
         DummyMTDReturnDetails: Record "MTD Return Details";
@@ -80,6 +86,7 @@ codeunit 148085 "MTDTestReturnsWebService"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATReturns_Negative_WrongJsonResponse()
     var
         DummyMTDReturnDetails: Record "MTD Return Details";
@@ -95,6 +102,7 @@ codeunit 148085 "MTDTestReturnsWebService"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATReturns_New_DisabledOutput()
     var
         DummyMTDReturnDetails: Record "MTD Return Details";
@@ -107,10 +115,11 @@ codeunit 148085 "MTDTestReturnsWebService"
 
         VerifyReturn(DummyMTDReturnDetails);
         VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrieveReturnMsg(1, 0));
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_New_UI()
     var
@@ -124,11 +133,14 @@ codeunit 148085 "MTDTestReturnsWebService"
         GetVATReturnAndShowResultViaPage(DummyMTDReturnDetails);
 
         VerifyGetReturnRequestJson(DummyMTDReturnDetails);
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         VerifyGetReturnScenario(DummyMTDReturnDetails, LibraryMakingTaxDigital.GetRetrieveReturnMsg(1, 0));
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATReturns_New_ExpiredToken()
     var
         DummyMTDReturnDetails: Record "MTD Return Details";
@@ -145,10 +157,11 @@ codeunit 148085 "MTDTestReturnsWebService"
 
         VerifyReturn(DummyMTDReturnDetails);
         VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrieveReturnMsg(1, 0));
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_UpToDate()
     var
@@ -169,7 +182,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_PeriodKey()
     var
@@ -190,7 +203,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_VATDueSales()
     var
@@ -211,7 +224,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_VATDueAcquisitions()
     var
@@ -232,7 +245,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_TotalVATDue()
     var
@@ -253,7 +266,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_VATReclaimedCurrPeriod()
     var
@@ -274,7 +287,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_NetVATDue()
     var
@@ -295,7 +308,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_TotalValueSalesExclVAT()
     var
@@ -316,7 +329,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_TotalValuePurchasesExclVAT()
     var
@@ -337,7 +350,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_TotalValueGoodsSupplExVAT()
     var
@@ -358,7 +371,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_TotalAcquisitionsExclVAT()
     var
@@ -379,7 +392,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Error404NotFound()
     var
@@ -394,10 +407,12 @@ codeunit 148085 "MTDTestReturnsWebService"
 
         Assert.ExpectedMessage(NoSubmittedReturnsMsg, LibraryVariableStorage.DequeueText());
         VerifyLatestHttpLogFailure('HTTP error 404 (Not Found)');
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure SubmitVATReturns_Negative_Reason()
     var
         RequestJson: Text;
@@ -417,10 +432,13 @@ codeunit 148085 "MTDTestReturnsWebService"
         LibraryMakingTaxDigital.VerifyLatestHttpLogForSandbox(
             false, LibraryMakingTaxDigital.GetInvokeRequestLbl('POST') + ' ' + SubmitVATReturnTxt,
             'HTTP error 400 (Bad Request). The provided VRN is invalid.', true);
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure SubmitVATReturns_Positive_BlankedJsonResponse()
     var
         RequestJson: Text;
@@ -435,10 +453,12 @@ codeunit 148085 "MTDTestReturnsWebService"
 
         LibraryMakingTaxDigital.VerifyLatestHttpLogForSandbox(
             true, LibraryMakingTaxDigital.GetInvokeRequestLbl('POST') + ' ' + SubmitVATReturnTxt, '', true);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure SubmitVATReturns_Positive_WrongJsonResponse()
     var
         RequestJson: Text;
@@ -453,10 +473,12 @@ codeunit 148085 "MTDTestReturnsWebService"
 
         LibraryMakingTaxDigital.VerifyLatestHttpLogForSandbox(
             true, LibraryMakingTaxDigital.GetInvokeRequestLbl('POST') + ' ' + SubmitVATReturnTxt, '', true);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure SubmitVATReturns_Positive_JsonResponse()
     var
         RequestJson: Text;
@@ -474,10 +496,12 @@ codeunit 148085 "MTDTestReturnsWebService"
         LibraryMakingTaxDigital.VerifyLatestHttpLogForSandbox(
             true, LibraryMakingTaxDigital.GetInvokeRequestLbl('POST') + ' ' + SubmitVATReturnTxt, '', true);
         VerifySubmissionResponse(ResponseJson);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure SubmitVATReturns_ExpiredToken()
     var
         RequestJson: Text;
@@ -497,10 +521,12 @@ codeunit 148085 "MTDTestReturnsWebService"
         LibraryMakingTaxDigital.VerifyLatestHttpLogForSandbox(
             true, LibraryMakingTaxDigital.GetInvokeRequestLbl('POST') + ' ' + SubmitVATReturnTxt, '', true);
         VerifySubmissionResponse(ResponseJson);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure SubmitVATReturns_Timeout()
     var
         RequestJson: Text;
@@ -520,10 +546,12 @@ codeunit 148085 "MTDTestReturnsWebService"
         LibraryMakingTaxDigital.VerifyLatestHttpLogForSandbox(
             true, LibraryMakingTaxDigital.GetInvokeRequestLbl('POST') + ' ' + SubmitVATReturnTxt, '', true);
         VerifySubmissionResponse(ResponseJson);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure MarkSubmittedVATReturnAsAccepted()
     var
         DummyMTDReturnDetails: Record "MTD Return Details";
@@ -540,6 +568,7 @@ codeunit 148085 "MTDTestReturnsWebService"
 
         VATReportHeader.Find();
         VATReportHeader.TESTFIELD(Status, VATReportHeader.Status::Accepted);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
@@ -564,6 +593,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         VerifyArchiveSubmissionMessage(VATReportHeader);
         VATReportArchive.Get(VATReportArchive."VAT Report Type"::"VAT Return", VATReportHeader."No.", DummyGUID);
         Assert.IsFalse(VATReportArchive."Response Message BLOB".HasValue(), 'VATReportArchive."Response Message BLOB".HasValue');
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
@@ -585,6 +616,9 @@ codeunit 148085 "MTDTestReturnsWebService"
 
         VerifyVATReportStatus(VATReportHeader, VATReportHeader.Status::Accepted);
         VerifyArchiveResponseMessage(VATReportHeader);
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure Initialize()
@@ -597,7 +631,7 @@ codeunit 148085 "MTDTestReturnsWebService"
         IsInitialized := true;
 
         LibraryMakingTaxDigital.SetOAuthSetupSandbox(true);
-        LibraryMakingTaxDigital.DisableFraudPreventionHeaders(true);
+        LibraryMakingTaxDigital.SetupDefaultFPHeaders();
     end;
 
     local procedure ClearRecords()
@@ -678,6 +712,7 @@ codeunit 148085 "MTDTestReturnsWebService"
         VATReturnPeriodCard: TestPage "VAT Return Period Card";
     begin
         MockAndGetVATPeriod(VATReturnPeriod, DummyMTDReturnDetails);
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
 
         VATReturnPeriodCard.OpenEdit();
         VATReturnPeriodCard.Filter.SetFilter("Start Date", Format(VATReturnPeriod."Start Date"));
@@ -703,14 +738,16 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyVATReturnPeriod."Start Date" := DummyMTDReturnDetails."Start Date";
         DummyVATReturnPeriod."End Date" := DummyMTDReturnDetails."End Date";
         DummyVATReturnPeriod."Period Key" := DummyMTDReturnDetails."Period Key";
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
 
         Assert.AreEqual(
             ExpectedResult,
-            MTDMgt.RetrieveVATReturns(DummyVATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount, ShowMessage),
+            MTDMgt.RetrieveVATReturns(DummyVATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount, ShowMessage, true),
             'MTDMgt.RetrieveVATReturns');
         Assert.AreEqual(ExpectedTotalCount, TotalCount, 'MTDMgt.RetrieveVATReturns - TotalCount');
         Assert.AreEqual(ExpectedNewCount, NewCount, 'MTDMgt.RetrieveVATReturns - NewCount');
         Assert.AreEqual(ExpectedModifiedCount, ModifiedCount, 'MTDMgt.RetrieveVATReturns - ModifiedCount');
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
     end;
 
     local procedure GetVATReturnForGivenPeriod(VATReturnPeriod: Record "VAT Return Period")
@@ -721,21 +758,28 @@ codeunit 148085 "MTDTestReturnsWebService"
         NewCount: Integer;
         ModifiedCount: Integer;
     begin
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         Assert.IsTrue(
-            MTDMgt.RetrieveVATReturns(VATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount, false),
+            MTDMgt.RetrieveVATReturns(VATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount, false, true),
             'MTDMgt.RetrieveVATReturns');
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure SubmitVATReturn(var RequestJson: Text; var ResponseJson: Text; ExpectedResult: Boolean)
     var
         MTDMgt: Codeunit "MTD Mgt.";
     begin
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         Assert.AreEqual(ExpectedResult, MTDMgt.SubmitVATReturn(RequestJson, ResponseJson), 'MTDMgt.SubmitVATReturn');
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure SubmitVATReturnScenario(VATReportHeader: Record "VAT Report Header"; Confirm: Boolean)
     begin
         Commit();
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         LibraryVariableStorage.Enqueue(Confirm);
         Codeunit.Run(Codeunit::"MTD Submit Return", VATReportHeader);
     end;
@@ -750,12 +794,14 @@ codeunit 148085 "MTDTestReturnsWebService"
         ModifiedCount: Integer;
     begin
         VATReturnPeriod.Get(VATReportHeader."Return Period No.");
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         LibraryVariableStorage.Enqueue(true);
         Codeunit.Run(Codeunit::"MTD Submit Return", VATReportHeader);
         LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket338');
         Assert.AreEqual(
             true,
-            MTDMgt.RetrieveVATReturns(VATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount, false),
+            MTDMgt.RetrieveVATReturns(VATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount, false, true),
             'MTDMgt.RetrieveVATReturns');
         Assert.AreEqual(1, TotalCount, 'MTDMgt.RetrieveVATReturns - TotalCount');
         Assert.AreEqual(1, NewCount, 'MTDMgt.RetrieveVATReturns - NewCount');
@@ -804,6 +850,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(ExpectedMessage);
         VerifyLatestHttpLogFailure(ExpectedMessage);
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure VerifyGetReturnScenario(DummyMTDReturnDetails: Record "MTD Return Details"; ExpectedMessage: Text)
@@ -812,6 +860,7 @@ codeunit 148085 "MTDTestReturnsWebService"
         Assert.ExpectedMessage(ExpectedMessage, LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
         VerifyLatestHttpLogSucess(ExpectedMessage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure VerifyReturn(DummyMTDReturnDetails: Record "MTD Return Details")
@@ -891,7 +940,6 @@ codeunit 148085 "MTDTestReturnsWebService"
         VATReportHeader.Find();
         Assert.AreEqual(ExpectedStatus, VATReportHeader.Status, 'VATReportHeader.Status');
         Assert.ExpectedMessage(ConfirmSubmitQst, LibraryVariableStorage.DequeueText());
-        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure VerifySubmissionResponse(Response: Text)
@@ -913,7 +961,7 @@ codeunit 148085 "MTDTestReturnsWebService"
 
     [ConfirmHandler]
     [Scope('OnPrem')]
-    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    procedure ConfirmHandler(Question: Text; var Reply: Boolean)
     begin
         LibraryVariableStorage.Enqueue(Question);
         Reply := LibraryVariableStorage.DequeueBoolean();

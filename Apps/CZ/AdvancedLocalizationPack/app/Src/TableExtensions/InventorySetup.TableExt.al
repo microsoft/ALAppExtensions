@@ -12,5 +12,10 @@ tableextension 31250 "Inventory Setup CZA" extends "Inventory Setup"
             Caption = 'Skip Update SKU on Posting';
             DataClassification = CustomerContent;
         }
+        field(31068; "Exact Cost Revers. Mandat. CZA"; Boolean)
+        {
+            Caption = 'Exact Cost Reversing Mandatory';
+            DataClassification = CustomerContent;
+        }
     }
 }

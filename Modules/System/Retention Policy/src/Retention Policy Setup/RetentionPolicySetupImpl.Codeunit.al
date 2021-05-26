@@ -14,7 +14,8 @@ codeunit 3903 "Retention Policy Setup Impl."
                   tabledata "Retention Policy Setup Line" = ri;
 
     var
-        ManualSetupNameTxt: Label 'Retention Policies';
+        ManualSetupTitleTxt: Label 'Retention policies';
+        ManualSetupShortTitleTxt: Label 'Retention policies';
         ManualSetupDescriptionTxt: Label 'Set up retention policies for log tables to automatically delete expired records.';
         ManualSetupKeyWordsTxt: Label 'Retention, Delete, Cleanup, Log';
         RetentionPeriodUsedErr: Label 'You cannot delete the retention period %1 because one or more retention policies are using it.', Comment = '%1 = a retention period code';
@@ -234,7 +235,7 @@ codeunit 3903 "Retention Policy Setup Impl."
         CurrModuleInfo: ModuleInfo;
     begin
         NavApp.GetCurrentModuleInfo(CurrModuleInfo);
-        GuidedExperience.InsertManualSetup(ManualSetupNameTxt, ManualSetupNameTxt, ManualSetupDescriptionTxt, 0, ObjectType::Page,
+        GuidedExperience.InsertManualSetup(ManualSetupTitleTxt, ManualSetupShortTitleTxt, ManualSetupDescriptionTxt, 5, ObjectType::Page,
             Page::"Retention Policy Setup List", ManualSetupCategory::Uncategorized, ManualSetupKeyWordsTxt);
     end;
 

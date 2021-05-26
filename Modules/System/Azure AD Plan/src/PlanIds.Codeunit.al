@@ -34,7 +34,8 @@ codeunit 9027 "Plan Ids"
         AccountantHubPlanGuidTxt: Label '{5d60ea51-0053-458f-80a8-b6f426a1a0c1}', Locked = true;
         HelpDeskPlanGuidTxt: Label '{00000000-0000-0000-0000-000000000008}', Locked = true;
         InfrastructurePlanGuidTxt: Label '{996DEF3D-B36C-4153-8607-A6FD3C01B89F}', Locked = true;
-#pragma warning restore
+        D365AdminPartnerGUIDTxt: Label '{00000000-0000-0000-0000-000000000009}', Locked = true;
+#pragma warning restore AA0240
 
     /// <summary>
     /// Returns the ID for the Dynamics 365 Business Central Basic Financials plan.
@@ -107,6 +108,15 @@ codeunit 9027 "Plan Ids"
     procedure GetDelegatedAdminPlanId(): Guid
     begin
         exit(DelegatedAdminGUIDTxt);
+    end;
+
+    /// <summary>
+    /// Returns the ID for the Dynamics 365 Admin - Partner plan.
+    /// </summary>
+    /// <returns>The ID for the Dynamics 365 Admin - Partner plan.</returns>
+    procedure GetD365AdminPartnerPlanId(): Guid
+    begin
+        exit(D365AdminPartnerGUIDTxt);
     end;
 
     /// <summary>
