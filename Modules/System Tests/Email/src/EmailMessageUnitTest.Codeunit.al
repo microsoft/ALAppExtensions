@@ -285,7 +285,7 @@ codeunit 134689 "Email Message Unit Test"
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempEmailAccount);
 
-        // [GIVEN] The message doesn't have any recipients
+        // [GIVEN] The message does not have any recipients
         EmailMessage.Create(Recipients, 'Test subject', 'Test body', true, RecipientsCC, RecipientsBCC);
 
         // [WHEN] An email is sent
