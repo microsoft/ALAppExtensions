@@ -290,7 +290,7 @@ codeunit 134689 "Email Message Unit Test"
 
         // [WHEN] An email is sent
         // [THEN] A validation error occurs
-        Email.Send(EmailMessage, TempEmailAccount."Account Id", TempEmailAccount.Connector);
+        asserterror Email.Send(EmailMessage, TempEmailAccount."Account Id", TempEmailAccount.Connector);
 
         // [THEN] The validation error is as expected
         Assert.ExpectedError(NoAccountErr);
