@@ -134,7 +134,9 @@ codeunit 8906 "Email Editor"
             Error(NoFromAccountErr);
 
         // Validate recipients
-        EmailMessage.ValidateRecipients();
+        EmailMessage.ValidateRecipients(Enum::"Email Recipient Type"::"To");
+        EmailMessage.ValidateRecipients(Enum::"Email Recipient Type"::Cc);
+        EmailMessage.ValidateRecipients(Enum::"Email Recipient Type"::Bcc);
 
         if EmailMessage.GetSubject() = '' then
             exit(Dialog.Confirm(NoSubjectlineQst, false));
