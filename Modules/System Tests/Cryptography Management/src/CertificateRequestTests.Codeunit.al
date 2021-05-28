@@ -1,4 +1,4 @@
-codeunit 132589 "CertificateRequestTests"
+codeunit 132590 "CertificateRequestTests"
 {
     Subtype = Test;
     TestPermissions = Disabled;
@@ -9,7 +9,7 @@ codeunit 132589 "CertificateRequestTests"
     [Test]
     procedure CreateCertificateSigningRequest()
     var
-        CertSigningRequest: Codeunit "Certificate Signing Request";
+        CertSigningRequest: Codeunit CertificateRequest;
         KeyXml: XmlDocument;
         Root: XmlElement;
         Node: XmlNode;
@@ -51,7 +51,7 @@ codeunit 132589 "CertificateRequestTests"
     [Test]
     procedure CreateSelfSignedCertificate()
     var
-        CertSigningRequest: Codeunit "Certificate Signing Request";
+        CertSigningRequest: Codeunit CertificateRequest;
         X509Certificate2: Codeunit X509Certificate2;
         KeyXmlText, CertBase64Value, Subject : Text;
         NotBefore1, NotBefore2 : DateTime;
