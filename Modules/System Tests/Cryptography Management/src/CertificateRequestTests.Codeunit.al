@@ -54,7 +54,6 @@ codeunit 132590 "CertificateRequestTests"
         CertSigningRequest: Codeunit CertificateRequest;
         X509Certificate2: Codeunit X509Certificate2;
         KeyXmlText, CertBase64Value, Subject : Text;
-        NotBefore1, NotBefore2 : DateTime;
         HashAlgorithm: Enum "Hash Algorithm";
         RSASignaturePadding: Enum "RSA Signature Padding";
         X509ContentType: Enum "X509 Content Type";
@@ -68,11 +67,7 @@ codeunit 132590 "CertificateRequestTests"
 
         CertSigningRequest.AddX509KeyUsageToCertificateRequest(16 + 128, false);
 
-        NotBefore1 := CreateDateTime(Today, 000000T);
-        CertSigningRequest.CreateSelfSigned(NotBefore1, CreateDateTime(Today + 365, 000000T), X509ContentType::Cert, CertBase64Value);
-
-        X509Certificate2.GetCertificateNotBefore(CertBase64Value, '', NotBefore2);
-        Assert.AreEqual(NotBefore1, NotBefore2, 'Self signed certificate generation failed.');
+        CertSigningRequest.CreateSelfSigned(CreateDateTime(Today, 000000T), CreateDateTime(Today + 365, 000000T), X509ContentType::Cert, CertBase64Value);
 
         X509Certificate2.GetCertificateSubject(CertBase64Value, '', Subject);
         Assert.AreEqual('CN=www.consilia.fi, C=FI', Subject, 'Self signed certificate generation failed.');
