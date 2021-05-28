@@ -19,7 +19,7 @@
       }
     ],
     "screenshots": [],
-    "features": ["TranslationFile"],
+    "features": [],
     "platform": "18.0.0.0",
     "application": "18.0.0.0",
     "idRanges": [
@@ -30,5 +30,6 @@
     ],
     "contextSensitiveHelpUrl": "https://docs.microsoft.com/dynamics365/business-central/",
     "showMyCode": true,
-    "runtime": "7.0"
+    "runtime": "7.0",
+    "target": "OnPrem"
   }
