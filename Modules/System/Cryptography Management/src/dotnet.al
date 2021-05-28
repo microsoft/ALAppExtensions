@@ -18,7 +18,6 @@ dotnet
         type("System.Security.Cryptography.SHA1Managed"; "SHA1Managed") { }
         type("System.Security.Cryptography.SymmetricAlgorithm"; "Cryptography.SymmetricAlgorithm") { }
         type("System.Security.Cryptography.DESCryptoServiceProvider"; "Cryptography.DESCryptoServiceProvider") { }
-        type("System.Security.Cryptography.HashAlgorithmName"; HashAlgorithmName) { }
         type("System.Security.Cryptography.RSASignaturePadding"; RSASignaturePadding) { }
     }
 
