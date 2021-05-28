@@ -139,7 +139,7 @@ codeunit 88154 "Blob Service Test Library"
         // [THEN] Test with updated settings
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject);
 
-        BlobServicesAPI.PreflightBlobRequest(OperationObject, '127.0.0.1', AccessControlRequestMethod::PUT);
+        BlobServicesAPI.PreflightBlobRequest(OperationObject, '127.0.0.1', enum::"Http Request Type"::PUT);
         Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Preflight Blob Request (CORS)', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
 
         // [THEN] Set back to defaults
