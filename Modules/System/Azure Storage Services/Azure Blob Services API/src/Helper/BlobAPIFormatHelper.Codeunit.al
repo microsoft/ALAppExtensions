@@ -7,11 +7,6 @@ codeunit 9044 "Blob API Format Helper"
 {
     Access = Internal;
 
-    trigger OnRun()
-    begin
-
-    end;
-
     procedure AppendToUri(var Uri: Text; ParameterIdentifier: Text; ParameterValue: Text)
     var
         ConcatChar: Text;
@@ -27,18 +22,9 @@ codeunit 9044 "Blob API Format Helper"
             Uri += StrSubstNo(AppendType2Lbl, ConcatChar, ParameterValue)
     end;
 
-    procedure RemoveSasTokenParameterFromUrl(Url: Text): Text
-    begin
-        if Url.Contains('&sv') then
-            Url := Url.Substring(1, Url.LastIndexOf('&sv') - 1);
-        exit(Url);
-    end;
-
     procedure RemoveCurlyBracketsFromString("Value": Text): Text
     begin
-        "Value" := "Value".Replace('{', '');
-        "Value" := "Value".Replace('}', '');
-        exit("Value");
+        exit(DelChr("Value", '=', '{}'));
     end;
 
     procedure GetBase64BlockId(): Text
