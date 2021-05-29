@@ -7,7 +7,7 @@
 /// Defines the possible resource types for account SAS
 /// More Information: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas#specifying-account-sas-parameters
 /// </summary>
-enum 9053 "Storage Service Resource Type"
+enum 9063 "Storage Service Resource Type"
 {
     Access = Public;
     Extensible = false;

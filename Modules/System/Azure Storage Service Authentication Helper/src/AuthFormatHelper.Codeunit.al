@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 9050 "Auth. Format Helper"
+codeunit 9060 "Auth. Format Helper"
 {
     Access = Internal;
 

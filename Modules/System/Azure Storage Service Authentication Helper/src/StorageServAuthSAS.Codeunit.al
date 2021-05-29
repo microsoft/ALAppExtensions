@@ -7,7 +7,7 @@
 /// Exposes functionality to handle the creation of an Account SAS (Shared Access Signature)
 /// More Information: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas
 /// </summary>
-codeunit 9052 "Storage Serv. Auth. SAS"
+codeunit 9062 "Storage Serv. Auth. SAS"
 {
     Access = Public;
 

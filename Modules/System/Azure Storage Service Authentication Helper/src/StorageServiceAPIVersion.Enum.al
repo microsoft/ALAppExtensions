@@ -7,7 +7,7 @@
 /// Defines the available API versions
 /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/previous-azure-storage-service-versions
 /// </summary>
-enum 9050 "Storage Service API Version"
+enum 9060 "Storage Service API Version"
 {
     Access = Public;
     Extensible = false;

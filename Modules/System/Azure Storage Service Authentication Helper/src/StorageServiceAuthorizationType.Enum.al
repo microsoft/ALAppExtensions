@@ -7,7 +7,7 @@
 /// Defines the possible Authorization types
 /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-requests-to-azure-storage
 /// </summary>
-enum 9051 "Storage Service Authorization Type"
+enum 9061 "Storage Service Authorization Type"
 {
     Access = Public;
     Extensible = false;

@@ -7,7 +7,7 @@
 /// Defines the possible permissions for account SAS
 /// More Information: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas#account-sas-permissions-by-operation
 /// </summary>
-enum 9054 "Storage Service Permission"
+enum 9064 "Storage Service Permission"
 {
     Access = Public;
     Extensible = false;
