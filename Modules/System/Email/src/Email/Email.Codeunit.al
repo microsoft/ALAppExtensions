@@ -327,6 +327,7 @@ codeunit 8901 "Email"
     [IntegrationEvent(false, false)]
     internal procedure OnEnqueuedInOutbox(MessageId: Guid)
     begin
+
     end;
 
     #endregion
