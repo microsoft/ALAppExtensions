@@ -147,6 +147,7 @@ codeunit 8900 "Email Impl"
     local procedure Send(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"; InBackground: Boolean; var EmailOutbox: Record "Email Outbox"): Boolean
     var
         Accounts: Record "Email Account";
+        Email: codeunit "Email";
         EmailAccount: Codeunit "Email Account";
         EmailMessageImpl: Codeunit "Email Message Impl.";
         EmailDispatcher: Codeunit "Email Dispatcher";
@@ -172,6 +173,8 @@ codeunit 8900 "Email Impl"
             Error(InvalidEmailAccountErr);
 
         CreateOrUpdateEmailOutbox(EmailMessageImpl, EmailAccountId, EmailConnector, Enum::"Email Status"::Queued, Accounts."Email Address", EmailOutbox);
+
+        Email.OnEnqueuedInOutbox(EmailMessage.GetId());
 
         if InBackground then begin
             TaskId := TaskScheduler.CreateTask(Codeunit::"Email Dispatcher", Codeunit::"Email Error Handler", true, CompanyName(), CurrentDateTime(), EmailOutbox.RecordId());
