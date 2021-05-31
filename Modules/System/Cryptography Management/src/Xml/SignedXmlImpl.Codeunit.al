@@ -52,6 +52,22 @@ codeunit 1461 "SignedXml Impl."
         DotNetXmlDsigExcC14NTransform := DotNetXmlDsigExcC14NTransform.XmlDsigExcC14NTransform(InclusiveNamespacesPrefixList);
         DotNetReference.AddTransform(DotNetXmlDsigExcC14NTransform);
     end;
+
+    procedure AddXmlDsigExcC14NTransformToReference()
+    var
+        DotNetXmlDsigExcC14NTransform: DotNet XmlDsigExcC14NTransform;
+    begin
+        DotNetXmlDsigExcC14NTransform := DotNetXmlDsigExcC14NTransform.XmlDsigExcC14NTransform();
+        DotNetReference.AddTransform(DotNetXmlDsigExcC14NTransform);
+    end;
+
+    procedure AddXmlDsigEnvelopedSignatureTransform()
+    var
+        DotNetXmlDsigEnvelopedSignatureTransform: DotNet XmlDsigEnvelopedSignatureTransform;
+    begin
+        DotNetXmlDsigEnvelopedSignatureTransform := DotNetXmlDsigEnvelopedSignatureTransform.XmlDsigEnvelopedSignatureTransform();
+        DotNetReference.AddTransform(DotNetXmlDsigEnvelopedSignatureTransform);
+    end;
     #endregion
 
     #region SignedInfo
