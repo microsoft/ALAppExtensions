@@ -219,7 +219,7 @@ codeunit 137121 "Translation Tests"
     procedure TestCopyTranslations()
     var
         TranslationTestTable: Record "Translation Test Table";
-        CopyTargetTranslationTestTable: Record "Translation Test Table";
+        TargetTranslationTestTable: Record "Translation Test Table";
     begin
         // [SCENARIO] Translations can be deleted
 
@@ -229,9 +229,9 @@ codeunit 137121 "Translation Tests"
         TranslationTestTable.Init();
         TranslationTestTable.PK := 1;
         TranslationTestTable.Insert();
-        CopyTargetTranslationTestTable.Init();
-        CopyTargetTranslationTestTable.PK := 2;
-        CopyTargetTranslationTestTable.Insert();
+        TargetTranslationTestTable.Init();
+        TargetTranslationTestTable.PK := 2;
+        TargetTranslationTestTable.Insert();
 
         // [WHEN] Set the translations in two fields
         Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), Text1Txt);
@@ -239,14 +239,14 @@ codeunit 137121 "Translation Tests"
         Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(SecondTextField), Text3Txt);
 
         // [WHEN] Copy the the translations for one field
-        Translation.Copy(TranslationTestTable, CopyTargetTranslationTestTable, TranslationTestTable.FieldNo(TextField));
+        Translation.Copy(TranslationTestTable, TargetTranslationTestTable, TranslationTestTable.FieldNo(TextField));
 
         // [THEN] The translation for the field is copied and for the second is not
-        Assert.AreEqual(Text1Txt, Translation.Get(CopyTargetTranslationTestTable, CopyTargetTranslationTestTable.FieldNo(TextField)),
+        Assert.AreEqual(Text1Txt, Translation.Get(TargetTranslationTestTable, TargetTranslationTestTable.FieldNo(TextField)),
             'The translation should have been copied');
-        Assert.AreEqual(Text2Txt, Translation.Get(CopyTargetTranslationTestTable, CopyTargetTranslationTestTable.FieldNo(TextField), 1031),
+        Assert.AreEqual(Text2Txt, Translation.Get(TargetTranslationTestTable, TargetTranslationTestTable.FieldNo(TextField), 1030),
             'The translation should have been copied');
-        Assert.AreEqual('', Translation.Get(TranslationTestTable, TranslationTestTable.FieldNo(SecondTextField)),
+        Assert.AreEqual('', Translation.Get(TargetTranslationTestTable, TranslationTestTable.FieldNo(SecondTextField)),
             'The 2nd translation should not have been copied');
     end;
 

@@ -98,7 +98,7 @@ codeunit 3712 "Translation Implementation"
         GetRecordRefFromVariant(ToRecVariant, ToRecordRef);
         if FromRecordRef.Number() <> ToRecordRef.Number() then
             Error(DifferntTableErr);
-        Translation.SetRange(SystemId, GetSystemIdFromRecordRef(FromRecordRef));
+        Translation.SetRange("System Id", GetSystemIdFromRecordRef(FromRecordRef));
         Translation.SetRange("Table ID", FromRecordRef.Number());
         if FieldId <> 0 then
             Translation.SetRange("Field ID", FieldId);
