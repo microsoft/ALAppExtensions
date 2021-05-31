@@ -13,7 +13,6 @@ codeunit 3712 "Translation Implementation"
         CannotTranslateTempRecErr: Label 'Translations cannot be added or retrieved for temporary records.';
         NotAValidRecordForTranslationErr: Label 'Translations cannot be added for the record on table %1.', Comment = '%1 - Table number';
         DifferntTableErr: Label 'The records cannot belong to different tables.';
-        FieldIdZeroErr: Label 'The field number must not be zero.';
 
     procedure Any(): Boolean
     var
@@ -89,18 +88,7 @@ codeunit 3712 "Translation Implementation"
         DeleteTranslations(RecVariant, Translation);
     end;
 
-    procedure Copy(FromRecVariant: Variant; ToRecVariant: Variant)
-    begin        
-        CopyTranslations(FromRecVariant, ToRecVariant, 0);
-    end;
     procedure Copy(FromRecVariant: Variant; ToRecVariant: Variant; FieldId: Integer)
-    begin
-        if FieldId = 0 then
-            Error(FieldIdZeroErr);
-        CopyTranslations(FromRecVariant, ToRecVariant, FieldId);
-    end;
-
-    local procedure CopyTranslations(FromRecVariant: Variant; ToRecVariant: Variant; FieldId: Integer)
     var
         Translation: Record Translation;
         FromRecordRef: RecordRef;
