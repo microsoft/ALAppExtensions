@@ -150,7 +150,7 @@ codeunit 3712 "Translation Implementation"
     begin
         GetRecordRefFromVariant(RecVariant, RecordRef);
         RecordId := RecordRef.RecordId();
-        exit(Format(RecordId));
+        exit(Format(RecordId, 0, 1));
     end;
 
     local procedure GetSystemIdFromVariant(RecVariant: Variant; var SystemId: Guid; var TableNo: Integer)

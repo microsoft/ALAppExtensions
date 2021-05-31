@@ -24,6 +24,10 @@ codeunit 1991 "Guided Experience Impl."
         DescriptionDimensionLbl: Label '%1ItemDescription', Locked = true;
         ExtensionIdDimensionLbl: Label '%1ItemExtensionId', Locked = true;
         ExtensionNameDimensionLbl: Label '%1ItemExtensionName', Locked = true;
+        ObjectTypeToRunLbl: Label 'ObjectTypeToRun', Locked = true;
+        ObjectIdToRunLbl: Label 'ObjectIdToRun', Locked = true;
+        LinkToRunLbl: Label 'LinkToRun', Locked = true;
+        GuidedExperienceTypeLbl: Label 'GuidedExperienceType', Locked = true;
 
     procedure Insert(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; ExtensionId: Guid; GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; Link: Text[250]; AssistedSetupGroup: Enum "Assisted Setup Group"; VideoUrl: Text[250]; VideoCategory: Enum "Video Category"; HelpUrl: Text[250]; ManualSetupCategory: Enum "Manual Setup Category"; Keywords: Text[250]; CheckObjectValidity: Boolean)
     var
@@ -65,6 +69,8 @@ codeunit 1991 "Guided Experience Impl."
         if VideoUrl <> '' then
             Video.Register(GuidedExperienceItem."Extension ID", CopyStr(GuidedExperienceItem.Title, 1, 250), VideoUrl, VideoCategory,
             Database::"Guided Experience Item", GuidedExperienceItem.SystemId);
+
+        LogMessageOnDatabaseEvent(GuidedExperienceItem, '0000EIM', GuidedExperienceItemInsertedLbl);
     end;
 
     procedure OpenManualSetupPage()
@@ -274,6 +280,8 @@ codeunit 1991 "Guided Experience Impl."
     begin
         if not GuidedExperienceItem.WritePermission() then
             exit;
+
+        GetObjectTypeToRun(GuidedExperienceObjectType, ObjectType);
 
         FilterGuidedExperienceItem(GuidedExperienceItem, GuidedExperienceType, GuidedExperienceObjectType, ObjectID, '');
 
@@ -769,14 +777,26 @@ codeunit 1991 "Guided Experience Impl."
         Translation: Codeunit Translation;
         Language: Codeunit Language;
         DefaultLanguage: Integer;
+        CurrentLanguage: Integer;
     begin
         DefaultLanguage := Language.GetDefaultApplicationLanguageId();
+        CurrentLanguage := GlobalLanguage();
+        GlobalLanguage(DefaultLanguage);
 
         Dimensions.Add(StrSubstNo(TitleDimensionLbl, DimensionName), Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title), DefaultLanguage));
         Dimensions.Add(StrSubstNo(ShortTitleDimensionLbl, DimensionName), Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"), DefaultLanguage));
         Dimensions.Add(StrSubstNo(DescriptionDimensionLbl, DimensionName), Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description), DefaultLanguage));
         Dimensions.Add(StrSubstNo(ExtensionIdDimensionLbl, DimensionName), GuidedExperienceItem."Extension ID");
+
+        GuidedExperienceItem.CalcFields("Extension Name");
         Dimensions.Add(StrSubstNo(ExtensionNameDimensionLbl, DimensionName), GuidedExperienceItem."Extension Name");
+
+        Dimensions.Add(GuidedExperienceTypeLbl, Format(GuidedExperienceItem."Guided Experience Type"));
+        Dimensions.Add(ObjectTypeToRunLbl, Format(GuidedExperienceItem."Object Type to Run"));
+        Dimensions.Add(ObjectIdToRunLbl, Format(GuidedExperienceItem."Object ID to Run"));
+        Dimensions.Add(LinkToRunLbl, Format(GuidedExperienceItem.Link));
+
+        GlobalLanguage(CurrentLanguage);
     end;
 
     procedure AddCompanyNameDimension(var Dimensions: Dictionary of [Text, Text])
@@ -785,10 +805,18 @@ codeunit 1991 "Guided Experience Impl."
     end;
 
     procedure AddRoleDimension(var Dimensions: Dictionary of [Text, Text]; var UserPersonalization: Record "User Personalization")
+    var
+        Language: Codeunit Language;
+        CurrentLanguage: Integer;
     begin
-        Dimensions.Add('Role', UserPersonalization.Role);
+        CurrentLanguage := GlobalLanguage();
+        GlobalLanguage(Language.GetDefaultApplicationLanguageId());
+
+        Dimensions.Add('Role', UserPersonalization."Profile ID");
         Dimensions.Add('RoleExtension', UserPersonalization."App ID");
         Dimensions.Add('RoleScope', Format(UserPersonalization.Scope));
+
+        GlobalLanguage(CurrentLanguage);
     end;
 
     local procedure LogMessageOnDatabaseEvent(var Rec: Record "Guided Experience Item"; Tag: Text; Message: Text)
@@ -800,13 +828,6 @@ codeunit 1991 "Guided Experience Impl."
 
         Session.LogMessage(Tag, Message, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
             TelemetryScope::ExtensionPublisher, Dimensions);
-    end;
-
-
-    [EventSubscriber(ObjectType::Table, Database::"Guided Experience Item", 'OnAfterInsertEvent', '', true, true)]
-    local procedure OnAfterGuidedExperienceItemInsert(var Rec: Record "Guided Experience Item")
-    begin
-        LogMessageOnDatabaseEvent(Rec, '0000EIM', GuidedExperienceItemInsertedLbl);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Guided Experience Item", 'OnAfterDeleteEvent', '', true, true)]

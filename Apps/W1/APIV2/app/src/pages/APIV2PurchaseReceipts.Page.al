@@ -156,6 +156,11 @@ page 30064 "APIV2 - Purchase Receipts"
                 {
                     Caption = 'Currency Code';
                 }
+                field(orderNumber; "Order No.")
+                {
+                    Caption = 'Order No.';
+                    Editable = false;
+                }
                 part(purchaseReceiptLines; "APIV2 - Purch Receipt Lines")
                 {
                     Caption = 'Lines';

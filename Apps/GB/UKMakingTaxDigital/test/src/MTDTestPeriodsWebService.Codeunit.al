@@ -26,6 +26,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPeriods_Negative_DisabledOutput()
     var
         DummyVATReturnPeriod: Record "VAT Return Period";
@@ -38,10 +39,12 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
         Assert.RecordIsEmpty(DummyVATReturnPeriod);
         VerifyLatestHttpLogFailure('HTTP error 400 (Bad Request)');
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPeriods_Negative_Reason()
     var
         DummyVATReturnPeriod: Record "VAT Return Period";
@@ -57,10 +60,13 @@ codeunit 148084 "MTDTestPeriodsWebService"
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(StrSubstNo('%1\%2%3', RetrievePeriodsErr, LibraryMakingTaxDigital.GetResonLbl(), HttpError));
         VerifyLatestHttpLogFailure('HTTP error 400 (Bad Request). The provided VRN is invalid.');
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPeriods_Negative_BlankedJsonResponse()
     var
         DummyVATReturnPeriod: Record "VAT Return Period";
@@ -76,6 +82,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPeriods_Negative_WrongJsonResponse()
     var
         DummyVATReturnPeriod: Record "VAT Return Period";
@@ -91,6 +98,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPeriods_OneNewPeriod_DisabledOutput()
     var
         DummyVATReturnPeriod: Record "VAT Return Period";
@@ -103,10 +111,11 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
         VerifyOnePeriod(DummyVATReturnPeriod);
         VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0));
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
-    [HandlerFunctions('GetMTDRecords_RPH,MessageHandler,SendNotificationHandler,RecallNotificationHandler')]
+    [HandlerFunctions('GetMTDRecords_RPH,MessageHandler,SendNotificationHandler,RecallNotificationHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_OneNewPeriod_UI()
     var
@@ -123,12 +132,14 @@ codeunit 148084 "MTDTestPeriodsWebService"
         VerifyOnePeriod(DummyVATReturnPeriod);
         VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0));
         Assert.ExpectedMessage(GetReturnPeriodsLbl, LibraryVariableStorage.DequeueText());
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         Assert.ExpectedMessage(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0), LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPeriods_OneNewPeriod_ExpiredToken()
     var
         DummyVATReturnPeriod: Record "VAT Return Period";
@@ -145,10 +156,11 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
         VerifyOnePeriod(DummyVATReturnPeriod);
         VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0));
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_OneUpToDatePeriod()
     var
@@ -166,7 +178,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_OneModifiedPeriod_OrgAmt()
     var
@@ -184,7 +196,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_OneModifiedPeriod_PeriodKey()
     var
@@ -202,7 +214,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_OneModifiedPeriod_Status()
     var
@@ -220,7 +232,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_OneModifiedPeriod_ReceivedDate()
     var
@@ -238,7 +250,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_TwoNewPeriods()
     var
@@ -254,7 +266,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_TwoUpToDatePeriods()
     var
@@ -274,7 +286,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_TwoModifiedPeriods()
     var
@@ -294,7 +306,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_TwoPeriodsInclOneNew()
     var
@@ -312,7 +324,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_TwoPeriodsInclOneModified()
     var
@@ -332,7 +344,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_TwoPeriodsInclOneNewAndOneModified()
     var
@@ -351,6 +363,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPeriods_AutoReceiveJob_Negative()
     var
         DummyVATReturnPeriod: Record "VAT Return Period";
@@ -369,7 +382,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure GetVATPeriods_AutoReceiveJob_Positive()
     var
@@ -384,6 +397,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         VerifyGetVATReturnPeriodsRequestJsonForAutoJob();
 
         VerifyOnePeriod(DummyVATReturnPeriod);
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         Assert.ExpectedMessage(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0), LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
         VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrievePeriodsMsg(1, 0));
@@ -391,6 +405,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure MarkAcceptedVATReturnAsClosed()
     var
         VATReturnPeriod: Record "VAT Return Period";
@@ -407,6 +422,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
         VATReportHeader.Find();
         VATReportHeader.TestField(Status, VATReportHeader.Status::Closed);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure Initialize()
@@ -419,7 +435,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         IsInitialized := true;
 
         LibraryMakingTaxDigital.SetOAuthSetupSandbox(true);
-        LibraryMakingTaxDigital.DisableFraudPreventionHeaders(true);
+        LibraryMakingTaxDigital.SetupDefaultFPHeaders();
     end;
 
     local procedure ClearRecords()
@@ -495,6 +511,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         NewCount: Integer;
         ModifiedCount: Integer;
     begin
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         Assert.AreEqual(
           ExpectedResult,
           MTDMgt.RetrieveVATReturnPeriods(
@@ -504,6 +521,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         Assert.AreEqual(ExpectedTotalCount, TotalCount, 'MTDMgt.RetrieveVATReturnPeriods - TotalCount');
         Assert.AreEqual(ExpectedNewCount, NewCount, 'MTDMgt.RetrieveVATReturnPeriods - NewCount');
         Assert.AreEqual(ExpectedModifiedCount, ModifiedCount, 'MTDMgt.RetrieveVATReturnPeriods - ModifiedCount');
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
     end;
 
     local procedure GetVATReturnPeriodsAndShowResultViaPage(DummyVATReturnPeriod: Record "VAT Return Period")
@@ -513,6 +531,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         Commit();
         LibraryVariableStorage.Enqueue(DummyVATReturnPeriod."Start Date");
         LibraryVariableStorage.Enqueue(DummyVATReturnPeriod."End Date");
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
 
         VATReturnPeriodList.OpenEdit();
         VATReturnPeriodList."Get VAT Return Periods".Invoke();
@@ -521,6 +540,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
 
     local procedure GetVATReturnPeriodsAutoJob()
     begin
+        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         Codeunit.Run(Codeunit::"MTD Auto Receive Period");
     end;
 
@@ -561,6 +581,8 @@ codeunit 148084 "MTDTestPeriodsWebService"
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(ExpectedMessage);
         VerifyLatestHttpLogFailure(ExpectedMessage);
+        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure VerifyGetOnePeriodScenario(DummyVATReturnPeriod: Record "VAT Return Period"; ExpectedMessage: Text)
@@ -569,6 +591,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         Assert.ExpectedMessage(ExpectedMessage, LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
         VerifyLatestHttpLogSucess(ExpectedMessage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure VerifyGetTwoPeriodsScenario(DummyVATReturnPeriod: array[2] of Record "VAT Return Period"; ExpectedMessage: Text)
@@ -577,6 +600,7 @@ codeunit 148084 "MTDTestPeriodsWebService"
         Assert.ExpectedMessage(ExpectedMessage, LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
         VerifyLatestHttpLogSucess(ExpectedMessage);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure VerifyOnePeriod(DummyVATReturnPeriod: Record "VAT Return Period")
@@ -655,5 +679,12 @@ codeunit 148084 "MTDTestPeriodsWebService"
     [Scope('OnPrem')]
     procedure RecallNotificationHandler(var TheNotification: Notification): Boolean
     begin
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text; var Reply: Boolean)
+    begin
+        LibraryVariableStorage.Enqueue(Question);
+        Reply := LibraryVariableStorage.DequeueBoolean();
     end;
 }

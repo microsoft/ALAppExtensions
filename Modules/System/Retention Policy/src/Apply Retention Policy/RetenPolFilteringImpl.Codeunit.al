@@ -151,7 +151,6 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
                 end;
                 ClearFilterGroupOnRecRef(RecRef, 10);
                 ClearFilterGroupOnRecRef(RecRef, 11);
-                ClearFilterGroupOnRecRef(RecRef, 12);
             until RetentionPolicySetupLine.Next() = 0;
     end;
 

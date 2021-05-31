@@ -19,33 +19,89 @@ tableextension 10539 "MTD Report Setup" extends "VAT Report Setup"
         field(10532; "MTD Disable FraudPrev. Headers"; Boolean)
         {
             DataClassification = CustomerContent;
+#if CLEAN19
+            ObsoleteState = Removed;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '19.0';
+#endif
+            ObsoleteReason = 'Replaced by configurable Fraud Prevention Headers Setup page';
         }
         field(10533; "MTD FP WinClient Due DateTime"; DateTime)
         {
             Editable = false;
             DataClassification = CustomerContent;
+#if CLEAN19
+            ObsoleteState = Removed;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '19.0';
+#endif
+            ObsoleteReason = 'Replaced by configurable Fraud Prevention Headers Setup page';
         }
         field(10534; "MTD FP WebClient Due DateTime"; DateTime)
         {
             Editable = false;
             DataClassification = CustomerContent;
+#if CLEAN19
+            ObsoleteState = Removed;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '19.0';
+#endif
+            ObsoleteReason = 'Replaced by configurable Fraud Prevention Headers Setup page';
         }
         field(10535; "MTD FP Batch Due DateTime"; DateTime)
         {
             Editable = false;
             DataClassification = CustomerContent;
+#if CLEAN19
+            ObsoleteState = Removed;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '19.0';
+#endif
+            ObsoleteReason = 'Replaced by configurable Fraud Prevention Headers Setup page';
         }
         field(10536; "MTD FP WinClient Json"; Blob)
         {
             DataClassification = EndUserIdentifiableInformation;
+#if CLEAN19
+            ObsoleteState = Removed;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '19.0';
+#endif
+            ObsoleteReason = 'Replaced by configurable Fraud Prevention Headers Setup page';
         }
         field(10537; "MTD FP WebClient Json"; Blob)
         {
             DataClassification = EndUserIdentifiableInformation;
+#if CLEAN19
+            ObsoleteState = Removed;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '19.0';
+#endif
+            ObsoleteReason = 'Replaced by configurable Fraud Prevention Headers Setup page';
         }
         field(10538; "MTD FP Batch Json"; Blob)
         {
             DataClassification = EndUserIdentifiableInformation;
+#if CLEAN19
+            ObsoleteState = Removed;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '19.0';
+#endif
+            ObsoleteReason = 'Replaced by configurable Fraud Prevention Headers Setup page';
         }
     }
 

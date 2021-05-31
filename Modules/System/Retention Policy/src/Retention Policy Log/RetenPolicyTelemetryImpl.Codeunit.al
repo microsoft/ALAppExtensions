@@ -12,6 +12,11 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         RetentionPolicySetupValuesLbl: Label 'Retention Policy Setup status was changed to: %1 for table id: %2 with retention period %3', Locked = true;
         RetentionPolicySetupLineValuesLbl: Label 'Retention Policy Setup Line status was changed to: %1 for table id: %2 with retention period %3 and filters: %4', Locked = true;
         EntryDeletedLbl: Label 'Deleted', Locked = true;
+        BeforeStartSessionLbl: Label 'Calling StartSession to insert a retention policy log entry.', Locked = true;
+        AfterStartSessionLbl: Label 'Called StartSession to insert a retention policy log entry.', Locked = true;
+        StartSessionFailureErr: Label 'A call to StartSession failed.', Locked = true;
+        BeforeInsertInForegroundLbl: Label 'Inserting a retention policy log entry in foreground.', Locked = true;
+        AfterInsertInForegroundLbl: Label 'Inserted a retention policy log entry in foreground.', Locked = true;
 
     procedure SendLogEntryToTelemetry(RetentionPolicyLogEntry: Record "Retention Policy Log Entry")
     var
@@ -26,7 +31,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         TelemetryDimensions.Add(DelChr(RetentionPolicyLogEntry.FieldName("Message Type"), '=', ' '), Format(RetentionPolicyLogEntry."Message Type"));
         TelemetryDimensions.Add('LogEntry', RetentionPolicyLogEntry.Message);
 
-        Session.LogMessage('0000D3L', StrSubstNo(RetenPolEntryLoggedLbl, RetentionPolicyLogEntry."Message Type"), ConvertMessageTypeToVerbosity(RetentionPolicyLogEntry."Message Type"), DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        Session.LogMessage('0000D3L', StrSubstNo(RetenPolEntryLoggedLbl, RetentionPolicyLogEntry."Message Type"), ConvertMessageTypeToVerbosity(RetentionPolicyLogEntry."Message Type"), DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
         GlobalLanguage := SavedGlobalLanguage;
     end;
 
@@ -40,7 +45,62 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         TelemetryDimensions.Add('RecordsDeleted', Format(RecordCount, 0, 9));
         TelemetryDimensions.Add('ManualRun', Format(ManualRun, 0, 9));
 
-        Session.LogMessage('0000D6H', StrSubstNo(RecordsDeletedLbl, RecordCount, TableNo, TableName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        Session.LogMessage('0000D6H', StrSubstNo(RecordsDeletedLbl, RecordCount, TableNo, TableName), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
+    end;
+
+    procedure SendTelemetryOnInsertLogEntryInForegroundSessionStart(InitializationInProgress: Boolean; CurrenExecutionContext: ExecutionContext)
+    var
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        TelemetryDimensions.Add('CompanyName', CompanyName());
+        TelemetryDimensions.Add('InitializationInProgress', Format(InitializationInProgress, 0, 9));
+        TelemetryDimensions.Add('CurrenExecutionContext', Format(CurrenExecutionContext, 0, 9));
+
+        Session.LogMessage('0000F6G', BeforeInsertInForegroundLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
+    end;
+
+    procedure SendTelemetryOnInsertLogEntryInForegroundSessionEnd(InitializationInProgress: Boolean; CurrenExecutionContext: ExecutionContext)
+    var
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        TelemetryDimensions.Add('CompanyName', CompanyName());
+        TelemetryDimensions.Add('InitializationInProgress', Format(InitializationInProgress, 0, 9));
+        TelemetryDimensions.Add('CurrenExecutionContext', Format(CurrenExecutionContext, 0, 9));
+
+        Session.LogMessage('0000F6H', AfterInsertInForegroundLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
+    end;
+
+    procedure SendTelemetryOnInsertLogEntryInBackgroundSessionStart(InitializationInProgress: Boolean; CurrenExecutionContext: ExecutionContext)
+    var
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        TelemetryDimensions.Add('CompanyName', CompanyName());
+        TelemetryDimensions.Add('InitializationInProgress', Format(InitializationInProgress, 0, 9));
+        TelemetryDimensions.Add('CurrenExecutionContext', Format(CurrenExecutionContext, 0, 9));
+
+        Session.LogMessage('0000F6I', BeforeStartSessionLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
+    end;
+
+    procedure SendTelemetryOnInsertLogEntryInBackgroundSessionEnd(InitializationInProgress: Boolean; CurrenExecutionContext: ExecutionContext)
+    var
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        TelemetryDimensions.Add('CompanyName', CompanyName());
+        TelemetryDimensions.Add('InitializationInProgress', Format(InitializationInProgress, 0, 9));
+        TelemetryDimensions.Add('CurrenExecutionContext', Format(CurrenExecutionContext, 0, 9));
+
+        Session.LogMessage('0000F6J', AfterStartSessionLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
+    end;
+
+    procedure SendTelemetryOnInsertLogEntryInBackgroundSessionFailed(InitializationInProgress: Boolean; CurrenExecutionContext: ExecutionContext)
+    var
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        TelemetryDimensions.Add('CompanyName', CompanyName());
+        TelemetryDimensions.Add('InitializationInProgress', Format(InitializationInProgress, 0, 9));
+        TelemetryDimensions.Add('CurrenExecutionContext', Format(CurrenExecutionContext, 0, 9));
+
+        Session.LogMessage('0000F6K', StartSessionFailureErr, Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", 'OnAfterInsertEvent', '', false, false)]
@@ -120,7 +180,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         TelemetryDimensions.Add('CompanyName', CompanyName());
         TelemetryDimensions.Add('TableNo', Format(TableNo, 0, 9));
         TelemetryDimensions.Add('TableName', TableName);
-        Session.LogMessage('0000D6I', StrSubstNo(FirstRetenPolEnabledLbl, CompanyName()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        Session.LogMessage('0000D6I', StrSubstNo(FirstRetenPolEnabledLbl, CompanyName()), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
     end;
 
     local procedure SendTelemetryOnLastRetentionPolicyDisabled(TableNo: Integer; TableName: Text)
@@ -130,7 +190,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         TelemetryDimensions.Add('CompanyName', CompanyName());
         TelemetryDimensions.Add('TableNo', Format(TableNo, 0, 9));
         TelemetryDimensions.Add('TableName', TableName);
-        Session.LogMessage('0000D6J', StrSubstNo(LastRetenPolDisabledLbl, CompanyName()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        Session.LogMessage('0000D6J', StrSubstNo(LastRetenPolDisabledLbl, CompanyName()), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", 'OnAfterModifyEvent', '', false, false)]

@@ -7,6 +7,7 @@ codeunit 10678 "SAF-T Upgrade"
     begin
         UpgradeSAFTFileFromHeaderToSAFTExportFileTable();
         UpgradeSAFTMediaResourcesToTenantMedia();
+        UpgradeExportCurrenfyInformationInSAFTExportHeader();
     end;
 
     local procedure UpgradeSAFTFileFromHeaderToSAFTExportFileTable()
@@ -70,6 +71,19 @@ codeunit 10678 "SAF-T Upgrade"
         UpgradeTag.SetUpgradeTag(GetSAFMediaResourcesToTenantMediaUpgradeTag());
     end;
 
+    local procedure UpgradeExportCurrenfyInformationInSAFTExportHeader()
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetUpgradeExportCurrenfyInformationInSAFTExportHeader()) then
+            exit;
+
+        SAFTExportHeader.ModifyAll("Export Currency Information", true);
+
+        UpgradeTag.SetUpgradeTag(GetUpgradeExportCurrenfyInformationInSAFTExportHeader());
+    end;
+
     local procedure GetSAFTFileFromHeaderToSAFTExportFileTableUpgradeTag(): Code[250];
     begin
         exit('MS-361285-SAFTFileFromHeaderToSAFTExportFileTable-20200616');
@@ -80,11 +94,17 @@ codeunit 10678 "SAF-T Upgrade"
         exit('MS-382903-SAFMediaResourcesToTenantMedia-20201211');
     end;
 
+    local procedure GetUpgradeExportCurrenfyInformationInSAFTExportHeader(): Code[250];
+    begin
+        exit('MS-399930-UpgradeExportCurrenfyInformationInSAFTExportHeader-20210519');
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         PerCompanyUpgradeTags.Add(GetSAFTFileFromHeaderToSAFTExportFileTableUpgradeTag());
         PerCompanyUpgradeTags.Add(GetSAFMediaResourcesToTenantMediaUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetUpgradeExportCurrenfyInformationInSAFTExportHeader());
     end;
 
 }

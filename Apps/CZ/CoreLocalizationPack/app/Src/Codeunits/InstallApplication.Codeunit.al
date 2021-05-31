@@ -2826,6 +2826,7 @@ codeunit 11748 "Install Application CZL"
         UnrelPayerServiceSetupCZL: Record "Unrel. Payer Service Setup CZL";
         PrevUnrelPayerServiceSetupCZL: Record "Unrel. Payer Service Setup CZL";
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
+        UnreliablePayerWSCZL: Codeunit "Unreliable Payer WS CZL";
     begin
         if not UnrelPayerServiceSetupCZL.Get() then begin
             UnrelPayerServiceSetupCZL.Init();
@@ -2837,7 +2838,7 @@ codeunit 11748 "Install Application CZL"
         UnrelPayerServiceSetupCZL.Enabled := false;
         UnrelPayerServiceSetupCZL."Public Bank Acc.Chck.Star.Date" := 20140101D;
         UnrelPayerServiceSetupCZL."Public Bank Acc.Check Limit" := 700000;
-        UnrelPayerServiceSetupCZL."Unr.Payer Request Record Limit" := 5000;
+        UnrelPayerServiceSetupCZL."Unr.Payer Request Record Limit" := UnreliablePayerWSCZL.GetDefaultInputRecordLimit();
 
         if (UnrelPayerServiceSetupCZL."Unreliable Payer Web Service" <> PrevUnrelPayerServiceSetupCZL."Unreliable Payer Web Service") or
            (UnrelPayerServiceSetupCZL.Enabled <> PrevUnrelPayerServiceSetupCZL.Enabled) or

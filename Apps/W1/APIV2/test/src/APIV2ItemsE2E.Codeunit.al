@@ -141,7 +141,7 @@ codeunit 139800 "APIV2 - Items E2E"
     end;
 
     [Test]
-    procedure TestCreateItemWithUoM()
+    procedure TestCreateItemWithUoMId()
     var
         UnitOfMeasure: Record "Unit of Measure";
         ItemID: Text;
@@ -161,6 +161,38 @@ codeunit 139800 "APIV2 - Items E2E"
         // [GIVEN] a JSON text with an Item that has the Unit of Measure as a property
         ItemJSON := CreateMinimalItemJSON(ItemID);
         ItemJSON := LibraryGraphMgt.AddPropertytoJSON(ItemJSON, 'baseUnitOfMeasureId', UnitOfMeasure.SystemId);
+
+        // [WHEN] we POST the JSON to the web service
+        TargetURL := LibraryGraphMgt.CreateTargetURL('', Page::"APIV2 - Items", '');
+        LibraryGraphMgt.PostToWebService(TargetURL, ItemJSON, ResponseText);
+
+        // [THEN] the response text should contain the unit of measure that also exists in the corresponding item table row
+        Assert.AreNotEqual('', ResponseText, 'JSON Should not be blank');
+        Assert.IsTrue(LibraryGraphMgt.GetObjectIDFromJSON(ResponseText, 'baseUnitOfMeasureCode', UnitofMeasureCode), ItemBaseUoMNotFoundErr);
+        Assert.AreEqual(Format(UnitOfMeasure.Code), UnitofMeasureCode, 'Base unit of measure code is wrong');
+    end;
+
+    [Test]
+    procedure TestCreateItemWithUoMCode()
+    var
+        UnitOfMeasure: Record "Unit of Measure";
+        ItemID: Text;
+        ItemJSON: Text;
+        ResponseText: Text;
+        TargetURL: Text;
+        UnitofMeasureCode: Text;
+    begin
+        // [FEATURE] [Complex Type]
+        // [SCENARIO 184721] Create an item with a unit of measure through a POST method and check if it was created
+        // [GIVEN] a unit of measure
+        Initialize();
+
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
+        Commit();
+
+        // [GIVEN] a JSON text with an Item that has the Unit of Measure as a property
+        ItemJSON := CreateMinimalItemJSON(ItemID);
+        ItemJSON := LibraryGraphMgt.AddPropertytoJSON(ItemJSON, 'baseUnitOfMeasureCode', UnitOfMeasure.Code);
 
         // [WHEN] we POST the JSON to the web service
         TargetURL := LibraryGraphMgt.CreateTargetURL('', Page::"APIV2 - Items", '');

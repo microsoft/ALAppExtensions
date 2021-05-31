@@ -92,6 +92,9 @@ codeunit 1996 "Checklist Banner"
         GetUserChecklistStatusDimensionsInDefaultLanguage(OldStatus, NewStatus, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
         GetCustomDimensionsForUserChecklistStatusUpdate(Dimensions, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
 
+        if UserPersonalization."Profile ID" = '' then
+            if UserPersonalization.Get(UserSecurityId()) then;
+
         GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
         GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
 

@@ -54,17 +54,29 @@ codeunit 11757 "Unreliable Payer WS CZL"
     end;
 
     procedure GetInputRecordLimit(): Integer
+    var
+        UnrelPayerServiceSetupCZL: Record "Unrel. Payer Service Setup CZL";
+    begin
+        UnrelPayerServiceSetupCZL.Get();
+        if UnrelPayerServiceSetupCZL."Unr.Payer Request Record Limit" <> 0 then
+            exit(UnrelPayerServiceSetupCZL."Unr.Payer Request Record Limit");
+        exit(GetDefaultInputRecordLimit());
+    end;
+
+    procedure GetDefaultInputRecordLimit(): Integer
     begin
         exit(100);
     end;
 
     local procedure CheckInputRecordLimit(VatRegNoCount: Integer)
     var
-        VATRegNoLimitExceededMsg: Label 'The number of VAT Registration No. has been exceeded. The maximum number of VAT Registration No. is 100 and %1 were sent. The service returns a response for only the first top 100 VAT Registration No.', Comment = '%1 = actual number of sending VAT registration numbers';
+        InputRecordLimit: Integer;
+        VATRegNoLimitExceededMsg: Label 'The number of VAT Registration No. has been exceeded. The maximum number of VAT Registration No. is %1 and %2 were sent. The service returns a response for only the first top %1 VAT Registration No.', Comment = '%1 = input record limit; %2 = actual number of sending VAT registration numbers';
     begin
-        if VatRegNoCount > GetInputRecordLimit() then
+        InputRecordLimit := GetInputRecordLimit();
+        if VatRegNoCount > InputRecordLimit then
             if GuiAllowed() then
-                Message(VATRegNoLimitExceededMsg, VatRegNoCount);
+                Message(VATRegNoLimitExceededMsg, InputRecordLimit, VatRegNoCount);
     end;
 
     local procedure SendHttpRequest(RequestXmlDocument: XmlDocument; var ResponseTempBlob: Codeunit "Temp Blob")

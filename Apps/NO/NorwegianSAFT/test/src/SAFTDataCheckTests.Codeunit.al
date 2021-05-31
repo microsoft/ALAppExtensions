@@ -20,6 +20,7 @@ codeunit 148107 "SAF-T Data Check Tests"
         IsInitialized: Boolean;
         MissedValueErr: Label 'A field value missed';
         CompanyInformationMissedFieldListTxt: Label 'Name,Address,City,VAT Registration No.,Post Code,Country/Region Code,SAF-T Contact No.,Bank Name or Bank Branch No. or Bank Account No. or IBAN';
+        CompanyInformationLimitedMissedFieldListTxt: Label 'Name,City,VAT Registration No.,Country/Region Code,SAF-T Contact No.,Bank Name or Bank Branch No. or Bank Account No. or IBAN';
         BankAccountMissedFieldListTxt: Label 'Name or Bank Account No. or Bank Branch No. or IBAN';
         CustvendBankAccountMissedFieldListTxt: Label 'Name or Bank Branch No. or Bank Account No. or IBAN';
 
@@ -114,6 +115,10 @@ codeunit 148107 "SAF-T Data Check Tests"
         Initialize();
         SAFTSetup.Get();
         SAFTSetup.Validate("Check Customer", true);
+        // TFS ID 397908:  Street address is not mandatory
+        SAFTSetup.Validate("Check Address", true);
+        // TFS ID 397143: Post code is not mandatory
+        SAFTSetup.Validate("Check Post Code", true);
         SAFTSetup.Modify(true);
         Customer.Init();
         Customer.Insert(true);
@@ -178,6 +183,10 @@ codeunit 148107 "SAF-T Data Check Tests"
         Initialize();
         SAFTSetup.Get();
         SAFTSetup.Validate("Check Vendor", true);
+        // TFS ID 397908:  Street address is not mandatory
+        SAFTSetup.Validate("Check Address", true);
+        // TFS ID 397143: Post code is not mandatory
+        SAFTSetup.Validate("Check Post Code", true);
         SAFTSetup.Modify(true);
         Vendor.Init();
         Vendor.Insert(true);
@@ -239,6 +248,10 @@ codeunit 148107 "SAF-T Data Check Tests"
         Initialize();
         SAFTSetup.Get();
         SAFTSetup.Validate("Check Company Information", true);
+        // TFS ID 397908:  Street address is not mandatory
+        SAFTSetup.Validate("Check Address", true);
+        // TFS ID 397143: Post code is not mandatory
+        SAFTSetup.Validate("Check Post Code", true);
         SAFTSetup.Modify(true);
         CompanyInformation.Init();
         CompanyInformation.Modify(true);
@@ -431,6 +444,74 @@ codeunit 148107 "SAF-T Data Check Tests"
         VendorBankAccountCardPage.OpenEdit();
         VendorBankAccountCardPage.Filter.SetFilter(Code, VendorBankAccount.Code);
         VendorBankAccountCardPage.Close();
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('DataCheckModalPageHandler')]
+    procedure PartialConfirmationShownWhenCloseCustomerCardWithMissingDataAndNotificationEnabled()
+    var
+        SAFTSetup: Record "SAF-T Setup";
+        Customer: Record Customer;
+        CustomerCardPage: TestPage "Customer Card";
+    begin
+        // [SCENARIO 352458] A confirmation page with only Name and City shown when close the Customer Card page with missing data and "Check Customer" enabled in the SAF-T Setup
+
+        Initialize();
+        SAFTSetup.Get();
+        SAFTSetup.Validate("Check Customer", true);
+        SAFTSetup.Modify(true);
+        Customer.Init();
+        Customer.Insert(true);
+        LibraryVariableStorage.Enqueue('Name,City'); // a list of the fields with missing values 
+        CustomerCardPage.OpenEdit();
+        CustomerCardPage.Filter.SetFilter("No.", Customer."No.");
+        CustomerCardPage.Close();
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('DataCheckModalPageHandler')]
+    procedure ParialConfirmationShownWhenCloseVendorCardWithMissingDataAndNotificationEnabled()
+    var
+        SAFTSetup: Record "SAF-T Setup";
+        Vendor: Record Vendor;
+        VendorCardPage: TestPage "Vendor Card";
+    begin
+        // [SCENARIO 352458] A confirmation page with only Name and City shown when close the Vendor Card page with missing date and "Check Vendor" enabled in the SAF-T Setup
+
+        Initialize();
+        SAFTSetup.Get();
+        SAFTSetup.Validate("Check Vendor", true);
+        SAFTSetup.Modify(true);
+        Vendor.Init();
+        Vendor.Insert(true);
+        LibraryVariableStorage.Enqueue('Name,City'); // a list of the fields with missing values 
+        VendorCardPage.OpenEdit();
+        VendorCardPage.Filter.SetFilter("No.", Vendor."No.");
+        VendorCardPage.Close();
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('DataCheckModalPageHandler')]
+    procedure PartialConfirmationShownWhenCloseCompanyInformationWithMissingDataAndNotificationEnabled()
+    var
+        SAFTSetup: Record "SAF-T Setup";
+        CompanyInformation: Record "Company Information";
+        CompanyInformationCard: TestPage "Company Information";
+    begin
+        // [SCENARIO 352458] A confirmation page with only name and city shown when close Company Information page with missing date and "Check Company Information" enabled in the SAF-T Setup
+
+        Initialize();
+        SAFTSetup.Get();
+        SAFTSetup.Validate("Check Company Information", true);
+        SAFTSetup.Modify(true);
+        CompanyInformation.Init();
+        CompanyInformation.Modify(true);
+        LibraryVariableStorage.Enqueue(CompanyInformationLimitedMissedFieldListTxt); // a list of the fields with missing values 
+        CompanyInformationCard.OpenEdit();
+        CompanyInformationCard.Close();
         LibraryVariableStorage.AssertEmpty();
     end;
 

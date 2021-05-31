@@ -45,7 +45,7 @@ page 2500 "Extension Management"
                 field(AdditionalInfo; InfoText)
                 {
                     ApplicationArea = All;
-                    Caption = 'Description';
+                    Caption = 'Publisher';
                     Style = Favorable;
                     StyleExpr = InfoStyle;
                     ToolTip = 'Specifies, in case of on-premises, either the person or company who provided the extension and, in case of SaaS, whether the extension is installed or not.';
@@ -55,6 +55,19 @@ page 2500 "Extension Management"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the extension.';
                 }
+                field(Version; VersionDisplay)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Version';
+                    ToolTip = 'Specifies the version of the extension.';
+                }
+                field("Published As"; "Published As")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Published As';
+                    ToolTip = 'Specifies whether the extension is published as a per-tenant, development, or a global extension.';
+                }
+
                 label(Control18)
                 {
                     ApplicationArea = All;
@@ -66,18 +79,6 @@ page 2500 "Extension Management"
                     StyleExpr = TRUE;
                     ToolTip = 'Specifies a spacer for ''Brick'' view mode.';
                     Visible = NOT IsOnPremDisplay;
-                }
-                field(Version; VersionDisplay)
-                {
-                    ApplicationArea = All;
-                    Caption = 'Version';
-                    ToolTip = 'Specifies the version of the extension.';
-                }
-                field("Published as"; "Published As")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Published as';
-                    ToolTip = 'Specifies whether the extension is published as a per-tenant, development, or a global extension.';
                 }
             }
         }
@@ -101,7 +102,6 @@ page 2500 "Extension Management"
                     PromotedCategory = Category5;
                     Scope = Repeater;
                     ToolTip = 'Install the extension for the current tenant.';
-                    Visible = IsInstallAllowed;
 
                     trigger OnAction()
                     begin

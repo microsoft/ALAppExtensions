@@ -30,6 +30,16 @@ codeunit 18080 "GST Purchase Subscribers"
         IGSTAggTurnoverErr: Label 'Interstate transaction cannot be calculated against Unregistered Vendor whose aggregate turnover is more than 20 Lakhs.';
         POSasGSTGroupRevChargeErr: Label 'POS as Vendor State is not applicable for Reverse Charge';
 
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnBeforeUpdateLocationCode', '', false, false)]
+    local procedure HandledOnBeforeUpdateLocationCode(var PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean)
+    var
+        Item: Record Item;
+    begin
+        if Item.Get(PurchaseLine."No.") then
+            if (Item."HSN/SAC Code" <> '') and (Item."GST Group Code" <> '') then
+                IsHandled := true;
+    end;
+
     //CopyDocument 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopyPurchLineFromPurchLineBuffer', '', false, false)]
     local procedure CallTaxEngineOnAfterCopyPurchLineFromPurchLineBuffer(var ToPurchLine: Record "Purchase Line"; RecalculateLines: Boolean; FromPurchLineBuf: Record "Purchase Line")
@@ -54,7 +64,7 @@ codeunit 18080 "GST Purchase Subscribers"
         UpdateGSTJurisdictionType(Rec);
     end;
 
-    // Check Fields for Import Vendr
+    // Check Fields for Import Vendor
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostLines', '', false, false)]
     local procedure CheckBillofEntryValues(PurchHeader: Record "Purchase Header")
     begin

@@ -11,301 +11,6 @@
       <rd:DataSourceID>b641bb39-59c0-4b82-996a-559df39f740d</rd:DataSourceID>
     </DataSource>
   </DataSources>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-      <Fields>
-        <Field Name="FORMAT_TODAY_0_4_">
-          <DataField>FORMAT_TODAY_0_4_</DataField>
-        </Field>
-        <Field Name="CompInfo_Name">
-          <DataField>CompInfo_Name</DataField>
-        </Field>
-        <Field Name="CurrReport_PAGENO">
-          <DataField>CurrReport_PAGENO</DataField>
-        </Field>
-        <Field Name="USERID">
-          <DataField>USERID</DataField>
-        </Field>
-        <Field Name="Bank_Account_Name">
-          <DataField>Bank_Account_Name</DataField>
-        </Field>
-        <Field Name="GETFILTERS">
-          <DataField>GETFILTERS</DataField>
-        </Field>
-        <Field Name="Bank_Book_">
-          <DataField>Bank_Book_</DataField>
-        </Field>
-        <Field Name="Opening_Balance_As_On_______FORMAT_GETRANGEMIN__Date_Filter___">
-          <DataField>Opening_Balance_As_On_______FORMAT_GETRANGEMIN__Date_Filter___</DataField>
-        </Field>
-        <Field Name="OpeningDRBal">
-          <DataField>OpeningDRBal</DataField>
-        </Field>
-        <Field Name="OpeningDRBalFormat">
-          <DataField>OpeningDRBalFormat</DataField>
-        </Field>
-        <Field Name="OpeningCRBal">
-          <DataField>OpeningCRBal</DataField>
-        </Field>
-        <Field Name="OpeningCRBalFormat">
-          <DataField>OpeningCRBalFormat</DataField>
-        </Field>
-        <Field Name="ABS_OpeningDRBal_OpeningCRBal_">
-          <DataField>ABS_OpeningDRBal_OpeningCRBal_</DataField>
-        </Field>
-        <Field Name="ABS_OpeningDRBal_OpeningCRBal_Format">
-          <DataField>ABS_OpeningDRBal_OpeningCRBal_Format</DataField>
-        </Field>
-        <Field Name="DrCrTextBalance">
-          <DataField>DrCrTextBalance</DataField>
-        </Field>
-        <Field Name="OpeningCRBal_TransCredits">
-          <DataField>OpeningCRBal_TransCredits</DataField>
-        </Field>
-        <Field Name="OpeningCRBal_TransCreditsFormat">
-          <DataField>OpeningCRBal_TransCreditsFormat</DataField>
-        </Field>
-        <Field Name="OpeningDRBal_TransDebits">
-          <DataField>OpeningDRBal_TransDebits</DataField>
-        </Field>
-        <Field Name="OpeningDRBal_TransDebitsFormat">
-          <DataField>OpeningDRBal_TransDebitsFormat</DataField>
-        </Field>
-        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits_">
-          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits_</DataField>
-        </Field>
-        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits_Format">
-          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits_Format</DataField>
-        </Field>
-        <Field Name="DrCrTextBalance_Control1500007">
-          <DataField>DrCrTextBalance_Control1500007</DataField>
-        </Field>
-        <Field Name="TransDebits">
-          <DataField>TransDebits</DataField>
-        </Field>
-        <Field Name="TransDebitsFormat">
-          <DataField>TransDebitsFormat</DataField>
-        </Field>
-        <Field Name="TransCredits">
-          <DataField>TransCredits</DataField>
-        </Field>
-        <Field Name="TransCreditsFormat">
-          <DataField>TransCreditsFormat</DataField>
-        </Field>
-        <Field Name="Bank_Account_No_">
-          <DataField>Bank_Account_No_</DataField>
-        </Field>
-        <Field Name="Bank_Account_Date_Filter">
-          <DataField>Bank_Account_Date_Filter</DataField>
-        </Field>
-        <Field Name="Bank_Account_Global_Dimension_1_Filter">
-          <DataField>Bank_Account_Global_Dimension_1_Filter</DataField>
-        </Field>
-        <Field Name="Bank_Account_Global_Dimension_2_Filter">
-          <DataField>Bank_Account_Global_Dimension_2_Filter</DataField>
-        </Field>
-        <Field Name="CurrReport_PAGENOCaption">
-          <DataField>CurrReport_PAGENOCaption</DataField>
-        </Field>
-        <Field Name="Posting_DateCaption">
-          <DataField>Posting_DateCaption</DataField>
-        </Field>
-        <Field Name="Document_No_Caption">
-          <DataField>Document_No_Caption</DataField>
-        </Field>
-        <Field Name="Debit_AmountCaption">
-          <DataField>Debit_AmountCaption</DataField>
-        </Field>
-        <Field Name="Credit_AmountCaption">
-          <DataField>Credit_AmountCaption</DataField>
-        </Field>
-        <Field Name="Account_NameCaption">
-          <DataField>Account_NameCaption</DataField>
-        </Field>
-        <Field Name="BalanceCaption">
-          <DataField>BalanceCaption</DataField>
-        </Field>
-        <Field Name="Voucher_TypeCaption">
-          <DataField>Voucher_TypeCaption</DataField>
-        </Field>
-        <Field Name="Cheque_NoCaption">
-          <DataField>Cheque_NoCaption</DataField>
-        </Field>
-        <Field Name="Cheque_DateCaption">
-          <DataField>Cheque_DateCaption</DataField>
-        </Field>
-        <Field Name="Closing_BalanceCaption">
-          <DataField>Closing_BalanceCaption</DataField>
-        </Field>
-        <Field Name="Bank_Account_Ledger_Entry_Entry_No_">
-          <DataField>Bank_Account_Ledger_Entry_Entry_No_</DataField>
-        </Field>
-        <Field Name="Bank_Account_Ledger_Entry_Bank_Account_No_">
-          <DataField>Bank_Account_Ledger_Entry_Bank_Account_No_</DataField>
-        </Field>
-        <Field Name="Bank_Account_Ledger_Entry_Posting_Date">
-          <DataField>Bank_Account_Ledger_Entry_Posting_Date</DataField>
-        </Field>
-        <Field Name="Bank_Account_Ledger_Entry___Cheque_No__">
-          <DataField>Bank_Account_Ledger_Entry___Cheque_No__</DataField>
-        </Field>
-        <Field Name="Bank_Account_Ledger_Entry___Cheque_Date_">
-          <DataField>Bank_Account_Ledger_Entry___Cheque_Date_</DataField>
-        </Field>
-        <Field Name="Bank_Account_Ledger_Entry_Global_Dimension_1_Code">
-          <DataField>Bank_Account_Ledger_Entry_Global_Dimension_1_Code</DataField>
-        </Field>
-        <Field Name="Bank_Account_Ledger_Entry_Global_Dimension_2_Code">
-          <DataField>Bank_Account_Ledger_Entry_Global_Dimension_2_Code</DataField>
-        </Field>
-        <Field Name="G_L_Entry__Posting_Date_">
-          <DataField>G_L_Entry__Posting_Date_</DataField>
-        </Field>
-        <Field Name="G_L_Entry__Document_No__">
-          <DataField>G_L_Entry__Document_No__</DataField>
-        </Field>
-        <Field Name="AccountName">
-          <DataField>AccountName</DataField>
-        </Field>
-        <Field Name="G_L_Entry__Debit_Amount_">
-          <DataField>G_L_Entry__Debit_Amount_</DataField>
-        </Field>
-        <Field Name="G_L_Entry__Debit_Amount_Format">
-          <DataField>G_L_Entry__Debit_Amount_Format</DataField>
-        </Field>
-        <Field Name="G_L_Entry__Credit_Amount_">
-          <DataField>G_L_Entry__Credit_Amount_</DataField>
-        </Field>
-        <Field Name="G_L_Entry__Credit_Amount_Format">
-          <DataField>G_L_Entry__Credit_Amount_Format</DataField>
-        </Field>
-        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500026">
-          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500026</DataField>
-        </Field>
-        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500026Format">
-          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500026Format</DataField>
-        </Field>
-        <Field Name="SourceDesc">
-          <DataField>SourceDesc</DataField>
-        </Field>
-        <Field Name="DrCrTextBalance_Control1500065">
-          <DataField>DrCrTextBalance_Control1500065</DataField>
-        </Field>
-        <Field Name="OneEntryRecord">
-          <DataField>OneEntryRecord</DataField>
-        </Field>
-        <Field Name="G_L_Entry_Entry_No_">
-          <DataField>G_L_Entry_Entry_No_</DataField>
-        </Field>
-        <Field Name="G_L_Entry_Transaction_No_">
-          <DataField>G_L_Entry_Transaction_No_</DataField>
-        </Field>
-        <Field Name="GLEntry__Posting_Date_">
-          <DataField>GLEntry__Posting_Date_</DataField>
-        </Field>
-        <Field Name="GLEntry__Document_No__">
-          <DataField>GLEntry__Document_No__</DataField>
-        </Field>
-        <Field Name="AccountName_Control1500018">
-          <DataField>AccountName_Control1500018</DataField>
-        </Field>
-        <Field Name="G_L_Entry___Debit_Amount_">
-          <DataField>G_L_Entry___Debit_Amount_</DataField>
-        </Field>
-        <Field Name="G_L_Entry___Debit_Amount_Format">
-          <DataField>G_L_Entry___Debit_Amount_Format</DataField>
-        </Field>
-        <Field Name="G_L_Entry___Credit_Amount_">
-          <DataField>G_L_Entry___Credit_Amount_</DataField>
-        </Field>
-        <Field Name="G_L_Entry___Credit_Amount_Format">
-          <DataField>G_L_Entry___Credit_Amount_Format</DataField>
-        </Field>
-        <Field Name="ABS_DetailAmt_">
-          <DataField>ABS_DetailAmt_</DataField>
-        </Field>
-        <Field Name="ABS_DetailAmt_Format">
-          <DataField>ABS_DetailAmt_Format</DataField>
-        </Field>
-        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500049">
-          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500049</DataField>
-        </Field>
-        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500049Format">
-          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500049Format</DataField>
-        </Field>
-        <Field Name="SourceDesc_Control1500036">
-          <DataField>SourceDesc_Control1500036</DataField>
-        </Field>
-        <Field Name="Bank_Account_Ledger_Entry___Cheque_No">
-          <DataField>Bank_Account_Ledger_Entry___Cheque_No</DataField>
-        </Field>
-        <Field Name="Bank_Account_Ledger_Entry___Cheque_Date">
-          <DataField>Bank_Account_Ledger_Entry___Cheque_Date</DataField>
-        </Field>
-        <Field Name="DrCrText">
-          <DataField>DrCrText</DataField>
-        </Field>
-        <Field Name="DrCrTextBalance_Control1500067">
-          <DataField>DrCrTextBalance_Control1500067</DataField>
-        </Field>
-        <Field Name="AccountName_Control1500042">
-          <DataField>AccountName_Control1500042</DataField>
-        </Field>
-        <Field Name="ABS_GLEntry_Amount_">
-          <DataField>ABS_GLEntry_Amount_</DataField>
-        </Field>
-        <Field Name="ABS_GLEntry_Amount_Format">
-          <DataField>ABS_GLEntry_Amount_Format</DataField>
-        </Field>
-        <Field Name="DrCrText_Control1500056">
-          <DataField>DrCrText_Control1500056</DataField>
-        </Field>
-        <Field Name="FirstRecord">
-          <DataField>FirstRecord</DataField>
-        </Field>
-        <Field Name="PrintDetail">
-          <DataField>PrintDetail</DataField>
-        </Field>
-        <Field Name="Integer_Number">
-          <DataField>Integer_Number</DataField>
-        </Field>
-        <Field Name="Posted_Narration_Narration">
-          <DataField>Posted_Narration_Narration</DataField>
-        </Field>
-        <Field Name="Posted_Narration_Entry_No_">
-          <DataField>Posted_Narration_Entry_No_</DataField>
-        </Field>
-        <Field Name="Posted_Narration_Transaction_No_">
-          <DataField>Posted_Narration_Transaction_No_</DataField>
-        </Field>
-        <Field Name="Posted_Narration_Line_No_">
-          <DataField>Posted_Narration_Line_No_</DataField>
-        </Field>
-        <Field Name="PostedNarration1_Narration">
-          <DataField>PostedNarration1_Narration</DataField>
-        </Field>
-        <Field Name="PostedNarration1_Entry_No_">
-          <DataField>PostedNarration1_Entry_No_</DataField>
-        </Field>
-        <Field Name="PostedNarration1_Transaction_No_">
-          <DataField>PostedNarration1_Transaction_No_</DataField>
-        </Field>
-        <Field Name="PostedNarration_Entry_No_">
-          <DataField>PostedNarration_Entry_No_</DataField>
-        </Field>
-        <Field Name="PostedNarration_Transaction_No_">
-          <DataField>PostedNarration_Transaction_No_</DataField>
-        </Field>
-        <Field Name="PostedNarration1_Line_No_">
-          <DataField>PostedNarration1_Line_No_</DataField>
-        </Field>
-      </Fields>
-    </DataSet>
-  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -3710,7 +3415,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=ReportItems!CurrReport_PAGENOCaption.Value</Value>
+                      <Value EvaluationMode="Constant">Page</Value>
                       <Style>
                         <FontSize>7pt</FontSize>
                       </Style>
@@ -3733,6 +3438,12 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
+                      <Value xml:space="preserve">            </Value>
+                      <Style>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                    <TextRun>
                       <Value>=ReportItems!Bank_Book_.Value</Value>
                       <Style>
                         <FontWeight>Bold</FontWeight>
@@ -3746,7 +3457,7 @@
               </Paragraphs>
               <Top>0.316cm</Top>
               <Height>0.475cm</Height>
-              <Width>27.30159cm</Width>
+              <Width>26.02944cm</Width>
               <ZIndex>1</ZIndex>
               <Style>
                 <VerticalAlign>Middle</VerticalAlign>
@@ -3916,12 +3627,6 @@
       </Page>
     </ReportSection>
   </ReportSections>
-  <ReportParametersLayout>
-    <GridLayoutDefinition>
-      <NumberOfColumns>4</NumberOfColumns>
-      <NumberOfRows>2</NumberOfRows>
-    </GridLayoutDefinition>
-  </ReportParametersLayout>
   <Code>Public Function BlankZero(ByVal Value As Decimal)
     if Value = 0 then
         Return ""
@@ -3961,4 +3666,299 @@ End Function
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
   <rd:ReportID>f2887d9f-664b-46ff-a1ec-d2b55ef96031</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="CompInfo_Name">
+          <DataField>CompInfo_Name</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENO">
+          <DataField>CurrReport_PAGENO</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="Bank_Account_Name">
+          <DataField>Bank_Account_Name</DataField>
+        </Field>
+        <Field Name="GETFILTERS">
+          <DataField>GETFILTERS</DataField>
+        </Field>
+        <Field Name="Bank_Book_">
+          <DataField>Bank_Book_</DataField>
+        </Field>
+        <Field Name="Opening_Balance_As_On_______FORMAT_GETRANGEMIN__Date_Filter___">
+          <DataField>Opening_Balance_As_On_______FORMAT_GETRANGEMIN__Date_Filter___</DataField>
+        </Field>
+        <Field Name="OpeningDRBal">
+          <DataField>OpeningDRBal</DataField>
+        </Field>
+        <Field Name="OpeningDRBalFormat">
+          <DataField>OpeningDRBalFormat</DataField>
+        </Field>
+        <Field Name="OpeningCRBal">
+          <DataField>OpeningCRBal</DataField>
+        </Field>
+        <Field Name="OpeningCRBalFormat">
+          <DataField>OpeningCRBalFormat</DataField>
+        </Field>
+        <Field Name="ABS_OpeningDRBal_OpeningCRBal_">
+          <DataField>ABS_OpeningDRBal_OpeningCRBal_</DataField>
+        </Field>
+        <Field Name="ABS_OpeningDRBal_OpeningCRBal_Format">
+          <DataField>ABS_OpeningDRBal_OpeningCRBal_Format</DataField>
+        </Field>
+        <Field Name="DrCrTextBalance">
+          <DataField>DrCrTextBalance</DataField>
+        </Field>
+        <Field Name="OpeningCRBal_TransCredits">
+          <DataField>OpeningCRBal_TransCredits</DataField>
+        </Field>
+        <Field Name="OpeningCRBal_TransCreditsFormat">
+          <DataField>OpeningCRBal_TransCreditsFormat</DataField>
+        </Field>
+        <Field Name="OpeningDRBal_TransDebits">
+          <DataField>OpeningDRBal_TransDebits</DataField>
+        </Field>
+        <Field Name="OpeningDRBal_TransDebitsFormat">
+          <DataField>OpeningDRBal_TransDebitsFormat</DataField>
+        </Field>
+        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits_">
+          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits_</DataField>
+        </Field>
+        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits_Format">
+          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits_Format</DataField>
+        </Field>
+        <Field Name="DrCrTextBalance_Control1500007">
+          <DataField>DrCrTextBalance_Control1500007</DataField>
+        </Field>
+        <Field Name="TransDebits">
+          <DataField>TransDebits</DataField>
+        </Field>
+        <Field Name="TransDebitsFormat">
+          <DataField>TransDebitsFormat</DataField>
+        </Field>
+        <Field Name="TransCredits">
+          <DataField>TransCredits</DataField>
+        </Field>
+        <Field Name="TransCreditsFormat">
+          <DataField>TransCreditsFormat</DataField>
+        </Field>
+        <Field Name="Bank_Account_No_">
+          <DataField>Bank_Account_No_</DataField>
+        </Field>
+        <Field Name="Bank_Account_Date_Filter">
+          <DataField>Bank_Account_Date_Filter</DataField>
+        </Field>
+        <Field Name="Bank_Account_Global_Dimension_1_Filter">
+          <DataField>Bank_Account_Global_Dimension_1_Filter</DataField>
+        </Field>
+        <Field Name="Bank_Account_Global_Dimension_2_Filter">
+          <DataField>Bank_Account_Global_Dimension_2_Filter</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="Posting_DateCaption">
+          <DataField>Posting_DateCaption</DataField>
+        </Field>
+        <Field Name="Document_No_Caption">
+          <DataField>Document_No_Caption</DataField>
+        </Field>
+        <Field Name="Debit_AmountCaption">
+          <DataField>Debit_AmountCaption</DataField>
+        </Field>
+        <Field Name="Credit_AmountCaption">
+          <DataField>Credit_AmountCaption</DataField>
+        </Field>
+        <Field Name="Account_NameCaption">
+          <DataField>Account_NameCaption</DataField>
+        </Field>
+        <Field Name="BalanceCaption">
+          <DataField>BalanceCaption</DataField>
+        </Field>
+        <Field Name="Voucher_TypeCaption">
+          <DataField>Voucher_TypeCaption</DataField>
+        </Field>
+        <Field Name="Cheque_NoCaption">
+          <DataField>Cheque_NoCaption</DataField>
+        </Field>
+        <Field Name="Cheque_DateCaption">
+          <DataField>Cheque_DateCaption</DataField>
+        </Field>
+        <Field Name="Closing_BalanceCaption">
+          <DataField>Closing_BalanceCaption</DataField>
+        </Field>
+        <Field Name="Bank_Account_Ledger_Entry_Entry_No_">
+          <DataField>Bank_Account_Ledger_Entry_Entry_No_</DataField>
+        </Field>
+        <Field Name="Bank_Account_Ledger_Entry_Bank_Account_No_">
+          <DataField>Bank_Account_Ledger_Entry_Bank_Account_No_</DataField>
+        </Field>
+        <Field Name="Bank_Account_Ledger_Entry_Posting_Date">
+          <DataField>Bank_Account_Ledger_Entry_Posting_Date</DataField>
+        </Field>
+        <Field Name="Bank_Account_Ledger_Entry___Cheque_No__">
+          <DataField>Bank_Account_Ledger_Entry___Cheque_No__</DataField>
+        </Field>
+        <Field Name="Bank_Account_Ledger_Entry___Cheque_Date_">
+          <DataField>Bank_Account_Ledger_Entry___Cheque_Date_</DataField>
+        </Field>
+        <Field Name="Bank_Account_Ledger_Entry_Global_Dimension_1_Code">
+          <DataField>Bank_Account_Ledger_Entry_Global_Dimension_1_Code</DataField>
+        </Field>
+        <Field Name="Bank_Account_Ledger_Entry_Global_Dimension_2_Code">
+          <DataField>Bank_Account_Ledger_Entry_Global_Dimension_2_Code</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Posting_Date_">
+          <DataField>G_L_Entry__Posting_Date_</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Document_No__">
+          <DataField>G_L_Entry__Document_No__</DataField>
+        </Field>
+        <Field Name="AccountName">
+          <DataField>AccountName</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Debit_Amount_">
+          <DataField>G_L_Entry__Debit_Amount_</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Debit_Amount_Format">
+          <DataField>G_L_Entry__Debit_Amount_Format</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Credit_Amount_">
+          <DataField>G_L_Entry__Credit_Amount_</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Credit_Amount_Format">
+          <DataField>G_L_Entry__Credit_Amount_Format</DataField>
+        </Field>
+        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500026">
+          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500026</DataField>
+        </Field>
+        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500026Format">
+          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500026Format</DataField>
+        </Field>
+        <Field Name="SourceDesc">
+          <DataField>SourceDesc</DataField>
+        </Field>
+        <Field Name="DrCrTextBalance_Control1500065">
+          <DataField>DrCrTextBalance_Control1500065</DataField>
+        </Field>
+        <Field Name="OneEntryRecord">
+          <DataField>OneEntryRecord</DataField>
+        </Field>
+        <Field Name="G_L_Entry_Entry_No_">
+          <DataField>G_L_Entry_Entry_No_</DataField>
+        </Field>
+        <Field Name="G_L_Entry_Transaction_No_">
+          <DataField>G_L_Entry_Transaction_No_</DataField>
+        </Field>
+        <Field Name="GLEntry__Posting_Date_">
+          <DataField>GLEntry__Posting_Date_</DataField>
+        </Field>
+        <Field Name="GLEntry__Document_No__">
+          <DataField>GLEntry__Document_No__</DataField>
+        </Field>
+        <Field Name="AccountName_Control1500018">
+          <DataField>AccountName_Control1500018</DataField>
+        </Field>
+        <Field Name="G_L_Entry___Debit_Amount_">
+          <DataField>G_L_Entry___Debit_Amount_</DataField>
+        </Field>
+        <Field Name="G_L_Entry___Debit_Amount_Format">
+          <DataField>G_L_Entry___Debit_Amount_Format</DataField>
+        </Field>
+        <Field Name="G_L_Entry___Credit_Amount_">
+          <DataField>G_L_Entry___Credit_Amount_</DataField>
+        </Field>
+        <Field Name="G_L_Entry___Credit_Amount_Format">
+          <DataField>G_L_Entry___Credit_Amount_Format</DataField>
+        </Field>
+        <Field Name="ABS_DetailAmt_">
+          <DataField>ABS_DetailAmt_</DataField>
+        </Field>
+        <Field Name="ABS_DetailAmt_Format">
+          <DataField>ABS_DetailAmt_Format</DataField>
+        </Field>
+        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500049">
+          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500049</DataField>
+        </Field>
+        <Field Name="ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500049Format">
+          <DataField>ABS_OpeningDRBal_OpeningCRBal_TransDebits_TransCredits__Control1500049Format</DataField>
+        </Field>
+        <Field Name="SourceDesc_Control1500036">
+          <DataField>SourceDesc_Control1500036</DataField>
+        </Field>
+        <Field Name="Bank_Account_Ledger_Entry___Cheque_No">
+          <DataField>Bank_Account_Ledger_Entry___Cheque_No</DataField>
+        </Field>
+        <Field Name="Bank_Account_Ledger_Entry___Cheque_Date">
+          <DataField>Bank_Account_Ledger_Entry___Cheque_Date</DataField>
+        </Field>
+        <Field Name="DrCrText">
+          <DataField>DrCrText</DataField>
+        </Field>
+        <Field Name="DrCrTextBalance_Control1500067">
+          <DataField>DrCrTextBalance_Control1500067</DataField>
+        </Field>
+        <Field Name="AccountName_Control1500042">
+          <DataField>AccountName_Control1500042</DataField>
+        </Field>
+        <Field Name="ABS_GLEntry_Amount_">
+          <DataField>ABS_GLEntry_Amount_</DataField>
+        </Field>
+        <Field Name="ABS_GLEntry_Amount_Format">
+          <DataField>ABS_GLEntry_Amount_Format</DataField>
+        </Field>
+        <Field Name="DrCrText_Control1500056">
+          <DataField>DrCrText_Control1500056</DataField>
+        </Field>
+        <Field Name="FirstRecord">
+          <DataField>FirstRecord</DataField>
+        </Field>
+        <Field Name="PrintDetail">
+          <DataField>PrintDetail</DataField>
+        </Field>
+        <Field Name="Integer_Number">
+          <DataField>Integer_Number</DataField>
+        </Field>
+        <Field Name="Posted_Narration_Narration">
+          <DataField>Posted_Narration_Narration</DataField>
+        </Field>
+        <Field Name="Posted_Narration_Entry_No_">
+          <DataField>Posted_Narration_Entry_No_</DataField>
+        </Field>
+        <Field Name="Posted_Narration_Transaction_No_">
+          <DataField>Posted_Narration_Transaction_No_</DataField>
+        </Field>
+        <Field Name="Posted_Narration_Line_No_">
+          <DataField>Posted_Narration_Line_No_</DataField>
+        </Field>
+        <Field Name="PostedNarration1_Narration">
+          <DataField>PostedNarration1_Narration</DataField>
+        </Field>
+        <Field Name="PostedNarration1_Entry_No_">
+          <DataField>PostedNarration1_Entry_No_</DataField>
+        </Field>
+        <Field Name="PostedNarration1_Transaction_No_">
+          <DataField>PostedNarration1_Transaction_No_</DataField>
+        </Field>
+        <Field Name="PostedNarration_Entry_No_">
+          <DataField>PostedNarration_Entry_No_</DataField>
+        </Field>
+        <Field Name="PostedNarration_Transaction_No_">
+          <DataField>PostedNarration_Transaction_No_</DataField>
+        </Field>
+        <Field Name="PostedNarration1_Line_No_">
+          <DataField>PostedNarration1_Line_No_</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
 </Report>

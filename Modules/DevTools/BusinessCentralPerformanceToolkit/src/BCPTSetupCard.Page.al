@@ -116,7 +116,7 @@ page 149001 "BCPT Setup Card"
                 trigger OnAction()
                 begin
                     CurrPage.Update(false);
-                    Find();
+                    Rec.Find();
                     Rec.CurrentRunType := Rec.CurrentRunType::BCPT;
                     Rec.Modify();
                     BCPTStartTests.StartBCPTSuite(Rec);
@@ -125,7 +125,7 @@ page 149001 "BCPT Setup Card"
             }
             action(StartPRT)
             {
-                Enabled = (EnableActions and (Status <> Status::Running));
+                Enabled = (EnableActions and (Rec.Status <> Rec.Status::Running));
                 ApplicationArea = All;
                 Caption = 'Start in Single Run mode';
                 Image = Start;
@@ -137,7 +137,7 @@ page 149001 "BCPT Setup Card"
                 trigger OnAction()
                 begin
                     CurrPage.Update(false);
-                    Find();
+                    Rec.Find();
                     Rec.CurrentRunType := Rec.CurrentRunType::PRT;
                     Rec.Modify();
                     BCPTStartTests.StartBCPTSuite(Rec);
@@ -146,7 +146,7 @@ page 149001 "BCPT Setup Card"
             }
             action(Stop)
             {
-                Enabled = Status = Status::Running;
+                Enabled = Rec.Status = Rec.Status::Running;
                 ApplicationArea = All;
                 Caption = 'Stop';
                 Image = Stop;
@@ -170,7 +170,7 @@ page 149001 "BCPT Setup Card"
                     MaxDateTime := CurrentDateTime() + (60000 * 5); // Wait for a max of 5 mins
                     BCPTStartTests.StopBCPTSuite(Rec);
 
-                    BCPTLine.SetRange("BCPT Code", Code);
+                    BCPTLine.SetRange("BCPT Code", Rec.Code);
                     BCPTLine.SetFilter(Status, '<> %1', BCPTLine.Status::Cancelled);
                     if not BCPTLine.IsEmpty then
                         repeat
@@ -196,7 +196,7 @@ page 149001 "BCPT Setup Card"
 
                 trigger OnAction()
                 begin
-                    Find();
+                    Rec.Find();
                     CurrPage.Update(false);
                 end;
             }

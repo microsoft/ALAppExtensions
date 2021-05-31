@@ -58,6 +58,16 @@ table 10670 "SAF-T Setup"
             DataClassification = CustomerContent;
             Caption = 'Check Bank Account';
         }
+        field(24; "Check Post Code"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Check Post Code';
+        }
+        field(25; "Check Address"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Check Address';
+        }
     }
 
     keys

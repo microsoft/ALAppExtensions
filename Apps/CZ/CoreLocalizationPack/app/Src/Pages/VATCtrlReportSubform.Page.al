@@ -147,6 +147,12 @@ page 31112 "VAT Ctrl. Report Subform CZL"
                     Editable = false;
                     ToolTip = 'Specifies the document number which the line was closed with.';
                 }
+                field("Closed Date"; Rec."Closed Date")
+                {
+                    ApplicationArea = VAT;
+                    Visible = false;
+                    ToolTip = 'Specifies the document date of the document that was closed.';
+                }
             }
         }
     }
@@ -161,7 +167,8 @@ page 31112 "VAT Ctrl. Report Subform CZL"
                 action("&Navigate")
                 {
                     ApplicationArea = VAT;
-                    Caption = '&Navigate';
+                    Caption = 'Find Entries';
+                    Ellipsis = true;
                     Image = Navigate;
                     ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 

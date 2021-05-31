@@ -25,7 +25,7 @@ page 1875 "Manual Setup"
         {
             repeater(Group)
             {
-                field(Name; Title)
+                field(Name; "Short Title")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the manual setup.';

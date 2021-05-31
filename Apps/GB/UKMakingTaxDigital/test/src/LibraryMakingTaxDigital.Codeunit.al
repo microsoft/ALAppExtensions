@@ -24,6 +24,7 @@ codeunit 148080 "Library - Making Tax Digital"
         RetrievePaymentsMsg: Label 'Retrieve VAT payments successful';
         RetrievePeriodsMsg: Label 'Retrieve VAT return periods successful';
         RetrieveReturnsMsg: Label 'Retrieve submitted VAT returns successful';
+        ConfirmHeadersMsg: Label 'HMRC requires additional information that will be used to uniquely identify your request. The following fraud prevention headers will be sent:';
 
     internal procedure EnableSaaS(Enable: Boolean)
     var
@@ -32,15 +33,25 @@ codeunit 148080 "Library - Making Tax Digital"
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(Enable);
     end;
 
-    internal procedure DisableFraudPreventionHeaders(DisableFPHeaders: Boolean)
+    internal procedure SetupDefaultFPHeaders()
     var
-        VATReportSetup: Record "VAT Report Setup";
+        MTDDefaultFraudPrevHdr: Record "MTD Default Fraud Prev. Hdr";
     begin
-        with VATReportSetup do begin
-            Get();
-            "MTD Disable FraudPrev. Headers" := DisableFPHeaders;
-            Modify();
-        end;
+        MTDDefaultFraudPrevHdr.DeleteAll();
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Device-ID', '', 'beec798b-b366-47fa-b1f8-92cede14a1ce');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Device-ID', '', 'beec798b-b366-47fa-b1f8-92cede14a1ce');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Screens', '', 'width=1920&height=1080&scaling-factor=1&colour-depth=16');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Public-IP', '', '198.51.100.0');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Public-port', '', '12345');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Local-IPs', '', '192.168.1.1');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-MAC-Addresses', '', 'ea%3A43%3A1a%3A5d%3A21%3A45');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Window-Size', '', 'width=640&height=480');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Vendor-Public-IP', '', '203.0.113.6');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Vendor-Forwarded', '', 'by=176.30.57.118&for=203.0.113.6');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-JS-User-Agent', '', 'Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us)');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-Plugins', '', 'Chromium%20PDF%20Viewer');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-Do-Not-Track', '', 'false');
+
     end;
 
     internal procedure SetupOAuthAndVATRegNo(EnabledOAuth: Boolean; URL: Text; VATRegNo: Text)
@@ -491,5 +502,10 @@ codeunit 148080 "Library - Making Tax Digital"
     internal procedure GetRetrieveReturnMsg(NewCount: Integer; ModifiedCount: Integer): Text
     begin
         exit(StrSubstNo('%1,\%2', RetrieveReturnsMsg, StrSubstNo(IncludingLbl, NewCount, ModifiedCount)));
+    end;
+
+    internal procedure VerifyFraudPreventionConfirmMsg(var LibraryVariableStorage: Codeunit "Library - Variable Storage");
+    begin
+        Assert.ExpectedMessage(ConfirmHeadersMsg, LibraryVariableStorage.DequeueText());
     end;
 }
