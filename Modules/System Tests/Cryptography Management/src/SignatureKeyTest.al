@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 132590 "Signature Key Test"
+codeunit 133570 "Signature Key Test"
 {
     Subtype = Test;
 
@@ -14,6 +14,7 @@ codeunit 132590 "Signature Key Test"
     procedure VerifySignatureKeyIsInitialized()
     var
         CertBase64Value: Text;
+        KeyValue: Text;
     begin
         // [SCENARIO] Init Signature Key record from Base64 value
         // [GIVEN] Get Test Certificate Base64
@@ -23,7 +24,7 @@ codeunit 132590 "Signature Key Test"
         SignatureKey.FromBase64String(CertBase64Value, 'Test', true);
 
         // [THEN] Verify that "Key Value Blob" BLOB has Value
-        LibraryAssert.IsTrue(SignatureKey."Key Value Blob".HasValue, 'Failed to verify certificate.');
+        LibraryAssert.IsTrue(SignatureKey.ToXmlString() <> '', 'Failed to verify certificate.');
     end;
 
     [Test]
