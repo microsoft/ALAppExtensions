@@ -119,7 +119,7 @@ codeunit 3711 Translation
     /// <error>If the FromRecVariant parameter is the type Record, the ToRecVariant parameter is the type Record and they are differnt.</error> 
     procedure Copy(FromRecVariant: Variant; ToRecVariant: Variant)
     begin
-        TranslationImplementation.Copy(FromRecVariant, ToRecVariant);
+        TranslationImplementation.Copy(FromRecVariant, ToRecVariant, 0);
     end;
 
     /// <summary>
