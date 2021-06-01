@@ -221,7 +221,6 @@ codeunit 137121 "Translation Tests"
     var
         TranslationTestTable: Record "Translation Test Table";
         TargetTranslationTestTable: Record "Translation Test Table";
-        TranslationTestTableTwo: Record "Translation Test Table Two";
     begin
         // [SCENARIO] Translations can be deleted
         Initialize();
