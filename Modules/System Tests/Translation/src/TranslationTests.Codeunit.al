@@ -247,30 +247,31 @@ codeunit 137121 "Translation Tests"
             'The 2nd translation should not have been copied');
     end;
 
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestCopyTranslationForDifferentRecords()
-    var
-        TranslationTestTable: Record "Translation Test Table";
-        TranslationTestTableTwo: Record "Translation Test Table Two";
-    begin
-        // [SCENARIO] Checks for an error message when translation is copied from one to another table
-        Initialize();
+    //TODO: Enable in BC19
+    // [Test]
+    // [Scope('OnPrem')]
+    // procedure TestCopyTranslationForDifferentRecords()
+    // var
+    //     TranslationTestTable: Record "Translation Test Table";
+    //     TranslationTestTableTwo: Record "Translation Test Table Two";
+    // begin
+    //     // [SCENARIO] Checks for an error message when translation is copied from one to another table
+    //     Initialize();
 
-        // [GIVEN] A record of one table is created
-        CreateRecord(TranslationTestTable);
+    //     // [GIVEN] A record of one table is created
+    //     CreateRecord(TranslationTestTable);
 
-        // [GIVEN] A record of another table is created
-        TranslationTestTableTwo.Init();
-        TranslationTestTableTwo.PK := 1;
-        TranslationTestTableTwo.Insert();
+    //     // [GIVEN] A record of another table is created
+    //     TranslationTestTableTwo.Init();
+    //     TranslationTestTableTwo.PK := 1;
+    //     TranslationTestTableTwo.Insert();
 
-        // [WHEN] Translation is copied
-        asserterror Translation.Copy(TranslationTestTable, TranslationTestTableTwo);
+    //     // [WHEN] Translation is copied
+    //     asserterror Translation.Copy(TranslationTestTable, TranslationTestTableTwo);
 
-        // [THEN] Error is raised
-        Assert.ExpectedError(DifferntTableErr);
-    end;
+    //     // [THEN] Error is raised
+    //     Assert.ExpectedError(DifferntTableErr);
+    // end;
 
     [Test]
     [Scope('OnPrem')]
