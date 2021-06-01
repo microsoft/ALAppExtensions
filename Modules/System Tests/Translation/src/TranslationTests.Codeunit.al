@@ -17,6 +17,7 @@ codeunit 137121 "Translation Tests"
         Text4Txt: Label 'Translation 4';
         Text5Txt: Label 'Translation 5';
         CannotTranslateTempRecErr: Label 'Translations cannot be added or retrieved for temporary records.';
+        DifferntTableErr: Label 'The records cannot belong to different tables.';
 
     [Test]
     [Scope('OnPrem')]
@@ -220,18 +221,14 @@ codeunit 137121 "Translation Tests"
     var
         TranslationTestTable: Record "Translation Test Table";
         TargetTranslationTestTable: Record "Translation Test Table";
+        TranslationTestTableTwo: Record "Translation Test Table Two";
     begin
         // [SCENARIO] Translations can be deleted
-
         Initialize();
 
         // [GIVEN] Create tow record for which data in fields can be translated
-        TranslationTestTable.Init();
-        TranslationTestTable.PK := 1;
-        TranslationTestTable.Insert();
-        TargetTranslationTestTable.Init();
-        TargetTranslationTestTable.PK := 2;
-        TargetTranslationTestTable.Insert();
+        CreateRecord(TranslationTestTable);
+        CreateRecord(TargetTranslationTestTable);
 
         // [WHEN] Set the translations in two fields
         Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), Text1Txt);
@@ -248,6 +245,31 @@ codeunit 137121 "Translation Tests"
             'The translation should have been copied');
         Assert.AreEqual('', Translation.Get(TargetTranslationTestTable, TranslationTestTable.FieldNo(SecondTextField)),
             'The 2nd translation should not have been copied');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestCopyTranslationForDifferentRecords()
+    var
+        TranslationTestTable: Record "Translation Test Table";
+        TranslationTestTableTwo: Record "Translation Test Table Two";
+    begin
+        // [SCENARIO] Checks for an error message when translation is copied from one to another table
+        Initialize();
+
+        // [GIVEN] A record of one table is created
+        CreateRecord(TranslationTestTable);
+
+        // [GIVEN] A record of another table is created
+        TranslationTestTableTwo.Init();
+        TranslationTestTableTwo.PK := 1;
+        TranslationTestTableTwo.Insert();
+
+        // [WHEN] Translation is copied
+        asserterror Translation.Copy(TranslationTestTable, TranslationTestTableTwo);
+
+        // [THEN] Error is raised
+        Assert.ExpectedError(DifferntTableErr);
     end;
 
     [Test]
