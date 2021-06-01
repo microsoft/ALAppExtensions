@@ -320,6 +320,15 @@ codeunit 8901 "Email"
     begin
     end;
 
+    /// <summary>
+    /// Integration event to implement additional tests after the email message has been enqueued in the email outbox 
+    /// </summary>
+    /// <param name="MessageId">The ID of the email that has been queued</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnEnqueuedInOutbox(MessageId: Guid)
+    begin
+    end;
+
     #endregion
 
     var
