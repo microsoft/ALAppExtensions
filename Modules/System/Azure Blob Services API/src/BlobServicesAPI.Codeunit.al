@@ -18,9 +18,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="Container">Collection of the result (temporary record).</param>
     /// <param name="ShowOutput">Determines if the result should be shown as a Page to the user.</param>
-    procedure ListContainers(var OperationPayload: Codeunit "Blob API Operation Payload"; var Container: Record "Container") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure ListContainers(var OperationPayload: Codeunit "Blob API Operation Payload"; var Container: Record "Container"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.ListContainers(OperationPayload, Container);
+        exit(BlobServicesApiImpl.ListContainers(OperationPayload, Container));
     end;
     // #endregion List Containers
 
@@ -30,9 +30,9 @@ codeunit 9040 "Blob Services API"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/create-container
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
-    procedure CreateContainer(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure CreateContainer(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.CreateContainer(OperationPayload);
+        exit(BlobServicesApiImpl.CreateContainer(OperationPayload));
     end;
     // #endregion 
 
@@ -42,9 +42,9 @@ codeunit 9040 "Blob Services API"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-container
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
-    procedure DeleteContainer(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure DeleteContainer(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.DeleteContainer(OperationPayload);
+        exit(BlobServicesApiImpl.DeleteContainer(OperationPayload));
     end;
     // #endregion Delete Container
 
@@ -54,9 +54,9 @@ codeunit 9040 "Blob Services API"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
     /// </summary>
     /// <param name="OperationPayload">A Request Object containing the necessary para#meters for the request.</param>    
-    procedure PutBlobBlockBlobUI(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlobBlockBlobUI(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutBlobBlockBlobUI(OperationPayload);
+        exit(BlobServicesApiImpl.PutBlobBlockBlobUI(OperationPayload));
     end;
 
     /// <summary>
@@ -66,9 +66,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="BlobName">The Name of the Blob to Upload.</param>
     /// <param name="SourceStream">The Content of the Blob as InStream.</param>
-    procedure PutBlobBlockBlobStream(var OperationPayload: Codeunit "Blob API Operation Payload"; BlobName: Text; var SourceStream: InStream) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlobBlockBlobStream(var OperationPayload: Codeunit "Blob API Operation Payload"; BlobName: Text; var SourceStream: InStream): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutBlobBlockBlobStream(OperationPayload, BlobName, SourceStream);
+        exit(BlobServicesApiImpl.PutBlobBlockBlobStream(OperationPayload, BlobName, SourceStream));
     end;
 
     /// <summary>
@@ -78,9 +78,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="BlobName">The Name of the Blob to Upload.</param>
     /// <param name="SourceText">The Content of the Blob as Text.</param>
-    procedure PutBlobBlockBlobText(var OperationPayload: Codeunit "Blob API Operation Payload"; BlobName: Text; SourceText: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlobBlockBlobText(var OperationPayload: Codeunit "Blob API Operation Payload"; BlobName: Text; SourceText: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutBlobBlockBlobText(OperationPayload, BlobName, SourceText);
+        exit(BlobServicesApiImpl.PutBlobBlockBlobText(OperationPayload, BlobName, SourceText));
     end;
 
     /// <summary>
@@ -90,9 +90,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="BlobName">The Name of the Blob to Upload.</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
-    procedure PutBlobPageBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentType: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlobPageBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentType: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutBlobPageBlob(OperationPayload, ContentType);
+        exit(BlobServicesApiImpl.PutBlobPageBlob(OperationPayload, ContentType));
     end;
     /// <summary>
     /// Creates (PUT) a PageBlob
@@ -101,10 +101,10 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="BlobName">The Name of the Blob to Upload.</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
-    procedure PutBlobPageBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; BlobName: Text; ContentType: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlobPageBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; BlobName: Text; ContentType: Text): Codeunit "Blob API Operation Response"
     begin
         OperationPayload.SetBlobName(BlobName);
-        OperationResponse := PutBlobPageBlob(OperationPayload, ContentType);
+        exit(PutBlobPageBlob(OperationPayload, ContentType));
     end;
     // #endregion Put Blob
 
@@ -115,9 +115,9 @@ codeunit 9040 "Blob Services API"
     /// Uses 'application/octet-stream' as Content-Type
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
-    procedure PutBlobAppendBlobStream(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlobAppendBlobStream(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := PutBlobAppendBlob(OperationPayload, 'application/octet-stream');
+        exit(PutBlobAppendBlob(OperationPayload, 'application/octet-stream'));
     end;
     /// <summary>
     /// The Put Blob operation creates a new append blob
@@ -125,9 +125,9 @@ codeunit 9040 "Blob Services API"
     /// Uses 'text/plain; charset=UTF-8' as Content-Type
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
-    procedure PutBlobAppendBlobText(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlobAppendBlobText(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := PutBlobAppendBlob(OperationPayload, 'text/plain; charset=UTF-8');
+        exit(PutBlobAppendBlob(OperationPayload, 'text/plain; charset=UTF-8'));
     end;
     /// <summary>
     /// The Put Blob operation creates a new append blob
@@ -135,9 +135,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
-    procedure PutBlobAppendBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentType: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlobAppendBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentType: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutBlobAppendBlob(OperationPayload, ContentType);
+        exit(BlobServicesApiImpl.PutBlobAppendBlob(OperationPayload, ContentType));
     end;
 
     /// <summary>
@@ -147,9 +147,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="ContentAsText">Text-variable containing the content that should be added to the Blob</param>
-    procedure AppendBlockText(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentAsText: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure AppendBlockText(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentAsText: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := AppendBlockText(OperationPayload, ContentAsText, 'text/plain; charset=UTF-8');
+        exit(AppendBlockText(OperationPayload, ContentAsText, 'text/plain; charset=UTF-8'));
     end;
 
     /// <summary>
@@ -159,9 +159,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="ContentAsText">Text-variable containing the content that should be added to the Blob</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
-    procedure AppendBlockText(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentAsText: Text; ContentType: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure AppendBlockText(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentAsText: Text; ContentType: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := AppendBlock(OperationPayload, ContentType, ContentAsText);
+        exit(AppendBlock(OperationPayload, ContentType, ContentAsText));
     end;
 
     /// <summary>
@@ -171,9 +171,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="ContentAsStream">InStream containing the content that should be added to the Blob</param>
-    procedure AppendBlockStream(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentAsStream: InStream) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure AppendBlockStream(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentAsStream: InStream): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := AppendBlockStream(OperationPayload, ContentAsStream, 'application/octet-stream');
+        exit(AppendBlockStream(OperationPayload, ContentAsStream, 'application/octet-stream'));
     end;
 
     /// <summary>
@@ -183,9 +183,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="ContentAsStream">InStream containing the content that should be added to the Blob</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
-    procedure AppendBlockStream(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentAsStream: InStream; ContentType: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure AppendBlockStream(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentAsStream: InStream; ContentType: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := AppendBlock(OperationPayload, ContentType, ContentAsStream);
+        exit(AppendBlock(OperationPayload, ContentType, ContentAsStream));
     end;
 
     /// <summary>
@@ -195,9 +195,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
     /// <param name="SourceContent">Variant containing the content that should be added to the Blob</param>
-    procedure AppendBlock(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentType: Text; SourceContent: Variant) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure AppendBlock(var OperationPayload: Codeunit "Blob API Operation Payload"; ContentType: Text; SourceContent: Variant): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.AppendBlock(OperationPayload, ContentType, SourceContent);
+        exit(BlobServicesApiImpl.AppendBlock(OperationPayload, ContentType, SourceContent));
     end;
 
     /// <summary>
@@ -206,9 +206,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="SourceUri">Specifies the name of the source blob.</param>
-    procedure AppendBlockFromURL(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceUri: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure AppendBlockFromURL(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceUri: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.AppendBlockFromURL(OperationPayload, SourceUri);
+        exit(BlobServicesApiImpl.AppendBlockFromURL(OperationPayload, SourceUri));
     end;
     // #endregion Append Block
 
@@ -219,9 +219,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="Properties">XmlDocument containing the current properties.</param>
-    procedure GetBlobServiceProperties(var OperationPayload: Codeunit "Blob API Operation Payload"; var Properties: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetBlobServiceProperties(var OperationPayload: Codeunit "Blob API Operation Payload"; var Properties: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetBlobServiceProperties(OperationPayload, Properties);
+        exit(BlobServicesApiImpl.GetBlobServiceProperties(OperationPayload, Properties));
     end;
     // #endregion Get Blob Service Properties
 
@@ -232,9 +232,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="Document">The XmlDocument containing the Properties</param>
-    procedure SetBlobServiceProperties(var OperationPayload: Codeunit "Blob API Operation Payload"; Document: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetBlobServiceProperties(var OperationPayload: Codeunit "Blob API Operation Payload"; Document: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetBlobServiceProperties(OperationPayload, Document);
+        exit(BlobServicesApiImpl.SetBlobServiceProperties(OperationPayload, Document));
     end;
     // #endregion Set Blob Service Properties
 
@@ -246,9 +246,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="Origin">Specifies the origin from which the actual request will be issued.</param>
     /// <param name="AccessControlRequestMethod">Specifies the method (or HTTP verb) for the actual request.</param>
-    procedure PreflightBlobRequest(var OperationPayload: Codeunit "Blob API Operation Payload"; Origin: Text; AccessControlRequestMethod: Enum "Http Request Type") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PreflightBlobRequest(var OperationPayload: Codeunit "Blob API Operation Payload"; Origin: Text; AccessControlRequestMethod: Enum "Http Request Type"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := PreflightBlobRequest(OperationPayload, Origin, AccessControlRequestMethod, '');
+        exit(PreflightBlobRequest(OperationPayload, Origin, AccessControlRequestMethod, ''));
     end;
 
     /// <summary>
@@ -259,9 +259,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="Origin">Specifies the origin from which the actual request will be issued.</param>
     /// <param name="AccessControlRequestMethod">Specifies the method (or HTTP verb) for the actual request.</param>
     /// <param name="AccessControlRequestHeaders">Optional. Specifies the headers for the actual request headers that will be sent</param>
-    procedure PreflightBlobRequest(var OperationPayload: Codeunit "Blob API Operation Payload"; Origin: Text; AccessControlRequestMethod: Enum "Http Request Type"; AccessControlRequestHeaders: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PreflightBlobRequest(var OperationPayload: Codeunit "Blob API Operation Payload"; Origin: Text; AccessControlRequestMethod: Enum "Http Request Type"; AccessControlRequestHeaders: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PreflightBlobRequest(OperationPayload, Origin, AccessControlRequestMethod, AccessControlRequestHeaders);
+        exit(BlobServicesApiImpl.PreflightBlobRequest(OperationPayload, Origin, AccessControlRequestMethod, AccessControlRequestHeaders));
     end;
     // #endregion Preflight Blob Request
 
@@ -272,9 +272,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>  
     /// <param name="ServiceStats">A XmlDocument containing the returned Services stats.</param>  
-    procedure GetBlobServiceStats(var OperationPayload: Codeunit "Blob API Operation Payload"; var ServiceStats: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetBlobServiceStats(var OperationPayload: Codeunit "Blob API Operation Payload"; var ServiceStats: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetBlobServiceStats(OperationPayload, ServiceStats);
+        exit(BlobServicesApiImpl.GetBlobServiceStats(OperationPayload, ServiceStats));
     end;
     // #endregion Get Blob Service Stats
 
@@ -286,9 +286,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="AccountInformationHeaders">HttpHeaders containing the current properties.</param>
-    procedure GetAccountInformation(var OperationPayload: Codeunit "Blob API Operation Payload"; var AccountInformationHeaders: HttpHeaders) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetAccountInformation(var OperationPayload: Codeunit "Blob API Operation Payload"; var AccountInformationHeaders: HttpHeaders): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetAccountInformation(OperationPayload, AccountInformationHeaders);
+        exit(BlobServicesApiImpl.GetAccountInformation(OperationPayload, AccountInformationHeaders));
     end;
     // #endregion Get Account Information
 
@@ -300,9 +300,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="ExpiryDateTime">The expiry time of user delegation SAS, in ISO Date format. It must be a valid date and time within 7 days of the current time.</param>
     /// <param name="UserDelegationKey">The returned User Delegation Key.</param>
-    procedure GetUserDelegationKey(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryDateTime: DateTime; var UserDelegationKey: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetUserDelegationKey(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryDateTime: DateTime; var UserDelegationKey: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := GetUserDelegationKey(OperationPayload, ExpiryDateTime, 0DT, UserDelegationKey);
+        exit(GetUserDelegationKey(OperationPayload, ExpiryDateTime, 0DT, UserDelegationKey));
     end;
     /// <summary>
     /// The Get User Delegation Key operation gets a key that can be used to sign a user delegation SAS (shared access signature)
@@ -312,10 +312,10 @@ codeunit 9040 "Blob Services API"
     /// <param name="StartDateTime">The start time for the user delegation SAS, in ISO Date format. It must be a valid date and time within 7 days of the current time</param>
     /// <param name="ExpiryDateTime">The expiry time of user delegation SAS, in ISO Date format. It must be a valid date and time within 7 days of the current time.</param>
     /// <param name="UserDelegationKey">The returned User Delegation Key.</param>
-    procedure GetUserDelegationKey(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryDateTime: DateTime; StartDateTime: DateTime; var UserDelegationKey: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetUserDelegationKey(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryDateTime: DateTime; StartDateTime: DateTime; var UserDelegationKey: Text): Codeunit "Blob API Operation Response"
     begin
         // TODO: Think about adding a function with all details as return value (instead of only the key)
-        OperationResponse := BlobServicesApiImpl.GetUserDelegationKey(OperationPayload, ExpiryDateTime, StartDateTime, UserDelegationKey);
+        exit(BlobServicesApiImpl.GetUserDelegationKey(OperationPayload, ExpiryDateTime, StartDateTime, UserDelegationKey));
     end;
     // #endregion Get User Delegation Key
 
@@ -327,9 +327,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="PropertyHeaders">HttpHeaders containing the current properties.</param>
-    procedure GetContainerProperties(var OperationPayload: Codeunit "Blob API Operation Payload"; var PropertyHeaders: HttpHeaders) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetContainerProperties(var OperationPayload: Codeunit "Blob API Operation Payload"; var PropertyHeaders: HttpHeaders): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetContainerProperties(OperationPayload, PropertyHeaders);
+        exit(BlobServicesApiImpl.GetContainerProperties(OperationPayload, PropertyHeaders));
     end;
     // #endregion Get Container Properties
 
@@ -341,9 +341,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="MetadataHeaders">HttpHeaders containing the current metadata.</param>
-    procedure GetContainerMetadata(var OperationPayload: Codeunit "Blob API Operation Payload"; var MetadataHeaders: HttpHeaders) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetContainerMetadata(var OperationPayload: Codeunit "Blob API Operation Payload"; var MetadataHeaders: HttpHeaders): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetContainerMetadata(OperationPayload, MetadataHeaders);
+        exit(BlobServicesApiImpl.GetContainerMetadata(OperationPayload, MetadataHeaders));
     end;
     // #endregion Get Container Metadata
 
@@ -353,9 +353,9 @@ codeunit 9040 "Blob Services API"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-container-metadata
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
-    procedure SetContainerMetadata(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetContainerMetadata(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetContainerMetadata(OperationPayload);
+        exit(BlobServicesApiImpl.SetContainerMetadata(OperationPayload));
     end;
     // #endregion Set Container Metadata
 
@@ -366,9 +366,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="ContainerAcl">XmlDocument containing the current ACL.</param>
-    procedure GetContainerACL(var OperationPayload: Codeunit "Blob API Operation Payload"; var ContainerAcl: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetContainerACL(var OperationPayload: Codeunit "Blob API Operation Payload"; var ContainerAcl: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetContainerACL(OperationPayload, ContainerAcl);
+        exit(BlobServicesApiImpl.GetContainerACL(OperationPayload, ContainerAcl));
     end;
     // #endregion Get Container ACL
 
@@ -379,9 +379,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="Document">The XmlDocument containing the ACL definition</param>
-    procedure SetContainerACL(var OperationPayload: Codeunit "Blob API Operation Payload"; Document: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetContainerACL(var OperationPayload: Codeunit "Blob API Operation Payload"; Document: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetContainerACL(OperationPayload, Document);
+        exit(BlobServicesApiImpl.SetContainerACL(OperationPayload, Document));
     end;
     // #endregion Set Container ACL
 
@@ -392,11 +392,11 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="LeaseId">A GUID containing the LeaseId from the result.</param>
-    procedure ContainerLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; var LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure ContainerLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; var LeaseId: Guid): Codeunit "Blob API Operation Response"
     var
         ProposedLeaseId: Guid;
     begin
-        OperationResponse := ContainerLeaseAcquire(OperationPayload, -1, ProposedLeaseId, LeaseId); // Infinite duration, null Guid
+        exit(ContainerLeaseAcquire(OperationPayload, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -406,11 +406,11 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
     /// <param name="LeaseId">A GUID containing the LeaseId from the result.</param>
-    procedure ContainerLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; DurationSeconds: Integer; var LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure ContainerLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; DurationSeconds: Integer; var LeaseId: Guid): Codeunit "Blob API Operation Response"
     var
         ProposedLeaseId: Guid;
     begin
-        OperationResponse := ContainerLeaseAcquire(OperationPayload, DurationSeconds, ProposedLeaseId, LeaseId); // Custom duration, new Guid
+        exit(ContainerLeaseAcquire(OperationPayload, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, new Guid
     end;
 
     /// <summary>
@@ -420,9 +420,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
     /// <param name="LeaseId">A GUID containing the LeaseId from the result.</param>
-    procedure ContainerLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; ProposedLeaseId: Guid; var LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure ContainerLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := ContainerLeaseAcquire(OperationPayload, -1, ProposedLeaseId, LeaseId); // Infinite duration, custom Guid
+        exit(ContainerLeaseAcquire(OperationPayload, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -433,9 +433,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
     /// <param name="LeaseId">A GUID containing the LeaseId from the result.</param>
-    procedure ContainerLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure ContainerLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.ContainerLeaseAcquire(OperationPayload, DurationSeconds, ProposedLeaseId, LeaseId);
+        exit(BlobServicesApiImpl.ContainerLeaseAcquire(OperationPayload, DurationSeconds, ProposedLeaseId, LeaseId));
     end;
     // #endregion Container Acquire Lease
 
@@ -446,9 +446,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="LeaseId">The Guid for the lease that should be freed</param>
-    procedure ContainerLeaseRelease(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure ContainerLeaseRelease(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.ContainerLeaseRelease(OperationPayload, LeaseId);
+        exit(BlobServicesApiImpl.ContainerLeaseRelease(OperationPayload, LeaseId));
     end;
     // #endregion Container Release Lease
 
@@ -459,9 +459,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
-    procedure ContainerLeaseRenew(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure ContainerLeaseRenew(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.ContainerLeaseRenew(OperationPayload, LeaseId);
+        exit(BlobServicesApiImpl.ContainerLeaseRenew(OperationPayload, LeaseId));
     end;
     // #endregion Container Renew Lease
 
@@ -472,9 +472,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
-    procedure ContainerLeaseBreak(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure ContainerLeaseBreak(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.ContainerLeaseBreak(OperationPayload, LeaseId);
+        exit(BlobServicesApiImpl.ContainerLeaseBreak(OperationPayload, LeaseId));
     end;
     // #endregion Container Break Lease
 
@@ -486,9 +486,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="LeaseId">The Guid for the lease that should be changed</param>
     /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
-    procedure ContainerLeaseChange(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid; ProposedLeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure ContainerLeaseChange(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.ContainerLeaseChange(OperationPayload, LeaseId, ProposedLeaseId);
+        exit(BlobServicesApiImpl.ContainerLeaseChange(OperationPayload, LeaseId, ProposedLeaseId));
     end;
     // #endregion Container Change Lease
 
@@ -499,11 +499,11 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="LeaseId">A GUID containing the LeaseId from the result.</param>
-    procedure BlobLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; var LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure BlobLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; var LeaseId: Guid): Codeunit "Blob API Operation Response"
     var
         ProposedLeaseId: Guid;
     begin
-        OperationResponse := BlobLeaseAcquire(OperationPayload, -1, ProposedLeaseId, LeaseId); // Infinite duration, null Guid
+        exit(BlobLeaseAcquire(OperationPayload, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -513,11 +513,11 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
     /// <param name="LeaseId">A GUID containing the LeaseId from the result.</param>
-    procedure BlobLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; DurationSeconds: Integer; var LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure BlobLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; DurationSeconds: Integer; var LeaseId: Guid): Codeunit "Blob API Operation Response"
     var
         ProposedLeaseId: Guid;
     begin
-        OperationResponse := BlobLeaseAcquire(OperationPayload, DurationSeconds, ProposedLeaseId, LeaseId); // Custom duration, new Guid
+        exit(BlobLeaseAcquire(OperationPayload, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, new Guid
     end;
 
     /// <summary>
@@ -527,9 +527,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
     /// <param name="LeaseId">A GUID containing the LeaseId from the result.</param>
-    procedure BlobLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; ProposedLeaseId: Guid; var LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure BlobLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobLeaseAcquire(OperationPayload, -1, ProposedLeaseId, LeaseId); // Infinite duration, custom Guid
+        exit(BlobLeaseAcquire(OperationPayload, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -540,9 +540,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
     /// <param name="LeaseId">A GUID containing the LeaseId from the result.</param>
-    procedure BlobLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure BlobLeaseAcquire(var OperationPayload: Codeunit "Blob API Operation Payload"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.BlobLeaseAcquire(OperationPayload, DurationSeconds, ProposedLeaseId, LeaseId);
+        exit(BlobServicesApiImpl.BlobLeaseAcquire(OperationPayload, DurationSeconds, ProposedLeaseId, LeaseId));
     end;
     // #endregion Blob Acquire Lease
 
@@ -553,9 +553,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="LeaseId">The Guid for the lease that should be freed</param>
-    procedure BlobLeaseRelease(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure BlobLeaseRelease(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.BlobLeaseRelease(OperationPayload, LeaseId);
+        exit(BlobServicesApiImpl.BlobLeaseRelease(OperationPayload, LeaseId));
     end;
     // #endregion Blob Release Lease
 
@@ -566,9 +566,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
-    procedure BlobLeaseRenew(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure BlobLeaseRenew(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.BlobLeaseRenew(OperationPayload, LeaseId);
+        exit(BlobServicesApiImpl.BlobLeaseRenew(OperationPayload, LeaseId));
     end;
     // #endregion Blob Renew Lease
 
@@ -579,9 +579,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
-    procedure BlobLeaseBreak(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure BlobLeaseBreak(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.BlobLeaseBreak(OperationPayload, LeaseId);
+        exit(BlobServicesApiImpl.BlobLeaseBreak(OperationPayload, LeaseId));
     end;
     // #endregion Blob Break Lease
 
@@ -593,9 +593,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="LeaseId">The Guid for the lease that should be changed</param>
     /// <param name="ProposedLeaseId">The Guid that should be used in future</param>    
-    procedure BlobLeaseChange(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid; ProposedLeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure BlobLeaseChange(var OperationPayload: Codeunit "Blob API Operation Payload"; LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.BlobLeaseChange(OperationPayload, LeaseId, ProposedLeaseId);
+        exit(BlobServicesApiImpl.BlobLeaseChange(OperationPayload, LeaseId, ProposedLeaseId));
     end;
     // #endregion Blob Change Lease
 
@@ -606,9 +606,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="ContainerContent">Collection of the result (temporary record).</param>
-    procedure ListBlobs(var OperationPayload: Codeunit "Blob API Operation Payload"; var ContainerContent: Record "Container Content") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure ListBlobs(var OperationPayload: Codeunit "Blob API Operation Payload"; var ContainerContent: Record "Container Content"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.ListBlobs(OperationPayload, ContainerContent);
+        exit(BlobServicesApiImpl.ListBlobs(OperationPayload, ContainerContent));
     end;
     // #endregion List Blobs
 
@@ -618,9 +618,9 @@ codeunit 9040 "Blob Services API"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
-    procedure GetBlobAsFile(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetBlobAsFile(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetBlobAsFile(OperationPayload);
+        exit(BlobServicesApiImpl.GetBlobAsFile(OperationPayload));
     end;
 
     /// <summary>
@@ -629,9 +629,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="TargetStream">The result InStream containg the content of the Blob.</param>
-    procedure GetBlobAsStream(var OperationPayload: Codeunit "Blob API Operation Payload"; var TargetStream: InStream) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetBlobAsStream(var OperationPayload: Codeunit "Blob API Operation Payload"; var TargetStream: InStream): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetBlobAsStream(OperationPayload, TargetStream);
+        exit(BlobServicesApiImpl.GetBlobAsStream(OperationPayload, TargetStream));
     end;
 
     /// <summary>
@@ -640,9 +640,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="TargetText">The result Text containg the content of the Blob.</param>
-    procedure GetBlobAsText(var OperationPayload: Codeunit "Blob API Operation Payload"; var TargetText: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetBlobAsText(var OperationPayload: Codeunit "Blob API Operation Payload"; var TargetText: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetBlobAsText(OperationPayload, TargetText);
+        exit(BlobServicesApiImpl.GetBlobAsText(OperationPayload, TargetText));
     end;
     // #endregion Get Blob
 
@@ -653,9 +653,9 @@ codeunit 9040 "Blob Services API"
     /// Read the result from the Response Headers after using this
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
-    procedure GetBlobProperties(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetBlobProperties(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetBlobProperties(OperationPayload);
+        exit(BlobServicesApiImpl.GetBlobProperties(OperationPayload));
     end;
     // #endregion Get Blob Properties
 
@@ -666,9 +666,9 @@ codeunit 9040 "Blob Services API"
     /// Read the result from the Response Headers after using this
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
-    procedure SetBlobProperties(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetBlobProperties(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetBlobProperties(OperationPayload);
+        exit(BlobServicesApiImpl.SetBlobProperties(OperationPayload));
     end;
     // #endregion Set Blob Properties
 
@@ -680,9 +680,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="ExpiryTime">Number if miliseconds (Integer) until the expiration.</param>
-    procedure SetBlobExpiryRelativeToCreation(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryTime: Integer) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetBlobExpiryRelativeToCreation(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryTime: Integer): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetBlobExpiryRelativeToCreation(OperationPayload, ExpiryTime);
+        exit(BlobServicesApiImpl.SetBlobExpiryRelativeToCreation(OperationPayload, ExpiryTime));
     end;
 
     /// <summary>
@@ -692,9 +692,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="ExpiryTime">Number if miliseconds (Integer) until the expiration.</param>
-    procedure SetBlobExpiryRelativeToNow(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryTime: Integer) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetBlobExpiryRelativeToNow(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryTime: Integer): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetBlobExpiryRelativeToNow(OperationPayload, ExpiryTime);
+        exit(BlobServicesApiImpl.SetBlobExpiryRelativeToNow(OperationPayload, ExpiryTime));
     end;
 
     /// <summary>
@@ -704,9 +704,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="ExpiryTime">Absolute DateTime for the expiration.</param>
-    procedure SetBlobExpiryAbsolute(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryTime: DateTime) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetBlobExpiryAbsolute(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryTime: DateTime): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetBlobExpiryAbsolute(OperationPayload, ExpiryTime);
+        exit(BlobServicesApiImpl.SetBlobExpiryAbsolute(OperationPayload, ExpiryTime));
     end;
 
     /// <summary>
@@ -715,9 +715,9 @@ codeunit 9040 "Blob Services API"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-expiry
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
-    procedure SetBlobExpiryNever(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetBlobExpiryNever(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetBlobExpiryNever(OperationPayload);
+        exit(BlobServicesApiImpl.SetBlobExpiryNever(OperationPayload));
     end;
 
     /// <summary>
@@ -728,9 +728,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="ExpiryOption">The type of expiration that should be set.</param>
     /// <param name="ExpiryTime">Variant containing Nothing, number if miliseconds (Integer) or the absolute DateTime for the expiration.</param>
     /// <param name="OperationNotSuccessfulErr">The error message that should be thrown when the request fails.</param>
-    procedure SetBlobExpiry(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryOption: Enum "Blob Expiry Option"; ExpiryTime: Variant; OperationNotSuccessfulErr: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetBlobExpiry(var OperationPayload: Codeunit "Blob API Operation Payload"; ExpiryOption: Enum "Blob Expiry Option"; ExpiryTime: Variant; OperationNotSuccessfulErr: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetBlobExpiry(OperationPayload, ExpiryOption, ExpiryTime, OperationNotSuccessfulErr);
+        exit(BlobServicesApiImpl.SetBlobExpiry(OperationPayload, ExpiryOption, ExpiryTime, OperationNotSuccessfulErr));
     end;
     // #endregion Set Blob Expiry
 
@@ -741,9 +741,9 @@ codeunit 9040 "Blob Services API"
     /// Read the result from the Response Headers after using this
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
-    procedure GetBlobMetadata(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetBlobMetadata(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetBlobMetadata(OperationPayload);
+        exit(BlobServicesApiImpl.GetBlobMetadata(OperationPayload));
     end;
     // #endregion Get Blob Metadata
 
@@ -753,9 +753,9 @@ codeunit 9040 "Blob Services API"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-metadata
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
-    procedure SetBlobMetadata(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetBlobMetadata(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetBlobMetadata(OperationPayload);
+        exit(BlobServicesApiImpl.SetBlobMetadata(OperationPayload));
     end;
     // #endregion Set Blob Metadata
 
@@ -766,9 +766,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="BlobTags">A XmlDocument which contains the Tags currently set on the Blob.</param>    
-    procedure GetBlobTags(var OperationPayload: Codeunit "Blob API Operation Payload"; var BlobTags: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetBlobTags(var OperationPayload: Codeunit "Blob API Operation Payload"; var BlobTags: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetBlobTags(OperationPayload, BlobTags);
+        exit(BlobServicesApiImpl.GetBlobTags(OperationPayload, BlobTags));
     end;
     // #endregion Get Blob Tags
 
@@ -779,9 +779,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="Tags">A Dictionary of [Text, Text] which contains the Tags you want to set.</param>    
-    procedure SetBlobTags(var OperationPayload: Codeunit "Blob API Operation Payload"; Tags: Dictionary of [Text, Text]) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetBlobTags(var OperationPayload: Codeunit "Blob API Operation Payload"; Tags: Dictionary of [Text, Text]): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetBlobTags(OperationPayload, Tags);
+        exit(BlobServicesApiImpl.SetBlobTags(OperationPayload, Tags));
     end;
 
     /// <summary>
@@ -790,9 +790,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="Tags">A Dictionary of [Text, Text] which contains the Tags you want to set.</param>    
-    procedure SetBlobTags(var OperationPayload: Codeunit "Blob API Operation Payload"; Tags: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetBlobTags(var OperationPayload: Codeunit "Blob API Operation Payload"; Tags: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetBlobTags(OperationPayload, Tags);
+        exit(BlobServicesApiImpl.SetBlobTags(OperationPayload, Tags));
     end;
     // #endregion Set Blob Tags
 
@@ -804,9 +804,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="SearchTags">A Dictionary of [Text, Text] containing the necessary tags to search for.</param>
     /// <param name="FoundBlobs">XmlDocument containing the enumeration of found blobs</param>
-    procedure FindBlobsByTags(var OperationPayload: Codeunit "Blob API Operation Payload"; SearchTags: Dictionary of [Text, Text]; var FoundBlobs: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure FindBlobsByTags(var OperationPayload: Codeunit "Blob API Operation Payload"; SearchTags: Dictionary of [Text, Text]; var FoundBlobs: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.FindBlobsByTags(OperationPayload, SearchTags, FoundBlobs);
+        exit(BlobServicesApiImpl.FindBlobsByTags(OperationPayload, SearchTags, FoundBlobs));
     end;
 
     /// <summary>
@@ -816,9 +816,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="SearchExpression">A search expression to find blobs by.</param>
     /// <param name="FoundBlobs">XmlDocument containing the enumeration of found blobs</param>
-    procedure FindBlobsByTags(var OperationPayload: Codeunit "Blob API Operation Payload"; SearchExpression: Text; var FoundBlobs: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure FindBlobsByTags(var OperationPayload: Codeunit "Blob API Operation Payload"; SearchExpression: Text; var FoundBlobs: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.FindBlobsByTags(OperationPayload, SearchExpression, FoundBlobs);
+        exit(BlobServicesApiImpl.FindBlobsByTags(OperationPayload, SearchExpression, FoundBlobs));
     end;
     // #endregion Find Blob by Tags
 
@@ -828,9 +828,9 @@ codeunit 9040 "Blob Services API"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-blob
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
-    procedure DeleteBlob(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure DeleteBlob(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.DeleteBlob(OperationPayload);
+        exit(BlobServicesApiImpl.DeleteBlob(OperationPayload));
     end;
     // #endregion Delete Blob
 
@@ -840,9 +840,9 @@ codeunit 9040 "Blob Services API"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/undelete-blob
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
-    procedure UndeleteBlob(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure UndeleteBlob(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.UndeleteBlob(OperationPayload);
+        exit(BlobServicesApiImpl.UndeleteBlob(OperationPayload));
     end;
     // #endregion Undelete Blob
 
@@ -852,9 +852,9 @@ codeunit 9040 "Blob Services API"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/snapshot-blob
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>        
-    procedure SnapshotBlob(var OperationPayload: Codeunit "Blob API Operation Payload") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SnapshotBlob(var OperationPayload: Codeunit "Blob API Operation Payload"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SnapshotBlob(OperationPayload);
+        exit(BlobServicesApiImpl.SnapshotBlob(OperationPayload));
     end;
     // #endregion Snapshot Blob
 
@@ -865,11 +865,11 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="SourceName">Specifies the name of the source blob or file.</param>
-    procedure CopyBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceName: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure CopyBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceName: Text): Codeunit "Blob API Operation Response"
     var
         LeaseId: Guid;
     begin
-        OperationResponse := CopyBlob(OperationPayload, SourceName, LeaseId);
+        exit(CopyBlob(OperationPayload, SourceName, LeaseId));
     end;
 
     /// <summary>
@@ -879,9 +879,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="SourceName">Specifies the name of the source blob or file.</param>
     /// <param name="LeaseId">Required if the destination blob has an active lease. The lease ID specified must match the lease ID of the destination blob.</param>
-    procedure CopyBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceName: Text; LeaseId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure CopyBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceName: Text; LeaseId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.CopyBlob(OperationPayload, SourceName, LeaseId);
+        exit(BlobServicesApiImpl.CopyBlob(OperationPayload, SourceName, LeaseId));
     end;
     // #endregion Copy Blob
 
@@ -892,9 +892,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="SourceUri">Specifies the URL of the source blob.</param>
-    procedure CopyBlobFromURL(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceUri: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure CopyBlobFromURL(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceUri: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.CopyBlobFromURL(OperationPayload, SourceUri);
+        exit(BlobServicesApiImpl.CopyBlobFromURL(OperationPayload, SourceUri));
     end;
     // #endregion Copy Blob from URL
 
@@ -905,9 +905,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>    
     /// <param name="CopyId">Id with the copy identifier provided in the x-ms-copy-id header of the original Copy Blob operation.</param>
-    procedure AbortCopyBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; CopyId: Guid) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure AbortCopyBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; CopyId: Guid): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.AbortCopyBlob(OperationPayload, CopyId);
+        exit(BlobServicesApiImpl.AbortCopyBlob(OperationPayload, CopyId));
     end;
     // #endregion Abort Copy Blob
 
@@ -918,9 +918,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="SourceContent">Variant containing the content that should be added to the page</param>
-    procedure PutBlock(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceContent: Variant) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlock(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceContent: Variant): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutBlock(OperationPayload, SourceContent);
+        exit(BlobServicesApiImpl.PutBlock(OperationPayload, SourceContent));
     end;
     /// <summary>
     /// The Put Block operation creates a new block to be committed as part of a blob.
@@ -929,9 +929,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="SourceContent">Variant containing the content that should be added to the page</param>
     /// <param name="BlockId">A valid Base64 string value that identifies the block</param>
-    procedure PutBlock(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceContent: Variant; BlockId: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlock(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceContent: Variant; BlockId: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutBlock(OperationPayload, SourceContent, BlockId);
+        exit(BlobServicesApiImpl.PutBlock(OperationPayload, SourceContent, BlockId));
     end;
     // #endregion Put Block
 
@@ -944,9 +944,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="BlockListType">Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together.</param>
     /// <param name="CommitedBlocks">Dictionary of [Text, Integer] containing the list of commited blocks (BLockId and Size)</param>
     /// <param name="UncommitedBlocks">Dictionary of [Text, Integer] containing the list of uncommited blocks (BLockId and Size)</param>
-    procedure GetBlockList(var OperationPayload: Codeunit "Blob API Operation Payload"; BlockListType: Enum "Block List Type"; var CommitedBlocks: Dictionary of [Text, Integer]; var UncommitedBlocks: Dictionary of [Text, Integer]) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetBlockList(var OperationPayload: Codeunit "Blob API Operation Payload"; BlockListType: Enum "Block List Type"; var CommitedBlocks: Dictionary of [Text, Integer]; var UncommitedBlocks: Dictionary of [Text, Integer]): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetBlockList(OperationPayload, BlockListType, CommitedBlocks, UncommitedBlocks);
+        exit(BlobServicesApiImpl.GetBlockList(OperationPayload, BlockListType, CommitedBlocks, UncommitedBlocks));
     end;
 
     /// <summary>
@@ -955,11 +955,11 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="BlockList">XmlDocument containing the Block List.</param>
-    procedure GetBlockList(var OperationPayload: Codeunit "Blob API Operation Payload"; var BlockList: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetBlockList(var OperationPayload: Codeunit "Blob API Operation Payload"; var BlockList: XmlDocument): Codeunit "Blob API Operation Response"
     var
         BlockListType: Enum "Block List Type";
     begin
-        OperationResponse := GetBlockList(OperationPayload, BlockListType::committed, BlockList); // default API value is "committed"
+        exit(GetBlockList(OperationPayload, BlockListType::committed, BlockList)); // default API value is "committed"
     end;
 
     /// <summary>
@@ -969,9 +969,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="BlockListType">Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together.</param>
     /// <param name="BlockList">XmlDocument containing the Block List.</param>
-    procedure GetBlockList(var OperationPayload: Codeunit "Blob API Operation Payload"; BlockListType: Enum "Block List Type"; var BlockList: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetBlockList(var OperationPayload: Codeunit "Blob API Operation Payload"; BlockListType: Enum "Block List Type"; var BlockList: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetBlockList(OperationPayload, BlockListType, BlockList);
+        exit(BlobServicesApiImpl.GetBlockList(OperationPayload, BlockListType, BlockList));
     end;
     // #endregion Get Block List
 
@@ -983,18 +983,18 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="CommitedBlocks">Dictionary of [Text, Integer] containing the list of commited blocks that should be put to the Blob</param>
     /// <param name="UncommitedBlocks">Dictionary of [Text, Integer] containing the list of uncommited blocks that should be put to the Blob</param>
-    procedure PutBlockList(var OperationPayload: Codeunit "Blob API Operation Payload"; CommitedBlocks: Dictionary of [Text, Integer]; UncommitedBlocks: Dictionary of [Text, Integer]) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlockList(var OperationPayload: Codeunit "Blob API Operation Payload"; CommitedBlocks: Dictionary of [Text, Integer]; UncommitedBlocks: Dictionary of [Text, Integer]): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutBlockList(OperationPayload, CommitedBlocks, UncommitedBlocks);
+        exit(BlobServicesApiImpl.PutBlockList(OperationPayload, CommitedBlocks, UncommitedBlocks));
     end;
     /// <summary>
     /// The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob.
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-block-list
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
-    procedure PutBlockList(var OperationPayload: Codeunit "Blob API Operation Payload"; BlockList: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlockList(var OperationPayload: Codeunit "Blob API Operation Payload"; BlockList: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutBlockList(OperationPayload, BlockList);
+        exit(BlobServicesApiImpl.PutBlockList(OperationPayload, BlockList));
     end;
     // #endregion Put Block List
 
@@ -1006,9 +1006,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="SourceUri">Specifies the name of the source block blob.</param>
     /// <param name="BlockId">Specifies the BlockId that should be put.</param>
-    procedure PutBlockFromURL(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceUri: Text; BlockId: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutBlockFromURL(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceUri: Text; BlockId: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutBlockFromURL(OperationPayload, SourceUri, BlockId);
+        exit(BlobServicesApiImpl.PutBlockFromURL(OperationPayload, SourceUri, BlockId));
     end;
     // #endregion Put Block From URL
 
@@ -1020,9 +1020,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="QueryExpression">A SQL-like expression to query content (see: https://docs.microsoft.com/en-us/azure/storage/blobs/query-acceleration-sql-reference)</param>
     /// <param name="Result">An InStream-object containing the Blob contents.</param>
-    procedure QueryBlobContents(var OperationPayload: Codeunit "Blob API Operation Payload"; QueryExpression: Text; var Result: InStream) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure QueryBlobContents(var OperationPayload: Codeunit "Blob API Operation Payload"; QueryExpression: Text; var Result: InStream): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.QueryBlobContents(OperationPayload, QueryExpression, Result);
+        exit(BlobServicesApiImpl.QueryBlobContents(OperationPayload, QueryExpression, Result));
     end;
     /// <summary>
     /// The Query Blob Contents API applies a simple Structured Query Language (SQL) statement on a blob's contents and returns only the queried subset of the data.
@@ -1031,9 +1031,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="QueryDocument">The XML containing the QueryRequest</param>
     /// <param name="Result">An InStream-object containing the Blob contents.</param>
-    procedure QueryBlobContents(var OperationPayload: Codeunit "Blob API Operation Payload"; QueryDocument: XmlDocument; var Result: InStream) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure QueryBlobContents(var OperationPayload: Codeunit "Blob API Operation Payload"; QueryDocument: XmlDocument; var Result: InStream): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.QueryBlobContents(OperationPayload, QueryDocument, Result);
+        exit(BlobServicesApiImpl.QueryBlobContents(OperationPayload, QueryDocument, Result));
     end;
     // #endregion Query Blob Contents
 
@@ -1044,9 +1044,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="BlobAccessTier">The Access Tier the blob should be set to.</param>
-    procedure SetBlobTier(var OperationPayload: Codeunit "Blob API Operation Payload"; BlobAccessTier: Enum "Blob Access Tier") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure SetBlobTier(var OperationPayload: Codeunit "Blob API Operation Payload"; BlobAccessTier: Enum "Blob Access Tier"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.SetBlobTier(OperationPayload, BlobAccessTier);
+        exit(BlobServicesApiImpl.SetBlobTier(OperationPayload, BlobAccessTier));
     end;
     // #endregion Set Blob Tier
 
@@ -1060,11 +1060,11 @@ codeunit 9040 "Blob Services API"
     /// <param name="StartRange">Specifies the start of the range of bytes to be written as a page</param>
     /// <param name="EndRange">Specifies the end of the range of bytes to be written as a page</param>
     /// <param name="SourceContent">Variant containing the content that should be added to the page</param>
-    procedure PutPageUpdate(var OperationPayload: Codeunit "Blob API Operation Payload"; StartRange: Integer; EndRange: Integer; SourceContent: Variant) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutPageUpdate(var OperationPayload: Codeunit "Blob API Operation Payload"; StartRange: Integer; EndRange: Integer; SourceContent: Variant): Codeunit "Blob API Operation Response"
     var
         PageWriteOption: Enum "PageBlob Write Option";
     begin
-        OperationResponse := PutPage(OperationPayload, StartRange, EndRange, SourceContent, PageWriteOption::Update);
+        exit(PutPage(OperationPayload, StartRange, EndRange, SourceContent, PageWriteOption::Update));
     end;
 
     /// <summary>
@@ -1075,11 +1075,11 @@ codeunit 9040 "Blob Services API"
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="StartRange">Specifies the start of the range of bytes to be written as a page</param>
     /// <param name="EndRange">Specifies the end of the range of bytes to be cleared</param>    
-    procedure PutPageClear(var OperationPayload: Codeunit "Blob API Operation Payload"; StartRange: Integer; EndRange: Integer) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutPageClear(var OperationPayload: Codeunit "Blob API Operation Payload"; StartRange: Integer; EndRange: Integer): Codeunit "Blob API Operation Response"
     var
         PageWriteOption: Enum "PageBlob Write Option";
     begin
-        OperationResponse := PutPage(OperationPayload, StartRange, EndRange, '', PageWriteOption::Clear);
+        exit(PutPage(OperationPayload, StartRange, EndRange, '', PageWriteOption::Clear));
     end;
 
     /// <summary>
@@ -1091,9 +1091,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="EndRange">Specifies the end of the range of bytes to be written as a page</param>
     /// <param name="SourceContent">Variant containing the content that should be added to the page</param>
     /// <param name="PageWriteOption">Either 'update' or 'clear'; defines if content is added to or cleared from a page</param>
-    procedure PutPage(var OperationPayload: Codeunit "Blob API Operation Payload"; StartRange: Integer; EndRange: Integer; SourceContent: Variant; PageWriteOption: Enum "PageBlob Write Option") OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutPage(var OperationPayload: Codeunit "Blob API Operation Payload"; StartRange: Integer; EndRange: Integer; SourceContent: Variant; PageWriteOption: Enum "PageBlob Write Option"): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutPage(OperationPayload, StartRange, EndRange, SourceContent, PageWriteOption);
+        exit(BlobServicesApiImpl.PutPage(OperationPayload, StartRange, EndRange, SourceContent, PageWriteOption));
     end;
     // #endregion Put Page
 
@@ -1106,9 +1106,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="StartRange">Specifies the start of the range of bytes of the source page blob to be written as a page</param>
     /// <param name="EndRange">Specifies the end of the range of bytes of the source page blob to be written as a page</param>        
     /// <param name="SourceUri">Specifies the URL of the source blob.</param>
-    procedure PutPageFromURL(var OperationPayload: Codeunit "Blob API Operation Payload"; StartRangeSource: Integer; EndRangeSource: Integer; SourceUri: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutPageFromURL(var OperationPayload: Codeunit "Blob API Operation Payload"; StartRangeSource: Integer; EndRangeSource: Integer; SourceUri: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := PutPageFromURL(OperationPayload, StartRangeSource, EndRangeSource, StartRangeSource, EndRangeSource, SourceUri); // uses the same ranges for source and destination
+        exit(PutPageFromURL(OperationPayload, StartRangeSource, EndRangeSource, StartRangeSource, EndRangeSource, SourceUri)); // uses the same ranges for source and destination
     end;
 
     /// <summary>
@@ -1121,9 +1121,9 @@ codeunit 9040 "Blob Services API"
     /// <param name="StartRange">Specifies the start of the range of bytes to be written as a page</param>
     /// <param name="EndRange">Specifies the end of the range of bytes to be written as a page</param>    
     /// <param name="SourceUri">Specifies the URL of the source blob.</param>
-    procedure PutPageFromURL(var OperationPayload: Codeunit "Blob API Operation Payload"; StartRangeSource: Integer; EndRangeSource: Integer; StartRange: Integer; EndRange: Integer; SourceUri: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure PutPageFromURL(var OperationPayload: Codeunit "Blob API Operation Payload"; StartRangeSource: Integer; EndRangeSource: Integer; StartRange: Integer; EndRange: Integer; SourceUri: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.PutPageFromURL(OperationPayload, StartRangeSource, EndRangeSource, StartRange, EndRange, SourceUri);
+        exit(BlobServicesApiImpl.PutPageFromURL(OperationPayload, StartRangeSource, EndRangeSource, StartRange, EndRange, SourceUri));
     end;
     // #endregion Put Page from URL
 
@@ -1134,9 +1134,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="PageRanges">A Dictionairy containing the result in structured form.</param>
-    procedure GetPageRanges(var OperationPayload: Codeunit "Blob API Operation Payload"; var PageRanges: Dictionary of [Integer, Integer]) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetPageRanges(var OperationPayload: Codeunit "Blob API Operation Payload"; var PageRanges: Dictionary of [Integer, Integer]): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetPageRanges(OperationPayload, PageRanges);
+        exit(BlobServicesApiImpl.GetPageRanges(OperationPayload, PageRanges));
     end;
 
     /// <summary>
@@ -1145,9 +1145,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="PageRanges">XmlDocument containing the Page ranges.</param>
-    procedure GetPageRanges(var OperationPayload: Codeunit "Blob API Operation Payload"; var PageRanges: XmlDocument) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure GetPageRanges(var OperationPayload: Codeunit "Blob API Operation Payload"; var PageRanges: XmlDocument): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.GetPageRanges(OperationPayload, PageRanges);
+        exit(BlobServicesApiImpl.GetPageRanges(OperationPayload, PageRanges));
     end;
     // #endregion Get Page Ranges
 
@@ -1158,9 +1158,9 @@ codeunit 9040 "Blob Services API"
     /// </summary>
     /// <param name="OperationPayload">An object containing the necessary parameters for the request.</param>
     /// <param name="SourceUri">Specifies the name of the source page blob snapshot.</param>
-    procedure IncrementalCopyBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceUri: Text) OperationResponse: Codeunit "Blob API Operation Response"
+    procedure IncrementalCopyBlob(var OperationPayload: Codeunit "Blob API Operation Payload"; SourceUri: Text): Codeunit "Blob API Operation Response"
     begin
-        OperationResponse := BlobServicesApiImpl.IncrementalCopyBlob(OperationPayload, SourceUri);
+        exit(BlobServicesApiImpl.IncrementalCopyBlob(OperationPayload, SourceUri));
     end;
     // #endregion Incremental Copy Blob
 
