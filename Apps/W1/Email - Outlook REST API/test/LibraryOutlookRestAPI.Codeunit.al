@@ -89,7 +89,7 @@ codeunit 139755 "Library - Outlook Rest API"
 
         Message.Get('attachments', JToken);
         JArray := JToken.AsArray();
-        Assert.AreEqual(2, JArray.Count, 'Two attachements were expected');
+        Assert.AreEqual(2, JArray.Count, 'Two attachments were expected');
 
         JArray.Get(0, JToken);
         VerifyJsonProperty(JToken.AsObject(), '@odata.type', '#microsoft.graph.fileAttachment', 'A different value was expected');
@@ -97,7 +97,7 @@ codeunit 139755 "Library - Outlook Rest API"
         VerifyJsonProperty(JToken.AsObject(), 'contentType', AttachemntContentTypeTxt, 'A different attachment content type was expected');
         VerifyJsonProperty(JToken.AsObject(), 'isInline', 'false', 'Attachment was not expected to be inline');
         JToken.AsObject().Get('contentBytes', JToken);
-        Assert.AreEqual(AttachmentTxt, Base64Convert.FromBase64(JToken.AsValue().AsText()), 'A different attachement content was expected');
+        Assert.AreEqual(AttachmentTxt, Base64Convert.FromBase64(JToken.AsValue().AsText()), 'A different attachment content was expected');
 
         JArray.Get(1, JToken);
         VerifyJsonProperty(JToken.AsObject(), '@odata.type', '#microsoft.graph.fileAttachment', 'A different value was expected');
@@ -105,7 +105,7 @@ codeunit 139755 "Library - Outlook Rest API"
         VerifyJsonProperty(JToken.AsObject(), 'contentType', AttachemntContentTypeTxt, 'A different attachment content type was expected');
         VerifyJsonProperty(JToken.AsObject(), 'isInline', 'false', 'Attachment was not expected to be inline');
         JToken.AsObject().Get('contentBytes', JToken);
-        Assert.AreEqual(AttachmentTxt, Base64Convert.FromBase64(JToken.AsValue().AsText()), 'A different attachement content was expected');
+        Assert.AreEqual(AttachmentTxt, Base64Convert.FromBase64(JToken.AsValue().AsText()), 'A different attachment content was expected');
     end;
 
     procedure VerifyJsonProperty(Object: JsonObject; Property: Text; Expected: Text; Message: Text)

@@ -187,6 +187,8 @@ codeunit 149005 "BCPT Line"
         TelemetryLogLbl: Label 'Performance Toolkit - %1 - %2 - %3', Locked = true;
     begin
         Dimensions.Add('code', BCPTLogEntry."BCPT Code");
+        Dimensions.Add('lineNo', Format(BCPTLogEntry."BCPT Line No."));
+        Dimensions.Add('version', Format(BCPTLogEntry.Version));
         Dimensions.Add('codeunitId', Format(BCPTLogEntry."Codeunit ID"));
         BCPTLogEntry.CalcFields("Codeunit Name");
         Dimensions.Add('codeunitName', BCPTLogEntry."Codeunit Name");

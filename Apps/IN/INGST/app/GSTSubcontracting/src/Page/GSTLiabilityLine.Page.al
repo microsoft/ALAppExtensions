@@ -2,8 +2,6 @@ page 18472 "GST Liability Line"
 {
     Caption = 'GST Liability Line';
     PageType = List;
-    ApplicationArea = Basic, Suite;
-    UsageCategory = Lists;
     SourceTable = "GST Liability Line";
     Editable = false;
 

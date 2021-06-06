@@ -2,6 +2,8 @@
 #pragma warning disable AL0432,AL0603
 codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
 {
+    Permissions = tabledata "Posted Cash Document Header" = rimd,
+                  tabledata "Posted Cash Document Hdr. CZP" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.5';

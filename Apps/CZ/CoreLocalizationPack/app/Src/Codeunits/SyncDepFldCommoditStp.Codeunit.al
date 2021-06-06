@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31195 "Sync.Dep.Fld-CommoditStp CZL"
 {
+    Permissions = tabledata "Commodity Setup" = rimd,
+                  tabledata "Commodity Setup CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

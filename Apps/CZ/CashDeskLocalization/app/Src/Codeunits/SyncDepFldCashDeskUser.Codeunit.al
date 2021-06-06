@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
 {
+    Permissions = tabledata "Cash Desk User" = rimd,
+                  tabledata "Cash Desk User CZP" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.5';

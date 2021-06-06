@@ -34,6 +34,16 @@ codeunit 18143 "GST Sales Validation"
         SalesHeader := VariantRec;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnBeforeUpdateLocationCode', '', false, false)]
+    local procedure HandledOnBeforeUpdateLocationCode(var SalesLine: Record "Sales Line"; var IsHandled: Boolean)
+    var
+        Item: Record Item;
+    begin
+        if Item.Get(SalesLine."No.") then
+            if (Item."HSN/SAC Code" <> '') and (Item."GST Group Code" <> '') then
+                IsHandled := true;
+    end;
+
     //CopyDocument 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopySalesLineFromSalesLineBuffer', '', false, false)]
     local procedure CallTaxEngineOnAfterCopySalesLineFromSalesLineBuffer(var ToSalesLine: Record "Sales Line"; RecalculateLines: Boolean)

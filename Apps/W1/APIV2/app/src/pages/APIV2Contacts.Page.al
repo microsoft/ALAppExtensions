@@ -188,6 +188,29 @@ page 30071 "APIV2 - Contacts"
                         RegisterFieldSet(FieldNo("Privacy Blocked"));
                     end;
                 }
+                field(taxRegistrationNumber; TaxRegistrationNumber)
+                {
+                    Caption = 'Tax Registration No.';
+
+                    trigger OnValidate()
+                    var
+                        EnterpriseNoFieldRef: FieldRef;
+                    begin
+                        if IsEnterpriseNumber(EnterpriseNoFieldRef) then begin
+                            if (Rec."Country/Region Code" <> BECountryCodeLbl) and (Rec."Country/Region Code" <> '') then begin
+                                Rec.Validate("VAT Registration No.", TaxRegistrationNumber);
+                                RegisterFieldSet(FieldNo("VAT Registration No."));
+                            end else begin
+                                EnterpriseNoFieldRef.Validate(TaxRegistrationNumber);
+                                EnterpriseNoFieldRef.Record().SetTable(Rec);
+                                RegisterFieldSet(FieldNo("VAT Registration No."));
+                            end;
+                        end else begin
+                            Rec.Validate("VAT Registration No.", TaxRegistrationNumber);
+                            RegisterFieldSet(FieldNo("VAT Registration No."));
+                        end;
+                    end;
+                }
                 field(lastInteractionDate; "Date of Last Interaction")
                 {
                     Caption = 'Date of Last Interaction';
@@ -213,6 +236,10 @@ page 30071 "APIV2 - Contacts"
     {
     }
 
+    trigger OnAfterGetRecord()
+    begin
+        SetCalculatedFields();
+    end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
@@ -233,6 +260,7 @@ page 30071 "APIV2 - Contacts"
         RecRef.SetTable(Rec);
 
         Modify(true);
+        SetCalculatedFields();
         exit(false);
     end;
 
@@ -250,6 +278,7 @@ page 30071 "APIV2 - Contacts"
             TransferFields(Contact);
         end;
 
+        SetCalculatedFields();
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
@@ -260,12 +289,28 @@ page 30071 "APIV2 - Contacts"
     var
         TempFieldSet: Record 2000000041 temporary;
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
+        TaxRegistrationNumber: Text[50];
         NotProvidedContactNameErr: Label 'A "displayName" must be provided.', Comment = 'displayName is a field name and should not be translated.';
         BlankContactNameErr: Label 'The blank "displayName" is not allowed.', Comment = 'displayName is a field name and should not be translated.';
+        BECountryCodeLbl: Label 'BE', Locked = true;
+
+    local procedure SetCalculatedFields()
+    var
+        EnterpriseNoFieldRef: FieldRef;
+    begin
+        if IsEnterpriseNumber(EnterpriseNoFieldRef) then begin
+            if (Rec."Country/Region Code" <> BECountryCodeLbl) and (Rec."Country/Region Code" <> '') then
+                TaxRegistrationNumber := Rec."VAT Registration No."
+            else
+                TaxRegistrationNumber := EnterpriseNoFieldRef.Value();
+        end else
+            TaxRegistrationNumber := Rec."VAT Registration No.";
+    end;
 
     local procedure ClearCalculatedFields()
     begin
         Clear(SystemId);
+        Clear(TaxRegistrationNumber);
         TempFieldSet.DeleteAll();
     end;
 
@@ -278,6 +323,18 @@ page 30071 "APIV2 - Contacts"
         TempFieldSet.TableNo := Database::Contact;
         TempFieldSet.Validate("No.", FieldNo);
         TempFieldSet.Insert(true);
+    end;
+
+    procedure IsEnterpriseNumber(var EnterpriseNoFieldRef: FieldRef): Boolean
+    var
+        ContactRecordRef: RecordRef;
+    begin
+        ContactRecordRef.GetTable(Rec);
+        if ContactRecordRef.FieldExist(11310) then begin
+            EnterpriseNoFieldRef := ContactRecordRef.Field(11310);
+            exit((EnterpriseNoFieldRef.Type = FieldType::Text) and (EnterpriseNoFieldRef.Name = 'Enterprise No.'));
+        end else
+            exit(false);
     end;
 }
 

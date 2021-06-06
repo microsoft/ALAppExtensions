@@ -3,6 +3,9 @@ codeunit 11605 "Copy Line Des. To G/L Entry AU"
     ObsoleteState = Pending;
     ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
     ObsoleteTag = '17.0';
+    Permissions = tabledata "Service Mgt. Setup" = rmid,
+                    tabledata "Purchases & Payables Setup" = rmid,
+                    tabledata "Sales & Receivables Setup" = rmid;
 
     trigger OnRun()
     begin

@@ -159,13 +159,27 @@ page 30009 "APIV2 - Customers"
                     Caption = 'Tax Area Display Name';
                     Editable = false;
                 }
-                field(taxRegistrationNumber; "VAT Registration No.")
+                field(taxRegistrationNumber; TaxRegistrationNumber)
                 {
                     Caption = 'Tax Registration No.';
 
                     trigger OnValidate()
+                    var
+                        EnterpriseNoFieldRef: FieldRef;
                     begin
-                        RegisterFieldSet(FieldNo("VAT Registration No."));
+                        if IsEnterpriseNumber(EnterpriseNoFieldRef) then begin
+                            if (Rec."Country/Region Code" <> BECountryCodeLbl) and (Rec."Country/Region Code" <> '') then begin
+                                Rec.Validate("VAT Registration No.", TaxRegistrationNumber);
+                                RegisterFieldSet(FieldNo("VAT Registration No."));
+                            end else begin
+                                EnterpriseNoFieldRef.Validate(TaxRegistrationNumber);
+                                EnterpriseNoFieldRef.Record().SetTable(Rec);
+                                RegisterFieldSet(FieldNo("VAT Registration No."));
+                            end;
+                        end else begin
+                            Rec.Validate("VAT Registration No.", TaxRegistrationNumber);
+                            RegisterFieldSet(FieldNo("VAT Registration No."));
+                        end;
                     end;
                 }
                 field(currencyId; "Currency Id")
@@ -390,6 +404,7 @@ page 30009 "APIV2 - Customers"
         TempFieldSet: Record 2000000041 temporary;
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         LCYCurrencyCode: Code[10];
+        TaxRegistrationNumber: Text[50];
         CurrencyCodeTxt: Text;
         TaxAreaDisplayNameGlobal: Text;
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.';
@@ -401,19 +416,30 @@ page 30009 "APIV2 - Customers"
         BlankGUID: Guid;
         NotProvidedCustomerNameErr: Label 'A "displayName" must be provided.', Comment = 'displayName is a field name and should not be translated.';
         BlankCustomerNameErr: Label 'The blank "displayName" is not allowed.', Comment = 'displayName is a field name and should not be translated.';
+        BECountryCodeLbl: Label 'BE', Locked = true;
 
     local procedure SetCalculatedFields()
     var
         TaxAreaBuffer: Record "Tax Area Buffer";
+        EnterpriseNoFieldRef: FieldRef;
     begin
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
         TaxAreaDisplayNameGlobal := TaxAreaBuffer.GetTaxAreaDisplayName("Tax Area ID");
+
+        if IsEnterpriseNumber(EnterpriseNoFieldRef) then begin
+            if (Rec."Country/Region Code" <> BECountryCodeLbl) and (Rec."Country/Region Code" <> '') then
+                TaxRegistrationNumber := Rec."VAT Registration No."
+            else
+                TaxRegistrationNumber := EnterpriseNoFieldRef.Value();
+        end else
+            TaxRegistrationNumber := Rec."VAT Registration No.";
     end;
 
     local procedure ClearCalculatedFields()
     begin
         Clear(SystemId);
         Clear(TaxAreaDisplayNameGlobal);
+        Clear(TaxRegistrationNumber);
         TempFieldSet.DeleteAll();
     end;
 
@@ -426,6 +452,18 @@ page 30009 "APIV2 - Customers"
         TempFieldSet.TableNo := Database::Customer;
         TempFieldSet.Validate("No.", FieldNo);
         TempFieldSet.Insert(true);
+    end;
+
+    procedure IsEnterpriseNumber(var EnterpriseNoFieldRef: FieldRef): Boolean
+    var
+        CustomerRecordRef: RecordRef;
+    begin
+        CustomerRecordRef.GetTable(Rec);
+        if CustomerRecordRef.FieldExist(11310) then begin
+            EnterpriseNoFieldRef := CustomerRecordRef.Field(11310);
+            exit((EnterpriseNoFieldRef.Type = FieldType::Text) and (EnterpriseNoFieldRef.Name = 'Enterprise No.'));
+        end else
+            exit(false);
     end;
 }
 

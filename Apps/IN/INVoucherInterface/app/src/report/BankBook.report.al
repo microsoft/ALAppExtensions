@@ -407,7 +407,18 @@ report 18930 "Bank Book"
                 TransDebits := 0;
                 TransCredits := 0;
 
-                if not GenJournalNarration.FindFirst() then
+                VoucherPostingCreditAccount.SetFilter(Type, '%1|%2',
+                    VoucherPostingCreditAccount.Type::"Bank Payment Voucher",
+                    VoucherPostingCreditAccount.Type::"Bank Receipt Voucher");
+                VoucherPostingCreditAccount.SetRange("Account Type", VoucherPostingCreditAccount."Account Type"::"Bank Account");
+                VoucherPostingCreditAccount.SetRange("Account No.", "No.");
+
+                VoucherPostingDebitAccount.SetFilter(Type, '%1|%2',
+                    VoucherPostingDebitAccount.Type::"Bank Payment Voucher",
+                    VoucherPostingDebitAccount.Type::"Bank Receipt Voucher");
+                VoucherPostingDebitAccount.SetRange("Account Type", VoucherPostingDebitAccount."Account Type"::"Bank Account");
+                VoucherPostingDebitAccount.SetRange("Account No.", "No.");
+                if (not VoucherPostingCreditAccount.FindFirst()) and (not VoucherPostingDebitAccount.FindFirst()) then
                     CurrReport.Skip();
 
                 if BankAccountNo <> "No." then begin
@@ -489,7 +500,8 @@ report 18930 "Bank Book"
         CompanyInformation: Record "Company Information";
         GLEntry: Record "G/L Entry";
         GLEntry2: Record "G/L Entry";
-        GenJournalNarration: Record "Gen. Journal Narration";
+        VoucherPostingCreditAccount: Record "Voucher Posting Credit Account";
+        VoucherPostingDebitAccount: Record "Voucher Posting Debit Account";
         SourceCode: Record "Source Code";
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         Daybook: Report "Day Book";

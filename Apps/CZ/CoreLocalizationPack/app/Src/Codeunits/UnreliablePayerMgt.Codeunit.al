@@ -25,26 +25,29 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
     var
         ResponseTempBlob: Codeunit "Temp Blob";
         InsertEntryCount: Integer;
-        VATRegNoCount: Integer;
-        MaxVATRegNoCount: Integer;
-        CurrVATRegNoCount: Integer;
+        RemainingRecordCount: Integer;
+        RecordLimit: Integer;
+        RecordCountToSend: Integer;
+        Index: Integer;
     begin
         GetUnreliablePayerServiceSetup();
-        VATRegNoCount := GetVATRegNoCount();
-        if VATRegNoCount = 0 then
+        RemainingRecordCount := GetVATRegNoCount();
+        if RemainingRecordCount = 0 then
             exit(false);
 
-        MaxVATRegNoCount := GetMaxVATRegNoCount();
+        RecordLimit := GetVATRegNoLimit();
+        Index := 1;
         repeat
-            CurrVATRegNoCount := MaxVATRegNoCount;
-            if VATRegNoCount <= MaxVATRegNoCount then
-                CurrVATRegNoCount := VATRegNoCount;
-            if not GetUnrPayerStatus(VATRegNoList, ResponseTempBlob) then
+            RecordCountToSend := RecordLimit;
+            if RemainingRecordCount <= RecordLimit then
+                RecordCountToSend := RemainingRecordCount;
+            if not GetUnrPayerStatus(VATRegNoList.GetRange(Index, RecordCountToSend), ResponseTempBlob) then
                 exit(false);
 
             InsertEntryCount += ImportUnrPayerStatusResponse(ResponseTempBlob);
-            VATRegNoCount -= CurrVATRegNoCount;
-        until VATRegNoCount = 0;
+            RemainingRecordCount -= RecordCountToSend;
+            Index += RecordCountToSend;
+        until RemainingRecordCount = 0;
 
         if ShowMessage then
             Message(ImportSuccessfulMsg, InsertEntryCount);
@@ -118,11 +121,8 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
         exit(UnreliablePayerListCZL.GetInsertEntryCount());
     end;
 
-    local procedure GetMaxVATRegNoCount(): Integer
+    local procedure GetVATRegNoLimit(): Integer
     begin
-        GetUnreliablePayerServiceSetup();
-        if UnrelPayerServiceSetupCZL."Unr.Payer Request Record Limit" <> 0 then
-            exit(UnrelPayerServiceSetupCZL."Unr.Payer Request Record Limit");
         exit(UnreliablePayerWSCZL.GetInputRecordLimit());
     end;
 
@@ -314,9 +314,21 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
     local procedure ConfirmProcess(ConfirmQuestion: Text)
     var
         ConfirmManagement: Codeunit "Confirm Management";
+        IsHandled: Boolean;
     begin
+        OnBeforeConfirmProcess(ConfirmQuestion, IsHandled);
+        if IsHandled then
+            exit;
+        if not IsConfirmDialogAllowed() then
+            exit;
         if not ConfirmManagement.GetResponse(ConfirmQuestion, false) then
             Error('');
+    end;
+
+    local procedure IsConfirmDialogAllowed() IsAllowed: Boolean
+    begin
+        IsAllowed := GuiAllowed();
+        OnIsConfirmDialogAllowed(IsAllowed);
     end;
 
     procedure CreateUnrelPayerServiceNotSetNotification()
@@ -340,4 +352,15 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
     local procedure OnAfterIsVATRegNoExportPossible(VATRegNo: Code[20]; CountryCode: Code[10]; var ReturnValue: Boolean)
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure  OnBeforeConfirmProcess(ConfirmQuestion: Text; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure  OnIsConfirmDialogAllowed(var IsAllowed: Boolean)
+    begin
+    end;
+
 }

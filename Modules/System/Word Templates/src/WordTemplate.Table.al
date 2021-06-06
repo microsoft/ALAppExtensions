@@ -15,7 +15,7 @@ table 9988 "Word Template"
     {
         field(1; "Code"; Code[30])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
         }
         field(2; Name; Text[250])
         {

@@ -60,34 +60,4 @@ table 18692 "TDS Section"
         }
         key(Key2; "Presentation Order") { }
     }
-
-    trigger OnInsert()
-    var
-        TDSSection: Record "TDS Section";
-        SubTDSSection: Record "TDS Section";
-    begin
-        if "Presentation Order" = 0 then begin
-            TDSSection.SetCurrentKey("Presentation Order");
-            if TDSSection.FindLast() then begin
-                SubTDSSection.Reset();
-                SubTDSSection.SetCurrentKey("Presentation Order");
-                SubTDSSection.SetRange("Parent Code", Code);
-                if SubTDSSection.FindLast() then
-                    "Presentation Order" := SubTDSSection."Presentation Order" + 1
-                else
-                    "Presentation Order" := TDSSection."Presentation Order" + 20
-            end else
-                "Presentation Order" := 1;
-        end;
-
-        if "Section Order" = 0 then begin
-            TDSSection.Reset();
-            TDSSection.SetCurrentKey("Presentation Order");
-            TDSSection.SetRange("Parent Code", "Parent Code");
-            if TDSSection.FindLast() then
-                "Section Order" := TDSSection."Section Order" + 1
-            else
-                "Section Order" := 1;
-        end;
-    end;
 }

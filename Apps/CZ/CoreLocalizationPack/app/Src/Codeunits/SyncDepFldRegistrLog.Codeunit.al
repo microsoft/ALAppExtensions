@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
 {
+    Permissions = tabledata "Registration Log" = rimd,
+                  tabledata "Registration Log CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

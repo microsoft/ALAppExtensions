@@ -237,11 +237,11 @@ codeunit 10679 "SAF-T Data Check"
             AddBasicSAFTMissingField(TempSAFTMissingField, CompanyInformation, CompanyInformation.FieldNo("Country/Region Code"));
         if CompanyInformation.Name = '' then
             AddBasicSAFTMissingField(TempSAFTMissingField, CompanyInformation, CompanyInformation.FieldNo(Name));
-        if CompanyInformation.Address = '' then
+        if CheckAddress() and (CompanyInformation.Address = '') then
             AddBasicSAFTMissingField(TempSAFTMissingField, CompanyInformation, CompanyInformation.FieldNo(Address));
         if CompanyInformation.City = '' then
             AddBasicSAFTMissingField(TempSAFTMissingField, CompanyInformation, CompanyInformation.FieldNo(City));
-        if CompanyInformation."Post Code" = '' then
+        if CheckPostCode() and (CompanyInformation."Post Code" = '') then
             AddBasicSAFTMissingField(TempSAFTMissingField, CompanyInformation, CompanyInformation.FieldNo("Post Code"));
         if CompanyInformation."SAF-T Contact No." = '' then
             AddBasicSAFTMissingField(TempSAFTMissingField, CompanyInformation, CompanyInformation.FieldNo("SAF-T Contact No."))
@@ -318,11 +318,11 @@ codeunit 10679 "SAF-T Data Check"
         TempSAFTMissingField.DeleteAll();
         if Customer.Name = '' then
             AddBasicSAFTMissingField(TempSAFTMissingField, Customer, Customer.FieldNo(Name));
-        if Customer.Address = '' then
+        if CheckAddress() and (Customer.Address = '') then
             AddBasicSAFTMissingField(TempSAFTMissingField, Customer, Customer.FieldNo(Address));
         if Customer.City = '' then
             AddBasicSAFTMissingField(TempSAFTMissingField, Customer, Customer.FieldNo(City));
-        if Customer."Post Code" = '' then
+        if CheckPostCode() and (Customer."Post Code" = '') then
             AddBasicSAFTMissingField(TempSAFTMissingField, Customer, Customer.FieldNo("Post Code"));
     end;
 
@@ -332,11 +332,11 @@ codeunit 10679 "SAF-T Data Check"
         TempSAFTMissingField.DeleteAll();
         if Vendor.Name = '' then
             AddBasicSAFTMissingField(TempSAFTMissingField, Vendor, Vendor.FieldNo(Name));
-        if Vendor.Address = '' then
+        if CheckAddress() and (Vendor.Address = '') then
             AddBasicSAFTMissingField(TempSAFTMissingField, Vendor, Vendor.FieldNo(Address));
         if Vendor.City = '' then
             AddBasicSAFTMissingField(TempSAFTMissingField, Vendor, Vendor.FieldNo(City));
-        if Vendor."Post Code" = '' then
+        if CheckPostCode() and (Vendor."Post Code" = '') then
             AddBasicSAFTMissingField(TempSAFTMissingField, Vendor, Vendor.FieldNo("Post Code"));
     end;
 
@@ -462,6 +462,21 @@ codeunit 10679 "SAF-T Data Check"
         exit(ACTION::No = SAFTDataCheck.RunModal());
     end;
 
+    local procedure CheckPostCode(): Boolean
+    var
+        SAFTSetup: Record "SAF-T Setup";
+    begin
+        SAFTSetup.Get();
+        exit(SAFTSetup."Check Post Code");
+    end;
+
+    local procedure CheckAddress(): Boolean
+    var
+        SAFTSetup: Record "SAF-T Setup";
+    begin
+        SAFTSetup.Get();
+        exit(SAFTSetup."Check Address");
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnCollectErrors(var ErrorMessageMgt: Codeunit "Error Message Management")

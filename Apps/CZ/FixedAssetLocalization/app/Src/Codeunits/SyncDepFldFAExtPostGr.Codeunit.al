@@ -3,6 +3,8 @@
 codeunit 31307 "Sync.Dep.Fld-FAExtPostGr CZF"
 {
     Access = Internal;
+    Permissions = tabledata "FA Extended Posting Group" = rimd,
+                  tabledata "FA Extended Posting Group CZF" = rimd;
 
     [EventSubscriber(ObjectType::Table, Database::"FA Extended Posting Group", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenameFAExtendedPostingGroup(var Rec: Record "FA Extended Posting Group"; var xRec: Record "FA Extended Posting Group")

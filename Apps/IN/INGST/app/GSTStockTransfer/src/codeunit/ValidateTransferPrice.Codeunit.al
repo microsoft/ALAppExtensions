@@ -16,15 +16,17 @@ codeunit 18393 "Validate Transfer Price"
         TaxCaseExecution.HandleEvent('OnAfterTransferPrirce', Rec, '', 1);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Tax Transaction Value", 'OnBeforeTableFilterApplied', '', false, false)]
-    local procedure OnBeforeTableFilterApplied(var TaxRecordID: RecordID; LineNoFilter: Integer; DocumentNoFilter: Text)
+   [EventSubscriber(ObjectType::Table, Database::"Tax Transaction Value", 'OnBeforeTableFilterApplied', '', false, false)]
+    local procedure OnBeforeTableFilterApplied(var TaxRecordID: RecordID; LineNoFilter: Integer; DocumentNoFilter: Text; TableIDFilter: Integer)
     var
         TransferLine: Record "Transfer Line";
     begin
-        TransferLine.Reset();
-        TransferLine.SetRange("Document No.", DocumentNoFilter);
-        TransferLine.SetRange("Line No.", LineNoFilter);
-        if TransferLine.FindFirst() then
-            TaxRecordID := TransferLine.RecordId();
+        if TableIDFilter = Database::"Transfer Line" then begin
+            TransferLine.Reset();
+            TransferLine.SetRange("Document No.", DocumentNoFilter);
+            TransferLine.SetRange("Line No.", LineNoFilter);
+            if TransferLine.FindFirst() then
+                TaxRecordID := TransferLine.RecordId();
+        end;
     end;
 }

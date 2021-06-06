@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31179 "Sync.Dep.Fld-VatCtrlRepEnL CZL"
 {
+    Permissions = tabledata "VAT Ctrl.Rep. - VAT Entry Link" = rimd,
+                  tabledata "VAT Ctrl. Report Ent. Link CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

@@ -268,12 +268,29 @@ page 30045 "APIV2 - Sales Quote Lines"
                         RegisterFieldSet(FieldNo("Variant Code"));
                     end;
                 }
+                field(locationId; "Location Id")
+                {
+                    Caption = 'Location Id';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Location Code"));
+                    end;
+                }
                 part(dimensionSetLines; "APIV2 - Dimension Set Lines")
                 {
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
                     SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(5);
+                }
+                part(location; "APIV2 - Locations")
+                {
+                    Caption = 'Location';
+                    EntityName = 'location';
+                    EntitySetName = 'locations';
+                    Multiplicity = ZeroOrOne;
+                    SubPageLink = SystemId = field("Location Id");
                 }
             }
         }

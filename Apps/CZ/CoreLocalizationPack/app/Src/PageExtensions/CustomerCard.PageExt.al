@@ -25,6 +25,29 @@ pageextension 11704 "Customer Card CZL" extends "Customer Card"
                 Importance = Additional;
             }
         }
+        addafter("Credit Limit (LCY)")
+        {
+            field(BalanceOfVendorCZL; BalanceAsVendor)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Balance As Vendor (LCY)';
+                Editable = false;
+                Enabled = BalanceOfVendorEnabled;
+                ToolTip = 'Specifies the vendor''s balance which is connected with certain customer';
+
+                trigger OnDrillDown()
+                var
+                    DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
+                    VendorLedgerEntry: Record "Vendor Ledger Entry";
+                begin
+                    DetailedVendorLedgEntry.SetRange("Vendor No.", Vendor."No.");
+                    Rec.CopyFilter("Global Dimension 1 Filter", DetailedVendorLedgEntry."Initial Entry Global Dim. 1");
+                    Rec.CopyFilter("Global Dimension 2 Filter", DetailedVendorLedgEntry."Initial Entry Global Dim. 2");
+                    Rec.CopyFilter("Currency Filter", DetailedVendorLedgEntry."Currency Code");
+                    VendorLedgerEntry.DrillDownOnEntries(DetailedVendorLedgEntry);
+                end;
+            }
+        }
         addafter(PricesandDiscounts)
         {
             group("Foreign Trade")
@@ -69,4 +92,22 @@ pageextension 11704 "Customer Card CZL" extends "Customer Card"
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        if Vendor.Get(Rec.GetLinkedVendorCZL()) then begin
+            Vendor.CalcFields("Balance (LCY)");
+            BalanceAsVendor := Vendor."Balance (LCY)";
+            BalanceOfVendorEnabled := true;
+        end else begin
+            BalanceAsVendor := 0;
+            BalanceOfVendorEnabled := false;
+        end;
+    end;
+
+    var
+        Vendor: Record Vendor;
+        BalanceAsVendor: Decimal;
+        [InDataSet]
+        BalanceOfVendorEnabled: Boolean;
 }

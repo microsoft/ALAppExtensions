@@ -82,6 +82,11 @@ page 10687 "SAF-T Export Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies that multiple ZIP files will be generated.';
                 }
+                field(ExportCurrencyInformation; "Export Currency Information")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies that currency information must be included in the export to the SAF-T file.';
+                }
                 field(Status; Status)
                 {
                     ApplicationArea = Basic, Suite;
@@ -175,7 +180,7 @@ page 10687 "SAF-T Export Card"
                 Caption = 'Download Files';
                 ToolTip = 'Download the generated SAF-T files.';
                 RunObject = Page "SAF-T Export Files";
-                RunPageLink = "Export ID" = field ("ID");
+                RunPageLink = "Export ID" = field("ID");
             }
         }
     }

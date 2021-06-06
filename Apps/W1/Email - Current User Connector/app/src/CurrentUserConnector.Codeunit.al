@@ -51,6 +51,16 @@ codeunit 4500 "Current User Connector" implements "Email Connector"
     end;
 
     local procedure SubstituteEmailAddress(var EmailAccount: Record "Email Account")
+    begin
+        // there may only be one account of type "Current User"
+        if not EmailAccount.FindFirst() then
+            exit;
+
+        EmailAccount."Email Address" := GetCurrentUserEmailAddress();
+        EmailAccount.Modify();
+    end;
+
+    internal procedure GetCurrentUserEmailAddress(): Text[250]
     var
         User: Record User;
         EmailOutlookAPIHelper: Codeunit "Email - Outlook API Helper";
@@ -63,18 +73,14 @@ codeunit 4500 "Current User Connector" implements "Email Connector"
         [NonDebuggable]
         AccessToken: Text;
     begin
-        // there may only be one account of type "Current User"
-        if not EmailAccount.FindFirst() then
-            exit;
-
         if EnvironmentInformation.IsSaaS() then begin
             if not User.Get(UserSecurityId()) then
                 exit;
             if User."Authentication Email" = '' then
                 exit;
 
-            EmailAccount."Email Address" := User."Authentication Email";
-        end else begin
+            exit(User."Authentication Email");
+        end else begin // OnPrem
             EmailOutlookAPIHelper.InitializeClients(APIClient, OAuthClient);
 
             if not EmailOutlookAPIHelper.IsAzureAppRegistrationSetup() then
@@ -84,9 +90,8 @@ codeunit 4500 "Current User Connector" implements "Email Connector"
             if not APIClient.GetAccountInformation(AccessToken, CurrentUserEmail, CurrentUserName) then
                 exit;
 
-            EmailAccount."Email Address" := CurrentUserEmail;
+            exit(CurrentUserEmail);
         end;
-        EmailAccount.Modify();
     end;
 
     procedure DeleteAccount(AccountId: Guid): Boolean

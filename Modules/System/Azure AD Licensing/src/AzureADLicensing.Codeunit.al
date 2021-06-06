@@ -179,7 +179,6 @@ codeunit 458 "Azure AD Licensing"
     /// Sets whether to include unknown plans when moving to the next subscribed SKU in subscribed SKUs collection.
     /// </summary>
     /// <param name="IncludeUnknownPlans">The value to be set to the flag.</param>
-    [Scope('OnPrem')]
     [NonDebuggable]
     procedure SetIncludeUnknownPlans(IncludeUnknownPlans: Boolean)
     begin

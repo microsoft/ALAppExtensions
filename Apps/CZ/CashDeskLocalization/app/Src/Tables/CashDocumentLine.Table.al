@@ -904,7 +904,6 @@ table 11733 "Cash Document Line CZP"
         {
             Caption = 'Advance Letter Link Code';
             DataClassification = CustomerContent;
-            Access = Internal;
 #if CLEAN18
             ObsoleteState = Removed;
 #else

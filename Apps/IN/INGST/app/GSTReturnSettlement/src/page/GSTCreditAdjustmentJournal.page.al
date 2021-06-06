@@ -5,8 +5,6 @@ page 18318 "GST Credit Adjustment Journal"
     InsertAllowed = false;
     PageType = Worksheet;
     SourceTable = "GST Credit Adjustment Journal";
-    UsageCategory = Lists;
-    ApplicationArea = Basic, Suite;
 
     layout
     {

@@ -54,17 +54,27 @@ codeunit 3909 "Retention Policy Log Impl."
         RetenPolicyTelemetryImpl.SendLogEntryToTelemetry(TempRetentionPolicyLogEntry);
         if (not SystemInitialization.IsInProgress()) and (Session.GetExecutionContext() = ExecutionContext::Normal) then begin // no background logging during OnCompanyOpen() or during install/upgrade
             // add log entry in background session to avoid rollback
-            if not InsertLogEntryInBackgroundSession(TempRetentionPolicyLogEntry) then;
-        end else
+            if not InsertLogEntryInBackgroundSession(TempRetentionPolicyLogEntry) then
+                RetenPolicyTelemetryImpl.SendTelemetryOnInsertLogEntryInBackgroundSessionFailed(SystemInitialization.IsInProgress(), Session.GetExecutionContext());
+        end else begin
+            RetenPolicyTelemetryImpl.SendTelemetryOnInsertLogEntryInForegroundSessionStart(SystemInitialization.IsInProgress(), Session.GetExecutionContext());
             CreateLogEntry(MessageType, Category, Message, Database.SessionId());
+            RetenPolicyTelemetryImpl.SendTelemetryOnInsertLogEntryInForegroundSessionEnd(SystemInitialization.IsInProgress(), Session.GetExecutionContext());
+        end;
     end;
 
     [TryFunction]
     local procedure InsertLogEntryInBackgroundSession(var TempRetentionPolicyLogEntry: Record "Retention Policy Log Entry" temporary)
     var
+        RetenPolicyTelemetryImpl: Codeunit "Reten. Policy Telemetry Impl.";
+        SystemInitialization: Codeunit "System Initialization";
         SessionId: Integer;
     begin
+        RetenPolicyTelemetryImpl.SendTelemetryOnInsertLogEntryInBackgroundSessionStart(SystemInitialization.IsInProgress(), Session.GetExecutionContext());
+
         StartSession(SessionId, Codeunit::"Retention Policy Log Impl.", CompanyName(), TempRetentionPolicyLogEntry);
+
+        RetenPolicyTelemetryImpl.SendTelemetryOnInsertLogEntryInBackgroundSessionEnd(SystemInitialization.IsInProgress(), Session.GetExecutionContext());
     end;
 
     local procedure CreateLogEntry(MessageType: Enum "Retention Policy Log Message Type"; Category: Enum "Retention Policy Log Category"; Message: Text[2048]; SessionId: Integer)

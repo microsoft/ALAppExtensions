@@ -484,6 +484,13 @@ page 30012 "APIV2 - Sales Invoices"
                     Caption = 'Remaining Amount';
                     Editable = false;
                 }
+                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
+                {
+                    Caption = 'Dimension Set Lines';
+                    EntityName = 'dimensionSetLine';
+                    EntitySetName = 'dimensionSetLines';
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(8);
+                }
                 part(salesInvoiceLines; "APIV2 - Sales Invoice Lines")
                 {
                     Caption = 'Lines';
@@ -574,13 +581,6 @@ page 30012 "APIV2 - Sales Invoices"
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const(5);
-                }
-                part(dimensionSetLines; "APIV2 - Dimension Set Lines")
-                {
-                    Caption = 'Dimension Set Lines';
-                    EntityName = 'dimensionSetLine';
-                    EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(8);
                 }
             }
         }

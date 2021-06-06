@@ -30,7 +30,7 @@ page 9995 "Word Template Creation Wizard"
                 label(SelectEntity)
                 {
                     ApplicationArea = All;
-                    Caption = 'Choose the source of the data for the template, or skip this step and upload a custom template.';
+                    Caption = 'Choose the source of the data for the template.';
                 }
 
                 field(AddNewEntity; AddNewEntityLbl)

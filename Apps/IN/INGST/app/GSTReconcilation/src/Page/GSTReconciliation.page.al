@@ -4,8 +4,6 @@ page 18282 "GST Reconciliation"
     PaGetype = Document;
     PromotedActionCategories = 'New,Process,Report,Manage,Matching';
     SourceTable = "GST Reconcilation";
-    UsageCategory = Documents;
-    ApplicationArea = Basic, Suite;
 
     layout
     {

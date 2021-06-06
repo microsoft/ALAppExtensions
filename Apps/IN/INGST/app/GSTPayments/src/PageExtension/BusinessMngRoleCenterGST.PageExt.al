@@ -61,6 +61,63 @@ pageextension 18253 "Business Mng Role Center GST" extends "Business Manager Rol
                         ToolTip = 'Specifies the rates for the defined components, which will be used to calculate GST.';
                     }
                 }
+                group("Periodic Activities")
+                {
+                    action("GST Credit Adjustment")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'GST Credit Adjustment';
+                        Promoted = false;
+                        Image = EditList;
+                        RunObject = Page "GST Credit Adjustment";
+                        ToolTip = 'GST credit adjustment is a type of journal to keep track of all the credit adjustments made.';
+                    }
+                    action("GST Reconciliation")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'GST Reconciliation';
+                        Promoted = false;
+                        Image = EditList;
+                        RunObject = Page "GST Reconcilation List";
+                        ToolTip = 'GST Reconciliation is a process to keep track of all the GST reconciliation.';
+                    }
+                    action("GST Settlement")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'GST Settlement';
+                        Promoted = false;
+                        Image = EditList;
+                        RunObject = Page "GST Settlement";
+                        ToolTip = 'GST Settlement is a process to keep track of all the GST settlement made.';
+                    }
+                    action("GST Liability Adjustment")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'GST Liability Adjustment';
+                        Promoted = false;
+                        Image = EditList;
+                        RunObject = Page "GST Liability Adjustment";
+                        ToolTip = 'GST liability adjustment is a type of journal to keep track of all the liability adjustments made in GST.';
+                    }
+                    action("GST Adjustment Journal")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'GST Adjustment Journal';
+                        Promoted = false;
+                        Image = EditList;
+                        RunObject = Page "GST Adjustment Journal";
+                        ToolTip = 'GST adjustment journal is a type of journal to keep track of all the GST adjustments made.';
+                    }
+                    action("Update GST TDS Certificate")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Update GST TDS Certificate';
+                        Promoted = false;
+                        Image = EditList;
+                        RunObject = Page "Update GST TDS Certificate Dtl";
+                        ToolTip = 'Update GST TDS certificate is a register maintained to keep track of all the GST TDS certificates with relevant details.';
+                    }
+                }
             }
         }
         addlast("User Configuration")

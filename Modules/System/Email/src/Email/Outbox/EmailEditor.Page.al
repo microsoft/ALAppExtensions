@@ -44,9 +44,9 @@ page 13 "Email Editor"
 
                             trigger OnAssistEdit()
                             begin
-                                EmailEditor.ChangeEmailAccount(Rec, EmailAccount);
+                                EmailEditor.ChangeEmailAccount(Rec, TempEmailAccount);
 
-                                UpdateFromField(EmailAccount);
+                                UpdateFromField(TempEmailAccount);
                                 CurrPage.Update();
                             end;
                         }
@@ -191,7 +191,7 @@ page 13 "Email Editor"
                 var
                     IsEmailDataValid: Boolean;
                 begin
-                    IsEmailDataValid := EmailEditor.ValidateEmailData(EmailAccount."Email Address", EmailMessage);
+                    IsEmailDataValid := EmailEditor.ValidateEmailData(TempEmailAccount."Email Address", EmailMessage);
 
                     if IsEmailDataValid then begin
                         IsNewOutbox := false;
@@ -259,6 +259,23 @@ page 13 "Email Editor"
                     EmailImpl.ShowSourceRecord(Rec."Message Id");
                 end;
             }
+
+            action(SourceAttachments)
+            {
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Image = Attach;
+                Caption = 'Get Source Attachments';
+                ToolTip = 'Attach a file that was originally attached to the source document.';
+                Scope = Page;
+
+                trigger OnAction()
+                begin
+                    EmailEditor.AttachFromRelatedRecords(Rec."Message Id");
+                end;
+            }
         }
     }
 
@@ -266,10 +283,10 @@ page 13 "Email Editor"
     begin
         EmailEditor.CheckPermissions(Rec);
 
-        EmailEditor.GetEmailAccount(Rec, EmailAccount);
+        EmailEditor.GetEmailAccount(Rec, TempEmailAccount);
         EmailEditor.GetEmailMessage(Rec, EmailMessage);
 
-        UpdateFromField(EmailAccount);
+        UpdateFromField(TempEmailAccount);
         ToRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::"To");
         CcRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::Cc);
         BccRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::Bcc);
@@ -353,7 +370,7 @@ page 13 "Email Editor"
     end;
 
     var
-        EmailAccount: Record "Email Account" temporary;
+        TempEmailAccount: Record "Email Account" temporary;
         EmailMessage: Codeunit "Email Message Impl.";
         EmailEditor: Codeunit "Email Editor";
         EmailAction: Enum "Email Action";

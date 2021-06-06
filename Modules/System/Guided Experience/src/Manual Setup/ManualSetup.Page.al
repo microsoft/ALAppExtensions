@@ -25,7 +25,7 @@ page 1875 "Manual Setup"
         {
             repeater(Group)
             {
-                field(Name; Title)
+                field(Name; "Short Title")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the manual setup.';
@@ -74,6 +74,7 @@ page 1875 "Manual Setup"
                 Scope = Repeater;
                 ShortCutKey = 'Return';
                 ToolTip = 'View or edit the setup for the application feature.';
+                Enabled = ("Object Type to Run" = "Object Type to Run"::Page) and ("Object ID to Run" <> 0);
 
                 trigger OnAction()
                 begin

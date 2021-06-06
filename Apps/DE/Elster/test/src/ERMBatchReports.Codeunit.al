@@ -133,6 +133,54 @@ codeunit 148170 "Elster ERM Batch Reports"
         VATStatementName.Delete(true);
     end;
 
+    [Test]
+    [HandlerFunctions('VatStatementPreviewVerifyFiltersPageHandler')]
+    procedure VATStatementPreviewInheritFiltersFromSalesAdvNotificationCard()
+    var
+        VATStatementLine: Record "VAT Statement Line";
+        VATStatementName: Record "VAT Statement Name";
+        VATPostingSetup: Record "VAT Posting Setup";
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+        SalesVATAdvNotifCard: TestPage "Sales VAT Adv. Notif. Card";
+        No: Code[20];
+    begin
+        // [FETURE] [UI]
+        // [SCENARIO 395630] Stan see the same data in the VAT statement preview page that he had specified in the Sales advance notification card
+
+        Initialize();
+        UpdateSalesVATAdvNotificationOnVATStatementName();
+        CreateAndUpdateVATStatementLines(VATStatementName, VATPostingSetup, VATStatementLine."Gen. Posting Type"::Purchase);
+        Commit();
+        No := LibraryUtility.GenerateGUID();
+        CreateSalesVATAdvanceNotificationCard(No);
+
+        // [GIVEN] Sales VAT advance notification with "Incl. VAT Entries (Period)" = "Within Period", "Incl. VAT Entries (Closing)" = "Open and Closed"
+        // [GIVEN] and "Starting Date" = 01.01.2020
+        SalesVATAdvanceNotif.Get(No);
+        SalesVATAdvanceNotif.Validate("Incl. VAT Entries (Period)", SalesVATAdvanceNotif."Incl. VAT Entries (Period)"::"Within Period");
+        SalesVATAdvanceNotif.Validate("Incl. VAT Entries (Closing)", SalesVATAdvanceNotif."Incl. VAT Entries (Closing)"::"Open and Closed");
+        SalesVATAdvanceNotif.Modify(true);
+        LibraryVariableStorage.Enqueue(SalesVATAdvanceNotif."Starting Date");
+        LibraryVariableStorage.Enqueue(SalesVATAdvanceNotif."Incl. VAT Entries (Period)");
+        LibraryVariableStorage.Enqueue(SalesVATAdvanceNotif."Incl. VAT Entries (Closing)");
+
+        // [GIVEN] Sales VAT advance notification card is opened
+        SalesVATAdvNotifCard.OpenEdit();
+        SalesVATAdvNotifCard.Filter.SetFilter("No.", No);
+
+        // [WHEN] Stan press "Preview"
+        SalesVATAdvNotifCard."P&review".Invoke();
+
+        // [THEN] Stan can see the following values in the VAT statement preview page
+        // [THEN] "Period" = "Within Period", "Selection" = "Open and Close", "Date filter" = "01.01.2020"
+        // Verified in VatStatementPreviewVerifyFiltersPageHandler
+
+        LibraryVariableStorage.AssertEmpty();
+
+        // Tear Down.
+        VATStatementName.Delete(true);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Elster ERM Batch Reports");
@@ -299,6 +347,14 @@ codeunit 148170 "Elster ERM Batch Reports"
         LibraryVariableStorage.Dequeue(RowNo);
         VATStatementPreview.VATStatementLineSubForm.Filter.SetFilter("Row No.", RowNo);
         VATStatementPreview.VATStatementLineSubForm.TotalAmount.AssertEquals(TotalAmount);
+    end;
+
+    [PageHandler]
+    procedure VatStatementPreviewVerifyFiltersPageHandler(var VATStatementPreview: TestPage "VAT Statement Preview")
+    begin
+        VATStatementPreview.DateFilter.AssertEquals(StrSubstNo('%1..', LibraryVariableStorage.DequeueDate()));
+        VATStatementPreview.PeriodSelection.AssertEquals(LibraryVariableStorage.DequeueInteger());
+        VATStatementPreview.Selection.AssertEquals(LibraryVariableStorage.DequeueInteger());
     end;
 
     [ModalPageHandler]

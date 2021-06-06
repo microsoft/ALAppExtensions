@@ -162,7 +162,7 @@ codeunit 149000 "BCPT Start Tests"
         BCPTLine.SetRange("BCPT Code", BCPTHeader.Code);
 
         if not BCPTLine.FindSet() then
-            Error('There is nothign to run.');
+            Error('There is nothing to run.');
 
         repeat
             CodeunitMetadata.Get(BCPTLine."Codeunit ID");

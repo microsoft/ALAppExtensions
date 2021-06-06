@@ -99,4 +99,47 @@ codeunit 31253 "Item Journal Line Handler CZA"
         ValueEntry."Currency Code CZA" := ItemJournalLine."Currency Code CZA";
         ValueEntry."Currency Factor CZA" := ItemJournalLine."Currency Factor CZA";
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterValidateEvent', 'Applies-from Entry', false, false)]
+    local procedure CheckExactCostReturnOnAfterValidateAppliesFromEntry(var Rec: Record "Item Journal Line"; var xRec: Record "Item Journal Line"; CurrFieldNo: Integer)
+    var
+        ManufacturingSetup: Record "Manufacturing Setup";
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        if Rec."Applies-from Entry" <> 0 then begin
+            ItemLedgerEntry.Get(Rec."Applies-from Entry");
+            if Rec."Entry Type" = Rec."Entry Type"::Consumption then begin
+                ManufacturingSetup.Get();
+                if ManufacturingSetup."Exact Cost Rev.Mand. Cons. CZA" then begin
+                    ItemLedgerEntry.TestField("Order No.", Rec."Order No.");
+                    ItemLedgerEntry.TestField("Order Line No.", Rec."Order Line No.");
+                    ItemLedgerEntry.TestField("Prod. Order Comp. Line No.", Rec."Prod. Order Comp. Line No.");
+                    ItemLedgerEntry.TestField("Entry Type", Rec."Entry Type");
+                end;
+            end;
+            if ItemLedgerEntry."Invoiced Quantity" = 0 then
+                Rec."Unit Cost" := 0;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnSelectItemEntryOnBeforeOpenPage', '', false, false)]
+    local procedure FilterForExactCostReturnOnSelectItemEntryOnBeforeOpenPage(var ItemLedgerEntry: Record "Item Ledger Entry"; ItemJournalLine: Record "Item Journal Line"; CurrentFieldNo: Integer)
+    var
+        ManufacturingSetup: Record "Manufacturing Setup";
+    begin
+        if (ItemJournalLine."Entry Type" = ItemJournalLine."Entry Type"::Consumption) and
+            (ItemJournalLine."Value Entry Type" <> ItemJournalLine."Value Entry Type"::Revaluation) and
+            (CurrentFieldNo = ItemJournalLine.FieldNo("Applies-from Entry"))
+        then begin
+            ManufacturingSetup.Get();
+            if ManufacturingSetup."Exact Cost Rev.Mand. Cons. CZA" then begin
+                ItemLedgerEntry.SetCurrentKey(
+                  "Order Type", "Order No.", "Order Line No.", "Entry Type", "Prod. Order Comp. Line No.");
+                ItemLedgerEntry.SetRange("Order No.", ItemJournalLine."Order No.");
+                ItemLedgerEntry.SetRange("Order Line No.", ItemJournalLine."Order Line No.");
+                ItemLedgerEntry.SetRange("Prod. Order Comp. Line No.", ItemJournalLine."Prod. Order Comp. Line No.");
+                ItemLedgerEntry.SetRange("Entry Type", ItemJournalLine."Entry Type");
+            end;
+        end;
+    end;
 }

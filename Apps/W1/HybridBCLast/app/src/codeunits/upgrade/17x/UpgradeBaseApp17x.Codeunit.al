@@ -21,7 +21,6 @@ codeunit 4054 "Upgrade BaseApp 17x"
             exit;
 
         UpgradeSharePointConnection();
-        CreateDefaultAADApplication();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Company Handler", 'OnUpgradePerCompanyDataForVersion', '', false, false)]
@@ -31,12 +30,31 @@ codeunit 4054 "Upgrade BaseApp 17x"
             exit;
 
         UpgradeIntegrationTableMapping();
-        UpgradeWorkflowStepArgumentEventFilters();
         UpgradeTemplates();
         UpgradeContactMobilePhoneNo();
         UpgradeDefaultDimensions();
         UpgradeDimensionValues();
         UpgradeGLAccountAPIType(CountryCode);
+        UpdateItemVariants();
+        UpgradeUserTaskDescriptionToUTF8();
+        UpgradeWorkflowStepArgumentEventFilters();
+    end;
+
+    local procedure UpdateItemVariants()
+    var
+        Item: Record Item;
+        ItemVariant: Record "Item Variant";
+        ItemVariant2: Record "Item Variant";
+    begin
+        if ItemVariant.FindSet() then
+            repeat
+                if Item.Get(ItemVariant."Item No.") then
+                    if ItemVariant."Item Id" <> Item.SystemId then begin
+                        ItemVariant2 := ItemVariant;
+                        ItemVariant2."Item Id" := Item.SystemId;
+                        ItemVariant2.Modify();
+                    end;
+            until ItemVariant.Next() = 0;
     end;
 
     local procedure UpgradeIntegrationTableMapping()
@@ -58,49 +76,6 @@ codeunit 4054 "Upgrade BaseApp 17x"
             Database::"CRM Product",
             Database::"CRM Productpricelevel");
         IntegrationTableMapping.ModifyAll("Uncouple Codeunit ID", Codeunit::"CDS Int. Table Uncouple");
-    end;
-
-    local procedure UpgradeWorkflowStepArgumentEventFilters()
-    var
-        WorkflowStepArgument: Record "Workflow Step Argument";
-        WorkflowStepArgumentArchive: Record "Workflow Step Argument Archive";
-    begin
-        ChangeEncodingToUTF8(Database::"Workflow Step Argument", WorkflowStepArgument.FieldNo("Event Conditions"));
-        ChangeEncodingToUTF8(Database::"Workflow Step Argument Archive", WorkflowStepArgumentArchive.FieldNo("Event Conditions"));
-    end;
-
-    local procedure ChangeEncodingToUTF8(TableNo: Integer; FieldNo: Integer)
-    var
-        InTempBlob, OutTempBlob : Codeunit "Temp Blob";
-        RecordRef: RecordRef;
-        InStr: InStream;
-        OutStr: OutStream;
-        Value: Text;
-    begin
-        RecordRef.Open(TableNo);
-
-        if RecordRef.FindSet(true) then
-            repeat
-                Clear(InTempBlob);
-                Clear(OutTempBlob);
-
-                InTempBlob.FromRecordRef(RecordRef, FieldNo);
-
-                if InTempBlob.HasValue() then begin
-                    // Read the value using the default encoding
-                    InTempBlob.CreateInStream(InStr);
-                    InStr.Read(Value);
-
-                    // Write the value in UTF8
-                    OutTempBlob.CreateOutStream(OutStr, TextEncoding::UTF8);
-                    OutStr.Write(Value);
-
-                    OutTempBlob.ToRecordRef(RecordRef, FieldNo);
-                    RecordRef.Modify();
-                end;
-            until RecordRef.Next() = 0;
-
-        RecordRef.Close();
     end;
 
     local procedure UpgradeTemplates()
@@ -430,11 +405,54 @@ codeunit 4054 "Upgrade BaseApp 17x"
         end;
     end;
 
-    local procedure CreateDefaultAADApplication()
+    local procedure UpgradeUserTaskDescriptionToUTF8()
     var
-        AADApplicationSetup: Codeunit "AAD Application Setup";
+        UserTask: Record "User Task";
     begin
-        AADApplicationSetup.CreateDynamics365BusinessCentralforVirtualEntitiesAAdApplication();
+        ChangeEncodingToUTF8(Database::"User Task", UserTask.FieldNo(Description), TextEncoding::Windows);
+    end;
+
+    local procedure UpgradeWorkflowStepArgumentEventFilters()
+    var
+        WorkflowStepArgument: Record "Workflow Step Argument";
+        WorkflowStepArgumentArchive: Record "Workflow Step Argument Archive";
+    begin
+        ChangeEncodingToUTF8(Database::"Workflow Step Argument", WorkflowStepArgument.FieldNo("Event Conditions"), TextEncoding::MSDos);
+        ChangeEncodingToUTF8(Database::"Workflow Step Argument Archive", WorkflowStepArgumentArchive.FieldNo("Event Conditions"), TextEncoding::MSDos);
+    end;
+
+    local procedure ChangeEncodingToUTF8(TableNo: Integer; FieldNo: Integer; FromEncoding: TextEncoding)
+    var
+        InTempBlob, OutTempBlob : Codeunit "Temp Blob";
+        RecordRef: RecordRef;
+        InStr: InStream;
+        OutStr: OutStream;
+        Value: Text;
+    begin
+        RecordRef.Open(TableNo);
+
+        if RecordRef.FindSet(true) then
+            repeat
+                Clear(InTempBlob);
+                Clear(OutTempBlob);
+
+                InTempBlob.FromRecordRef(RecordRef, FieldNo);
+
+                if InTempBlob.HasValue() then begin
+                    // Read the value using the given encoding
+                    InTempBlob.CreateInStream(InStr, FromEncoding);
+                    InStr.Read(Value);
+
+                    // Write the value in UTF8
+                    OutTempBlob.CreateOutStream(OutStr, TextEncoding::UTF8);
+                    OutStr.Write(Value);
+
+                    OutTempBlob.ToRecordRef(RecordRef, FieldNo);
+                    RecordRef.Modify();
+                end;
+            until RecordRef.Next() = 0;
+
+        RecordRef.Close();
     end;
 
 }

@@ -169,5 +169,15 @@ tableextension 18147 "GST Sales Header Ext" extends "Sales Header"
             Caption = 'Ship-to GST Customer Type';
             DataClassification = CustomerContent;
         }
+        field(18178; "Time of Removal"; Time)
+        {
+            Caption = 'Time of Removal';
+            DataClassification = CustomerContent;
+        }
+        field(18179; "Mode of Transport"; Text[20])
+        {
+            Caption = 'Mode of Transport';
+            DataClassification = CustomerContent;
+        }
     }
 }

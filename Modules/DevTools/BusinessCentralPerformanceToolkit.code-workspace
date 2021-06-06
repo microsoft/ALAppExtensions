@@ -1,13 +1,13 @@
 {
 	"folders": [
 		{
-			"path": "ApplicationBenchmarkTool"
+			"path": "BusinessCentralPerformanceToolkit"
 		},
 		{
 			"path": "TestFramework/TestRunner"
 		},
 		{
-			"path": "ApplicationBenchmarkTool Tests"
+			"path": "BusinessCentralPerformanceToolkit Tests"
 		}
 	],
 	"settings": {}

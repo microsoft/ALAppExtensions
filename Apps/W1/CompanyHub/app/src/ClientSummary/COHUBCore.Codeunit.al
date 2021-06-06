@@ -94,14 +94,12 @@ codeunit 1151 "COHUB Core"
     var
         COHUBUrlTaskManager: Codeunit "COHUB Url Task Manager";
         RecRef: RecordRef;
-        ResourceUrl: Text;
         EnviromentNameAndEnviroment: Text;
         EnviromentLink: Text;
         EnviromentName: Text;
     begin
         RecRef.GetTable(COHUBEnviroment);
         EnviromentLink := COHUBEnviroment.Link;
-        ResourceUrl := GetResoureUrl();
 
         if not EnviromentLink.ToLower().TrimStart().StartsWith(GetFixedClientUrl()) then
             Error(ClienkLinkFormatErr);
@@ -195,20 +193,28 @@ codeunit 1151 "COHUB Core"
 
     procedure GetFixedWebServicesUrl(): Text;
     var
+        Url: Text;
     begin
         if IsPPE() then
-            exit('https://api.businesscentral.dynamics-tie.com/')
-        else
-            exit('https://api.businesscentral.dynamics.com/');
+            exit('https://api.businesscentral.dynamics-tie.com/');
+
+
+        Url := GetUrl(ClientType::ODataV4);
+
+        // Should return something like https://api.businesscentral.dynamics.com
+        // We supprot partner URL structure as well https://[application family].bc.dynamics.com[/environment]
+        Url := Url.Remove(Url.IndexOf('.com/') + StrLen('.com/'));
+        exit(Url);
     end;
 
     procedure GetFixedClientUrl(): Text;
     var
+        URLHelper: Codeunit "Url Helper";
     begin
         if IsPPE() then
-            exit('https://businesscentral.dynamics-tie.com/')
-        else
-            exit('https://businesscentral.dynamics.com/');
+            exit('https://businesscentral.dynamics-tie.com/');
+
+        exit(URLHelper.GetFixedClientEndpointBaseUrl());
     end;
 
     procedure GetResoureUrl(): Text[100];
@@ -218,6 +224,21 @@ codeunit 1151 "COHUB Core"
             exit('https://projectmadeira-ppe.com')
         else
             exit('https://projectmadeira.com');
+    end;
+
+    procedure GetResourceUrl(): Text;
+    var
+        ResourceURL: Text;
+        Handled: Boolean;
+    begin
+        if IsPPE() then
+            exit('https://projectmadeira-ppe.com');
+
+        OnGetResourceURL(ResourceURL, Handled);
+        if Handled then
+            exit(ResourceURL);
+
+        exit('https://projectmadeira.com');
     end;
 
     procedure ExportEnviroments()
@@ -405,5 +426,10 @@ codeunit 1151 "COHUB Core"
         end;
 
         COHUBEnviromentRecordRef.SetTable(COHUBEnviroment);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetResourceURL(var ResourceURL: Text; var Handled: Boolean)
+    begin
     end;
 }

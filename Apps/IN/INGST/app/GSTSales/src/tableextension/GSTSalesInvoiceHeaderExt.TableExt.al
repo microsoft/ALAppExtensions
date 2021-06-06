@@ -201,5 +201,15 @@ tableextension 18148 "GST Sales Invoice Header Ext" extends "Sales Invoice Heade
             Caption = 'Cancel Reason';
             DataClassification = CustomerContent;
         }
+        field(18178; "Time of Removal"; Time)
+        {
+            Caption = 'Time of Removal';
+            DataClassification = CustomerContent;
+        }
+        field(18179; "Mode of Transport"; Text[20])
+        {
+            Caption = 'Mode of Transport';
+            DataClassification = CustomerContent;
+        }
     }
 }

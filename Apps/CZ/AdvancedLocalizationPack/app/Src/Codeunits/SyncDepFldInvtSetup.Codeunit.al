@@ -26,5 +26,6 @@ codeunit 31280 "Sync.Dep.Fld-InvtSetup CZA"
 
         SyncDepFldUtilities.SyncFields(Rec."Use GPPG from SKU", Rec."Use GPPG from SKU CZA", PreviousRecord."Use GPPG from SKU", PreviousRecord."Use GPPG from SKU CZA");
         SyncDepFldUtilities.SyncFields(Rec."Skip Update SKU on Posting", Rec."Skip Update SKU on Posting CZA", PreviousRecord."Skip Update SKU on Posting", PreviousRecord."Skip Update SKU on Posting CZA");
+        SyncDepFldUtilities.SyncFields(Rec."Exact Cost Reversing Mandatory", Rec."Exact Cost Revers. Mandat. CZA", PreviousRecord."Exact Cost Reversing Mandatory", PreviousRecord."Exact Cost Revers. Mandat. CZA");
     end;
 }

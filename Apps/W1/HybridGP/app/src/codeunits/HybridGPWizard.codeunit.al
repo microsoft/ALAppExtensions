@@ -6,6 +6,7 @@ codeunit 4015 "Hybrid GP Wizard"
         ReplicationCompletedServiceTypeTxt: Label 'ReplicationCompleted', Locked = true;
         TooManySegmentsErr: Label 'You have selected a company that has more than 9 segments. In order to migrate your data you need to reformat your Chart of Accounts in Dynamics GP to have less than 10 segments for these companies: %1', Comment = '%1 - Comma delimited list of companies.';
         AdditionalProcessesInProgressErr: Label 'Cannot start a new migration until the previous migration run and additional/posting processes have completed.';
+        ProductDescriptionTxt: Label 'Use this option if you are migrating from Dynamics GP. The migration process transforms the Dynamics GP data to the Dynamics 365 Business Central format.';
 
     procedure ProductId(): Text[250]
     begin
@@ -15,6 +16,13 @@ codeunit 4015 "Hybrid GP Wizard"
     procedure ProductName(): Text[250]
     begin
         exit(CopyStr(ProductNameTxt, 1, 250));
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductDescription', '', false, false)]
+    local procedure HandleGetHybridProductDescription(ProductId: Text; var ProductDescription: Text)
+    begin
+        if ProductId = ProductIdTxt then
+            ProductDescription := ProductDescriptionTxt;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductType', '', false, false)]

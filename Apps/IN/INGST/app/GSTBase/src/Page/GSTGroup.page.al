@@ -77,12 +77,9 @@ page 18001 "GST Group"
                 begin
                     ODataUtility.EditWorksheetInExcel('GST Group',
                     CurrPage.ObjectId(false),
-                    StrSubstNo(CodeValueLbl, Rec.Code));
+                    Rec.GetFilter(Code));
                 end;
             }
         }
     }
-
-    var
-        CodeValueLbl: Label 'Code %1', Comment = '%1 = GST Group Code';
 }

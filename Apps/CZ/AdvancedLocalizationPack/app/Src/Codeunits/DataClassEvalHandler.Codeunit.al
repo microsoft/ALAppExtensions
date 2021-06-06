@@ -13,6 +13,7 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         AssemblyLine: Record "Assembly Line";
         AssemblySetup: Record "Assembly Setup";
         CapacityLedgerEntry: Record "Capacity Ledger Entry";
+        GLEntry: Record "G/L Entry";
         InventorySetup: Record "Inventory Setup";
         ItemJournalLine: Record "Item Journal Line";
         ItemLedgerEntry: Record "Item Ledger Entry";
@@ -32,13 +33,20 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         Company.Get(CompanyName());
         if not Company."Evaluation Company" then
             exit;
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Detailed G/L Entry CZA");
 
         DataClassificationMgt.SetFieldToNormal(Database::"Assembly Header", AssemblyHeader.FieldNo("Gen. Bus. Posting Group CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Assembly Line", AssemblyLine.FieldNo("Gen. Bus. Posting Group CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Assembly Setup", AssemblySetup.FieldNo("Default Gen.Bus.Post. Grp. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Capacity Ledger Entry", CapacityLedgerEntry.FieldNo("User ID CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("Closed at Date CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("Applies-to ID CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("Amount to Apply CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("Applying Entry CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("Closed CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Use GPPG from SKU CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Skip Update SKU on Posting CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Exact Cost Revers. Mandat. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Item Journal Line", ItemJournalLine.FieldNo("Delivery-to Source No. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Item Journal Line", ItemJournalLine.FieldNo("Currency Code CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Item Journal Line", ItemJournalLine.FieldNo("Currency Factor CZA"));
@@ -49,6 +57,7 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         DataClassificationMgt.SetFieldToNormal(Database::"Item Ledger Entry", ItemLedgerEntry.FieldNo("Currency Code CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Item Ledger Entry", ItemLedgerEntry.FieldNo("Currency Factor CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Manufacturing Setup", ManufacturingSetup.FieldNo("Default Gen.Bus.Post. Grp. CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Manufacturing Setup", ManufacturingSetup.FieldNo("Exact Cost Rev.Mand. Cons. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Posted Assembly Header", PostedAssemblyHeader.FieldNo("Gen. Bus. Posting Group CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Posted Assembly Line", PostedAssemblyLine.FieldNo("Gen. Bus. Posting Group CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("Invoice-to Source No. CZA"));

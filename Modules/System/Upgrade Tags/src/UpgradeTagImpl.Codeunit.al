@@ -19,9 +19,15 @@ codeunit 9996 "Upgrade Tag Impl."
     var
         UpgradeTags: Record "Upgrade Tags";
         UpgradeTagExists: Boolean;
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         UpgradeTagExists := UpgradeTags.Get(Tag, TagCompanyName);
-        Session.LogMessage('0000EAV', StrSubstNo(HasUpgradeTagLbl, Tag, TagCompanyName, Session.GetExecutionContext(), UpgradeTagExists), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', CategoryLbl);
+
+        if GetExecutionContext() = ExecutionContext::Upgrade then begin
+            AddDefaultTelemetryParameters(TelemetryDimensions, Tag, TagCompanyName);
+            TelemetryDimensions.Add('Value', Format(UpgradeTagExists, 0, 9));
+            Session.LogMessage('0000EJ9', StrSubstNo(HasUpgradeTagTelemetryLbl, Tag), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
+        end;
 
         exit(UpgradeTagExists);
     end;
@@ -98,9 +104,17 @@ codeunit 9996 "Upgrade Tag Impl."
 
                 if not ToUpgradeTags.Get(ToUpgradeTags.Tag, ToUpgradeTags.Company) then begin
                     ToUpgradeTags.Insert();
-                    Session.LogMessage('0000EAY', StrSubstNo(CopyUpgradeTagLbl, FromUpgradeTags.Tag, FromUpgradeTags.Company, ToCompanyName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', CategoryLbl);
+                    Session.LogMessage('0000EAY', StrSubstNo(CopyUpgradeTagLbl, FromUpgradeTags.Tag, FromUpgradeTags.Company, ToCompanyName), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', CategoryLbl);
                 end;
             until FromUpgradeTags.Next() = 0;
+    end;
+
+    local procedure AddDefaultTelemetryParameters(var TelemetryDimensions: Dictionary of [Text, Text]; Tag: Code[250]; TagCompanyName: Code[30])
+    begin
+        TelemetryDimensions.Add('Category', CategoryLbl);
+        TelemetryDimensions.Add('UpgradeTag', Tag);
+        TelemetryDimensions.Add('CompanyName', TagCompanyName);
+        TelemetryDimensions.Add('ExecutionContext', Format(Session.GetExecutionContext()));
     end;
 
     local procedure EnsurePerCompanyUpgradeTagsExist(PerCompanyUpgradeTags: List of [Code[250]]; TagCompanyName: Code[30])
@@ -131,13 +145,15 @@ codeunit 9996 "Upgrade Tag Impl."
     local procedure SetUpgradeTagForCompany(NewTag: Code[250]; NewCompanyName: Code[30])
     var
         UpgradeTags: Record "Upgrade Tags";
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         UpgradeTags.Validate(Tag, NewTag);
         UpgradeTags.Validate("Tag Timestamp", CurrentDateTime());
         UpgradeTags.Validate(Company, NewCompanyName);
         UpgradeTags.Insert(true);
 
-        Session.LogMessage('0000EAW', StrSubstNo(SetUpgradeTagLbl, NewTag, NewCompanyName, Session.GetExecutionContext()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', CategoryLbl);
+        AddDefaultTelemetryParameters(TelemetryDimensions, NewTag, NewCompanyName);
+        Session.LogMessage('0000EJA', StrSubstNo(UpgradeTagSetTelemetryLbl, NewTag), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterRenameEvent', '', false, false)]
@@ -181,8 +197,8 @@ codeunit 9996 "Upgrade Tag Impl."
     end;
 
     var
-        HasUpgradeTagLbl: Label 'Executing HasUpgradeTag: %1, Company Name: %2, ExecutionContext: %3, Value: %4', Comment = '%1 tag name, %2 company name, %3 ExecutionContext, %4 Value', Locked = true;
-        SetUpgradeTagLbl: Label 'Executing SetUpgradeTag: %1, Company Name: %2, ExecutionContext: %3', Comment = '%1 tag name, %2 company name, %3 ExecutionContext', Locked = true;
+        UpgradeTagSetTelemetryLbl: Label 'Upgrade tag set: %1', Comment = '%1 tag name', Locked = true;
+        HasUpgradeTagTelemetryLbl: Label 'Upgrade tag searched for: %1', Comment = '%1 tag name', Locked = true;
         CopyUpgradeTagLbl: Label 'Copying upgrade tag %1. From company: %2. To company: %3', Comment = '%1 tag name, %2 = origin company, % 3 destination company', Locked = true;
         CategoryLbl: Label 'ALUpgrade', Locked = true;
 }

@@ -5,8 +5,6 @@ page 18319 "GST Liability Adj. Journal"
     InsertAllowed = false;
     PageType = Worksheet;
     SourceTable = "GST Liability Adjustment";
-    UsageCategory = Lists;
-    ApplicationArea = Basic, Suite;
 
     layout
     {

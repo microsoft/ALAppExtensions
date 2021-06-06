@@ -138,6 +138,53 @@ codeunit 18544 "Tax Base Subscribers"
         isPreview := true;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeInitVAT', '', false, false)]
+    local procedure OnBeforeInitVAT(var IsHandled: Boolean; var GenJournalLine: Record "Gen. Journal Line")
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        if not VATPostingSetup.Get(GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group") then
+            IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnBeforeValidateVATProdPostingGroup', '', false, false)]
+    local procedure OnBeforeValidateVATProdPostingGroupSalesLine(var IsHandled: Boolean; sender: Record "Sales Line")
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        if not VATPostingSetup.Get(sender."VAT Bus. Posting Group", sender."VAT Prod. Posting Group") then
+            IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnBeforeValidateVATProdPostingGroup', '', false, false)]
+    local procedure OnBeforeValidateVATProdPostingGroupPurchaseLine(var IsHandled: Boolean; var PurchaseLine: Record "Purchase Line")
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        if not VATPostingSetup.Get(PurchaseLine."VAT Bus. Posting Group", PurchaseLine."VAT Prod. Posting Group") then
+            IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnBeforeValidateVATProdPostingGroup', '', false, false)]
+    local procedure OnBeforeValidateVATProdPostingGroupServiceLine(var IsHandled: Boolean; var ServiceLine: Record "Service Line")
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        if not VATPostingSetup.Get(ServiceLine."VAT Bus. Posting Group", ServiceLine."VAT Prod. Posting Group") then
+            IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Finance Charge Memo Line", 'OnValidateVATProdPostingGroupOnBeforeVATPostingSetupGet', '', false, false)]
+    local procedure OnValidateVATProdPostingGroupOnBeforeVATPostingSetupGet(var IsHandled: Boolean; var FinanceChargeMemoLine: Record "Finance Charge Memo Line")
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        FinanceChargeMemoHeader: Record "Finance Charge Memo Header";
+    begin
+        if FinanceChargeMemoHeader.Get(FinanceChargeMemoLine."Finance Charge Memo No.") then
+            if not VATPostingSetup.Get(FinanceChargeMemoHeader."VAT Bus. Posting Group", FinanceChargeMemoLine."VAT Prod. Posting Group") then
+                IsHandled := true;
+    end;
+
     local procedure CallTaxEngineForPurchaseLines(var PurchaseHeader: Record "Purchase Header")
     var
         PurchaseLine: Record "Purchase Line";

@@ -27,13 +27,9 @@ page 8889 "Email Attachments"
 
                     trigger OnDrillDown()
                     var
-                        Instream: Instream;
-                        Filename: Text;
+                        EmailEditor: Codeunit "Email Editor";
                     begin
-                        Rec.CalcFields(Attachment);
-                        Rec.Attachment.CreateInStream(Instream);
-                        Filename := Rec."Attachment Name";
-                        DownloadFromStream(Instream, '', '', '', Filename);
+                        EmailEditor.DownloadAttachment(Rec.Data.MediaId(), Rec."Attachment Name");
                         CurrPage.Update(false);
                     end;
                 }
@@ -64,6 +60,26 @@ page 8889 "Email Attachments"
                     EmailEditor.UploadAttachment(EmailMessage);
                     UpdateDeleteEnablement();
                     CurrPage.Update();
+                end;
+            }
+
+            action(SourceAttachments)
+            {
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Image = Attach;
+                Caption = 'Get Source Attachments';
+                ToolTip = 'Attach a file that was originally attached to the source document.';
+                Scope = Page;
+                Visible = not IsMessageRead;
+
+                trigger OnAction()
+                var
+                    EmailEditor: Codeunit "Email Editor";
+                begin
+                    EmailEditor.AttachFromRelatedRecords(EmailMessageId);
                 end;
             }
 

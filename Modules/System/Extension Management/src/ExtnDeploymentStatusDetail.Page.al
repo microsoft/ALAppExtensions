@@ -21,6 +21,7 @@ page 2509 "Extn Deployment Status Detail"
     SourceTable = "NAV App Tenant Operation";
     SourceTableTemporary = true;
     ContextSensitiveHelpPage = 'ui-extensions';
+    Caption = 'Extension Deployment Status Detail';
 
     layout
     {
@@ -188,7 +189,7 @@ page 2509 "Extn Deployment Status Detail"
         if not IsFinalStatus then
             ExtensionOperationImpl.RefreshStatus("Operation ID");
 
-        SetOperationRecord();
+        SetOperationRecord(NavAppTenantOperationTable);
 
         ShowDetails := not (Status in [Status::InProgress, Status::Completed]);
         ExtensionOperationImpl.GetDeployOperationInfo("Operation ID", Version, DeploymentSchedule, Publisher, Name, Description);
@@ -210,18 +211,20 @@ page 2509 "Extn Deployment Status Detail"
         HideName: Boolean;
         IsFinalStatus: Boolean;
 
-    local procedure SetOperationRecord()
+    internal procedure SetOperationRecord(NavAppTenantOperationTable: Record "NAV App Tenant Operation")
     var
         DetailsStream: InStream;
     begin
-        TransferFields(NavAppTenantOperationTable, true);
+        Rec.TransferFields(NavAppTenantOperationTable, true);
 
         NavAppTenantOperationTable.CalcFields(Details);
         NavAppTenantOperationTable.Details.CreateInStream(DetailsStream, TEXTENCODING::UTF8);
         DeploymentDetails.Read(DetailsStream);
 
         if not Rec.Insert() then
-            Rec.Modify()
+            Rec.Modify();
+
+        SetEnvironmentVariables();
     end;
 
     local procedure SetEnvironmentVariables()
@@ -229,6 +232,7 @@ page 2509 "Extn Deployment Status Detail"
         DetailsStream: InStream;
     begin
         Status := NavAppTenantOperationTable.Status;
+
         NavAppTenantOperationTable.CalcFields(Details);
         NavAppTenantOperationTable.Details.CreateInStream(DetailsStream, TEXTENCODING::UTF8);
         DeploymentDetails.Read(DetailsStream);

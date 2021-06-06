@@ -79,6 +79,22 @@ pageextension 18145 "GST Posted Sales Shipment Ext" extends "Posted Sales Shipme
                     Editable = false;
                     ToolTip = 'Specifies if the place of supply of invoice is out of India.';
                 }
+                field("Date of Removal"; Rec."Posting Date")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Date of Removal';
+                    ToolTip = 'Specifies the date of removal.';
+                }
+                field("Time of Removal"; Rec."Time of Removal")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the time of removal.';
+                }
+                field("Mode of Transport"; Rec."Mode of Transport")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the transportation mode e.g. by road, by air etc.';
+                }
             }
         }
     }

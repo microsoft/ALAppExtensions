@@ -2,6 +2,8 @@
 #pragma warning disable AL0432
 codeunit 31180 "Sync.Dep.Fld-InvtMvmtTempl CZL"
 {
+    Permissions = tabledata "Whse. Net Change Template" = rimd,
+                  tabledata "Invt. Movement Template CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '17.0';

@@ -1,6 +1,8 @@
 #pragma warning disable AL0432
 codeunit 31213 "Sync.Dep.Fld-IntrsDelivGrp CZL"
 {
+    Permissions = tabledata "Intrastat Delivery Group" = rimd,
+                  tabledata "Intrastat Delivery Group CZL" = rimd;
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '18.0';
