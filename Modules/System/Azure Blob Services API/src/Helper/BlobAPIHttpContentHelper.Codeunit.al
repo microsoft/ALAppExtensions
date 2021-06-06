@@ -10,39 +10,39 @@ codeunit 9049 "Blob API HttpContent Helper"
     var
         ContentLengthLbl: Label '%1', Comment = '%1 = Length';
 
-    procedure AddBlobPutBlockBlobContentHeaders(var Content: HttpContent; OperationObject: Codeunit "Blob API Operation Object"; var SourceStream: InStream)
+    procedure AddBlobPutBlockBlobContentHeaders(var Content: HttpContent; OperationPayload: Codeunit "Blob API Operation Payload"; var SourceStream: InStream)
     var
         BlobType: Enum "Blob Type";
     begin
-        AddBlobPutContentHeaders(Content, OperationObject, SourceStream, BlobType::BlockBlob)
+        AddBlobPutContentHeaders(Content, OperationPayload, SourceStream, BlobType::BlockBlob)
     end;
 
-    procedure AddBlobPutBlockBlobContentHeaders(var Content: HttpContent; OperationObject: Codeunit "Blob API Operation Object"; SourceText: Text)
+    procedure AddBlobPutBlockBlobContentHeaders(var Content: HttpContent; OperationPayload: Codeunit "Blob API Operation Payload"; SourceText: Text)
     var
         BlobType: Enum "Blob Type";
     begin
-        AddBlobPutContentHeaders(Content, OperationObject, SourceText, BlobType::BlockBlob)
+        AddBlobPutContentHeaders(Content, OperationPayload, SourceText, BlobType::BlockBlob)
     end;
 
-    procedure AddBlobPutPageBlobContentHeaders(OperationObject: Codeunit "Blob API Operation Object"; ContentLength: Integer; ContentType: Text)
+    procedure AddBlobPutPageBlobContentHeaders(OperationPayload: Codeunit "Blob API Operation Payload"; ContentLength: Integer; ContentType: Text)
     var
         BlobType: Enum "Blob Type";
         Content: HttpContent;
     begin
         if ContentLength = 0 then
             ContentLength := 512;
-        AddBlobPutContentHeaders(Content, OperationObject, BlobType::PageBlob, ContentLength, ContentType)
+        AddBlobPutContentHeaders(Content, OperationPayload, BlobType::PageBlob, ContentLength, ContentType)
     end;
 
-    procedure AddBlobPutAppendBlobContentHeaders(OperationObject: Codeunit "Blob API Operation Object"; ContentType: Text)
+    procedure AddBlobPutAppendBlobContentHeaders(OperationPayload: Codeunit "Blob API Operation Payload"; ContentType: Text)
     var
         BlobType: Enum "Blob Type";
         Content: HttpContent;
     begin
-        AddBlobPutContentHeaders(Content, OperationObject, BlobType::AppendBlob, 0, ContentType)
+        AddBlobPutContentHeaders(Content, OperationPayload, BlobType::AppendBlob, 0, ContentType)
     end;
 
-    local procedure AddBlobPutContentHeaders(var Content: HttpContent; OperationObject: Codeunit "Blob API Operation Object"; var SourceStream: InStream; BlobType: Enum "Blob Type")
+    local procedure AddBlobPutContentHeaders(var Content: HttpContent; OperationPayload: Codeunit "Blob API Operation Payload"; var SourceStream: InStream; BlobType: Enum "Blob Type")
     var
         Length: Integer;
     begin
@@ -51,10 +51,10 @@ codeunit 9049 "Blob API HttpContent Helper"
 
         Length := GetContentLength(SourceStream);
 
-        AddBlobPutContentHeaders(Content, OperationObject, BlobType, Length, 'application/octet-stream');
+        AddBlobPutContentHeaders(Content, OperationPayload, BlobType, Length, 'application/octet-stream');
     end;
 
-    local procedure AddBlobPutContentHeaders(var Content: HttpContent; OperationObject: Codeunit "Blob API Operation Object"; SourceText: Text; BlobType: Enum "Blob Type")
+    local procedure AddBlobPutContentHeaders(var Content: HttpContent; OperationPayload: Codeunit "Blob API Operation Payload"; SourceText: Text; BlobType: Enum "Blob Type")
     var
         Length: Integer;
     begin
@@ -62,10 +62,10 @@ codeunit 9049 "Blob API HttpContent Helper"
 
         Length := GetContentLength(SourceText);
 
-        AddBlobPutContentHeaders(Content, OperationObject, BlobType, Length, 'text/plain; charset=UTF-8');
+        AddBlobPutContentHeaders(Content, OperationPayload, BlobType, Length, 'text/plain; charset=UTF-8');
     end;
 
-    local procedure AddBlobPutContentHeaders(var Content: HttpContent; OperationObject: Codeunit "Blob API Operation Object"; BlobType: Enum "Blob Type"; ContentLength: Integer; ContentType: Text)
+    local procedure AddBlobPutContentHeaders(var Content: HttpContent; OperationPayload: Codeunit "Blob API Operation Payload"; BlobType: Enum "Blob Type"; ContentLength: Integer; ContentType: Text)
     var
         Headers: HttpHeaders;
         BlobServiceAPIOperation: Enum "Blob Service API Operation";
@@ -73,52 +73,52 @@ codeunit 9049 "Blob API HttpContent Helper"
         if ContentType = '' then
             ContentType := 'application/octet-stream';
         Content.GetHeaders(Headers);
-        if not (OperationObject.GetOperation() in [BlobServiceAPIOperation::PutPage]) then
-            OperationObject.AddHeader(Headers, 'Content-Type', ContentType);
+        if not (OperationPayload.GetOperation() in [BlobServiceAPIOperation::PutPage]) then
+            OperationPayload.AddHeader(Headers, 'Content-Type', ContentType);
         case BlobType of
             BlobType::PageBlob:
                 begin
-                    OperationObject.AddHeader(Headers, 'x-ms-blob-content-length', StrSubstNo(ContentLengthLbl, ContentLength));
-                    OperationObject.AddHeader(Headers, 'Content-Length', StrSubstNo(ContentLengthLbl, 0));
+                    OperationPayload.AddHeader(Headers, 'x-ms-blob-content-length', StrSubstNo(ContentLengthLbl, ContentLength));
+                    OperationPayload.AddHeader(Headers, 'Content-Length', StrSubstNo(ContentLengthLbl, 0));
                 end;
             else
-                OperationObject.AddHeader(Headers, 'Content-Length', StrSubstNo(ContentLengthLbl, ContentLength));
+                OperationPayload.AddHeader(Headers, 'Content-Length', StrSubstNo(ContentLengthLbl, ContentLength));
         end;
-        if not (OperationObject.GetOperation() in [BlobServiceAPIOperation::PutBlock, BlobServiceAPIOperation::PutPage, BlobServiceAPIOperation::AppendBlock]) then
-            OperationObject.AddHeader(Headers, 'x-ms-blob-type', Format(BlobType));
+        if not (OperationPayload.GetOperation() in [BlobServiceAPIOperation::PutBlock, BlobServiceAPIOperation::PutPage, BlobServiceAPIOperation::AppendBlock]) then
+            OperationPayload.AddHeader(Headers, 'x-ms-blob-type', Format(BlobType));
     end;
 
-    procedure AddServicePropertiesContent(var Content: HttpContent; var OperationObject: Codeunit "Blob API Operation Object"; Document: XmlDocument)
+    procedure AddServicePropertiesContent(var Content: HttpContent; var OperationPayload: Codeunit "Blob API Operation Payload"; Document: XmlDocument)
     begin
-        AddXmlDocumentAsContent(Content, OperationObject, Document);
+        AddXmlDocumentAsContent(Content, OperationPayload, Document);
     end;
 
-    procedure AddContainerAclDefinition(var Content: HttpContent; var OperationObject: Codeunit "Blob API Operation Object"; Document: XmlDocument)
+    procedure AddContainerAclDefinition(var Content: HttpContent; var OperationPayload: Codeunit "Blob API Operation Payload"; Document: XmlDocument)
     begin
-        AddXmlDocumentAsContent(Content, OperationObject, Document);
+        AddXmlDocumentAsContent(Content, OperationPayload, Document);
     end;
 
-    procedure AddTagsContent(var Content: HttpContent; var OperationObject: Codeunit "Blob API Operation Object"; Document: XmlDocument)
+    procedure AddTagsContent(var Content: HttpContent; var OperationPayload: Codeunit "Blob API Operation Payload"; Document: XmlDocument)
     begin
-        AddXmlDocumentAsContent(Content, OperationObject, Document);
+        AddXmlDocumentAsContent(Content, OperationPayload, Document);
     end;
 
-    procedure AddBlockListContent(var Content: HttpContent; var OperationObject: Codeunit "Blob API Operation Object"; Document: XmlDocument)
+    procedure AddBlockListContent(var Content: HttpContent; var OperationPayload: Codeunit "Blob API Operation Payload"; Document: XmlDocument)
     begin
-        AddXmlDocumentAsContent(Content, OperationObject, Document);
+        AddXmlDocumentAsContent(Content, OperationPayload, Document);
     end;
 
-    procedure AddUserDelegationRequestContent(var Content: HttpContent; var OperationObject: Codeunit "Blob API Operation Object"; Document: XmlDocument)
+    procedure AddUserDelegationRequestContent(var Content: HttpContent; var OperationPayload: Codeunit "Blob API Operation Payload"; Document: XmlDocument)
     begin
-        AddXmlDocumentAsContent(Content, OperationObject, Document);
+        AddXmlDocumentAsContent(Content, OperationPayload, Document);
     end;
 
-    procedure AddQueryBlobContentRequestContent(var Content: HttpContent; var OperationObject: Codeunit "Blob API Operation Object"; Document: XmlDocument)
+    procedure AddQueryBlobContentRequestContent(var Content: HttpContent; var OperationPayload: Codeunit "Blob API Operation Payload"; Document: XmlDocument)
     begin
-        AddXmlDocumentAsContent(Content, OperationObject, Document);
+        AddXmlDocumentAsContent(Content, OperationPayload, Document);
     end;
 
-    local procedure AddXmlDocumentAsContent(var Content: HttpContent; var OperationObject: Codeunit "Blob API Operation Object"; Document: XmlDocument)
+    local procedure AddXmlDocumentAsContent(var Content: HttpContent; var OperationPayload: Codeunit "Blob API Operation Payload"; Document: XmlDocument)
     var
         Headers: HttpHeaders;
         Length: Integer;
@@ -130,8 +130,8 @@ codeunit 9049 "Blob API HttpContent Helper"
         Content.WriteFrom(DocumentAsText);
 
         Content.GetHeaders(Headers);
-        OperationObject.AddHeader(Headers, 'Content-Type', 'application/xml');
-        OperationObject.AddHeader(Headers, 'Content-Length', Format(Length));
+        OperationPayload.AddHeader(Headers, 'Content-Type', 'application/xml');
+        OperationPayload.AddHeader(Headers, 'Content-Length', Format(Length));
     end;
 
     procedure ContentSet(Content: HttpContent): Boolean

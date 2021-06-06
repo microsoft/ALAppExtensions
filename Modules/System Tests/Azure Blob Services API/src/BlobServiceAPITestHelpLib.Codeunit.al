@@ -11,22 +11,22 @@ codeunit 88150 "Blob Service API Test Help Lib"
         AccessKeyLbl: Label 'Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=='; // Using Azurite Storage Emulator
         SasTokenLbl: Label '<TODO>'; // TODO: What SAS to use with Azurite?
 
-    procedure InitializeRequestFromContext(TestContext: Codeunit "Blob Service API Test Context"; var OperationObject: Codeunit "Blob API Operation Object")
+    procedure InitializeRequestFromContext(TestContext: Codeunit "Blob Service API Test Context"; var OperationPayload: Codeunit "Blob API Operation Payload")
     begin
-        InitializeRequestFromContext(TestContext, OperationObject, '');
+        InitializeRequestFromContext(TestContext, OperationPayload, '');
     end;
 
-    procedure InitializeRequestFromContext(TestContext: Codeunit "Blob Service API Test Context"; var OperationObject: Codeunit "Blob API Operation Object"; ContainerName: Text)
+    procedure InitializeRequestFromContext(TestContext: Codeunit "Blob Service API Test Context"; var OperationPayload: Codeunit "Blob API Operation Payload"; ContainerName: Text)
     begin
-        InitializeRequestFromContext(TestContext, OperationObject, ContainerName, '');
+        InitializeRequestFromContext(TestContext, OperationPayload, ContainerName, '');
     end;
 
-    procedure InitializeRequestFromContext(TestContext: Codeunit "Blob Service API Test Context"; var OperationObject: Codeunit "Blob API Operation Object"; ContainerName: Text; BlobName: Text)
+    procedure InitializeRequestFromContext(TestContext: Codeunit "Blob Service API Test Context"; var OperationPayload: Codeunit "Blob API Operation Payload"; ContainerName: Text; BlobName: Text)
     begin
-        Clear(OperationObject);
-        OperationObject.InitializeRequest(TestContext.GetStorageAccountName(), ContainerName, BlobName);
-        OperationObject.InitializeAuthorization(TestContext.GetAuthType(), TestContext.GetSecret());
-        OperationObject.SetApiVersion(TestContext.GetApiVersion());
+        Clear(OperationPayload);
+        OperationPayload.InitializeRequest(TestContext.GetStorageAccountName(), ContainerName, BlobName);
+        OperationPayload.InitializeAuthorization(TestContext.GetAuthType(), TestContext.GetSecret());
+        OperationPayload.SetApiVersion(TestContext.GetApiVersion());
     end;
 
     procedure GetStorageAccountName(): Text

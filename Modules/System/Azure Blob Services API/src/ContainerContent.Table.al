@@ -68,15 +68,15 @@ table 9041 "Container Content"
         }
     }
     var
-        OperationObject: Codeunit "Blob API Operation Object";
+        OperationPayload: Codeunit "Blob API Operation Payload";
         StorageAccountName: Text;
         ContainerName: Text;
 
-    procedure SetBaseInfos(NewOperationObject: Codeunit "Blob API Operation Object")
+    procedure SetBaseInfos(NewOperationPayload: Codeunit "Blob API Operation Payload")
     begin
-        StorageAccountName := OperationObject.GetStorageAccountName();
-        ContainerName := OperationObject.GetContainerName();
-        OperationObject := NewOperationObject;
+        StorageAccountName := OperationPayload.GetStorageAccountName();
+        ContainerName := OperationPayload.GetContainerName();
+        OperationPayload := NewOperationPayload;
     end;
 
     procedure AddNewEntryFromNode(var Node: XmlNode; XPathName: Text)

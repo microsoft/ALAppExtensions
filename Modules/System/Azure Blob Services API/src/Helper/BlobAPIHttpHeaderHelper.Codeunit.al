@@ -7,7 +7,7 @@ codeunit 9048 "Blob API HttpHeader Helper"
 {
     Access = Internal;
 
-    procedure HandleHeaders(HttpRequestType: Enum "Http Request Type"; var Client: HttpClient; var OperationObject: Codeunit "Blob API Operation Object")
+    procedure HandleHeaders(HttpRequestType: Enum "Http Request Type"; var Client: HttpClient; var OperationPayload: Codeunit "Blob API Operation Payload")
     var
         FormatHelper: Codeunit "Blob API Format Helper";
         UsedDateTimeText: Text;
@@ -19,23 +19,23 @@ codeunit 9048 "Blob API HttpHeader Helper"
         Headers := Client.DefaultRequestHeaders;
         // Add to all requests >>
         UsedDateTimeText := FormatHelper.GetRfc1123DateTime();
-        OperationObject.AddHeader('x-ms-date', UsedDateTimeText);
-        OperationObject.AddHeader('x-ms-version', Format(OperationObject.GetApiVersion()));
+        OperationPayload.AddHeader('x-ms-date', UsedDateTimeText);
+        OperationPayload.AddHeader('x-ms-version', Format(OperationPayload.GetApiVersion()));
         // Add to all requests <<
-        HeadersDictionary := OperationObject.GetSortedHeadersDictionary();
-        OperationObject.SetHeaderValues(HeadersDictionary);
+        HeadersDictionary := OperationPayload.GetSortedHeadersDictionary();
+        OperationPayload.SetHeaderValues(HeadersDictionary);
         foreach HeaderKey in HeadersDictionary.Keys do
             if not IsContentHeader(HeaderKey) then
-                OperationObject.AddHeader(Headers, HeaderKey, HeadersDictionary.Get(HeaderKey));
-        case OperationObject.GetAuthorizationType() of
+                OperationPayload.AddHeader(Headers, HeaderKey, HeadersDictionary.Get(HeaderKey));
+        case OperationPayload.GetAuthorizationType() of
             AuthType::AccessKey:
-                OperationObject.AddHeader(Headers, 'Authorization', OperationObject.GetSharedKeySignature(HttpRequestType));
+                OperationPayload.AddHeader(Headers, 'Authorization', OperationPayload.GetSharedKeySignature(HttpRequestType));
         //AuthType::"AAD (Client Credentials)":
-        //    OperationObject.AddHeader(Headers, 'Authorization', OperationObject.GetAADBearerToken(HttpRequestType));
+        //    OperationPayload.AddHeader(Headers, 'Authorization', OperationPayload.GetAADBearerToken(HttpRequestType));
         end;
     end;
 
-    procedure HandleContentHeaders(var Content: HttpContent; var OperationObject: Codeunit "Blob API Operation Object"): Boolean
+    procedure HandleContentHeaders(var Content: HttpContent; var OperationPayload: Codeunit "Blob API Operation Payload"): Boolean
     var
         Headers: HttpHeaders;
         HeadersDictionary: Dictionary of [Text, Text];
@@ -43,10 +43,10 @@ codeunit 9048 "Blob API HttpHeader Helper"
         ContainsContentHeader: Boolean;
     begin
         Content.GetHeaders(Headers);
-        HeadersDictionary := OperationObject.GetSortedHeadersDictionary();
+        HeadersDictionary := OperationPayload.GetSortedHeadersDictionary();
         foreach HeaderKey in HeadersDictionary.Keys do
             if IsContentHeader(HeaderKey) then begin
-                OperationObject.AddHeader(Headers, HeaderKey, HeadersDictionary.Get(HeaderKey));
+                OperationPayload.AddHeader(Headers, HeaderKey, HeadersDictionary.Get(HeaderKey));
                 ContainsContentHeader := true;
             end;
         exit(ContainsContentHeader);

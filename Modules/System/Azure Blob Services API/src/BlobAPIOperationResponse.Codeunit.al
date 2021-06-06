@@ -134,7 +134,7 @@ codeunit 9050 "Blob API Operation Response"
     /// Can be called after an API operation was executed. Returns the value of 'x-ms-lease-state' HttpHeader of the underlying HttpResponseMessage
     /// </summary>    
     /// <returns>Text containing the value of HttpHeader 'x-ms-lease-state' of the underlying HttpResponseMessage. Returns empty string if HttpHeader does not exist</returns>
-    procedure GetLeaseStateFromResponseHeaders(var OperationObject: Codeunit "Blob API Operation Object"): Text
+    procedure GetLeaseStateFromResponseHeaders(var OperationPayload: Codeunit "Blob API Operation Payload"): Text
     var
         ReturnValue: Text;
     begin

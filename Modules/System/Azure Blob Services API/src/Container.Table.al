@@ -75,15 +75,15 @@ table 9040 "Container"
         }
     }
     var
-        OperationObject: Codeunit "Blob API Operation Object";
+        OperationPayload: Codeunit "Blob API Operation Payload";
         StorageAccountName: Text;
         ContainerName: Text;
 
-    procedure SetBaseInfos(NewOperationObject: Codeunit "Blob API Operation Object")
+    procedure SetBaseInfos(NewOperationPayload: Codeunit "Blob API Operation Payload")
     begin
-        StorageAccountName := OperationObject.GetStorageAccountName();
-        ContainerName := OperationObject.GetContainerName();
-        OperationObject := NewOperationObject;
+        StorageAccountName := OperationPayload.GetStorageAccountName();
+        ContainerName := OperationPayload.GetContainerName();
+        OperationPayload := NewOperationPayload;
     end;
 
     procedure AddNewEntryFromNode(var Node: XmlNode; XPathName: Text)
@@ -124,7 +124,7 @@ table 9040 "Container"
         SetPropertyFields(ChildNodes);
         Rec."XML Value".CreateOutStream(Outstr);
         Outstr.Write(OuterXml);
-        //Rec.URI := HelperLibrary.ConstructUrl(StorageAccountName, OperationObject, Operation::ListContainerContents, ContainerName, NameFromXml);
+        //Rec.URI := HelperLibrary.ConstructUrl(StorageAccountName, OperationPayload, Operation::ListContainerContents, ContainerName, NameFromXml);
         Rec.Insert(true);
     end;
 

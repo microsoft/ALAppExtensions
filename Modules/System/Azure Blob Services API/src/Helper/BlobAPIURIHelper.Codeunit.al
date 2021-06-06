@@ -16,9 +16,9 @@ codeunit 9046 "Blob API URI Helper"
     end;
 
     // #region Uri generation
-    procedure ConstructUri(var OperationObject: Codeunit "Blob API Operation Object"): Text
+    procedure ConstructUri(var OperationPayload: Codeunit "Blob API Operation Payload"): Text
     begin
-        exit(ConstructUri(OperationObject.GetStorageAccountName(), OperationObject.GetContainerName(), OperationObject.GetBlobName(), OperationObject.GetOperation(), OperationObject.GetAuthorizationType(), OperationObject.GetSecret()));
+        exit(ConstructUri(OperationPayload.GetStorageAccountName(), OperationPayload.GetContainerName(), OperationPayload.GetBlobName(), OperationPayload.GetOperation(), OperationPayload.GetAuthorizationType(), OperationPayload.GetSecret()));
     end;
 
     procedure ConstructUri(StorageAccountName: Text; ContainerName: Text; BlobName: Text; Operation: Enum "Blob Service API Operation"; AuthType: Enum "Storage Service Authorization Type"; Secret: Text): Text

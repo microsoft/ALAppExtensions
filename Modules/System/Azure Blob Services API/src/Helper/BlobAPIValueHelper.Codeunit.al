@@ -17,12 +17,12 @@ codeunit 9047 "Blob API Value Helper"
         InvalidCombinationTwoValuesErr: Label 'Invalid combination: "%1" can only be set if "%2" is "%3" or "%4"', Comment = '%1 = Header Name, %2 = Lease Action Header Name, %3 = Lease Action, %4 = Lease Action 2';
 
 
-    procedure GetLeaseActionFromOptionalHeaders(var OperationObject: Codeunit "Blob API Operation Object"): Enum "Lease Action"
+    procedure GetLeaseActionFromOptionalHeaders(var OperationPayload: Codeunit "Blob API Operation Payload"): Enum "Lease Action"
     var
         LeaseActionAsText: Text;
         LeaseAction: Enum "Lease Action";
     begin
-        if not OperationObject.GetOptionalHeaderValue('x-ms-lease-action', LeaseActionAsText) then
+        if not OperationPayload.GetOptionalHeaderValue('x-ms-lease-action', LeaseActionAsText) then
             Error(NeedToSpecifyHeaderErr, 'x-ms-lease-action');
         Evaluate(LeaseAction, LeaseActionAsText);
         exit(LeaseAction);
@@ -31,342 +31,342 @@ codeunit 9047 "Blob API Value Helper"
     /// <summary>
     /// Sets the value for 'x-ms-lease-id' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Guid value specifying the LeaseID</param>
-    procedure SetLeaseIdHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Guid)
+    procedure SetLeaseIdHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Guid)
     var
         GuidAsText: Text;
     begin
         GuidAsText := BlobAPIFormatHelper.RemoveCurlyBracketsFromString(Format("Value").ToLower());
-        OperationObject.AddOptionalHeader('x-ms-lease-id', GuidAsText);
+        OperationPayload.AddOptionalHeader('x-ms-lease-id', GuidAsText);
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-source-lease-id' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Guid value specifying the source LeaseID</param>
-    procedure SetSourceLeaseIdHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Guid)
+    procedure SetSourceLeaseIdHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Guid)
     var
         GuidAsText: Text;
     begin
         GuidAsText := BlobAPIFormatHelper.RemoveCurlyBracketsFromString(Format("Value").ToLower());
-        SetSourceLeaseIdHeader(OperationObject, GuidAsText);
+        SetSourceLeaseIdHeader(OperationPayload, GuidAsText);
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-source-lease-id' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Text value specifying the source LeaseID</param>
-    procedure SetSourceLeaseIdHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetSourceLeaseIdHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalHeader('x-ms-source-lease-id', "Value");
+        OperationPayload.AddOptionalHeader('x-ms-source-lease-id', "Value");
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-lease-action' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Text value specifying the lease action</param>
-    procedure SetLeaseActionHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Enum "Lease Action")
+    procedure SetLeaseActionHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Enum "Lease Action")
     begin
-        OperationObject.AddOptionalHeader('x-ms-lease-action', Format("Value"));
+        OperationPayload.AddOptionalHeader('x-ms-lease-action', Format("Value"));
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-lease-break-period' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Integer value specifying the duration in seconds before a break operation is actually executed</param>
-    procedure SetLeaseBreakPeriodHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Integer)
+    procedure SetLeaseBreakPeriodHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Integer)
     var
         LeaseAction: Enum "Lease Action";
     begin
-        LeaseAction := GetLeaseActionFromOptionalHeaders(OperationObject);
+        LeaseAction := GetLeaseActionFromOptionalHeaders(OperationPayload);
         if LeaseAction <> LeaseAction::break then
             Error(InvalidCombinationErr, 'x-ms-lease-break-period', 'x-ms-lease-action', 'break');
-        OperationObject.AddOptionalHeader('x-ms-lease-break-period', Format("Value"));
+        OperationPayload.AddOptionalHeader('x-ms-lease-break-period', Format("Value"));
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-lease-duration' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Integer value specifying the duration in seconds of a lease. Can be -1 (infinite) or between 15 and 60 seconds.</param>
-    procedure SetLeaseDurationHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Integer)
+    procedure SetLeaseDurationHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Integer)
     var
         LeaseAction: Enum "Lease Action";
     begin
-        LeaseAction := GetLeaseActionFromOptionalHeaders(OperationObject);
+        LeaseAction := GetLeaseActionFromOptionalHeaders(OperationPayload);
         if LeaseAction <> LeaseAction::acquire then
             Error(InvalidCombinationErr, 'x-ms-lease-duration', 'x-ms-lease-action', 'acquire');
-        OperationObject.AddOptionalHeader('x-ms-lease-duration', Format("Value"));
+        OperationPayload.AddOptionalHeader('x-ms-lease-duration', Format("Value"));
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-proposed-lease-id' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Guid value specifying proposed LeaseId</param>
-    procedure SetProposedLeaseIdHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Guid)
+    procedure SetProposedLeaseIdHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Guid)
     var
         GuidAsText: Text;
     begin
         GuidAsText := BlobAPIFormatHelper.RemoveCurlyBracketsFromString(Format("Value").ToLower());
-        SetProposedLeaseIdHeader(OperationObject, GuidAsText);
+        SetProposedLeaseIdHeader(OperationPayload, GuidAsText);
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-proposed-lease-id' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Text value specifying proposed LeaseId</param>
-    procedure SetProposedLeaseIdHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetProposedLeaseIdHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     var
         LeaseAction: Enum "Lease Action";
     begin
-        LeaseAction := GetLeaseActionFromOptionalHeaders(OperationObject);
+        LeaseAction := GetLeaseActionFromOptionalHeaders(OperationPayload);
         if LeaseAction in [LeaseAction::acquire, LeaseAction::change] then
             Error(InvalidCombinationTwoValuesErr, 'x-ms-lease-break-period', 'x-ms-lease-action', 'acquire', 'change');
-        OperationObject.AddOptionalHeader('x-ms-proposed-lease-id', "Value");
+        OperationPayload.AddOptionalHeader('x-ms-proposed-lease-id', "Value");
     end;
 
     /// <summary>
     /// Sets the value for 'Origin' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Text value specifying the HttpHeader value</param>
-    procedure SetOriginHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetOriginHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalHeader('Origin', "Value");
+        OperationPayload.AddOptionalHeader('Origin', "Value");
     end;
 
     /// <summary>
     /// Sets the value for 'Access-Control-Request-Method' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Text value specifying the HttpHeader value</param>
-    procedure SetAccessControlRequestMethodHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Enum "Http Request Type")
+    procedure SetAccessControlRequestMethodHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Enum "Http Request Type")
     begin
-        OperationObject.AddOptionalHeader('Access-Control-Request-Method', Format("Value"));
+        OperationPayload.AddOptionalHeader('Access-Control-Request-Method', Format("Value"));
     end;
 
     /// <summary>
     /// Sets the value for 'Access-Control-Request-Headers' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Text value specifying the HttpHeader value</param>
-    procedure SetAccessControlRequestHeadersHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetAccessControlRequestHeadersHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalHeader('Access-Control-Request-Headers', "Value");
+        OperationPayload.AddOptionalHeader('Access-Control-Request-Headers', "Value");
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-client-request-id' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Text value specifying the HttpHeader value</param>
-    procedure SetClientRequestIdHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetClientRequestIdHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalHeader('x-ms-client-request-id', "Value");
+        OperationPayload.AddOptionalHeader('x-ms-client-request-id', "Value");
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-blob-public-access' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Enum "Blob Public Access" value specifying the HttpHeader value</param>
-    procedure SetBlobPublicAccessHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Enum "Blob Public Access")
+    procedure SetBlobPublicAccessHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Enum "Blob Public Access")
     begin
-        OperationObject.AddOptionalHeader('x-ms-blob-public-access', Format("Value"));
+        OperationPayload.AddOptionalHeader('x-ms-blob-public-access', Format("Value"));
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-meta-[MetaName]' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="MetaName">The name of the Metadata-value.</param>
     /// <param name="Value">Text value specifying the Metadata value</param>
-    procedure SetMetadataNameValueHeader(var OperationObject: Codeunit "Blob API Operation Object"; MetaName: Text; "Value": Text)
+    procedure SetMetadataNameValueHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; MetaName: Text; "Value": Text)
     var
         MetaKeyValuePairLbl: Label 'x-ms-meta-%1', Comment = '%1 = Key';
     begin
-        OperationObject.AddOptionalHeader(StrSubstNo(MetaKeyValuePairLbl, MetaName), "Value");
+        OperationPayload.AddOptionalHeader(StrSubstNo(MetaKeyValuePairLbl, MetaName), "Value");
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-tags' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Text value specifying the HttpHeader value</param>
-    procedure SetTagsValueHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetTagsValueHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalHeader('x-ms-tags', "Value"); // Supported in version 2019-12-12 and newer.
+        OperationPayload.AddOptionalHeader('x-ms-tags', "Value"); // Supported in version 2019-12-12 and newer.
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-source-if-modified-since' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">DateTime value specifying the HttpHeader value</param>
-    procedure SetSourceIfModifiedSinceHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": DateTime)
+    procedure SetSourceIfModifiedSinceHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": DateTime)
     begin
-        OperationObject.AddOptionalHeader('x-ms-source-if-modified-since', Format("Value")); // TODO: Check DateTime-format for URI
+        OperationPayload.AddOptionalHeader('x-ms-source-if-modified-since', Format("Value")); // TODO: Check DateTime-format for URI
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-source-if-unmodified-since' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">DateTime value specifying the HttpHeader value</param>
-    procedure SetSourceIfUnmodifiedSinceHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": DateTime)
+    procedure SetSourceIfUnmodifiedSinceHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": DateTime)
     begin
-        OperationObject.AddOptionalHeader('x-ms-source-if-unmodified-since', Format("Value")); // TODO: Check DateTime-format for URI
+        OperationPayload.AddOptionalHeader('x-ms-source-if-unmodified-since', Format("Value")); // TODO: Check DateTime-format for URI
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-source-if-match' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Text value specifying the HttpHeader value</param>
-    procedure SetSourceIfMatchHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetSourceIfMatchHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalHeader('x-ms-source-if-match', "Value");
+        OperationPayload.AddOptionalHeader('x-ms-source-if-match', "Value");
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-source-if-none-match' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Text value specifying the HttpHeader value</param>
-    procedure SetSourceIfNoneMatchHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetSourceIfNoneMatchHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalHeader('x-ms-source-if-none-match', "Value");
+        OperationPayload.AddOptionalHeader('x-ms-source-if-none-match', "Value");
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-copy-source' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Text value specifying the HttpHeader value</param>
-    procedure SetCopySourceNameHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetCopySourceNameHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalHeader('x-ms-copy-source', "Value");
+        OperationPayload.AddOptionalHeader('x-ms-copy-source', "Value");
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-access-tier' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Enum "Blob Access Tier" value specifying the HttpHeader value</param>
-    procedure SetAccessTierHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Enum "Blob Access Tier")
+    procedure SetAccessTierHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Enum "Blob Access Tier")
     begin
-        OperationObject.AddOptionalHeader('x-ms-access-tier', Format("Value"));
+        OperationPayload.AddOptionalHeader('x-ms-access-tier', Format("Value"));
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-rehydrate-priority' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Enum "Rehydrate Priority" value specifying the HttpHeader value</param>
-    procedure SetRehydratePriorityHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Enum "Rehydrate Priority")
+    procedure SetRehydratePriorityHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Enum "Rehydrate Priority")
     begin
-        OperationObject.AddOptionalHeader('x-ms-rehydrate-priority', Format("Value"));
+        OperationPayload.AddOptionalHeader('x-ms-rehydrate-priority', Format("Value"));
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-copy-action' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Enum "Copy Action" value specifying the HttpHeader value</param>
-    procedure SetCopyActionHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Enum "Copy Action")
+    procedure SetCopyActionHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Enum "Copy Action")
     begin
-        OperationObject.AddOptionalHeader('x-ms-copy-action', Format("Value")); // Valid value is 'abort'
+        OperationPayload.AddOptionalHeader('x-ms-copy-action', Format("Value")); // Valid value is 'abort'
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-expiry-option' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Enum "Blob Expiry Option" value specifying the HttpHeader value</param>
-    procedure SetBlobExpiryOptionHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Enum "Blob Expiry Option")
+    procedure SetBlobExpiryOptionHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Enum "Blob Expiry Option")
     begin
-        OperationObject.AddOptionalHeader('x-ms-expiry-option', Format("Value")); // Valid values are RelativeToCreation/RelativeToNow/Absolute/NeverExpire
+        OperationPayload.AddOptionalHeader('x-ms-expiry-option', Format("Value")); // Valid values are RelativeToCreation/RelativeToNow/Absolute/NeverExpire
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-expiry-time' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Integer value specifying the HttpHeader value</param>
-    procedure SetBlobExpiryTimeHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Integer)
+    procedure SetBlobExpiryTimeHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Integer)
     begin
-        OperationObject.AddOptionalHeader('x-ms-expiry-time', Format("Value")); // Either an RFC 1123 datetime or miliseconds-value
+        OperationPayload.AddOptionalHeader('x-ms-expiry-time', Format("Value")); // Either an RFC 1123 datetime or miliseconds-value
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-expiry-time' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">DateTime value specifying the HttpHeader value</param>
-    procedure SetBlobExpiryTimeHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": DateTime)
+    procedure SetBlobExpiryTimeHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": DateTime)
     begin
-        OperationObject.AddOptionalHeader('x-ms-expiry-time', BlobAPIFormatHelper.GetRfc1123DateTime(("Value"))); // Either an RFC 1123 datetime or miliseconds-value
+        OperationPayload.AddOptionalHeader('x-ms-expiry-time', BlobAPIFormatHelper.GetRfc1123DateTime(("Value"))); // Either an RFC 1123 datetime or miliseconds-value
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-access-tier' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Enum "Blob Access Tier" value specifying the HttpHeader value</param>
-    procedure SetBlobAccessTierHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Enum "Blob Access Tier")
+    procedure SetBlobAccessTierHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Enum "Blob Access Tier")
     begin
-        OperationObject.AddOptionalHeader('x-ms-access-tier', Format("Value"));
+        OperationPayload.AddOptionalHeader('x-ms-access-tier', Format("Value"));
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-page-write' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Enum "PageBlob Write Option" value specifying the HttpHeader value</param>
-    procedure SetPageWriteOptionHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Enum "PageBlob Write Option")
+    procedure SetPageWriteOptionHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Enum "PageBlob Write Option")
     begin
-        OperationObject.AddOptionalHeader('x-ms-page-write', Format("Value"));
+        OperationPayload.AddOptionalHeader('x-ms-page-write', Format("Value"));
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-range' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="BytesStartValue">Integer value specifying the Bytes start range value</param>
     /// <param name="BytesEndValue">Integer value specifying the Bytes end range value</param>
-    procedure SetRangeHeader(var OperationObject: Codeunit "Blob API Operation Object"; BytesStartValue: Integer; BytesEndValue: Integer)
+    procedure SetRangeHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; BytesStartValue: Integer; BytesEndValue: Integer)
     var
         RangeBytesLbl: Label 'bytes=%1-%2', Comment = '%1 = Start Range; %2 = End Range';
     begin
-        OperationObject.AddOptionalHeader('x-ms-range', StrSubstNo(RangeBytesLbl, BytesStartValue, BytesEndValue));
+        OperationPayload.AddOptionalHeader('x-ms-range', StrSubstNo(RangeBytesLbl, BytesStartValue, BytesEndValue));
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-source-range' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="BytesStartValue">Integer value specifying the Bytes start range value</param>
     /// <param name="BytesEndValue">Integer value specifying the Bytes end range value</param>
-    procedure SetSourceRangeHeader(var OperationObject: Codeunit "Blob API Operation Object"; BytesStartValue: Integer; BytesEndValue: Integer)
+    procedure SetSourceRangeHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; BytesStartValue: Integer; BytesEndValue: Integer)
     var
         RangeBytesLbl: Label 'bytes=%1-%2', Comment = '%1 = Start Range; %2 = End Range';
     begin
-        OperationObject.AddOptionalHeader('x-ms-source-range', StrSubstNo(RangeBytesLbl, BytesStartValue, BytesEndValue));
+        OperationPayload.AddOptionalHeader('x-ms-source-range', StrSubstNo(RangeBytesLbl, BytesStartValue, BytesEndValue));
     end;
 
     /// <summary>
     /// Sets the value for 'x-ms-requires-sync' HttpHeader for a request.
     /// </summary>
-    /// <param name="OperationObject">An object containing the parameters for the request.</param>
+    /// <param name="OperationPayload">An object containing the parameters for the request.</param>
     /// <param name="Value">Boolean value specifying the HttpHeader value</param>
-    procedure SetRequiresSyncHeader(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Boolean)
+    procedure SetRequiresSyncHeader(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Boolean)
     var
         ValueText: Text;
     begin
@@ -375,7 +375,7 @@ codeunit 9047 "Blob API Value Helper"
             ValueText := 'true'
         else
             ValueText := 'false';
-        OperationObject.AddOptionalHeader('x-ms-requires-sync', ValueText);
+        OperationPayload.AddOptionalHeader('x-ms-requires-sync', ValueText);
     end;
 
     // #region Optional Uri Parameters
@@ -383,51 +383,51 @@ codeunit 9047 "Blob API Value Helper"
     /// Sets the optional timeout value for the Request
     /// </summary>
     /// <param name="Value">Timeout in seconds. Most operations have a max. limit of 30 seconds. For more Information see: https://docs.microsoft.com/en-us/rest/api/storageservices/setting-timeouts-for-blob-service-operations</param>
-    procedure SetTimeoutParameterParameter(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Integer)
+    procedure SetTimeoutParameterParameter(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Integer)
     begin
-        OperationObject.AddOptionalUriParameter('timeout', Format("Value"));
+        OperationPayload.AddOptionalUriParameter('timeout', Format("Value"));
     end;
 
     /// <summary>
     /// The versionid parameter is an opaque DateTime value that, when present, specifies the Version of the blob to retrieve.
     /// </summary>
     /// <param name="Value">The DateTime identifying the Version</param>
-    procedure SetVersionIdParameter(var OperationObject: Codeunit "Blob API Operation Object"; "Value": DateTime)
+    procedure SetVersionIdParameter(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": DateTime)
     var
         HelperLibrary: Codeunit "Blob API Helper Library";
         ApiVersion: Enum "Storage Service API Version";
         IncompatibleVersionsErr: Label 'Parameter "%1" is only available after API Version %2, but you selected %3.', Comment = '%1 = Parameter Name; %2 = Target API Version; %3 = Curr. API Version';
     begin
         // Only allowed for API-Version 2019-12-12 and newer
-        HelperLibrary.ValidateApiVersion(OperationObject.GetApiVersion(), ApiVersion::"2019-12-12", true, StrSubstNo(IncompatibleVersionsErr, 'VersionId', OperationObject.GetApiVersion(), ApiVersion::"2019-12-12"));
-        OperationObject.AddOptionalUriParameter('versionid', Format("Value")); // TODO: Check DateTime-format for URI
+        HelperLibrary.ValidateApiVersion(OperationPayload.GetApiVersion(), ApiVersion::"2019-12-12", true, StrSubstNo(IncompatibleVersionsErr, 'VersionId', OperationPayload.GetApiVersion(), ApiVersion::"2019-12-12"));
+        OperationPayload.AddOptionalUriParameter('versionid', Format("Value")); // TODO: Check DateTime-format for URI
     end;
 
     /// <summary>
     /// The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. 
     /// </summary>
     /// <param name="Value">The DateTime identifying the Snapshot</param>
-    procedure SetSnapshotParameter(var OperationObject: Codeunit "Blob API Operation Object"; "Value": DateTime)
+    procedure SetSnapshotParameter(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": DateTime)
     begin
-        OperationObject.AddOptionalUriParameter('snapshot', Format("Value")); // TODO: Check DateTime-format for URI
+        OperationPayload.AddOptionalUriParameter('snapshot', Format("Value")); // TODO: Check DateTime-format for URI
     end;
 
     /// <summary>
     /// The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. 
     /// </summary>
     /// <param name="Value">The DateTime identifying the Snapshot</param>
-    procedure SetSnapshotParameter(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetSnapshotParameter(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalUriParameter('snapshot', "Value");
+        OperationPayload.AddOptionalUriParameter('snapshot', "Value");
     end;
 
     /// <summary>
     /// Filters the results to return only blobs whose names begin with the specified prefix.
     /// </summary>
     /// <param name="Value">Prefix to search for</param>
-    procedure SetPrefixParameter(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetPrefixParameter(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalUriParameter('prefix', "Value");
+        OperationPayload.AddOptionalUriParameter('prefix', "Value");
     end;
 
     /// <summary>
@@ -436,36 +436,36 @@ codeunit 9047 "Blob API Value Helper"
     /// The delimiter may be a single character or a string.
     /// </summary>
     /// <param name="Value">Delimiting character/string</param>
-    procedure SetDelimiterParameter(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetDelimiterParameter(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalUriParameter('delimiter', "Value");
+        OperationPayload.AddOptionalUriParameter('delimiter', "Value");
     end;
 
     /// <summary>
     /// Specifies the maximum number of blobs to return
     /// </summary>
     /// <param name="Value">Max. number of results to return. Must be positive, must not be greater than 5000</param>
-    procedure SetMaxResultsParameterParameter(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Integer)
+    procedure SetMaxResultsParameterParameter(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Integer)
     begin
-        OperationObject.AddOptionalUriParameter('maxresults', Format("Value"));
+        OperationPayload.AddOptionalUriParameter('maxresults', Format("Value"));
     end;
 
     /// <summary>
     /// Identifiers the ID of a Block in BlockBlob
     /// </summary>
     /// <param name="Value">A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size</param>
-    procedure SetBlockIdParameter(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Text)
+    procedure SetBlockIdParameter(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Text)
     begin
-        OperationObject.AddOptionalUriParameter('blockid', "Value");
+        OperationPayload.AddOptionalUriParameter('blockid', "Value");
     end;
 
     /// <summary>
     /// Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together.
     /// </summary>
     /// <param name="Value">Valid values are committed, uncommitted, or all</param>
-    procedure SetBlockListTypeParameter(var OperationObject: Codeunit "Blob API Operation Object"; "Value": Enum "Block List Type")
+    procedure SetBlockListTypeParameter(var OperationPayload: Codeunit "Blob API Operation Payload"; "Value": Enum "Block List Type")
     begin
-        OperationObject.AddOptionalUriParameter('blocklisttype', Format("Value"));
+        OperationPayload.AddOptionalUriParameter('blocklisttype', Format("Value"));
     end;
     // #endregion Optional Uri Parameters
 
