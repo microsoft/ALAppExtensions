@@ -4,25 +4,27 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure ClearStorageAccount(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         Container: Record "Container";
         OperationObject: Codeunit "Blob API Operation Object";
     begin
         // [SCENARIO] This is a helper; it'll remove all containters from the Storage Account (assumes that some other functions are working)
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject);
-        BlobServicesAPI.ListContainers(OperationObject, Container);
+        OperationResponse := BlobServicesAPI.ListContainers(OperationObject, Container);
 
         if not Container.Find('-') then
             exit;
 
         repeat
             OperationObject.SetContainerName(Container.Name);
-            BlobServicesAPI.DeleteContainer(OperationObject);
-            Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Cleanup / Delete Container', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+            OperationResponse := BlobServicesAPI.DeleteContainer(OperationObject);
+            Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Cleanup / Delete Container', OperationResponse.GetHttpResponseStatusCode()));
         until Container.Next() = 0;
     end;
 
     procedure CreateContainer(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         ContainerName: Text;
     begin
         // [SCENARIO] A new containter is created in the Storage Account
@@ -38,6 +40,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure ListContainers(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         Container: Record "Container";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerNames: List of [Text];
@@ -56,14 +59,14 @@ codeunit 88154 "Blob Service Test Library"
         // [THEN] Create the Containers in the Storage Account
         foreach ContainerName in ContainerNames do begin
             OperationObject.SetContainerName(ContainerName);
-            BlobServicesAPI.CreateContainer(OperationObject);
-            Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Create Container', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+            OperationResponse := BlobServicesAPI.CreateContainer(OperationObject);
+            Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Create Container', OperationResponse.GetHttpResponseStatusCode()));
         end;
 
         // [THEN] List the Containers in the Storage Account
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject);
-        BlobServicesAPI.ListContainers(OperationObject, Container);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'List Container', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.ListContainers(OperationObject, Container);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'List Container', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Compare number of returned containers with number of expected containers
         Count1 := Container.Count();
@@ -73,13 +76,14 @@ codeunit 88154 "Blob Service Test Library"
         // [THEN] Cleanup / Delete the Containers from the Storage Account
         foreach ContainerName in ContainerNames do begin
             OperationObject.SetContainerName(ContainerName);
-            BlobServicesAPI.DeleteContainer(OperationObject);
-            Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Cleanup / Delete Container', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+            OperationResponse := BlobServicesAPI.DeleteContainer(OperationObject);
+            Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Cleanup / Delete Container', OperationResponse.GetHttpResponseStatusCode()));
         end;
     end;
 
     procedure GetBlobServiceProperties(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         Document: XmlDocument;
     begin
@@ -89,13 +93,14 @@ codeunit 88154 "Blob Service Test Library"
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject);
 
         // [THEN] Retrieve properties via GetBlobServiceProperties
-        Document := BlobServicesAPI.GetBlobServiceProperties(OperationObject);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Get Blob Service Properties', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
-        Assert.IsTrue(StrPos(Format(Document), 'StorageServiceProperties') > 0, StrSubstNo(OperationFailedErr, 'Get Blob Service Properties', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.GetBlobServiceProperties(OperationObject, Document);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Get Blob Service Properties', OperationResponse.GetHttpResponseStatusCode()));
+        Assert.IsTrue(StrPos(Format(Document), 'StorageServiceProperties') > 0, StrSubstNo(OperationFailedErr, 'Get Blob Service Properties', OperationResponse.GetHttpResponseStatusCode()));
     end;
 
     procedure SetBlobServiceProperties(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         Document: XmlDocument;
     begin
@@ -108,12 +113,13 @@ codeunit 88154 "Blob Service Test Library"
         Document := HelperLibrary.GetDefaultBlobServiceProperties(false);
 
         // [THEN] Set properties (unchanged)
-        BlobServicesAPI.SetBlobServiceProperties(OperationObject, Document);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Blob Service Properties', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.SetBlobServiceProperties(OperationObject, Document);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Blob Service Properties', OperationResponse.GetHttpResponseStatusCode()));
     end;
 
     procedure PreflightBlobRequest(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         Document: XmlDocument;
         AccessControlRequestMethod: Enum "Http Request Type";
@@ -129,8 +135,8 @@ codeunit 88154 "Blob Service Test Library"
 
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject);
 
-        BlobServicesAPI.SetBlobServiceProperties(OperationObject, Document);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Blob Service Properties (CORS)', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.SetBlobServiceProperties(OperationObject, Document);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Blob Service Properties (CORS)', OperationResponse.GetHttpResponseStatusCode()));
 
         // In the emulator the change is immeadiate, but on a real account it takes up to 60 seconds to be applied
         if OperationObject.GetStorageAccountName() <> 'devstoreaccount1' then
@@ -139,20 +145,21 @@ codeunit 88154 "Blob Service Test Library"
         // [THEN] Test with updated settings
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject);
 
-        BlobServicesAPI.PreflightBlobRequest(OperationObject, '127.0.0.1', enum::"Http Request Type"::PUT);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Preflight Blob Request (CORS)', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.PreflightBlobRequest(OperationObject, '127.0.0.1', enum::"Http Request Type"::PUT);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Preflight Blob Request (CORS)', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Set back to defaults
         Document := HelperLibrary.GetDefaultBlobServiceProperties(false);
 
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject);
 
-        BlobServicesAPI.SetBlobServiceProperties(OperationObject, Document);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Blob Service Properties', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.SetBlobServiceProperties(OperationObject, Document);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Blob Service Properties', OperationResponse.GetHttpResponseStatusCode()));
     end;
 
     procedure GetBlobServiceStats(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         Document: XmlDocument;
     begin
@@ -161,14 +168,16 @@ codeunit 88154 "Blob Service Test Library"
         // [GIVEN] A Storage Account exists
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject);
 
-        Document := BlobServicesAPI.GetBlobServiceStats(OperationObject);
+        OperationResponse := BlobServicesAPI.GetBlobServiceStats(OperationObject, Document);
 
-        Assert.IsTrue(StrPos(Format(Document), 'StorageServiceStats') > 0, StrSubstNo(OperationFailedErr, 'Get Blob Service Stats', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.IsTrue(StrPos(Format(Document), 'StorageServiceStats') > 0, StrSubstNo(OperationFailedErr, 'Get Blob Service Stats', OperationResponse.GetHttpResponseStatusCode()));
     end;
 
     procedure GetAccountInformation(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
+        AccountInformationHeaders: HttpHeaders;
         ReturnValue: Text;
     begin
         // [SCENARIO] Get Account Information
@@ -176,15 +185,16 @@ codeunit 88154 "Blob Service Test Library"
         // [GIVEN] A Storage Account exists
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject);
 
-        BlobServicesAPI.GetAccountInformation(OperationObject);
-        ReturnValue := BlobAPIValueHelper.GetSkuNameFromResponseHeaders(OperationObject);
-        Assert.IsTrue(StrLen(ReturnValue) > 0, StrSubstNo(OperationFailedErr, 'Get Account Information', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
-        ReturnValue := BlobAPIValueHelper.GetAccountKindFromResponseHeaders(OperationObject);
-        Assert.IsTrue(StrLen(ReturnValue) > 0, StrSubstNo(OperationFailedErr, 'Get Account Information', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.GetAccountInformation(OperationObject, AccountInformationHeaders);
+        ReturnValue := OperationResponse.GetSkuNameFromResponseHeaders();
+        Assert.IsTrue(StrLen(ReturnValue) > 0, StrSubstNo(OperationFailedErr, 'Get Account Information', OperationResponse.GetHttpResponseStatusCode()));
+        ReturnValue := OperationResponse.GetAccountKindFromResponseHeaders();
+        Assert.IsTrue(StrLen(ReturnValue) > 0, StrSubstNo(OperationFailedErr, 'Get Account Information', OperationResponse.GetHttpResponseStatusCode()));
     end;
 
     procedure GetUserDelegationKeyExpectedError(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         StartDateTime: DateTime;
         ExpiryDateTime: DateTime;
@@ -198,15 +208,17 @@ codeunit 88154 "Blob Service Test Library"
 
         StartDateTime := CurrentDateTime();
         ExpiryDateTime := CurrentDateTime() + 60000;
-        ReturnValue := BlobServicesAPI.GetUserDelegationKey(OperationObject, ExpiryDateTime, StartDateTime);
+        OperationResponse := BlobServicesAPI.GetUserDelegationKey(OperationObject, ExpiryDateTime, StartDateTime, ReturnValue);
         Assert.AreEqual(GetLastErrorText, 'Only works with Azure AD authentication, which is not implemented yet', 'Not as expected');
     end;
 
     procedure GetContainerProperties(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         ReturnValue: Text;
+        PropertyHeaders: HttpHeaders;
     begin
         // [SCENARIO] Get Container Properties
 
@@ -218,9 +230,9 @@ codeunit 88154 "Blob Service Test Library"
         // [THEN] Get Container Properties
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
 
-        BlobServicesAPI.GetContainerProperties(OperationObject);
-        ReturnValue := BlobAPIValueHelper.GetLeaseStateFromResponseHeaders(OperationObject);
-        Assert.AreEqual(ReturnValue.ToLower(), 'available', StrSubstNo(OperationFailedErr, 'Get Container Properties', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.GetContainerProperties(OperationObject, PropertyHeaders);
+        ReturnValue := OperationResponse.GetLeaseStateFromResponseHeaders(OperationObject);
+        Assert.AreEqual(ReturnValue.ToLower(), 'available', StrSubstNo(OperationFailedErr, 'Get Container Properties', OperationResponse.GetHttpResponseStatusCode()));
         // TODO: maybe check more properties from the result
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
@@ -229,6 +241,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure SetContainerMetadata(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
     begin
@@ -244,8 +257,8 @@ codeunit 88154 "Blob Service Test Library"
 
         BlobAPIValueHelper.SetMetadataNameValueHeader(OperationObject, 'Dummy01', 'DummyValue01');
         BlobAPIValueHelper.SetMetadataNameValueHeader(OperationObject, 'Dummy02', 'DummyValue02');
-        BlobServicesAPI.SetContainerMetadata(OperationObject);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Container Metadata', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.SetContainerMetadata(OperationObject);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Container Metadata', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -253,9 +266,11 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure GetContainerMetadata(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         ReturnValue: Text;
+        MetadataHeaders: HttpHeaders;
     begin
         // [SCENARIO] Get Container Metadata
 
@@ -269,18 +284,18 @@ codeunit 88154 "Blob Service Test Library"
 
         BlobAPIValueHelper.SetMetadataNameValueHeader(OperationObject, 'Dummy01', 'DummyValue01');
         BlobAPIValueHelper.SetMetadataNameValueHeader(OperationObject, 'Dummy02', 'DummyValue02');
-        BlobServicesAPI.SetContainerMetadata(OperationObject);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Container Metadata', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.SetContainerMetadata(OperationObject);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Container Metadata', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Get Container Metadata
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
 
-        BlobServicesAPI.GetContainerMetadata(OperationObject);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Get Container Metadata', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
-        ReturnValue := BlobAPIValueHelper.GetMetaValueFromResponseHeaders(OperationObject, 'Dummy01');
-        Assert.AreEqual(ReturnValue, 'DummyValue01', StrSubstNo(OperationFailedErr, 'Get Container Metadata', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
-        ReturnValue := BlobAPIValueHelper.GetMetaValueFromResponseHeaders(OperationObject, 'Dummy02');
-        Assert.AreEqual(ReturnValue, 'DummyValue02', StrSubstNo(OperationFailedErr, 'Get Container Metadata', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.GetContainerMetadata(OperationObject, MetadataHeaders);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Get Container Metadata', OperationResponse.GetHttpResponseStatusCode()));
+        ReturnValue := OperationResponse.GetMetaValueFromResponseHeaders('Dummy01');
+        Assert.AreEqual(ReturnValue, 'DummyValue01', StrSubstNo(OperationFailedErr, 'Get Container Metadata', OperationResponse.GetHttpResponseStatusCode()));
+        ReturnValue := OperationResponse.GetMetaValueFromResponseHeaders('Dummy02');
+        Assert.AreEqual(ReturnValue, 'DummyValue02', StrSubstNo(OperationFailedErr, 'Get Container Metadata', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -288,6 +303,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure GetContainerACL(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         Document: XmlDocument;
@@ -302,8 +318,8 @@ codeunit 88154 "Blob Service Test Library"
         // [THEN] Get Container ACL
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
 
-        Document := BlobServicesAPI.GetContainerACL(OperationObject);
-        Assert.IsTrue(StrPos(Format(Document), 'SignedIdentifiers') > 0, StrSubstNo(OperationFailedErr, 'Get Container ACL', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.GetContainerACL(OperationObject, Document);
+        Assert.IsTrue(StrPos(Format(Document), 'SignedIdentifiers') > 0, StrSubstNo(OperationFailedErr, 'Get Container ACL', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -311,6 +327,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure SetContainerACL(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         Document1: XmlDocument;
@@ -327,15 +344,15 @@ codeunit 88154 "Blob Service Test Library"
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
 
         Document1 := HelperLibrary.GetSampleContainerACL();
-        BlobServicesAPI.SetContainerACL(OperationObject, Document1);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Container ACL', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.SetContainerACL(OperationObject, Document1);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Container ACL', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Get Container ACL
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
 
-        Document2 := BlobServicesAPI.GetContainerACL(OperationObject);
-        Assert.IsTrue(StrPos(Format(Document2), 'SignedIdentifiers') > 0, StrSubstNo(OperationFailedErr, 'Get Container ACL', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
-        Assert.IsTrue(StrPos(Format(Document2), '<Start>2020-09-28T08:49:37.0000000Z</Start>') > 0, StrSubstNo(OperationFailedErr, 'Get Container ACL', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.GetContainerACL(OperationObject, Document2);
+        Assert.IsTrue(StrPos(Format(Document2), 'SignedIdentifiers') > 0, StrSubstNo(OperationFailedErr, 'Get Container ACL', OperationResponse.GetHttpResponseStatusCode()));
+        Assert.IsTrue(StrPos(Format(Document2), '<Start>2020-09-28T08:49:37.0000000Z</Start>') > 0, StrSubstNo(OperationFailedErr, 'Get Container ACL', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -343,6 +360,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure LeaseContainerAcquireAndRelease(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         LeaseId: Guid;
@@ -357,15 +375,15 @@ codeunit 88154 "Blob Service Test Library"
 
         // [THEN] Acquire Lease
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
-        LeaseId := BlobServicesAPI.ContainerLeaseAcquire(OperationObject, 60);
+        OperationResponse := BlobServicesAPI.ContainerLeaseAcquire(OperationObject, 60, LeaseId);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Acquire Lease', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
-        Assert.AreNotEqual(LeaseId, EmptyGuid, StrSubstNo(OperationFailedErr, 'Acquire Lease', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Acquire Lease', OperationResponse.GetHttpResponseStatusCode()));
+        Assert.AreNotEqual(LeaseId, EmptyGuid, StrSubstNo(OperationFailedErr, 'Acquire Lease', OperationResponse.GetHttpResponseStatusCode()));
 
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
-        BlobServicesAPI.ContainerLeaseRelease(OperationObject, LeaseId);
+        OperationResponse := BlobServicesAPI.ContainerLeaseRelease(OperationObject, LeaseId);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Release Lease', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Release Lease', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -373,6 +391,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure DeleteContainerWithoutLease(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         ContainerName: Text;
     begin
         // [SCENARIO] An existing containter is deleted from the Storage Account
@@ -388,6 +407,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure DeleteContainerWithLease(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         LeaseId: Guid;
@@ -402,10 +422,10 @@ codeunit 88154 "Blob Service Test Library"
 
         // [THEN] Acquire Lease
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
-        LeaseId := BlobServicesAPI.ContainerLeaseAcquire(OperationObject, 60);
+        OperationResponse := BlobServicesAPI.ContainerLeaseAcquire(OperationObject, 60, LeaseId);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Acquire Lease', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
-        Assert.AreNotEqual(LeaseId, EmptyGuid, StrSubstNo(OperationFailedErr, 'Acquire Lease', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Acquire Lease', OperationResponse.GetHttpResponseStatusCode()));
+        Assert.AreNotEqual(LeaseId, EmptyGuid, StrSubstNo(OperationFailedErr, 'Acquire Lease', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName, LeaseId);
@@ -413,6 +433,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure ListBlobs(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         ContainerContent: Record "Container Content";
 
         OperationObject: Codeunit "Blob API Operation Object";
@@ -432,9 +453,9 @@ codeunit 88154 "Blob Service Test Library"
             PutBlockBlobTextImpl(TestContext, ContainerName, BlobName);
 
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
-        BlobServicesAPI.ListBlobs(OperationObject, ContainerContent);
+        OperationResponse := BlobServicesAPI.ListBlobs(OperationObject, ContainerContent);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'List Blobs', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'List Blobs', OperationResponse.GetHttpResponseStatusCode()));
         Assert.AreEqual(ContainerContent.Count(), BlobNames.Count, 'Number of returned Blobs does not match the ones created.');
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
@@ -443,6 +464,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure SetBlobProperties(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -460,9 +482,9 @@ codeunit 88154 "Blob Service Test Library"
         // [THEN] Set blob properties
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
         OperationObject.AddOptionalHeader('x-ms-blob-content-type', 'text/plain; charset=UTF-16');
-        BlobServicesAPI.SetBlobProperties(OperationObject);
+        OperationResponse := BlobServicesAPI.SetBlobProperties(OperationObject);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set blob properties', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set blob properties', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -470,6 +492,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure GetBlobProperties(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -487,11 +510,11 @@ codeunit 88154 "Blob Service Test Library"
 
         // [THEN] Get blob properties
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.GetBlobProperties(OperationObject);
+        OperationResponse := BlobServicesAPI.GetBlobProperties(OperationObject);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Get blob properties', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Get blob properties', OperationResponse.GetHttpResponseStatusCode()));
 
-        ReturnValue := BlobAPIValueHelper.GetHeaderValueFromResponseHeaders(OperationObject, 'x-ms-blob-type');
+        ReturnValue := OperationResponse.GetHeaderValueFromResponseHeaders('x-ms-blob-type');
         Assert.AreEqual(ReturnValue, 'BlockBlob', 'Return Value not as expected');
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
@@ -500,6 +523,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure SetBlobMetadata(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -518,9 +542,9 @@ codeunit 88154 "Blob Service Test Library"
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
         BlobAPIValueHelper.SetMetadataNameValueHeader(OperationObject, 'Dummy01', 'DummyValue01');
         BlobAPIValueHelper.SetMetadataNameValueHeader(OperationObject, 'Dummy02', 'DummyValue02');
-        BlobServicesAPI.SetBlobMetadata(OperationObject);
+        OperationResponse := BlobServicesAPI.SetBlobMetadata(OperationObject);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Blob Metadata', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Blob Metadata', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -528,6 +552,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure GetBlobMetadata(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -548,19 +573,19 @@ codeunit 88154 "Blob Service Test Library"
 
         BlobAPIValueHelper.SetMetadataNameValueHeader(OperationObject, 'Dummy01', 'DummyValue01');
         BlobAPIValueHelper.SetMetadataNameValueHeader(OperationObject, 'Dummy02', 'DummyValue02');
-        BlobServicesAPI.SetBlobMetadata(OperationObject);
+        OperationResponse := BlobServicesAPI.SetBlobMetadata(OperationObject);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Blob Metadata', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Blob Metadata', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Get blob Metadata
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
 
-        BlobServicesAPI.GetBlobMetadata(OperationObject);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Get blob Metadata', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
-        ReturnValue := BlobAPIValueHelper.GetMetaValueFromResponseHeaders(OperationObject, 'Dummy01');
-        Assert.AreEqual(ReturnValue, 'DummyValue01', StrSubstNo(OperationFailedErr, 'Get blob Metadata', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
-        ReturnValue := BlobAPIValueHelper.GetMetaValueFromResponseHeaders(OperationObject, 'Dummy02');
-        Assert.AreEqual(ReturnValue, 'DummyValue02', StrSubstNo(OperationFailedErr, 'Get blob Metadata', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.GetBlobMetadata(OperationObject);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Get blob Metadata', OperationResponse.GetHttpResponseStatusCode()));
+        ReturnValue := OperationResponse.GetMetaValueFromResponseHeaders('Dummy01');
+        Assert.AreEqual(ReturnValue, 'DummyValue01', StrSubstNo(OperationFailedErr, 'Get blob Metadata', OperationResponse.GetHttpResponseStatusCode()));
+        ReturnValue := OperationResponse.GetMetaValueFromResponseHeaders('Dummy02');
+        Assert.AreEqual(ReturnValue, 'DummyValue02', StrSubstNo(OperationFailedErr, 'Get blob Metadata', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -568,6 +593,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure SetBlobTags(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -590,9 +616,9 @@ codeunit 88154 "Blob Service Test Library"
         Tags.Add('Dummy02', 'DummyValue02');
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
 
-        BlobServicesAPI.SetBlobTags(OperationObject, Tags);
+        OperationResponse := BlobServicesAPI.SetBlobTags(OperationObject, Tags);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Blob Tags', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Blob Tags', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -600,6 +626,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure GetBlobTags(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -623,16 +650,16 @@ codeunit 88154 "Blob Service Test Library"
         Tags.Add('Dummy02', 'DummyValue02');
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
 
-        BlobServicesAPI.SetBlobTags(OperationObject, Tags);
+        OperationResponse := BlobServicesAPI.SetBlobTags(OperationObject, Tags);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Blob Tags', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Blob Tags', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Get blob tags        
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
 
-        Document := BlobServicesAPI.GetBlobTags(OperationObject);
+        OperationResponse := BlobServicesAPI.GetBlobTags(OperationObject, Document);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Get Blob Tags', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Get Blob Tags', OperationResponse.GetHttpResponseStatusCode()));
         Assert.AreEqual(StrPos(Format(Document), 'DummyValue01') > 0, true, 'Return Value not as expected');
         Assert.AreEqual(StrPos(Format(Document), 'DummyValue02') > 0, true, 'Return Value not as expected');
 
@@ -642,6 +669,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure FindBlobsByTags(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -666,9 +694,9 @@ codeunit 88154 "Blob Service Test Library"
         Tags.Add('Dummy03', 'DummyValue03');
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
 
-        BlobServicesAPI.SetBlobTags(OperationObject, Tags);
+        OperationResponse := BlobServicesAPI.SetBlobTags(OperationObject, Tags);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Blob Tags', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Blob Tags', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Upload BlockBlob to the Container
         BlobName := PutBlockBlobTextImpl(TestContext, ContainerName);
@@ -679,9 +707,9 @@ codeunit 88154 "Blob Service Test Library"
         Tags.Add('Dummy02', 'DummyValue02');
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
 
-        BlobServicesAPI.SetBlobTags(OperationObject, Tags);
+        OperationResponse := BlobServicesAPI.SetBlobTags(OperationObject, Tags);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Blob Tags', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Blob Tags', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Upload BlockBlob to the Container
         BlobName := PutBlockBlobTextImpl(TestContext, ContainerName);
@@ -692,9 +720,9 @@ codeunit 88154 "Blob Service Test Library"
         Tags.Add('Dummy03', 'DummyValue03');
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
 
-        BlobServicesAPI.SetBlobTags(OperationObject, Tags);
+        OperationResponse := BlobServicesAPI.SetBlobTags(OperationObject, Tags);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Set Blob Tags', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Set Blob Tags', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Find Blobs by Tags
         Clear(Tags);
@@ -702,9 +730,9 @@ codeunit 88154 "Blob Service Test Library"
         Tags.Add('Dummy03', '= DummyValue03');
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
 
-        Document := BlobServicesAPI.FindBlobsByTags(OperationObject, Tags);
+        OperationResponse := BlobServicesAPI.FindBlobsByTags(OperationObject, Tags, Document);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Find Blobs by Tags', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Find Blobs by Tags', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -712,6 +740,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure DeleteBlobWithoutLease(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -728,9 +757,9 @@ codeunit 88154 "Blob Service Test Library"
 
         // [THEN] Delete blob
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.DeleteBlob(OperationObject);
+        OperationResponse := BlobServicesAPI.DeleteBlob(OperationObject);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Delete Blob', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Delete Blob', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -738,6 +767,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure DeleteBlobWithLease(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -756,17 +786,17 @@ codeunit 88154 "Blob Service Test Library"
 
         // [THEN] Acquire Lease
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        LeaseId := BlobServicesAPI.BlobLeaseAcquire(OperationObject, 60);
+        OperationResponse := BlobServicesAPI.BlobLeaseAcquire(OperationObject, 60, LeaseId);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Acquire Lease', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
-        Assert.AreNotEqual(LeaseId, EmptyGuid, StrSubstNo(OperationFailedErr, 'Acquire Lease', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Acquire Lease', OperationResponse.GetHttpResponseStatusCode()));
+        Assert.AreNotEqual(LeaseId, EmptyGuid, StrSubstNo(OperationFailedErr, 'Acquire Lease', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Delete blob
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
         BlobAPIValueHelper.SetLeaseIdHeader(OperationObject, LeaseId);
-        BlobServicesAPI.DeleteBlob(OperationObject);
+        OperationResponse := BlobServicesAPI.DeleteBlob(OperationObject);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Delete Blob', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Delete Blob', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -774,6 +804,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure UndeleteBlob(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -792,15 +823,15 @@ codeunit 88154 "Blob Service Test Library"
 
         // [THEN] Delete blob
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.DeleteBlob(OperationObject);
+        OperationResponse := BlobServicesAPI.DeleteBlob(OperationObject);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Delete Blob', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Delete Blob', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Undelete blob
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.UndeleteBlob(OperationObject);
+        OperationResponse := BlobServicesAPI.UndeleteBlob(OperationObject);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Undelete Blob', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Undelete Blob', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -808,6 +839,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure LeaseBlobAcquireAndRelease(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         LeaseId: Guid;
@@ -825,15 +857,15 @@ codeunit 88154 "Blob Service Test Library"
 
         // [THEN] Acquire Lease
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        LeaseId := BlobServicesAPI.BlobLeaseAcquire(OperationObject, 60);
+        OperationResponse := BlobServicesAPI.BlobLeaseAcquire(OperationObject, 60, LeaseId);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Acquire Lease', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
-        Assert.AreNotEqual(LeaseId, EmptyGuid, StrSubstNo(OperationFailedErr, 'Acquire Lease', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Acquire Lease', OperationResponse.GetHttpResponseStatusCode()));
+        Assert.AreNotEqual(LeaseId, EmptyGuid, StrSubstNo(OperationFailedErr, 'Acquire Lease', OperationResponse.GetHttpResponseStatusCode()));
 
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.BlobLeaseRelease(OperationObject, LeaseId);
+        OperationResponse := BlobServicesAPI.BlobLeaseRelease(OperationObject, LeaseId);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Release Lease', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Release Lease', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -841,6 +873,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure SnapshotBlob(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -857,9 +890,9 @@ codeunit 88154 "Blob Service Test Library"
 
         // [THEN] Snapshot blob
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.SnapshotBlob(OperationObject);
+        OperationResponse := BlobServicesAPI.SnapshotBlob(OperationObject);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Snapshot Blob', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Snapshot Blob', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -867,6 +900,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure CopyBlob(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         OperationObject2: Codeunit "Blob API Operation Object";
         Operation: Enum "Blob Service API Operation";
@@ -897,9 +931,9 @@ codeunit 88154 "Blob Service Test Library"
         // Call Copy Blob
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject2, ContainerName2, BlobName2);
 
-        BlobServicesAPI.CopyBlob(OperationObject2, SourceName);
+        OperationResponse := BlobServicesAPI.CopyBlob(OperationObject2, SourceName);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject2), true, StrSubstNo(OperationFailedErr, 'Copy Blob', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject2)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Copy Blob', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -907,6 +941,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure CopyBlobFromUrl(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         OperationObject2: Codeunit "Blob API Operation Object";
         Operation: Enum "Blob Service API Operation";
@@ -935,9 +970,9 @@ codeunit 88154 "Blob Service Test Library"
         // Call Copy Blob
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject2, ContainerName2, BlobName2);
 
-        BlobServicesAPI.CopyBlob(OperationObject2, OperationObject.ConstructUri());
+        OperationResponse := BlobServicesAPI.CopyBlob(OperationObject2, OperationObject.ConstructUri());
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject2), true, StrSubstNo(OperationFailedErr, 'Copy Blob from URL', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject2)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Copy Blob from URL', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -945,6 +980,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure GetBlobBlockBlobText(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
         BlobName: Text;
@@ -962,9 +998,9 @@ codeunit 88154 "Blob Service Test Library"
 
         // [THEN] Get blob from Container
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.GetBlobAsText(OperationObject, TargetText);
+        OperationResponse := BlobServicesAPI.GetBlobAsText(OperationObject, TargetText);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Get Blob', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Get Blob', OperationResponse.GetHttpResponseStatusCode()));
         Assert.AreEqual(HelperLibrary.GetSampleTextBlobContent(), TargetText, 'Content is not identical.');
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
@@ -973,7 +1009,9 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure PutBlockUncommited(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
+        FormatHelper: Codeunit "Blob API Format Helper";
         ContainerName: Text;
         BlobName: Text;
         BlobContent: Text;
@@ -992,13 +1030,13 @@ codeunit 88154 "Blob Service Test Library"
         BlobContent := HelperLibrary.GetSampleTextBlobContent();
 
         // [GIVEN] A BlockId (Base64-Guid)
-        BlockID := BlobAPIValueHelper.GetBase64BlockId();
+        BlockID := FormatHelper.GetBase64BlockId();
 
         // [THEN] Put Block
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.PutBlock(OperationObject, BlobContent);
+        OperationResponse := BlobServicesAPI.PutBlock(OperationObject, BlobContent);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Put Block', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Put Block', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -1006,7 +1044,9 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure GetBlockList(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
+        FormatHelper: Codeunit "Blob API Format Helper";
         ContainerName: Text;
         BlobName: Text;
         BlobContent: Text;
@@ -1029,26 +1069,26 @@ codeunit 88154 "Blob Service Test Library"
         BlobContent := HelperLibrary.GetSampleTextBlobContent();
 
         // [GIVEN] A BlockId (Base64-Guid)
-        BlockID := BlobAPIValueHelper.GetBase64BlockId();
-        BlockID2 := BlobAPIValueHelper.GetBase64BlockId();
+        BlockID := FormatHelper.GetBase64BlockId();
+        BlockID2 := FormatHelper.GetBase64BlockId();
 
         // [THEN] Put Block
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID);
+        OperationResponse := BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Put Block', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Put Block', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Put another Block
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID2);
+        OperationResponse := BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID2);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Put Block', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Put Block', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Get Block List
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.GetBlockList(OperationObject, BlockListType::all, CommitedBlocks, UncommitedBlocks);
+        OperationResponse := BlobServicesAPI.GetBlockList(OperationObject, BlockListType::all, CommitedBlocks, UncommitedBlocks);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Get Block List', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Get Block List', OperationResponse.GetHttpResponseStatusCode()));
         Assert.AreEqual(UncommitedBlocks.Count(), 2, 'Number of returned Blocks does not match the ones created.');
         Assert.AreEqual(UncommitedBlocks.ContainsKey(BlockID), true, 'Return value not as expected');
         Assert.AreEqual(UncommitedBlocks.ContainsKey(BlockID2), true, 'Return value not as expected');
@@ -1059,7 +1099,9 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure PutBlockList(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
+        FormatHelper: Codeunit "Blob API Format Helper";
         ContainerName: Text;
         BlobName: Text;
         BlobContent: Text;
@@ -1082,44 +1124,44 @@ codeunit 88154 "Blob Service Test Library"
         BlobContent := HelperLibrary.GetSampleTextBlobContent();
 
         // [GIVEN] A BlockId (Base64-Guid)
-        BlockID := BlobAPIValueHelper.GetBase64BlockId();
-        BlockID2 := BlobAPIValueHelper.GetBase64BlockId();
+        BlockID := FormatHelper.GetBase64BlockId();
+        BlockID2 := FormatHelper.GetBase64BlockId();
 
         // [THEN] Put Block
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID);
+        OperationResponse := BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Put Block', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Put Block', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Put another Block
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID2);
+        OperationResponse := BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID2);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Put Block', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Put Block', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Get Block List
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.GetBlockList(OperationObject, BlockListType::all, CommitedBlocks, UncommitedBlocks);
+        OperationResponse := BlobServicesAPI.GetBlockList(OperationObject, BlockListType::all, CommitedBlocks, UncommitedBlocks);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Get Block List', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Get Block List', OperationResponse.GetHttpResponseStatusCode()));
         Assert.AreEqual(UncommitedBlocks.Count(), 2, 'Number of returned Blocks does not match the ones created.');
         Assert.AreEqual(UncommitedBlocks.ContainsKey(BlockID), true, 'Return value not as expected');
         Assert.AreEqual(UncommitedBlocks.ContainsKey(BlockID2), true, 'Return value not as expected');
 
         // [THEN] Put Block List
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.PutBlockList(OperationObject, CommitedBlocks, UncommitedBlocks);
+        OperationResponse := BlobServicesAPI.PutBlockList(OperationObject, CommitedBlocks, UncommitedBlocks);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Put Block List', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Put Block List', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Get Block List for validation
         Clear(OperationObject);
         Clear(CommitedBlocks);
         Clear(UncommitedBlocks);
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.GetBlockList(OperationObject, BlockListType::all, CommitedBlocks, UncommitedBlocks);
+        OperationResponse := BlobServicesAPI.GetBlockList(OperationObject, BlockListType::all, CommitedBlocks, UncommitedBlocks);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Get Block List', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Get Block List', OperationResponse.GetHttpResponseStatusCode()));
         Assert.AreEqual(CommitedBlocks.Count(), 2, 'Number of returned Blocks does not match the ones created.');
         Assert.AreEqual(UncommitedBlocks.Count(), 0, 'Number of returned Blocks does not match the ones created.');
         Assert.AreEqual(UncommitedBlocks.ContainsKey(BlockID), false, 'Return value not as expected');
@@ -1133,7 +1175,9 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure QueryBlobContents(TestContext: Codeunit "Blob Service API Test Context")
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
+        FormatHelper: Codeunit "Blob API Format Helper";
         ApiVersion: Enum "Storage Service API Version";
         ContainerName: Text;
         BlobName: Text;
@@ -1161,44 +1205,44 @@ codeunit 88154 "Blob Service Test Library"
         BlobContent := HelperLibrary.GetSampleTextBlobContent();
 
         // [GIVEN] A BlockId (Base64-Guid)
-        BlockID := BlobAPIValueHelper.GetBase64BlockId();
-        BlockID2 := BlobAPIValueHelper.GetBase64BlockId();
+        BlockID := FormatHelper.GetBase64BlockId();
+        BlockID2 := FormatHelper.GetBase64BlockId();
 
         // [THEN] Put Block
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID);
+        OperationResponse := BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Put Block', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Put Block', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Put another Block
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID2);
+        OperationResponse := BlobServicesAPI.PutBlock(OperationObject, BlobContent, BlockID2);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Put Block', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Put Block', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Get Block List
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.GetBlockList(OperationObject, BlockListType::all, CommitedBlocks, UncommitedBlocks);
+        OperationResponse := BlobServicesAPI.GetBlockList(OperationObject, BlockListType::all, CommitedBlocks, UncommitedBlocks);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Get Block List', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Get Block List', OperationResponse.GetHttpResponseStatusCode()));
         Assert.AreEqual(UncommitedBlocks.Count(), 2, 'Number of returned Blocks does not match the ones created.');
         Assert.AreEqual(UncommitedBlocks.ContainsKey(BlockID), true, 'Return value not as expected');
         Assert.AreEqual(UncommitedBlocks.ContainsKey(BlockID2), true, 'Return value not as expected');
 
         // [THEN] Put Block List
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.PutBlockList(OperationObject, CommitedBlocks, UncommitedBlocks);
+        OperationResponse := BlobServicesAPI.PutBlockList(OperationObject, CommitedBlocks, UncommitedBlocks);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Put Block List', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Put Block List', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Get Block List for validation
         Clear(OperationObject);
         Clear(CommitedBlocks);
         Clear(UncommitedBlocks);
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
-        BlobServicesAPI.GetBlockList(OperationObject, BlockListType::all, CommitedBlocks, UncommitedBlocks);
+        OperationResponse := BlobServicesAPI.GetBlockList(OperationObject, BlockListType::all, CommitedBlocks, UncommitedBlocks);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Get Block List', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Get Block List', OperationResponse.GetHttpResponseStatusCode()));
         Assert.AreEqual(CommitedBlocks.Count(), 2, 'Number of returned Blocks does not match the ones created.');
         Assert.AreEqual(UncommitedBlocks.Count(), 0, 'Number of returned Blocks does not match the ones created.');
         Assert.AreEqual(UncommitedBlocks.ContainsKey(BlockID), false, 'Return value not as expected');
@@ -1210,9 +1254,9 @@ codeunit 88154 "Blob Service Test Library"
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
         OperationObject.SetApiVersion(ApiVersion::"2020-02-10");
         SearchExpression := 'SELECT * FROM BlobStorage';
-        BlobServicesAPI.QueryBlobContents(OperationObject, SearchExpression, Result);
+        OperationResponse := BlobServicesAPI.QueryBlobContents(OperationObject, SearchExpression, Result);
 
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Query Blob Contents', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Query Blob Contents', OperationResponse.GetHttpResponseStatusCode()));
 
         // [THEN] Cleanup / Delete the Container from the Storage Account
         DeleteContainerImpl(TestContext, ContainerName);
@@ -1221,6 +1265,7 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure CreateContainerImpl(TestContext: Codeunit "Blob Service API Test Context"): Text
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         ContainerName: Text;
     begin
@@ -1231,32 +1276,34 @@ codeunit 88154 "Blob Service Test Library"
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
 
         // [THEN] Create the Container in the Storage Account
-        BlobServicesAPI.CreateContainer(OperationObject);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Create Container', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.CreateContainer(OperationObject);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Create Container', OperationResponse.GetHttpResponseStatusCode()));
         exit(ContainerName);
     end;
 
     procedure DeleteContainerImpl(TestContext: Codeunit "Blob Service API Test Context"; ContainerName: Text)
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
     begin
         // [THEN] Cleanup / Delete the Container from the Storage Account
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
 
-        BlobServicesAPI.DeleteContainer(OperationObject);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Cleanup / Delete Container', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.DeleteContainer(OperationObject);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Cleanup / Delete Container', OperationResponse.GetHttpResponseStatusCode()));
     end;
 
     procedure DeleteContainerImpl(TestContext: Codeunit "Blob Service API Test Context"; ContainerName: Text; LeaseId: Guid)
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
     begin
         // [THEN] Cleanup / Delete the Container from the Storage Account
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName);
 
         BlobAPIValueHelper.SetLeaseIdHeader(OperationObject, LeaseId);
-        BlobServicesAPI.DeleteContainer(OperationObject);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Cleanup / Delete Container', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.DeleteContainer(OperationObject);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Cleanup / Delete Container', OperationResponse.GetHttpResponseStatusCode()));
     end;
 
     procedure PutBlockBlobTextImpl(TestContext: Codeunit "Blob Service API Test Context"; ContainerName: Text): Text
@@ -1270,13 +1317,14 @@ codeunit 88154 "Blob Service Test Library"
 
     procedure PutBlockBlobTextImpl(TestContext: Codeunit "Blob Service API Test Context"; ContainerName: Text; BlobName: Text)
     var
+        OperationResponse: Codeunit "Blob API Operation Response";
         OperationObject: Codeunit "Blob API Operation Object";
         SampleContent: Text;
     begin
         HelperLibrary.InitializeRequestFromContext(TestContext, OperationObject, ContainerName, BlobName);
         SampleContent := HelperLibrary.GetSampleTextBlobContent();
-        BlobServicesAPI.PutBlobBlockBlobText(OperationObject, BlobName, SampleContent);
-        Assert.AreEqual(BlobAPIValueHelper.GetHttpResponseIsSuccessStatusCode(OperationObject), true, StrSubstNo(OperationFailedErr, 'Put Blob', BlobAPIValueHelper.GetHttpResponseStatusCode(OperationObject)));
+        OperationResponse := BlobServicesAPI.PutBlobBlockBlobText(OperationObject, BlobName, SampleContent);
+        Assert.AreEqual(OperationResponse.GetHttpResponseIsSuccessStatusCode(), true, StrSubstNo(OperationFailedErr, 'Put Blob', OperationResponse.GetHttpResponseStatusCode()));
     end;
 
     var
