@@ -222,28 +222,6 @@ codeunit 9042 "Blob API Operation Object"
         exit(Operation);
     end;
 
-    /// <summary>
-    /// Sets the HttpResponseMessage for this request
-    /// </summary>
-    /// <param name="NewResponse">The HttpResponseMessage</param>
-    procedure SetHttpResponse(NewResponse: HttpResponseMessage)
-    begin
-        Response := NewResponse;
-        ResponseIsSet := true;
-    end;
-
-    /// <summary>
-    /// Returns the HttpResponseMessage for this request
-    /// </summary>
-    /// <returns>The HttpResponseMessage</returns>
-    procedure GetHttpResponse(var NewResponse: HttpResponseMessage)
-    var
-        ValueNotSetErr: Label 'HttpResponseMessage is not set. Call this function only after you executed the API operation.';
-    begin
-        if not ResponseIsSet then
-            Error(ValueNotSetErr);
-        NewResponse := Response;
-    end;
 
     internal procedure SetHeaderValues(NewHeaderValues: Dictionary of [Text, Text])
     begin

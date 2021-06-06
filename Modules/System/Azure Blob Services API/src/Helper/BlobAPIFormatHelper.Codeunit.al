@@ -78,16 +78,6 @@ codeunit 9044 "Blob API Format Helper"
         exit(Document);
     end;
 
-    procedure GetUserDelegationKeyFromResponse(ResponseAsText: Text): Text
-    var
-        ResponseDocument: XmlDocument;
-        ValueNode: XmlNode;
-    begin
-        XmlDocument.ReadFrom(ResponseAsText, ResponseDocument);
-        ResponseDocument.SelectSingleNode('.//Value', ValueNode);
-        exit(ValueNode.AsXmlElement().InnerText);
-    end;
-
     procedure BlockListDictionaryToXmlDocument(BlockList: Dictionary of [Text, Text]): XmlDocument
     var
         Document: XmlDocument;
