@@ -44,7 +44,7 @@ codeunit 9050 "Blob API Operation Response"
     /// Can be called after an API operation was executed. Returns the HttpStatusCode as Integer
     /// </summary>    
     /// <returns>The HttpStatusCode as Integer</returns>
-    procedure GetHttpResponseStatusCode(var OperationObject: Codeunit "Blob API Operation Object"): Integer
+    procedure GetHttpResponseStatusCode(): Integer
     begin
         exit(Response.HttpStatusCode());
     end;
@@ -53,7 +53,7 @@ codeunit 9050 "Blob API Operation Response"
     /// Can be called after an API operation was executed. Returns a Boolean indicating if the request was successful or not
     /// </summary>    
     /// <returns>Boolean indicating if the request was successful or not</returns>
-    procedure GetHttpResponseIsSuccessStatusCode(var OperationObject: Codeunit "Blob API Operation Object"): Boolean
+    procedure GetHttpResponseIsSuccessStatusCode(): Boolean
     begin
         exit(Response.IsSuccessStatusCode);
     end;
@@ -98,7 +98,7 @@ codeunit 9050 "Blob API Operation Response"
     /// Can be called after an API operation was executed. Returns the value of 'x-ms-account-kind' HttpHeader of the underlying HttpResponseMessage
     /// </summary>    
     /// <returns>Text containing the value of HttpHeader 'x-ms-sku-name' of the underlying HttpResponseMessage. Returns empty string if HttpHeader does not exist</returns>
-    procedure GetAccountKindFromResponseHeaders(var OperationObject: Codeunit "Blob API Operation Object"): Text
+    procedure GetAccountKindFromResponseHeaders(): Text
     var
         ReturnValue: Text;
     begin
@@ -110,7 +110,7 @@ codeunit 9050 "Blob API Operation Response"
     /// Can be called after an API operation was executed. Returns the value of 'x-ms-copy-id' HttpHeader of the underlying HttpResponseMessage
     /// </summary>    
     /// <returns>Text containing the value of HttpHeader 'x-ms-copy-id' of the underlying HttpResponseMessage. Returns empty string if HttpHeader does not exist</returns>
-    procedure GetCopyIdFromResponseHeaders(var OperationObject: Codeunit "Blob API Operation Object"): Text
+    procedure GetCopyIdFromResponseHeaders(): Text
     var
         ReturnValue: Text;
     begin
