@@ -328,38 +328,26 @@ codeunit 9042 "Blob API Operation Payload"
     /// <returns>Sorted Dictionary of [Text, Text] containg all Headers and OptionalHeaderValues from this object.</returns>
     internal procedure GetSortedHeadersDictionary() NewHeaders: Dictionary of [Text, Text]
     var
-        SortTable: Record "Temp. Sort Table";
+        SortedDictionary: DotNet SortedDictionary2;
+        SortedDictionaryEntry: DotNet GenericKeyValuePair2;
         HeaderKey: Text;
         HeaderValue: Text;
     begin
-        Clear(NewHeaders);
-        SortTable.Reset();
-        SortTable.DeleteAll();
-        foreach HeaderKey in HeaderValues.Keys do begin
-            SortTable."Key" := CopyStr(HeaderKey, 1, 250);
-            SortTable."Value" := CopyStr(HeaderValues.Get(HeaderKey), 1, 250);
-            SortTable.Insert(false);
-        end;
-        foreach HeaderKey in OptionalHeaderValues.Keys do begin
-            SortTable."Key" := CopyStr(HeaderKey, 1, 250);
-            SortTable."Value" := CopyStr(OptionalHeaderValues.Get(HeaderKey), 1, 250);
-            if not SortTable.Insert(false) then
-                SortTable.Modify(false);
-        end;
-        SortTable.SetCurrentKey("Key");
-        SortTable.Ascending(true);
+        SortedDictionary := SortedDictionary.SortedDictionary();
 
-        if not SortTable.FindSet(false, false) then
-            exit;
-        repeat
-            // It's possible that "Value" is greater than 250 characters,
-            // so get the original value from the Dictionary again
-            if HeaderValues.ContainsKey(SortTable."Key") then
-                HeaderValue := HeaderValues.Get(SortTable."Key")
-            else
-                HeaderValue := OptionalHeaderValues.Get(SortTable."Key");
-            NewHeaders.Add(SortTable."Key", HeaderValue);
-        until SortTable.Next() = 0;
+        Clear(NewHeaders);
+
+        foreach HeaderKey in HeaderValues.Keys do
+            SortedDictionary.Add(HeaderKey, HeaderValues.Get(HeaderKey));
+
+        foreach HeaderKey in OptionalHeaderValues.Keys do begin
+            if SortedDictionary.ContainsKey(HeaderKey) then
+                SortedDictionary.Remove(HeaderKey);
+            SortedDictionary.Add(HeaderKey, OptionalHeaderValues.Get(HeaderKey));
+        end;
+
+        foreach SortedDictionaryEntry in SortedDictionary do
+            NewHeaders.Add(SortedDictionaryEntry."Key", SortedDictionaryEntry.Value);
     end;
 
     // #region Optional Uri Parameters

@@ -55,8 +55,9 @@ codeunit 9060 "Auth. Format Helper"
     var
         Uri: Codeunit Uri;
         UriBuider: Codeunit "Uri Builder";
-        UriQuerySortHelper: Codeunit "Uri Query Sort Helper";
         AuthenticationHelper: Codeunit "Auth. Format Helper";
+        SortedDictionaryQuery: DotNet SortedDictionary2;
+        SortedDictionaryEntry: DotNet GenericKeyValuePair2;
         QueryString: Text;
         Segments: List of [Text];
         Segment: Text;
@@ -77,19 +78,47 @@ codeunit 9060 "Auth. Format Helper"
             StringBuilderResource.Append(Segment);
 
         if QueryString <> '' then begin
-            // Need to use temp. Table to sort query alphabetically
-            // According to documentation it should be lexicographically, but I don't know how :(
+            // According to documentation it should be lexicographically, but I didn't find a better way than SortedDictionary
             // see: https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key#constructing-the-canonicalized-headers-string
-            UriQuerySortHelper.SetQueryString(QueryString);
-            if UriQuerySortHelper.FindSet() then
-                repeat
-                    StringBuilderQuery.Append(AuthenticationHelper.GetNewLineCharacter());
-                    StringBuilderQuery.Append(StrSubstNo(KeyValuePairLbl, UriQuerySortHelper.Identifier(), Uri.UnescapeDataString(UriQuerySortHelper.Value())));
-                until UriQuerySortHelper.Next() = 0;
+            SplitQueryStringIntoSortedDictionary(QueryString, SortedDictionaryQuery);
+            foreach SortedDictionaryEntry in SortedDictionaryQuery do begin
+                StringBuilderQuery.Append(AuthenticationHelper.GetNewLineCharacter());
+                StringBuilderQuery.Append(StrSubstNo(KeyValuePairLbl, SortedDictionaryEntry."Key", Uri.UnescapeDataString(SortedDictionaryEntry.Value)));
+            end;
         end;
         StringBuilderCanonicalizedResource.Append(StringBuilderResource.ToText());
         StringBuilderCanonicalizedResource.Append(StringBuilderQuery.ToText());
         exit(StringBuilderCanonicalizedResource.ToText());
+    end;
+
+    local procedure SplitQueryStringIntoSortedDictionary(QueryString: Text; var NewSortedDictionary: DotNet SortedDictionary2)
+    var
+        Segments: List of [Text];
+        Segment: Text;
+        CurrIdentifier: Text;
+        CurrValue: Text;
+    begin
+        if QueryString.StartsWith('?') then
+            QueryString := CopyStr(QueryString, 2);
+        Segments := QueryString.Split('&');
+
+        NewSortedDictionary := NewSortedDictionary.SortedDictionary();
+
+        foreach Segment in Segments do begin
+            GetKeyValueFromQueryParameter(Segment, CurrIdentifier, CurrValue);
+            NewSortedDictionary.Add(CurrIdentifier, CurrValue);
+        end;
+    end;
+
+    local procedure GetKeyValueFromQueryParameter(QueryString: Text; var CurrIdentifier: Text; var CurrValue: Text)
+    var
+        Split: List of [Text];
+    begin
+        Split := QueryString.Split('=');
+        if Split.Count <> 2 then
+            Error('This should not happen'); // TODO: Make better error
+        CurrIdentifier := Split.Get(1);
+        CurrValue := Split.Get(2);
     end;
 
     procedure CreateSharedKeyStringToSign(ApiVersion: Enum "Storage service API Version"; HeaderValues: Dictionary of [Text, Text]; HttpRequestType: Enum "Http Request Type"; StorageAccount: Text; UriString: Text): Text
