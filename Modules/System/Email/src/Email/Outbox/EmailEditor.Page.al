@@ -62,7 +62,7 @@ page 13 "Email Editor"
 
                             trigger OnValidate()
                             begin
-                                EmailMessage.SetRecipients(Enum::"Email Recipient Type"::"To", ToRecipient);
+                                SetRecipients(Enum::"Email Recipient Type"::"To", ToRecipient);
                             end;
                         }
 
@@ -76,7 +76,7 @@ page 13 "Email Editor"
 
                             trigger OnValidate()
                             begin
-                                EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Cc, CcRecipient);
+                                SetRecipients(Enum::"Email Recipient Type"::Cc, CcRecipient);
                             end;
                         }
 
@@ -90,7 +90,7 @@ page 13 "Email Editor"
 
                             trigger OnValidate()
                             begin
-                                EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Bcc, BccRecipient);
+                                SetRecipients(Enum::"Email Recipient Type"::Bcc, BccRecipient);
                             end;
                         }
 
@@ -369,13 +369,17 @@ page 13 "Email Editor"
         IsNewOutbox := true;
     end;
 
+    procedure SetRecipients(RecipientType: Enum "Email Recipient Type"; Recipient: Text)
+    begin
+        EmailMessage.SetRecipients(Enum::"Email Recipient Type"::"To", Recipient);
+    end;
+
     var
         TempEmailAccount: Record "Email Account" temporary;
         EmailMessage: Codeunit "Email Message Impl.";
         EmailEditor: Codeunit "Email Editor";
         EmailAction: Enum "Email Action";
         FromDisplayName: Text;
-        ToRecipient, CcRecipient, BccRecipient : Text;
         EmailScheduled: Boolean;
         IsNewOutbox: Boolean;
         EmailBody, EmailSubject : Text;
@@ -385,4 +389,7 @@ page 13 "Email Editor"
         CloseThePageQst: Label 'The email has not been sent.';
         OptionsOnClosePageNewEmailLbl: Label 'Keep as draft in Email Outbox,Discard email';
         PageCaptionTxt: Label 'Compose an Email';
+
+    protected var
+        ToRecipient, CcRecipient, BccRecipient : Text;
 }
