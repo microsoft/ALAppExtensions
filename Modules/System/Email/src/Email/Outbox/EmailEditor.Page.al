@@ -59,10 +59,20 @@ page 13 "Email Editor"
                             ToolTip = 'Specifies the email addresses to send the email to.';
                             Editable = not EmailScheduled;
                             Importance = Promoted;
+                            Lookup = true;
 
                             trigger OnValidate()
                             begin
                                 EmailMessage.SetRecipients(Enum::"Email Recipient Type"::"To", ToRecipient);
+                            end;
+
+                            trigger OnLookup(var Text: Text): Boolean
+                            var
+                                LookupOk: Boolean;
+                            begin
+                                LookupOk := true;
+                                OnLookupToRecipient(Text, LookupOk);
+                                exit(LookupOk)
                             end;
                         }
 
@@ -73,10 +83,20 @@ page 13 "Email Editor"
                             ToolTip = 'Specifies the email addresses of people who should receive a copy of the email.';
                             Editable = not EmailScheduled;
                             Importance = Additional;
+                            Lookup = true;
 
                             trigger OnValidate()
                             begin
                                 EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Cc, CcRecipient);
+                            end;
+
+                            trigger OnLookup(var Text: Text): Boolean
+                            var
+                                LookupOk: Boolean;
+                            begin
+                                LookupOk := true;
+                                OnLookupCcRecipient(Text, LookupOk);
+                                exit(LookupOk)
                             end;
                         }
 
@@ -87,10 +107,20 @@ page 13 "Email Editor"
                             ToolTip = 'Specifies the email addresses of people who should receive a blind carbon copy (Bcc) of the email. These addresses are not shown to other recipients.';
                             Editable = not EmailScheduled;
                             Importance = Additional;
+                            Lookup = true;
 
                             trigger OnValidate()
                             begin
                                 EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Bcc, BccRecipient);
+                            end;
+
+                            trigger OnLookup(var Text: Text): Boolean
+                            var
+                                LookupOk: Boolean;
+                            begin
+                                LookupOk := true;
+                                OnLookupBccRecipient(Text, LookupOk);
+                                exit(LookupOk)
                             end;
                         }
 
@@ -375,7 +405,6 @@ page 13 "Email Editor"
         EmailEditor: Codeunit "Email Editor";
         EmailAction: Enum "Email Action";
         FromDisplayName: Text;
-        ToRecipient, CcRecipient, BccRecipient : Text;
         EmailScheduled: Boolean;
         IsNewOutbox: Boolean;
         EmailBody, EmailSubject : Text;
@@ -385,4 +414,23 @@ page 13 "Email Editor"
         CloseThePageQst: Label 'The email has not been sent.';
         OptionsOnClosePageNewEmailLbl: Label 'Keep as draft in Email Outbox,Discard email';
         PageCaptionTxt: Label 'Compose an Email';
+
+    protected var
+        ToRecipient, CcRecipient, BccRecipient : Text;
+
+
+    [IntegrationEvent(false, false)]
+    local procedure OnLookupToRecipient(var ToRecipient: Text; var LookupOk: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnLookupCcRecipient(var CcRecipient: Text; var LookupOk: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnLookupBccRecipient(var BccRecipient: Text; var LookupOk: Boolean)
+    begin
+    end;
 }
