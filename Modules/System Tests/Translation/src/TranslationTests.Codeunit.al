@@ -17,6 +17,7 @@ codeunit 137121 "Translation Tests"
         Text4Txt: Label 'Translation 4';
         Text5Txt: Label 'Translation 5';
         CannotTranslateTempRecErr: Label 'Translations cannot be added or retrieved for temporary records.';
+        DifferntTableErr: Label 'The records cannot belong to different tables.';
 
     [Test]
     [Scope('OnPrem')]
@@ -212,6 +213,64 @@ codeunit 137121 "Translation Tests"
         TranslationPage.Next();
         Assert.IsFalse(TranslationPage.Next(), 'No more records should be available.');
     end;
+
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestCopyTranslations()
+    var
+        TranslationTestTable: Record "Translation Test Table";
+        TargetTranslationTestTable: Record "Translation Test Table";
+    begin
+        // [SCENARIO] Translations can be deleted
+        Initialize();
+
+        // [GIVEN] Create tow record for which data in fields can be translated
+        CreateRecord(TranslationTestTable);
+        CreateRecord(TargetTranslationTestTable);
+
+        // [WHEN] Set the translations in two fields
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), Text1Txt);
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030, Text2Txt);
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(SecondTextField), Text3Txt);
+
+        // [WHEN] Copy the the translations for one field
+        Translation.Copy(TranslationTestTable, TargetTranslationTestTable, TranslationTestTable.FieldNo(TextField));
+
+        // [THEN] The translation for the field is copied and for the second is not
+        Assert.AreEqual(Text1Txt, Translation.Get(TargetTranslationTestTable, TargetTranslationTestTable.FieldNo(TextField)),
+            'The translation should have been copied');
+        Assert.AreEqual(Text2Txt, Translation.Get(TargetTranslationTestTable, TargetTranslationTestTable.FieldNo(TextField), 1030),
+            'The translation should have been copied');
+        Assert.AreEqual('', Translation.Get(TargetTranslationTestTable, TranslationTestTable.FieldNo(SecondTextField)),
+            'The 2nd translation should not have been copied');
+    end;
+
+    //TODO: Enable in BC19
+    // [Test]
+    // [Scope('OnPrem')]
+    // procedure TestCopyTranslationForDifferentRecords()
+    // var
+    //     TranslationTestTable: Record "Translation Test Table";
+    //     TranslationTestTableTwo: Record "Translation Test Table Two";
+    // begin
+    //     // [SCENARIO] Checks for an error message when translation is copied from one to another table
+    //     Initialize();
+
+    //     // [GIVEN] A record of one table is created
+    //     CreateRecord(TranslationTestTable);
+
+    //     // [GIVEN] A record of another table is created
+    //     TranslationTestTableTwo.Init();
+    //     TranslationTestTableTwo.PK := 1;
+    //     TranslationTestTableTwo.Insert();
+
+    //     // [WHEN] Translation is copied
+    //     asserterror Translation.Copy(TranslationTestTable, TranslationTestTableTwo);
+
+    //     // [THEN] Error is raised
+    //     Assert.ExpectedError(DifferntTableErr);
+    // end;
 
     [Test]
     [Scope('OnPrem')]

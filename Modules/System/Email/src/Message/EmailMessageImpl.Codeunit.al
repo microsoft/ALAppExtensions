@@ -298,7 +298,7 @@ codeunit 8905 "Email Message Impl."
         foreach Recipient in Recipients do begin
             Recipient := DelChr(Recipient, '<>'); // trim the whitespaces around
             if Recipient <> '' then
-                if UniqueRecipients.Add(Recipient, Recipient) then begin
+                if UniqueRecipients.Add(Recipient.ToLower(), Recipient) then begin // Set the recipient key to lowercase to prevent duplicates
                     EmailRecipientRecord.Init();
                     EmailRecipientRecord."Email Message Id" := Message.Id;
                     EmailRecipientRecord."Email Recipient Type" := RecipientType;
