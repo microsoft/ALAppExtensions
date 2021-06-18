@@ -87,7 +87,7 @@ codeunit 135030 "Temp Blob Test"
         IntegerFieldNo: Integer;
     begin
         // [SCENARIO] TempBlob can be set from RecordRef.
-        
+
         IntegerFieldNo := 5; // Height
         BlobFieldNo := 3; // Content
 
@@ -141,6 +141,37 @@ codeunit 135030 "Temp Blob Test"
         TempBlob.ToRecordRef(MediaRecordRef, BlobFieldNo);
 
         MediaRecordRef.SetTable(Media);
+        Media.Content.CreateInStream(BlobInStream);
+        BlobInStream.ReadText(OutputText);
+        // [THEN] The same value is copied on the record.
+        Assert.AreEqual(SampleTxt, OutputText, 'Same text was expected.');
+    end;
+
+    [Test]
+    procedure WriteToRecordTest()
+    var
+        Media: Record Media;
+        TempBlob: Codeunit "Temp Blob";
+        BlobInStream: InStream;
+        OutputText: Text;
+        BlobFieldNo: Integer;
+        IntegerFieldNo: Integer;
+    begin
+        // [SCENARIO] TempBlob can be exported to RecordRef.
+        IntegerFieldNo := 5; // Height
+        BlobFieldNo := 3; // Content
+
+        // [GIVEN] A value in TempBlob.
+        WriteSampleTextToBlob(TempBlob);
+
+        // [GIVEN] Record is initialized.
+        Media.Init();
+
+        // [THEN] Cannot get a value for a non-BLOB field.
+        asserterror TempBlob.ToRecord(Media, IntegerFieldNo);
+
+        Media := TempBlob.ToRecord(Media, BlobFieldNo);
+
         Media.Content.CreateInStream(BlobInStream);
         BlobInStream.ReadText(OutputText);
         // [THEN] The same value is copied on the record.
