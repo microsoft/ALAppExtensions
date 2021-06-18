@@ -213,6 +213,29 @@ Any Record variable.
 
 The field number of the BLOB field to be read.
 
+### ToRecord (Method) <a name="ToRecord"></a> 
+
+ Copies the value of the TempBlob to the specified field on the Record.
+ 
+#### Syntax
+```
+procedure ToRecord(var RecordVariant: Variant; FieldNo: Integer)
+```
+#### Parameters
+*RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+Any Record variable.
+
+*FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The field number of the Blob field to be written.
+
+#### Return Value
+*[Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type)* 
+
+Returns the Record with the updated Blob field as Variant.
+
+
 ### FromRecordRef (Method) <a name="FromRecordRef"></a> 
 
  Copies the value of the BLOB field on the RecordRef in the specified field to the TempBlob.

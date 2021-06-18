@@ -8,9 +8,9 @@ codeunit 4107 "Temp Blob Impl."
     Access = Internal;
 
     var
-    #pragma warning disable AA0073
+#pragma warning disable AA0073
         TempBlob: Record "Temp Blob" temporary;
-    #pragma warning restore AA0073
+#pragma warning restore AA0073
 
     procedure CreateInStream(var InStream: InStream)
     begin
@@ -48,6 +48,16 @@ codeunit 4107 "Temp Blob Impl."
     begin
         RecordRef.GetTable(RecordVariant);
         FromRecordRef(RecordRef, FieldNo);
+    end;
+
+    procedure ToRecord(RecordVariant: Variant; FieldNo: Integer): Variant
+    var
+        RecordRef: RecordRef;
+    begin
+        RecordRef.GetTable(RecordVariant);
+        ToRecordRef(RecordRef, FieldNo);
+        RecordRef.SetTable(RecordVariant);
+        exit(RecordVariant);
     end;
 
     procedure FromRecordRef(RecordRef: RecordRef; FieldNo: Integer)

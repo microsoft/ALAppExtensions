@@ -80,6 +80,17 @@ codeunit 4100 "Temp Blob"
     end;
 
     /// <summary>
+    /// Copies the value of the TempBlob to the specified field on the RecordVariant.
+    /// </summary>
+    /// <param name="RecordVariant">Any Record variable.</param>
+    /// <param name="FieldNo">The field number of the Blob field to be written.</param>
+    /// <returns>Returns the Record with the updated Blob field as Variant.</returns>
+    procedure ToRecord(RecordVariant: Variant; FieldNo: Integer): Variant
+    begin
+        exit(TempBlobImpl.ToRecord(RecordVariant, FieldNo));
+    end;
+
+    /// <summary>
     /// Copies the value of the BLOB field on the RecordRef in the specified field to the TempBlob.
     /// </summary>
     /// <param name="RecordRef">A RecordRef variable attached to a Record.</param>
