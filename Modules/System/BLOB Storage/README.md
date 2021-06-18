@@ -219,7 +219,7 @@ The field number of the BLOB field to be read.
  
 #### Syntax
 ```
-procedure ToRecord(var RecordVariant: Variant; FieldNo: Integer)
+procedure ToRecord(RecordVariant: Variant; FieldNo: Integer): Variant
 ```
 #### Parameters
 *RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
