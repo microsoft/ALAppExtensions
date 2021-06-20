@@ -89,6 +89,8 @@ codeunit 1295 "CertificateRequest Impl."
         Pem: TextBuilder;
         B64: Text;
         Pos: Integer;
+        BeginCertReqTok: Label '-----BEGIN CERTIFICATE REQUEST-----', Locked = true;
+        EndCertReqTok: Label '-----END CERTIFICATE REQUEST-----', Locked = true;
     begin
         TempBlob.CreateOutStream(SigningRequestOutStream);
         TempBlob.CreateInStream(SigningRequestInStream);
@@ -96,12 +98,12 @@ codeunit 1295 "CertificateRequest Impl."
         B64 := Base64Convert.ToBase64(SigningRequestInStream);
 
         Pos := 1;
-        Pem.AppendLine('-----BEGIN CERTIFICATE REQUEST-----');
+        Pem.AppendLine(BeginCertReqTok);
         while Pos < StrLen(B64) do begin
             Pem.AppendLine(CopyStr(B64, Pos, 64));
             Pos += 64;
         end;
-        Pem.Append('-----END CERTIFICATE REQUEST-----');
+        Pem.Append(EndCertReqTok);
 
         SigningRequestPemString := Pem.ToText();
     end;

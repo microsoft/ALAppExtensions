@@ -68,7 +68,7 @@ codeunit 1296 CertificateRequest
     /// <summary>
     /// Creates an ASN.1 DER-encoded PKCS#10 CertificationRequest and returns a Base 64 encoded string.
     /// </summary>
-    /// <param name="SigningRequestBase64">Returns the SigningRequest in Base 64 string format.</param>
+    /// <param name="SigningRequestPemString">Returns the SigningRequest in Base 64 string format.</param>
     procedure CreateSigningRequest(var SigningRequestPemString: Text)
     begin
         CertSigningRequestImpl.CreateSigningRequest(SigningRequestPemString);

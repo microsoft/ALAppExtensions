@@ -5,6 +5,7 @@ codeunit 132590 "CertificateRequestTests"
 
     var
         Assert: Codeunit "Library Assert";
+        Any: Codeunit Any;
 
     [Test]
     procedure CreateCertificateSigningRequest()
@@ -29,7 +30,7 @@ codeunit 132590 "CertificateRequestTests"
         Assert.IsTrue(Root.SelectSingleNode('DQ', Node), 'Could not find <DQ> in key.');
 
         CertSigningRequest.InitializeCertificateRequestUsingRSA(
-            'CN=www.consilia.fi,C=FI', HashAlgorithm::SHA256, RSASignaturePadding::Pkcs1);
+            GetSubjectName(), HashAlgorithm::SHA256, RSASignaturePadding::Pkcs1);
 
         CertSigningRequest.AddX509BasicConstraintToCertificateRequest(false, false, 0, true);
 
@@ -57,11 +58,14 @@ codeunit 132590 "CertificateRequestTests"
         HashAlgorithm: Enum "Hash Algorithm";
         RSASignaturePadding: Enum "RSA Signature Padding";
         X509ContentType: Enum "X509 Content Type";
+        SubjectName: Text;
     begin
         CertSigningRequest.InitializeRSA(2048, true, KeyXmlText);
 
+        SubjectName := GetSubjectName();
+
         CertSigningRequest.InitializeCertificateRequestUsingRSA(
-            'CN=www.consilia.fi,C=FI', HashAlgorithm::SHA256, RSASignaturePadding::Pkcs1);
+            SubjectName, HashAlgorithm::SHA256, RSASignaturePadding::Pkcs1);
 
         CertSigningRequest.AddX509BasicConstraintToCertificateRequest(false, false, 0, true);
 
@@ -70,6 +74,11 @@ codeunit 132590 "CertificateRequestTests"
         CertSigningRequest.CreateSelfSigned(CreateDateTime(Today, 000000T), CreateDateTime(Today + 365, 000000T), X509ContentType::Cert, CertBase64Value);
 
         X509Certificate2.GetCertificateSubject(CertBase64Value, '', Subject);
-        Assert.AreEqual('CN=www.consilia.fi, C=FI', Subject, 'Self signed certificate generation failed.');
+        Assert.AreEqual(SubjectName, Subject, 'Self signed certificate generation failed.');
+    end;
+
+    local procedure GetSubjectName(): Text
+    begin
+        exit(StrSubstNo('CN=www.%1.com,C=US', Any.AlphabeticText(8)));
     end;
 }
