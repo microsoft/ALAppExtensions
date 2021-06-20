@@ -114,6 +114,15 @@ codeunit 1461 "SignedXml Impl."
     end;
     #endregion
 
+    procedure LoadXml(SignatureElement: XmlElement)
+    var
+        XmlDotNetConvert: Codeunit "Xml DotNet Convert";
+        DotNetXmlElement: DotNet XmlElement;
+    begin
+        XmlDotNetConvert.ToDotNet(SignatureElement, DotNetXmlElement);
+        DotNetSignedXml.LoadXml(DotNetXmlElement);
+    end;
+
     procedure SetSigningKey(var SignatureKey: Record "Signature Key")
     begin
         if SignatureKey.TryGetInstance(DotNetAsymmetricAlgorithm) then
@@ -134,6 +143,20 @@ codeunit 1461 "SignedXml Impl."
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
     begin
         XmlDotNetConvert.FromDotNet(DotNetSignedXml.GetXml(), SignedXmlElement);
+    end;
+
+    procedure CheckSignature(): Boolean
+    begin
+        exit(DotNetSignedXml.CheckSignature(DotNetAsymmetricAlgorithm));
+    end;
+
+    procedure CheckSignature(X509CertBase64Value: Text; X509CertPassword: Text; VerifySignatureOnly: Boolean): Boolean
+    var
+        X509Certificate2Impl: Codeunit "X509Certificate2 Impl.";
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        X509Certificate2Impl.InitializeX509Certificate(X509CertBase64Value, X509CertPassword, X509Certificate2);
+        exit(DotNetSignedXml.CheckSignature(X509Certificate2, VerifySignatureOnly));
     end;
 
     #region Static Fields
