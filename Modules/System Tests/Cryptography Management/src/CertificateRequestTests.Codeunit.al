@@ -1,25 +1,20 @@
-codeunit 132590 "CertificateRequestTests"
+codeunit 132572 "CertificateRequestTests"
 {
     Subtype = Test;
     TestPermissions = Disabled;
 
     var
+        CertSigningRequest: Codeunit CertificateRequest;
         Assert: Codeunit "Library Assert";
         Any: Codeunit Any;
 
     [Test]
-    procedure CreateCertificateSigningRequest()
+    procedure InitializeKeys()
     var
-        CertSigningRequest: Codeunit CertificateRequest;
         KeyXml: XmlDocument;
         Root: XmlElement;
         Node: XmlNode;
-        KeyXmlText, SigningRequestPem : Text;
-        HashAlgorithm: Enum "Hash Algorithm";
-        RSASignaturePadding: Enum "RSA Signature Padding";
-        Oids: List of [Text];
-        BCRTok: Label '-----BEGIN CERTIFICATE REQUEST-----';
-        ECRTok: Label '-----END CERTIFICATE REQUEST-----';
+        KeyXmlText: Text;
     begin
         CertSigningRequest.InitializeRSA(2048, true, KeyXmlText);
 
@@ -28,26 +23,82 @@ codeunit 132590 "CertificateRequestTests"
 
         Assert.IsTrue(Root.SelectSingleNode('Modulus', Node), 'Could not find <Modulus> in key.');
         Assert.IsTrue(Root.SelectSingleNode('DQ', Node), 'Could not find <DQ> in key.');
+    end;
+
+    [Test]
+    procedure AddX509BasicConstraintToCertificateRequest()
+    var
+        SigningRequestPem: Text;
+        HashAlgorithm: Enum "Hash Algorithm";
+        RSASignaturePadding: Enum "RSA Signature Padding";
+        KeyXmlText: Text;
+    begin
+        CertSigningRequest.InitializeRSA(2048, true, KeyXmlText);
 
         CertSigningRequest.InitializeCertificateRequestUsingRSA(
             GetSubjectName(), HashAlgorithm::SHA256, RSASignaturePadding::Pkcs1);
 
         CertSigningRequest.AddX509BasicConstraintToCertificateRequest(false, false, 0, true);
+    end;
+
+    [Test]
+    procedure AddX509KeyUsageToCertificateRequest()
+    var
+        SigningRequestPem: Text;
+        HashAlgorithm: Enum "Hash Algorithm";
+        RSASignaturePadding: Enum "RSA Signature Padding";
+        KeyXmlText: Text;
+    begin
+        CertSigningRequest.InitializeRSA(2048, true, KeyXmlText);
+
+        CertSigningRequest.InitializeCertificateRequestUsingRSA(
+            GetSubjectName(), HashAlgorithm::SHA256, RSASignaturePadding::Pkcs1);
 
         CertSigningRequest.AddX509KeyUsageToCertificateRequest(16 + 128, false);
+    end;
+
+    [Test]
+    procedure AddX509EnhancedKeyUsageToCertificateRequest()
+    var
+        SigningRequestPem: Text;
+        HashAlgorithm: Enum "Hash Algorithm";
+        RSASignaturePadding: Enum "RSA Signature Padding";
+        KeyXmlText: Text;
+        Oids: List of [Text];
+    begin
+        CertSigningRequest.InitializeRSA(2048, true, KeyXmlText);
+
+        CertSigningRequest.InitializeCertificateRequestUsingRSA(
+            GetSubjectName(), HashAlgorithm::SHA256, RSASignaturePadding::Pkcs1);
 
         Oids.Add('1.3.6.1.5.5.7.3.2');
         CertSigningRequest.AddX509EnhancedKeyUsageToCertificateRequest(Oids, false);
+    end;
+
+    [Test]
+    procedure CreateCertificateSigningRequest()
+    var
+        SigningRequestPem: Text;
+        HashAlgorithm: Enum "Hash Algorithm";
+        RSASignaturePadding: Enum "RSA Signature Padding";
+        Oids: List of [Text];
+        KeyXmlText: Text;
+        BeginCertReqTok: Label '-----BEGIN CERTIFICATE REQUEST-----';
+        EndCertReqTok: Label '-----END CERTIFICATE REQUEST-----';
+    begin
+        CertSigningRequest.InitializeRSA(2048, true, KeyXmlText);
+
+        CertSigningRequest.InitializeCertificateRequestUsingRSA(
+            GetSubjectName(), HashAlgorithm::SHA256, RSASignaturePadding::Pkcs1);
 
         CertSigningRequest.CreateSigningRequest(SigningRequestPem);
 
-        Assert.AreEqual(BCRTok, SigningRequestPem.Substring(1, StrLen(BCRTok)), 'Invalid PEM certificate signing request.');
-        Assert.AreEqual(ECRTok, SigningRequestPem.Substring(StrLen(SigningRequestPem) - StrLen(ECRTok) + 1, StrLen(ECRTok)), 'Invalid PEM certificate signing request.');
+        Assert.IsTrue(SigningRequestPem.StartsWith(BeginCertReqTok), 'Invalid PEM certificate signing request.');
+        Assert.IsTrue(SigningRequestPem.EndsWith(EndCertReqTok), 'Invalid PEM certificate signing request.');
 
-        SigningRequestPem := SigningRequestPem.Substring(StrLen(BCRTok) + 1).Trim();
+        SigningRequestPem := SigningRequestPem.Substring(StrLen(BeginCertReqTok) + 1).Trim();
         Assert.AreEqual('MII', SigningRequestPem.Substring(1, 3), 'Invalid PEM certificate signing request.');
     end;
-
 
     [Test]
     procedure CreateSelfSignedCertificate()
@@ -69,8 +120,6 @@ codeunit 132590 "CertificateRequestTests"
 
         CertSigningRequest.AddX509BasicConstraintToCertificateRequest(false, false, 0, true);
 
-        CertSigningRequest.AddX509KeyUsageToCertificateRequest(16 + 128, false);
-
         CertSigningRequest.CreateSelfSigned(CreateDateTime(Today, 000000T), CreateDateTime(Today + 365, 000000T), X509ContentType::Cert, CertBase64Value);
 
         X509Certificate2.GetCertificateSubject(CertBase64Value, '', Subject);
@@ -79,6 +128,6 @@ codeunit 132590 "CertificateRequestTests"
 
     local procedure GetSubjectName(): Text
     begin
-        exit(StrSubstNo('CN=www.%1.com,C=US', Any.AlphabeticText(8)));
+        exit(StrSubstNo('CN=www.%1.com, C=US', Any.AlphabeticText(8)));
     end;
 }

@@ -6,7 +6,7 @@
 /// <summary> 
 /// Provides helper functionality for creating Certificate Signing Requests (CSR:s) and Self Signed Certificates.
 /// </summary>
-codeunit 1296 CertificateRequest
+codeunit 1449 CertificateRequest
 {
     var
         CertSigningRequestImpl: Codeunit "CertificateRequest Impl.";
