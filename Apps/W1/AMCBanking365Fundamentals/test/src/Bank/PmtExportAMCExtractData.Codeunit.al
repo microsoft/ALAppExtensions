@@ -26,7 +26,7 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         LibraryHumanResource: Codeunit "Library - Human Resource";
         LibraryAmcWebService: Codeunit "Library - Amc Web Service";
         isInitialised: Boolean;
-        MissingBankNameDataConvErr: Label '%1 must have a value';
+        MissingBankNameDataConvErr: Label '%1 must have a value', Comment = '%1=Bank Name';
 
     local procedure Initialize()
     var
@@ -61,7 +61,7 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         BankAccount: Record "Bank Account";
         VendorBankAccount: Record "Vendor Bank Account";
         Vendor: Record Vendor;
-        PmtGenJnlBatch: Record "Gen. Journal Batch";
+        GenJournalBatch: Record "Gen. Journal Batch";
     begin
         // [SCENARIO 1] Export a number of payments applied to an existing vendor invoices.
         // [GIVEN] A number of domestic vendor invoices.
@@ -83,18 +83,18 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         LibraryPaymentExport.SetPmtToDomestic(BankAccount, VendorBankAccount);
         PostVendorInvoice(Vendor."No.");
 
-        LibraryERM.CreateGenJournalBatch(PmtGenJnlBatch, LibraryERM.SelectGenJnlTemplate());
-        PmtGenJnlBatch.Validate("Bal. Account Type", PmtGenJnlBatch."Bal. Account Type"::"Bank Account");
-        PmtGenJnlBatch.Validate("Bal. Account No.", BankAccount."No.");
-        PmtGenJnlBatch.Modify(true);
-        SuggestVendorPayments(Vendor, PmtGenJnlBatch);
-        SetupPmtDetails(PmtGenJnlBatch);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, LibraryERM.SelectGenJnlTemplate());
+        GenJournalBatch.Validate("Bal. Account Type", GenJournalBatch."Bal. Account Type"::"Bank Account");
+        GenJournalBatch.Validate("Bal. Account No.", BankAccount."No.");
+        GenJournalBatch.Modify(true);
+        SuggestVendorPayments(Vendor, GenJournalBatch);
+        SetupPmtDetails(GenJournalBatch);
 
         // Exercise. Run the pre-mapping.
-        ExtractAMCData(PmtGenJnlBatch);
+        ExtractAMCData(GenJournalBatch);
 
         // Verify. Payment Export Data.
-        VerifyVendorPaymentExportData(PmtGenJnlBatch, Vendor, VendorBankAccount, BankAccount);
+        VerifyVendorPaymentExportData(GenJournalBatch, Vendor, VendorBankAccount, BankAccount);
     end;
 
     [Test]
@@ -105,8 +105,8 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         BankAccount: Record "Bank Account";
         VendorBankAccount: Record "Vendor Bank Account";
         Vendor: Record Vendor;
-        PmtGenJnlBatch: Record "Gen. Journal Batch";
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
     begin
         // [SCENARIO 2] Export a number of standalone not applied payments.
         // [GIVEN] A number of payment lines unapplied to any domestic vendor invoices.
@@ -126,20 +126,20 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         SetupVendorDetails(Vendor, VendorBankAccount);
         CreateBankAccountWithDetails(BankAccount);
         LibraryPaymentExport.SetPmtToDomestic(BankAccount, VendorBankAccount);
-        LibraryERM.CreateGenJournalBatch(PmtGenJnlBatch, LibraryERM.SelectGenJnlTemplate());
-        PmtGenJnlBatch.Validate("Bal. Account Type", PmtGenJnlBatch."Bal. Account Type"::"Bank Account");
-        PmtGenJnlBatch.Validate("Bal. Account No.", BankAccount."No.");
-        PmtGenJnlBatch.Modify(true);
-        LibraryERM.CreateGeneralJnlLine(GenJnlLine,
-          PmtGenJnlBatch."Journal Template Name", PmtGenJnlBatch.Name, GenJnlLine."Document Type"::Payment,
-          GenJnlLine."Account Type"::Vendor, Vendor."No.", LibraryRandom.RandDec(1000, 2));
-        SetupPmtDetails(PmtGenJnlBatch);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, LibraryERM.SelectGenJnlTemplate());
+        GenJournalBatch.Validate("Bal. Account Type", GenJournalBatch."Bal. Account Type"::"Bank Account");
+        GenJournalBatch.Validate("Bal. Account No.", BankAccount."No.");
+        GenJournalBatch.Modify(true);
+        LibraryERM.CreateGeneralJnlLine(GenJournalLine,
+          GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::Payment,
+          GenJournalLine."Account Type"::Vendor, Vendor."No.", LibraryRandom.RandDec(1000, 2));
+        SetupPmtDetails(GenJournalBatch);
 
         // Exercise. Run the pre-mapping.
-        ExtractAMCData(PmtGenJnlBatch);
+        ExtractAMCData(GenJournalBatch);
 
         // Verify. Payment Export Data.
-        VerifyVendorPaymentExportData(PmtGenJnlBatch, Vendor, VendorBankAccount, BankAccount);
+        VerifyVendorPaymentExportData(GenJournalBatch, Vendor, VendorBankAccount, BankAccount);
     end;
 
     [Test]
@@ -151,10 +151,10 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         BankAccount: Record "Bank Account";
         VendorBankAccount: Record "Vendor Bank Account";
         Vendor: Record Vendor;
-        GenJnlBatch: Record "Gen. Journal Batch";
-        PmtGenJnlBatch: Record "Gen. Journal Batch";
-        GenJnlLine: Record "Gen. Journal Line";
-        CrMemoGenJnlLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        PmtGenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        CrMemoGenJournalLine: Record "Gen. Journal Line";
         Customer: Record Customer;
         CustomerBankAccount: Record "Customer Bank Account";
         Employee: Record Employee;
@@ -185,42 +185,42 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         LibraryPaymentExport.SetPmtToDomestic(BankAccount, VendorBankAccount);
         LibraryPaymentExport.SetRefundToDomestic(BankAccount, CustomerBankAccount);
 
-        LibraryERM.CreateGenJournalBatch(GenJnlBatch, LibraryERM.SelectGenJnlTemplate());
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, LibraryERM.SelectGenJnlTemplate());
         LibraryERM.CreateGLAccount(GLAccount);
-        LibraryERM.CreateGeneralJnlLineWithBalAcc(CrMemoGenJnlLine,
-          GenJnlBatch."Journal Template Name", GenJnlBatch.Name, GenJnlLine."Document Type"::"Credit Memo",
-          CrMemoGenJnlLine."Account Type"::Customer, Customer."No.", GenJnlLine."Bal. Account Type"::"G/L Account", GLAccount."No.",
+        LibraryERM.CreateGeneralJnlLineWithBalAcc(CrMemoGenJournalLine,
+          GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::"Credit Memo",
+          CrMemoGenJournalLine."Account Type"::Customer, Customer."No.", GenJournalLine."Bal. Account Type"::"G/L Account", GLAccount."No.",
           -LibraryRandom.RandDec(1000, 2));
-        LibraryERM.PostGeneralJnlLine(CrMemoGenJnlLine);
+        LibraryERM.PostGeneralJnlLine(CrMemoGenJournalLine);
 
-        LibraryERM.CreateGenJournalBatch(PmtGenJnlBatch, LibraryERM.SelectGenJnlTemplate());
-        PmtGenJnlBatch.Validate("Bal. Account Type", PmtGenJnlBatch."Bal. Account Type"::"Bank Account");
-        PmtGenJnlBatch.Validate("Bal. Account No.", BankAccount."No.");
-        PmtGenJnlBatch.Modify(true);
-        LibraryERM.CreateGeneralJnlLine(GenJnlLine,
-          PmtGenJnlBatch."Journal Template Name", PmtGenJnlBatch.Name, GenJnlLine."Document Type"::Payment,
-          GenJnlLine."Account Type"::Vendor, Vendor."No.", LibraryRandom.RandDec(1000, 2));
-        LibraryERM.CreateGeneralJnlLine(GenJnlLine,
-          PmtGenJnlBatch."Journal Template Name", PmtGenJnlBatch.Name, GenJnlLine."Document Type"::Refund,
-          GenJnlLine."Account Type"::Customer, Customer."No.", -LibraryRandom.RandDec(1000, 2));
-        GenJnlLine.Validate("Applies-to Doc. Type", GenJnlLine."Applies-to Doc. Type"::"Credit Memo");
-        GenJnlLine.Validate("Applies-to Doc. No.", CrMemoGenJnlLine."Document No.");
-        GenJnlLine.Modify(true);
-        LibraryERM.CreateGeneralJnlLine(GenJnlLine,
-          PmtGenJnlBatch."Journal Template Name", PmtGenJnlBatch.Name, GenJnlLine."Document Type"::Payment,
-          GenJnlLine."Account Type"::Employee, Employee."No.", LibraryRandom.RandDec(1000, 2));
-        GenJnlLine."Payment Method Code" := Vendor."Payment Method Code";
-        GenJnlLine."Message to Recipient" := LibraryUtility.GenerateGUID();
-        GenJnlLine.Modify();
-        SetupPmtDetails(PmtGenJnlBatch);
+        LibraryERM.CreateGenJournalBatch(PmtGenJournalBatch, LibraryERM.SelectGenJnlTemplate());
+        PmtGenJournalBatch.Validate("Bal. Account Type", PmtGenJournalBatch."Bal. Account Type"::"Bank Account");
+        PmtGenJournalBatch.Validate("Bal. Account No.", BankAccount."No.");
+        PmtGenJournalBatch.Modify(true);
+        LibraryERM.CreateGeneralJnlLine(GenJournalLine,
+          PmtGenJournalBatch."Journal Template Name", PmtGenJournalBatch.Name, GenJournalLine."Document Type"::Payment,
+          GenJournalLine."Account Type"::Vendor, Vendor."No.", LibraryRandom.RandDec(1000, 2));
+        LibraryERM.CreateGeneralJnlLine(GenJournalLine,
+          PmtGenJournalBatch."Journal Template Name", PmtGenJournalBatch.Name, GenJournalLine."Document Type"::Refund,
+          GenJournalLine."Account Type"::Customer, Customer."No.", -LibraryRandom.RandDec(1000, 2));
+        GenJournalLine.Validate("Applies-to Doc. Type", GenJournalLine."Applies-to Doc. Type"::"Credit Memo");
+        GenJournalLine.Validate("Applies-to Doc. No.", CrMemoGenJournalLine."Document No.");
+        GenJournalLine.Modify(true);
+        LibraryERM.CreateGeneralJnlLine(GenJournalLine,
+          PmtGenJournalBatch."Journal Template Name", PmtGenJournalBatch.Name, GenJournalLine."Document Type"::Payment,
+          GenJournalLine."Account Type"::Employee, Employee."No.", LibraryRandom.RandDec(1000, 2));
+        GenJournalLine."Payment Method Code" := Vendor."Payment Method Code";
+        GenJournalLine."Message to Recipient" := LibraryUtility.GenerateGUID();
+        GenJournalLine.Modify();
+        SetupPmtDetails(PmtGenJournalBatch);
 
         // Exercise. Run the pre-mapping.
-        ExtractAMCData(PmtGenJnlBatch);
+        ExtractAMCData(PmtGenJournalBatch);
 
         // Verify. Payment Export Data.
-        VerifyVendorPaymentExportData(PmtGenJnlBatch, Vendor, VendorBankAccount, BankAccount);
-        VerifyCustomerPaymentExportData(PmtGenJnlBatch, Customer, CustomerBankAccount, BankAccount);
-        VerifyEmployeePaymentExportData(PmtGenJnlBatch, Employee, BankAccount);
+        VerifyVendorPaymentExportData(PmtGenJournalBatch, Vendor, VendorBankAccount, BankAccount);
+        VerifyCustomerPaymentExportData(PmtGenJournalBatch, Customer, CustomerBankAccount, BankAccount);
+        VerifyEmployeePaymentExportData(PmtGenJournalBatch, Employee, BankAccount);
     end;
 
     [Test]
@@ -231,7 +231,7 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         BankAccount: Record "Bank Account";
         VendorBankAccount: Record "Vendor Bank Account";
         Vendor: Record Vendor;
-        PmtGenJnlBatch: Record "Gen. Journal Batch";
+        GenJournalBatch: Record "Gen. Journal Batch";
     begin
         // [SCENARIO 4] Export a number of payments applied to non-domestic vendor invoices.
         // [GIVEN] A number of non-domestic vendor invoices.
@@ -252,18 +252,18 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         CreateBankAccountWithDetails(BankAccount);
         LibraryPaymentExport.SetPmtToInternational(BankAccount, VendorBankAccount);
         PostVendorInvoice(Vendor."No.");
-        LibraryERM.CreateGenJournalBatch(PmtGenJnlBatch, LibraryERM.SelectGenJnlTemplate());
-        PmtGenJnlBatch.Validate("Bal. Account Type", PmtGenJnlBatch."Bal. Account Type"::"Bank Account");
-        PmtGenJnlBatch.Validate("Bal. Account No.", BankAccount."No.");
-        PmtGenJnlBatch.Modify(true);
-        SuggestVendorPayments(Vendor, PmtGenJnlBatch);
-        SetupPmtDetails(PmtGenJnlBatch);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, LibraryERM.SelectGenJnlTemplate());
+        GenJournalBatch.Validate("Bal. Account Type", GenJournalBatch."Bal. Account Type"::"Bank Account");
+        GenJournalBatch.Validate("Bal. Account No.", BankAccount."No.");
+        GenJournalBatch.Modify(true);
+        SuggestVendorPayments(Vendor, GenJournalBatch);
+        SetupPmtDetails(GenJournalBatch);
 
         // Exercise. Run the pre-mapping.
-        ExtractAMCData(PmtGenJnlBatch);
+        ExtractAMCData(GenJournalBatch);
 
         // Verify. Payment Export Data.
-        VerifyVendorPaymentExportData(PmtGenJnlBatch, Vendor, VendorBankAccount, BankAccount);
+        VerifyVendorPaymentExportData(GenJournalBatch, Vendor, VendorBankAccount, BankAccount);
     end;
 
     [Test]
@@ -274,8 +274,8 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         BankAccount: Record "Bank Account";
         VendorBankAccount: Record "Vendor Bank Account";
         Vendor: Record Vendor;
-        PmtGenJnlBatch: Record "Gen. Journal Batch";
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
     begin
         // [SCENARIO 5] Export a number of payments unapplied to non-domestic vendor invoices.
         // [GIVEN] A number of payment lines unapplied to any non-domestic vendor invoices.
@@ -295,20 +295,20 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         SetupVendorDetails(Vendor, VendorBankAccount);
         CreateBankAccountWithDetails(BankAccount);
         LibraryPaymentExport.SetPmtToInternational(BankAccount, VendorBankAccount);
-        LibraryERM.CreateGenJournalBatch(PmtGenJnlBatch, LibraryERM.SelectGenJnlTemplate());
-        PmtGenJnlBatch.Validate("Bal. Account Type", PmtGenJnlBatch."Bal. Account Type"::"Bank Account");
-        PmtGenJnlBatch.Validate("Bal. Account No.", BankAccount."No.");
-        PmtGenJnlBatch.Modify(true);
-        LibraryERM.CreateGeneralJnlLine(GenJnlLine,
-          PmtGenJnlBatch."Journal Template Name", PmtGenJnlBatch.Name, GenJnlLine."Document Type"::Payment,
-          GenJnlLine."Account Type"::Vendor, Vendor."No.", LibraryRandom.RandDec(1000, 2));
-        SetupPmtDetails(PmtGenJnlBatch);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, LibraryERM.SelectGenJnlTemplate());
+        GenJournalBatch.Validate("Bal. Account Type", GenJournalBatch."Bal. Account Type"::"Bank Account");
+        GenJournalBatch.Validate("Bal. Account No.", BankAccount."No.");
+        GenJournalBatch.Modify(true);
+        LibraryERM.CreateGeneralJnlLine(GenJournalLine,
+          GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::Payment,
+          GenJournalLine."Account Type"::Vendor, Vendor."No.", LibraryRandom.RandDec(1000, 2));
+        SetupPmtDetails(GenJournalBatch);
 
         // Exercise. Run the pre-mapping.
-        ExtractAMCData(PmtGenJnlBatch);
+        ExtractAMCData(GenJournalBatch);
 
         // Verify. Payment Export Data.
-        VerifyVendorPaymentExportData(PmtGenJnlBatch, Vendor, VendorBankAccount, BankAccount);
+        VerifyVendorPaymentExportData(GenJournalBatch, Vendor, VendorBankAccount, BankAccount);
     end;
 
     [Test]
@@ -319,8 +319,8 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         BankAccount: Record "Bank Account";
         VendorBankAccount: Record "Vendor Bank Account";
         Vendor: Record Vendor;
-        PmtGenJnlBatch: Record "Gen. Journal Batch";
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
         Customer: Record Customer;
         CustomerBankAccount: Record "Customer Bank Account";
     begin
@@ -344,24 +344,24 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         CreateBankAccountWithDetails(BankAccount);
         LibraryPaymentExport.SetPmtToInternational(BankAccount, VendorBankAccount);
         LibraryPaymentExport.SetRefundToInternational(BankAccount, CustomerBankAccount);
-        LibraryERM.CreateGenJournalBatch(PmtGenJnlBatch, LibraryERM.SelectGenJnlTemplate());
-        PmtGenJnlBatch.Validate("Bal. Account Type", PmtGenJnlBatch."Bal. Account Type"::"Bank Account");
-        PmtGenJnlBatch.Validate("Bal. Account No.", BankAccount."No.");
-        PmtGenJnlBatch.Modify(true);
-        LibraryERM.CreateGeneralJnlLine(GenJnlLine,
-          PmtGenJnlBatch."Journal Template Name", PmtGenJnlBatch.Name, GenJnlLine."Document Type"::Payment,
-          GenJnlLine."Account Type"::Vendor, Vendor."No.", LibraryRandom.RandDec(1000, 2));
-        LibraryERM.CreateGeneralJnlLine(GenJnlLine,
-          PmtGenJnlBatch."Journal Template Name", PmtGenJnlBatch.Name, GenJnlLine."Document Type"::Refund,
-          GenJnlLine."Account Type"::Customer, Customer."No.", -LibraryRandom.RandDec(1000, 2));
-        SetupPmtDetails(PmtGenJnlBatch);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, LibraryERM.SelectGenJnlTemplate());
+        GenJournalBatch.Validate("Bal. Account Type", GenJournalBatch."Bal. Account Type"::"Bank Account");
+        GenJournalBatch.Validate("Bal. Account No.", BankAccount."No.");
+        GenJournalBatch.Modify(true);
+        LibraryERM.CreateGeneralJnlLine(GenJournalLine,
+          GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::Payment,
+          GenJournalLine."Account Type"::Vendor, Vendor."No.", LibraryRandom.RandDec(1000, 2));
+        LibraryERM.CreateGeneralJnlLine(GenJournalLine,
+          GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::Refund,
+          GenJournalLine."Account Type"::Customer, Customer."No.", -LibraryRandom.RandDec(1000, 2));
+        SetupPmtDetails(GenJournalBatch);
 
         // Exercise. Run the pre-mapping.
-        ExtractAMCData(PmtGenJnlBatch);
+        ExtractAMCData(GenJournalBatch);
 
         // Verify. Payment Export Data.
-        VerifyVendorPaymentExportData(PmtGenJnlBatch, Vendor, VendorBankAccount, BankAccount);
-        VerifyCustomerPaymentExportData(PmtGenJnlBatch, Customer, CustomerBankAccount, BankAccount);
+        VerifyVendorPaymentExportData(GenJournalBatch, Vendor, VendorBankAccount, BankAccount);
+        VerifyCustomerPaymentExportData(GenJournalBatch, Customer, CustomerBankAccount, BankAccount);
     end;
 
     [Test]
@@ -372,7 +372,7 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         BankAccount: Record "Bank Account";
         VendorBankAccount: Record "Vendor Bank Account";
         Vendor: Record Vendor;
-        PmtGenJnlBatch: Record "Gen. Journal Batch";
+        GenJournalBatch: Record "Gen. Journal Batch";
     begin
         // [SCENARIO 7] If the "AMC Bank Name" is not set, payment export throws an error in the premapping.
         // [GIVEN] A number of domestic vendor invoices.
@@ -391,32 +391,32 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         LibraryPaymentExport.SetPmtToDomestic(BankAccount, VendorBankAccount);
         PostVendorInvoice(Vendor."No.");
 
-        LibraryERM.CreateGenJournalBatch(PmtGenJnlBatch, LibraryERM.SelectGenJnlTemplate());
-        PmtGenJnlBatch.Validate("Bal. Account Type", PmtGenJnlBatch."Bal. Account Type"::"Bank Account");
-        PmtGenJnlBatch.Validate("Bal. Account No.", BankAccount."No.");
-        PmtGenJnlBatch.Modify(true);
-        SuggestVendorPayments(Vendor, PmtGenJnlBatch);
-        SetupPmtDetails(PmtGenJnlBatch);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, LibraryERM.SelectGenJnlTemplate());
+        GenJournalBatch.Validate("Bal. Account Type", GenJournalBatch."Bal. Account Type"::"Bank Account");
+        GenJournalBatch.Validate("Bal. Account No.", BankAccount."No.");
+        GenJournalBatch.Modify(true);
+        SuggestVendorPayments(Vendor, GenJournalBatch);
+        SetupPmtDetails(GenJournalBatch);
 
         // Exercise. Run the pre-mapping. & Verify the error returned
-        asserterror ExtractAMCData(PmtGenJnlBatch);
+        asserterror ExtractAMCData(GenJournalBatch);
         Assert.ExpectedError(StrSubstNo(MissingBankNameDataConvErr, BankAccount.FieldCaption("AMC Bank Name")));
     end;
 
-    local procedure SuggestVendorPayments(var Vendor: Record Vendor; GenJnlBatch: Record "Gen. Journal Batch")
+    local procedure SuggestVendorPayments(var Vendor: Record Vendor; GenJournalBatch: Record "Gen. Journal Batch")
     var
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalLine: Record "Gen. Journal Line";
         SuggestVendorPaymentsReport: Report "Suggest Vendor Payments";
     begin
-        GenJnlLine.Init();
-        GenJnlLine.Validate("Journal Template Name", GenJnlBatch."Journal Template Name");
-        GenJnlLine.Validate("Journal Batch Name", GenJnlBatch.Name);
+        GenJournalLine.Init();
+        GenJournalLine.Validate("Journal Template Name", GenJournalBatch."Journal Template Name");
+        GenJournalLine.Validate("Journal Batch Name", GenJournalBatch.Name);
 
         with SuggestVendorPaymentsReport do begin
-            SetGenJnlLine(GenJnlLine);
+            SetGenJnlLine(GenJournalLine);
             SetTableView(Vendor);
             InitializeRequest(WorkDate(), false, 0, false, WorkDate(), LibraryUtility.GenerateGUID(), false,
-              GenJnlBatch."Bal. Account Type", GenJnlBatch."Bal. Account No.", 0);
+              GenJournalBatch."Bal. Account Type", GenJournalBatch."Bal. Account No.", 0);
             UseRequestPage(false);
             RunModal();
         end;
@@ -759,19 +759,19 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
 
     local procedure PostVendorInvoice(VendorNo: Code[20])
     var
-        GenJnlBatch: Record "Gen. Journal Batch";
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
         GLAccount: Record "G/L Account";
     begin
         LibraryERM.CreateGLAccount(GLAccount);
-        LibraryERM.CreateGenJournalBatch(GenJnlBatch, LibraryERM.SelectGenJnlTemplate());
-        LibraryERM.CreateGeneralJnlLineWithBalAcc(GenJnlLine,
-          GenJnlBatch."Journal Template Name", GenJnlBatch.Name, GenJnlLine."Document Type"::Invoice,
-          GenJnlLine."Account Type"::Vendor, VendorNo, GenJnlLine."Bal. Account Type"::"G/L Account", GLAccount."No.",
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, LibraryERM.SelectGenJnlTemplate());
+        LibraryERM.CreateGeneralJnlLineWithBalAcc(GenJournalLine,
+          GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::Invoice,
+          GenJournalLine."Account Type"::Vendor, VendorNo, GenJournalLine."Bal. Account Type"::"G/L Account", GLAccount."No.",
           -LibraryRandom.RandDec(1000, 2));
-        GenJnlLine."Recipient Bank Account" := '';
-        GenJnlLine.Modify();
-        LibraryERM.PostGeneralJnlLine(GenJnlLine);
+        GenJournalLine."Recipient Bank Account" := '';
+        GenJournalLine.Modify();
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
     end;
 
     local procedure SelectAMCCreditTransferFormat(): Code[20]
@@ -786,7 +786,7 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         repeat
             DataExchMapping.SetRange("Data Exch. Def Code", DataExchDef.Code);
             DataExchMapping.SetRange("Table ID", DATABASE::"Payment Export Data");
-            DataExchMapping.SetRange("Pre-Mapping Codeunit", CODEUNIT::"AMC Bank Exp. CT Pre-Map");
+            DataExchMapping.SetRange("Mapping Codeunit", CODEUNIT::"AMC Bank Exp. CT Pre-Map");
             if not DataExchMapping.IsEmpty() then begin
                 BankExportImportSetup.SetRange("Data Exch. Def. Code", DataExchDef.Code);
                 if BankExportImportSetup.FindFirst() then begin
@@ -806,23 +806,23 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         DataExchDef.Modify(true);
     end;
 
-    local procedure ExtractAMCData(PmtGenJnlBatch: Record "Gen. Journal Batch")
+    local procedure ExtractAMCData(GenJournalBatch: Record "Gen. Journal Batch")
     var
         DataExch: Record "Data Exch.";
         DataExchDef: Record "Data Exch. Def";
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalLine: Record "Gen. Journal Line";
         BankAccount: Record "Bank Account";
         CreditTransferRegister: Record "Credit Transfer Register";
     begin
         DataExch.Init();
         DataExch.Insert();
-        GenJnlLine.SetRange("Journal Template Name", PmtGenJnlBatch."Journal Template Name");
-        GenJnlLine.SetRange("Journal Batch Name", PmtGenJnlBatch.Name);
-        GenJnlLine.ModifyAll("Data Exch. Entry No.", DataExch."Entry No.");
+        GenJournalLine.SetRange("Journal Template Name", GenJournalBatch."Journal Template Name");
+        GenJournalLine.SetRange("Journal Batch Name", GenJournalBatch.Name);
+        GenJournalLine.ModifyAll("Data Exch. Entry No.", DataExch."Entry No.");
 
-        BankAccount.Get(PmtGenJnlBatch."Bal. Account No.");
+        BankAccount.Get(GenJournalBatch."Bal. Account No.");
         BankAccount.GetDataExchDefPaymentExport(DataExchDef);
-        CreditTransferRegister.CreateNew(DataExchDef.Code, PmtGenJnlBatch."Bal. Account No.");
+        CreditTransferRegister.CreateNew(DataExchDef.Code, GenJournalBatch."Bal. Account No.");
         CreditTransferRegister."Data Exch. Entry No." := DataExch."Entry No.";
         CreditTransferRegister.Modify();
         Commit();

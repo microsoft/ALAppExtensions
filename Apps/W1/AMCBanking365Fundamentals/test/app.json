@@ -12,12 +12,12 @@
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2101583",
     "logo":  "./AppResources/amctestlogo.png",
     "dependencies":  [
-                         {
-                             "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
-                             "name":  "AMC Banking 365 Fundamentals",
-                             "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
-                         },
+                            {
+                                "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
+                                "name":  "AMC Banking 365 Fundamentals",
+                                "publisher":  "Microsoft",
+                                "version":  "18.2.0.0"
+                            },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
@@ -39,6 +39,8 @@
                      ],
     "platform":  "18.0.0.0",
     "target":  "OnPrem",
+    "runtime": "7.0",
     "showMyCode":  false,
     "application":  "18.2.0.0"
+
 }

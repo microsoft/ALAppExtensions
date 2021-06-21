@@ -1,0 +1,41 @@
+HTTP/1.1 200 OK
+Content-Type: text/xml
+Server: Jetty(8.1.7.v20120910)
+Content-Length: 1580
+
+<soap:Envelope
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+    <soap:Body>
+        <ns2:bankListResponse
+            xmlns:ns2="http://api04.soap.xml.link.amc.dk/"
+            xmlns:ns3="amc/xml/pay04_bankresponse"
+            xmlns:ns4="amc/xml/pay03_tokenresponse"
+            xmlns:ns5="amc/xml/pay03_reportresponse"
+            xmlns:ns6="amc/xml/pay04_paymentrequest"
+            xmlns:ns7="amc/xml/pay03_reportrequest"
+            xmlns:ns8="amc/xml/pay03_entryresponse"
+            xmlns:ns9="amc/xml/pay04_journalresponse"
+            xmlns:ns10="amc/xml/pay03_global"
+            xmlns:ns11="amc/xml/pay04_paymentresponse"
+            xmlns:ns12="amc/xml/pay03_entryrequest"
+            xmlns:ns13="amc/xml/pay04_definitionresponse">
+            <return>
+                <version>3.0</version>
+                <pack>
+                    <date>2021-02-11T00:00:00.000</date>
+                    <sysdataid>100061</sysdataid>
+                </pack>
+                <header>
+                    <result>error</result>
+                </header>
+                <syslog>
+                    <hinttext>The country code entered does not exist</hinttext>
+                    <messageid>@DB_K0145</messageid>
+                    <text>The country code entered does not exist (BCCommon1/100061)</text>
+                    <url>http://amcbanking.com/kb/DB_K0145</url>
+                    <syslogtype>error</syslogtype>
+                </syslog>
+            </return>
+        </ns2:bankListResponse>
+    </soap:Body>
+</soap:Envelope>

@@ -9,7 +9,7 @@ codeunit 20116 "AMC Bank Install"
         NavApp.GetCurrentModuleInfo(AppInfo);
         if AppInfo.DataVersion() = Version.Create('0.0.0.0') then begin
             MoveBankAccountTableData();
-            MoveBankDataConvPmtTypesTableData();
+            MoveBankDataConversionPmtTypesTableData();
             MovePaymentMethodTableData();
             DeleteOldDataExchangeDefinitions();
             RemoveDataExchangeDefinitionReferences();
@@ -38,19 +38,19 @@ codeunit 20116 "AMC Bank Install"
             until PaymentMethod.Next() = 0;
     end;
 
-    local procedure MoveBankDataConvPmtTypesTableData()
+    local procedure MoveBankDataConversionPmtTypesTableData()
     var
-        BankDataConvPmtType: Record "Bank Data Conversion Pmt. Type";
-        AmcBankPmtType: Record "AMC Bank Pmt. Type";
+        BankDataConversionPmtType: Record "Bank Data Conversion Pmt. Type";
+        AMCBankPmtType: Record "AMC Bank Pmt. Type";
     begin
-        if BankDataConvPmtType.FindSet(false, false) then
+        if BankDataConversionPmtType.FindSet(false, false) then
             repeat
-                clear(AmcBankPmtType);
-                AmcBankPmtType.Code := BankDataConvPmtType.Code;
-                AmcBankPmtType.Description := BankDataConvPmtType.Description;
-                AmcBankPmtType.SystemId := BankDataConvPmtType.SystemId;
-                AmcBankPmtType.Insert(true);
-            until BankDataConvPmtType.Next() = 0;
+                clear(AMCBankPmtType);
+                AMCBankPmtType.Code := BankDataConversionPmtType.Code;
+                AMCBankPmtType.Description := BankDataConversionPmtType.Description;
+                AMCBankPmtType.SystemId := BankDataConversionPmtType.SystemId;
+                AMCBankPmtType.Insert(true);
+            until BankDataConversionPmtType.Next() = 0;
     end;
 
     local procedure DeleteOldDataExchangeDefinitions()

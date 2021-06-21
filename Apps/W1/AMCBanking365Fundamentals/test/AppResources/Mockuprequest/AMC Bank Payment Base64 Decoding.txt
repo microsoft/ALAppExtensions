@@ -1,0 +1,52 @@
+HTTP/1.1 200 OK
+Content-Type: text/xml
+Server: Jetty(8.1.7.v20120910)
+Content-Length: 3090
+
+<soap:Envelope
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+    <soap:Body>
+        <ns2:paymentExportBankResponse
+            xmlns:ns2="http://api04.soap.xml.link.amc.dk/"
+            xmlns:ns3="amc/xml/pay03_tokenresponse"
+            xmlns:ns4="amc/xml/pay04_bankresponse"
+            xmlns:ns5="amc/xml/pay03_entryresponse"
+            xmlns:ns6="amc/xml/pay03_reportresponse"
+            xmlns:ns7="amc/xml/pay04_paymentrequest"
+            xmlns:ns8="amc/xml/pay04_journalresponse"
+            xmlns:ns9="amc/xml/pay04_paymentresponse"
+            xmlns:ns10="amc/xml/pay03_reportrequest"
+            xmlns:ns11="amc/xml/pay03_entryrequest"
+            xmlns:ns12="amc/xml/pay04_definitionresponse"
+            xmlns:ns13="amc/xml/pay03_global">
+            <return>
+                <version>3.0</version>
+                <pack>
+                    <checksum>c0a12a5a9a7530de1def324e0796b60203cf6db8bbfc9bc18e40f9076afddedc6c86c71e525d802e0f51f75509e73ffb1d5dcaceb2bec89069766eaec2d7729a</checksum>
+                    <data>IkNNQk8iLCIxMjQwODc2OTYxMDcwNSIsIjE1NjUyODg3NDA0NzAzIiwiOTEyLjQxIiwiMDcwNTIwMjEiLCJHQlAiLCIiLCJVIiwiIiwiIiwiIiwiIiwiIiwiIiwiIiwiR0wwMDAwMDAwMCAgICAgICAgICAgICAgICAgICAgICAgICAiLCIiLCIiLCIiLCJHTDAwMDAwMDAwICAgICAgICAgICIsIiIsIkRlY29kaW5nIOa55SAgICAgICAgIiwiIiwiIiwiR0wwMDAwMDAwMCAgICAgICAgICAgICAgICAgICAgICAgICAiLCIiLCJEZWNvZGluZyDmueUgICAgICAgICAgICAgICAgICAgICAgICIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIkRlY29kaW5nIOa55SAgICAgICAgICAgICAgICAgICAgICAgIiwiNzEyMiBTb3V0aCBBc2hmb3JkIFN0cmVldCAgICAgICAgICAiLCJXZXN0bWluc3RlciAgICAgICAgICAgICAgICAgICAgICAgICIsIlcyIDhIRyBMb25kb24gICAgICAgICAgICAgICAgICAgICAgIg0K</data>
+                    <date>2021-05-07T08:30:48.075Z</date>
+                    <journalnumber>1000</journalnumber>
+                    <journalstatus>Imported</journalstatus>
+                    <signprocess>false</signprocess>
+                    <downloadlink>https://dev.amcbanking.com/login?token=a6382014-a862-4821-b4be-3bf0c06b28e1&amp;loginPage=download&amp;journalNumber=1000</downloadlink>
+                </pack>
+                <header>
+                    <result>ok</result>
+                </header>
+                <syslog>
+                    <hinttext></hinttext>
+                    <messageid>@11391</messageid>
+                    <text>Connection to AMC-Consult A/S SUCCEEDED (..durknudsen/bardurknudsen)</text>
+                    <url>http://amcbanking.com/kb/11391</url>
+                    <syslogtype>info</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext></hinttext>
+                    <text>Bank account(s) sync finalized (..durknudsen/bardurknudsen)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>info</syslogtype>
+                </syslog>
+            </return>
+        </ns2:paymentExportBankResponse>
+    </soap:Body>
+</soap:Envelope>

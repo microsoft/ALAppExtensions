@@ -7,11 +7,13 @@ codeunit 20105 "AMC Banking Mgt."
     end;
 
     var
+        EnvironmentInformation: Codeunit "Environment Information";
         MissingCredentialsQst: Label 'The %1 is missing the user name or password. Do you want to open the %2 page?', comment = '%1=Tablename, %2=Pagename';
         MissingCredentialsErr: Label 'The user name and password must be filled in %1 page.', comment = '%1=Pagename';
-        ApiVersionTxt: Label 'nav03', Locked = true;
+        ApiVersionTxt: Label 'api04', Locked = true; //V17.5
         ClientCodeTxt: Label 'amcbanking fundamentals bc', Locked = true;
         DemoSolutionTxt: Label 'demo', Locked = true;
+        EnterpriseSolutionTxt: Label 'ENTERPRISE', Locked = true;
         LicenseXmlApiTxt: Label 'amcxml', Locked = true;
         ModuleInfoWebCallTxt: Label 'amcwebservice', Locked = true;
         DataExchNameCtTxt: Label 'BANKDATACONVSERVCT', Locked = true;
@@ -45,30 +47,47 @@ codeunit 20105 "AMC Banking Mgt."
         ConvErrPathTxt: Label '/amc:%1/return/pack/convertlog[syslogtype[text()="error"]]', Locked = true;
         DataPathTxt: Label '/amc:%1/return/pack/data/text()', Locked = true;
 
-    procedure InitDefaultURLs(var AMCBankServiceSetup: Record "AMC Banking Setup")
+    procedure InitDefaultURLs(var AMCBankingSetup: Record "AMC Banking Setup")
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
 
-        AMCBankServiceSetup."Sign-up URL" := 'https://license.amcbanking.com/register';
-        if ((AMCBankServiceSetup.Solution = GetDemoSolutionCode()) or
-            (AMCBankServiceSetup.Solution = '')) then
-            AMCBankServiceSetup."Service URL" := GetServiceURL('https://demoxtl.amcbanking.com/', ApiVersion())
+        AMCBankingSetup."Sign-up URL" := 'https://licensetest.amcbanking.com/api/v1/register/customer'; //TODO 'https://license.amcbanking.com/register';
+        if ((AMCBankingSetup.Solution = GetDemoSolutionCode()) or
+            (AMCBankingSetup.Solution = '')) then
+            AMCBankingSetup."Service URL" := GetServiceURL('https://demoxtl.amcbanking.com/', ApiVersion())
         else
-            AMCBankServiceSetup."Service URL" := GetServiceURL('https://nav.amcbanking.com/', ApiVersion());
+            AMCBankingSetup."Service URL" := GetServiceURL('https://nav.amcbanking.com/', ApiVersion());
 
-        AMCBankServiceSetup."Support URL" := 'https://amcbanking.com/landing365bc/help/';
-        AMCBankServiceSetup."Namespace API Version" := ApiVersion();
+        //Always set to DemoUrl if it is a sandbox and solution is NOT Enterprise, to avoid payment to be made to real Bankaccounts
+        if (IsSolutionSandbox(AMCBankingSetup)) then
+            AMCBankingSetup."Service URL" := GetServiceURL('https://demoxtl.amcbanking.com/', ApiVersion());
+
+        AMCBankingSetup."Support URL" := 'https://amcbanking.com/landing365bc/help/';
+        AMCBankingSetup."Namespace API Version" := ApiVersion();
     end;
 
-    procedure SetURLsToDefault(var AMCBankServiceSetup: Record "AMC Banking Setup")
+    procedure SetURLsToDefault(var AMCBankingSetup: Record "AMC Banking Setup")
     begin
-        InitDefaultURLs(AMCBankServiceSetup);
-        AMCBankServiceSetup.Modify();
+        InitDefaultURLs(AMCBankingSetup);
+        AMCBankingSetup.Modify();
     end;
 
     procedure GetNamespace(): Text
     begin
         exit('http://' + ApiVersion() + '.soap.xml.link.amc.dk/');
     end;
+
+    procedure IsSolutionSandbox(AMCBankingSetup: Record "AMC Banking Setup"): Boolean
+    var
+    begin
+        if ((UpperCase(AMCBankingSetup.Solution) <> UpperCase(GetEnterPriseSolutionCode())) and
+            (EnvironmentInformation.IsSandbox())) then
+            exit(true)
+        else
+            exit(false)
+    end;
+
 
     [Scope('OnPrem')]
     [Obsolete('This method is obsolete. A new GetSupportURL overload is available, which is called with an XmlDocument instead of a XmlNode object', '16.2')]
@@ -98,29 +117,36 @@ codeunit 20105 "AMC Banking Mgt."
         IF SupportURL <> '' THEN
             EXIT(SupportURL);
 
+
+        if (SupportXmlDoc.SelectSingleNode(AMCBankServiceRequestMgt.GetConvertlogXPath(), SysLogXmlNode)) then
+            SupportURL := AMCBankServiceRequestMgt.getNodeValue(SysLogXmlNode, './url');
+
+        IF SupportURL <> '' THEN
+            EXIT(SupportURL);
+
         AMCBankingSetup.GET();
         EXIT(AMCBankingSetup."Support URL");
     end;
 
     procedure CheckCredentials()
     var
-        AMCBankServiceSetup: Record "AMC Banking Setup";
+        AMCBankingSetup: Record "AMC Banking Setup";
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
     begin
-        if not AMCBankServiceSetup.Get() or (not AMCBankServiceSetup.HasPassword()) or (not AMCBankServiceSetup.HasUserName())
+        if not AMCBankingSetup.Get() or (not AMCBankingSetup.HasPassword()) or (not AMCBankingSetup.HasUserName())
         then begin
             if CompanyInformationMgt.IsDemoCompany() then begin
-                AMCBankServiceSetup.DeleteAll(true);
-                AMCBankServiceSetup.Init();
-                AMCBankServiceSetup.Insert(true);
+                AMCBankingSetup.DeleteAll(true);
+                AMCBankingSetup.Init();
+                AMCBankingSetup.Insert(true);
             end else
-                if Confirm(StrSubstNo(MissingCredentialsQst, AMCBankServiceSetup.TableCaption(), AMCBankServiceSetup.TableCaption()), true) then begin
+                if Confirm(StrSubstNo(MissingCredentialsQst, AMCBankingSetup.TableCaption(), AMCBankingSetup.TableCaption()), true) then begin
                     Commit();
-                    PAGE.RunModal(PAGE::"AMC Banking Setup", AMCBankServiceSetup);
+                    PAGE.RunModal(PAGE::"AMC Banking Setup", AMCBankingSetup);
                 end;
 
-            if not AMCBankServiceSetup.Get() or not AMCBankServiceSetup.HasPassword() then
-                Error(MissingCredentialsErr, AMCBankServiceSetup.TableCaption());
+            if not AMCBankingSetup.Get() or not AMCBankingSetup.HasPassword() then
+                Error(MissingCredentialsErr, AMCBankingSetup.TableCaption());
         end;
     end;
 
@@ -157,33 +183,59 @@ codeunit 20105 "AMC Banking Mgt."
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
     procedure HandleBankDataConvRegisterServiceConnection(var ServiceConnection: Record "Service Connection")
     var
-        AMCBankServiceSetup: Record "AMC Banking Setup";
-        RecRef: RecordRef;
+        AMCBankingSetup: Record "AMC Banking Setup";
+        RecordRef: RecordRef;
     begin
-        if not AMCBankServiceSetup.Get() then
-            AMCBankServiceSetup.Insert(true);
-        RecRef.GetTable(AMCBankServiceSetup);
+        if not AMCBankingSetup.Get() then
+            AMCBankingSetup.Insert(true);
+        RecordRef.GetTable(AMCBankingSetup);
 
         ServiceConnection.Status := ServiceConnection.Status::Enabled;
-        with AMCBankServiceSetup do begin
+        with AMCBankingSetup do begin
             if "Service URL" = '' then
                 ServiceConnection.Status := ServiceConnection.Status::Disabled;
 
             ServiceConnection.InsertServiceConnection(
-              ServiceConnection, RecRef.RecordId(), TableCaption(), "Service URL", PAGE::"AMC Banking Setup");
+              ServiceConnection, RecordRef.RecordId(), TableCaption(), "Service URL", PAGE::"AMC Banking Setup");
         end;
     end;
 
     procedure ApiVersion(): Text[10]
     var
-        AMCBankServiceSetup: Record "AMC Banking Setup";
+        AMCBankingSetup: Record "AMC Banking Setup";
     begin
-        if AMCBankServiceSetup.Get() then
-            if AMCBankServiceSetup."Namespace API Version" <> '' then
-                exit(AMCBankServiceSetup."Namespace API Version");
+        if AMCBankingSetup.Get() then
+            if AMCBankingSetup."Namespace API Version" <> '' then
+                exit(AMCBankingSetup."Namespace API Version");
 
         exit(ApiVersionTxt);
     end;
+
+    internal procedure GetCurrentApiVersion(): Text[10]
+    begin
+        exit(ApiVersionTxt);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sandbox Cleanup", 'OnClearCompanyConfiguration', '', false, false)]
+    local procedure AMCOnClearCompanyConfiguration()
+    var
+        AMCBankingSetup: Record "AMC Banking Setup";
+    begin
+        if (AMCBankingSetup.Get()) then
+            if (IsSolutionSandbox(AMCBankingSetup)) then
+                SetURLsToDefault(AMCBankingSetup);
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Copy Company", 'OnAfterCreatedNewCompanyByCopyCompany', '', false, false)]
+    local procedure AMCHandleOnAfterCreatedNewCompanyByCopyCompany(NewCompanyName: Text[30])
+    var
+        AMCBankingSetup: Record "AMC Banking Setup";
+    begin
+        if (AMCBankingSetup.Get()) then
+            if (IsSolutionSandbox(AMCBankingSetup)) then
+                SetURLsToDefault(AMCBankingSetup);
+    end;
+
 
     // To substitute code in Codeunit 2 "Company-Initialize"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
@@ -228,7 +280,7 @@ codeunit 20105 "AMC Banking Mgt."
         InsertPaymentMethod(AMCBankingPmtTypeCode6Tok, BNKDOMACC_Txt);
     end;
 
-    local procedure InsertPaymentMethod(AMCBankingPmtType: Text[50]; PaymentCode: Code[10]): Boolean;
+    local procedure InsertPaymentMethod(AMCBankingPmtType: Text[50]; PaymentCode: Code[10])
     var
         AMCBankPmtType: Record "AMC Bank Pmt. Type";
         PaymentMethod: Record "Payment Method";
@@ -334,9 +386,9 @@ codeunit 20105 "AMC Banking Mgt."
 
     local procedure InitBankDataConvServiceSetup()
     var
-        AMCBankServiceSetup: Record "AMC Banking Setup";
+        AMCBankingSetup: Record "AMC Banking Setup";
     begin
-        with AMCBankServiceSetup do begin
+        with AMCBankingSetup do begin
             if not Get() then begin
                 Init();
                 Insert(true);
@@ -388,23 +440,44 @@ codeunit 20105 "AMC Banking Mgt."
 
     procedure GetLicenseNumber(): Text[40];
     var
-        EnvironmentInfo: Codeunit "Environment Information";
-        TenantSettings: Codeunit "Azure AD Tenant";
+        EnvironmentInformation: Codeunit "Environment Information";
+        AzureADTenant: Codeunit "Azure AD Tenant";
         LicenseNumber: Text[40];
     begin
-        if (EnvironmentInfo.IsSaaS()) then
-            LicenseNumber := CopyStr(TenantSettings.GetAadTenantId(), 1, 40)
+        if (EnvironmentInformation.IsSaaS()) then begin
+            LicenseNumber := CopyStr(AzureADTenant.GetAadTenantId(), 1, 40);
+            if (LicenseNumber = '') then
+                LicenseNumber := 'common2'; //TODO remove after testing
+        end
         else begin
             LicenseNumber := CopyStr(DELCHR(SerialNumber(), '<', ' '), 1, 40);
             LicenseNumber := CopyStr(DELCHR(SerialNumber(), '>', ' '), 1, 40);
         end;
 
-        exit(CopyStr('BC' + LicenseNumber, 1, 40));
+        exit(CopyStr('BC' + LicenseNumber, 1, 40)) //TODO - Leave only this line after testing
+
+        //exit('BCcommon1'); //TODO - Delete this line after testing
+    end;
+
+    internal procedure IsAMCBusinessInstalled(): Boolean
+    var
+        AppInfo: ModuleInfo;
+    begin
+        NavApp.GetModuleInfo('b7a9d320-4dac-4e5b-b35f-adcb8626bfe2', AppInfo);
+        if (AppInfo.Name = 'AMC Banking 365 Business') then
+            exit(true)
+        else
+            exit(false);
     end;
 
     procedure GetDemoSolutionCode(): Text[50];
     begin
         exit(DemoSolutionTxt);
+    end;
+
+    procedure GetEnterPriseSolutionCode(): Text[50];
+    begin
+        exit(EnterpriseSolutionTxt);
     end;
 
     procedure GetLicenseXmlApi(): Text;
@@ -448,7 +521,7 @@ codeunit 20105 "AMC Banking Mgt."
     procedure ShowDetailedLogInfo(ActivityLog: Record "Activity Log"; DefaultFileName: Text; ShowFileDialog: Boolean): Text;
     var
         TempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit "File Management";
+        FileManagement: Codeunit "File Management";
     begin
         ActivityLog.CALCFIELDS(ActivityLog."Detailed Info");
         IF NOT ActivityLog."Detailed Info".HASVALUE() THEN BEGIN
@@ -461,7 +534,7 @@ codeunit 20105 "AMC Banking Mgt."
 
         TempBlob.FromRecord(ActivityLog, ActivityLog.FieldNo("Detailed Info"));
 
-        EXIT(FileMgt.BLOBExport(TempBlob, DefaultFileName, ShowFileDialog));
+        EXIT(FileManagement.BLOBExport(TempBlob, DefaultFileName, ShowFileDialog));
     end;
 
     procedure GetAppCaller(): Text[30]
@@ -472,5 +545,124 @@ codeunit 20105 "AMC Banking Mgt."
         exit(CopyStr(AppInfo.Name(), 1, 30));
     end;
 
+    internal procedure SetFieldValue(var RecordRef: RecordRef; FieldId: Integer; XmlValueVariant: Variant; AppendToValue: Boolean; UseValidate: Boolean)
+    var
+        TypeHelper: Codeunit "Type Helper";
+        TempBlob: Codeunit "Temp Blob";
+        FieldRef: FieldRef;
+        OutStream: OutStream;
+        CurrentLength: Integer;
+        ValueVariant: Variant;
+        OptionValue: Integer;
+        TextValue: Text;
+    begin
+
+        FieldRef := RecordRef.Field(FieldId);
+
+        case FieldRef.Type of
+            FieldType::Text,
+            FieldType::Code:
+                begin
+                    CurrentLength := StrLen(Format(FieldRef.Value));
+                    if (FieldRef.Length = CurrentLength) and (AppendToValue) then
+                        exit;
+                    if (CurrentLength = 0) or not AppendToValue then
+                        updateValue(FieldRef, CopyStr(XmlValueVariant, 1, FieldRef.Length), UseValidate)
+                    else
+                        updateValue(FieldRef, Format(FieldRef.Value) + ' ' + CopyStr(XmlValueVariant, 1, FieldRef.Length - CurrentLength - 1), UseValidate);
+
+                end;
+            FieldType::Date:
+                begin
+                    TextValue := format(XmlValueVariant, 0, 9);
+                    if (TextValue <> '') then begin
+                        ValueVariant := FieldRef.Value;
+                        if TypeHelper.Evaluate(ValueVariant, TextValue, '', '') then;
+                        updateValue(FieldRef, ValueVariant, UseValidate);
+                    end;
+                end;
+            FieldType::Decimal:
+                begin
+                    TextValue := Format(XmlValueVariant, 0, 9);
+                    if (TextValue <> '') then begin
+                        ValueVariant := FieldRef.Value;
+                        if TypeHelper.Evaluate(ValueVariant, TextValue, '', '') then;
+                        updateValue(FieldRef, ValueVariant, UseValidate);
+                    end;
+                end;
+            FieldType::Integer:
+                begin
+                    updateValue(FieldRef, XmlValueVariant, UseValidate);
+                end;
+            FieldType::Option:
+                begin
+                    TextValue := CopyStr(XmlValueVariant, 1, FieldRef.Length);
+                    updateValue(FieldRef, TypeHelper.GetOptionNoFromTableField(TextValue, RecordRef.Number, FieldId), UseValidate);
+                end;
+            FieldType::BLOB:
+                begin
+                    TempBlob.CreateOutStream(OutStream, TEXTENCODING::Windows);
+                    OutStream.WriteText(XmlValueVariant);
+                    TempBlob.ToRecordRef(RecordRef, FieldRef.Number);
+                end;
+        end;
+    end;
+
+    internal procedure updateValue(var fieldref: FieldRef; ValueVariant: Variant; UseValidate: Boolean)
+    var
+    begin
+        if (UseValidate) then
+            fieldref.Validate(ValueVariant)
+        else
+            fieldref.Value(ValueVariant);
+
+    end;
+
+    internal procedure GetFieldValue(RecordRef: RecordRef; FieldNo: Integer): Text;
+    var
+        TypeHelper: Codeunit "Type Helper";
+        FieldRef: FieldRef;
+        DateVariant: Variant;
+        DateTimeValue: DateTime;
+        TransformedValue: Text;
+    begin
+
+        FieldRef := RecordRef.Field(FieldNo);
+        case FieldRef.Type of
+            FieldType::Text,
+                FieldType::Code:
+                TransformedValue := FieldRef.Value();
+            FieldType::Date:
+                begin
+                    DateVariant := FieldRef.Value();
+                    EVALUATE(DateTimeValue, FORMAT(DateVariant, 0, 9), 9);
+                    DateVariant := DateTimeValue;
+                    TransformedValue := FORMAT(DateVariant, 0, 9);
+                end;
+            FieldType::Decimal:
+                TransformedValue := FORMAT(FieldRef.Value(), 0, TypeHelper.GetXMLAmountFormatWithTwoDecimalPlaces());
+            FieldType::Option:
+                TransformedValue := FieldRef.Value();
+            FieldType::BLOB:
+                TransformedValue := FieldRef.Value();
+        end;
+
+        exit(TransformedValue)
+    end;
+
+    internal procedure GetBankFileName(BankAccount: Record "Bank Account"): Text[250]
+    var
+        FileExtTxt: Label '.txt';
+    begin
+
+        if (BankAccount."AMC Bank File Name" <> '') then begin
+            if (StrPos(BankAccount."AMC Bank File Name", '%1') <> 0) then
+                exit(StrSubstNo(BankAccount."AMC Bank File Name", Format(CreateDateTime(Today(), Time()), 0, '<Year4><Month,2><Day,2>_<Hours24,2><Minutes,2><Second,2>')))
+            else
+                exit(BankAccount."AMC Bank File Name");
+        end
+        else
+            exit(BankAccount."AMC Bank Name" + FileExtTxt);
+    end;
 }
 

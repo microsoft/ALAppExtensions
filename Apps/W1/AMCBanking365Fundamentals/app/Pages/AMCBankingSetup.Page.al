@@ -85,11 +85,13 @@ page 20101 "AMC Banking Setup"
                 Caption = 'Service';
                 field("Service URL"; "Service URL")
                 {
+                    Editable = EditUrlAllowed;
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the address of the service that converts bank data to the format required by your bank when you export payment bank files and import bank statement files. The service specified in the Service URL field is called when users export or import bank files.';
                     trigger OnDrillDown()
                     begin
-                        Hyperlink(CopyStr("Service URL", 1, StrLen("Service URL") - StrLen("Namespace API Version")));
+                        Rec.Modify();
+                        AMCBankServiceRequestMgt.ShowServiceLinkPage('myaccount', true);
                     end;
                 }
                 field("Namespace API Version"; "Namespace API Version")
@@ -113,9 +115,10 @@ page 20101 "AMC Banking Setup"
                 Promoted = true;
                 ToolTip = 'Calls the sign-up page for the service that converts bank data to the format required by your bank when you export payment bank files and import bank statement files. This is the web page where you enter your company''s user name and password to sign up for the service.';
                 PromotedCategory = Category4;
+                PromotedOnly = true;
                 trigger OnAction();
                 begin
-                    Hyperlink("Sign-up URL");
+                    PAGE.RunModal(Page::"AMC Bank Signup to Service");
                 end;
             }
         }
@@ -131,6 +134,7 @@ page 20101 "AMC Banking Setup"
                 Image = Setup;
                 Promoted = true;
                 PromotedCategory = Category5;
+                PromotedOnly = true;
 
                 trigger OnAction()
                 var
@@ -203,8 +207,8 @@ page 20101 "AMC Banking Setup"
     trigger OnAfterGetRecord()
     begin
         CurrPageEditable := CurrPage.Editable();
-
-        if HasPassword() then
+        EditUrlAllowed := not AMCBankingMgt.IsSolutionSandbox(Rec);
+        if Rec.HasPassword() then
             PasswordText := 'Password Dots';
     end;
 
@@ -215,17 +219,19 @@ page 20101 "AMC Banking Setup"
             Init();
             Insert(true);
         end;
-        BCLicenseNumberText := AMCBankServMgt.GetLicenseNumber();
+        BCLicenseNumberText := AMCBankingMgt.GetLicenseNumber();
     end;
 
     var
-        AMCBankServMgt: Codeunit "AMC Banking Mgt.";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
+        AMCBankServiceRequestMgt: codeunit "AMC Bank Service Request Mgt.";
         PasswordText: Text[50];
         CheckedEncryption: Boolean;
-        CopyBCLicenseQst: Label 'Do you want to copy the License %1 to the User name field?';
+        CopyBCLicenseQst: Label 'Do you want to copy the License %1 to the User name field?', Comment = '%1=BC License Number';
         EncryptionIsNotActivatedQst: Label 'Data encryption is not activated. It is recommended that you encrypt data. \Do you want to open the Data Encryption Management page?';
         CurrPageEditable: Boolean;
         BCLicenseNumberText: Text;
+        EditUrlAllowed: Boolean;
 
     local procedure CheckEncryption()
     begin
@@ -237,5 +243,7 @@ page 20101 "AMC Banking Setup"
             end;
         end;
     end;
+
+
 }
 

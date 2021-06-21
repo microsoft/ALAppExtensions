@@ -1,5 +1,9 @@
 xmlport 20100 "AMC Bank Export CreditTransfer"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by the new implementation in V18.2 of Export Credit transfer.';
+    ObsoleteTag = '18.2';
+
     Caption = 'AMC Banking Export CreditTransfer';
     Namespaces = ns1 = 'http://nav03.soap.xml.link.amc.dk/';
     Direction = Export;
