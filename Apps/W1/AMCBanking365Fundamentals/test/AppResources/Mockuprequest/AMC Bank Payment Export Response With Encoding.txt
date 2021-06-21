@@ -1,0 +1,39 @@
+HTTP/1.1 200 OK
+Content-Type: text/xml
+Server: Jetty(8.1.7.v20120910)
+Content-Length: 1940
+
+<soap:Envelope
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+    <soap:Body>
+        <ns2:paymentExportBankResponse
+            xmlns:ns2="http://api04.soap.xml.link.amc.dk/"
+            xmlns:ns3="amc/xml/pay03_reportresponse"
+            xmlns:ns4="amc/xml/pay04_paymentresponse"
+            xmlns:ns5="amc/xml/pay03_tokenresponse"
+            xmlns:ns6="amc/xml/pay03_entryrequest"
+            xmlns:ns7="amc/xml/pay03_entryresponse"
+            xmlns:ns8="amc/xml/pay04_definitionresponse"
+            xmlns:ns9="amc/xml/pay03_reportrequest"
+            xmlns:ns10="amc/xml/pay04_paymentrequest"
+            xmlns:ns11="amc/xml/pay04_journalresponse"
+            xmlns:ns12="amc/xml/pay04_bankresponse"
+            xmlns:ns13="amc/xml/pay03_global">
+            <return>
+                <version>3.0</version>
+                <pack>
+                    <checksum>702a1907baef08e5fa14994aa0dc433bf3a42bb82c238dd7665ce5b37529757fa8f1e66d11e46440d47317b9f8cda908650cfbf2afe1646cd740cbbb126e5460</checksum>
+                    <data>MDEyMzQ1OTk0NDU2NzAgOTkwMTIzNDU5OTQ0NTY3MCAgICAwMDAwMDAwMDUwMENST05VUyBVU0EsIEluYy4gIDEwNzIwMSAgICAgICAgICAgIEZhYnJpa2FtLCBJbmMuICAgIDA2MDUyMQ0K</data>
+                    <date>2021-05-06T06:59:34.560Z</date>
+                    <journalnumber>1011</journalnumber>
+                    <journalstatus>Imported</journalstatus>
+                    <signprocess>false</signprocess>
+                    <downloadlink>https://demoxtl.amcbanking.com/login?token=4842072b-95f6-4683-9c13-361d28ec751b&amp;loginPage=download&amp;journalNumber=1011</downloadlink>
+                </pack>
+                <header>
+                    <result>ok</result>
+                </header>
+            </return>
+        </ns2:paymentExportBankResponse>
+    </soap:Body>
+</soap:Envelope>

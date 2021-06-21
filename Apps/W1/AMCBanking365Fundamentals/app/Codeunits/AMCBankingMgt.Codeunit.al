@@ -611,7 +611,6 @@ codeunit 20105 "AMC Banking Mgt."
 
     internal procedure GetBankFileName(BankAccount: Record "Bank Account"): Text[250]
     var
-
     begin
 
         if (BankAccount."AMC Bank File Name" <> '') then begin

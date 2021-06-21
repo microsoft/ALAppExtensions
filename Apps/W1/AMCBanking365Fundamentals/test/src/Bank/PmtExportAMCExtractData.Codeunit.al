@@ -27,6 +27,7 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
         LibraryAmcWebService: Codeunit "Library - Amc Web Service";
         isInitialised: Boolean;
         CompanyInfoChanged: Boolean;
+
         MissingBankNameDataConvErr: Label '%1 must have a value', Comment = '%1=Bank Name';
 
     local procedure Initialize()

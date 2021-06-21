@@ -1,0 +1,155 @@
+HTTP/1.1 200 OK
+Content-Type: text/xml
+Server: Jetty(8.1.7.v20120910)
+Content-Length: 8709
+
+<soap:Envelope
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+    <soap:Body>
+        <ns2:paymentExportBankResponse
+            xmlns:ns2="http://api04.soap.xml.link.amc.dk/"
+            xmlns:ns3="amc/xml/pay03_reportresponse"
+            xmlns:ns4="amc/xml/pay04_paymentresponse"
+            xmlns:ns5="amc/xml/pay03_tokenresponse"
+            xmlns:ns6="amc/xml/pay03_entryrequest"
+            xmlns:ns7="amc/xml/pay03_entryresponse"
+            xmlns:ns8="amc/xml/pay04_definitionresponse"
+            xmlns:ns9="amc/xml/pay03_reportrequest"
+            xmlns:ns10="amc/xml/pay04_paymentrequest"
+            xmlns:ns11="amc/xml/pay04_journalresponse"
+            xmlns:ns12="amc/xml/pay04_bankresponse"
+            xmlns:ns13="amc/xml/pay03_global">
+            <return>
+                <version>3.0</version>
+                <header>
+                    <result>error</result>
+                </header>
+                <syslog>
+                    <hinttext></hinttext>
+                    <messageid>@11402</messageid>
+                    <text>Verifying license (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/11402</url>
+                    <syslogtype>info</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext></hinttext>
+                    <messageid>@11391</messageid>
+                    <text>Connection to AMC-Consult A/S SUCCEEDED (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/11391</url>
+                    <syslogtype>info</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext></hinttext>
+                    <messageid>@11404</messageid>
+                    <text>Updating license informations (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/11404</url>
+                    <syslogtype>info</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext></hinttext>
+                    <messageid>@11412</messageid>
+                    <text>Updating format informations (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/11412</url>
+                    <syslogtype>info</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'Nordea FI' not recognized format type 'UnIso20022-camt_054_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'Nordea FI' not recognized format type 'UnIso20022-camt_053_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'SEB FI' not recognized format type 'FiSeb-camt_054_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'SEB FI' not recognized format type 'FiSeb-camt_053_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'Sydbank DK' not recognized format type 'UnIso20022-camt_053_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'SEB XML DK' not recognized format type 'UnIso20022-camt_054_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'SEB XML DK' not recognized format type 'UnIso20022-camt_053_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'SEB XML FI' not recognized format type 'UnIso20022-camt_054_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'SEB XML FI' not recognized format type 'UnIso20022-camt_053_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'Rabobank XML NL' not recognized format type 'UnIso20022-camt_054_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'Rabobank XML NL' not recognized format type 'UnIso20022-camt_053_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'Rabobank XML NL' not recognized format type 'UnIso20022-pain_002_001_03' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'ABN AMRO XML NL' not recognized format type 'UnIso20022-camt_053_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>If you do not need this bank please disregard this warning</hinttext>
+                    <text>The bank 'Sydbank XML DK' not recognized format type 'UnIso20022-camt_053_001_02' (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>warning</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext></hinttext>
+                    <text>The license verification for 'amc-prod-dynnav' succeeded! (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/</url>
+                    <syslogtype>info</syslogtype>
+                </syslog>
+                <syslog>
+                    <hinttext>Please verify the spelling of this bank. You can see all supported banks at http://amcbanking.com/support/</hinttext>
+                    <messageid>@11439</messageid>
+                    <text>You have tried to use a not existing bank: WRONGBANKNAME (demouser/main)</text>
+                    <url>http://amcbanking.com/kb/11439</url>
+                    <syslogtype>error</syslogtype>
+                </syslog>
+            </return>
+        </ns2:paymentExportBankResponse>
+    </soap:Body>
+</soap:Envelope>

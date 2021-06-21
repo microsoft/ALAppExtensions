@@ -1,0 +1,39 @@
+HTTP/1.1 200 OK
+Content-Type: text/xml
+Server: Jetty(8.1.7.v20120910)
+Content-Length: 3507
+
+<soap:Envelope
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+    <soap:Body>
+        <ns2:paymentExportBankResponse
+            xmlns:ns2="http://api04.soap.xml.link.amc.dk/"
+            xmlns:ns3="amc/xml/pay03_reportresponse"
+            xmlns:ns4="amc/xml/pay04_paymentresponse"
+            xmlns:ns5="amc/xml/pay03_tokenresponse"
+            xmlns:ns6="amc/xml/pay03_entryrequest"
+            xmlns:ns7="amc/xml/pay03_entryresponse"
+            xmlns:ns8="amc/xml/pay04_definitionresponse"
+            xmlns:ns9="amc/xml/pay03_reportrequest"
+            xmlns:ns10="amc/xml/pay04_paymentrequest"
+            xmlns:ns11="amc/xml/pay04_journalresponse"
+            xmlns:ns12="amc/xml/pay04_bankresponse"
+            xmlns:ns13="amc/xml/pay03_global">
+            <return>
+                <version>3.0</version>
+                <pack>
+                    <checksum>b3aecd47a96e6fed539d612c797c2f187a57c546fa2b67c3cdfef53a4e8cf858a11287505f42936070492972dbf10edb9293c3baef7d8e8d591272a81b592950</checksum>
+                    <data>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSIgc3RhbmRhbG9uZT0ieWVzIj8+PGFtY3BheW1lbnRyZXF1ZXN0PjxiYW5rdHJhbnNqb3VybmFsPjxqb3VybmFsbmFtZT57NjY4MjQzMkEtPC9qb3VybmFsbmFtZT48am91cm5hbG51bWJlcj4xMDEyPC9qb3VybmFsbnVtYmVyPjx0cmFuc21pc3Npb25yZWYxPjwvdHJhbnNtaXNzaW9ucmVmMT48dW5pcXVlaWQ+MTwvdW5pcXVlaWQ+PGJhbmt0cmFuc3VzPjxjb3VudHJ5b2ZvcmlnaW4+R0I8L2NvdW50cnlvZm9yaWdpbj48b3ducmVmZXJlbmNlPlYwMDAxMDwvb3ducmVmZXJlbmNlPjx1bmlxdWVpZD4xTDFVUzwvdW5pcXVlaWQ+PGJhbmt0cmFuc3RoZW0+PGN1c3RvbWVyaWQ+VjAwMDEwPC9jdXN0b21lcmlkPjx1bmlxdWVpZD4xTDFUSDwvdW5pcXVlaWQ+PHBheW1lbnR0eXBlPkRvbUFjYzJBY2M8L3BheW1lbnR0eXBlPjxiYW5rdHJhbnNzcGVjPjxkaXNjb3VudHVzZWQ+MC4wMDwvZGlzY291bnR1c2VkPjxpbnZvaWNlcmVmPjwvaW52b2ljZXJlZj48dW5pcXVlaWQ+ezhGRTBCODZFLURBMjgtNEY1RS04NkU1LTcwQTZBNTJGRDc0Mn08L3VuaXF1ZWlkPjxhbW91bnRkZXRhaWxzPjxwYXlhbW91bnQ+NTEuMTA8L3BheWFtb3VudD48cGF5Y3VycmVuY3k+R0JQPC9wYXljdXJyZW5jeT48cGF5ZGF0ZT4yMDIxLTA1LTA2VDAwOjAwOjAwLjAwMDwvcGF5ZGF0ZT48L2Ftb3VudGRldGFpbHM+PC9iYW5rdHJhbnNzcGVjPjxhbW91bnRkZXRhaWxzPjxwYXlhbW91bnQ+NS4wMDwvcGF5YW1vdW50PjxwYXljdXJyZW5jeT5HQlA8L3BheWN1cnJlbmN5PjxwYXlkYXRlPjIwMjEtMDUtMDZUMDA6MDA6MDAuMDAwPC9wYXlkYXRlPjwvYW1vdW50ZGV0YWlscz48Y29zdHM+U2hhcmVkPC9jb3N0cz48cmVjZWl2ZXJzYWRkcmVzcz48bmFtZT5WMDAwMTA8L25hbWU+PC9yZWNlaXZlcnNhZGRyZXNzPjxyZWNlaXZlcnNiYW5rYWNjb3VudD48YmFua2FjY291bnQ+PC9iYW5rYWNjb3VudD48L3JlY2VpdmVyc2JhbmthY2NvdW50PjwvYmFua3RyYW5zdGhlbT48b3duYWRkcmVzcz48YWRkcmVzczE+NzEyMiBTb3V0aCBBc2hmb3JkIFN0cmVldDwvYWRkcmVzczE+PGFkZHJlc3MyPldlc3RtaW5zdGVyPC9hZGRyZXNzMj48Y2l0eT5Mb25kb248L2NpdHk+PGNvdW50cnlpc28+R0I8L2NvdW50cnlpc28+PG5hbWU+Q1JPTlVTIFVLIEx0ZC48L25hbWU+PC9vd25hZGRyZXNzPjxiYW5rYWNjb3VudGlkZW50PjxiYW5rYWNjb3VudD5DT1JSRUNURklMRUVYUE9SVDwvYmFua2FjY291bnQ+PHN3aWZ0Y29kZT48L3N3aWZ0Y29kZT48L2JhbmthY2NvdW50aWRlbnQ+PC9iYW5rdHJhbnN1cz48L2Jhbmt0cmFuc2pvdXJuYWw+PC9hbWNwYXltZW50cmVxdWVzdD4=</data>
+                    <date>2021-05-06T07:10:36.610Z</date>
+                    <journalnumber>1012</journalnumber>
+                    <journalstatus>Imported</journalstatus>
+                    <signprocess>false</signprocess>
+                    <downloadlink>https://demoxtl.amcbanking.com/login?token=0e30f03c-6392-49aa-9cf2-e1e65c56d490&amp;loginPage=download&amp;journalNumber=1012</downloadlink>
+                </pack>
+                <header>
+                    <result>ok</result>
+                </header>
+            </return>
+        </ns2:paymentExportBankResponse>
+    </soap:Body>
+</soap:Envelope>

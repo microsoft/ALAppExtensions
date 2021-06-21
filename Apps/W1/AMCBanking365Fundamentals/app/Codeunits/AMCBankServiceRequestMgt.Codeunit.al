@@ -767,7 +767,6 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         exit(PackPathTxt);
     end;
 
-
     procedure GetHeaderXPath(): Text;
     begin
         EXIT('//return/header');
