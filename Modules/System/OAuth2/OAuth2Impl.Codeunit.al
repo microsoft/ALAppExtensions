@@ -459,6 +459,16 @@ codeunit 502 OAuth2Impl
     end;
 
     [NonDebuggable]
+    procedure AcquireOnBehalfOfTokenByTokenCache(OAuthAuthorityUrl: Text; LoginHint: Text; RedirectURL: Text; Scopes: List of [Text]; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
+    var
+        ScopesArray: DotNet StringArray;
+    begin
+        FillScopesArray(Scopes, ScopesArray);
+        Initialize(OAuthAuthorityUrl, RedirectURL);
+        AccessToken := AuthFlow.ALAcquireTokenFromTokenCacheState(ScopesArray, LoginHint, RefreshToken, NewRefreshToken);
+    end;
+
+    [NonDebuggable]
     procedure AcquireOnBehalfOfTokensByTokenCache(LoginHint: Text; RedirectURL: Text; Scopes: List of [Text]; RefreshToken: Text; var AccessToken: Text; var IdToken: Text; var NewRefreshToken: Text)
     var
         ScopesArray: DotNet StringArray;

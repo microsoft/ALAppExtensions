@@ -551,6 +551,23 @@ codeunit 501 OAuth2
     /// <summary>
     /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
     /// </summary>
+    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
+    /// <param name="LoginHint">The user login hint, i.e. authentication email.</param>
+    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
+    /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
+    /// <param name="TokenCache">The token cache acquired when the access token was requested .</param>
+    /// <param name="AccessToken">Exit parameter containing the access token.</param>
+    /// <param name="NewTokenCache">Exit parameter containing the new token cache.</param>
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireOnBehalfOfTokenByTokenCache(OAuthAuthorityUrl: Text; LoginHint: Text; RedirectURL: Text; Scopes: List of [Text]; TokenCache: Text; var AccessToken: Text; var NewTokenCache: Text)
+    begin
+        OAuth2Impl.AcquireOnBehalfOfTokenByTokenCache(OAuthAuthorityUrl, LoginHint, RedirectURL, Scopes, TokenCache, AccessToken, NewTokenCache);
+    end;
+
+    /// <summary>
+    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+    /// </summary>
     /// <param name="LoginHint">The user login hint, i.e. authentication email.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
     /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
