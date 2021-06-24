@@ -80,6 +80,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
 
         //Send Request to webservice
         Handled := false;
+        AMCBankServiceRequestMgt.OnBeforeExecuteWebServiceRequest(Handled, PaymentHttpRequestMessage, PaymentHttpResponseMessage, PaymentExportWebCallTxt, AppCaller); //For mockup testing
         AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, PaymentHttpRequestMessage, PaymentHttpResponseMessage, PaymentExportWebCallTxt, AppCaller, true);
         AMCBankServiceRequestMgt.GetWebServiceResponse(PaymentHttpResponseMessage, PaymentFileTempBlob, PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), true);
         AMCBankServiceRequestMgt.SetUsedXTLJournal(PaymentFileTempBlob, DataExchEntryNo, PaymentExportWebCallTxt);

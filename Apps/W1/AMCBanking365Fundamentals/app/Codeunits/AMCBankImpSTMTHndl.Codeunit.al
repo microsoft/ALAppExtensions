@@ -62,6 +62,7 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
 
         //Send Request to webservice
         Handled := false;
+        AMCBankServiceRequestMgt.OnBeforeExecuteWebServiceRequest(Handled, ReportExportHttpRequestMessage, ReportExportHttpResponseMessage, AMCBankServiceRequestMgt.GetReportExportTag(), AppCaller); //For mockup testing
         AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, ReportExportHttpRequestMessage, ReportExportHttpResponseMessage, AMCBankServiceRequestMgt.GetReportExportTag(), AppCaller, true);
         AMCBankServiceRequestMgt.GetWebServiceResponse(ReportExportHttpResponseMessage, BankStatementTempBlob, AMCBankServiceRequestMgt.GetReportExportTag() + AMCBankServiceRequestMgt.GetResponseTag(), true);
         if (AMCBankServiceRequestMgt.HasResponseErrors(BankStatementTempBlob, AMCBankServiceRequestMgt.GetHeaderXPath(), AMCBankServiceRequestMgt.GetReportExportTag() + AMCBankServiceRequestMgt.GetResponseTag(), Result, AppCaller)) then

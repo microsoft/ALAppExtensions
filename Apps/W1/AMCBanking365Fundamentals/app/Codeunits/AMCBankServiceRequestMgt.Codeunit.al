@@ -362,6 +362,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         //Set Content-Type header
         SetHttpContentsDefaults(TokenHttpRequestMessage);
 
+        OnBeforeExecuteWebServiceRequest(Handled, TokenHttpRequestMessage, TokenHttpResponseMessage, GetTokenCreate(), AMCBankingMgt.GetAppCaller()); //For mockup testing
         ExecuteWebServiceRequest(Handled, TokenHttpRequestMessage, TokenHttpResponseMessage, GetTokenCreate(), AMCBankingMgt.GetAppCaller(), true);
         GetWebServiceResponse(TokenHttpResponseMessage, ResponseTempBlob, GetTokenCreate() + GetResponseTag(), true);
 

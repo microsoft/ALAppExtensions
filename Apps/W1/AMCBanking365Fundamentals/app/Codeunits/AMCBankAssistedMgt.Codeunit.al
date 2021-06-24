@@ -350,6 +350,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
 
         //Send Request to webservice
         Handled := false;
+        AMCBankServiceRequestMgt.OnBeforeExecuteWebServiceRequest(Handled, HttpRequestMessage, HttpResponseMessage, webcall, AMCBankingMgt.GetAppCaller()); //For mockup testing
         AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, HttpRequestMessage, HttpResponseMessage, webcall, AMCBankingMgt.GetAppCaller(), true);
         AMCBankServiceRequestMgt.GetWebServiceResponse(HttpResponseMessage, ModuleTempBlob, webcall, false);
         exit(GetModuleInfoData(ModuleTempBlob, XTLUrl, SignUpUrl, SupportUrl, Solution, AMCBankingMgt.GetAppCaller())); //Get reponse and XTLUrl and Solution

@@ -57,6 +57,7 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         //Send Request to webservice
         Handled := false;
         AMCBankServiceRequestMgt.SetTimeout(TimeOut);
+        AMCBankServiceRequestMgt.OnBeforeExecuteWebServiceRequest(Handled, BankListHttpRequestMessage, BankListHttpResponseMessage, BankListWebCallTxt, AppCaller); //For mockup testing
         AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, BankListHttpRequestMessage, BankListHttpResponseMessage, BankListWebCallTxt, AppCaller, true);
         AMCBankServiceRequestMgt.GetWebServiceResponse(BankListHttpResponseMessage, BodyTempBlob, BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), true);
         if (AMCBankServiceRequestMgt.HasResponseErrors(BodyTempBlob, AMCBankServiceRequestMgt.GetHeaderXPath(), BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), Result, AppCaller)) then
