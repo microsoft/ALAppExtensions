@@ -690,6 +690,12 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         exit(GLBToId);
     end;
 
+    [IntegrationEvent(true, false)] //Used for mockup testing
+    procedure OnBeforeExecuteWebServiceRequest(Var Handled: Boolean; Var WebHttpRequestMessage: HttpRequestMessage; Var WebHttpResponseMessage: HttpResponseMessage; webCall: Text; AppCaller: Text[30]);
+    begin
+    end;
+
+
     [Obsolete('This method is obsolete and it will be removed.', '17.5')]
     procedure GetFinstaXPath(ResponseNode: Text): Text
     begin
