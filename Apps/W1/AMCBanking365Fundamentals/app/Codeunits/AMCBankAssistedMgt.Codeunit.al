@@ -381,6 +381,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         //Send Request to webservice
         Handled := false;
         AMCBankServiceRequestMgt.SetTimeout(Timeout);
+        AMCBankServiceRequestMgt.OnBeforeExecuteWebServiceRequest(Handled, HttpRequestMessage, HttpResponseMessage, webcall, AppCaller); //For mockup testing
         AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, HttpRequestMessage, HttpResponseMessage, webcall, AppCaller, true);
         AMCBankServiceRequestMgt.GetWebServiceResponse(HttpResponseMessage, TempBlob, webcall + AMCBankServiceRequestMgt.GetResponseTag(), true);
         if (AMCBankServiceRequestMgt.HasResponseErrors(TempBlob, AMCBankServiceRequestMgt.GetHeaderXPath(), webcall + AMCBankServiceRequestMgt.GetResponseTag(), Result, AppCaller)) then begin
