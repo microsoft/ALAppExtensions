@@ -26,7 +26,7 @@ codeunit 132590 "GenerateBase64KeyedHash Test"
         // [WHEN] Calculate signature
         LF := 10;
 
-        stringtosign := 'AWS4 - HMAC - SHA256' + format(LF) + '20150830T123600Z' + format(LF) + '20150830/us-east-1/iam/aws4_request' + format(LF) + 'f536975d06c0309214f805bb90ccff089219ecd68b2577efef23edd43b7e1a59';
+        stringtosign := 'AWS4-HMAC-SHA256' + format(LF) + '20150830T123600Z' + format(LF) + '20150830/us-east-1/iam/aws4_request' + format(LF) + 'f536975d06c0309214f805bb90ccff089219ecd68b2577efef23edd43b7e1a59';
 
         kSecret := 'wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY';
         ldate := '20150830';
