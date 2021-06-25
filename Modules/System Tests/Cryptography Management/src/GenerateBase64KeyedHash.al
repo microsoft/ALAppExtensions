@@ -34,7 +34,7 @@ codeunit 132590 "GenerateBase64KeyedHash Test"
         Service := 'iam';
         aws4_request := 'aws4_request';
 
-        xlSignature := signature(stringtosign, kSecret, ldate, Region, Service, aws4_request);
+        xlSignature := signature(stringtosign, kSecret, ldate, Region, Service, aws4_request).ToLower();
 
         // [THEN] Verify Result 
         LibraryAssert.AreEqual(ExpectedSignature, xlSignature, 'Failed to sing text with GenerateBase64KeyedHash');
