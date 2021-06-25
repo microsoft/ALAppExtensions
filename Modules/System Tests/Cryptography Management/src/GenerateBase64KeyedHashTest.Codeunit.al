@@ -7,6 +7,7 @@ codeunit 132590 "GenerateBase64KeyedHash Test"
     [Test]
     procedure GenerateBase64KeyedHash()
     var
+        LibraryAssert: Codeunit "Library Assert";
         LF: Char;
         stringtosign: Text;
         kSecret: Text;
@@ -16,7 +17,6 @@ codeunit 132590 "GenerateBase64KeyedHash Test"
         aws4_request: Text;
         xlSignature: Text;
         ExpectedSignature: Text;
-        LibraryAssert: Codeunit "Library Assert";
     begin
         // [SCENARIO 12441] Add fuction in Codeunit 1266 "Crypthography Management"
 
