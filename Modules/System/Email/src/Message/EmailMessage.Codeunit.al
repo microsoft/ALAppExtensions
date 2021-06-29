@@ -112,7 +112,7 @@ codeunit 8904 "Email Message"
     /// <param name="Recipients">Out parameter filled with the recipients' email addresses.</param>
     procedure GetRecipients(RecipientType: Enum "Email Recipient Type"; var Recipients: list of [Text])
     begin
-        EmailMessageImpl.GetRecipients(RecipientType, Recipients)
+        Recipients := EmailMessageImpl.GetRecipients(RecipientType);
     end;
 
     /// <summary>

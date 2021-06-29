@@ -163,9 +163,7 @@ codeunit 8900 "Email Impl"
         if EmailMessageSent(EmailMessage.GetId()) then
             Error(EmailMessageSentErr);
 
-        EmailMessageImpl.ValidateRecipients(Enum::"Email Recipient Type"::"To");
-        EmailMessageImpl.ValidateRecipients(Enum::"Email Recipient Type"::Cc);
-        EmailMessageImpl.ValidateRecipients(Enum::"Email Recipient Type"::Bcc);
+        EmailMessageImpl.ValidateRecipients();
 
         // Validate email account
         EmailAccount.GetAllAccounts(false, Accounts);

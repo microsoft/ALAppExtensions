@@ -18,6 +18,7 @@ codeunit 134689 "Email Message Unit Test"
         EmailMessageSentCannotDeleteRecipientErr: Label 'Cannot delete the recipient because the email has already been sent.';
         EmailMessageQueuedCannotInsertRecipientErr: Label 'Cannot add a recipient because the email is queued to be sent.';
         EmailMessageSentCannotInsertRecipientErr: Label 'Cannot add the recipient because the email has already been sent.';
+        NoAccountErr: Label 'You must specify a valid email account to send the message to.';
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -245,6 +246,54 @@ codeunit 134689 "Email Message Unit Test"
         // Exercise/Verify// Exercise/Verify
         asserterror Message.AddAttachment('Attachment1', 'text/plain', Base64Convert.ToBase64('Content'));
         Assert.ExpectedError(EmailMessageQueuedCannotInsertAttachmentErr);
+    end;
+
+    [Test]
+    procedure SendMessageBccOnly()
+    var
+        TempEmailAccount: Record "Email Account" temporary;
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        Recipients: List of [Text];
+        RecipientsCC: List of [Text];
+        RecipientsBCC: List of [Text];
+    begin
+        // Initialize
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempEmailAccount);
+
+        // [GIVEN] The message only has recipients in BCC
+        RecipientsBCC.Add('recipient@test.com');
+        EmailMessage.Create(Recipients, 'Test subject', 'Test body', true, RecipientsCC, RecipientsBCC);
+
+        // [WHEN] An email is sent
+        // [THEN] No error occurs
+        Email.Send(EmailMessage, TempEmailAccount."Account Id", TempEmailAccount.Connector);
+    end;
+
+    [Test]
+    procedure SendMessageNoRecipientsError()
+    var
+        TempEmailAccount: Record "Email Account" temporary;
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        Recipients: List of [Text];
+        RecipientsCC: List of [Text];
+        RecipientsBCC: List of [Text];
+    begin
+        // Initialize
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempEmailAccount);
+
+        // [GIVEN] The message does not have any recipients
+        EmailMessage.Create(Recipients, 'Test subject', 'Test body', true, RecipientsCC, RecipientsBCC);
+
+        // [WHEN] An email is sent
+        // [THEN] A validation error occurs
+        asserterror Email.Send(EmailMessage, TempEmailAccount."Account Id", TempEmailAccount.Connector);
+
+        // [THEN] The validation error is as expected
+        Assert.ExpectedError(NoAccountErr);
     end;
 
     [Test]
