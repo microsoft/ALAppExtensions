@@ -10,6 +10,7 @@ codeunit 132912 "Azure AD Plan Tests"
 
     var
         LibraryAssert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
 
     [Test]
     [Scope('OnPrem')]
@@ -18,6 +19,10 @@ codeunit 132912 "Azure AD Plan Tests"
         AzureADPlan: Codeunit "Azure AD Plan";
     begin
         // [SCENARIO] There should be 15 Plans
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD Plan View');
+
         LibraryAssert.AreEqual(16, AzureADPlan.GetAvailablePlansCount(),
             'The number of available plans has changed. Make sure that you have added or removed tests on these changes in Plan-Based tests and then update the number of plans in this test.');
     end;
@@ -32,6 +37,9 @@ codeunit 132912 "Azure AD Plan Tests"
         PlanID: Guid;
     begin
         DeleteAllFromTablePlanAndUserPlan();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD Plan View');
 
         //[GIVEN] A specific plan with at least one user assigned to it
         PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlanAssigned');
@@ -59,6 +67,9 @@ codeunit 132912 "Azure AD Plan Tests"
         PlanID: Guid;
     begin
         DeleteAllFromTablePlanAndUserPlan();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD Plan View');
 
         //[GIVEN] A specific plan which is assigned to the current user
         PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlanAssigned');
@@ -88,6 +99,9 @@ codeunit 132912 "Azure AD Plan Tests"
         PlanID: Guid;
     begin
         DeleteAllFromTablePlanAndUserPlan();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD Plan View');
 
         // [GIVEN] a service plan and a user who is entitled to a plan 
         UserId := CreateGuid();
@@ -120,6 +134,9 @@ codeunit 132912 "Azure AD Plan Tests"
         DeleteAllFromTablePlanAndUserPlan();
         AzureADPlan.SetTestInProgress(true);
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD Plan View');
+
         // [GIVEN] a User and a GraphUser with a Plan which is not in the table Plan and a user
         UserId := CreateGuid();
         CreateGraphUser(GraphUser, UserId);
@@ -149,6 +166,9 @@ codeunit 132912 "Azure AD Plan Tests"
     begin
         //[GIVEN] A specific plan which is assigned to a specific user
         DeleteAllFromTablePlanAndUserPlan();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD Plan View');
 
         //[GIVEN] A specific plan which is assigned to the current user
         UserID := CreateGuid();
@@ -180,6 +200,9 @@ codeunit 132912 "Azure AD Plan Tests"
     begin
         DeleteAllFromTablePlanAndUserPlan();
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD Plan View');
+
         // [GIVEN] no Plans in the table Plan
         // [WHEN] invoking DoPlansExist
         // [THEN] The table Plan should be empty
@@ -201,6 +224,9 @@ codeunit 132912 "Azure AD Plan Tests"
         AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
     begin
         DeleteAllFromTablePlanAndUserPlan();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD Plan View');
 
         // [GIVEN] Users who doesnt have any Plans assigned
         // [WHEN] invoking DoUserPlansExist
@@ -224,6 +250,9 @@ codeunit 132912 "Azure AD Plan Tests"
         PlanID: Guid;
     begin
         DeleteAllFromTablePlanAndUserPlan();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD Plan View');
 
         // [GIVEN] A Plan which doesnt exist
         // [WHEN] invoking DoesPlanExist
@@ -249,6 +278,9 @@ codeunit 132912 "Azure AD Plan Tests"
     begin
         DeleteAllFromTablePlanAndUserPlan();
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD Plan View');
+
         // [GIVEN] A User with  no Plan assigned
         // [WHEN] invoking DoesUserHavePlans
         // [THEN] The result should be false
@@ -272,6 +304,9 @@ codeunit 132912 "Azure AD Plan Tests"
         AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
     begin
         DeleteAllFromTablePlanAndUserPlan();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD Plan View');
 
         // [GIVEN] An empty Plan table
         // [WHEN] invoking GetAvailablePlansCount

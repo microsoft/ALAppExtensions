@@ -19,7 +19,6 @@ codeunit 8888 "Email Dispatcher"
         ProcessingEmailMsg: Label 'Processing email %1 for the %2 connector and %3 account.', Comment = '%1 - Email Message Id, %2 - Connector, %3 - Account Id', Locked = true;
         SuccessfullySentEmailMsg: Label 'Email sent successfully', Locked = true;
         SuccessfullySentEmailDetailedMsg: Label 'The email %1 was successfully sent using the %2 email connector.', Comment = '%1 - Email Message Id, %2 - Connector', Locked = true;
-        FailedToSendEmailMsg: Label 'Failed to send email', Locked = true;
         FailedToSendEmailErrorMsg: Label 'Could not send the email %1 because of the following error: %2. Call stack: %3.', Comment = '%1 - Email Message Id, %2 - Error message, %3 - Error call stack', Locked = true;
         FailedToFindEmailMessageMsg: Label 'Failed to find email message %1', Comment = '%1 - Email Message Id', Locked = true;
         FailedToFindEmailMessageErrorMsg: Label 'The email message has been deleted by another user.';
@@ -63,8 +62,9 @@ codeunit 8888 "Email Dispatcher"
                 EmailMessageImpl.MarkAsRead();
             end
             else begin
-                Session.LogMessage('0000CTP', FailedToSendEmailMsg, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
-                Session.LogMessage('0000CTQ', StrSubstNo(FailedToSendEmailErrorMsg, Rec."Message Id", GetLastErrorText(), GetLastErrorCallStack()), Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+                Dimensions.Add('ErrorText', GetLastErrorText(true));
+                Dimensions.Add('ErrorCallStack', GetLastErrorCallStack());
+                Session.LogMessage('0000CTP', StrSubstNo(FailedToSendEmailErrorMsg, Rec."Message Id", GetLastErrorText(true), GetLastErrorCallStack()), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
 
                 UpdateOutboxError(GetLastErrorText(), Rec);
                 UpdateOutboxStatus(Rec, Rec.Status::Failed);

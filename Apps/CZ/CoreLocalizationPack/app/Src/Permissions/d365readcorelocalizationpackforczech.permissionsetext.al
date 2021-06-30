@@ -1,6 +1,13 @@
 permissionsetextension 14195 "D365 READ - Core Localization Pack for Czech" extends "D365 READ"
 {
-    Permissions = tabledata "Acc. Schedule File Mapping CZL" = R,
+    Permissions = tabledata "Acc. Sched. Expr. Buffer CZL" = R,
+                  tabledata "Acc. Schedule Extension CZL" = R,
+                  tabledata "Acc. Schedule File Mapping CZL" = R,
+                  tabledata "Acc. Schedule Result Col. CZL" = R,
+                  tabledata "Acc. Schedule Result Hdr. CZL" = R,
+                  tabledata "Acc. Schedule Result Hist. CZL" = R,
+                  tabledata "Acc. Schedule Result Line CZL" = R,
+                  tabledata "Acc. Schedule Result Value CZL" = R,
                   tabledata "Certificate Code CZL" = R,
                   tabledata "Commodity CZL" = R,
                   tabledata "Commodity Setup CZL" = R,

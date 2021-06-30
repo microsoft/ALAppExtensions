@@ -26,7 +26,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
         WorldPayStandardBusinessSetupDescriptionTxt: Label 'Set up and enable the WorldPay Payments Standard service.';
         YourReferenceTxt: Label 'Your Ref.', Comment = 'Ref. is short for reference from Your Reference field. After Ref there will be a number';
         TermsOfServiceURLTxt: Label 'https://go.microsoft.com/fwlink/?linkid=844662', Locked = true;
-        LogoURLTxt: Label 'https://cdn-bc.dynamics.com/common/images/extensionslogos/worldpay_colour_v1.png', Locked = true;
+        LogoURLTxt: Label 'https://bc-cdn.dynamics.com/common/images/extensionslogos/worldpay_colour_v1.png', Locked = true;
         WorldPayBaseURLTok: Label 'https://secure-test.worldpay.com/wcc/purchase?testMode=100', Locked = true;
         WorldPayMandatoryParametersTok: Label 'instId=%1&cartId=%2&amount=%3&currency=%4&desc=%5', Locked = true;
         TargetURLCannotBeChangedInDemoCompanyErr: Label 'You cannot change the target URL in the demonstration company.';

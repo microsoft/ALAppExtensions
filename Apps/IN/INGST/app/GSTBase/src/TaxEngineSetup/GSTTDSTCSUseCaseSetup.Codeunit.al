@@ -7,6 +7,8 @@ codeunit 18014 "GST TDS TCS Use Case Setup"
         GSTTDSTCSUseCaseData: Codeunit "GST TDS TCS Use Case Data";
     begin
         TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.SkipUseCaseIndentation(true);
         TaxJsonDeserialization.ImportUseCases(GSTTDSTCSUseCaseData.GetText());
     end;
 }

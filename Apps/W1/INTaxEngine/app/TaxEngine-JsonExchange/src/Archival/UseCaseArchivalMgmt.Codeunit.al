@@ -134,10 +134,13 @@ codeunit 20365 "Use Case Archival Mgmt."
             exit;
 
         TaxUseCase.Get(UseCaseArchivalLogEntry."Case ID");
-        TaxUseCase.Validate(Status, TaxUseCase.Status::Draft);
-        TaxUseCase.Modify();
         OldVersion := TaxUseCase."Minor Version";
-        TaxUseCase.Delete(true);
+        if TaxUseCase.Status = TaxUseCase.Status::Draft then
+            OldVersion -= 1
+        else begin
+            TaxUseCase.Validate(Status, TaxUseCase.Status::Draft);
+            TaxUseCase.Modify();
+        end;
 
         UseCaseArchivalLogEntry.CalcFields("Configuration Data");
         UseCaseArchivalLogEntry."Configuration Data".CreateInStream(IStream);
@@ -165,6 +168,14 @@ codeunit 20365 "Use Case Archival Mgmt."
             Page.Run(PAGE::"Use Case Card", TaxUseCase);
     end;
 
+    local procedure ExportModifiedUseCases()
+    var
+        TaxUseCase: Record "Tax Use Case";
+    begin
+        TaxUseCase.SetFilter("Minor Version", '<>%1', 0);
+        ExportUseCases(TaxUseCase);
+    end;
+
     local procedure ArchiveUseCase(var TaxUseCase: Record "Tax Use Case")
     begin
         CreateArchivalLog(TaxUseCase);
@@ -179,17 +190,11 @@ codeunit 20365 "Use Case Archival Mgmt."
         UseCaseArchivalLogEntry."Case ID" := TaxUseCase.ID;
         UseCaseArchivalLogEntry.Description := TaxUseCase.Description;
         UseCaseArchivalLogEntry."Log Date-Time" := CurrentDateTime;
-        if TaxUseCase."Major Version" = 0 then
-            UseCaseArchivalLogEntry."Major Version" := GetNextVersionID(TaxUseCase."Major Version")
-        else
-            UseCaseArchivalLogEntry."Major Version" := TaxUseCase."Major Version";
-
-        UseCaseArchivalLogEntry."Minor Version" := GetNextVersionID(TaxUseCase."Minor Version");
+        UseCaseArchivalLogEntry."Major Version" := TaxUseCase."Major Version";
+        UseCaseArchivalLogEntry."Minor Version" := TaxUseCase."Minor Version";
         UseCaseArchivalLogEntry."Configuration Data".CreateOutStream(OStream);
-        OStream.WriteText(GetUseCaseJsonText(TaxUseCase.ID));
-        UseCaseArchivalLogEntry."Active Version" := true;
-        TaxUseCase."Changed By" := ChangedByPartnerLbl; //TODO: to be discussed about using changed by as Microsoft.
         UseCaseArchivalLogEntry."Changed by" := TaxUseCase."Changed By";
+        OStream.WriteText(GetUseCaseJsonText(TaxUseCase.ID));
         UseCaseArchivalLogEntry."User ID" := copystr(UserId(), 1, 50);
         UseCaseArchivalLogEntry.Insert(true);
 
@@ -201,7 +206,7 @@ codeunit 20365 "Use Case Archival Mgmt."
         RemoveIsActiveFromLastLog(TaxUseCase.ID, UseCaseArchivalLogEntry."Entry No.");
         TaxUseCase.Validate("Effective From", UseCaseArchivalLogEntry."Log Date-Time");
         TaxUseCase.Validate("Major Version", UseCaseArchivalLogEntry."Major Version");
-        TaxUseCase.Validate("Minor Version", UseCaseArchivalLogEntry."Minor Version");
+        TaxUseCase.Validate("Minor Version", GetNextVersionID(UseCaseArchivalLogEntry."Minor Version"));
         TaxUseCase.Validate("Changed By", ChangedByPartnerLbl);
     end;
 
@@ -234,16 +239,22 @@ codeunit 20365 "Use Case Archival Mgmt."
         exit(CurrentVersion + 1);
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Tax Engine Setup Wizard", 'OnAfterActionEvent', 'ExportModified', false, false)]
+    local procedure OnAfterExportModified()
+    begin
+        ExportModifiedUseCases();
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Tax Use Case", 'OnBeforeValidateEvent', 'Status', false, false)]
     local procedure OnAfterValidateEnableEvent(var Rec: Record "Tax Use Case"; var xRec: Record "Tax Use Case")
     begin
         if xRec.Status = Rec.Status then
             exit;
 
-        if rec.Status = Rec.Status::Released then
-            ArchiveUseCase(Rec)
-        else
-            rec.Validate(Enable, false);
+        if Rec.Status = Rec.Status::Draft then begin
+            ArchiveUseCase(Rec);
+            Rec.Validate(Enable, false);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Tax Types", 'OnAfterExportTaxTypes', '', false, false)]

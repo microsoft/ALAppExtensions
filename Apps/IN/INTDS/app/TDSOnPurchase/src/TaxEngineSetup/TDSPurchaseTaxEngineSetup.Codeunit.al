@@ -7,6 +7,8 @@ codeunit 18717 "TDS Purchase Tax Engine Setup"
         TaxJsonDeserialization: Codeunit "Tax Json Deserialization";
     begin
         TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.SkipUseCaseIndentation(true);
         TaxJsonDeserialization.ImportUseCases(TDSOnPurchaseUseCases.GetText());
     end;
 }

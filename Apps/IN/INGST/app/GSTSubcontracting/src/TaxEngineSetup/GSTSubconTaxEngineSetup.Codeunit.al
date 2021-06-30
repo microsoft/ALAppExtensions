@@ -7,6 +7,8 @@ codeunit 18472 "GST Subcon Tax Engine Setup"
         GSTSubconUseCaseDataset: Codeunit "GST Subcon UseCase Dataset";
     begin
         TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.SkipUseCaseIndentation(true);
         TaxJsonDeserialization.ImportUseCases(GSTSubconUseCaseDataset.GetText());
     end;
 }

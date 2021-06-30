@@ -8,11 +8,6 @@ codeunit 130045 "System Initialization Test"
     // Tests for the System Initialization codeunit
 
     Subtype = Test;
-    TestPermissions = NonRestrictive;
-
-    trigger OnRun()
-    begin
-    end;
 
     [Test]
     [HandlerFunctions('PasswordDialogModalPageHandler')]
@@ -21,9 +16,11 @@ codeunit 130045 "System Initialization Test"
     var
         CompanyTriggers: Codeunit "Company Triggers";
         PasswordDialog: Codeunit "Password Dialog Management";
+        PermissionsMock: Codeunit "Permissions Mock";
         OldPassword: Text;
         NewPassword: Text;
     begin
+        PermissionsMock.Set('System Init Exec');
         // [WHEN] Calling CompanyTriggers.OnCompanyOpen()
         CompanyTriggers.OnCompanyOpen();
 

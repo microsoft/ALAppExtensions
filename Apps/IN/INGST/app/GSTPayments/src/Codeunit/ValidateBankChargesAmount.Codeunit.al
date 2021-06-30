@@ -95,9 +95,17 @@ codeunit 18247 "Validate Bank Charges Amount"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostBankAccOnBeforeBankAccLedgEntryInsert', '', false, false)]
     local procedure IncludeChargeAmount(var BankAccountLedgerEntry: Record "Bank Account Ledger Entry"; var GenJournalLine: Record "Gen. Journal Line")
     var
+        JnlBankCharges: Record "Journal Bank Charges";
         JnlBankChargesSessionMgt: Codeunit "GST Bank Charge Session Mgt.";
         DummySignOfBankAccLedgAmount: Integer;
     begin
+        JnlBankCharges.Reset();
+        JnlBankCharges.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
+        JnlBankCharges.SetRange("Journal Batch Name", GenJournalLine."JOurnal Batch Name");
+        JnlBankCharges.SetRange("Line No.", GenJournalLine."Line No.");
+        if JnlBankCharges.IsEmpty then
+            exit;
+
         BankChargeAmount := JnlBankChargesSessionMgt.GetBankChargeAmount();
         if BankChargeAmount <> 0 then
             UpdateBankChargeAmt(BankAccountLedgerEntry, GenJournalLine, GenJournalLine."Amount (LCY)", DummySignOfBankAccLedgAmount);

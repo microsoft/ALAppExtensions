@@ -3,10 +3,7 @@ codeunit 147108 "CD WMS"
     // // [FEATURE] [Custom Declaration]
 
     Subtype = Test;
-
-    trigger OnRun()
-    begin
-    end;
+    TestPermissions = NonRestrictive;
 
     var
         LibraryCDTracking: Codeunit "Library - CD Tracking";

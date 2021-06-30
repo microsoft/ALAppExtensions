@@ -2,7 +2,7 @@
     "id":  "a8177fd4-0adb-4482-889c-2e123a13b50a",
     "name":  "Retention Policy",
     "publisher":  "Microsoft",
-    "version":  "18.2.0.0",
+    "version":  "18.3.0.0",
     "brief":  "Allows setting up Retention Policies on tables.",
     "description":  "Allows setting up Retention Policies on tables and deletes expired records.",
     "privacyStatement":  "",
@@ -15,43 +15,43 @@
                              "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "94245fbb-b5b1-416e-b8cf-484306646e82",
                              "name":  "Field Selection",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "2edca772-d3b5-4cfc-9ed6-b17ce4bd53c9",
                              "name":  "Object Selection",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "93b83ef6-9666-4c1d-b130-c232f4047621",
                              "name":  "Upgrade Tags",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "2955a828-6c0a-4d51-a1b8-a4cf2a040b9a",
                              "name":  "System Initialization",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "c64d75f0-e9f1-4d0f-9949-cd453b9b1466",
                              "name":  "Guided Experience",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          }
                      ],
     "internalsVisibleTo":  [

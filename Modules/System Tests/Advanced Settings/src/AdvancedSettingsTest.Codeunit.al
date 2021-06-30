@@ -17,9 +17,11 @@ codeunit 132589 "Advanced Settings Test"
     procedure TestAdvancedSettingsShowsUpOnOpenRoleBasedSetupExperience()
     var
         SystemActionTriggers: Codeunit "System Action Triggers";
+        PermissionsMock: Codeunit "Permissions Mock";
         AdvancedSettings: TestPage "Advanced Settings";
     begin
-        Initialize();
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Adv. Settings View');
 
         // [GIVEN] Subscribers are not registered
         // [WHEN] System action OpenGeneralSetupExperience is triggered
@@ -33,24 +35,21 @@ codeunit 132589 "Advanced Settings Test"
     [Test]
     procedure TestAdvancedSettingsNotShownIfHandledOnBeforeOpenRoleBasedSetupExperience()
     var
+        PermissionsMock: Codeunit "Permissions Mock";
         SystemActionTriggers: Codeunit "System Action Triggers";
     begin
-        Initialize();
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Adv. Settings View');
 
         // [GIVEN] Subscribers are registered
-        if BindSubscription(AdvancedSettingsTest) then;
+        BindSubscription(AdvancedSettingsTest);
 
         // [WHEN] System action OpenGeneralSetupExperience is triggered
         SystemActionTriggers.OpenGeneralSetupExperience();
 
         // [THEN] Advanced settings is not opened
-    end;
-
-    local procedure Initialize();
-    begin
         UnbindSubscription(AdvancedSettingsTest);
     end;
-
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Advanced Settings", 'OnBeforeOpenGeneralSetupExperience', '', true, true)]
     [Normal]
@@ -58,6 +57,4 @@ codeunit 132589 "Advanced Settings Test"
     begin
         Handled := true;
     end;
-
-
 }

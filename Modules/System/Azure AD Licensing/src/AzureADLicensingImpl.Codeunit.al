@@ -6,7 +6,6 @@
 codeunit 460 "Azure AD Licensing Impl."
 {
     Access = Internal;
-    Permissions = tabledata "Membership Entitlement" = r;
 
     var
         AzureADGraph: Codeunit "Azure AD Graph";

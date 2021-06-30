@@ -8,9 +8,11 @@
 codeunit 138705 "Retention Policy Log Test"
 {
     Subtype = Test;
+    Permissions = tabledata "Retention Policy Log Entry" = r;
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         RetentionPolicyLogCategory: Enum "Retention Policy Log Category";
         ErrorOccuredDuringApplyErrLbl: Label 'An error occured while applying the retention policy for table %1 %2.\\%3', Comment = '%1 = table number, %2 = table name, %3 = error message';
         TestLogMessageLbl: Label 'TestLog %1 Entry No. %2', Locked = true;
@@ -24,6 +26,7 @@ codeunit 138705 "Retention Policy Log Test"
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         LastRetentionPolicyLogEntryNo: BigInteger;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         //Setup
         if RetentionPolicyLogEntry.FindLast() then;
         LastRetentionPolicyLogEntryNo := RetentionPolicyLogEntry."Entry No.";
@@ -47,6 +50,7 @@ codeunit 138705 "Retention Policy Log Test"
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         LastRetentionPolicyLogEntryNo: BigInteger;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         //Setup
         if RetentionPolicyLogEntry.FindLast() then;
         LastRetentionPolicyLogEntryNo := RetentionPolicyLogEntry."Entry No.";
@@ -70,6 +74,7 @@ codeunit 138705 "Retention Policy Log Test"
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         LastRetentionPolicyLogEntryNo: BigInteger;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         //Setup
         if RetentionPolicyLogEntry.FindLast() then;
         LastRetentionPolicyLogEntryNo := RetentionPolicyLogEntry."Entry No.";
@@ -90,6 +95,7 @@ codeunit 138705 "Retention Policy Log Test"
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         LastRetentionPolicyLogEntryNo: BigInteger;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         //Setup
         if RetentionPolicyLogEntry.FindLast() then;
         LastRetentionPolicyLogEntryNo := RetentionPolicyLogEntry."Entry No.";
@@ -103,7 +109,6 @@ codeunit 138705 "Retention Policy Log Test"
         VerifyLogEntry(LastRetentionPolicyLogEntryNo + 1, RetentionPolicyLogEntry."Message Type"::Error, RetentionPolicyLogCategory::"Retention Policy - Period", StrSubstNo(TestLogMessageLbl, RetentionPolicyLogEntry."Message Type"::Error, LastRetentionPolicyLogEntryNo + 1));
     end;
 
-
     [Test]
     procedure TestLogErrorWithoutDisplay()
     var
@@ -111,6 +116,7 @@ codeunit 138705 "Retention Policy Log Test"
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         LastRetentionPolicyLogEntryNo: BigInteger;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         //Setup
         if RetentionPolicyLogEntry.FindLast() then;
         LastRetentionPolicyLogEntryNo := RetentionPolicyLogEntry."Entry No.";
@@ -131,6 +137,7 @@ codeunit 138705 "Retention Policy Log Test"
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         LastRetentionPolicyLogEntryNo: BigInteger;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         if RetentionPolicyLogEntry.FindLast() then;
         LastRetentionPolicyLogEntryNo := RetentionPolicyLogEntry."Entry No.";
@@ -151,7 +158,6 @@ codeunit 138705 "Retention Policy Log Test"
             StrSubstNo(ErrorOccuredDuringApplyErrLbl, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Name", RetentionPolicySetupRecordNotTempErr));
     end;
 
-
     [Test]
     procedure TestApplyRetentionPolicyRecordMustExist()
     var
@@ -160,6 +166,7 @@ codeunit 138705 "Retention Policy Log Test"
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         LastRetentionPolicyLogEntryNo: BigInteger;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         if RetentionPolicyLogEntry.FindLast() then;
         LastRetentionPolicyLogEntryNo := RetentionPolicyLogEntry."Entry No.";
@@ -179,8 +186,6 @@ codeunit 138705 "Retention Policy Log Test"
         VerifyLogEntry(LastRetentionPolicyLogEntryNo + 1, RetentionPolicyLogEntry."Message Type"::Error, RetentionPolicyLogCategory::"Retention Policy - Apply",
             StrSubstNo(ErrorOccuredDuringApplyErrLbl, TempRetentionPolicySetup."Table Id", TempRetentionPolicySetup."Table Name", StrSubstNo(RecordDoesNotExistErr, TempRetentionPolicySetup.SystemId)));
     end;
-
-
 
     local procedure VerifyLogEntry(EntryNo: BigInteger; MessageType: Enum "Retention Policy Log Message Type"; Category: Enum "Retention Policy Log Category"; Message: Text)
     var

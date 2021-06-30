@@ -12,9 +12,7 @@ codeunit 133100 "Extension Management Test"
     // The two extensions are pre-build outside the testing extension , and it is only the resulting .app files that are moved to a "testArtifacts" folder within this test extension.
     // The tests script will therefore publish the two extensions separately so the tests in this codeunit can execute and complete succesfully.
 
-
     Subtype = Test;
-    TestPermissions = NonRestrictive;
 
     trigger OnRun()
     begin
@@ -23,6 +21,7 @@ codeunit 133100 "Extension Management Test"
     var
         ExtensionManagement: Codeunit "Extension Management";
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         MainAppId: Guid;
         DependingAppId: Guid;
         NotInstalledSuccErr: Label 'Extension was not installed succesfully';
@@ -45,11 +44,10 @@ codeunit 133100 "Extension Management Test"
     var
         NAVAppInstalledApp: Record "NAV App Installed App";
     begin
-
-        IF NAVAppInstalledApp.GET(MainAppId) THEN
-            ExtensionManagement.UninstallExtension(NAVAppInstalledApp."Package ID", FALSE);
-        IF NAVAppInstalledApp.GET(DependingAppId) THEN
-            ExtensionManagement.UninstallExtension(NAVAppInstalledApp."Package ID", FALSE);
+        if NAVAppInstalledApp.Get(MainAppId) then
+            ExtensionManagement.UninstallExtension(NAVAppInstalledApp."Package ID", false);
+        if NAVAppInstalledApp.Get(DependingAppId) then
+            ExtensionManagement.UninstallExtension(NAVAppInstalledApp."Package ID", false);
     end;
 
     [Test]
@@ -59,15 +57,17 @@ codeunit 133100 "Extension Management Test"
         NAVAppInstalledApp: Record "NAV App Installed App";
         MainAppPackageId: Guid;
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         SetNavAppIds();
         InitializeExtensions();
 
         MainAppPackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(MainAppId);
-        ExtensionManagement.InstallExtension(MainAppPackageId, GlobalLanguage(), FALSE);
-        Assert.IsTrue(NAVAppInstalledApp.GET(MainAppId), NotInstalledSuccErr);
+        ExtensionManagement.InstallExtension(MainAppPackageId, GlobalLanguage(), false);
+        Assert.IsTrue(NAVAppInstalledApp.Get(MainAppId), NotInstalledSuccErr);
 
-        ExtensionManagement.UninstallExtension(MainAppPackageId, FALSE);
-        Assert.IsFalse(NAVAppInstalledApp.GET(MainAppId), NotUninstalledSuccErr);
+        ExtensionManagement.UninstallExtension(MainAppPackageId, false);
+        Assert.IsFalse(NAVAppInstalledApp.Get(MainAppId), NotUninstalledSuccErr);
     end;
 
     [Test]
@@ -77,13 +77,15 @@ codeunit 133100 "Extension Management Test"
         NAVAppInstalledApp: Record "NAV App Installed App";
         MainPackageId: Guid;
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         SetNavAppIds();
         InitializeExtensions();
 
         MainPackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(MainAppId);
 
-        ExtensionManagement.InstallExtension(MainPackageId, GlobalLanguage(), FALSE);
-        Assert.IsTrue(NAVAppInstalledApp.GET(MainAppId), MainExtNotInstalledSuccErr);
+        ExtensionManagement.InstallExtension(MainPackageId, GlobalLanguage(), false);
+        Assert.IsTrue(NAVAppInstalledApp.Get(MainAppId), MainExtNotInstalledSuccErr);
     end;
 
     [Test]
@@ -94,17 +96,19 @@ codeunit 133100 "Extension Management Test"
         MainAppPackageId: Guid;
         DependingAppPackageId: Guid;
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         SetNavAppIds();
         InitializeExtensions();
 
         MainAppPackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(MainAppId);
         DependingAppPackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(DependingAppId);
 
-        ExtensionManagement.InstallExtension(MainAppPackageId, GlobalLanguage(), FALSE);
-        ExtensionManagement.InstallExtension(DependingAppPackageId, GlobalLanguage(), FALSE);
-        ExtensionManagement.UninstallExtension(MainAppPackageId, FALSE);
+        ExtensionManagement.InstallExtension(MainAppPackageId, GlobalLanguage(), false);
+        ExtensionManagement.InstallExtension(DependingAppPackageId, GlobalLanguage(), false);
+        ExtensionManagement.UninstallExtension(MainAppPackageId, false);
 
-        Assert.IsFalse(NAVAppInstalledApp.GET(DependingAppId), DependingExtNotInstalledSuccErr);
+        Assert.IsFalse(NAVAppInstalledApp.Get(DependingAppId), DependingExtNotInstalledSuccErr);
     end;
 
     [Test]
@@ -113,15 +117,17 @@ codeunit 133100 "Extension Management Test"
     var
         MainAppPackageId: Guid;
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         SetNavAppIds();
         InitializeExtensions();
 
         MainAppPackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(MainAppId);
 
-        ExtensionManagement.InstallExtension(MainAppPackageId, GlobalLanguage(), FALSE);
+        ExtensionManagement.InstallExtension(MainAppPackageId, GlobalLanguage(), false);
         Assert.IsTrue(ExtensionManagement.IsInstalledByPackageId(MainAppPackageId), ExtensionNotInstalledErr);
 
-        ExtensionManagement.UninstallExtension(MainAppPackageId, FALSE);
+        ExtensionManagement.UninstallExtension(MainAppPackageId, false);
 
         Assert.IsFalse(ExtensionManagement.IsInstalledByPackageId(MainAppPackageId), ExtensionInstalleddErr);
     end;
@@ -132,15 +138,17 @@ codeunit 133100 "Extension Management Test"
     var
         MainAppPackageId: Guid;
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         SetNavAppIds();
         InitializeExtensions();
 
         MainAppPackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(MainAppId);
 
-        ExtensionManagement.InstallExtension(MainAppPackageId, GlobalLanguage(), FALSE);
+        ExtensionManagement.InstallExtension(MainAppPackageId, GlobalLanguage(), false);
         Assert.IsTrue(ExtensionManagement.IsInstalledByAppId(MainAppId), ExtensionNotInstalledErr);
 
-        ExtensionManagement.UninstallExtension(MainAppPackageId, FALSE);
+        ExtensionManagement.UninstallExtension(MainAppPackageId, false);
 
         Assert.IsFalse(ExtensionManagement.IsInstalledByAppId(MainAppId), ExtensionInstalleddErr);
     end;
@@ -152,6 +160,8 @@ codeunit 133100 "Extension Management Test"
         PublishedApplication: Record "Published Application";
         PackageId: Guid;
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         SetNavAppIds();
 
         PackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(MainAppId);
@@ -169,14 +179,16 @@ codeunit 133100 "Extension Management Test"
         PublishedApplication: Record "Published Application";
         PackageId: Guid;
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         SetNavAppIds();
         InitializeExtensions();
 
         PackageId := ExtensionManagement.GetCurrentlyInstalledVersionPackageIdByAppId(MainAppId);
-        Assert.IsTrue(ISNULLGUID(PackageId), NullPackageIdErr);
+        Assert.IsTrue(IsNullGuid(PackageId), NullPackageIdErr);
 
         PackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(MainAppId);
-        ExtensionManagement.InstallExtension(PackageId, GlobalLanguage(), FALSE);
+        ExtensionManagement.InstallExtension(PackageId, GlobalLanguage(), false);
         PackageId := ExtensionManagement.GetCurrentlyInstalledVersionPackageIdByAppId(MainAppId);
         PublishedApplication.SetRange("Package ID", PackageId);
         PublishedApplication.SetRange("Tenant Visible", true);
@@ -193,6 +205,8 @@ codeunit 133100 "Extension Management Test"
         PackageId: Guid;
         NullGuid: Guid;
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         SetNavAppIds();
 
         PackageId := ExtensionManagement.GetSpecificVersionPackageIdByAppId(NullGuid, '', 0, 0, 0, 0);

@@ -7,7 +7,8 @@ codeunit 135150 "Data Classification Mgt. Tests"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;
-    TestPermissions = Disabled;
+    Permissions = tabledata "Data Sensitivity" = md,
+                  tabledata "Fields Sync Status" = ri;
 
     trigger OnRun()
     begin
@@ -17,6 +18,7 @@ codeunit 135150 "Data Classification Mgt. Tests"
     var
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
         LibraryAssert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
 
     [Test]
     [Scope('OnPrem')]
@@ -30,6 +32,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
         FieldCount: Integer;
     begin
         // [SCENARIO] The data sensitivity table can be populated as unclassified for all the data sensitive fields
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         // [GIVEN] The data sensitivity table is empty
         DataSensitivity.DeleteAll();
@@ -72,6 +77,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
     begin
         // [SCENARIO] Inserting an entry in the Data Sensitivity table
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
+
         // [GIVEN] The data sensitivity table is empty
         DataSensitivity.DeleteAll();
 
@@ -84,7 +92,7 @@ codeunit 135150 "Data Classification Mgt. Tests"
         DataClassificationMgt.InsertDataSensitivityForField(TableNo, FieldNo, DataSensitivityOption);
 
         // [THEN] The Data Sensitivity table has exactly one entry
-        LibraryAssert.AreEqual(1, DataSensitivity.Count(), 'The Data Sensitivity table should contain exactly one entry');
+        LibraryAssert.RecordCount(DataSensitivity, 1);
 
         // [THEN] The Data Sensitivity entry should have the properties set above
         // and the Company Name should be set to the current company name
@@ -110,6 +118,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
     begin
         // [SCENARIO] The Data Sensitivity and Data Privacy Entities are synched by setting the default data sensitivity
         // for the entries in the Data Privacy Entities
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         DataPrivacyEntities.DeleteAll();
         DataSensitivity.DeleteAll();
@@ -147,6 +158,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
     begin
         // [SCENARIO] Setting the sensitivity for all the entries in a Data Sensitivity record
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
+
         // [GIVEN] The Data Sensitivity table contains two entries with different data sensitivities
         DataSensitivity.DeleteAll();
         DataClassificationMgt.InsertDataSensitivityForField(
@@ -158,10 +172,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
         DataClassificationMgt.SetSensitivities(DataSensitivity, DataSensitivity."Data Sensitivity"::Normal);
 
         // [THEN] There should be two entries in the Data Sensitivity table and they should both have normal sensitivity
-        LibraryAssert.AreEqual(2, DataSensitivity.Count(), 'There should be 2 entries in the Data Sensitivity table');
+        LibraryAssert.RecordCount(DataSensitivity, 2);
         DataSensitivity.SetRange("Data Sensitivity", DataSensitivity."Data Sensitivity"::Normal);
-        LibraryAssert.AreEqual(2, DataSensitivity.Count(),
-          'Both entries in the Data Sensitiviy table should have Normal sensitivity');
+        LibraryAssert.RecordCount(DataSensitivity, 2);
     end;
 
     [Test]
@@ -179,7 +192,10 @@ codeunit 135150 "Data Classification Mgt. Tests"
         // [GIVEN] Some records in the Web Service table
         WebService.Init();
         WebService."Service Name" := 'Name';
-        WebService.Insert();
+        WebService.Insert();        
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         // [WHEN] Populating the field values for the Service Name field in Web Service table
         RecordRef.GetTable(WebService);
@@ -199,6 +215,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
         AreAllFieldsClassified: Boolean;
     begin
         // [SCENARIO] The system can be queried in regards to whether or not all the fields are classified
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         // [GIVEN] A single entry in the Data Sensitivity table that is unclassified
         DataSensitivity.DeleteAll();
@@ -243,6 +262,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
         NewFieldNo: Integer;
     begin
         // [SCENARIO] A field's data sensitivity can be set to Personal
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         // [GIVEN] The Data Sensitivity table contains two entries - one of them Normal, the other one Company Confidential
         DataSensitivity.DeleteAll();
@@ -306,6 +328,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
     begin
         // [SCENARIO] A field's data sensitivity can be set to Sensitive
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
+
         // [GIVEN] The Data Sensitivity table contains two entries - one of them Normal, the other one Company Confidential
         DataSensitivity.DeleteAll();
 
@@ -367,6 +392,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
         NewFieldNo: Integer;
     begin
         // [SCENARIO] A field's data sensitivity can be set to Company Condidential
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         // [GIVEN] The Data Sensitivity table contains two entries - one of them Normal, the other one Sensitive
         DataSensitivity.DeleteAll();
@@ -430,6 +458,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
     begin
         // [SCENARIO] A field's data sensitivity can be set to Company Condidential
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
+
         // [GIVEN] The Data Sensitivity table contains two entries - one of them Personal, the other one Sensitive
         DataSensitivity.DeleteAll();
 
@@ -491,6 +522,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
     begin
         // [SCENARIO] Setting the data sensitivity for all the fields of a table to normal
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
+
         // [GIVEN] The Data Sensitivity table is empty
         DataSensitivity.DeleteAll();
 
@@ -510,7 +544,7 @@ codeunit 135150 "Data Classification Mgt. Tests"
         DataSensitivity.SetRange("Data Sensitivity", DataSensitivity."Data Sensitivity"::Normal);
         DataSensitivity.SetFilter("Table No", Format(TableNo));
 
-        LibraryAssert.AreEqual(NumberOfSensitivieFields, DataSensitivity.Count(), 'The number of Normal fields is incorrect');
+        LibraryAssert.RecordCount(DataSensitivity, NumberOfSensitivieFields);
 
         // [GIVEN] One of the Data Sensitivity entries for this table is modified to no longer be normal
         if DataSensitivity.FindFirst() then;
@@ -524,7 +558,7 @@ codeunit 135150 "Data Classification Mgt. Tests"
         DataSensitivity.SetRange("Data Sensitivity", DataSensitivity."Data Sensitivity"::Normal);
         DataSensitivity.SetFilter("Table No", Format(TableNo));
 
-        LibraryAssert.AreEqual(DataSensitivity.Count(), NumberOfSensitivieFields, 'The number of Normal fields is incorrect');
+        LibraryAssert.RecordCount(DataSensitivity, NumberOfSensitivieFields);
     end;
 
     [Test]
@@ -534,6 +568,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
         DataSensitivity: Record "Data Sensitivity";
     begin
         // [SCENARIO] The system can be queried about whether or not the Data Sensitivity table is empty
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         // [GIVEN] The Data Sensitivity table is empty
         DataSensitivity.DeleteAll();
@@ -562,8 +599,10 @@ codeunit 135150 "Data Classification Mgt. Tests"
         DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
         FieldCount: Integer;
     begin
-        // [SCENARIO] Synchronizing the Field and Data Sensitivity table when the Data Sensitivity table
-        // is empty
+        // [SCENARIO] Synchronizing the Field and Data Sensitivity table when the Data Sensitivity table is empty
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         // [GIVEN] The Data Sensitivity table is empty
         DataSensitivity.DeleteAll();
@@ -576,11 +615,11 @@ codeunit 135150 "Data Classification Mgt. Tests"
         DataClassificationMgt.SyncAllFields();
 
         // [THEN] The number of fields in the Data Sensitivity table should be the same as FieldCount
-        LibraryAssert.AreEqual(FieldCount, DataSensitivity.Count(), 'The tables have not been synchronized correctly');
+        LibraryAssert.RecordCount(DataSensitivity, FieldCount);
 
         // [THEN] All the entries in the Data Sensitivity table should be unclassified
         DataSensitivity.SetRange("Data Sensitivity", DataSensitivity."Data Sensitivity"::Unclassified);
-        LibraryAssert.AreEqual(FieldCount, DataSensitivity.Count(), 'Not all the fields are unclassified');
+        LibraryAssert.RecordCount(DataSensitivity, FieldCount);
 
         // [THEN] The Fields Sync Status table is not empty
         LibraryAssert.AreNotEqual(0, FieldsSyncStatus.Count(), 'The Fields Sync Status table cannot be empty');
@@ -599,8 +638,10 @@ codeunit 135150 "Data Classification Mgt. Tests"
         SensitiveFieldNo: Integer;
         UnclassifiedFieldNo: Integer;
     begin
-        // [SCENARIO] Synchronizing the Field and Data Sensitivity table when the Data Sensitivity table
-        // is not empty
+        // [SCENARIO] Synchronizing the Field and Data Sensitivity table when the Data Sensitivity table is not empty
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         // [GIVEN] The Data Sensitivity table is not empty - it contains a classified and an unclassifed entry
         DataSensitivity.DeleteAll();
@@ -620,23 +661,21 @@ codeunit 135150 "Data Classification Mgt. Tests"
         DataClassificationMgt.SyncAllFields();
 
         // [THEN] The number of fields in the Data Sensitivity table should be the FieldCount + 1
-        LibraryAssert.AreEqual(FieldCount + 1, DataSensitivity.Count(), 'The tables have not been synchronized correctly');
+        LibraryAssert.RecordCount(DataSensitivity, FieldCount + 1);
 
         // [THEN] FieldCount entries in the Data Sensitivity table should be unclassified
         DataSensitivity.SetRange("Data Sensitivity", DataSensitivity."Data Sensitivity"::Unclassified);
-        LibraryAssert.AreEqual(FieldCount, DataSensitivity.Count(), 'Not all the fields are unclassified');
+        LibraryAssert.RecordCount(DataSensitivity, FieldCount);
 
         // [THEN] The Data Sensitivity should still contain the initial sensitive field
         DataSensitivity.Reset();
         DataSensitivity.SetRange("Table No", TableNo);
         DataSensitivity.SetRange("Field No", SensitiveFieldNo);
-        LibraryAssert.AreEqual(1, DataSensitivity.Count(),
-          'The Data Sensitivity table should still contain the initial sensitive field');
+        LibraryAssert.RecordCount(DataSensitivity, 1);
 
         // [THEN] The Data Sensitivity should not contain the initial unclassified field anymore
         DataSensitivity.SetRange("Field No", UnclassifiedFieldNo);
-        LibraryAssert.AreEqual(0, DataSensitivity.Count(),
-          'The Data Sensitivity table should not contain the initial unclassified field anymore');
+        LibraryAssert.RecordIsEmpty(DataSensitivity);
 
         // [THEN] The Fields Sync Status table is not empty
         LibraryAssert.AreNotEqual(0, FieldsSyncStatus.Count(), 'The Fields Sync Status table cannot be empty');
@@ -649,6 +688,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
         DataSensitivityOptionString: Text;
     begin
         // [SCENARIO] The options that Data Sensitivity can take are retrieved correctly
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         // [WHEN] Calling GetDataSensitivityOptionString
         DataSensitivityOptionString := DataClassificationMgt.GetDataSensitivityOptionString();
@@ -667,6 +709,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
     begin
         // [SCENARIO] Having an event subscriber that introduces a data privacy entity causes the 
         // DataPrivacyEntitiesExist function to return true
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         BindSubscription(DataClassificationMgtTests);
 
@@ -695,6 +740,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
     begin
         // [SCENARIO] A "standard" Data Privacy Entities entry can be inserted in a record
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
+
         // [GIVEN] The Data Privacy Entities table is empty
         DataPrivacyEntities.DeleteAll();
 
@@ -708,8 +756,7 @@ codeunit 135150 "Data Classification Mgt. Tests"
           EntityFilter, PrivacyBlockedFieldNo);
 
         // [THEN] The DataPrivacyEntities record contains exactly one entry
-        LibraryAssert.AreEqual(1, DataPrivacyEntities.Count(),
-          'The Data Privacy Entities record should contain exactly one entry');
+        LibraryAssert.RecordCount(DataPrivacyEntities, 1);
 
         // [THEN] The fields of the Data Privacy Entities entry should be set correctly
         if DataPrivacyEntities.FindFirst() then;
@@ -735,6 +782,9 @@ codeunit 135150 "Data Classification Mgt. Tests"
         // [GIVEN] The Fields Sync Status table is empty
         FieldsSyncStatus.DeleteAll();
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
+
         // [WHEN] Getting the last sync status date
         LastSyncStatusDate := DataClassificationMgt.GetLastSyncStatusDate();
 
@@ -759,31 +809,37 @@ codeunit 135150 "Data Classification Mgt. Tests"
     begin
         // [SCENARIO] The call to RaiseOnGetDataPrivacyEntities results in an error when the parameter is not a temporary record
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
+
         // [WHEN] Calling RaiseOnGetDataPrivacyEntities with a non-temporary record
         // [THEN] An error is thrown
         asserterror DataClassificationMgt.RaiseOnGetDataPrivacyEntities(DataPrivacyEntities);
+        LibraryAssert.ExpectedError('Please call this function with a temporary record.');
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure TestRaiseOnGetDataPrivacyEntitiesWithTempRecord()
     var
-        DataPrivacyEntities: Record "Data Privacy Entities" temporary;
+        TempDataPrivacyEntities: Record "Data Privacy Entities" temporary;
         DataClassificationMgtTests: Codeunit "Data Classification Mgt. Tests";
     begin
         // [SCENARIO] When calling RaiseOnGetDataPrivacyEntities, the OnGetDataPrivacyEntitiesSubscriber will 
         // successfully insert a Data Privacy Entities entry in the parameter record
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Data Class Edit');
 
         BindSubscription(DataClassificationMgtTests);
 
         // [GIVEN] The OnGetDataPrivacyEntitiesSubscriber inserts an entry in the Data Privacy Entities record
 
         // [WHEN] Calling RaiseOnGetDataPrivacyEntities
-        DataClassificationMgt.RaiseOnGetDataPrivacyEntities(DataPrivacyEntities);
+        DataClassificationMgt.RaiseOnGetDataPrivacyEntities(TempDataPrivacyEntities);
 
         // [THEN] The DataPrivacyEntities record contains exactly one entry
-        LibraryAssert.AreEqual(1, DataPrivacyEntities.Count(),
-          'The DataPrivacyEntities record should contain exactly one entry');
+        LibraryAssert.RecordCount(TempDataPrivacyEntities, 1);
 
         UnbindSubscription(DataClassificationMgtTests);
     end;

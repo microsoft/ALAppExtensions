@@ -322,7 +322,6 @@ codeunit 4513 "SMTP Connector Impl."
     var
         SMTPAccounts: Record "SMTP Account";
     begin
-        SMTPAccounts.ChangeCompany(CompanyName);
         SMTPAccounts.ModifyAll(Server, '');
     end;
 

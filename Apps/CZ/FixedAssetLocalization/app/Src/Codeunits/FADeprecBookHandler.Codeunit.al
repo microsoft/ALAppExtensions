@@ -139,10 +139,15 @@ codeunit 31239 "FA Deprec. Book Handler CZF"
 
     [EventSubscriber(ObjectType::Page, Page::"Fixed Asset Card", 'OnAfterLoadDepreciationBooks', '', false, false)]
     local procedure ShowDeprBooksOnAfterLoadDepreciationBooks(var Simple: Boolean)
-    var
-        ExtensionManagement: Codeunit "Extension Management";
     begin
-        if not ExtensionManagement.IsInstalledByAppId('c81764a5-be79-4d50-ba3e-4ade02073780') then // only if test application "Tests-Fixed Asset" is not installed
+        if not IsInstalledByAppId('c81764a5-be79-4d50-ba3e-4ade02073780') then // only if test application "Tests-Fixed Asset" is not installed
             Simple := false;
+    end;
+
+    local procedure IsInstalledByAppId(AppID: Guid): Boolean
+    var
+        NAVAppInstalledApp: Record "NAV App Installed App";
+    begin
+        exit(NAVAppInstalledApp.Get(AppID));
     end;
 }

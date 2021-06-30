@@ -1,0 +1,32 @@
+{
+    "id":  "33003b8a-f6d8-4efe-af22-1a8cb8fbacbe",
+    "name":  "Retention Policy Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Library with Test tables for the Retention Policy module",
+    "description":  "Library with Test tables for the Retention Policy module",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "a8177fd4-0adb-4482-889c-2e123a13b50a",
+                            "name":  "Retention Policy",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "18.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  138700,
+                         "to":  138704
+                     }
+                 ],
+    "target":  "OnPrem"
+}

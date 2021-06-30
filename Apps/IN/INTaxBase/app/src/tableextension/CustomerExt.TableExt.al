@@ -29,5 +29,9 @@ tableextension 18544 "CustomerExt" extends Customer
             TableRelation = "State";
             DataClassification = EndUserIdentifiableInformation;
         }
+        field(18548; "Aggregate Turnover"; Enum "Cust Aggregate Turnover")
+        {
+            DataClassification = CustomerContent;
+        }
     }
 }

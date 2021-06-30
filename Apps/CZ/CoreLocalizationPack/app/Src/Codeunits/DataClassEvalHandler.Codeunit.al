@@ -115,7 +115,13 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         if not Company."Evaluation Company" then
             exit;
 
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Extension CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule File Mapping CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Col. CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Hdr. CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Hist. CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Line CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Value CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Certificate Code CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Commodity CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Commodity Setup CZL");
@@ -192,6 +198,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Line", AccScheduleLine.FieldNo("Calc CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Line", AccScheduleLine.FieldNo("Row Correction CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Line", AccScheduleLine.FieldNo("Assets/Liabilities Type CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Line", AccScheduleLine.FieldNo("Source Table CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Name", AccScheduleName.FieldNo("Acc. Schedule Type CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Bank Account", BankAccount.FieldNo("Excl. from Exch. Rate Adj. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Company Information", CompanyInformation.FieldNo("Default Bank Account Code CZL"));
@@ -222,6 +229,8 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Rounding Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Closed Per. Entry Pos.Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("User Checks Allowed CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Shared Account Schedule CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Acc. Schedule Results Nos. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"General Posting Setup", GeneralPostingSetup.FieldNo("Invt. Rounding Adj. Acc. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("VAT Delay CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("VAT Currency Factor CZL"));

@@ -9,6 +9,7 @@ codeunit 138700 "Retention Period Test"
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
 
     trigger OnRun()
     begin
@@ -24,6 +25,7 @@ codeunit 138700 "Retention Period Test"
         ExpirationDateTime: DateTime;
         CurrDateTime: DateTime;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"1 Week";
         RetentionPeriodInterface := RetentionPeriod."Retention Period";
@@ -47,6 +49,7 @@ codeunit 138700 "Retention Period Test"
         ExpirationDateTime: DateTime;
         CurrDateTime: DateTime;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"1 Month";
         RetentionPeriodInterface := RetentionPeriod."Retention Period";
@@ -70,6 +73,7 @@ codeunit 138700 "Retention Period Test"
         ExpirationDateTime: DateTime;
         CurrDateTime: DateTime;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"3 Months";
         RetentionPeriodInterface := RetentionPeriod."Retention Period";
@@ -93,6 +97,7 @@ codeunit 138700 "Retention Period Test"
         ExpirationDateTime: DateTime;
         CurrDateTime: DateTime;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"6 Months";
         RetentionPeriodInterface := RetentionPeriod."Retention Period";
@@ -116,6 +121,7 @@ codeunit 138700 "Retention Period Test"
         ExpirationDateTime: DateTime;
         CurrDateTime: DateTime;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"1 Year";
         RetentionPeriodInterface := RetentionPeriod."Retention Period";
@@ -139,6 +145,7 @@ codeunit 138700 "Retention Period Test"
         ExpirationDateTime: DateTime;
         CurrDateTime: DateTime;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"5 Years";
         RetentionPeriodInterface := RetentionPeriod."Retention Period";
@@ -162,6 +169,7 @@ codeunit 138700 "Retention Period Test"
         ExpirationDateTime: DateTime;
         CurrDateTime: DateTime;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"Never Delete";
         RetentionPeriodInterface := RetentionPeriod."Retention Period";
@@ -185,6 +193,7 @@ codeunit 138700 "Retention Period Test"
         ExpirationDateTime: DateTime;
         CurrDateTime: DateTime;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::Custom;
         Evaluate(RetentionPeriod."Ret. Period Calculation", '<+CM-2M>');
@@ -206,6 +215,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPeriodInterface: Interface "Retention Period";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         GlobalLanguage(1030);
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"1 Week";
@@ -226,6 +236,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPeriodInterface: Interface "Retention Period";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         GlobalLanguage(1030);
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"1 Month";
@@ -237,7 +248,6 @@ codeunit 138700 "Retention Period Test"
         Assert.AreEqual('<-1M>', RetentionPeriodInterface.RetentionPeriodDateFormula(RetentionPeriod, false), 'Incorrect DateFormula for Retention Period ''1 Month''');
         Assert.AreEqual('-1M', RetentionPeriodInterface.RetentionPeriodDateFormula(RetentionPeriod, true), 'Incorrect DateFormula for Retention Period ''1 Month''');
 
-
         GlobalLanguage(1033);
     end;
 
@@ -247,6 +257,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPeriodInterface: Interface "Retention Period";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         GlobalLanguage(1030);
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"3 Months";
@@ -267,6 +278,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPeriodInterface: Interface "Retention Period";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         GlobalLanguage(1030);
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"6 Months";
@@ -287,6 +299,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPeriodInterface: Interface "Retention Period";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         GlobalLanguage(1030);
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"1 Year";
@@ -307,6 +320,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPeriodInterface: Interface "Retention Period";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         GlobalLanguage(1030);
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"5 Years";
@@ -329,6 +343,7 @@ codeunit 138700 "Retention Period Test"
         UnltdRetenPolCalcFormTxt: Label '<+CY+%1Y>', Locked = true;
         UnltdRetenPolCalcFormDKTxt: Label '+LÅ+%1Å', Locked = true;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         GlobalLanguage(1030);
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"Never Delete";
@@ -349,6 +364,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPeriodInterface: Interface "Retention Period";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         GlobalLanguage(1030);
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::Custom;
@@ -371,6 +387,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriodInterface: Interface "Retention Period";
         DateFormulaText: Text;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup - initialize with one implementation
         RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"Never Delete";
         RetentionPeriodInterface := RetentionPeriod."Retention Period";
@@ -390,6 +407,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPeriods: TestPage "Retention Periods";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         RetentionPeriod.Code := Format(RetentionPeriod."Retention Period"::"1 Month");
@@ -413,6 +431,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPeriods: TestPage "Retention Periods";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         RetentionPeriod.Code := Format(RetentionPeriod."Retention Period"::"1 Month");
@@ -438,6 +457,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPeriods: TestPage "Retention Periods";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         RetentionPeriod.Code := Format(RetentionPeriod."Retention Period"::"1 Month");
@@ -464,6 +484,7 @@ codeunit 138700 "Retention Period Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPeriods: TestPage "Retention Periods";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         RetentionPeriod.Code := Format(RetentionPeriod."Retention Period"::"1 Month");

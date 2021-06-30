@@ -11,6 +11,7 @@ codeunit 134695 "Email Scenario Page Test"
         Assert: Codeunit "Library Assert";
         ConnectorMock: Codeunit "Connector Mock";
         EmailScenarioMock: Codeunit "Email Scenario Mock";
+        PermissionsMock: Codeunit "Permissions Mock";
         DisplayNameTxt: Label '%1 (%2)', Locked = true;
 
 
@@ -22,6 +23,7 @@ codeunit 134695 "Email Scenario Page Test"
         EmailScenarioPage: TestPage "Email Scenario Setup";
     begin
         // [Scenario] The "Email Scenario Setup" shows no data when there are no email accounts
+        PermissionsMock.Set('Email Admin');
 
         // [Given] No email account is registered.
         ConnectorMock.Initialize();
@@ -43,6 +45,7 @@ codeunit 134695 "Email Scenario Page Test"
         EmailScenarioPage: TestPage "Email Scenario Setup";
     begin
         // [Scenario] The "Email Scenario Setup" shows one entry when there is only one email account and no scenarios
+        PermissionsMock.Set('Email Admin');
 
         // [Given] One email account is registered.
         ConnectorMock.Initialize();
@@ -75,6 +78,7 @@ codeunit 134695 "Email Scenario Page Test"
         EmailScenarioPage: TestPage "Email Scenario Setup";
     begin
         // [Scenario] The "Email Scenario Setup" shows one entry when there is only one email account and no scenarios
+        PermissionsMock.Set('Email Admin');
 
         // [Given] One email account is registered and it's set as default.
         ConnectorMock.Initialize();
@@ -112,6 +116,7 @@ codeunit 134695 "Email Scenario Page Test"
         EmailScenarioPage: TestPage "Email Scenario Setup";
     begin
         // [Scenario] Having one default account with a non-default scenario assigned displays propely on "Email Scenario Setup"
+        PermissionsMock.Set('Email Admin');
 
         // [Given] One email account is registered and it's set as default.
         ConnectorMock.Initialize();
@@ -159,7 +164,8 @@ codeunit 134695 "Email Scenario Page Test"
         EmailScenarioPage: TestPage "Email Scenario Setup";
     begin
         // [Scenario] The "Email Scenario Setup" shows three entries when there are two accounts - one with the default scenario and one with a non-default scenario
-
+        PermissionsMock.Set('Email Admin');
+    
         // [Given] Two email accounts are registered. One is set as default.
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(FirstEmailAccount);

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 permissionset 66 "System Tables - Basic"
 {
     Access = Internal;
@@ -5,6 +10,7 @@ permissionset 66 "System Tables - Basic"
     Caption = 'Basic User (All Inclusive)';
 
     IncludedPermissionSets = "Company - Read",
+                             "Device - Read",
                              "Media - View",
                              "Metadata - Read",
                              "Permissions & Licenses - Read",
@@ -22,7 +28,6 @@ permissionset 66 "System Tables - Basic"
                   tabledata Chart = R,
                   tabledata "Code Coverage" = Rimd,
                   tabledata "Configuration Package File" = RIMD,
-                  tabledata Device = Rimd,
                   tabledata "Document Service" = R,
                   tabledata Drive = Rimd,
                   tabledata "Event Subscription" = Rimd,

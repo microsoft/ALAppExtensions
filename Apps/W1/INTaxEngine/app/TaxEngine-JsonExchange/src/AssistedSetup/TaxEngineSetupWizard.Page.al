@@ -132,6 +132,23 @@ page 20364 "Tax Engine Setup Wizard"
                     NextStep(false);
                 end;
             }
+            action(ExportModified)
+            {
+                ApplicationArea = Invoicing, Basic, Suite;
+                Caption = 'Export Modified Use Cases';
+                Enabled = FinishActionEnabled;
+                Image = ExportFile;
+                InFooterBar = true;
+
+                trigger OnAction()
+                var
+                    i: Integer;
+                begin
+                    i := 0;
+                    //blank OnAction created as we have a subscriber of this action in Use Case Archival mgmt codeunit 
+                    //and ruleset doesn't allow  to create a action without the OnAction trigger
+                end;
+            }
             action(ActionFinish)
             {
                 ApplicationArea = Invoicing, Basic, Suite;
@@ -141,8 +158,12 @@ page 20364 "Tax Engine Setup Wizard"
                 InFooterBar = true;
 
                 trigger OnAction()
+                var
+                    TaxJsonSingleInstance: Codeunit "Tax Json Single Instance";
                 begin
+                    TaxJsonSingleInstance.ClearValues();
                     FinishAction();
+                    TaxJsonSingleInstance.OpenReplcedTaxUseCases();
                 end;
             }
         }

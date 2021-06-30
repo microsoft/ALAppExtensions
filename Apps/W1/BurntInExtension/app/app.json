@@ -1,0 +1,19 @@
+{
+    "id":  "e1bc644c-1e88-4055-8650-86af327fc8b7",
+    "name":  "_Exclude_BurntInExtension",
+    "publisher":  "Microsoft",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "help":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "ExtensionLogo.png",
+    "dependencies":  [
+
+                     ],
+    "platform":  "18.0.0.0",
+    "target":  "OnPrem",
+    "showMyCode":  true,
+    "application":  "18.3.0.0"
+}

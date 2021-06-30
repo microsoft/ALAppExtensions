@@ -7,6 +7,8 @@ codeunit 18009 "Cess Use Case Setup"
         CessUseCaseData: Codeunit "Cess Use Case Data";
     begin
         TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.SkipUseCaseIndentation(true);
         TaxJsonDeserialization.ImportUseCases(CessUseCaseData.GetText());
     end;
 }

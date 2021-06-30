@@ -205,39 +205,35 @@ codeunit 1993 "Checklist Implementation"
 
         ChangeBannerVisibilityNotification.Message(ChangeBannerVisibilityLbl);
         ChangeBannerVisibilityNotification.Scope := NotificationScope::LocalScope;
-        ChangeBannerVisibilityNotification.SetData('UserName', UserId());
         ChangeBannerVisibilityNotification.AddAction(ShowChecklistLbl, Codeunit::"Checklist Implementation", 'SetChecklistVisibility');
         ChangeBannerVisibilityNotification.Send();
     end;
 
     procedure SetChecklistVisibility(ChangeVisibilityNotification: Notification)
-    var
-        UserPersonalization: Record "User Personalization";
-        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
-        Dimensions: Dictionary of [Text, Text];
-        UserName: Text;
-        SessionSettings: SessionSettings;
     begin
-        UserName := ChangeVisibilityNotification.GetData('UserName');
-        SetChecklistVisibility(UserName, true, UserPersonalization);
-
-        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
-        GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
-        Session.LogMessage('0000EIS', UserResurfacedBannerLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
-
-        SessionSettings.RequestSessionUpdate(false);
+        SetChecklistVisibility(UserId(), true);
     end;
 
     procedure SetChecklistVisibility(UserName: Text; Visible: Boolean)
     var
         UserPersonalization: Record "User Personalization";
+        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
+        Dimensions: Dictionary of [Text, Text];
+        SessionSettings: SessionSettings;
     begin
-        if UserPersonalization.Get(UserSecurityId()) then;
+        if SetChecklistVisibility(UserName, Visible, UserPersonalization) then begin
+            if UserPersonalization."Profile ID" = '' then
+                if UserPersonalization.Get(UserSecurityId()) then;
 
-        SetChecklistVisibility(UserName, Visible, UserPersonalization);
+            GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
+            GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
+            Session.LogMessage('0000EIS', UserResurfacedBannerLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+
+            SessionSettings.RequestSessionUpdate(false);
+        end;
     end;
 
-    local procedure SetChecklistVisibility(UserName: Text; Visible: Boolean; var UserPersonalization: Record "User Personalization")
+    local procedure SetChecklistVisibility(UserName: Text; Visible: Boolean; var UserPersonalization: Record "User Personalization"): Boolean
     var
         UserChecklistStatus: Record "User Checklist Status";
         UserNameCode: Code[50];
@@ -245,16 +241,26 @@ codeunit 1993 "Checklist Implementation"
         UserNameCode := CopyStr(UserName, 1, 50);
 
         if GetUserChecklistStatusForCurrentRole(UserChecklistStatus) then begin
+            if UserChecklistStatus."Is Visible" = Visible then
+                exit(false);
+
             UserChecklistStatus."Is Visible" := Visible;
 
             if UserChecklistStatus."Checklist Status" = UserChecklistStatus."Checklist Status"::Skipped then
                 UserChecklistStatus."Checklist Status" := UserChecklistStatus."Checklist Status"::"In progress";
 
             UserChecklistStatus.Modify();
+
+            exit(true);
         end else
-            if UserPersonalization.Get(UserSecurityId()) then
+            if UserPersonalization.Get(UserSecurityId()) then begin
                 CreateNewUserChecklistStatus(UserChecklistStatus, UserNameCode, UserPersonalization."Profile ID",
                     UserChecklistStatus."Checklist Status"::"Not Started", Visible);
+
+                exit(true);
+            end;
+
+        exit(false);
     end;
 
     procedure UpdateUserName(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50]; TableID: Integer)

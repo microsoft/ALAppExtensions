@@ -7,6 +7,8 @@ codeunit 18901 "TCS Receipt Tax Engine Setup"
         TaxJsonDeserialization: Codeunit "Tax Json Deserialization";
     begin
         TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.SkipUseCaseIndentation(true);
         TaxJsonDeserialization.ImportUseCases(TCSOnReceiptUseCases.GetText());
     end;
 }

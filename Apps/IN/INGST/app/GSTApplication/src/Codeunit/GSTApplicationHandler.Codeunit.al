@@ -392,9 +392,6 @@ codeunit 18430 "GST Application Handler"
 
                     DetailedGSTLedgerEntry.Modify();
 
-                    DetailedGSTLedgerEntryInfo."Remaining Amount Closed" := DetailedGSTLedgerEntry."Remaining Base Amount" = 0;
-                    DetailedGSTLedgerEntryInfo.Modify();
-
                     RemainingBase := Abs(RemainingBase) - Abs(AppliedBase);
                     RemainingAmount := Abs(RemainingAmount) - Abs(AppliedAmount);
                     FillGSTPostingBufferWithApplication(ApplyDetailedGSTLedgerEntry, false, false);
@@ -756,9 +753,6 @@ codeunit 18430 "GST Application Handler"
                             end;
 
                             DetailedGSTLedgerEntry.Modify();
-
-                            DetailedGSTLedgerEntryInfo."Remaining Amount Closed" := DetailedGSTLedgerEntry."Remaining Base Amount" = 0;
-                            DetailedGSTLedgerEntryInfo.Modify();
 
                             RemainingBase := Abs(RemainingBase) - Abs(AppliedBase);
                             RemainingAmount := Abs(RemainingAmount) - Abs(AppliedAmount);
@@ -1540,9 +1534,6 @@ codeunit 18430 "GST Application Handler"
                     DetailedGSTLedgerEntry."Remaining Base Amount" += AppliedBase;
                     DetailedGSTLedgerEntry."Remaining GST Amount" += AppliedAmount;
                     DetailedGSTLedgerEntry.Modify();
-
-                    DetailedGSTLedgerEntryInfo."Remaining Amount Closed" := (DetailedGSTLedgerEntry."Remaining Base Amount" = 0);
-                    DetailedGSTLedgerEntryInfo.Modify();
 
                     RemainingBase := Abs(RemainingBase) - Abs(AppliedBase);
                     RemainingAmount := Abs(RemainingAmount) - Abs(AppliedAmount);

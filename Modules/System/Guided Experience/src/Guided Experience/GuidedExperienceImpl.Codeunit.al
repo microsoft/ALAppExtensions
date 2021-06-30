@@ -7,8 +7,7 @@ codeunit 1991 "Guided Experience Impl."
 {
     Access = Internal;
     Permissions = tabledata AllObj = r,
-                  tabledata "Guided Experience Item" = rimd,
-                  tabledata Translation = r;
+                  tabledata "Guided Experience Item" = rimd;
 
     var
         TempBlob: Codeunit "Temp Blob";
@@ -525,6 +524,8 @@ codeunit 1991 "Guided Experience Impl."
     end;
 
     local procedure InsertTranslations(GuidedExperienceItem: Record "Guided Experience Item"; PrevVersionGuidedExperienceItem: Record "Guided Experience Item")
+    var
+        Translation: Codeunit Translation;
     begin
         InsertTranslations(GuidedExperienceItem, GuidedExperienceItem.Title, GuidedExperienceItem."Short Title",
             GuidedExperienceItem.Description, GuidedExperienceItem.Keywords);
@@ -533,26 +534,12 @@ codeunit 1991 "Guided Experience Impl."
         // description if they haven't changed
         if GuidedExperienceItem.Version > 0 then begin
             if PrevVersionGuidedExperienceItem.Title = GuidedExperienceItem.Title then
-                CopyTranslations(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
+                Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
             if PrevVersionGuidedExperienceItem."Short Title" = GuidedExperienceItem."Short Title" then
-                CopyTranslations(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"));
+                Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"));
             if PrevVersionGuidedExperienceItem.Description = GuidedExperienceItem.Description then
-                CopyTranslations(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description));
+                Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description));
         end;
-    end;
-
-    local procedure CopyTranslations(FromRecord: Record "Guided Experience Item"; ToRecord: Record "Guided Experience Item"; ForFieldId: Integer)
-    var
-        Translation: Record Translation;
-        TranslationAPI: Codeunit Translation;
-    begin
-        Translation.SetRange(SystemId, FromRecord.SystemId);
-        Translation.SetRange("Table ID", Database::"Guided Experience Item");
-        Translation.SetRange("Field ID", ForFieldId);
-        if Translation.FindSet() then
-            repeat
-                TranslationAPI.Set(ToRecord, ForFieldId, Translation."Language ID", Translation.Value);
-            until Translation.Next() = 0;
     end;
 
     procedure GetObjectTypeToRun(var GuidedExperienceObjectType: Enum "Guided Experience Object Type"; ObjectType: ObjectType)

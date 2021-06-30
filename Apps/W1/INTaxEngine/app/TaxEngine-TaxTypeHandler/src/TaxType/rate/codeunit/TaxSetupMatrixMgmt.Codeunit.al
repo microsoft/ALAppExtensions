@@ -1,5 +1,23 @@
 codeunit 20233 "Tax Setup Matrix Mgmt."
 {
+    procedure DeleteAllTaxRates(TaxType: Code[20]; SkipConfirmation: Boolean)
+    var
+        TaxRate: Record "Tax Rate";
+        TaxRateValue: Record "Tax Rate Value";
+    begin
+        if not SkipConfirmation then
+            if not Confirm(StrSubstNo(CanDeleteAllTaxRatesQst, TaxType)) then
+                Error('');
+
+        TaxRate.SetRange("Tax Type", TaxType);
+        if not TaxRate.IsEmpty() then
+            TaxRate.DeleteAll();
+
+        TaxRateValue.SetRange("Tax Type", TaxType);
+        if not TaxRateValue.IsEmpty() then
+            TaxRateValue.DeleteAll();
+    end;
+
     procedure FillColumnArray(TaxType: Code[20]; var AttributeCaption: array[20] of Text; var AttributeValue: array[20] of Text; var RangeAttribute: array[20] of Boolean; var AttributeID: array[20] of Integer; var ColumnCount: Integer)
     var
         TaxRateSetup: Record "Tax Rate Column Setup";
@@ -88,8 +106,8 @@ codeunit 20233 "Tax Setup Matrix Mgmt."
 
         ValidateColumnValue(TaxRateSetup, AttributeValue[Index]);
 
-        TaxRateValue.SetRange("Config ID", ConfigId);
         TaxRateValue.SetRange("Tax Type", TaxType);
+        TaxRateValue.SetRange("Config ID", ConfigId);
         TaxRateValue.SetRange("Column ID", AttributeID[Index]);
         TaxRateValue.FindFirst();
 
@@ -120,6 +138,11 @@ codeunit 20233 "Tax Setup Matrix Mgmt."
         TaxRateValue: Record "Tax Rate Value";
         TaxRateColumnSetup: Record "Tax Rate Column Setup";
     begin
+        TaxRateValue.SetRange("Tax Type", TaxType);
+        TaxRateValue.SetRange("Config ID", ConfigID);
+        if TaxRateValue.IsEmpty() then
+            exit;
+
         TaxRateColumnSetup.SetCurrentKey(Sequence);
         TaxRateColumnSetup.SetRange("Tax Type", TaxType);
         TaxRateColumnSetup.SetFilter("Column Type", '%1|%2|%3|%4|%5',
@@ -131,10 +154,57 @@ codeunit 20233 "Tax Setup Matrix Mgmt."
 
         if TaxRateColumnSetup.FindSet() then
             repeat
+                TaxRateValue.Reset();
+                TaxRateValue.SetRange("Tax Type", TaxType);
                 TaxRateValue.SetRange("Config ID", ConfigID);
                 TaxRateValue.SetRange("Column ID", TaxRateColumnSetup."Column ID");
                 if TaxRateValue.FindFirst() then
                     TaxSetupID += TaxRateValue.Value + '|';
+            until TaxRateColumnSetup.Next() = 0;
+
+        CheckForDuplicateSetID(ConfigID, TaxType, TaxSetupID);
+    end;
+
+    procedure CheckForDuplicateSetID(
+        var TempTaxRateValue: Record "Tax Rate" temporary;
+        ConfigID: Guid;
+        TaxType: Code[20];
+        TaxSetID: Text)
+    begin
+        TempTaxRateValue.SetRange("Tax Type", TaxType);
+        TempTaxRateValue.SetFilter(ID, '<>%1', ConfigID);
+        TempTaxRateValue.SetRange("Tax Setup ID", TaxSetID);
+        if TempTaxRateValue.FindFirst() then
+            Error(TaxRateAlreadyExistErr, TaxSetID);
+    end;
+
+    procedure GenerateTaxSetupID(var TempTaxRateValue: Record "Tax Rate Value" temporary; ConfigID: Guid; TaxType: Code[20]) TaxSetupID: Text[2000]
+    var
+        TaxRateColumnSetup: Record "Tax Rate Column Setup";
+    begin
+        TempTaxRateValue.Reset();
+        TempTaxRateValue.SetRange("Tax Type", TaxType);
+        TempTaxRateValue.SetRange("Config ID", ConfigID);
+        if TempTaxRateValue.IsEmpty() then
+            exit;
+
+        TaxRateColumnSetup.SetCurrentKey(Sequence);
+        TaxRateColumnSetup.SetRange("Tax Type", TaxType);
+        TaxRateColumnSetup.SetFilter("Column Type", '%1|%2|%3|%4|%5',
+            TaxRateColumnSetup."Column Type"::"Tax Attributes",
+            TaxRateColumnSetup."Column Type"::Value,
+            TaxRateColumnSetup."Column Type"::"Range From",
+            TaxRateColumnSetup."Column Type"::"Range From and Range To",
+            TaxRateColumnSetup."Column Type"::"Range To");
+
+        if TaxRateColumnSetup.FindSet() then
+            repeat
+                TempTaxRateValue.Reset();
+                TempTaxRateValue.SetRange("Tax Type", TaxType);
+                TempTaxRateValue.SetRange("Config ID", ConfigID);
+                TempTaxRateValue.SetRange("Column ID", TaxRateColumnSetup."Column ID");
+                if TempTaxRateValue.FindFirst() then
+                    TaxSetupID += TempTaxRateValue.Value + '|';
             until TaxRateColumnSetup.Next() = 0;
 
         CheckForDuplicateSetID(ConfigID, TaxType, TaxSetupID);
@@ -145,6 +215,11 @@ codeunit 20233 "Tax Setup Matrix Mgmt."
         TaxRateValue: Record "Tax Rate Value";
         TaxRateColumnSetup: Record "Tax Rate Column Setup";
     begin
+        TaxRateValue.SetRange("Tax Type", TaxType);
+        TaxRateValue.SetRange("Config ID", ConfigID);
+        if TaxRateValue.IsEmpty() then
+            exit;
+
         TaxRateColumnSetup.SetCurrentKey(Sequence);
         TaxRateColumnSetup.SetRange("Tax Type", TaxType);
         TaxRateColumnSetup.SetFilter("Column Type", '%1|%2',
@@ -153,10 +228,38 @@ codeunit 20233 "Tax Setup Matrix Mgmt."
         TaxRateColumnSetup.SetRange("Allow Blank", false);
         if TaxRateColumnSetup.FindSet() then
             repeat
+                TaxRateValue.Reset();
+                TaxRateValue.SetRange("Tax Type", TaxType);
                 TaxRateValue.SetRange("Config ID", ConfigID);
                 TaxRateValue.SetRange("Column ID", TaxRateColumnSetup."Column ID");
                 if TaxRateValue.FindFirst() then
                     TaxRateID += TaxRateValue.Value + '|';
+            until TaxRateColumnSetup.Next() = 0;
+    end;
+
+    procedure GenerateTaxRateID(var TempTaxRateValue: Record "Tax Rate Value" temporary; ConfigID: Guid; TaxType: Code[20]) TaxRateID: Text[2000]
+    var
+        TaxRateColumnSetup: Record "Tax Rate Column Setup";
+    begin
+        TempTaxRateValue.SetRange("Tax Type", TaxType);
+        TempTaxRateValue.SetRange("Config ID", ConfigID);
+        if TempTaxRateValue.IsEmpty() then
+            exit;
+
+        TaxRateColumnSetup.SetCurrentKey(Sequence);
+        TaxRateColumnSetup.SetRange("Tax Type", TaxType);
+        TaxRateColumnSetup.SetFilter("Column Type", '%1|%2',
+            TaxRateColumnSetup."Column Type"::"Tax Attributes",
+            TaxRateColumnSetup."Column Type"::Value);
+        TaxRateColumnSetup.SetRange("Allow Blank", false);
+        if TaxRateColumnSetup.FindSet() then
+            repeat
+                TempTaxRateValue.Reset();
+                TempTaxRateValue.SetRange("Tax Type", TaxType);
+                TempTaxRateValue.SetRange("Config ID", ConfigID);
+                TempTaxRateValue.SetRange("Column ID", TaxRateColumnSetup."Column ID");
+                if TempTaxRateValue.FindFirst() then
+                    TaxRateID += TempTaxRateValue.Value + '|';
             until TaxRateColumnSetup.Next() = 0;
     end;
 
@@ -265,7 +368,7 @@ codeunit 20233 "Tax Setup Matrix Mgmt."
         UpdateRateIDOnRateValue(ConfigId, TaxRate."Tax Rate ID");
     end;
 
-    local procedure SetDefaultRateValues(TaxRateColumnSetup: Record "Tax Rate Column Setup"; var TaxRateValue: Record "Tax Rate Value")
+    procedure SetDefaultRateValues(TaxRateColumnSetup: Record "Tax Rate Column Setup"; var TaxRateValue: Record "Tax Rate Value")
     begin
         case TaxRateColumnSetup.Type of
             TaxRateColumnSetup.Type::Decimal, TaxRateColumnSetup.Type::Integer, TaxRateColumnSetup.Type::Option:
@@ -384,6 +487,8 @@ codeunit 20233 "Tax Setup Matrix Mgmt."
         TaxAttributeMgmt: Codeunit "Tax Attribute Management";
         CaptionCount: Integer;
         TaxConfigurationAlreadyExistErr: Label 'Tax Rate already exist with the same setup value.';
+        TaxRateAlreadyExistErr: Label 'Tax Rate already exist with the same setup value. key value : %1', Comment = '%1 - Key Value';
         AttributeDoesNotExistErr: Label 'Attribute does not exist with ID %1.', Comment = '%1 = Attribute ID';
         RateSetupDoesNotExistErr: Label 'Rate Setup does not exist with Column ID %1 for Tax Type %2.', Comment = '%1 = Attribute ID,%2 = Tax Type Code';
+        CanDeleteAllTaxRatesQst: Label 'Do you want to delete all Tax Rates for Tax Type : %1.', Comment = '%1 = Tax Type';
 }

@@ -14,6 +14,8 @@ page 535 "Windows Languages"
     PageType = List;
     SourceTable = "Windows Language";
     ContextSensitiveHelpPage = 'ui-change-basic-settings#language';
+    Permissions = tabledata "Page Data Personalization" = r,
+                  tabledata "Windows Language" = r;
 
     layout
     {

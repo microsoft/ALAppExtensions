@@ -255,7 +255,6 @@ codeunit 8900 "Email Impl"
         IsHandled: Boolean;
     begin
         EmailRelatedRecord.SetRange("Email Message Id", EmailMessageId);
-        EmailRelatedRecord.SetRange("Relation Type", Enum::"Email Relation Type"::"Primary Source");
 
         if not EmailRelatedRecord.FindFirst() then
             Error(SourceRecordErr);
@@ -292,15 +291,24 @@ codeunit 8900 "Email Impl"
     end;
 
     procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid) ResultSentEmails: Record "Sent Email" temporary;
+    begin
+        GetSentEmailsForRecord(TableId, SystemId, ResultSentEmails);
+    end;
+
+    procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid; var ResultSentEmails: Record "Sent Email" temporary)
     var
         SentEmails: Record "Sent Email";
         EmailRelatedRecord: Record "Email Related Record";
+        EmailAccountImpl: Codeunit "Email Account Impl.";
     begin
         EmailRelatedRecord.SetRange("Table Id", TableId);
         EmailRelatedRecord.SetRange("System Id", SystemId);
 
         if not EmailRelatedRecord.FindSet() then
             exit;
+
+        if not EmailAccountImpl.IsUserEmailAdmin() then
+            SentEmails.SetRange("User Security Id", UserSecurityId());
 
         repeat
             SentEmails.SetCurrentKey("Message Id");
@@ -351,6 +359,14 @@ codeunit 8900 "Email Impl"
         EmailRelation."System Id" := SystemId;
         EmailRelation."Relation Type" := RelationType;
         EmailRelation.Insert();
+    end;
+
+    procedure OpenSentEmails(TableId: Integer; SystemId: Guid)
+    var
+        SentEmails: Page "Sent Emails";
+    begin
+        SentEmails.SetRelatedRecord(TableId, SystemId);
+        SentEmails.Run();
     end;
 
     local procedure CheckRequiredPermissions()

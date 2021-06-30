@@ -22,6 +22,7 @@ codeunit 135039 "Cues And KPIs Test"
         Assert: Codeunit "Library Assert";
         CuesAndKPIs: Codeunit "Cues And KPIs";
         CuesAndKPIsTest: Codeunit "Cues And KPIs Test";
+        PermissionsMock: Codeunit "Permissions Mock";
         CueStyle: Enum "Cues And KPIs Style";
         IsInitialized: Boolean;
         CueTableId: Integer;
@@ -36,6 +37,10 @@ codeunit 135039 "Cues And KPIs Test"
     procedure CueSetupUserPageCannotInsert()
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         // [GIVEN] Cue Setup User page is open
         // [WHEN] Trying to insert a new record
         // [THEN] Error is thrown
@@ -49,6 +54,10 @@ codeunit 135039 "Cues And KPIs Test"
     procedure CueSetupUserPageNotEmpty()
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         // [GIVEN] There exists at least one Cue table that has records
         // [GIVEN] There is no other prior Cue Setup
         // [WHEN] Opening the Cue Setup user page
@@ -63,6 +72,10 @@ codeunit 135039 "Cues And KPIs Test"
     procedure CueSetupUserPageOpenWithDifferentTableNotEmpty()
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         // [GIVEN] There exists at least one Cue table that has records
         // [GIVEN] There is no other prior Cue Setup
         // [GIVEN] Said cue table does not have any Integer or Decimal fields
@@ -80,6 +93,10 @@ codeunit 135039 "Cues And KPIs Test"
         CueSetupAdminPage: TestPage "Cue Setup Administrator";
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         CueSetupAdminPage.OpenEdit();
         // [GIVEN] Setup has been done for both the current user and a dummy user
 
@@ -108,6 +125,10 @@ codeunit 135039 "Cues And KPIs Test"
         CueSetupAdminPage: TestPage "Cue Setup Administrator";
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         // [GIVEN] No default Cue Setup has been performed
         // [GIVEN] The Cue Setup user page is opened
         // [WHEN] The personalized flag is set on one of the temp records
@@ -133,6 +154,9 @@ codeunit 135039 "Cues And KPIs Test"
         Threshold2: Decimal;
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
 
         // [GIVEN] A setup entry is pending insertion
         TableId := CueTableId;
@@ -167,6 +191,9 @@ codeunit 135039 "Cues And KPIs Test"
     begin
         Initialize();
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         // [GIVEN] A setup entry has been already inserted through the facade
         TableId := CueTableId;
         FieldNo := CueNormalIntegerFieldId;
@@ -198,6 +225,10 @@ codeunit 135039 "Cues And KPIs Test"
         InitialThreshold: Decimal;
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         InitialThreshold := 100.00;
         CueSetupAdminPage.OpenEdit();
         // [GIVEN] The Cue Setup admin page is opened
@@ -229,6 +260,10 @@ codeunit 135039 "Cues And KPIs Test"
         CueSetupAdminPage: TestPage "Cue Setup Administrator";
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         CueSetupAdminPage.OpenEdit();
         // [GIVEN] The Cue Setup admin page is opened
         // [THEN] It is possible to insert records for both current user and for other users
@@ -252,6 +287,10 @@ codeunit 135039 "Cues And KPIs Test"
         CueSetupAdminPage: TestPage "Cue Setup Administrator";
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         CueSetupAdminPage.OpenEdit();
         // [GIVEN] The Cue Setup admin page is opened
         // [WHEN] Inserting a new record
@@ -274,6 +313,10 @@ codeunit 135039 "Cues And KPIs Test"
         CueSetupAdminPage: TestPage "Cue Setup Administrator";
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         CueSetupAdminPage.OpenEdit();
         // [GIVEN] The Cue Setup adming page is opened
         // [WHEN] There exists setup entries with no user id
@@ -312,6 +355,9 @@ codeunit 135039 "Cues And KPIs Test"
         ReturnedCueStyle: Enum "Cues And KPIs Style";
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
 
         CueSetupAdminPage.OpenEdit();
         // [GIVEN] There exists cue setup for differnt Cues
@@ -362,6 +408,10 @@ codeunit 135039 "Cues And KPIs Test"
     [Scope('OnPrem')]
     procedure TestConvertStyleToStyleText()
     begin
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         // [GIVEN] The default Cues and Kpis style enum is used
         // [WHEN] ConvertStyleToStyleText is called
         // [THEN] The default set of style texts are returned
@@ -377,6 +427,10 @@ codeunit 135039 "Cues And KPIs Test"
     [Scope('OnPrem')]
     procedure TestConvertStyleToStyleTextExtensibility()
     begin
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Cues And KPIs Edit');
+
         // [GIVEN] An extensible value of the Cues and Kpis style enum is used
         // [GIVEN] OnConvertStyleToStyleText is subscribed to and implemented
         // [WHEN] ConvertStyleToStyleText is called
@@ -390,9 +444,12 @@ codeunit 135039 "Cues And KPIs Test"
     var
         TestCueTable1: Record "Cues And KPIs Test 1 Cue";
         TestCueTable2: Record "Cues And KPIs Test 2 Cue";
+        CuesAndKPIsTestLibrary: Codeunit "Cues And KPIs Test Library";
     begin
         if IsInitialized then
             exit;
+
+        CuesAndKPIsTestLibrary.DeleteAllSetup();
 
         if not TestCueTable1.IsEmpty() then
             TestCueTable1.DeleteAll();

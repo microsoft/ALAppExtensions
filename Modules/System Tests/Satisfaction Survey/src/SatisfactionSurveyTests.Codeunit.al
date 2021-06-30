@@ -8,17 +8,14 @@ codeunit 138074 "Satisfaction Survey Tests"
     // [FEATURE] [Satisfaction Survey] [UT]
 
     Subtype = Test;
-    TestPermissions = Disabled;
-
-    trigger OnRun()
-    begin
-    end;
+    Permissions = tabledata "User Property" = r;
 
     var
         LibraryAssert: Codeunit "Library Assert";
         SatisfactionSurveyMgt: Codeunit "Satisfaction Survey Mgt.";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         TestClientTypeSubscriber: Codeunit "Test Client Type Subscriber";
+        PermissionsMock: Codeunit "Permissions Mock";
         IsInitialized: Boolean;
         TestApiUrlTxt: Label 'https://localhost:8080/', Locked = true;
         DisplayDataTxt: Label 'display/%1/?puid=%2', Locked = true;
@@ -46,6 +43,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         // Setup
         Initialize();
         SimulatePuidNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ApiUrlBefore := TestApiUrlTxt + 'before/';
@@ -74,6 +72,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -90,6 +89,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Timeout: Integer;
     begin
         // Execute
+        PermissionsMock.Set('Satisfaction View');
         Timeout := SatisfactionSurveyMgt.GetRequestTimeoutAsync();
 
         // Verify
@@ -107,6 +107,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -126,6 +127,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -145,6 +147,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -164,6 +167,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -183,6 +187,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -203,6 +208,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         Result := SatisfactionSurveyMgt.TryGetCheckUrl(Url);
@@ -224,6 +230,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         Result := SatisfactionSurveyMgt.TryGetCheckUrl(ActualUrl);
@@ -245,6 +252,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         EnvironmentInfoTestLibrary.SetTestabilitySandbox(true);
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
@@ -264,6 +272,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         TestClientTypeSubscriber.SetClientType(CLIENTTYPE::Phone);
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
@@ -283,6 +292,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
@@ -301,6 +311,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -320,6 +331,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
@@ -338,6 +350,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -358,6 +371,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         IsActivated := SatisfactionSurveyMgt.ActivateSurvey();
@@ -376,6 +390,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -394,6 +409,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -414,6 +430,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -435,6 +452,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         Result1 := SatisfactionSurveyMgt.ActivateSurvey();
@@ -456,6 +474,7 @@ codeunit 138074 "Satisfaction Survey Tests"
         Initialize();
         SimulatePuidNotEmpty();
         SimulateApiUrlNotEmpty();
+        PermissionsMock.Set('Satisfaction View');
 
         // Execute
         ActivateSurvey();
@@ -473,15 +492,15 @@ codeunit 138074 "Satisfaction Survey Tests"
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
         SatisfactionSurveyMgt.ResetCache();
-        TestClientTypeSubscriber.SetClientType(CLIENTTYPE::Web);
+        TestClientTypeSubscriber.SetClientType(ClientType::Web);
         SatisfactionSurveyMgt.ResetState();
         EnvironmentInfoTestLibrary.SetAppId(FinacialsTok);
 
         if IsInitialized then
             exit;
 
-        BindSubscription(TestClientTypeSubscriber);
-        BindSubscription(EnvironmentInfoTestLibrary);
+        if BindSubscription(TestClientTypeSubscriber) then;
+        if BindSubscription(EnvironmentInfoTestLibrary) then;
         GlobalLanguage := 1033; // mock service supports only this language
         IsInitialized := true;
     end;

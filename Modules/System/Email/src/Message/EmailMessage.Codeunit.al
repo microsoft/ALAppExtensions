@@ -108,7 +108,7 @@ codeunit 8904 "Email Message"
     /// <summary>
     /// Gets the recipents of a certain type of the email message.
     /// </summary>
-    /// <param name="RecipientType">Sepcifies the type of the recipients.</param>
+    /// <param name="RecipientType">Specifies the type of the recipients.</param>
     /// <param name="Recipients">Out parameter filled with the recipients' email addresses.</param>
     procedure GetRecipients(RecipientType: Enum "Email Recipient Type"; var Recipients: list of [Text])
     begin

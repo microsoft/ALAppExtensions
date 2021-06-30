@@ -26,6 +26,26 @@ pageextension 18151 "GST Sales Order Subform Ext" extends "Sales Order Subform"
                 CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
             end;
         }
+        modify("Line Discount %")
+        {
+            Trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
+            begin
+                CurrPage.SaveRecord();
+                CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+            end;
+        }
+        modify("Line Discount Amount")
+        {
+            Trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
+            begin
+                CurrPage.SaveRecord();
+                CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+            end;
+        }
         addafter("Line Amount")
         {
             field("GST on Assessable Value"; Rec."GST on Assessable Value")
@@ -71,6 +91,19 @@ pageextension 18151 "GST Sales Order Subform Ext" extends "Sales Order Subform"
             {
                 ApplicationArea = all;
                 ToolTip = 'Specifies if the price in inclusive of tax for the line.';
+
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
+            field("Unit Price Incl. of Tax"; Rec."Unit Price Incl. of Tax")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies unit prices are inclusive of tax on the line.';
 
                 trigger OnValidate()
                 var
