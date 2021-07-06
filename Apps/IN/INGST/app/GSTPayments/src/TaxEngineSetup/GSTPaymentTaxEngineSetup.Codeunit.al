@@ -7,6 +7,8 @@ codeunit 18249 "GST Payment Tax Engine Setup"
         GSTPaymentsUseCaseDataset: Codeunit "GST Payments UseCase Dataset";
     begin
         TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.SkipUseCaseIndentation(true);
         TaxJsonDeserialization.ImportUseCases(GSTPaymentsUseCaseDataset.GetText());
     end;
 }

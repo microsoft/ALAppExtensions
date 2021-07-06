@@ -100,7 +100,7 @@ page 20251 "Rate Setup"
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
-        Clear(LinkedAttributeName2);
+        LinkedAttributeName2 := '';
     end;
 
     trigger OnAfterGetRecord()
@@ -111,15 +111,37 @@ page 20251 "Rate Setup"
             LinkedAttributeName2 := '';
     end;
 
+    trigger OnOpenPage()
+    begin
+        RecordModified := false;
+    end;
+
+    trigger OnModifyRecord(): Boolean
+    begin
+        RecordModified := true;
+    end;
+
+    trigger OnDeleteRecord(): Boolean
+    begin
+        RecordModified := true;
+    end;
+
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+    begin
+        RecordModified := true;
+    end;
+
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     begin
-        UpdateTransactionKeys();
+        if RecordModified then
+            Rec.UpdateTransactionKeys();
     end;
 
     var
         AttributeManagement: Codeunit "Tax Attribute Management";
         DataTypeMgmt: Codeunit "Use Case Data Type Mgmt.";
         ScriptSymbolsMgmt: Codeunit "Script Symbols Mgmt.";
+        RecordModified: Boolean;
         LinkedAttributeName2: Text[30];
         EmptyGuid: Guid;
 }

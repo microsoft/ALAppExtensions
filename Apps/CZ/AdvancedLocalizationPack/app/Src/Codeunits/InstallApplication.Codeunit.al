@@ -47,6 +47,7 @@ codeunit 31250 "Install Application CZA"
         CopyTransferReceiptLine();
         CopyDetailedGLEntry();
         CopyGLEntry();
+        CopyDefaultDimension();
     end;
 
     local procedure CopyPermission();
@@ -336,6 +337,37 @@ codeunit 31250 "Install Application CZA"
                 GLEntry."Applied Amount CZA" := GLEntry."Applied Amount";
                 GLEntry.Modify(false);
             until GLEntry.Next() = 0;
+    end;
+
+    local procedure CopyDefaultDimension();
+    var
+        DefaultDimension: Record "Default Dimension";
+    begin
+        if DefaultDimension.FindSet(true) then
+            repeat
+                if DefaultDimension."Automatic Create" then begin
+                    DefaultDimension."Automatic Create CZA" := DefaultDimension."Automatic Create";
+                    DefaultDimension."Dim. Description Field ID CZA" := DefaultDimension."Dimension Description Field ID";
+                    DefaultDimension."Dim. Description Format CZA" := DefaultDimension."Dimension Description Format";
+                    DefaultDimension."Dim. Description Update CZA" := DefaultDimension."Dimension Description Update";
+                    case DefaultDimension."Automatic Cr. Value Posting" of
+                        DefaultDimension."Automatic Cr. Value Posting"::" ":
+                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::" ";
+                        DefaultDimension."Automatic Cr. Value Posting"::"No Code":
+                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"No Code";
+                        DefaultDimension."Automatic Cr. Value Posting"::"Same Code":
+                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"Same Code";
+                        DefaultDimension."Automatic Cr. Value Posting"::"Code Mandatory":
+                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"Code Mandatory";
+                    end;
+                    Clear(DefaultDimension."Automatic Create");
+                    Clear(DefaultDimension."Dimension Description Field ID");
+                    Clear(DefaultDimension."Dimension Description Format");
+                    Clear(DefaultDimension."Dimension Description Update");
+                    Clear(DefaultDimension."Automatic Cr. Value Posting");
+                    DefaultDimension.Modify(false);
+                end;
+            until DefaultDimension.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

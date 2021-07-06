@@ -1,0 +1,32 @@
+{
+    "id":  "03ecb409-cce1-4f5b-b194-6ad3ad3d7378",
+    "name":  "Satisfaction Survey Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Test objects for the Satisfaction Survey module.",
+    "description":  "Test objects for the Satisfaction Survey module.",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "5d03ef2d-13f0-4132-b941-48387b581434",
+                            "name":  "Satisfaction Survey",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "idRanges": [
+        {
+            "from": 138074,
+            "to": 138074
+        }
+    ],
+    "platform":  "18.0.0.0",
+    "target":  "OnPrem"
+}

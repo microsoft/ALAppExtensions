@@ -6,9 +6,11 @@
 codeunit 135035 "User Selection Test"
 {
     Subtype = Test;
+    Permissions = tabledata User = r;
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         IsInitialized: Boolean;
 
     [Test]
@@ -19,6 +21,7 @@ codeunit 135035 "User Selection Test"
         // [SCENARIO] No error is thrown if there is a user with the given username
         // [GIVEN] There are some users in the system
         Initialize();
+        PermissionsMock.Set('User Selection Read');
         ClearLastError();
 
         // [WHEN] A username that exists is entered
@@ -35,6 +38,7 @@ codeunit 135035 "User Selection Test"
         // [SCENARIO] An error is thrown when there is no User with that Username
         // [GIVEN] There are some users in the system
         Initialize();
+        PermissionsMock.Set('User Selection Read');
 
         // [WHEN] A username that does not exists is entered
         // [THEN] Then an error is thrown
@@ -53,6 +57,8 @@ codeunit 135035 "User Selection Test"
         // [GIVEN] Filters have been set on the User Record.
         // [GIVEN] There are some users in the system
         Initialize();
+        PermissionsMock.Set('User Selection Read');
+
         User.SetRange("User Name", 'D');
         // [WHEN] Open function is called
         // [THEN] Only user D is visible.
@@ -69,6 +75,7 @@ codeunit 135035 "User Selection Test"
         // [SCENARIO] A single user can be selected.
         // [GIVEN] There are some users in the system
         Initialize();
+        PermissionsMock.Set('User Selection Read');
 
         // [WHEN] User selects a User and Clicks OK
         // [THEN] Open returns True
@@ -88,6 +95,7 @@ codeunit 135035 "User Selection Test"
         // [SCENARIO] A single user can be selected and the selected user can be stored in temporary record.
         // [GIVEN] There are some users in the system
         Initialize();
+        PermissionsMock.Set('User Selection Read');
 
         // [WHEN] User selects a User and Clicks OK
         // [THEN] Open returns True
@@ -107,6 +115,7 @@ codeunit 135035 "User Selection Test"
         // [SCENARIO] User variable is not altered if the User cancels the lookup.
         // [GIVEN] There are some users in the system
         Initialize();
+        PermissionsMock.Set('User Selection Read');
 
         // [GIVEN] User Variable has some values
         User."User Name" := 'SOME VALUE';
@@ -126,6 +135,8 @@ codeunit 135035 "User Selection Test"
         // [SCENARIO] External users are not visible on the Lookup page.
         // [GIVEN] There are some users in the system
         Initialize();
+        PermissionsMock.Set('User Selection Read');
+
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
         // [WHEN] User Lookup page opens

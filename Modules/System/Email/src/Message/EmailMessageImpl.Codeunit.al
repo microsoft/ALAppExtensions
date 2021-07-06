@@ -268,9 +268,9 @@ codeunit 8905 "Email Message Impl."
         Recipients: List of [Text];
     begin
         if EmailRecipients.FindSet() then
-        repeat
-            Recipients.Add(EmailRecipients."Email Address");
-        until EmailRecipients.Next() = 0;
+            repeat
+                Recipients.Add(EmailRecipients."Email Address");
+            until EmailRecipients.Next() = 0;
         exit(Recipients);
     end;
 

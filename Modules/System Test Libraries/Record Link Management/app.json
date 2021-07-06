@@ -1,0 +1,32 @@
+{
+    "id":  "7d434875-500b-4d70-a486-82b1208e3bbc",
+    "name":  "Record Link Management Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Library with Test objects for the Record Link Management module",
+    "description":  "Library with Test objects for the Record Link Management module",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "82834e1e-bbf2-4184-b70e-ee44bca1ca10",
+                            "name":  "Record Link Management",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "18.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  132507,
+                         "to":  132508
+                     }
+                 ],
+    "target":  "OnPrem"
+}

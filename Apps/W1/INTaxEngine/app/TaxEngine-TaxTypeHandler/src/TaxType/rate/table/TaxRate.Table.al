@@ -35,6 +35,12 @@ table 20251 "Tax Rate"
         {
             Clustered = true;
         }
+        key(K2; "Tax Setup ID")
+        {
+        }
+        key(K3; "Tax Rate ID")
+        {
+        }
     }
 
     trigger OnInsert()
@@ -46,6 +52,7 @@ table 20251 "Tax Rate"
     var
         TaxConfigurationValue: Record "Tax Rate Value";
     begin
+        TaxConfigurationValue.SetRange("Tax Type", Rec."Tax Type");
         TaxConfigurationValue.SetRange("Config ID", ID);
         if not TaxConfigurationValue.IsEmpty() then
             TaxConfigurationValue.DeleteAll();

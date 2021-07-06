@@ -492,14 +492,14 @@ page 4003 "Intelligent Cloud Management"
     var
         AssistedCompanySetupStatus: Record "Assisted Company Setup Status";
         HybridCompany: Record "Hybrid Company";
-        SetupStatus: Option " ","Completed","In Progress","Error","Missing Permission";
+        SetupStatus: Enum "Company Setup Status";
     begin
         HybridCompany.Reset();
         HybridCompany.SetRange(Replicate, true);
         if HybridCompany.FindSet() then
             repeat
                 if AssistedCompanySetupStatus.Get(HybridCompany.Name) then begin
-                    SetupStatus := AssistedCompanySetupStatus.GetCompanySetupStatus(CopyStr(HybridCompany.Name, 1, 30));
+                    SetupStatus := AssistedCompanySetupStatus.GetCompanySetupStatusValue(CopyStr(HybridCompany.Name, 1, 30));
                     if SetupStatus <> SetupStatus::Completed then
                         exit(true);
                 end;

@@ -1,10 +1,10 @@
-#if not CLEAN17
+#if not CLEAN19
 #pragma warning disable AL0432,AL0603
 codeunit 31189 "Sync.Dep.Fld-AccSchedLine CZL"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '17.0';
+    ObsoleteTag = '19.0';
 
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Line", 'OnBeforeInsertEvent', '', false, false)]
     local procedure SyncOnBeforeInsertGLAccount(var Rec: Record "Acc. Schedule Line")
@@ -28,7 +28,7 @@ codeunit 31189 "Sync.Dep.Fld-AccSchedLine CZL"
     begin
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
-
+#if not CLEAN17
         DepFieldInt := Rec.Calc;
         NewFieldInt := Rec."Calc CZL".AsInteger();
         SyncDepFldUtilities.SyncFields(DepFieldInt, NewFieldInt, PreviousRecord.Calc, PreviousRecord."Calc CZL".AsInteger());
@@ -44,6 +44,12 @@ codeunit 31189 "Sync.Dep.Fld-AccSchedLine CZL"
         SyncDepFldUtilities.SyncFields(DepFieldInt, NewFieldInt, PreviousRecord."Assets/Liabilities Type", PreviousRecord."Assets/Liabilities Type CZL".AsInteger());
         Rec."Assets/Liabilities Type" := DepFieldInt;
         Rec."Assets/Liabilities Type CZL" := NewFieldInt;
+#endif
+        DepFieldInt := Rec."Source Table";
+        NewFieldInt := Rec."Source Table CZL".AsInteger();
+        SyncDepFldUtilities.SyncFields(DepFieldInt, NewFieldInt, PreviousRecord."Source Table", PreviousRecord."Source Table CZL".AsInteger());
+        Rec."Source Table" := DepFieldInt;
+        Rec."Source Table CZL" := NewFieldInt;
     end;
 }
 #endif

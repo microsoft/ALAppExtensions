@@ -7,6 +7,8 @@ codeunit 18144 "GST Sales Tax Engine Setup"
         TaxJsonDeserialization: Codeunit "Tax Json Deserialization";
     begin
         TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.SkipUseCaseIndentation(true);
         TaxJsonDeserialization.ImportUseCases(GSTSalesUseCaseDataset1.GetText());
     end;
 }

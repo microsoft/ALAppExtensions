@@ -3,18 +3,19 @@ codeunit 18549 "IN Tax Data Sensitivity Mgmt."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Class. Eval. Data Country", 'OnAfterClassifyCountrySpecificTables', '', false, false)]
     local procedure CreateSenstiviteDataTaxType()
     begin
-        ClassifyCustLedgerEntry();
+        ClassifyTablesToNormal();
     end;
 
-    local procedure ClassifyCustLedgerEntry()
-    var
-        CustLedgerEntry: Record "Cust. Ledger Entry";
-        DataClassificationMgt: Codeunit "Data Classification Mgt.";
-        TableNo: Integer;
+    local procedure ClassifyTablesToNormal()
     begin
-        TableNo := Database::"Cust. Ledger Entry";
+        SetTableFieldsToNormal(Database::Customer);
+        SetTableFieldsToNormal(Database::"Cust. Ledger Entry");
+    end;
+
+    local procedure SetTableFieldsToNormal(TableNo: Integer)
+    var
+        DataClassificationMgt: Codeunit "Data Classification Mgt.";
+    begin
         DataClassificationMgt.SetTableFieldsToNormal(TableNo);
-        DataClassificationMgt.SetFieldToPersonal(TableNo, CustLedgerEntry.FieldNo("TCS Nature of Collection"));
-        DataClassificationMgt.SetFieldToPersonal(TableNo, CustLedgerEntry.FieldNo("Total TCS Including SHE CESS"));
     end;
 }

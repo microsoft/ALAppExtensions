@@ -1,10 +1,10 @@
-#if not CLEAN18
+#if not CLEAN19
 #pragma warning disable AL0432
 codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
-    ObsoleteTag = '18.0';
+    ObsoleteTag = '19.0';
 
     [EventSubscriber(ObjectType::Table, Database::"General Ledger Setup", 'OnBeforeInsertEvent', '', false, false)]
     local procedure SyncOnBeforeInsertGLSetup(var Rec: Record "General Ledger Setup")
@@ -23,6 +23,7 @@ codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
         PreviousRecord: Record "General Ledger Setup";
         SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
         PreviousRecordRef: RecordRef;
+        DepFieldTxt, NewFieldTxt : Text;
     begin
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
@@ -34,9 +35,21 @@ codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
         SyncDepFldUtilities.SyncFields(Rec."Check Posting Debit/Credit", Rec."Check Posting Debit/Credit CZL", PreviousRecord."Check Posting Debit/Credit", PreviousRecord."Check Posting Debit/Credit CZL");
         SyncDepFldUtilities.SyncFields(Rec."Mark Neg. Qty as Correction", Rec."Mark Neg. Qty as Correct. CZL", PreviousRecord."Mark Neg. Qty as Correction", PreviousRecord."Mark Neg. Qty as Correct. CZL");
 #endif
+#if not CLEAN18
         SyncDepFldUtilities.SyncFields(Rec."Rounding Date", Rec."Rounding Date CZL", PreviousRecord."Rounding Date", PreviousRecord."Rounding Date CZL");
         SyncDepFldUtilities.SyncFields(Rec."Closed Period Entry Pos.Date", Rec."Closed Per. Entry Pos.Date CZL", PreviousRecord."Closed Period Entry Pos.Date", PreviousRecord."Closed Per. Entry Pos.Date CZL");
         SyncDepFldUtilities.SyncFields(Rec."User Checks Allowed", Rec."User Checks Allowed CZL", PreviousRecord."User Checks Allowed", PreviousRecord."User Checks Allowed CZL");
+#endif
+        DepFieldTxt := Rec."Shared Account Schedule";
+        NewFieldTxt := Rec."Shared Account Schedule CZL";
+        SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Shared Account Schedule", PreviousRecord."Shared Account Schedule CZL");
+        Rec."Shared Account Schedule" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Shared Account Schedule"));
+        Rec."Shared Account Schedule CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Shared Account Schedule CZL"));
+        DepFieldTxt := Rec."Acc. Schedule Results Nos.";
+        NewFieldTxt := Rec."Acc. Schedule Results Nos. CZL";
+        SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Acc. Schedule Results Nos.", PreviousRecord."Acc. Schedule Results Nos. CZL");
+        Rec."Acc. Schedule Results Nos." := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Acc. Schedule Results Nos."));
+        Rec."Acc. Schedule Results Nos. CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Acc. Schedule Results Nos. CZL"));
     end;
 #if not CLEAN17
     [EventSubscriber(ObjectType::Table, Database::"General Ledger Setup", 'OnAfterInsertEvent', '', false, false)]

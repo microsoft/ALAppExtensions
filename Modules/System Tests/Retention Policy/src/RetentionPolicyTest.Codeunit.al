@@ -12,6 +12,7 @@ codeunit 138702 "Retention Policy Test"
         Any: Codeunit Any;
         Assert: Codeunit "Library Assert";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        PermissionsMock: Codeunit "Permissions Mock";
 
     trigger OnRun()
     begin
@@ -25,6 +26,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestDataTwo: Record "Retention Policy Test Data Two";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneWeekRetentionPeriod(RetentionPeriod);
@@ -55,6 +57,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneWeekRetentionPeriod(RetentionPeriod);
@@ -80,6 +83,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneWeekRetentionPeriod(RetentionPeriod);
@@ -104,6 +108,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneWeekRetentionPeriod(RetentionPeriod);
@@ -128,6 +133,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneWeekRetentionPeriod(RetentionPeriod);
@@ -152,6 +158,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneWeekRetentionPeriod(RetentionPeriod);
@@ -177,6 +184,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneMonthRetentionPeriod(RetentionPeriod);
@@ -202,6 +210,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneMonthRetentionPeriod(RetentionPeriod);
@@ -230,6 +239,7 @@ codeunit 138702 "Retention Policy Test"
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
         FilterView: Text;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneWeekRetentionPeriod(RetentionPeriod);
@@ -257,6 +267,7 @@ codeunit 138702 "Retention Policy Test"
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
         FilterView: Text;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneWeekRetentionPeriod(RetentionPeriod);
@@ -284,6 +295,7 @@ codeunit 138702 "Retention Policy Test"
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
         FilterView: Text;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneWeekRetentionPeriod(RetentionPeriod);
@@ -311,6 +323,7 @@ codeunit 138702 "Retention Policy Test"
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
         FilterView: Text;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertOneWeekRetentionPeriod(RetentionPeriod);
@@ -338,6 +351,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertEnabledRetentionPolicySetupForSubsets(RetentionPolicySetup, RetentionPolicyTestData.FieldNo("Date Field"));
@@ -376,6 +390,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertEnabledRetentionPolicySetupForSubsets(RetentionPolicySetup, RetentionPolicyTestData.FieldNo("Date Field"));
@@ -411,6 +426,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertEnabledRetentionPolicySetupForSubsets(RetentionPolicySetup, RetentionPolicyTestData.FieldNo("Date Field"));
@@ -451,6 +467,7 @@ codeunit 138702 "Retention Policy Test"
         DateFormulaLbl: Label '<-%1D>', Locked = true;
         i: Integer;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertEnabledRetentionPolicySetupForSubsets(RetentionPolicySetup, RetentionPolicyTestData.FieldNo("Date Field"));
@@ -491,6 +508,7 @@ codeunit 138702 "Retention Policy Test"
         MaxRecordsToDelete: Integer;
         Buffer: Integer;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         MaxRecordsToDelete := 250000;
         Buffer := 1000;
@@ -522,6 +540,7 @@ codeunit 138702 "Retention Policy Test"
         MaxRecordsToDelete: Integer;
         Buffer: Integer;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         MaxRecordsToDelete := 250000;
         Buffer := 999;
@@ -554,6 +573,7 @@ codeunit 138702 "Retention Policy Test"
         RecordsTableOne: Integer;
         Buffer: Integer;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         MaxRecordsToDelete := 250000;
         RecordsTableOne := 150000;
@@ -595,6 +615,7 @@ codeunit 138702 "Retention Policy Test"
         RecordsTableOne: Integer;
         Buffer: Integer;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         MaxRecordsToDelete := 250000;
         RecordsTableOne := 150000;
@@ -633,6 +654,7 @@ codeunit 138702 "Retention Policy Test"
         MaxRecordsToDelete: Integer;
         Buffer: Integer;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         MaxRecordsToDelete := 250000;
         Buffer := 1000;
@@ -662,6 +684,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertEnabledRetentionPolicySetupForSubsets(RetentionPolicySetup, RetentionPolicyTestData.FieldNo("Date Field"));
@@ -706,6 +729,7 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         ClearTestData();
         InsertEnabledRetentionPolicySetupForSubsets(RetentionPolicySetup, RetentionPolicyTestData.FieldNo("Date Field"));

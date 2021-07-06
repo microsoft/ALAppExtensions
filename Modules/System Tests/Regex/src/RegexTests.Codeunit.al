@@ -404,5 +404,13 @@ codeunit 135057 RegexTests
 
         // [Then] We get an error, because the timeout should be minimum 1000 ms 
         Asserterror Regex.Match(Input, Pattern, RegexOptions, Matches);
+        Assert.ExpectedError('The regular expression timeout should be at least 1000 ms');
+
+        // [When] Setting the match timeout to 10001
+        RegexOptions.MatchTimeoutInMs := 10001;
+
+        // [Then] We get an error, because the timeout should be maximum 10000 ms 
+        Asserterror Regex.Match(Input, Pattern, RegexOptions, Matches);
+        Assert.ExpectedError('The regular expression timeout should be at most 10000 ms');
     end;
 }

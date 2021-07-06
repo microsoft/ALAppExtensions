@@ -29,20 +29,26 @@ codeunit 12210 "Copy Line Des. To G/L Entry NZ"
         PurchSetup: Record "Purchases & Payables Setup";
         ServiceMgtSetup: Record "Service Mgt. Setup";
     begin
-        if SalesSetup.Get() and not SalesSetup."Copy Line Descr. to G/L Entry" then begin
-            SalesSetup."Copy Line Descr. to G/L Entry" := true;
-            SalesSetup.Modify();
-        end;
+        if SalesSetup.ReadPermission() then
+            if SalesSetup.WritePermission() then
+                if SalesSetup.Get() and not SalesSetup."Copy Line Descr. to G/L Entry" then begin
+                    SalesSetup."Copy Line Descr. to G/L Entry" := true;
+                    SalesSetup.Modify();
+                end;
 
-        if ServiceMgtSetup.Get() and not ServiceMgtSetup."Copy Line Descr. to G/L Entry" then begin
-            ServiceMgtSetup."Copy Line Descr. to G/L Entry" := true;
-            ServiceMgtSetup.Modify();
-        end;
+        if ServiceMgtSetup.ReadPermission() then
+            if ServiceMgtSetup.WritePermission() then
+                if ServiceMgtSetup.Get() and not ServiceMgtSetup."Copy Line Descr. to G/L Entry" then begin
+                    ServiceMgtSetup."Copy Line Descr. to G/L Entry" := true;
+                    ServiceMgtSetup.Modify();
+                end;
 
-        if PurchSetup.Get() and not PurchSetup."Copy Line Descr. to G/L Entry" then begin
-            PurchSetup."Copy Line Descr. to G/L Entry" := true;
-            PurchSetup.Modify();
-        end;
+        if PurchSetup.ReadPermission() then
+            if PurchSetup.WritePermission() then
+                if PurchSetup.Get() and not PurchSetup."Copy Line Descr. to G/L Entry" then begin
+                    PurchSetup."Copy Line Descr. to G/L Entry" := true;
+                    PurchSetup.Modify();
+                end;
     end;
 }
 

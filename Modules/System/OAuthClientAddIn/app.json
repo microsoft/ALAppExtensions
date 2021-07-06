@@ -2,7 +2,7 @@
     "id":  "2bc4f320-b476-4b99-8caa-358664b7f37c",
     "name":  "OAuthClientAddIn",
     "publisher":  "Microsoft",
-    "version":  "18.2.0.0",
+    "version":  "18.3.0.0",
     "brief":  "OAuth Client Add-In",
     "description":  "This module provides the client control Add-In for OAuth",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Clean up data when copying environment to sandbox.",
     "description":  "Provides an event to subscribe to in order to clean up data when copying an environment to sandbox.",
-    "version":  "18.2.0.0",
+    "version":  "18.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",

@@ -17,5 +17,10 @@ tableextension 11751 "Acc. Schedule Line CZL" extends "Acc. Schedule Line"
             Caption = 'Assets/Liabilities Type';
             DataClassification = CustomerContent;
         }
+        field(31085; "Source Table CZL"; Enum "Acc. Schedule Source Table CZL")
+        {
+            Caption = 'Source Table';
+            DataClassification = CustomerContent;
+        }
     }
 }

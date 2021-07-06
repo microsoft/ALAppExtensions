@@ -283,6 +283,7 @@ codeunit 20362 "Tax Json Serialization"
         AddJsonProperty(UseCaseJObject, 'ParentUseCase', UseCaseObjectHelper.GetUseCaseName(
             UseCase."Parent Use Case ID"));
 
+        AddJsonProperty(UseCaseJObject, 'ParentCaseId', UseCase."Parent Use Case ID");
         AddJsonProperty(UseCaseJObject, 'PresentationOrder', UseCase."Presentation Order");
         AddJsonProperty(UseCaseJObject, 'Indent', UseCase."Indentation Level");
 

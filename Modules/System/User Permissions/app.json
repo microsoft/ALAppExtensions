@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Checks whether users are assigned to the SUPER permission set or have been made capable to manage other users.",
     "description":  "Checks whether users are assigned to the SUPER permission or have been made capable to manage other users. You can also remove the SUPER permission set from a user.",
-    "version":  "18.2.0.0",
+    "version":  "18.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,7 +15,7 @@
                              "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          }
                      ],
     "internalsVisibleTo":  [

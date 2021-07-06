@@ -1,0 +1,25 @@
+{
+    "id":  "40860557-a18d-42ad-aecb-22b7dd80dc80",
+    "name":  "Permissions Mock",
+    "publisher":  "Microsoft",
+    "brief":  "Library used to mock permission sets assignments on current user.",
+    "description":  "In test code, Permissions Mock can be used to mock the permisison sets assignment of the user.",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "",
+    "EULA":  "",
+    "help":  "",
+    "url":  "",
+    "logo":  "",
+    "dependencies":  [
+                     ],
+    "screenshots":  [
+                    ],
+    "platform":  "18.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  131006,
+                         "to":  131006
+                     }
+                 ],
+    "target":  "OnPrem"
+}

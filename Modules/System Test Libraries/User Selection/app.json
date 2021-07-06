@@ -1,0 +1,32 @@
+{
+    "id":  "a42aa95e-45f6-4e85-bae1-26b3b89502f1",
+    "name":  "User Selection Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Test objects for the User Selection module.",
+    "description":  "Test objects for User Selection module.",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "7f850a76-a58c-4ade-a14f-7d7acff97115",
+                            "name":  "User Selection",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "idRanges": [
+        {
+            "from": 135035,
+            "to": 135035
+        }
+    ],
+    "platform":  "18.0.0.0",
+    "target":  "OnPrem"
+}

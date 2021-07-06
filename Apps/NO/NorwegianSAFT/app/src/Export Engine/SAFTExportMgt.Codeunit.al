@@ -527,7 +527,7 @@ codeunit 10675 "SAF-T Export Mgt."
         FilesPerZip: Integer;
         FilesHandled: Integer;
     begin
-        FileMgt.GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, ServerDestinationFolder);
+        GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, ServerDestinationFolder);
         FilesPerZip := GetFilesPerZip(TempNameValueBuffer, SAFTExportHeader);
         TempNameValueBuffer.FindSet();
         repeat
@@ -535,17 +535,17 @@ codeunit 10675 "SAF-T Export Mgt."
                 SaveZipFile(DataCompression, FilesHandled, SAFTExportHeader);
             If FilesHandled = 0 then
                 DataCompression.CreateZipArchive();
-            FileMgt.BLOBImportFromServerFile(EntryTempBlob, TempNameValueBuffer.Name);
+            FileMgt.BLOBImportFromServerFile(EntryTempBlob, TempNameValueBuffer.GetValue());
             EntryTempBlob.CreateInStream(EntryFileInStream);
-            DataCompression.AddEntry(EntryFileInStream, FileMgt.GetFileName(TempNameValueBuffer.Name));
+            DataCompression.AddEntry(EntryFileInStream, FileMgt.GetFileName(TempNameValueBuffer.GetValue()));
             FilesHandled += 1;
         until TempNameValueBuffer.Next() = 0;
         If FilesHandled <> 0 then
             SaveZipFile(DataCompression, FilesHandled, SAFTExportHeader);
 
-        FileMgt.GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, ServerDestinationFolder);
+        GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, ServerDestinationFolder);
         repeat
-            FileMgt.DeleteServerFile(TempNameValueBuffer.Name);
+            FileMgt.DeleteServerFile(TempNameValueBuffer.GetValue());
         until TempNameValueBuffer.Next() = 0;
     end;
 
@@ -560,7 +560,7 @@ codeunit 10675 "SAF-T Export Mgt."
         FilesHandled: Integer;
         ZipNo: Integer;
     begin
-        FileMgt.GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, SAFTExportHeader."Folder Path");
+        GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, SAFTExportHeader."Folder Path");
         FilesPerZip := GetFilesPerZip(TempNameValueBuffer, SAFTExportHeader);
         DataCompression.CreateZipArchive();
         TempNameValueBuffer.FindSet();
@@ -569,9 +569,9 @@ codeunit 10675 "SAF-T Export Mgt."
                 ExportZipFile(DataCompression, FilesHandled, ZipNo, SAFTExportHeader);
             If FilesHandled = 0 then
                 DataCompression.CreateZipArchive();
-            FileMgt.BLOBImportFromServerFile(EntryTempBlob, TempNameValueBuffer.Name);
+            FileMgt.BLOBImportFromServerFile(EntryTempBlob, TempNameValueBuffer.GetValue());
             EntryTempBlob.CreateInStream(EntryFileInStream);
-            DataCompression.AddEntry(EntryFileInStream, FileMgt.GetFileName(TempNameValueBuffer.Name));
+            DataCompression.AddEntry(EntryFileInStream, FileMgt.GetFileName(TempNameValueBuffer.GetValue()));
             FilesHandled += 1;
         until TempNameValueBuffer.Next() = 0;
         if FilesHandled <> 0 then
@@ -624,15 +624,33 @@ codeunit 10675 "SAF-T Export Mgt."
     procedure CheckNoFilesInFolder(SAFTExportHeader: Record "SAF-T Export Header")
     var
         TempNameValueBuffer: Record "Name/Value Buffer" temporary;
-        FileMgt: Codeunit "File Management";
         ErrorMessageManagement: Codeunit "Error Message Management";
     begin
         if not SAFTExportHeader.AllowedToExportIntoFolder() then
             exit;
 
-        FileMgt.GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, SAFTExportHeader."Folder Path");
+        GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, SAFTExportHeader."Folder Path");
         if TempNameValueBuffer.Count() <> 0 then
             ErrorMessageManagement.LogError(SAFTExportHeader, FilesExistsInFolderErr, '');
+    end;
+
+    local procedure GetServerDirectoryFilesListInclSubDirs(var TempNameValueBuffer: Record "Name/Value Buffer" temporary; DirectoryPath: Text)
+    var
+        FileManagement: Codeunit "File Management";
+        ArrayHelper: DotNet Array;
+        ServerDirectoryHelper: DotNet Directory;
+        FileSystemEntry: Text;
+        Index: Integer;
+    begin
+        FileManagement.IsAllowedPath(DirectoryPath, false);
+        ArrayHelper := ServerDirectoryHelper.GetFileSystemEntries(DirectoryPath);
+        for Index := 1 to ArrayHelper.GetLength(0) do begin
+            Evaluate(FileSystemEntry, ArrayHelper.GetValue(Index - 1));
+            if FileManagement.ServerDirectoryExists(FileSystemEntry) then
+                GetServerDirectoryFilesListInclSubDirs(TempNameValueBuffer, FileSystemEntry)
+            else
+                TempNameValueBuffer.AddNewEntry('', FileSystemEntry);
+        end;
     end;
 
     procedure SaveXMLDocToFolder(SAFTExportHeader: Record "SAF-T Export Header"; XMLDoc: XmlDocument; FileNumber: Integer): Boolean

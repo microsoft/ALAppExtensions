@@ -6,7 +6,6 @@
 codeunit 139481 "Headlines Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
 
     trigger OnRun()
     begin
@@ -16,6 +15,7 @@ codeunit 139481 "Headlines Test"
     var
         Headlines: Codeunit "Headlines";
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         Text50Txt: Label '12345678901234567890123456789012345678901234567890', Locked = true;
         Text75Txt: Label '123456789012345678901234567890123456789012345678901234567890123456789012345', Locked = true;
         NoonGreetingTxt: Label 'Hi, %1!', Comment = 'Displayed between 12:00 and 13:59. %1 is the user name.';
@@ -25,6 +25,7 @@ codeunit 139481 "Headlines Test"
     procedure TestEmphasize()
     begin
         // [FEATURE] [Emphasize Text]
+        PermissionsMock.Set('Headlines Read');
         // [WHEN] Empahsize is called with an empty text
         // [THEN] It returns an empty string
         Assert.AreEqual('', Headlines.Emphasize(''), 'Empty emphasize should be empty.');
@@ -40,6 +41,7 @@ codeunit 139481 "Headlines Test"
         Result: Text;
     begin
         // [FEATURE] [Headline Text]
+        PermissionsMock.Set('Headlines Read');
 
         // [WHEN] GetHeadlineText is called with no text at all
         // [THEN] It returns false
@@ -103,6 +105,7 @@ codeunit 139481 "Headlines Test"
     procedure TestTruncate()
     begin
         // [FEATURE] [Truncate]
+        PermissionsMock.Set('Headlines Read');
 
         // [WHEN] Truncate is called with negative negative or 0 length
         // [THEN] It returns an empty string
@@ -132,6 +135,7 @@ codeunit 139481 "Headlines Test"
         NoonTime: Time;
     begin
         // [FEATURE] [User Greeting]
+        PermissionsMock.Set('Headlines Read');
 
         NoonTime := 120000T;
         // [WHEN] The username contains only whitespace characters
@@ -157,17 +161,21 @@ codeunit 139481 "Headlines Test"
         UserLoginTestLibrary: Codeunit "User Login Test Library";
     begin
         // [FEATURE] [User Greeting]
-
         UserLoginTestLibrary.DeleteAllLoginInformation(UserSecurityId());
 
         // [WHEN] The user has logged in less than 10 minutes ago
         UserLoginTestLibrary.InsertUserLogin(UserSecurityId(), 0D, CurrentDateTime() - (9 * 60 * 1000), 0DT);
+    
+        PermissionsMock.Set('Headlines Read');
 
         // [THEN] User greeting should be shown
         Assert.IsTrue(Headlines.ShouldUserGreetingBeVisible(), 'User logged in within 9 minutes from now.');
 
         // [WHEN] The user has logged in more than 10 minutes ago
+        PermissionsMock.Stop();
         UserLoginTestLibrary.UpdateUserLogin(UserSecurityId(), 0D, CurrentDateTime() - (11 * 60 * 1000), 0DT);
+        PermissionsMock.Start();
+        PermissionsMock.Set('Headlines Read');
 
         // [THEN] No greeting should be shown
         Assert.IsFalse(Headlines.ShouldUserGreetingBeVisible(), 'User logged in at least 11 minutes minutes ago.');

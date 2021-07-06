@@ -1,0 +1,36 @@
+{
+    "id":  "ae5c2cd1-89f3-4f7e-a61b-c22909f27529",
+    "name":  "Cues And KPIs Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Library with Test Tables for the Cues And KPIs module",
+    "description":  "Library with Test Tables for the Cues And KPIs module",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "1d643b0c-a545-46b1-8514-11196184b38f",
+                            "name":  "Cues and KPIs",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "18.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  135039,
+                         "to":  135040
+                     },
+                     {
+                         "from": 135058,
+                         "to": 135058
+                     }
+                 ],
+    "target":  "OnPrem"
+}

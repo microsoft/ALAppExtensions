@@ -1,0 +1,32 @@
+{
+    "id":  "67aadf15-618d-415f-8bfe-8309b657b4fb",
+    "name":  "Azure AD User Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Test objects for the Azure AD User module.",
+    "description":  "Test objects for the Azure AD User module.",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                            "id":  "f2cc2ef8-949f-47d1-85b8-10bd6f8bc61c",
+                            "name":  "Azure AD User",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "idRanges": [
+        {
+            "from": 132911,
+            "to": 132911
+        }
+    ],
+    "platform":  "18.0.0.0",
+    "target":  "OnPrem"
+}

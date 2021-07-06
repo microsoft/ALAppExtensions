@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Provides different types of guided experience for users.",
     "description":  "Provides different types of guided experience for users, such as assisted setup guides, manual setup guides, and checklists.",
-    "version":  "18.2.0.0",
+    "version":  "18.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,67 +15,67 @@
                              "id":  "3ade8173-2cc2-4727-8c57-eb0754f70cdc",
                              "name":  "Translation",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "BLOB Storage",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "84e448ad-faa5-44c8-835a-ec4b408e8cec",
                              "name":  "Video",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
                              "name":  "Extension Management",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "a4584a53-9345-458a-af20-d1df2fab7bd8",
                              "name":  "Confirm Management",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "901c89b7-132b-4c59-bb3f-2bfa4fbc70b5",
                              "name":  "Navigation Bar Subscribers",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "959630b2-01c5-48d8-a477-d6d40da855fb",
                              "name":  "User Login Times",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "93b83ef6-9666-4c1d-b130-c232f4047621",
                              "name":  "Upgrade Tags",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "5c36f279-480c-451b-b513-c1af8cfb0744",
                              "name":  "Language",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          }
                      ],
     "internalsVisibleTo":  [
                                {
                                    "id":  "2856b1c4-3dda-4426-9403-d0313172b6c0",
-                                   "name":  "Assisted Setup Test Library",
+                                   "name":  "Guided Experience Test Library",
                                    "publisher":  "Microsoft"
                                },
                                {
@@ -119,7 +119,7 @@
                      },
                      {
                          "from":  1990,
-                         "to":  1996
+                         "to":  1997
                      },
                      {
                          "from":  3700,

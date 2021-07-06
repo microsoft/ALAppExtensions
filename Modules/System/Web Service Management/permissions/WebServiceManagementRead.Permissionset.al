@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 permissionset 6710 "Web Service Management - Read"
 {
     Access = Internal;
@@ -6,7 +11,7 @@ permissionset 6710 "Web Service Management - Read"
     Permissions = tabledata AllObj = r,
                   tabledata AllObjWithCaption = r,
                   tabledata Field = r,
-                  tabledata "Tenant Web Service" = r,
+                  tabledata "Tenant Web Service" = R,
                   tabledata "Tenant Web Service Columns" = R,
                   tabledata "Tenant Web Service Filter" = R,
                   tabledata "Tenant Web Service OData" = R,

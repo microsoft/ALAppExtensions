@@ -1,5 +1,7 @@
 codeunit 20344 "Tax Posting Execution"
 {
+    Permissions = tabledata "VAT Entry" = i;
+
     procedure ExecutePosting(
         var UseCase: Record "Tax Use Case";
         var SourceRecord: Variant;

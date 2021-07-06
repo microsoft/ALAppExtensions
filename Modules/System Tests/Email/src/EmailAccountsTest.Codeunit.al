@@ -10,6 +10,7 @@ codeunit 134686 "Email Accounts Test"
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         AccountNameLbl: Label '%1 (%2)';
         AccountToSelect: Guid;
 
@@ -27,6 +28,8 @@ codeunit 134686 "Email Accounts Test"
         // [Given] A email account
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(EmailAccount);
+
+        PermissionsMock.Set('Email Edit');
 
         // [When] The accounts page is open
         AccountsPage.OpenView();
@@ -54,6 +57,8 @@ codeunit 134686 "Email Accounts Test"
         ConnectorMock.AddAccount(FirstEmailAccount);
         ConnectorMock.AddAccount(SecondEmailAccount);
 
+        PermissionsMock.Set('Email Edit');
+
         // [When] The accounts page is open
         AccountsPage.OpenView();
 
@@ -76,6 +81,8 @@ codeunit 134686 "Email Accounts Test"
         AccountWizardPage: TestPage "Email Account Wizard";
     begin
         // [SCENARIO] A new Account can be added through the Account Wizard
+        PermissionsMock.Set('Email Admin');
+
         ConnectorMock.Initialize();
 
         // [WHEN] The AddAccount action is invoked
@@ -110,6 +117,8 @@ codeunit 134686 "Email Accounts Test"
         AccountsPage: TestPage "Email Accounts";
     begin
         // [SCENARIO] The add Account action open the Account Wizard page in modal mode
+        PermissionsMock.Set('Email Admin');
+
         AccountsPage.OpenView();
         // [WHEN] The AddAccount action is invoked
         AccountsPage.AddAccount.Invoke();
@@ -130,6 +139,8 @@ codeunit 134686 "Email Accounts Test"
         // [GIVEN] A connector is installed and an account is added
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
+        
+        PermissionsMock.Set('Email Edit');
 
         // [WHEN] The Send Email action is invoked
         Accounts.OpenView();
@@ -153,6 +164,8 @@ codeunit 134686 "Email Accounts Test"
         // [GIVEN] A connector is installed and an account is added
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
 
         // [WHEN] The Outbox action is invoked
         Accounts.OpenView();
@@ -179,6 +192,8 @@ codeunit 134686 "Email Accounts Test"
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
 
+        PermissionsMock.Set('Email Edit');
+
         // [WHEN] The Sent Emails action is invoked
         Accounts.OpenView();
         Accounts.SentEmails.Invoke();
@@ -198,6 +213,8 @@ codeunit 134686 "Email Accounts Test"
 
         // [GIVEN] A connector is installed and no account is added
         ConnectorMock.Initialize();
+
+        PermissionsMock.Set('Email Edit');
 
         // [WHEN] GetAllAccounts is called
         EmailAccount.GetAllAccounts(EmailAccounts);
@@ -232,6 +249,8 @@ codeunit 134686 "Email Accounts Test"
         // [GIVEN] A connector is installed and no account is added
         ConnectorMock.Initialize();
 
+        PermissionsMock.Set('Email Edit');
+
         // [WHEN] Calling IsAnyAccountRegistered
         // [THEN] it evaluates to false
         Assert.IsFalse(EmailAccount.IsAnyAccountRegistered(), 'There should be no registered accounts');
@@ -254,6 +273,7 @@ codeunit 134686 "Email Accounts Test"
         FirstAccountId, SecondAccountId, ThirdAccountId : Guid;
     begin
         // [SCENARIO] When all accounts are deleted, the Email Accounts page is empty
+        PermissionsMock.Set('Email Admin');
 
         // [GIVEN] A connector is installed and three account are added
         ConnectorMock.Initialize();
@@ -287,6 +307,7 @@ codeunit 134686 "Email Accounts Test"
         FirstAccountId, SecondAccountId, ThirdAccountId : Guid;
     begin
         // [SCENARIO] When all accounts are about to be deleted but the action in canceled, the Email Accounts page contains all of them.
+        PermissionsMock.Set('Email Admin');
 
         // [GIVEN] A connector is installed and three account are added
         ConnectorMock.Initialize();
@@ -322,6 +343,7 @@ codeunit 134686 "Email Accounts Test"
         FirstAccountId, SecondAccountId, ThirdAccountId : Guid;
     begin
         // [SCENARIO] When some accounts are deleted, they cannot be found on the page
+        PermissionsMock.Set('Email Admin');
 
         // [GIVEN] A connector is installed and three account are added
         ConnectorMock.Initialize();
@@ -358,6 +380,7 @@ codeunit 134686 "Email Accounts Test"
         FirstAccountId, ThirdAccountId : Guid;
     begin
         // [SCENARIO] When the a non default account is deleted, the user is not prompted to choose a new default account.
+        PermissionsMock.Set('Email Admin');
 
         // [GIVEN] A connector is installed and three account are added
         ConnectorMock.Initialize();
@@ -400,6 +423,7 @@ codeunit 134686 "Email Accounts Test"
         FirstAccountId, ThirdAccountId : Guid;
     begin
         // [SCENARIO] When the default account is deleted, the user is not prompted to choose a new default account if there's only one account left
+        PermissionsMock.Set('Email Admin');
 
         // [GIVEN] A connector is installed and three account are added
         ConnectorMock.Initialize();
@@ -441,6 +465,7 @@ codeunit 134686 "Email Accounts Test"
         FirstAccountId, ThirdAccountId : Guid;
     begin
         // [SCENARIO] When the default account is deleted, the user is prompted to choose a new default account but they cancel.
+        PermissionsMock.Set('Email Admin');
 
         // [GIVEN] A connector is installed and three account are added
         ConnectorMock.Initialize();
@@ -484,6 +509,7 @@ codeunit 134686 "Email Accounts Test"
         FirstAccountId, ThirdAccountId : Guid;
     begin
         // [SCENARIO] When the default account is deleted, the user is prompted to choose a new default account
+        PermissionsMock.Set('Email Admin');
 
         // [GIVEN] A connector is installed and three account are added
         ConnectorMock.Initialize();

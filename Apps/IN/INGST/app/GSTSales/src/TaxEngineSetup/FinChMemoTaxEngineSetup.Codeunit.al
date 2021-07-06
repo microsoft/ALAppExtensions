@@ -7,6 +7,8 @@ codeunit 18149 "Fin Ch. Memo Tax Engine Setup"
         TaxJsonDeserialization: Codeunit "Tax Json Deserialization";
     begin
         TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.SkipUseCaseIndentation(true);
         TaxJsonDeserialization.ImportUseCases(FinChMemoUseCaseDataset.GetText());
     end;
 }

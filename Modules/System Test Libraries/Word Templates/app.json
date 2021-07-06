@@ -1,0 +1,32 @@
+{
+    "id":  "bfdf2a31-bb39-4f1a-bbb5-291e04dc8051",
+    "name":  "Word Templates Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Library with Test objects for the Word Templates module",
+    "description":  "Library with Test objects for the Word Templates module",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "c0804406-ca14-4a8b-88a0-dd6999c550a8",
+                            "name":  "Word Templates",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "18.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  130443,
+                         "to":  130443
+                     }
+                 ],
+    "target":  "OnPrem"
+}

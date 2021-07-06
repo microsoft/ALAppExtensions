@@ -129,7 +129,7 @@ page 8883 "Sent Emails"
 
                 trigger OnAction()
                 begin
-                    EmailViewer.RefreshSentMailForUser(EmailAccountId, NewerThanDate, Rec);
+                    EmailViewer.RefreshSentMailForUser(EmailAccountId, NewerThanDate, SourceTableID, SourceSystemID, Rec);
                     CurrPage.Update(false);
                     NoSentEmails := Rec.IsEmpty();
                 end;
@@ -157,7 +157,7 @@ page 8883 "Sent Emails"
 
     trigger OnOpenPage()
     begin
-        EmailViewer.RefreshSentMailForUser(EmailAccountId, NewerThanDate, Rec);
+        EmailViewer.RefreshSentMailForUser(EmailAccountId, NewerThanDate, SourceTableID, SourceSystemID, Rec);
         Rec.SetCurrentKey("Date Time Sent");
         NoSentEmails := Rec.IsEmpty();
         Rec.Ascending(false);
@@ -193,10 +193,17 @@ page 8883 "Sent Emails"
         EmailAccountId := AccountId;
     end;
 
+    internal procedure SetRelatedRecord(TableID: Integer; SystemID: Guid)
+    begin
+        SourceTableID := TableID;
+        SourceSystemID := SystemID;
+    end;
+
     var
         EmailViewer: Codeunit "Email Viewer";
         NewerThanDate: DateTime;
-        EmailAccountId: Guid;
+        EmailAccountId, SourceSystemID : Guid;
+        SourceTableID: Integer;
         NoSentEmails: Boolean;
         EmailConnectorHasBeenUninstalledMsg: Label 'The email extension that was used to send this email has been uninstalled. To view information about the email account, you must reinstall the extension.';
 }

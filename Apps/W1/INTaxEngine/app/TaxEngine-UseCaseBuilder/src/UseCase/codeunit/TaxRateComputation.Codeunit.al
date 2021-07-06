@@ -147,6 +147,7 @@ codeunit 20291 "Tax Rate Computation"
     var
         TaxRateValue: Record "Tax Rate Value";
     begin
+        TaxRateValue.SetRange("Tax Type", TaxRateColumnSetup."Tax Type");
         TaxRateValue.SetRange("Config ID", TaxRate.ID);
         TaxRateValue.SetRange("Column ID", TaxRateColumnSetup."Column ID");
         if TaxRateValue.findfirst() then
@@ -315,6 +316,7 @@ codeunit 20291 "Tax Rate Computation"
         TaxRateValue: Record "Tax Rate Value";
         CompareDate: Date;
     begin
+        TaxRateValue.SetRange("Tax Type", TaxRateColumnSetup."Tax Type");
         TaxRateValue.SetRange("Config ID", TaxRate.ID);
         TaxRateValue.SetRange("Column ID", TaxRateColumnSetup."Column ID");
         if TaxRateValue.FindSet() then
@@ -345,6 +347,7 @@ codeunit 20291 "Tax Rate Computation"
         TaxRateValue: Record "Tax Rate Value";
     begin
         TaxRateValue.Reset();
+        TaxRateValue.SetRange("Tax Type", TaxRateColumnSetup."Tax Type");
         TaxRateValue.SetRange("Config ID", ConfigID);
         TaxRateValue.SetRange("Column ID", TaxRateColumnSetup."Column ID");
 
@@ -510,6 +513,7 @@ codeunit 20291 "Tax Rate Computation"
     var
         TaxRateValue: Record "Tax Rate Value";
     begin
+        TaxRateValue.SetRange("Tax Type", TaxRateColumnSetup."Tax Type");
         TaxRateValue.SetRange("Config ID", ConfigID);
         TaxRateValue.SetRange("Column ID", TaxRateColumnSetup."Column ID");
         if TaxRateValue.FindFirst() then

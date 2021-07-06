@@ -7,7 +7,7 @@ codeunit 4470 "Record Link Impl."
 {
     Access = Internal;
     SingleInstance = true;
-    Permissions = tabledata "Record Link" = rmd;
+    Permissions = tabledata "Record Link" = rimd;
 
     var
         RecordLinkManagement: Codeunit "Record Link Management";
