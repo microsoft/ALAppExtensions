@@ -18,6 +18,8 @@ codeunit 31017 "Upgrade Application CZL"
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion174PerDatabaseUpgradeTag());
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerDatabaseUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerDatabaseUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerDatabaseUpgradeTag());
     end;
 
     trigger OnUpgradePerCompany()
@@ -101,19 +103,37 @@ codeunit 31017 "Upgrade Application CZL"
         UpdateInventoryPostingSetup();
         UpdateUserSetup();
         UpdateUserSetupLine();
+        UpdateAccScheduleLine();
+        UpdateAccScheduleExtension();
+        UpdateAccScheduleResultLine();
+        UpdateAccScheduleResultColumn();
+        UpdateAccScheduleResultValue();
+        UpdateAccScheduleResultHeader();
+        UpdateAccScheduleResultHistory();
         UpdateGenJournalTemplate();
-        UpdateVATEntry();        
+        UpdateVATEntry();
 
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion174PerCompanyUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion174PerCompanyUpgradeTag());
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag());
     end;
 
     local procedure UpdateGeneralLedgerSetup();
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag()) then
+            exit;
+
+        if GeneralLedgerSetup.Get() then begin
+            GeneralLedgerSetup."Shared Account Schedule CZL" := GeneralLedgerSetup."Shared Account Schedule";
+            GeneralLedgerSetup."Acc. Schedule Results Nos. CZL" := GeneralLedgerSetup."Acc. Schedule Results Nos.";
+            GeneralLedgerSetup.Modify(false);
+        end;
+
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
@@ -1428,6 +1448,217 @@ codeunit 31017 "Upgrade Application CZL"
             until UserSetupLine.Next() = 0;
     end;
 
+    local procedure UpdateAccScheduleLine();
+    var
+        AccScheduleLine: Record "Acc. Schedule Line";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag()) then
+            exit;
+
+        if AccScheduleLine.FindSet(true) then
+            repeat
+                AccScheduleLine."Source Table CZL" := AccScheduleLine."Source Table";
+                ConvertAccScheduleLineTotalingTypeEnumValues(AccScheduleLine);
+                AccScheduleLine.Modify(false);
+            until AccScheduleLine.Next() = 0;
+    end;
+
+    local procedure ConvertAccScheduleLineTotalingTypeEnumValues(var AccScheduleLine: Record "Acc. Schedule Line");
+    begin
+#if CLEAN19
+        if AccScheduleLine."Totaling Type" = 14 then //14 = AccScheduleLine.Type::Custom
+#else
+        if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::Custom then
+#endif
+            AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Custom CZL";
+#if CLEAN19
+        if AccScheduleLine."Totaling Type" = 15 then //15 = AccScheduleLine.Type::Constant
+#else
+        if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::Constant then
+#endif
+            AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Constant CZL";
+    end;
+
+    local procedure UpdateAccScheduleExtension();
+    var
+        AccScheduleExtension: Record "Acc. Schedule Extension";
+        AccScheduleExtensionCZL: Record "Acc. Schedule Extension CZL";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag()) then
+            exit;
+
+        if AccScheduleExtension.FindSet() then
+            repeat
+                if not AccScheduleExtensionCZL.Get(AccScheduleExtension.Code) then begin
+                    AccScheduleExtensionCZL.Init();
+                    AccScheduleExtensionCZL.Code := AccScheduleExtension.Code;
+                    AccScheduleExtensionCZL.Insert();
+                end;
+                AccScheduleExtensionCZL.Description := AccScheduleExtension.Description;
+                AccScheduleExtensionCZL."Source Table" := AccScheduleExtension."Source Table";
+                AccScheduleExtensionCZL."Source Type" := AccScheduleExtension."Source Type";
+                AccScheduleExtensionCZL."Source Filter" := AccScheduleExtension."Source Filter";
+                AccScheduleExtensionCZL."G/L Account Filter" := AccScheduleExtension."G/L Account Filter";
+                AccScheduleExtensionCZL."G/L Amount Type" := AccScheduleExtension."G/L Amount Type";
+                AccScheduleExtensionCZL."Amount Sign" := AccScheduleExtension."Amount Sign";
+                AccScheduleExtensionCZL."Entry Type" := AccScheduleExtension."Entry Type";
+                AccScheduleExtensionCZL.Prepayment := AccScheduleExtension.Prepayment;
+                AccScheduleExtensionCZL."Reverse Sign" := AccScheduleExtension."Reverse Sign";
+                AccScheduleExtensionCZL."VAT Amount Type" := AccScheduleExtension."VAT Amount Type";
+                AccScheduleExtensionCZL."VAT Bus. Post. Group Filter" := AccScheduleExtension."VAT Bus. Post. Group Filter";
+                AccScheduleExtensionCZL."VAT Prod. Post. Group Filter" := AccScheduleExtension."VAT Prod. Post. Group Filter";
+                AccScheduleExtensionCZL."Location Filter" := AccScheduleExtension."Location Filter";
+                AccScheduleExtensionCZL."Bin Filter" := AccScheduleExtension."Bin Filter";
+                AccScheduleExtensionCZL."Posting Group Filter" := AccScheduleExtension."Posting Group Filter";
+                AccScheduleExtensionCZL."Posting Date Filter" := AccScheduleExtension."Posting Date Filter";
+                AccScheduleExtensionCZL."Due Date Filter" := AccScheduleExtension."Due Date Filter";
+                AccScheduleExtensionCZL."Document Type Filter" := AccScheduleExtension."Document Type Filter";
+                AccScheduleExtensionCZL.Modify(false);
+            until AccScheduleExtension.Next() = 0;
+    end;
+
+    local procedure UpdateAccScheduleResultLine();
+    var
+        AccScheduleResultLine: Record "Acc. Schedule Result Line";
+        AccScheduleResultLineCZL: Record "Acc. Schedule Result Line CZL";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag()) then
+            exit;
+
+        if AccScheduleResultLine.FindSet() then
+            repeat
+                if not AccScheduleResultLineCZL.Get(AccScheduleResultLine."Result Code", AccScheduleResultLine."Line No.") then begin
+                    AccScheduleResultLineCZL.Init();
+                    AccScheduleResultLineCZL."Result Code" := AccScheduleResultLine."Result Code";
+                    AccScheduleResultLineCZL."Line No." := AccScheduleResultLine."Line No.";
+                    AccScheduleResultLineCZL.Insert();
+                end;
+                AccScheduleResultLineCZL."Row No." := AccScheduleResultLine."Row No.";
+                AccScheduleResultLineCZL.Description := AccScheduleResultLine.Description;
+                AccScheduleResultLineCZL.Totaling := AccScheduleResultLine.Totaling;
+                AccScheduleResultLineCZL."Totaling Type" := AccScheduleResultLine."Totaling Type";
+                AccScheduleResultLineCZL."New Page" := AccScheduleResultLine."New Page";
+                AccScheduleResultLineCZL.Show := AccScheduleResultLine.Show;
+                AccScheduleResultLineCZL.Bold := AccScheduleResultLine.Bold;
+                AccScheduleResultLineCZL.Italic := AccScheduleResultLine.Italic;
+                AccScheduleResultLineCZL.Underline := AccScheduleResultLine.Underline;
+                AccScheduleResultLineCZL."Show Opposite Sign" := AccScheduleResultLine."Show Opposite Sign";
+                AccScheduleResultLineCZL."Row Type" := AccScheduleResultLine."Row Type";
+                AccScheduleResultLineCZL."Amount Type" := AccScheduleResultLine."Amount Type";
+                AccScheduleResultLineCZL.Modify(false);
+            until AccScheduleResultLine.Next() = 0;
+    end;
+
+    local procedure UpdateAccScheduleResultColumn();
+    var
+        AccScheduleResultColumn: Record "Acc. Schedule Result Column";
+        AccScheduleResultColCZL: Record "Acc. Schedule Result Col. CZL";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag()) then
+            exit;
+
+        if AccScheduleResultColumn.FindSet() then
+            repeat
+                if not AccScheduleResultColCZL.Get(AccScheduleResultColumn."Result Code", AccScheduleResultColumn."Line No.") then begin
+                    AccScheduleResultColCZL.Init();
+                    AccScheduleResultColCZL."Result Code" := AccScheduleResultColumn."Result Code";
+                    AccScheduleResultColCZL."Line No." := AccScheduleResultColumn."Line No.";
+                    AccScheduleResultColCZL.Insert();
+                end;
+                AccScheduleResultColCZL."Column No." := AccScheduleResultColumn."Column No.";
+                AccScheduleResultColCZL."Column Header" := AccScheduleResultColumn."Column Header";
+                AccScheduleResultColCZL."Column Type" := AccScheduleResultColumn."Column Type";
+                AccScheduleResultColCZL."Ledger Entry Type" := AccScheduleResultColumn."Ledger Entry Type";
+                AccScheduleResultColCZL."Amount Type" := AccScheduleResultColumn."Amount Type";
+                AccScheduleResultColCZL.Formula := AccScheduleResultColumn.Formula;
+                AccScheduleResultColCZL."Comparison Date Formula" := AccScheduleResultColumn."Comparison Date Formula";
+                AccScheduleResultColCZL."Show Opposite Sign" := AccScheduleResultColumn."Show Opposite Sign";
+                AccScheduleResultColCZL.Show := AccScheduleResultColumn.Show;
+                AccScheduleResultColCZL."Rounding Factor" := AccScheduleResultColumn."Rounding Factor";
+                AccScheduleResultColCZL."Comparison Period Formula" := AccScheduleResultColumn."Comparison Period Formula";
+                AccScheduleResultColCZL.Modify(false);
+            until AccScheduleResultColumn.Next() = 0;
+    end;
+
+    local procedure UpdateAccScheduleResultValue();
+    var
+        AccScheduleResultValue: Record "Acc. Schedule Result Value";
+        AccScheduleResultValueCZL: Record "Acc. Schedule Result Value CZL";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag()) then
+            exit;
+
+        if AccScheduleResultValue.FindSet() then
+            repeat
+                if not AccScheduleResultValueCZL.Get(AccScheduleResultValue."Result Code", AccScheduleResultValue."Row No.", AccScheduleResultValue."Column No.") then begin
+                    AccScheduleResultValueCZL.Init();
+                    AccScheduleResultValueCZL."Result Code" := AccScheduleResultValue."Result Code";
+                    AccScheduleResultValueCZL."Row No." := AccScheduleResultValue."Row No.";
+                    AccScheduleResultValueCZL."Column No." := AccScheduleResultValue."Column No.";
+                    AccScheduleResultValueCZL.Insert();
+                end;
+                AccScheduleResultValueCZL.Value := AccScheduleResultValue.Value;
+                AccScheduleResultValueCZL.Modify(false);
+            until AccScheduleResultValue.Next() = 0;
+    end;
+
+    local procedure UpdateAccScheduleResultHeader();
+    var
+        AccScheduleResultHeader: Record "Acc. Schedule Result Header";
+        AccScheduleResultHdrCZL: Record "Acc. Schedule Result Hdr. CZL";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag()) then
+            exit;
+
+        if AccScheduleResultHeader.FindSet() then
+            repeat
+                if not AccScheduleResultHdrCZL.Get(AccScheduleResultHeader."Result Code") then begin
+                    AccScheduleResultHdrCZL.Init();
+                    AccScheduleResultHdrCZL."Result Code" := AccScheduleResultHeader."Result Code";
+                    AccScheduleResultHdrCZL.Insert();
+                end;
+                AccScheduleResultHdrCZL.Description := AccScheduleResultHeader.Description;
+                AccScheduleResultHdrCZL."Date Filter" := AccScheduleResultHeader."Date Filter";
+                AccScheduleResultHdrCZL."Acc. Schedule Name" := AccScheduleResultHeader."Acc. Schedule Name";
+                AccScheduleResultHdrCZL."Column Layout Name" := AccScheduleResultHeader."Column Layout Name";
+                AccScheduleResultHdrCZL."Dimension 1 Filter" := AccScheduleResultHeader."Dimension 1 Filter";
+                AccScheduleResultHdrCZL."Dimension 2 Filter" := AccScheduleResultHeader."Dimension 2 Filter";
+                AccScheduleResultHdrCZL."Dimension 3 Filter" := AccScheduleResultHeader."Dimension 3 Filter";
+                AccScheduleResultHdrCZL."Dimension 4 Filter" := AccScheduleResultHeader."Dimension 4 Filter";
+                AccScheduleResultHdrCZL."User ID" := AccScheduleResultHeader."User ID";
+                AccScheduleResultHdrCZL."Result Date" := AccScheduleResultHeader."Result Date";
+                AccScheduleResultHdrCZL."Result Time" := AccScheduleResultHeader."Result Time";
+                AccScheduleResultHdrCZL.Modify(false);
+            until AccScheduleResultHeader.Next() = 0;
+    end;
+
+    local procedure UpdateAccScheduleResultHistory();
+    var
+        AccScheduleResultHistory: Record "Acc. Schedule Result History";
+        AccScheduleResultHistCZL: Record "Acc. Schedule Result Hist. CZL";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag()) then
+            exit;
+
+        if AccScheduleResultHistory.FindSet() then
+            repeat
+                if not AccScheduleResultHistCZL.Get(AccScheduleResultHistory."Result Code", AccScheduleResultHistory."Row No.",
+                                                    AccScheduleResultHistory."Column No.", AccScheduleResultHistory."Variant No.") then begin
+                    AccScheduleResultHistCZL.Init();
+                    AccScheduleResultHistCZL."Result Code" := AccScheduleResultHistory."Result Code";
+                    AccScheduleResultHistCZL."Row No." := AccScheduleResultHistory."Row No.";
+                    AccScheduleResultHistCZL."Column No." := AccScheduleResultHistory."Column No.";
+                    AccScheduleResultHistCZL."Variant No." := AccScheduleResultHistory."Variant No.";
+                    AccScheduleResultHistCZL.Insert();
+                end;
+                AccScheduleResultHistCZL."New Value" := AccScheduleResultHistory."New Value";
+                AccScheduleResultHistCZL."Old Value" := AccScheduleResultHistory."Old Value";
+                AccScheduleResultHistCZL."User ID" := AccScheduleResultHistory."User ID";
+                AccScheduleResultHistCZL."Modified DateTime" := AccScheduleResultHistory."Modified DateTime";
+                AccScheduleResultHistCZL.Modify(false);
+            until AccScheduleResultHistory.Next() = 0;
+    end;
+
     local procedure UpdateGenJournalTemplate();
     var
         GenJournalTemplate: Record "Gen. Journal Template";
@@ -1461,6 +1692,7 @@ codeunit 31017 "Upgrade Application CZL"
     begin
         UpdatePermissionVersion174();
         UpdatePermissionVersion180();
+        UpdatePermissionVersion190();
     end;
 
     local procedure UpdatePermissionVersion174()
@@ -1489,6 +1721,21 @@ codeunit 31017 "Upgrade Application CZL"
         InsertTableDataPermissions(Database::"User Setup Line", Database::"User Setup Line CZL");
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerDatabaseUpgradeTag());
+    end;
+
+    local procedure UpdatePermissionVersion190()
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerDatabaseUpgradeTag()) then
+            exit;
+
+        InsertTableDataPermissions(Database::"Acc. Schedule Extension", Database::"Acc. Schedule Extension CZL");
+        InsertTableDataPermissions(Database::"Acc. Schedule Result Line", Database::"Acc. Schedule Result Line CZL");
+        InsertTableDataPermissions(Database::"Acc. Schedule Result Column", Database::"Acc. Schedule Result Col. CZL");
+        InsertTableDataPermissions(Database::"Acc. Schedule Result Value", Database::"Acc. Schedule Result Value CZL");
+        InsertTableDataPermissions(Database::"Acc. Schedule Result Header", Database::"Acc. Schedule Result Hdr. CZL");
+        InsertTableDataPermissions(Database::"Acc. Schedule Result History", Database::"Acc. Schedule Result Hist. CZL");
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerDatabaseUpgradeTag());
     end;
 
     local procedure InsertTableDataPermissions(OldTableID: Integer; NewTableID: Integer)

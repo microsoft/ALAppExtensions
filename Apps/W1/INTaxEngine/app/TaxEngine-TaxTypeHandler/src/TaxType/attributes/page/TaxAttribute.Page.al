@@ -72,7 +72,7 @@ page 20257 "Tax Attribute"
                     }
                     field(FieldNameText; FieldNameText2)
                     {
-                        Caption = 'Refrence Field Name';
+                        Caption = 'Reference Field Name';
                         ToolTip = 'Specifies field name that is mapped with the parameter';
                         ApplicationArea = Basic, Suite;
                         trigger OnValidate();

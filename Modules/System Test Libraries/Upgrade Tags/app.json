@@ -1,0 +1,32 @@
+{
+    "id":  "4313b056-0cde-4a07-a700-c984cfbb209c",
+    "name":  "Upgrade Tags Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Test objects for the Upgrade Tags module.",
+    "description":  "Test objects for the Upgrade Tags module.",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "93b83ef6-9666-4c1d-b130-c232f4047621",
+                            "publisher":  "Microsoft",
+                            "name":  "Upgrade Tags",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "idRanges": [
+        {
+            "from": 135092,
+            "to": 135093
+        }
+    ],
+    "platform":  "18.0.0.0",
+    "target":  "OnPrem"
+}

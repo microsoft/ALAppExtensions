@@ -78,6 +78,9 @@ codeunit 130454 "Test Runner - Mgt"
             exit(true);
         end;
 
+        // Start permission mock if installed
+        StartStopPermissionMock();
+
         if not GetTestFunction(TestMethodLineFunction, FunctionName, TestSuite, CodeunitID, LineNoTestFilter) then
             exit(false);
 
@@ -95,6 +98,10 @@ codeunit 130454 "Test Runner - Mgt"
         TestMethodLine: Record "Test Method Line";
         CodeunitTestMethodLine: Record "Test Method Line";
     begin
+        // Stop Permisson Mock if installed
+        if (FunctionName <> '') and (FunctionName <> 'OnRun') then
+            StartStopPermissionMock();
+
         if SkipLoggingResults then begin
             OnAfterTestMethodRun(TestMethodLine, CodeunitID, CodeunitName, FunctionName, FunctionTestPermissions, IsSuccess);
             exit;
@@ -168,6 +175,19 @@ codeunit 130454 "Test Runner - Mgt"
 
         TestMethodLineFunction."Finish Time" := CurrentDateTime();
         TestMethodLineFunction.Modify();
+    end;
+
+    // TODO: Temporary fix refactor to system events.
+    local procedure StartStopPermissionMock()
+    var
+        AllObj: Record AllObj;
+        PermissionMockID: Integer;
+    begin
+        PermissionMockID := 131006; // codeunit 131006 "Permissions Mock"
+        AllObj.SetRange("Object Type", AllObj."Object Type"::Codeunit);
+        AllObj.SetRange("Object ID", PermissionMockID);
+        if not AllObj.IsEmpty() then
+            Codeunit.Run(PermissionMockID);
     end;
 
     local procedure GetTestFunction(var TestMethodLineFunction: Record "Test Method Line"; FunctionName: Text[128]; TestSuite: Code[10]; TestCodeunit: Integer; LineNoTestFilter: Text): Boolean

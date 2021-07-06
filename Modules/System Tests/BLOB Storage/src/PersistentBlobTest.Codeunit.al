@@ -10,6 +10,7 @@ codeunit 135031 "Persistent Blob Test"
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -19,6 +20,10 @@ codeunit 135031 "Persistent Blob Test"
         "Key": BigInteger;
     begin
         // [SCENARIO] A new PersistentBlob can be created.
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
+
         Key := PersistentBlob.Create();
         Assert.IsTrue(PersistentBlob.Exists(Key), 'Blob should have been created.');
     end;
@@ -31,6 +36,10 @@ codeunit 135031 "Persistent Blob Test"
         "Key": BigInteger;
     begin
         // [SCENARIO] An existing PersistentBlob can be deleted.
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
+
         Key := PersistentBlob.Create();
 
         Assert.IsTrue(PersistentBlob.Delete(Key), 'Blob should have been deleted.');
@@ -51,6 +60,9 @@ codeunit 135031 "Persistent Blob Test"
         Result: Text;
     begin
         // [SCENARIO] Content from an InStream can be stored to PersistentBlob and PersistentBlob content can be written to an OutStream.
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
 
         // [GIVEN] Some Content is written to an InStream.
         Content := 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna';
@@ -91,6 +103,10 @@ codeunit 135031 "Persistent Blob Test"
         Key2: BigInteger;
     begin
         // [SCENARIO] A different key used every time a new PersistentBlob is created.
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
+
         Key1 := PersistentBlob.Create();
         PersistentBlob.Delete(Key1);
         Commit();

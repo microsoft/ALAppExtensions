@@ -110,6 +110,47 @@ codeunit 3711 Translation
     end;
 
     /// <summary>
+    /// Copies the translation for a field from one record to another record on a persisted (non-temporary) record.
+    /// </summary>
+    /// <param name="FromRecVariant">The record from which the translations are copied.</param>
+    /// <param name="ToRecVariant">The record to which the translations are copied.</param>
+    /// <error>If the RecVariant parameter is of type Record, and it is temporary.</error>
+    /// <error>If the RecVariant parameter is of type Record, and the table number is 0.</error>
+    /// <error>If the FromRecVariant parameter is of type Record, the ToRecVariant parameter is of type Record and they are different.</error> 
+    procedure Copy(FromRecVariant: Variant; ToRecVariant: Variant)
+    begin
+        TranslationImplementation.Copy(FromRecVariant, ToRecVariant, 0);
+    end;
+
+    /// <summary>
+    /// Copies the translation for a field from one record to another record on a persisted (non-temporary) record.
+    /// </summary>
+    /// <param name="FromRecVariant">The record from which the translations are copied.</param>
+    /// <param name="ToRecVariant">The record to which the translations are copied.</param>
+    /// <param name="FieldId">Id of the field for which the translation will be copied.</param>
+    /// <error>If the RecVariant parameter is of type Record, and it is temporary.</error>
+    /// <error>If the RecVariant parameter is of type Record, and the table number is 0.</error>
+    /// <error>If the FromRecVariant parameter is of type Record, the ToRecVariant parameter is of type Record and they are different.</error> 
+    /// <error>If RecVariant passed is not of type Record.</error>
+    /// <error>If the FieldId is 0.</error>
+    procedure Copy(FromRecVariant: Variant; ToRecVariant: Variant; FieldId: Integer)
+    begin
+        TranslationImplementation.Copy(FromRecVariant, ToRecVariant, FieldId);
+    end;
+
+    /// <summary>
+    /// Copies the translation from one record's field to another record's field on a persisted (non-temporary) record.
+    /// </summary>
+    /// <param name="FromRecVariant">The record from which the translations are copied.</param>
+    /// <param name="FromFieldId">The id of the field from which the translations are copied.</param>
+    /// <param name="ToRecVariant">The record to which the translations are copied.</param>
+    /// <param name="ToFieldId">The id of the field to which the translations are copied.</param>
+    procedure Copy(FromRecVariant: Variant; FromFieldId: Integer; ToRecVariant: Variant; ToFieldId: Integer)
+    begin
+        TranslationImplementation.Copy(FromRecVariant, FromFieldId, ToRecVariant, ToFieldId);
+    end;
+
+    /// <summary>
     /// Shows all language translations that are available for a field in a new page.
     /// </summary>
     /// <param name="RecVariant">The record to get the translated value for.</param>
@@ -131,4 +172,3 @@ codeunit 3711 Translation
         TranslationImplementation.ShowForAllRecords(TableId, FieldId);
     end;
 }
-

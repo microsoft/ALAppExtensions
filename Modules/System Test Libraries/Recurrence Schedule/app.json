@@ -1,0 +1,32 @@
+{
+    "id":  "8dc27b4c-ed38-4df0-9497-2724beea0e9d",
+    "name":  "Recurrence Schedule Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Test objects for the Recurrence Schedule module.",
+    "description":  "Test objects for the Recurrence Schedule module.",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "f1d7a28a-e871-4eea-916e-203361cd31d9",
+                            "name":  "Recurrence Schedule",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "idRanges": [
+        {
+            "from": 134691,
+            "to": 134691
+        }
+    ],
+    "platform":  "18.0.0.0",
+    "target":  "OnPrem"
+}

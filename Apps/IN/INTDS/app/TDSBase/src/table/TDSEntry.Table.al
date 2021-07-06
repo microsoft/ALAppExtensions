@@ -411,6 +411,11 @@ table 18689 "TDS Entry"
             DataClassification = CustomerContent;
             Editable = false;
         }
+        field(91; "Over & Above Threshold Opening"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
     }
 
     keys

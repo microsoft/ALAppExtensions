@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Write XML quickly with System.Xml.XmlTextWriter.",
     "description":  "Provides a fast, non-cached, forward-only way to create streams or files with XML data that conforms to guidelines for W3C Extensible Markup Language (XML) 1.0 and Namespaces.",
-    "version":  "18.2.0.0",
+    "version":  "18.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,7 +15,7 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          }
                      ],
     "screenshots":  [

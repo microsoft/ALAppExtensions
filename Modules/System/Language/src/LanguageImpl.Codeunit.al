@@ -139,7 +139,7 @@ codeunit 54 "Language Impl."
 
         if TempWindowsLanguage.Get(LanguageId) then;
 
-        if PAGE.RunModal(PAGE::"Windows Languages", TempWindowsLanguage) = ACTION::LookupOK then
+        if Page.RunModal(Page::"Windows Languages", TempWindowsLanguage) = Action::LookupOK then
             LanguageId := TempWindowsLanguage."Language ID";
     end;
 

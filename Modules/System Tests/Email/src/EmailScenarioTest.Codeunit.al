@@ -6,6 +6,7 @@
 codeunit 134693 "Email Scenario Test"
 {
     Subtype = Test;
+    Permissions = tabledata "Email Scenario" = r;
 
     var
         Assert: Codeunit "Library Assert";
@@ -13,6 +14,7 @@ codeunit 134693 "Email Scenario Test"
         ConnectorMock: Codeunit "Connector Mock";
         EmailScenarioMock: Codeunit "Email Scenario Mock";
         EmailScenario: Codeunit "Email Scenario";
+        PermissionsMock: Codeunit "Permissions Mock";
 
     [Test]
     [Scope('OnPrem')]
@@ -21,6 +23,7 @@ codeunit 134693 "Email Scenario Test"
         Account: Record "Email Account";
     begin
         // [Scenario] When the email scenario isn't mapped an email account, GetEmailAccount returns false
+        PermissionsMock.Set('Email Admin');
 
         // [Given] No mappings between emails and scenarios
         Initialize();
@@ -38,6 +41,7 @@ codeunit 134693 "Email Scenario Test"
         NonExistentAccountId: Guid;
     begin
         // [Scenario] When the email scenario is mapped non-existing email account, GetEmailAccount returns false
+        PermissionsMock.Set('Email Admin');
 
         // [Given] An email scenario pointing to a non-existing email account
         Initialize();
@@ -57,6 +61,7 @@ codeunit 134693 "Email Scenario Test"
         NonExistentAccountId: Guid;
     begin
         // [Scenario] When the default email scenario is mapped to a non-existing email account, GetEmailAccount returns false
+        PermissionsMock.Set('Email Admin');
 
         // [Given] An email scenario isn't mapped to a account and the default scenario is mapped to a non-existing account
         Initialize();
@@ -76,6 +81,7 @@ codeunit 134693 "Email Scenario Test"
         AccountId: Guid;
     begin
         // [Scenario] When the default email scenario is mapped to an existing email account, GetEmailAccount returns that account
+        PermissionsMock.Set('Email Admin');
 
         // [Given] An email scenario isn't mapped to an account and the default scenario is mapped to an existing account
         Initialize();
@@ -97,6 +103,7 @@ codeunit 134693 "Email Scenario Test"
         AccountId: Guid;
     begin
         // [Scenario] When the email scenario is mapped to an existing email account, GetEmailAccount returns that account
+        PermissionsMock.Set('Email Admin');
 
         // [Given] An email scenario is mapped to an account
         Initialize();
@@ -119,6 +126,7 @@ codeunit 134693 "Email Scenario Test"
         DefaultAccountId: Guid;
     begin
         // [Scenario] When the email scenario and the default scenarion are mapped to different email accounts, GetEmailAccount returns the corrent account
+        PermissionsMock.Set('Email Admin');
 
         // [Given] An email scenario is mapped to an account, the default scenarion is mapped to another account
         Initialize();
@@ -147,6 +155,7 @@ codeunit 134693 "Email Scenario Test"
         DefaultAccountId: Guid;
     begin
         // [Scenario] When the email scenario is mapped to a non-existing account and the default scenarion is mapped to an existing accounts, GetEmailAccount returns the corrent account
+        PermissionsMock.Set('Email Admin');
 
         // [Given] An email scenario is mapped to a non-exisitng account, the default scenarion is mapped to an existing account
         Initialize();
@@ -175,6 +184,7 @@ codeunit 134693 "Email Scenario Test"
         DefaultAccountId: Guid;
     begin
         // [Scenario] When the email scenario is mapped to an existing account and the default scenarion is mapped to a non-existing accounts, GetEmailAccount returns the corrent account
+        PermissionsMock.Set('Email Admin');
 
         // [Given] An email scenario is mapped to an exisitng account, the default scenarion is mapped to a non-existing account
         Initialize();
@@ -203,6 +213,7 @@ codeunit 134693 "Email Scenario Test"
         Scenario: Enum "Email Scenario";
     begin
         // [Scenario] When SetAccount is called, the entry in the database is as expected
+        PermissionsMock.Set('Email Admin');
 
         // [Given] A random email account
         Initialize();
@@ -239,6 +250,7 @@ codeunit 134693 "Email Scenario Test"
         ResultAccount: Record "Email Account";
     begin
         // [Scenario] When unassigning a scenario then it falls back to the default account.
+        PermissionsMock.Set('Email Admin');
 
         // [Given] Two accounts, one default and one not 
         Initialize();

@@ -6,27 +6,27 @@
 codeunit 1885 "Sandbox Cleanup Impl."
 {
     Access = Internal;
-    Permissions = tabledata Company = r;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Triggers", 'OnAfterCopyEnvironmentToSandbox', '', false, false)]
     local procedure FireIntegrationEvent()
-    begin
-        RaiseEventForEveryCompany();
-    end;
-
-    local procedure RaiseEventForEveryCompany()
     var
-        Company: Record Company;
         SandboxCleanup: Codeunit "Sandbox Cleanup";
     begin
-        if Company.FindSet() then
-            repeat
-                SandboxCleanup.OnClearConfiguration(Company.Name);
-                SandboxCleanup.OnClearCompanyConfiguration(Company.Name);
-            until Company.Next() = 0;
-
+#if not CLEAN17
         SandboxCleanup.OnClearConfiguration('');
+#endif
         SandboxCleanup.OnClearDatabaseConfiguration();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Triggers", 'OnAfterCopyEnvironmentToSandboxPerCompany', '', false, false)]
+    local procedure FireIntegrationEventPerCompany()
+    var
+        SandboxCleanup: Codeunit "Sandbox Cleanup";
+    begin
+#if not CLEAN17
+        SandboxCleanup.OnClearConfiguration(CompanyName());
+#endif
+        SandboxCleanup.OnClearCompanyConfiguration(CompanyName());
     end;
 }
 

@@ -11,6 +11,7 @@ codeunit 135038 "Video Test"
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         UrlTxt: Label 'https://www.youtube.com/watch?v=CH1XGdu-hzQ';
         SourceVideoTableNum: Integer;
         SourceVideoSystemID: Guid;
@@ -23,6 +24,7 @@ codeunit 135038 "Video Test"
         Video: Codeunit Video;
     begin
         // [SCENARIO] Calling play on a link opens the player
+        PermissionsMock.Set('Video Read');
 
         // [GIVEN, WHEN] A link is passed to Play
         Video.Play(UrlTxt);

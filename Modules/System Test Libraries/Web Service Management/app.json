@@ -1,0 +1,32 @@
+{
+    "id":  "dbfc4c4f-40d1-4206-b7b4-d428054637e8",
+    "name":  "Web Service Management Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Library with test objects for Web Service Management module",
+    "description":  "Library with test objects for Web Service Management module",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "9bc20107-0927-405d-abec-ed877f67c2a3",
+                            "name":  "Web Service Management",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "18.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  139043,
+                         "to":  139044
+                     }
+                 ],
+    "target":  "OnPrem"
+}

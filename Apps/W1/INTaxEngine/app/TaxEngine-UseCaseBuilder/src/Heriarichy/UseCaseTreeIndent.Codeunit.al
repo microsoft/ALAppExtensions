@@ -121,7 +121,6 @@ codeunit 20299 "Use Case Tree-Indent"
 
     local procedure ExportSingleTreeNode(UseCaseTreeNode: Record "Use Case Tree Node"; var JArray: JsonArray)
     var
-        UseCase: Record "Tax Use Case";
         IStream: InStream;
         JObject: JsonObject;
         Txt: Text;
@@ -131,8 +130,7 @@ codeunit 20299 "Use Case Tree-Indent"
         JObject.Add('Name', UseCaseTreeNode.Name);
         JObject.Add('NodeType', format(UseCaseTreeNode."Node Type"));
         JObject.Add('TableID', UseCaseTreeNode."Table ID");
-        if UseCase.Get(UseCaseTreeNode."Use Case ID") then
-            JObject.Add('UseCaseName', UseCase.Description);
+        JObject.Add('CaseID', UseCaseTreeNode."Use Case ID");
 
         UseCaseTreeNode.CalcFields(Condition);
         if UseCaseTreeNode.Condition.HasValue then begin
@@ -151,7 +149,6 @@ codeunit 20299 "Use Case Tree-Indent"
     local procedure ReadUseCaseTree(JObject: JsonObject)
     var
         UseCaseTree: Record "Use Case Tree Node";
-        UseCase: Record "Tax Use Case";
         ScriptDataTypeMgmt: Codeunit "Script Data Type Mgmt.";
         OStream: OutStream;
         JToken: JsonToken;
@@ -171,13 +168,8 @@ codeunit 20299 "Use Case Tree-Indent"
                     UseCaseTree."Node Type" := ScriptDataTypeMgmt.GetFieldOptionIndex(Database::"Use Case Tree Node", UseCaseTree.FieldNo("Node Type"), JToken.AsValue().AsText());
                 'TableID':
                     UseCaseTree."Table ID" := JToken.AsValue().AsInteger();
-                'UseCaseName':
-                    begin
-                        UseCase.SetRange(Description, JToken.AsValue().AsText());
-                        UseCase.FindFirst();
-                        UseCaseTree."Use Case ID" := UseCase.ID;
-                        UseCaseTree.Name := CopyStr(UseCase.Description, 1, 250);
-                    end;
+                'CaseID':
+                    UseCaseTree."Use Case ID" := JToken.AsValue().AsText();
                 'Condition':
                     begin
                         UseCaseTree.Condition.CreateOutStream(OStream);

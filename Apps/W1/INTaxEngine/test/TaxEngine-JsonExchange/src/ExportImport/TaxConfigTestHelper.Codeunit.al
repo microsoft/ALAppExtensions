@@ -55,7 +55,7 @@ codeunit 137701 "Tax Config. Test Helper"
         JsonText += '"TableName":"Sales Line","FieldName":"Document No."}}}]}}]}],"ComputationVariables":[],"ComputationScript":[],"PostingVariables":[],';
         JsonText += '"PostingScript":[],"Components":[],"AttachedEvents":[]},{"CaseID":"{8B8CAACA-798D-4BA5-8ED3-7A2C778121CB}",';
         JsonText += '"Description":"Calculate tax on Sales Order Line","Version":1.00001,"TaxType":"VAT","ChangedBy":"Partner","Code":"",';
-        JsonText += '"TaxEntity":"Sales Line","ParentUseCase":"Sales Document Use Cases","PresentationOrder":3,"Indent":1,"PostingTableName":"VAT Posting Setup",';
+        JsonText += '"TaxEntity":"Sales Line","ParentCaseId":"{53C65764-882F-4596-A04A-094911693412}","ParentUseCase":"Sales Document Use Cases","PresentationOrder":3,"Indent":1,"PostingTableName":"VAT Posting Setup",';
         JsonText += '"PostingTableFilters":[{"FiterFieldName":"VAT Bus. Posting Group","FilterType":"Equals","FilterValue":{"Type":"Lookup",';
         JsonText += '"Lookup":{"SourceType":"Current Record","TableName":"Sales Line","FieldName":"VAT Bus. Posting Group"}}},';
         JsonText += '{"FiterFieldName":"VAT Prod. Posting Group","FilterType":"Equals","FilterValue":{"Type":"Lookup","Lookup":{"SourceType":"Current Record",';
@@ -213,6 +213,7 @@ codeunit 137701 "Tax Config. Test Helper"
         JsonText += '"Name": "VAT Use Case",';
         JsonText += '"NodeType": "Use Case",';
         JsonText += '"TableID": 37,';
+        JsonText += '"CaseID":"{8B8CAACA-798D-4BA5-8ED3-7A2C778121CB}",';
         JsonText += '"UseCaseName": "Calculate tax on Sales Order Line",';
         JsonText += '"Condition": "VERSION(1) SORTING(Field1,Field3,Field4) WHERE(Field6=1(<>''),Field89=1(<>''),Field90=1(<>''))",';
         JsonText += '"TaxType": "GST",';

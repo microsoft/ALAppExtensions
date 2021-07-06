@@ -73,14 +73,8 @@ codeunit 1807 "Assisted Setup Upgrade"
 
     local procedure InsertTranslations(GuidedExperienceItem: Record "Guided Experience Item"; AssistedSetup: Record "Assisted Setup")
     var
-        Translation: Record Translation;
-        TranslationAPI: Codeunit Translation;
+        Translation: Codeunit Translation;
     begin
-        Translation.SetRange(SystemId, AssistedSetup.SystemId);
-        Translation.SetRange("Table ID", Database::"Assisted Setup");
-        if Translation.FindSet() then
-            repeat
-                TranslationAPI.Set(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title), Translation."Language ID", Translation.Value);
-            until Translation.Next() = 0;
+        Translation.Copy(AssistedSetup, AssistedSetup.FieldNo(Name), GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
     end;
 }

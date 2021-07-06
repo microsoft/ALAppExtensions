@@ -1,6 +1,13 @@
 permissionsetextension 25424 "D365 FULL ACCESS - Core Localization Pack for Czech" extends "D365 FULL ACCESS"
 {
-    Permissions = tabledata "Acc. Schedule File Mapping CZL" = RIMD,
+    Permissions = tabledata "Acc. Sched. Expr. Buffer CZL" = RIMD,
+                  tabledata "Acc. Schedule Extension CZL" = RIMD,
+                  tabledata "Acc. Schedule File Mapping CZL" = RIMD,
+                  tabledata "Acc. Schedule Result Col. CZL" = RIMD,
+                  tabledata "Acc. Schedule Result Hdr. CZL" = RIMD,
+                  tabledata "Acc. Schedule Result Hist. CZL" = RIMD,
+                  tabledata "Acc. Schedule Result Line CZL" = RIMD,
+                  tabledata "Acc. Schedule Result Value CZL" = RIMD,
                   tabledata "Certificate Code CZL" = RIMD,
                   tabledata "Commodity CZL" = RIMD,
                   tabledata "Commodity Setup CZL" = RIMD,

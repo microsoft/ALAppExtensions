@@ -65,6 +65,17 @@ codeunit 9987 "Word Template"
     end;
 
     /// <summary>
+    /// Creates a template with the fields from a selected table and a list of related table IDs.
+    /// </summary>
+    /// <param name="TableId">Specifies the ID of the table from which fields will be used to insert data in the template.</param> 
+    /// <param name="RelatedTableIds">Specifies the IDs of tables that are related to the selected table. Fields from these tables will also be used to insert data in the template.</param> /// 
+    /// <param name="RelatedTableCodes">Specifies the IDs for each related table. The IDs must be the same length as the RelatedTableIds, and be between 1 and 5 characters.</param> 
+    procedure Create(TableId: Integer; RelatedTableIds: List of [Integer]; RelatedTableCodes: List of [Code[5]])
+    begin
+        WordTemplateImpl.Create(TableId, RelatedTableIds, RelatedTableCodes);
+    end;
+
+    /// <summary>
     /// Creates a template with given merge fields.
     /// </summary>
     /// <param name="MergeFields">Names of mail merge fields to be available in the template.</param>
@@ -174,5 +185,31 @@ codeunit 9987 "Word Template"
     procedure GetTableId(): Integer
     begin
         exit(WordTemplateImpl.GetTableId());
+    end;
+
+    /// <summary>
+    /// Add related table.
+    /// </summary>
+    /// <param name="WordTemplateCode">The code of an existing parent Word template.</param>
+    /// <param name="RelatedCode">The code of the related table to add.</param>
+    /// <param name="TableID">The ID of the parent Word template.</param>
+    /// <param name="RelatedTableID">The ID of the related table to add.</param>
+    /// <param name="FieldNo">The field no. of the parent table that references the related table.</param>
+    /// <remarks>The function shows a message if the related code or table ID is already used for the parent table</remarks>
+    /// <returns>True if the related table was added, false otherwise.</returns> 
+    procedure AddRelatedTable(WordTemplateCode: Code[30]; RelatedCode: Code[5]; TableId: Integer; RelatedTableId: Integer; FieldNo: Integer): Boolean
+    begin
+        WordTemplateImpl.AddRelatedTable(WordTemplateCode, RelatedCode, TableId, RelatedTableId, FieldNo);
+    end;
+
+    /// <summary>
+    /// Remove a related table.
+    /// </summary>
+    /// <param name="WordTemplateCode">The code of the parent Word template.</param>
+    /// <param name="RelatedTableID">The ID of the related table to remove.</param>
+    /// <returns>True if the related table was removed, false otherwise.</returns>
+    procedure RemoveRelatedTable(WordTemplateCode: Code[30]; RelatedTableId: Integer): Boolean
+    begin
+        WordTemplateImpl.RemoveRelatedTable(WordTemplateCode, RelatedTableId);
     end;
 }

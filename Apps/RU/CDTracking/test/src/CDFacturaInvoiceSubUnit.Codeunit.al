@@ -3,10 +3,7 @@ codeunit 147106 "CD FacturaInvoiceSubUnit"
     // // [FEATURE] [Factura-Invoice] [Proforma-Invoice] [Report]
 
     Subtype = Test;
-
-    trigger OnRun()
-    begin
-    end;
+    TestPermissions = NonRestrictive;
 
     var
         LibraryVATLedger: Codeunit "Library - VAT Ledger";

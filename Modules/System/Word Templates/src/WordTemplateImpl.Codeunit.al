@@ -8,6 +8,7 @@ codeunit 9988 "Word Template Impl."
     Access = Internal;
     Permissions = tabledata "Word Template" = rim,
                   tabledata "Word Templates Table" = ri,
+                  tabledata "Word Templates Related Table" = rimd,
                   tabledata AllObj = r,
                   tabledata Field = r;
 
@@ -201,6 +202,23 @@ codeunit 9988 "Word Template Impl."
         Create(MailMergeFields);
     end;
 
+    procedure Create(TableId: Integer; RelatedTableIds: List of [Integer]; RelatedTableCodes: List of [Code[5]])
+    var
+        MailMergeFields: List of [Text];
+        Index: Integer;
+    begin
+        if RelatedTableIds.Count() <> RelatedTableCodes.Count() then
+            Error(RelatedTableIdsLengthErr, RelatedTableIds.Count, RelatedTableCodes.Count);
+
+        WordTemplate."Table ID" := TableId;
+        GetMergeFieldsForRecord(TableId, MailMergeFields);
+
+        for Index := 1 to RelatedTableIds.Count do
+            GetMergeFieldsForRecord(RelatedTableIds.Get(Index), MailMergeFields, StrSubstNo(PrependPatternTxt, RelatedTableCodes.Get(Index)));
+
+        Create(MailMergeFields);
+    end;
+
     procedure Create(MailMergeFields: List of [Text])
     var
         OutStream: OutStream;
@@ -381,8 +399,8 @@ codeunit 9988 "Word Template Impl."
     begin
         RecordRef.GetTable(RecordVariant);
         Data.CreateOutStream(Writer, TextEncoding::UTF8);
-        WriteDataStream(RecordRef, Writer, true);
 
+        WriteDataStream(RecordRef, Writer, true);
         if RecordRef.FindSet() then
             repeat
                 WriteDataStream(RecordRef, Writer, false);
@@ -457,6 +475,13 @@ codeunit 9988 "Word Template Impl."
         if AllowedTable.Insert() then;
     end;
 
+    procedure AllowedTableExist(TableId: Integer): Boolean
+    var
+        AllowedTable: Record "Word Templates Table";
+    begin
+        exit(AllowedTable.Get(TableId));
+    end;
+
     internal procedure GetTableId(): Integer
     begin
         exit(WordTemplate."Table ID");
@@ -477,6 +502,74 @@ codeunit 9988 "Word Template Impl."
             Objects.GetRecord(AllObjWithCaption);
             AddTable(AllObjWithCaption."Object ID");
             exit(AllObjWithCaption."Object ID");
+        end;
+
+        exit(0);
+    end;
+
+    internal procedure GetTable(Caption: Text; var AllObjWithCaption: Record AllObjWithCaption; FilterExpression: Text): Boolean
+    var
+        Objects: Page Objects;
+    begin
+        AllObjWithCaption.FilterGroup(2);
+        AllObjWithCaption.SetRange("Object Type", AllObjWithCaption."Object Type"::Table);
+
+        if FilterExpression <> '' then
+            AllObjWithCaption.SetFilter("Object ID", FilterExpression);
+
+        AllObjWithCaption.FilterGroup(0);
+
+        Objects.SetTableView(AllObjWithCaption);
+        Objects.Caption(Caption);
+        Objects.LookupMode(true);
+
+        if Objects.RunModal() = Action::LookupOK then
+            Objects.GetRecord(AllObjWithCaption);
+    end;
+
+    internal procedure AddRelatedEntity(TableId: Integer; RelatedCode: Code[30]; var WordTemplateRelatedTable: Record "Word Templates Related Table"; FilterExpression: Text): Boolean
+    var
+        WordTemplateRelatedCard: Page "Word Templates Related Card";
+    begin
+        WordTemplateRelatedCard.SetRelatedTable(WordTemplateRelatedTable);
+        WordTemplateRelatedCard.SetTableNo(TableId);
+        WordTemplateRelatedCard.SetFilterExpression(FilterExpression);
+        WordTemplateRelatedCard.LookupMode(true);
+
+        if WordTemplateRelatedCard.RunModal() = Action::LookupOK then begin
+            WordTemplateRelatedCard.GetRelatedTable(WordTemplateRelatedTable);
+            WordTemplateRelatedTable.Code := RelatedCode;
+            exit(true);
+        end;
+
+        exit(false);
+    end;
+
+    internal procedure GetField(Caption: Text; TableId: Integer; FilterExpression: Text): Integer
+    var
+        Field: Record Field;
+        Fields: Page "Fields Lookup";
+    begin
+        Field.SetRange(TableNo, TableId);
+
+        if FilterExpression <> '' then
+            Field.SetFilter("No.", FilterExpression)
+        else
+            Field.SetFilter(Type,
+                            '%1|%2|%3|%4|%5',
+                            Field.Type::BigInteger,
+                            Field.Type::Integer,
+                            Field.Type::Code,
+                            Field.Type::GUID,
+                            Field.Type::RecordID);
+
+        Fields.SetTableView(Field);
+        Fields.Caption(Caption);
+        Fields.LookupMode(true);
+
+        if Fields.RunModal() = Action::LookupOK then begin
+            Fields.GetRecord(Field);
+            exit(Field."No.");
         end;
 
         exit(0);
@@ -515,6 +608,99 @@ codeunit 9988 "Word Template Impl."
         end;
     end;
 
+    internal procedure AddRelatedTable(var WordTemplatesRelatedTable: Record "Word Templates Related Table"; TableId: Integer; FilterRelatedTables: Boolean)
+    var
+        TempWordTemplatesRelatedTable: Record "Word Templates Related Table" temporary;
+        FilterExpression: Text;
+        InsertFailed: Boolean;
+    begin
+        if FilterRelatedTables then
+            FilterExpression := GetRelatedTablesFilterExpression(TableId);
+
+        repeat
+            InsertFailed := false;
+            if AddRelatedEntity(TableId, WordTemplatesRelatedTable.Code, TempWordTemplatesRelatedTable, FilterExpression) then
+                InsertFailed := not AddRelatedTable(WordTemplatesRelatedTable, TempWordTemplatesRelatedTable);
+        until not InsertFailed;
+    end;
+
+    internal procedure AddRelatedTable(WordTemplateCode: Code[30]; RelatedCode: Code[5]; TableId: Integer; RelatedTableId: Integer; FieldNo: Integer): Boolean
+    var
+        DummyWordTemplatesRelatedTable: Record "Word Templates Related Table";
+        TempWordTemplatesRelatedTable: Record "Word Templates Related Table" temporary;
+    begin
+        TempWordTemplatesRelatedTable.Code := WordTemplateCode;
+        TempWordTemplatesRelatedTable."Related Table Code" := RelatedCode;
+        TempWordTemplatesRelatedTable."Table ID" := TableId;
+        TempWordTemplatesRelatedTable."Related Table ID" := RelatedTableId;
+        TempWordTemplatesRelatedTable."Field No." := FieldNo;
+        exit(AddRelatedTable(DummyWordTemplatesRelatedTable, TempWordTemplatesRelatedTable));
+    end;
+
+    /// <summary>
+    /// Attempts to a add a related table. If the related table code or related table id already exists, the table is not added and a message is shown.
+    /// </summary>
+    /// <param name="WordTemplateRelatedTable">The related table to insert the record into.</param>
+    /// <param name="TempWordTemplateRelatedTable">The temporary related table that holds the values used for inserting.</param>
+    /// <returns>True if the related table was added, false otherwise.</returns>
+    internal procedure AddRelatedTable(var WordTemplateRelatedTable: Record "Word Templates Related Table"; TempWordTemplateRelatedTable: Record "Word Templates Related Table" temporary) Added: Boolean
+    begin
+        WordTemplateRelatedTable.SetRange(Code, TempWordTemplateRelatedTable.Code);
+        WordTemplateRelatedTable.SetRange("Related Table Code", TempWordTemplateRelatedTable."Related Table Code");
+
+        if not WordTemplateRelatedTable.IsEmpty() then begin
+            Message(RelatedTableCodeAlreadyUsedMsg);
+            exit(false);
+        end;
+
+        WordTemplateRelatedTable.Reset();
+        WordTemplateRelatedTable.SetRange(Code, TempWordTemplateRelatedTable.Code);
+        WordTemplateRelatedTable.SetRange("Related Table ID", TempWordTemplateRelatedTable."Related Table ID");
+
+        if not WordTemplateRelatedTable.IsEmpty() then begin
+            Message(RelatedTableIdAlreadyUsedMsg);
+            exit(false);
+        end;
+
+        WordTemplateRelatedTable.Init();
+        WordTemplateRelatedTable.Copy(TempWordTemplateRelatedTable);
+        Added := WordTemplateRelatedTable.Insert();
+        WordTemplateRelatedTable.SetRange(Code, WordTemplateRelatedTable.Code);
+    end;
+
+    internal procedure RemoveRelatedTable(WordTemplateCode: Code[30]; RelatedTableId: Integer): Boolean
+    var
+        WordTemplatesRelatedTable: Record "Word Templates Related Table";
+    begin
+        WordTemplatesRelatedTable.Get(WordTemplateCode, RelatedTableId);
+        exit(WordTemplatesRelatedTable.Delete());
+    end;
+
+    internal procedure UpdateRelatedEntity(WordTemplatesRelatedTable: Record "Word Templates Related Table"; TableId: Integer)
+    var
+        TempWordTemplatesRelatedTable: Record "Word Templates Related Table" temporary;
+        WordTemplatesRelatedCard: Page "Word Templates Related Card";
+    begin
+        WordTemplatesRelatedCard.SetTableNo(TableId);
+        WordTemplatesRelatedCard.SetRelatedTable(WordTemplatesRelatedTable);
+        WordTemplatesRelatedCard.LookupMode(true);
+        if WordTemplatesRelatedCard.RunModal() = Action::LookupOK then begin
+            WordTemplatesRelatedCard.GetRelatedTable(TempWordTemplatesRelatedTable);
+
+            // Rename record if Related Table ID changed, otherwise it'd have inserted a new one and kept the old
+            if (WordTemplatesRelatedTable.Code <> '') and (WordTemplatesRelatedTable."Related Table ID" <> TempWordTemplatesRelatedTable."Related Table ID") then begin
+                // The code should never change as it is linked to the Word Template
+                WordTemplatesRelatedTable.Rename(WordTemplatesRelatedTable.Code, TempWordTemplatesRelatedTable."Related Table ID");
+                WordTemplatesRelatedTable.CalcFields(WordTemplatesRelatedTable."Related Table Caption");
+            end;
+
+            WordTemplatesRelatedTable."Field No." := TempWordTemplatesRelatedTable."Field No.";
+            WordTemplatesRelatedTable."Related Table Code" := TempWordTemplatesRelatedTable."Related Table Code";
+            if not WordTemplatesRelatedTable.Insert() then
+                WordTemplatesRelatedTable.Modify();
+        end;
+    end;
+
     local procedure ReloadWordTemplate()
     var
         Instream: Instream;
@@ -530,10 +716,14 @@ codeunit 9988 "Word Template Impl."
     end;
 
     local procedure GetMergeFieldsForRecord(TableId: Integer; var MailMergeFields: List of [Text])
+    begin
+        GetMergeFieldsForRecord(TableId, MailMergeFields, '');
+    end;
+
+    local procedure GetMergeFieldsForRecord(TableId: Integer; var MailMergeFields: List of [Text]; PrependValue: Text)
     var
         FieldRec: Record Field;
     begin
-        Clear(MailMergeFields);
         FieldRec.SetRange(TableNo, TableId);
         FieldRec.SetFilter(Class, '<>%1', FieldRec.Class::FlowFilter);
         FieldRec.SetFilter(Type, '<>%1&<>%2&<>%3&<>%4&<>%5', FieldRec.Type::BLOB,
@@ -543,11 +733,81 @@ codeunit 9988 "Word Template Impl."
                                                              FieldRec.Type::TableFilter);
         if FieldRec.FindSet() then
             repeat
-                MailMergeFields.Add(FieldRec."Field Caption");
+                MailMergeFields.Add(PrependValue + FieldRec."Field Caption");
             until FieldRec.Next() = 0;
     end;
 
+
     local procedure WriteDataStream(RecordRef: RecordRef; OutStream: OutStream; WriteNames: Boolean)
+    var
+        RelatedTable: Record "Word Templates Related Table";
+        RecordRefRelated: RecordRef;
+    begin
+        WriteDataStream(RecordRef, OutStream, WriteNames, '');
+
+        RelatedTable.SetRange(Code, WordTemplate.Code);
+        if RelatedTable.FindSet() then
+            repeat
+                Clear(RecordRefRelated);
+                RecordRefRelated.Open(RelatedTable."Related Table ID");
+
+                if WriteNames then begin
+                    OutStream.WriteText('|');
+                    WriteDataStream(RecordRefRelated, Outstream, WriteNames, StrSubstNo(PrependPatternTxt, RelatedTable."Related Table Code"));
+                end else
+                    if GetRelatedRecord(RecordRefRelated, RecordRef.Field(RelatedTable."Field No.").Value()) then begin
+                        OutStream.WriteText('|');
+                        WriteDataStream(RecordRefRelated, Outstream, WriteNames, '')
+                    end
+
+            until RelatedTable.Next() = 0;
+        OutStream.WriteText();
+    end;
+
+    internal procedure GetRelatedRecord(var RelatedRecord: RecordRef; Reference: Variant) Found: Boolean
+    begin
+        Found := GetByPrimaryKey(RelatedRecord, Reference);
+
+        if not Found then
+            if Reference.IsGuid() then
+                Found := RelatedRecord.GetBySystemId(Reference)
+            else
+                if Reference.IsRecordId() then
+                    Found := RelatedRecord.Get(Reference);
+    end;
+
+    internal procedure GetByPrimaryKey(var RecordRef: RecordRef; Reference: Variant): Boolean
+    var
+        FieldRef: FieldRef;
+        KeyRef: KeyRef;
+    begin
+        KeyRef := RecordRef.KeyIndex(1);
+        if KeyRef.FieldCount() > 1 then
+            exit(false);
+
+        FieldRef := KeyRef.FieldIndex(1);
+        case FieldRef.Type of
+            FieldRef.Type::BigInteger:
+                if not Reference.IsBigInteger() then
+                    exit(false);
+            FieldRef.Type::Code:
+                if not Reference.IsCode() then
+                    exit(false);
+            FieldRef.Type::Integer:
+                if not Reference.IsInteger() then
+                    exit(false);
+            FieldRef.Type::Guid:
+                if not Reference.IsGuid() then
+                    exit(false);
+            else
+                exit(false);
+        end;
+
+        FieldRef.SetRange(Reference);
+        exit(RecordRef.FindFirst());
+    end;
+
+    local procedure WriteDataStream(RecordRef: RecordRef; OutStream: OutStream; WriteNames: Boolean; PrependValue: Text)
     var
         FieldRef: FieldRef;
         Field: Integer;
@@ -562,22 +822,36 @@ codeunit 9988 "Word Template Impl."
                 if FieldRef.Class = FieldClass::FlowField then
                     FieldRef.CalcField();
                 if WriteNames then
-                    OutStream.WriteText(FieldRef.Caption())
+                    OutStream.WriteText(PrependValue + FieldRef.Caption())
                 else
                     OutStream.WriteText(Format(FieldRef.Value()));
                 if Field < RecordRef.FieldCount() then
                     OutStream.WriteText('|');
             end;
         end;
-        OutStream.WriteText();
     end;
 
     local procedure WriteDataDict(RecordRef: RecordRef; var Data: Dictionary of [Text, Text])
     var
+        RelatedTable: Record "Word Templates Related Table";
+        RecordRefRelated: RecordRef;
+    begin
+        WriteDataDict(RecordRef, Data, '');
+
+        RelatedTable.SetRange(Code, WordTemplate.Code);
+        if RelatedTable.FindSet() then
+            repeat
+                RecordRefRelated.Open(RelatedTable."Related Table ID");
+                if GetRelatedRecord(RecordRefRelated, RecordRef.Field(RelatedTable."Field No.").Value()) then
+                    WriteDataDict(RecordRefRelated, Data, StrSubstNo(PrependPatternTxt, RelatedTable."Related Table Code"));
+            until RelatedTable.Next() = 0;
+    end;
+
+    local procedure WriteDataDict(RecordRef: RecordRef; var Data: Dictionary of [Text, Text]; PrependValue: Text)
+    var
         FieldRef: FieldRef;
         Field: Integer;
     begin
-        Clear(Data);
         for Field := 1 to RecordRef.FieldCount() do begin
             FieldRef := RecordRef.FieldIndex(Field);
             if (FieldRef.Class <> FieldClass::FlowFilter) and not (FieldRef.Type in [FieldRef.Type::Blob,
@@ -587,7 +861,7 @@ codeunit 9988 "Word Template Impl."
                                                                                      FieldRef.Type::RecordId]) then begin
                 if FieldRef.Class = FieldClass::FlowField then
                     FieldRef.CalcField();
-                Data.Set(FieldRef.Caption(), Format(FieldRef.Value()));
+                Data.Set(PrependValue + FieldRef.Caption(), Format(FieldRef.Value()));
             end;
         end;
     end;
@@ -609,6 +883,87 @@ codeunit 9988 "Word Template Impl."
         exit(true);
     end;
 
+    internal procedure GetFieldNo(var FilterExpression: Text; ParentTableNo: Integer; RelatedTableNo: Integer) FieldNo: Integer
+    var
+        Field: Record Field;
+        ExpressionBuilder: TextBuilder;
+        Found: Boolean;
+        MultipleMatches: Boolean;
+    begin
+        Field.SetRange(TableNo, ParentTableNo);
+        Field.SetRange(ObsoleteState, Field.ObsoleteState::No, Field.ObsoleteState::Pending);
+
+        if Field.FindSet() then
+            repeat
+                if (Field.RelationTableNo = RelatedTableNo) and (Field.RelationFieldNo in [0, 1]) then begin
+                    ExpressionBuilder.Append(StrSubstNo(ExpressionFilterTok, Field."No."));
+                    if not Found then begin
+                        FieldNo := Field."No.";
+                        Found := true;
+                    end else
+                        MultipleMatches := true;
+                end;
+            until Field.Next() = 0;
+
+        if MultipleMatches then
+            FilterExpression := ExpressionBuilder.ToText(1, ExpressionBuilder.Length() - 1)
+        else
+            FilterExpression := '';
+
+        exit(FieldNo);
+    end;
+
+    internal procedure GetRelatedTablesFilterExpression(TableNo: Integer): Text
+    var
+        Field: Record Field;
+        ExpressionBuilder: TextBuilder;
+    begin
+        Field.SetRange(TableNo, TableNo);
+        Field.SetRange(ObsoleteState, Field.ObsoleteState::No, Field.ObsoleteState::Pending);
+
+        if Field.FindSet() then
+            repeat
+                if (Field.RelationTableNo <> 0) and (Field.RelationFieldNo in [0, 1]) then
+                    ExpressionBuilder.Append(StrSubstNo(ExpressionFilterTok, Field.RelationTableNo));
+            until Field.Next() = 0;
+
+        exit(ExpressionBuilder.ToText(1, ExpressionBuilder.Length() - 1));
+    end;
+
+    internal procedure GenerateCode(ObjectCaption: Text[249]) EntityCode: Code[5]
+    var
+        Position: Integer;
+        Length: Integer;
+        Character: Char;
+    begin
+        Length := 1;
+        Position := 1;
+        ObjectCaption := ObjectCaption.ToUpper();
+
+        repeat
+            Character := ObjectCaption[Position];
+
+            // If first character, it can only be alphabetic
+            // Subsequent characters can have numbers
+            if ((Length = 1) and IsAlphabetic(Character)) or ((Length > 1) and IsAlphanumeric(Character)) then begin
+                EntityCode += Character;
+                Length += 1;
+            end;
+
+            Position += 1;
+        until (Length > 5) or (StrLen(ObjectCaption) < Position);
+    end;
+
+    local procedure IsAlphabetic(Character: Char): Boolean
+    begin
+        exit(Character in ['A' .. 'Z']);
+    end;
+
+    local procedure IsAlphanumeric(Character: Char): Boolean
+    begin
+        exit((Character in ['0' .. '9']) or IsAlphabetic(Character));
+    end;
+
     [EventSubscriber(ObjectType::Page, Page::"Word Template Creation Wizard", 'OnSetTableNo', '', false, false)]
     local procedure OnSetTableNo(Value: Integer)
     begin
@@ -623,7 +978,11 @@ codeunit 9988 "Word Template Impl."
 
     [EventSubscriber(ObjectType::Table, Database::"Word Template", 'OnBeforeDeleteEvent', '', false, false)]
     local procedure OnBeforeDeleteWordTemplate(var Rec: Record "Word Template")
+    var
+        RelatedTables: Record "Word Templates Related Table";
     begin
+        RelatedTables.SetRange(Code, Rec.Code);
+        RelatedTables.DeleteAll();
         Session.LogMessage('0000ED0', StrSubstNo(DeletedTemplateTxt, Rec.SystemId, Rec."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WordTemplatesCategoryTxt);
     end;
 
@@ -654,9 +1013,14 @@ codeunit 9988 "Word Template Impl."
         DefaultTemplateNameLbl: Label 'Template';
         OverrideTemplateQst: Label 'Do you want to override the existing template?';
         AddNewEntityCaptionLbl: Label 'Add new entity for which to create template';
+        RelatedTableCodeAlreadyUsedMsg: Label 'The field prefix for the related entity already exists.';
+        RelatedTableIdAlreadyUsedMsg: Label 'The related entity already exists.';
+        RelatedTableIdsLengthErr: Label 'The length of the related table IDs (%1), does not match the length of the related table codes (%2).', Comment = '%1 - Length of related table IDs list, %2 Length of related table codes list';
         FilenamePatternTxt: Label '%1.%2', Locked = true;
+        PrependPatternTxt: Label '%1_', Locked = true;
         EmptyTemplateNamePatternTxt: Label '%1.%2', Locked = true;
         TemplateNamePatternTxt: Label '%1_%2.%3', Locked = true;
+        ExpressionFilterTok: Label '%1|', Locked = true;
         ReservedCharsTok: Label '<|>|:|\/|\\|\||\?|\*|\"', Locked = true;
         WordTemplatesCategoryTxt: Label 'AL Word Templates', Locked = true;
         DownloadedTemplateTxt: Label 'Template downloaded: %1 (%2).', Comment = '%1 - System ID, %2 - Table ID', Locked = true;

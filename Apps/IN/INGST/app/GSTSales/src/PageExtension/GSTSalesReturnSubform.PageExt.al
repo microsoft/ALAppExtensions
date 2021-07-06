@@ -26,8 +26,41 @@ pageextension 18161 "GST Sales Return Subform" extends "Sales Return Order Subfo
                 CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
             end;
         }
+        modify("Line Discount %")
+        {
+            Trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
+            begin
+                CurrPage.SaveRecord();
+                CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+            end;
+        }
+        modify("Line Discount Amount")
+        {
+            Trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
+            begin
+                CurrPage.SaveRecord();
+                CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+            end;
+        }
         addafter("Qty. to Assign")
         {
+            field("GST Place Of Supply"; Rec."GST Place Of Supply")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the GST Place of Supply. For example Bill-to Address, Ship-to Address, Location Address etc.';
+
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
             field("GST Group Code"; Rec."GST Group Code")
             {
                 ApplicationArea = Basic, Suite;
@@ -62,6 +95,32 @@ pageextension 18161 "GST Sales Return Subform" extends "Sales Return Order Subfo
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if the GST credit has to be availed or not.';
+
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
+            field("Price Exclusive of Tax"; Rec."Price Inclusive of Tax")
+            {
+                ApplicationArea = all;
+                ToolTip = 'Specifies if the price in inclusive of tax for the line.';
+
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
+            field("Unit Price Incl. of Tax"; Rec."Unit Price Incl. of Tax")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies unit prices are inclusive of tax on the line.';
 
                 trigger OnValidate()
                 var

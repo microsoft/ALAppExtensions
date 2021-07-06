@@ -65,6 +65,23 @@ table 1461 "Signature Key"
         exit(ReadKeyValue());
     end;
 
+    /// <summary>
+    /// Saves an key value from an certificate in Base64 format
+    /// </summary>
+    /// <param name="CertBase64Value">Represents the certificate value encoded using the Base64 algorithm</param>
+    /// <param name="Represents the password of the certificate">Certificate Password</param>
+    /// <param name="IncludePrivateParameters">true to include private parameters; otherwise, false.</param>
+    [NonDebuggable]
+    procedure FromBase64String(CertBase64Value: Text; Password: Text; IncludePrivateParameters: Boolean)
+    var
+        X509Certificate2: DotNet X509Certificate2;
+        CertInitializeErr: Label 'Unable to initialize certificate!';
+    begin
+        if not TryInitializeCertificateFromBase64Format(CertBase64Value, Password, X509Certificate2) then
+            Error(CertInitializeErr);
+        FromXmlString(X509Certificate2.PrivateKey.ToXmlString(IncludePrivateParameters));
+    end;
+
     local procedure ReadKeyValue() KeyValue: Text
     var
         KeyValueInStream: InStream;
@@ -92,6 +109,18 @@ table 1461 "Signature Key"
     begin
         Rec."Key Value Blob".CreateOutStream(KeyValueOutStream, TextEncoding::UTF8);
         KeyValueOutStream.Write(KeyValue);
+    end;
+
+    [TryFunction]
+    [NonDebuggable]
+    local procedure TryInitializeCertificateFromBase64Format(CertBase64Value: Text; Password: Text; var X509Certificate2: DotNet X509Certificate2)
+    var
+        X509KeyStorageFlags: DotNet X509KeyStorageFlags;
+        Convert: DotNet Convert;
+    begin
+        X509Certificate2 := X509Certificate2.X509Certificate2(Convert.FromBase64String(CertBase64Value), Password, X509KeyStorageFlags.Exportable);
+        if IsNull(X509Certificate2) then
+            Error('');
     end;
 
     internal procedure WriteKeyValue(KeyValueInStream: InStream)

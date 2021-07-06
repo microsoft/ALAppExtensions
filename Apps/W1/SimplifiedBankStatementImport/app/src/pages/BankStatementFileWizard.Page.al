@@ -73,6 +73,8 @@ page 8850 "Bank Statement File Wizard"
                     ApplicationArea = Suite;
 
                     trigger OnDrillDown()
+                    var
+                        BankStatementFileWizard: Codeunit "Bank Statement File Wizard";
                     begin
                         Clear(TempBlob);
                         Clear(FileLinesList);
@@ -82,7 +84,7 @@ page 8850 "Bank Statement File Wizard"
                         Clear(FilePreviewDateColumnTxt);
                         Clear(FilePreviewAmountColumnTxt);
                         Clear(FilePreviewDescriptionColumnTxt);
-                        FileName := UploadBankFile(TempBlob);
+                        FileName := BankStatementFileWizard.UploadBankFile(TempBlob);
                         if FileName <> '' then begin
                             NextActionEnabled := true;
                             NewFileToRead := true;
@@ -90,7 +92,7 @@ page 8850 "Bank Statement File Wizard"
                             NewFileToGetColumns := true;
                             NewFileToGetFormats := true;
                             FileUploaded := true;
-                            Evaluate(DataExchangeCode, FileName.Replace('.csv', ''));
+                            Evaluate(DataExchangeCode, CopyStr(FileName.Replace('.csv', ''), 1, MaxStrLen(DataExchangeCode)));
                             CurrPage.Update(false);
                         end;
                     end;
@@ -502,13 +504,14 @@ page 8850 "Bank Statement File Wizard"
                     trigger OnDrillDown()
                     var
                         BankStatementImportPreview: Record "Bank Statement Import Preview";
+                        BankStatementFileWizard: Codeunit "Bank Statement File Wizard";
                         FileUploaded2: Boolean;
                     begin
                         if not FileUploaded then begin
                             Clear(TempBlob);
                             Clear(FileLinesList);
                             Clear(FileName);
-                            FileName := UploadBankFile(TempBlob);
+                            FileName := BankStatementFileWizard.UploadBankFile(TempBlob);
                             if FileName <> '' then begin
                                 FileUploaded2 := true;
                                 ReadTestBankFile();
@@ -674,12 +677,10 @@ page 8850 "Bank Statement File Wizard"
         ColumnSeperator: Option " ",Comma,Semicolon;
         DecimalSeperator: Option " ","Dot","Comma";
         UploadFileLbl: Label 'Upload a bank statement file';
-        UploadDialogTitleLbl: Label 'Upload';
         DownloadSampleLbl: Label 'Download a sample bank statement file';
         FileSuccessfullyUploadedLbl: Label 'Bank statement file successfully uploaded';
         SetupNotCompletedQst: Label 'The setup is not complete.\\Are you sure you want to exit?';
         TestFormatLbl: Label 'Test the bank statement file format';
-        UploadFilterLbl: Label 'CSV Files|%1', Comment = '%1 = File format, CSV should not be translated.';
         DateLbl: Label 'Date';
         AmountLbl: Label 'Amount';
         DescriptionLbl: Label 'Description';
@@ -692,15 +693,14 @@ page 8850 "Bank Statement File Wizard"
         CannotBeGreaterThanColumCountErr: Label 'Column number for %1 cannot be greater than column count.', Comment = '%1 = Name of the column';
         Step7InstructionLbl: Label 'The preview will show the first 10 lines from the file, and any problems will be colored red. It''s a good idea to verify that the decimal separator is correct. Using the wrong separator will result in incorrect amounts.';
         ChangeBankStatementImportFormatLbl: Label 'Bank Statement Import Format %1 is already defined for the Bank Account %2. Do you want to overwrite it with the new format?', Comment = '%1 = Bank Statement Import Format, %2 = Bank Account';
-        UploadFileFormatLbl: Label '*.csv', Locked = true;
         CommaSeperatorRegexLbl: Label '(,|\r?\n|^)([^",\r\n]+|"(?:[^"]|"")*")?', Locked = true;
         SemicolonSeperatorRegexLbl: Label '(;|\r?\n|^)([^";\r\n]+|"(?:[^"]|"")*")?', Locked = true;
         DateRegexLbl: Label '^((((0?[1-9]|[12]\d|3[01])[\.\-\/](0?[13578]|1[02])[\.\-\/]((1[6-9]|[2-9]\d)?\d{2}))|((0?[1-9]|[12]\d|30)[\.\-\/](0?[13456789]|1[012])[\.\-\/]((1[6-9]|[2-9]\d)?\d{2}))|((0?[1-9]|1\d|2[0-8])[\.\-\/]0?2[\.\-\/]((1[6-9]|[2-9]\d)?\d{2}))|(29[\.\-\/]0?2[\.\-\/]((1[6-9]|[2-9]\d)?(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00)|00)))|(((0[1-9]|[12]\d|3[01])(0[13578]|1[02])((1[6-9]|[2-9]\d)?\d{2}))|((0[1-9]|[12]\d|30)(0[13456789]|1[012])((1[6-9]|[2-9]\d)?\d{2}))|((0[1-9]|1\d|2[0-8])02((1[6-9]|[2-9]\d)?\d{2}))|(2902((1[6-9]|[2-9]\d)?(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00)|00))))$', Locked = true;
         DateWithMonthNameRegexLbl: Label '^((31(?![\.\-\/\ ](Feb(ruary)?|Apr(il)?|June?|(Sep(?=\b|t)t?|Nov)(ember)?)))|((30|29)(?!\ Feb(ruary)?))|(29(?=\ Feb(ruary)?\ (((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00)))))|(0?[1-9])|1\d|2[0-8])[\.\-\/\ ](Jan(uary)?|Feb(ruary)?|Ma(r(ch)?|y)|Apr(il)?|Ju((ly?)|(ne?))|Aug(ust)?|Oct(ober)?|(Sep(?=\b|t)t?|Nov|Dec)(ember)?)[\.\-\/\ ]((1[6-9]|[2-9]\d)\d{2})$', Locked = true;
         DateTimeMonthFirstRegexLbl: Label '^(?=\d)(?:(?:(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})|(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))|(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{2}))($|\ (?=\d)))?(((0?[1-9]|1[012])(:[0-5]\d){0,2}(\ [AP]M))|([01]\d|2[0-3])(:[0-5]\d){1,2})?$', Locked = true;
         DateTimeDayFirstRegexLbl: Label '^(?=\d)(?:(?:31(?!.(?:0?[2469]|11))|(?:30|29)(?!.0?2)|29(?=.0?2.(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00)))(?:\x20|$))|(?:2[0-8]|1\d|0?[1-9]))([-./])(?:1[012]|0?[1-9])\1(?:1[6-9]|[2-9]\d)?\d\d(?:(?=\x20\d)\x20|$))?(((0?[1-9]|1[012])(:[0-5]\d){0,2}(\x20[AP]M))|([01]\d|2[0-3])(:[0-5]\d){1,2})?$', Locked = true;
-        AmountWithDotRegexLbl: Label '^([0-9]+\d{0,2}(\,\d{3})*|([1-9]+\d*))(\.[0-9]+)?$', Locked = true;
-        AmountWithCommaRegexLbl: Label '^([0-9]+\d{0,2}(\.\d{3})*|([1-9]+\d*))(\,[0-9]+)?$', Locked = true;
+        AmountWithDotRegexLbl: Label '^([0-9]+\d{0,2}([\,'']\d{3})*|([1-9]+\d*))(\.[0-9]+)?$', Locked = true;
+        AmountWithCommaRegexLbl: Label '^([0-9]+\d{0,2}([\.'']\d{3})*|([1-9]+\d*))(\,[0-9]+)?$', Locked = true;
         yyyyMMddDashRegexLbl: Label '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$', Locked = true;
         yyyyMMddDotRegexLbl: Label '^[0-9]{4}\.(0[1-9]|1[0-2])\.(0[1-9]|[1-2][0-9]|3[0-1])$', Locked = true;
         yyyyMMddSlashRegexLbl: Label '^[0-9]{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[1-2][0-9]|3[0-1])$', Locked = true;
@@ -956,13 +956,6 @@ page 8850 "Bank Statement File Wizard"
         SampleFileOutStream.WriteText(SampleTransactionDate + ',12345678,MYACC,DD,-36.66,TST,VITALITY HEALTH,766.58');
         SampleFileName := 'SampleBankFile.csv';
         FileManagement.BLOBExport(SampleFileTempBlob, SampleFileName, true);
-    end;
-
-    local procedure UploadBankFile(var TempBlob: Codeunit "Temp Blob"): Text
-    var
-        FileManagement: Codeunit "File Management";
-    begin
-        exit(FileManagement.BLOBImportWithFilter(TempBlob, UploadDialogTitleLbl, '', StrSubstNo(UploadFilterLbl, UploadFileFormatLbl), UploadFileFormatLbl));
     end;
 
     local procedure ReadBankFile()

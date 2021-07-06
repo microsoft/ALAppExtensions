@@ -1,10 +1,14 @@
 codeunit 134689 "Email Message Unit Test"
 {
     Subtype = Test;
+    Permissions = tabledata "Email Outbox" = ri,
+                  tabledata "Email Message" = rm,
+                  tabledata "Email Recipient" = ri;
 
     var
         Assert: Codeunit "Library Assert";
         Email: Codeunit Email;
+        PermissionsMock: Codeunit "Permissions Mock";
 #pragma warning disable AA0240
 #pragma warning disable AA0470
         RecipientLbl: Label 'recipient%1@test.com',;
@@ -18,6 +22,7 @@ codeunit 134689 "Email Message Unit Test"
         EmailMessageSentCannotDeleteRecipientErr: Label 'Cannot delete the recipient because the email has already been sent.';
         EmailMessageQueuedCannotInsertRecipientErr: Label 'Cannot add a recipient because the email is queued to be sent.';
         EmailMessageSentCannotInsertRecipientErr: Label 'Cannot add the recipient because the email has already been sent.';
+        NoAccountErr: Label 'You must specify a valid email account to send the message to.';
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -29,6 +34,8 @@ codeunit 134689 "Email Message Unit Test"
         Index: Integer;
     begin
         // Initialize
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient1@test.com');
         Recipients.Add('recipient2@test.com');
         Recipients.Add('recipient3@test.com');
@@ -68,6 +75,8 @@ codeunit 134689 "Email Message Unit Test"
         Index: Integer;
     begin
         // Initialize
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient1@test.com');
         Recipients.Add('recipient2@test.com');
         Recipients.Add('recipient3@test.com');
@@ -116,6 +125,8 @@ codeunit 134689 "Email Message Unit Test"
         ConvertedBody: Text;
     begin
         // Initialize
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient@test.com');
         Body := '<div style="font-family: &quot;segoe ui&quot;, &quot;segoe wp&quot;, segoe, device-segoe, tahoma, helvetica, arial, sans-serif; font-size: 10.5pt; color: rgba(33, 33, 33, 1)"><span style="background-color: rgba(255, 0, 0, 1)">a</span> <span style="background-color: rgba(0, 255, 255, 1)">te</span><span style="color: rgba(220, 190, 34, 1); background-color: rgba(0, 255, 255, 1)">st</span> <span style="color: rgba(12, 100, 192, 1)">email</span></div>';
         Expected := '<div style="font-family: &quot;segoe ui&quot;, &quot;segoe wp&quot;, segoe, device-segoe, tahoma, helvetica, arial, sans-serif; font-size: 10.5pt; color: rgb(33, 33, 33)"><span style="background-color: rgb(255, 0, 0)">a</span> <span style="background-color: rgb(0, 255, 255)">te</span><span style="color: rgb(220, 190, 34); background-color: rgb(0, 255, 255)">st</span> <span style="color: rgb(12, 100, 192)">email</span></div>';
@@ -141,6 +152,8 @@ codeunit 134689 "Email Message Unit Test"
         OutStream: OutStream;
     begin
         // Initialize
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient@test.com');
         TempBLob.CreateOutStream(OutStream);
         OutStream.WriteText('Content');
@@ -186,6 +199,8 @@ codeunit 134689 "Email Message Unit Test"
         OutStream: OutStream;
     begin
         // Initialize
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient@test.com');
         TempBLob.CreateOutStream(OutStream);
         OutStream.WriteText('Content');
@@ -232,6 +247,9 @@ codeunit 134689 "Email Message Unit Test"
         // Initialize
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient@test.com');
         Message.Create(Recipients, 'Test subject', 'Test body', true);
 
@@ -248,6 +266,58 @@ codeunit 134689 "Email Message Unit Test"
     end;
 
     [Test]
+    procedure SendMessageBccOnly()
+    var
+        TempEmailAccount: Record "Email Account" temporary;
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        Recipients: List of [Text];
+        RecipientsCC: List of [Text];
+        RecipientsBCC: List of [Text];
+    begin
+        // Initialize
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempEmailAccount);
+
+        PermissionsMock.Set('Email Edit');
+
+        // [GIVEN] The message only has recipients in BCC
+        RecipientsBCC.Add('recipient@test.com');
+        EmailMessage.Create(Recipients, 'Test subject', 'Test body', true, RecipientsCC, RecipientsBCC);
+
+        // [WHEN] An email is sent
+        // [THEN] No error occurs
+        Email.Send(EmailMessage, TempEmailAccount."Account Id", TempEmailAccount.Connector);
+    end;
+
+    [Test]
+    procedure SendMessageNoRecipientsError()
+    var
+        TempEmailAccount: Record "Email Account" temporary;
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        Recipients: List of [Text];
+        RecipientsCC: List of [Text];
+        RecipientsBCC: List of [Text];
+    begin
+        // Initialize
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempEmailAccount);
+
+        PermissionsMock.Set('Email Edit');
+
+        // [GIVEN] The message doesn't have any recipients
+        EmailMessage.Create(Recipients, 'Test subject', 'Test body', true, RecipientsCC, RecipientsBCC);
+
+        // [WHEN] An email is sent
+        // [THEN] A validation error occurs
+        asserterror Email.Send(EmailMessage, TempEmailAccount."Account Id", TempEmailAccount.Connector);
+
+        // [THEN] The validation error is as expected
+        Assert.ExpectedError(NoAccountErr);
+    end;
+
+    [Test]
     procedure AddAttachmentsOnSentMessageTest()
     var
         TempAccount: Record "Email Account" temporary;
@@ -259,6 +329,9 @@ codeunit 134689 "Email Message Unit Test"
         // Initialize
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient@test.com');
         EmailMessage.Create(Recipients, 'Test subject', 'Test body', true);
         Email.Send(EmailMessage, TempAccount."Account Id", TempAccount.Connector);
@@ -282,6 +355,9 @@ codeunit 134689 "Email Message Unit Test"
         // Initialize
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient@test.com');
         Message.Create(Recipients, 'Test subject', 'Test body', true);
 
@@ -311,6 +387,9 @@ codeunit 134689 "Email Message Unit Test"
         // Initialize
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient@test.com');
         Message.Create(Recipients, 'Test subject', 'Test body', true);
         Email.Send(Message, TempAccount."Account Id", TempAccount.Connector);
@@ -336,6 +415,9 @@ codeunit 134689 "Email Message Unit Test"
         // Initialize
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient@test.com');
         Message.Create(Recipients, 'Test subject', 'Test body', true);
 
@@ -366,6 +448,9 @@ codeunit 134689 "Email Message Unit Test"
         // Initialize
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient@test.com');
         EmailMessage.Create(Recipients, 'Test subject', 'Test body', true);
         Email.Send(EmailMessage, TempAccount."Account Id", TempAccount.Connector);
@@ -392,6 +477,9 @@ codeunit 134689 "Email Message Unit Test"
         // Initialize
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
         Recipients.Add('recipient@test.com');
         Message.Create(Recipients, 'Test subject', 'Test body', true);
 
@@ -421,6 +509,9 @@ codeunit 134689 "Email Message Unit Test"
         // Initialize
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
         Message.Create('recipient@test.com', 'Test subject', 'Test body', true);
         Email.Send(Message, TempAccount."Account Id", TempAccount.Connector);
 

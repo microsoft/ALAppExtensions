@@ -40,8 +40,11 @@ codeunit 20366 "Tax Engine Assisted Setup"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Import Config. Package Files", 'OnBeforeImportConfigurationFile', '', false, false)]
     local procedure OnBeforeImportConfigurationFile()
+    var
+        TaxType: Record "Tax Type";
     begin
-        SetupTaxEngine();
+        if TaxType.IsEmpty() then
+            SetupTaxEngine();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Role Center Notification Mgt.", 'OnBeforeShowNotifications', '', false, false)]

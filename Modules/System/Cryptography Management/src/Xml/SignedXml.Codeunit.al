@@ -112,6 +112,21 @@ codeunit 1460 SignedXml
     end;
 
     /// <summary>
+    /// Adds a AddXmlDsigExcC14NTransformToReference object to the list of transforms to be performed on the data before passing it to the digest algorithm.
+    /// </summary>
+    procedure AddXmlDsigExcC14NTransformToReference()
+    begin
+        SignedXmlImpl.AddXmlDsigExcC14NTransformToReference();
+    end;
+    /// <summary>
+    /// Adds a AddXmlDsigEnvelopedSignatureTransform object to the list of transforms to be performed on the data before passing it to the digest algorithm.
+    /// </summary>
+    procedure AddXmlDsigEnvelopedSignatureTransform()
+    begin
+        SignedXmlImpl.AddXmlDsigEnvelopedSignatureTransform();
+    end;
+
+    /// <summary>
     /// Computes an Xml digital signature from Xml document.
     /// </summary>
     procedure ComputeSignature()

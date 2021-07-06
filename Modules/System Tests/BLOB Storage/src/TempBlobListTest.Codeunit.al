@@ -10,6 +10,7 @@ codeunit 135032 "Temp Blob List Test"
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         ElementNotAddedErr: Label 'The element was not added.';
         ElementNotRemovedErr: Label 'The element was not removed.';
         ElementDoesNotExistErr: Label 'An element with the given index does not exist.';
@@ -25,6 +26,9 @@ codeunit 135032 "Temp Blob List Test"
         TempBlob: Codeunit "Temp Blob";
     begin
         // [SCENARIO] The objects in the list can be found.
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
 
         // [WHEN] Exists is called with an index less than one.
         // [THEN] The error is thrown.
@@ -63,6 +67,9 @@ codeunit 135032 "Temp Blob List Test"
     begin
         // [SCENARIO] The total number of objects in the list can be obtained.
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
+
         // [WHEN] The list is empty.
         // [THEN] The count is zero.
         Assert.AreEqual(0, TempBlobList.Count(), 'Empty list should have size 0.');
@@ -96,9 +103,13 @@ codeunit 135032 "Temp Blob List Test"
     begin
         // [SCENARIO] A particular object can be obtained from the list.
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
+
         // [WHEN] The list is empty.
         // [THEN] It is not possible to get the first element, so the error is thrown.
         asserterror TempBlobList.Get(1, TempBlobOut);
+        Assert.ExpectedError('Object with index 1 does not exist.');
 
         // [GIVEN] Some data is written to a TempBlob object and it is added to the list.
         WriteDataToBlob('Test text', TempBlob);
@@ -113,6 +124,7 @@ codeunit 135032 "Temp Blob List Test"
 
         // [THEN] It is not possible to retrieve the first element, so the error is thrown.
         asserterror TempBlobList.Get(1, TempBlobOut);
+        Assert.ExpectedError('Object with index 1 does not exist.');
     end;
 
     [Test]
@@ -125,9 +137,13 @@ codeunit 135032 "Temp Blob List Test"
     begin
         // [SCENARIO] A particular object in the list can be changed.
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
+
         // [WHEN] The list is empty.
         // [THEN] It's not possible to set the first element, so the error is thrown.
         asserterror TempBlobList.Set(1, TempBlob);
+        Assert.ExpectedError('Object with index 1 does not exist.');
 
         // [GIVEN] Different data is written to the TempBlob and TempBlobReplacement variables.
         WriteDataToBlob('Original test text', TempBlob);
@@ -153,6 +169,9 @@ codeunit 135032 "Temp Blob List Test"
     begin
         // [SCENARIO] Elements can be removed from the list.
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
+
         // [GIVEN] TempBlob objects contain unique data.
         WriteDataToBlob('First', TempBlob1);
         WriteDataToBlob('Second', TempBlob2);
@@ -172,6 +191,7 @@ codeunit 135032 "Temp Blob List Test"
 
         // [THEN] The object with the index three no longer exists.
         asserterror TempBlobList.Get(3, TempBlobOut);
+        Assert.ExpectedError('Object with index 3 does not exist.');
 
         // [THEN] The object with the index two contains the data from the third TempBlob.
         TempBlobList.Get(2, TempBlobOut);
@@ -187,6 +207,7 @@ codeunit 135032 "Temp Blob List Test"
         // [WHEN] A non existing object is deleted.
         // [THEN] The error is thrown.
         asserterror TempBlobList.RemoveAt(2);
+        Assert.ExpectedError('Object with index 2 does not exist.');
     end;
 
     [Test]
@@ -196,6 +217,9 @@ codeunit 135032 "Temp Blob List Test"
         TempBlob: Codeunit "Temp Blob";
     begin
         // [SCENARIO] The list can be checked if it is empty.
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
 
         // [WHEN] The list is empty.
         // [THEN] IsEmpty returns 'true'.
@@ -228,6 +252,9 @@ codeunit 135032 "Temp Blob List Test"
         TempBlobOut3: Codeunit "Temp Blob";
     begin
         // [SCENARIO] Elements can be added to the list.
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
 
         // [GIVEN] Different data is written to three TempBlob objects.
         WriteDataToBlob('First', TempBlob1);
@@ -262,6 +289,9 @@ codeunit 135032 "Temp Blob List Test"
         TempBlobOut2: Codeunit "Temp Blob";
     begin
         // [SCENARIO] The range of elements from another list can be added to the current list.
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
 
         // [GIVEN] An empty list is added to the empty destination list.
         Assert.IsTrue(TempBlobListDest.AddRange(TempBlobList), RangeNotAddedErr);
@@ -305,6 +335,9 @@ codeunit 135032 "Temp Blob List Test"
         TempBlobOut3: Codeunit "Temp Blob";
     begin
         // [SCENARIO] The range of elements can retrieved from the list.
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
 
         // [GIVEN] Different data is written to three TempBlob objects, and they are added to the list.
         WriteDataToBlob('First', TempBlob1);

@@ -1,0 +1,32 @@
+{
+    "id":  "5d986913-9dd6-44b7-875b-3e8c455fac7c",
+    "name":  "Translation Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Library with Test objects for the Translation module",
+    "description":  "Library with Test objects for the Translation module",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "3ade8173-2cc2-4727-8c57-eb0754f70cdc",
+                            "name":  "Translation",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "18.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  137121,
+                         "to":  137121
+                     }
+                 ],
+    "target":  "OnPrem"
+}

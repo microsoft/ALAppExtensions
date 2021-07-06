@@ -26,6 +26,26 @@ pageextension 18149 "GST Sales Invoice Subform Ext" extends "Sales Invoice Subfo
                 CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
             end;
         }
+        modify("Line Discount %")
+        {
+            Trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
+            begin
+                CurrPage.SaveRecord();
+                CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+            end;
+        }
+        modify("Line Discount Amount")
+        {
+            Trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
+            begin
+                CurrPage.SaveRecord();
+                CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+            end;
+        }
         addafter("Line Amount")
         {
             field("GST on Assessable Value"; Rec."GST on Assessable Value")
@@ -80,6 +100,19 @@ pageextension 18149 "GST Sales Invoice Subform Ext" extends "Sales Invoice Subfo
                     CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
                 end;
             }
+            field("Unit Price Incl. of Tax"; Rec."Unit Price Incl. of Tax")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies unit prices are inclusive of tax on the line.';
+
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
             field("GST Credit"; Rec."GST Credit")
             {
                 ApplicationArea = Basic, Suite;
@@ -107,7 +140,7 @@ pageextension 18149 "GST Sales Invoice Subform Ext" extends "Sales Invoice Subfo
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies an identifier for the GST group used to calculate and post GST.';
-                
+
                 trigger OnValidate()
                 var
                     CalculateTax: Codeunit "Calculate Tax";

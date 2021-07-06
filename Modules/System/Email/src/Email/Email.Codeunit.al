@@ -240,6 +240,16 @@ codeunit 8901 "Email"
     end;
 
     ///<summary>
+    /// Open the sent emails page for a source record given by its table ID and system ID.
+    ///</summary>
+    ///<param name="TableId">The table ID of the record.</param>
+    ///<param name="SystemId">The system ID of the record.</param>
+    procedure OpenSentEmails(TableId: Integer; SystemId: Guid)
+    begin
+        EmailImpl.OpenSentEmails(TableId, SystemId);
+    end;
+
+    ///<summary>
     /// Adds a relation between an email message and a record.
     ///</summary>
     ///<param name="EmailMessage">The email message for which to create the relation.</param>
@@ -317,6 +327,15 @@ codeunit 8901 "Email"
     /// <param name="MessageID">The ID of the email to add an attachment to.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnGetAttachment(AttachmentTableID: Integer; AttachmentSystemID: Guid; MessageID: Guid)
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event to implement additional validation after the email message has been enqueued in the email outbox.
+    /// </summary>
+    /// <param name="MessageId">The ID of the email that has been queued</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnEnqueuedInOutbox(MessageId: Guid)
     begin
     end;
 

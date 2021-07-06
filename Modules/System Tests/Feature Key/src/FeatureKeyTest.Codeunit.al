@@ -6,7 +6,8 @@
 codeunit 135003 "Feature Key Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
+    Permissions = tabledata "Feature Key" = m,
+                  tabledata "Feature Data Update Status" = imd;
 
     trigger OnRun()
     begin
@@ -17,6 +18,7 @@ codeunit 135003 "Feature Key Test"
         Assert: Codeunit "Library Assert";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         FeatureManagementFacade: Codeunit "Feature Management Facade";
+        PermissionsMock: Codeunit "Permissions Mock";
         OneWayAlreadyEnabledErr: Label 'This feature has already been enabled and cannot be disabled.';
         NotImplementedMsg: Label 'The feature %1 cannot be enabled because data update handling is not implemented.', Comment = '%1 - feature key id';
 
@@ -30,6 +32,7 @@ codeunit 135003 "Feature Key Test"
         ID: Text[50];
     begin
         // [FEATURE] [UI]
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         // [GIVEN] Feature 'X' is disabled, no FeatureDataUpdateStatus for Company 'A'
         ID := GetOneWayFeatureId(false);
@@ -68,6 +71,7 @@ codeunit 135003 "Feature Key Test"
         ID: Text[50];
     begin
         // [FEATURE] [UI]
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         // [GIVEN] Feature 'X' is enabled, no FeatureDataUpdateStatus for Company 'A'
         ID := GetOneWayFeatureId(false);
@@ -99,6 +103,7 @@ codeunit 135003 "Feature Key Test"
         ID: Text[50];
     begin
         // [FEATURE] [UI]
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         // [GIVEN] 'One Way' Feature 'X' is enabled, no FeatureDataUpdateStatus for Company 'A'
         ID := 'ItemReference';
@@ -128,6 +133,7 @@ codeunit 135003 "Feature Key Test"
         Descr: Text;
     begin
         // [FEATURE] [UI]
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         BindSubscription(FeatureKeyTestHandler);
         // [GIVEN] 'One Way' Feature 'X' is disabled 
@@ -161,6 +167,7 @@ codeunit 135003 "Feature Key Test"
         Descr: Text;
     begin
         // [FEATURE] [UI]
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         BindSubscription(FeatureKeyTestHandler);
         // [GIVEN] 'One Way' Feature 'X' is disabled 
@@ -198,6 +205,7 @@ codeunit 135003 "Feature Key Test"
         Descr: Text;
     begin
         // [FEATURE] [UI]
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         BindSubscription(FeatureKeyTestHandler);
         // [GIVEN] 'One Way' Feature 'X' is disabled 
@@ -242,6 +250,7 @@ codeunit 135003 "Feature Key Test"
         Descr: Text;
     begin
         // [FEATURE] [UI]
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         BindSubscription(FeatureKeyTestHandler);
         // [GIVEN] User cannot schedule tasks
@@ -288,6 +297,7 @@ codeunit 135003 "Feature Key Test"
         Descr: Text;
     begin
         // [FEATURE] [UI]
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         BindSubscription(FeatureKeyTestHandler);
         // [GIVEN] 'One Way' Feature 'X' is disabled, update is going to fail. 
@@ -329,6 +339,7 @@ codeunit 135003 "Feature Key Test"
     begin
         // [FEATURE] [UI]
         // [SCENARIO] The "One Way" feature is enabled immediately if it does not require a data update.
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         // [GIVEN] Feature 'X' where "Is One Way" is Yes, but "Data Update Required" is No.
         FeatureKey.SetRange("Is One Way", true);
@@ -351,6 +362,7 @@ codeunit 135003 "Feature Key Test"
         Enabled: Option "None","All Users";
         ID: Text[50];
     begin
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         ID := 'SalesPrices';
         // [GIVEN] Feature Key 'X', where "Enabled" is 'None', "Feature Status" is Incomplete
@@ -367,6 +379,7 @@ codeunit 135003 "Feature Key Test"
         Enabled: Option "None","All Users";
         ID: Text[50];
     begin
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         ID := 'SalesPrices';
         // [GIVEN] Feature Key 'X', where "Enabled" is 'All Users', "Feature Status" is Complete
@@ -383,6 +396,7 @@ codeunit 135003 "Feature Key Test"
         Enabled: Option "None","All Users";
         ID: Text[50];
     begin
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         ID := 'SalesPrices';
         // [GIVEN] Feature Key 'X', where "Enabled" is 'All Users', "Feature Status" is Enabled
@@ -399,6 +413,7 @@ codeunit 135003 "Feature Key Test"
         Enabled: Option "None","All Users";
         ID: Text[50];
     begin
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         ID := 'SalesPrices';
         // [GIVEN] Feature Key 'X', where "Enabled" is 'All Users', "Feature Status" is Incomplete
@@ -415,6 +430,7 @@ codeunit 135003 "Feature Key Test"
         Enabled: Option "None","All Users";
         ID: Text[50];
     begin
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         ID := 'SalesPrices';
         // [GIVEN] Feature Key 'X', where "Enabled" is 'All Users', "Feature Status" is Pending
@@ -431,6 +447,7 @@ codeunit 135003 "Feature Key Test"
         Enabled: Option "None","All Users";
         ID: Text[50];
     begin
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         ID := 'SalesPrices';
         // [GIVEN] Feature Key 'X', where "Enabled" is 'All Users', "Feature Status" is Scheduled
@@ -447,6 +464,7 @@ codeunit 135003 "Feature Key Test"
         Enabled: Option "None","All Users";
         ID: Text[50];
     begin
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         ID := 'SalesPrices';
         // [GIVEN] Feature Key 'X', where "Enabled" is 'All Users', "Feature Status" is Updating
@@ -463,6 +481,7 @@ codeunit 135003 "Feature Key Test"
         Enabled: Option "None","All Users";
         ID: Text[50];
     begin
+        PermissionsMock.Set('Feature Key Admin');
         Initialize();
         ID := 'SalesPrices';
         // [GIVEN] Feature Key 'X', where "Enabled" is 'All Users', "Feature Status" is Disabled

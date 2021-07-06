@@ -6,17 +6,20 @@
 codeunit 137121 "Translation Tests"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
+    Permissions = tabledata Language = rimd;
 
     var
         Translation: Codeunit Translation;
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         Text1Txt: Label 'Translation 1';
         Text2Txt: Label 'Translation 2';
         Text3Txt: Label 'Translation 3';
         Text4Txt: Label 'Translation 4';
         Text5Txt: Label 'Translation 5';
         CannotTranslateTempRecErr: Label 'Translations cannot be added or retrieved for temporary records.';
+        DifferentTableErr: Label 'The records cannot belong to different tables.';
+        NoRecordIdErr: Label 'The variant passed is not a record.';
 
     [Test]
     [Scope('OnPrem')]
@@ -27,8 +30,9 @@ codeunit 137121 "Translation Tests"
         Translation2: Text;
     begin
         // [SCENARIO] Test the storage and retrieval of translations in different languages
-
         Initialize();
+
+        PermissionsMock.Set('Translation Edit');
 
         // [GIVEN] Create a record for which data in fields can be translated
         TranslationTestTable.Init();
@@ -60,8 +64,9 @@ codeunit 137121 "Translation Tests"
         TranslationTestTable: Record "Translation Test Table";
     begin
         // [SCENARIO] Translations can be deleted
-
         Initialize();
+
+        PermissionsMock.Set('Translation Edit');
 
         // [GIVEN] Create a record for which data in fields can be translated
         TranslationTestTable.Init();
@@ -103,8 +108,9 @@ codeunit 137121 "Translation Tests"
         Translation4: Text;
     begin
         // [SCENARIO] Tests if the Translation page shows the correct values stored
-
         Initialize();
+
+        PermissionsMock.Set('Translation Edit');
 
         // [GIVEN] Create a record for which data in fields can be translated
         TranslationTestTable.Init();
@@ -165,8 +171,9 @@ codeunit 137121 "Translation Tests"
         TranslationPage: TestPage Translation;
     begin
         // [SCENARIO] Tests if the ShowForAllRecords shows translations for all records in a table
-
         Initialize();
+
+        PermissionsMock.Set('Translation Edit');
 
         // [GIVEN] Create 3 records for which data in fields can be translated
         CreateRecordWithTranslation(TranslationTestTableA);
@@ -215,6 +222,85 @@ codeunit 137121 "Translation Tests"
 
     [Test]
     [Scope('OnPrem')]
+    procedure TestCopyTranslations()
+    var
+        TranslationTestTable: Record "Translation Test Table";
+        TargetTranslationTestTable: Record "Translation Test Table";
+    begin
+        // [SCENARIO] Translations can be deleted
+        Initialize();
+
+        // [GIVEN] Create two records for which data in fields can be translated
+        CreateRecord(TranslationTestTable);
+        CreateRecord(TargetTranslationTestTable);
+
+        // [WHEN] Set the translations in two fields
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), Text1Txt);
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField), 1030, Text2Txt);
+        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(SecondTextField), Text3Txt);
+
+        // [WHEN] Copy the the translations for one field
+        Translation.Copy(TranslationTestTable, TargetTranslationTestTable, TranslationTestTable.FieldNo(TextField));
+
+        // [THEN] The translation for the field is copied and for the second is not
+        Assert.AreEqual(Text1Txt, Translation.Get(TargetTranslationTestTable, TargetTranslationTestTable.FieldNo(TextField)),
+            'The translation should have been copied');
+        Assert.AreEqual(Text2Txt, Translation.Get(TargetTranslationTestTable, TargetTranslationTestTable.FieldNo(TextField), 1030),
+            'The translation should have been copied');
+        Assert.AreEqual('', Translation.Get(TargetTranslationTestTable, TranslationTestTable.FieldNo(SecondTextField)),
+            'The 2nd translation should not have been copied');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestCopyTranslationForDifferentRecords()
+    var
+        TranslationTestTable: Record "Translation Test Table";
+        TranslationTestTable2: Record Translation;
+    begin
+        // [SCENARIO] Checks for an error message when translation is copied from one to another table
+        Initialize();
+
+        // [GIVEN] A record on one table is created
+        CreateRecord(TranslationTestTable);
+
+        // [GIVEN] A record of another table is created
+        TranslationTestTable2.Init();
+        TranslationTestTable2."Language ID" := 1;
+        TranslationTestTable2."System ID" := CreateGuid();
+        TranslationTestTable2."Field ID" := 1;
+        TranslationTestTable2.Insert();
+
+        // [WHEN] Translation is copied
+        asserterror Translation.Copy(TranslationTestTable, TranslationTestTable2);
+
+        // [THEN] Error is raised
+        Assert.ExpectedError(DifferentTableErr);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestCopyTranslationForNonRecord()
+    var
+        TranslationTestTable: Record "Translation Test Table";
+        TxtValue: Text;
+    begin
+        // [SCENARIO] Checks for an error message when translation is copied to non-table.
+        Initialize();
+
+        // [GIVEN] A record on one table is created
+        CreateRecord(TranslationTestTable);
+
+        // [WHEN] Translation is copied
+        asserterror Translation.Copy(TranslationTestTable, TxtValue);
+
+        // [THEN] Error is raised
+        Assert.ExpectedError(NoRecordIdErr);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure TestTranslateForTemporaryRecords()
     var
         TranslationTestTable: Record "Translation Test Table" temporary;
@@ -222,6 +308,8 @@ codeunit 137121 "Translation Tests"
         // [SCENARIO] Checks for an error message when translation is set for a temporary record
         Initialize();
 
+        PermissionsMock.Set('Translation Edit');
+        
         // [GIVEN] A record in a temporary table is created
         CreateRecord(TranslationTestTable);
 
@@ -299,4 +387,3 @@ codeunit 137121 "Translation Tests"
         Response := Action::LookupOK;
     end;
 }
-

@@ -30,6 +30,11 @@ table 8910 "Email Related Attachment"
         {
             DataClassification = SystemMetadata;
         }
+        field(5; "Attachment Source"; Text[250])
+        {
+            Access = Internal;
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

@@ -6,7 +6,9 @@
 codeunit 135092 "Upgrade Tag Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
+
+    var
+        PermissionsMock: Codeunit "Permissions Mock";
 
     [Test]
     [Scope('OnPrem')]
@@ -18,6 +20,7 @@ codeunit 135092 "Upgrade Tag Test"
         NonExistingUpgradeTag: Code[250];
     begin
         // [Scenario] HasUpgradeTag should return false when upgrade tag is not set
+        PermissionsMock.Set('Upgrade Tags View');
 
         // [Given] Upgrade tag that does not exist
         NonExistingUpgradeTag := CopyStr(Any.AlphanumericText(MaxStrLen(NonExistingUpgradeTag)), 1, MaxStrLen(NonExistingUpgradeTag));
@@ -37,6 +40,7 @@ codeunit 135092 "Upgrade Tag Test"
         NewUpgradeTag: Code[250];
     begin
         // [Scenario] HasUpgradeTag should return true when upgrade tag is set by using SetUpgradeTag function
+        PermissionsMock.Set('Upgrade Tags View');
 
         // [Given] Any Upgrade tag
         NewUpgradeTag := CopyStr(Any.AlphanumericText(MaxStrLen(NewUpgradeTag)), 1, MaxStrLen(NewUpgradeTag));
@@ -58,6 +62,7 @@ codeunit 135092 "Upgrade Tag Test"
         NewUpgradeTag: Code[250];
     begin
         // [Scenario] HasUpgradeTag should return true when upgrade tag is set by using SetDatabaseUpgradeTag function
+        PermissionsMock.Set('Upgrade Tags View');
 
         // [Given] Any Upgrade tag
         NewUpgradeTag := CopyStr(Any.AlphanumericText(MaxStrLen(NewUpgradeTag)), 1, MaxStrLen(NewUpgradeTag));
@@ -79,6 +84,7 @@ codeunit 135092 "Upgrade Tag Test"
         MockedPerDatabaseUpgradeTags: List of [Code[250]];
     begin
         // [Scenario] HasUpgradeTag should return true when upgrade tag is set by using SetUpgradeTag function
+        PermissionsMock.Set('Upgrade Tags View');
 
         // [Given] A subscriber that wants to register PerCompany and PerDatabase Upgrade Tags
         SetupSetAllUpgradeTagsMock(SetAllUpgradeTagsMock, MockedPerCompanyUpgradeTags, MockedPerDatabaseUpgradeTags);
@@ -102,6 +108,7 @@ codeunit 135092 "Upgrade Tag Test"
         MockedPerDatabaseUpgradeTags: List of [Code[250]];
     begin
         // [Scenario] HasUpgradeTag should return true when upgrade tag is set by using SetUpgradeTag function
+        PermissionsMock.Set('Upgrade Tags View');
 
         // [Given] A subscriber that wants to register PerCompany and PerDatabase Upgrade Tags
         SetupSetAllUpgradeTagsMock(SetAllUpgradeTagsMock, MockedPerCompanyUpgradeTags, MockedPerDatabaseUpgradeTags);
@@ -125,6 +132,7 @@ codeunit 135092 "Upgrade Tag Test"
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         // [Scenario] Register upgrade tags should not trigger any code if there are no subscribers
+        PermissionsMock.Set('Upgrade Tags View');
         // [Given] No active subscribers to SetUpgradeTag methods
         // [When] SetUpgradeTag is called with no subscribers
         UpgradeTag.SetAllUpgradeTags();
@@ -140,6 +148,7 @@ codeunit 135092 "Upgrade Tag Test"
         UpgradeTagTags: Codeunit "Upgrade Tag - Tags";
     begin
         // [Scenario] Test upgrade tag validation verifies the setup is correct
+        PermissionsMock.Set('Upgrade Tags View');
 
         // [Given] All upgrade tags are registered
         UpgradeTag.SetAllUpgradeTags();
@@ -160,6 +169,7 @@ codeunit 135092 "Upgrade Tag Test"
         NewUpgradeTag: Code[250];
     begin
         // [Scenario] HasUpgradeTagSkipped should return true when upgrade tag is skipped set by using SetSkippedUpgrade function
+        PermissionsMock.Set('Upgrade Tags View');
 
         // [Given] Any Upgrade tag and insert into table
         NewUpgradeTag := CopyStr(Any.AlphanumericText(MaxStrLen(NewUpgradeTag)), 1, MaxStrLen(NewUpgradeTag));
@@ -180,6 +190,7 @@ codeunit 135092 "Upgrade Tag Test"
         NewUpgradeTag: Code[250];
     begin
         // [Scenario] HasUpgradeTagSkipped should return true when upgrade tag is skipped set by using SetSkippedUpgrade function
+        PermissionsMock.Set('Upgrade Tags View');
 
         // [Given] Any Upgrade tag and insert into table
         NewUpgradeTag := CopyStr(Any.AlphanumericText(MaxStrLen(NewUpgradeTag)), 1, MaxStrLen(NewUpgradeTag));
