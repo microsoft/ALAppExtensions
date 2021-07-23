@@ -13,6 +13,7 @@ pageextension 11727 "Sales Order CZL" extends "Sales Order"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT date of the original document.';
+                Visible = false;
             }
         }
         addafter(Control85)

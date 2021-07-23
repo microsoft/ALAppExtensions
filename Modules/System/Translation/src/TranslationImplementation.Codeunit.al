@@ -12,7 +12,7 @@ codeunit 3712 "Translation Implementation"
         NoRecordIdErr: Label 'The variant passed is not a record.';
         CannotTranslateTempRecErr: Label 'Translations cannot be added or retrieved for temporary records.';
         NotAValidRecordForTranslationErr: Label 'Translations cannot be added for the record on table %1.', Comment = '%1 - Table number';
-        DifferntTableErr: Label 'The records cannot belong to different tables.';
+        DifferentTableErr: Label 'The records cannot belong to different tables.';
 
     procedure Any(): Boolean
     var
@@ -97,7 +97,7 @@ codeunit 3712 "Translation Implementation"
         GetRecordRefFromVariant(FromRecVariant, FromRecordRef);
         GetRecordRefFromVariant(ToRecVariant, ToRecordRef);
         if FromRecordRef.Number() <> ToRecordRef.Number() then
-            Error(DifferntTableErr);
+            Error(DifferentTableErr);
         Translation.SetRange("System Id", GetSystemIdFromRecordRef(FromRecordRef));
         Translation.SetRange("Table ID", FromRecordRef.Number());
         if FieldId <> 0 then
@@ -105,6 +105,22 @@ codeunit 3712 "Translation Implementation"
         if Translation.FindSet() then
             repeat
                 Set(ToRecVariant, Translation."Field ID", Translation."Language ID", Translation.Value);
+            until Translation.Next() = 0;
+    end;
+
+    procedure Copy(FromRecVariant: Variant; FromFieldId: Integer; ToRecVariant: Variant; ToFieldId: Integer)
+    var
+        Translation: Record Translation;
+        FromRecordRef: RecordRef;
+    begin
+        GetRecordRefFromVariant(FromRecVariant, FromRecordRef);
+
+        Translation.SetRange("System Id", GetSystemIdFromRecordRef(FromRecordRef));
+        Translation.SetRange("Field ID", FromFieldId);
+
+        if Translation.FindSet() then
+            repeat
+                Set(ToRecVariant, ToFieldId, Translation."Language ID", Translation.Value);
             until Translation.Next() = 0;
     end;
 
@@ -186,4 +202,3 @@ codeunit 3712 "Translation Implementation"
         Error(NoRecordIdErr);
     end;
 }
-

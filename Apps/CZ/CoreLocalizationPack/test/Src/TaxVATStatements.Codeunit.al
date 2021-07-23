@@ -2,6 +2,7 @@
 codeunit 148060 "Tax VAT Statements CZL"
 {
     Subtype = Test;
+    TestPermissions = NonRestrictive;
 
     var
         LibraryERM: Codeunit "Library - ERM";

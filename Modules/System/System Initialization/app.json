@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Executes non-business logic on user login.",
     "description":  "",
-    "version":  "18.2.0.0",
+    "version":  "18.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,13 +15,13 @@
                              "id":  "959630b2-01c5-48d8-a477-d6d40da855fb",
                              "name":  "User Login Times",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "574d5c26-62d4-4541-bc36-0fbbaed0072a",
                              "name":  "Azure AD User Management",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          }
                      ],
     "screenshots":  [

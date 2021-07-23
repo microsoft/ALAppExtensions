@@ -7,10 +7,10 @@ codeunit 139146 "User Permissions Test"
 {
     Subtype = Test;
     EventSubscriberInstance = Manual;
-    TestPermissions = NonRestrictive;
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         SUPERTok: Label 'SUPER', Locked = true;
         NotSUPERTok: Label 'NOTSUPER', Locked = true;
         SUPERPermissionErr: Label 'There should be at least one enabled ''SUPER'' user.', Locked = true;
@@ -32,6 +32,7 @@ codeunit 139146 "User Permissions Test"
 
         AddPermissions(FirstUserId, SUPERTok, '');
         AddPermissions(SecondUserId, NotSUPERTok, '');
+        PermissionsMock.Set('User Permission View');
 
         // [When] checking if the first super user is SUPER
         IsUserSuper := UserPermissions.IsSuper(FirstUserId);
@@ -64,6 +65,8 @@ codeunit 139146 "User Permissions Test"
         AddPermissions(FirstUserId, SUPERTok, '');
         AddPermissions(SecondUserId, NotSUPERTok, '');
 
+        PermissionsMock.Set('User Permission View');
+
         // [When] checking if the non-super user is SUPER
         IsUserSuper := UserPermissions.IsSuper(SecondUserId);
 
@@ -86,6 +89,8 @@ codeunit 139146 "User Permissions Test"
         RandomCompanyName := CopyStr(Any.AlphabeticText(10), 1, MaxStrLen(RandomCompanyName));
         UserId := AddUser(Any.AlphabeticText(10), true, false);
         AddPermissions(UserId, SUPERTok, RandomCompanyName);
+
+        PermissionsMock.Set('User Permission View');
 
         // [When] checking if the user is SUPER for all companies
         IsUserSuper := UserPermissions.IsSuper(UserId);
@@ -110,6 +115,8 @@ codeunit 139146 "User Permissions Test"
         UserId := AddUser(Any.AlphabeticText(10), true, false);
         AddPermissions(UserId, NotSUPERTok, RandomCompanyName);
 
+        PermissionsMock.Set('User Permission View');
+
         // [When] checking if the user is SUPER for all companies
         IsUserSuper := UserPermissions.IsSuper(UserId);
 
@@ -131,6 +138,8 @@ codeunit 139146 "User Permissions Test"
         UserId := AddUser(Any.AlphabeticText(10), true, false);
 
         AddPermissions(UserId, SUPERTok, '');
+
+        PermissionsMock.Set('User Permission View');
 
         // [When] checking if the user is SUPER
         IsUserSuper := UserPermissions.IsSuper(UserId);
@@ -155,6 +164,7 @@ codeunit 139146 "User Permissions Test"
         SecondUserId: Guid;
     begin
         // [Given] two SUPER users
+        PermissionsMock.Stop();
         DeleteAllUsersAndPermissions();
         FirstUserId := AddUser(Any.AlphabeticText(10), true, false);
         SecondUserId := AddUser(Any.AlphabeticText(10), true, false);
@@ -196,6 +206,8 @@ codeunit 139146 "User Permissions Test"
         DeleteAllUsersAndPermissions();
         UserId := AddUser(Any.AlphabeticText(10), true, false);
         AddPermissions(UserId, SUPERTok, '');
+
+        PermissionsMock.Set('User Permission View');
 
         BindSubscription(UserPermissionsTest);
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);

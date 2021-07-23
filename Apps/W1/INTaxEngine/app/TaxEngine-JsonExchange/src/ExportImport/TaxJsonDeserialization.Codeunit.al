@@ -20,6 +20,16 @@ codeunit 20361 "Tax Json Deserialization"
         GlobalHideDialog := NewHideDialog;
     end;
 
+    procedure SkipVersionCheck(SkipVersionCheck: Boolean)
+    begin
+        GlobalSkipVersionCheck := SkipVersionCheck;
+    end;
+
+    procedure SkipUseCaseIndentation(SkipIndentation: Boolean)
+    begin
+        GlobalSkipIndentation := SkipIndentation;
+    end;
+
     procedure ImportTaxTypes(JsonText: Text)
     var
         JArray: JsonArray;
@@ -443,6 +453,8 @@ codeunit 20361 "Tax Json Deserialization"
     local procedure ReadUseCase(JObject: JsonObject)
     var
         UseCase: Record "Tax Use Case";
+        UseCaseArchivalLog: Record "Use Case Archival Log Entry";
+        TaxJsonSingleInstance: Codeunit "Tax Json Single Instance";
         TaxType: Code[20];
         UseCaseID: Guid;
         Description: Text[250];
@@ -463,18 +475,36 @@ codeunit 20361 "Tax Json Deserialization"
             if UseCase.Get(UseCaseID) then begin
                 OldMajorVersion := UseCase."Major Version";
                 OldMinorVersion := UseCase."Minor Version";
-                UseCase.Validate(Status, UseCase.Status::Draft);
+
+                if GlobalSkipVersionCheck then begin
+                    if (OldMajorVersion = MajorVersion) and (OldMinorVersion = MinorVersion) then
+                        exit;
+
+                    UseCaseArchivalLog.SetRange("Case ID", UseCaseID);
+                    UseCaseArchivalLog.SetRange("Major Version", MajorVersion);
+                    UseCaseArchivalLog.SetRange("Minor Version", MinorVersion);
+                    if not UseCaseArchivalLog.IsEmpty() then
+                        exit;
+
+                    if OldMinorVersion <> 0 then
+                        TaxJsonSingleInstance.UpdateReplacedUseCase(UseCase);
+                    UseCase.Validate(Status, UseCase.Status::Draft);
+                end else begin
+                    MajorVersion := UseCase."Major Version";
+
+                    if UseCase.Status = UseCase.Status::Draft then
+                        MinorVersion := UseCase."Minor Version"
+                    else begin
+                        UseCase.Validate(Status, UseCase.Status::Draft);
+                        MinorVersion := UseCase."Minor Version";
+                    end;
+                end;
+
                 UseCase.Modify();
                 UseCase.Delete(true);
             end;
         end else
             UseCaseID := CreateGuid();
-
-        if MajorVersion < OldMajorVersion then
-            Error(HigherVersionOfUseCaseIsAlreadyDeployedErr, UseCase.Description);
-
-        if MinorVersion < OldMinorVersion then
-            Error(HigherVersionOfUseCaseIsAlreadyDeployedErr, UseCase.Description);
 
         UseCase.Init();
         UseCase.ID := UseCaseID;
@@ -503,10 +533,11 @@ codeunit 20361 "Tax Json Deserialization"
                 'Code':
                     UseCase.Code := JToken2Text20(JToken);
                 'ParentUseCase':
+                    ;
+                'ParentCaseId':
                     begin
                         UpdateUseCaseProgressWindow('Updating Parent Use Case ID');
-                        UseCase."Parent Use Case ID" := UseCaseObjectHelper.GetUseCaseID(
-                            CopyStr(JToken2Text(JToken), 1, 2000));
+                        UseCase."Parent Use Case ID" := JToken.AsValue().AsText();
                         GlobalUseCase := UseCase;
                         UseCase.Modify();
                     end;
@@ -567,6 +598,7 @@ codeunit 20361 "Tax Json Deserialization"
 
         UseCase.Status := UseCase.Status::Released;
         UseCase.Enable := true;
+        UseCase."Effective From" := CurrentDateTime;
         UseCase.Modify();
     end;
 
@@ -2643,7 +2675,6 @@ codeunit 20361 "Tax Json Deserialization"
 
     var
         GlobalUseCase: Record "Tax Use Case";
-        UseCaseObjectHelper: Codeunit "Use Case Object Helper";
         UseCaseMgmt: Codeunit "Use Case Mgmt.";
         ScriptDataTypeMgmt: Codeunit "Script Data Type Mgmt.";
         TypeHelper: Codeunit "Type Helper";
@@ -2658,9 +2689,10 @@ codeunit 20361 "Tax Json Deserialization"
         GlobalCaseId: Guid;
         CanImportUseCases: Boolean;
         GlobalHideDialog: Boolean;
+        GlobalSkipIndentation: Boolean;
+        GlobalSkipVersionCheck: Boolean;
         CannotReadPropertyErr: Label 'Cannot read property %1.', Comment = '%1 = Property name.';
         InvalidPropertyErr: Label 'Invalid Property';
-        HigherVersionOfUseCaseIsAlreadyDeployedErr: Label 'An higher version of use case: %1 is already active.', Comment = '%1 = use case name';
         ColumnNameNotFoundErr: Label 'Column name %1 doest not exist for Tax Type : %2 and Use Case :%3.', Comment = '%1 = Column Name,%2 = Tax Type, %3 = use case name';
         TaxTypesLbl: Label 'Tax Types';
         UseCasesLbl: Label 'Use Cases';

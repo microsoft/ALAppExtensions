@@ -1,0 +1,32 @@
+{
+    "id":  "154a0187-d979-441b-b6c1-5b7632b5a620",
+    "name":  "Advanced Settings Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Test objects for the Advanced Settings module.",
+    "description":  "Test objects for the Advanced Settings module.",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "87c6506c-a822-4ce9-a1c4-aba1b3822e09",
+                            "name":  "Advanced Settings",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "idRanges": [
+        {
+            "from": 132589,
+            "to": 132589
+        }
+    ],
+    "platform":  "18.0.0.0",
+    "target":  "OnPrem"
+}

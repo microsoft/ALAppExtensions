@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Provides access to the camera and saved media on the client device.",
     "description":  "Invoke the Camera page to open the camera view and take a picture on your client device. The page will communicate the availability of the camera and progress in saving the picture to the user. Invoke the Media Upload page to upload saved media from your client device. The underlying implementation uses Apache Cordova plugin.",
-    "version":  "18.2.0.0",
+    "version":  "18.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,7 +15,7 @@
                              "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "BLOB Storage",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          }
                      ],
     "internalsVisibleTo":  [

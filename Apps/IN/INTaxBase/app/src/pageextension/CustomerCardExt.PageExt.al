@@ -37,6 +37,11 @@ pageextension 18544 "CustomerCardExt" extends "Customer Card"
                         ToolTip = 'Specifies the PAN Reference No. in case the PAN is not available or applied by the party';
                     }
                 }
+                field("Aggregate Turnover"; Rec."Aggregate Turnover")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether the customer last year aggregate turnover is less than 10 crores or more than 10 crores';
+                }
             }
         }
     }

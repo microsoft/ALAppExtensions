@@ -134,9 +134,7 @@ codeunit 8906 "Email Editor"
             Error(NoFromAccountErr);
 
         // Validate recipients
-        EmailMessage.ValidateRecipients(Enum::"Email Recipient Type"::"To");
-        EmailMessage.ValidateRecipients(Enum::"Email Recipient Type"::Cc);
-        EmailMessage.ValidateRecipients(Enum::"Email Recipient Type"::Bcc);
+        EmailMessage.ValidateRecipients();
 
         if EmailMessage.GetSubject() = '' then
             exit(Dialog.Confirm(NoSubjectlineQst, false));
@@ -161,7 +159,7 @@ codeunit 8906 "Email Editor"
             if not Confirm(ConfirmDiscardEmailQst, true) then
                 exit(false);
 
-        exit(EmailOutbox.Delete(true)); // This should detele the email message, recipients and attachments as well.
+        exit(EmailOutbox.Delete(true)); // This should delete the email message, recipients and attachments as well.
     end;
 
     procedure AttachFromRelatedRecords(EmailMessageID: Guid);
@@ -182,8 +180,26 @@ codeunit 8906 "Email Editor"
             until EmailRelatedAttachment.Next() = 0;
     end;
 
+    local procedure InsertRelatedAttachments(TableID: Integer; SystemID: Guid; var RecordAttachments: Record "Email Related Attachment"; var EmailRelatedAttachment: Record "Email Related Attachment")
+    var
+        RecordRef: RecordRef;
+    begin
+        RecordRef.Open(TableID);
+        if not RecordRef.GetBySystemId(SystemID) then begin
+            Session.LogMessage('0000CTZ', StrSubstNo(RecordNotFoundMsg, TableID), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            exit;
+        end;
+
+        repeat
+            EmailRelatedAttachment.Copy(RecordAttachments);
+            EmailRelatedAttachment."Attachment Source" := CopyStr(Format(RecordRef.RecordId(), 0, 1), 1, MaxStrLen(EmailRelatedAttachment."Attachment Source"));
+            EmailRelatedAttachment.Insert();
+        until RecordAttachments.Next() = 0;
+    end;
+
     procedure GetRelatedAttachments(EmailMessageId: Guid; var EmailRelatedAttachment: Record "Email Related Attachment")
     var
+        RecordAttachments: Record "Email Related Attachment";
         EmailRelatedRecord: Record "Email Related Record";
         Email: Codeunit "Email";
         EmailImpl: Codeunit "Email Impl";
@@ -192,10 +208,13 @@ codeunit 8906 "Email Editor"
         EmailImpl.FilterRemovedSourceRecords(EmailRelatedRecord);
         if EmailRelatedRecord.FindSet() then
             repeat
-                Email.OnFindRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailRelatedAttachment);
+                Email.OnFindRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", RecordAttachments);
+                if RecordAttachments.FindSet() then
+                    InsertRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", RecordAttachments, EmailRelatedAttachment);
+                RecordAttachments.DeleteAll();
             until EmailRelatedRecord.Next() = 0
         else
-            Error(NoRelatedAttachmentsErr);
+            Message(NoRelatedAttachmentsErr);
     end;
 
     var
@@ -205,6 +224,7 @@ codeunit 8906 "Email Editor"
         NoSubjectlineQst: Label 'Do you want to send this message without a subject?';
         NoFromAccountErr: Label 'You must specify an email account from which to send the message.';
         UploadingAttachmentMsg: Label 'Attached file with size: %1, Content type: %2', Comment = '%1 - File size, %2 - Content type', Locked = true;
+        RecordNotFoundMsg: Label 'Record not found in table: %1', Comment = '%1 - File size, %2 - Content type', Locked = true;
         EmailCategoryLbl: Label 'Email', Locked = true;
         SendingFailedErr: Label 'The email was not sent because of the following error: "%1" \\Depending on the error, you might need to contact your administrator.', Comment = '%1 - the error that occurred.';
         NoRelatedAttachmentsErr: Label 'Did not find any attachments related to this email.';

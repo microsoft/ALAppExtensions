@@ -1,5 +1,17 @@
 codeunit 11742 "VAT Date Handler CZL"
 {
+    
+    Permissions = tabledata "G/L Entry" = m,
+                  tabledata "VAT Entry" = m,
+                  tabledata "Sales Invoice Header" = m,
+                  tabledata "Sales Cr.Memo Header" = m,
+                  tabledata "Purch. Inv. Header" = m,
+                  tabledata "Purch. Cr. Memo Hdr." = m,
+                  tabledata "Service Invoice Header" = m,
+                  tabledata "Service Cr.Memo Header" = m,
+                  tabledata "Cust. Ledger Entry" = m,
+                  tabledata "Vendor Ledger Entry" = m;
+
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         UserSetup: Record "User Setup";
@@ -164,5 +176,24 @@ codeunit 11742 "VAT Date Handler CZL"
                   ForwardLinkMgt.GetHelpCodeForAllowedPostingDate());
             VATPeriodCZLCheck(ServiceHeader."VAT Date CZL");
         end;
+    end;
+
+    procedure InitVATDateFromRecordCZL(TableNo: Integer)
+    var
+        DataTypeManagement: Codeunit "Data Type Management";
+        RecordRef: RecordRef;
+        PostingDateFieldRef: FieldRef;
+        VATDateFieldRef: FieldRef;
+    begin
+        RecordRef.Open(TableNo);
+        DataTypeManagement.FindFieldByName(RecordRef, VATDateFieldRef, 'VAT Date');
+        DataTypeManagement.FindFieldByName(RecordRef, PostingDateFieldRef, 'Posting Date');
+        VATDateFieldRef.SetRange(0D);
+        PostingDateFieldRef.SetFilter('<>%1', 0D);
+        if RecordRef.FindSet(true) then
+            repeat
+                VATDateFieldRef.Value := PostingDateFieldRef.Value;
+                RecordRef.Modify();
+            until RecordRef.Next() = 0;
     end;
 }

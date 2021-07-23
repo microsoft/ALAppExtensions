@@ -7,6 +7,8 @@ codeunit 18394 "GST Stock Tax Engine Setup"
         GSTStockUseCaseDataset: Codeunit "GST Stock UseCase Dataset";
     begin
         TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.SkipUseCaseIndentation(true);
         TaxJsonDeserialization.ImportUseCases(GSTStockUseCaseDataset.GetText());
     end;
 

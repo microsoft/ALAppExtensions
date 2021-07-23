@@ -149,6 +149,12 @@ codeunit 11748 "Install Application CZL"
         CopyInventoryPostingSetup();
         CopyGeneralPostingSetup();
         CopyUserSetupLine();
+        CopyAccScheduleExtension();
+        CopyAccScheduleResultLine();
+        CopyAccScheduleResultColumn();
+        CopyAccScheduleResultValue();
+        CopyAccScheduleResultHeader();
+        CopyAccScheduleResultHistory();
         CopyGenJournalTemplate();
     end;
 
@@ -198,6 +204,12 @@ codeunit 11748 "Install Application CZL"
         InsertTableDataPermissions(Database::"Subst. Vendor Posting Group", Database::"Subst. Vend. Posting Group CZL");
         InsertTableDataPermissions(Database::"Specific Movement", Database::"Specific Movement CZL");
         InsertTableDataPermissions(Database::"Intrastat Delivery Group", Database::"Intrastat Delivery Group CZL");
+        InsertTableDataPermissions(Database::"Acc. Schedule Extension", Database::"Acc. Schedule Extension CZL");
+        InsertTableDataPermissions(Database::"Acc. Schedule Result Line", Database::"Acc. Schedule Result Line CZL");
+        InsertTableDataPermissions(Database::"Acc. Schedule Result Column", Database::"Acc. Schedule Result Col. CZL");
+        InsertTableDataPermissions(Database::"Acc. Schedule Result Value", Database::"Acc. Schedule Result Value CZL");
+        InsertTableDataPermissions(Database::"Acc. Schedule Result Header", Database::"Acc. Schedule Result Hdr. CZL");
+        InsertTableDataPermissions(Database::"Acc. Schedule Result History", Database::"Acc. Schedule Result Hist. CZL");
         InsertTableDataPermissions(Database::"User Setup Line", Database::"User Setup Line CZL");
     end;
 
@@ -463,6 +475,8 @@ codeunit 11748 "Install Application CZL"
             GLSetup."Rounding Date CZL" := GLSetup."Rounding Date";
             GLSetup."Closed Per. Entry Pos.Date CZL" := GLSetup."Closed Period Entry Pos.Date";
             GLSetup."User Checks Allowed CZL" := GLSetup."User Checks Allowed";
+            GLSetup."Shared Account Schedule CZL" := GLSetup."Shared Account Schedule";
+            GLSetup."Acc. Schedule Results Nos. CZL" := GLSetup."Acc. Schedule Results Nos.";
             GLSetup.Modify(false);
             if not StatutoryReportingSetupCZL.Get() then begin
                 StatutoryReportingSetupCZL.Init();
@@ -1645,8 +1659,26 @@ codeunit 11748 "Install Application CZL"
                 AccScheduleLine."Calc CZL" := AccScheduleLine.Calc;
                 AccScheduleLine."Row Correction CZL" := AccScheduleLine."Row Correction";
                 AccScheduleLine."Assets/Liabilities Type CZL" := AccScheduleLine."Assets/Liabilities Type";
+                AccScheduleLine."Source Table CZL" := AccScheduleLine."Source Table";
+                ConvertAccScheduleLineTotalingTypeEnumValues(AccScheduleLine);
                 AccScheduleLine.Modify(false);
             until AccScheduleLine.Next() = 0;
+    end;
+
+    local procedure ConvertAccScheduleLineTotalingTypeEnumValues(var AccScheduleLine: Record "Acc. Schedule Line");
+    begin
+#if CLEAN19
+        if AccScheduleLine."Totaling Type" = 14 then //14 = AccScheduleLine.Type::Custom
+#else
+        if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::Custom then
+#endif
+            AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Custom CZL";
+#if CLEAN19
+        if AccScheduleLine."Totaling Type" = 15 then //15 = AccScheduleLine.Type::Constant
+#else
+        if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::Constant then
+#endif
+            AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Constant CZL";
     end;
 
     local procedure CopyExcelTemplate();
@@ -2604,6 +2636,168 @@ codeunit 11748 "Install Application CZL"
                 UserSetupLineCZL."Code / Name" := UserSetupLine."Code / Name";
                 UserSetupLineCZL.Modify(false);
             until UserSetupLine.Next() = 0;
+    end;
+
+    local procedure CopyAccScheduleExtension();
+    var
+        AccScheduleExtension: Record "Acc. Schedule Extension";
+        AccScheduleExtensionCZL: Record "Acc. Schedule Extension CZL";
+    begin
+        if AccScheduleExtension.FindSet() then
+            repeat
+                if not AccScheduleExtensionCZL.Get(AccScheduleExtension.Code) then begin
+                    AccScheduleExtensionCZL.Init();
+                    AccScheduleExtensionCZL.Code := AccScheduleExtension.Code;
+                    AccScheduleExtensionCZL.Insert();
+                end;
+                AccScheduleExtensionCZL.Description := AccScheduleExtension.Description;
+                AccScheduleExtensionCZL."Source Table" := AccScheduleExtension."Source Table";
+                AccScheduleExtensionCZL."Source Type" := AccScheduleExtension."Source Type";
+                AccScheduleExtensionCZL."Source Filter" := AccScheduleExtension."Source Filter";
+                AccScheduleExtensionCZL."G/L Account Filter" := AccScheduleExtension."G/L Account Filter";
+                AccScheduleExtensionCZL."G/L Amount Type" := AccScheduleExtension."G/L Amount Type";
+                AccScheduleExtensionCZL."Amount Sign" := AccScheduleExtension."Amount Sign";
+                AccScheduleExtensionCZL."Entry Type" := AccScheduleExtension."Entry Type";
+                AccScheduleExtensionCZL.Prepayment := AccScheduleExtension.Prepayment;
+                AccScheduleExtensionCZL."Reverse Sign" := AccScheduleExtension."Reverse Sign";
+                AccScheduleExtensionCZL."VAT Amount Type" := AccScheduleExtension."VAT Amount Type";
+                AccScheduleExtensionCZL."VAT Bus. Post. Group Filter" := AccScheduleExtension."VAT Bus. Post. Group Filter";
+                AccScheduleExtensionCZL."VAT Prod. Post. Group Filter" := AccScheduleExtension."VAT Prod. Post. Group Filter";
+                AccScheduleExtensionCZL."Location Filter" := AccScheduleExtension."Location Filter";
+                AccScheduleExtensionCZL."Bin Filter" := AccScheduleExtension."Bin Filter";
+                AccScheduleExtensionCZL."Posting Group Filter" := AccScheduleExtension."Posting Group Filter";
+                AccScheduleExtensionCZL."Posting Date Filter" := AccScheduleExtension."Posting Date Filter";
+                AccScheduleExtensionCZL."Due Date Filter" := AccScheduleExtension."Due Date Filter";
+                AccScheduleExtensionCZL."Document Type Filter" := AccScheduleExtension."Document Type Filter";
+                AccScheduleExtensionCZL.Modify(false);
+            until AccScheduleExtension.Next() = 0;
+    end;
+
+    local procedure CopyAccScheduleResultLine();
+    var
+        AccScheduleResultLine: Record "Acc. Schedule Result Line";
+        AccScheduleResultLineCZL: Record "Acc. Schedule Result Line CZL";
+    begin
+        if AccScheduleResultLine.FindSet() then
+            repeat
+                if not AccScheduleResultLineCZL.Get(AccScheduleResultLine."Result Code", AccScheduleResultLine."Line No.") then begin
+                    AccScheduleResultLineCZL.Init();
+                    AccScheduleResultLineCZL."Result Code" := AccScheduleResultLine."Result Code";
+                    AccScheduleResultLineCZL."Line No." := AccScheduleResultLine."Line No.";
+                    AccScheduleResultLineCZL.Insert();
+                end;
+                AccScheduleResultLineCZL."Row No." := AccScheduleResultLine."Row No.";
+                AccScheduleResultLineCZL.Description := AccScheduleResultLine.Description;
+                AccScheduleResultLineCZL.Totaling := AccScheduleResultLine.Totaling;
+                AccScheduleResultLineCZL."Totaling Type" := AccScheduleResultLine."Totaling Type";
+                AccScheduleResultLineCZL."New Page" := AccScheduleResultLine."New Page";
+                AccScheduleResultLineCZL.Show := AccScheduleResultLine.Show;
+                AccScheduleResultLineCZL.Bold := AccScheduleResultLine.Bold;
+                AccScheduleResultLineCZL.Italic := AccScheduleResultLine.Italic;
+                AccScheduleResultLineCZL.Underline := AccScheduleResultLine.Underline;
+                AccScheduleResultLineCZL."Show Opposite Sign" := AccScheduleResultLine."Show Opposite Sign";
+                AccScheduleResultLineCZL."Row Type" := AccScheduleResultLine."Row Type";
+                AccScheduleResultLineCZL."Amount Type" := AccScheduleResultLine."Amount Type";
+                AccScheduleResultLineCZL.Modify(false);
+            until AccScheduleResultLine.Next() = 0;
+    end;
+
+    local procedure CopyAccScheduleResultColumn();
+    var
+        AccScheduleResultColumn: Record "Acc. Schedule Result Column";
+        AccScheduleResultColCZL: Record "Acc. Schedule Result Col. CZL";
+    begin
+        if AccScheduleResultColumn.FindSet() then
+            repeat
+                if not AccScheduleResultColCZL.Get(AccScheduleResultColumn."Result Code", AccScheduleResultColumn."Line No.") then begin
+                    AccScheduleResultColCZL.Init();
+                    AccScheduleResultColCZL."Result Code" := AccScheduleResultColumn."Result Code";
+                    AccScheduleResultColCZL."Line No." := AccScheduleResultColumn."Line No.";
+                    AccScheduleResultColCZL.Insert();
+                end;
+                AccScheduleResultColCZL."Column No." := AccScheduleResultColumn."Column No.";
+                AccScheduleResultColCZL."Column Header" := AccScheduleResultColumn."Column Header";
+                AccScheduleResultColCZL."Column Type" := AccScheduleResultColumn."Column Type";
+                AccScheduleResultColCZL."Ledger Entry Type" := AccScheduleResultColumn."Ledger Entry Type";
+                AccScheduleResultColCZL."Amount Type" := AccScheduleResultColumn."Amount Type";
+                AccScheduleResultColCZL.Formula := AccScheduleResultColumn.Formula;
+                AccScheduleResultColCZL."Comparison Date Formula" := AccScheduleResultColumn."Comparison Date Formula";
+                AccScheduleResultColCZL."Show Opposite Sign" := AccScheduleResultColumn."Show Opposite Sign";
+                AccScheduleResultColCZL.Show := AccScheduleResultColumn.Show;
+                AccScheduleResultColCZL."Rounding Factor" := AccScheduleResultColumn."Rounding Factor";
+                AccScheduleResultColCZL."Comparison Period Formula" := AccScheduleResultColumn."Comparison Period Formula";
+                AccScheduleResultColCZL.Modify(false);
+            until AccScheduleResultColumn.Next() = 0;
+    end;
+
+    local procedure CopyAccScheduleResultValue();
+    var
+        AccScheduleResultValue: Record "Acc. Schedule Result Value";
+        AccScheduleResultValueCZL: Record "Acc. Schedule Result Value CZL";
+    begin
+        if AccScheduleResultValue.FindSet() then
+            repeat
+                if not AccScheduleResultValueCZL.Get(AccScheduleResultValue."Result Code", AccScheduleResultValue."Row No.", AccScheduleResultValue."Column No.") then begin
+                    AccScheduleResultValueCZL.Init();
+                    AccScheduleResultValueCZL."Result Code" := AccScheduleResultValue."Result Code";
+                    AccScheduleResultValueCZL."Row No." := AccScheduleResultValue."Row No.";
+                    AccScheduleResultValueCZL."Column No." := AccScheduleResultValue."Column No.";
+                    AccScheduleResultValueCZL.Insert();
+                end;
+                AccScheduleResultValueCZL.Value := AccScheduleResultValue.Value;
+                AccScheduleResultValueCZL.Modify(false);
+            until AccScheduleResultValue.Next() = 0;
+    end;
+
+    local procedure CopyAccScheduleResultHeader();
+    var
+        AccScheduleResultHeader: Record "Acc. Schedule Result Header";
+        AccScheduleResultHdrCZL: Record "Acc. Schedule Result Hdr. CZL";
+    begin
+        if AccScheduleResultHeader.FindSet() then
+            repeat
+                if not AccScheduleResultHdrCZL.Get(AccScheduleResultHeader."Result Code") then begin
+                    AccScheduleResultHdrCZL.Init();
+                    AccScheduleResultHdrCZL."Result Code" := AccScheduleResultHeader."Result Code";
+                    AccScheduleResultHdrCZL.Insert();
+                end;
+                AccScheduleResultHdrCZL.Description := AccScheduleResultHeader.Description;
+                AccScheduleResultHdrCZL."Date Filter" := AccScheduleResultHeader."Date Filter";
+                AccScheduleResultHdrCZL."Acc. Schedule Name" := AccScheduleResultHeader."Acc. Schedule Name";
+                AccScheduleResultHdrCZL."Column Layout Name" := AccScheduleResultHeader."Column Layout Name";
+                AccScheduleResultHdrCZL."Dimension 1 Filter" := AccScheduleResultHeader."Dimension 1 Filter";
+                AccScheduleResultHdrCZL."Dimension 2 Filter" := AccScheduleResultHeader."Dimension 2 Filter";
+                AccScheduleResultHdrCZL."Dimension 3 Filter" := AccScheduleResultHeader."Dimension 3 Filter";
+                AccScheduleResultHdrCZL."Dimension 4 Filter" := AccScheduleResultHeader."Dimension 4 Filter";
+                AccScheduleResultHdrCZL."User ID" := AccScheduleResultHeader."User ID";
+                AccScheduleResultHdrCZL."Result Date" := AccScheduleResultHeader."Result Date";
+                AccScheduleResultHdrCZL."Result Time" := AccScheduleResultHeader."Result Time";
+                AccScheduleResultHdrCZL.Modify(false);
+            until AccScheduleResultHeader.Next() = 0;
+    end;
+
+    local procedure CopyAccScheduleResultHistory();
+    var
+        AccScheduleResultHistory: Record "Acc. Schedule Result History";
+        AccScheduleResultHistCZL: Record "Acc. Schedule Result Hist. CZL";
+    begin
+        if AccScheduleResultHistory.FindSet() then
+            repeat
+                if not AccScheduleResultHistCZL.Get(AccScheduleResultHistory."Result Code", AccScheduleResultHistory."Row No.",
+                                                    AccScheduleResultHistory."Column No.", AccScheduleResultHistory."Variant No.") then begin
+                    AccScheduleResultHistCZL.Init();
+                    AccScheduleResultHistCZL."Result Code" := AccScheduleResultHistory."Result Code";
+                    AccScheduleResultHistCZL."Row No." := AccScheduleResultHistory."Row No.";
+                    AccScheduleResultHistCZL."Column No." := AccScheduleResultHistory."Column No.";
+                    AccScheduleResultHistCZL."Variant No." := AccScheduleResultHistory."Variant No.";
+                    AccScheduleResultHistCZL.Insert();
+                end;
+                AccScheduleResultHistCZL."New Value" := AccScheduleResultHistory."New Value";
+                AccScheduleResultHistCZL."Old Value" := AccScheduleResultHistory."Old Value";
+                AccScheduleResultHistCZL."User ID" := AccScheduleResultHistory."User ID";
+                AccScheduleResultHistCZL."Modified DateTime" := AccScheduleResultHistory."Modified DateTime";
+                AccScheduleResultHistCZL.Modify(false);
+            until AccScheduleResultHistory.Next() = 0;
     end;
 
     local procedure CopyGenJournalTemplate();

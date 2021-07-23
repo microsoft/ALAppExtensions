@@ -6,6 +6,7 @@ codeunit 18193 "Sales Return Tests"
         LibraryGST: Codeunit "Library GST";
         LibraryRandom: Codeunit "Library - Random";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryGSTSales: Codeunit "Library GST Sales";
         ComponentPerArray: array[20] of Decimal;
         Storage: Dictionary of [Text, Text[20]];
         StorageBoolean: Dictionary of [Text, Boolean];
@@ -23,7 +24,81 @@ codeunit 18193 "Sales Return Tests"
         FromStateCodeLbl: Label 'FromStateCode';
         CustomerNoLbl: Label 'CustomerNo';
         ToStateCodeLbl: Label 'ToStateCode';
+        PriceInclusiveOfTaxLbl: Label 'WithPIT';
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,CustomerLedgerEntries')]
+    procedure PostFromSalesCreditMemoForRegCustInterStateWithPIT()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTCustomerType: Enum "GST Customer Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedInvoiceNo: Code[20];
+    begin
+        // [SCENARIO] Check if the system is handling Tax Value Calculation when Price is Inclusive of GST in case of Inter-state Sales of Goods through Sales Credit Memo.
+        // [FEATURE] [Sales Credit Memo] [Inter-State GST,Registered Customer]
+
+        // [GIVEN] Created GST Setup and Tax Rates for Registered Customer with Interstate Jurisdiction and Price Incusive of Tax Setup
+        CreateGSTSetup(GSTCustomerType::Registered, GSTGroupType::Goods, false, false);
+        InitializeShareStep(false, false);
+        SalesWithPriceInclusiveOfTax(true);
+
+        // [WHEN] Create and Post Sales Invoice and Sales Credit Memo
+        PostedInvoiceNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Invoice);
+        Storage.Set(PostedDocumentNoLbl, PostedInvoiceNo);
+        CreateAndPostSalesDocumentFromCopyDocument(
+            SalesHeader,
+            Storage.Get(CustomerNoLbl),
+            DocumentType::"Credit Memo",
+            CopyStr(Storage.Get(LocationCodeLbl), 1, 10));
+
+        // [THEN] Verify GST Ledger Entries and Detailed GST Ledger Entries
+        VerifyGSTEntries(Storage.Get(ReverseDocumentNoLbl), Database::"Sales Cr.Memo Header");
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,CustomerLedgerEntries')]
+    procedure PostFromSalesCreditMemoForRegCustIntraStateWithPIT()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTCustomerType: Enum "GST Customer Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedInvoiceNo: Code[20];
+    begin
+        // [SCENARIO] Check if the system is handling Tax Value Calculation when Price is Inclusive of GST in case of Intra-state Sales of Goods through Sale Credit Memo.
+        // [FEATURE] [Sales Credit Memo] [Intra-State GST,Registered Customer]
+
+        // [GIVEN] Created GST Setup and Tax Rates for Registered Customer with Intrastate Jurisdiction and Price Incusive of Tax Setup
+        CreateGSTSetup(GSTCustomerType::Registered, GSTGroupType::Goods, false, false);
+        InitializeShareStep(false, false);
+        SalesWithPriceInclusiveOfTax(true);
+
+        // [WHEN] Create and Post Sales Invoice and Sales Credit Memo
+        PostedInvoiceNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Invoice);
+        Storage.Set(PostedDocumentNoLbl, PostedInvoiceNo);
+        CreateAndPostSalesDocumentFromCopyDocument(
+            SalesHeader,
+            Storage.Get(CustomerNoLbl),
+            DocumentType::"Credit Memo",
+            CopyStr(Storage.Get(LocationCodeLbl), 1, 10));
+
+        // [THEN] Verify GST Ledger Entries and Detailed GST Ledger Entries
+        VerifyGSTEntries(Storage.Get(ReverseDocumentNoLbl), Database::"Sales Cr.Memo Header");
+    end;
 
     // [SCENARIO] [354276] Check if the system is calculating GST is case of Inter-State Sales Return of Goods from Registered Customer through Sale Return Orders
     [Test]
@@ -854,8 +929,24 @@ codeunit 18193 "Sales Return Tests"
             SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
             LibraryGST.UpdateLineDiscAccInGeneralPostingSetup(SalesLine."Gen. Bus. Posting Group", SalesLine."Gen. Prod. Posting Group");
         end;
+
+        if StorageBoolean.ContainsKey(PriceInclusiveOfTaxLbl) then
+            if StorageBoolean.Get(PriceInclusiveOfTaxLbl) = true then
+                SalesLine.Validate("Price Inclusive of Tax", true);
+        SalesLine.Validate("Unit Price Incl. of Tax", LibraryRandom.RandInt(10000));
+
         SalesLine.Validate("Unit Price", LibraryRandom.RandInt(10000));
         SalesLine.Modify(true);
+    end;
+
+    local procedure VerifyGSTEntries(DocumentNo: Code[20]; TableID: Integer)
+    begin
+        LibraryGSTSales.VerifyGSTEntries(DocumentNo, TableID, ComponentPerArray);
+    end;
+
+    local procedure SalesWithPriceInclusiveOfTax(WithPIT: Boolean)
+    begin
+        StorageBoolean.Set(PriceInclusiveOfTaxLbl, WithPIT);
     end;
 
     local procedure FillCompanyInformation()

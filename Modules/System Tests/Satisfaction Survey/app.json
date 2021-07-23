@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests the Satisfaction Survey module",
     "description":  "Tests for the Satisfaction Survey module",
-    "version":  "18.2.0.0",
+    "version":  "18.3.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
@@ -15,49 +15,61 @@
                              "id":  "5d03ef2d-13f0-4132-b941-48387b581434",
                              "name":  "Satisfaction Survey",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "3a56c7d2-a594-4682-bd90-b10bfb177620",
                              "name":  "Azure Key Vault",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "901cbabc-1217-4d4a-922f-77b4d4ef3dcf",
                              "name":  "Azure Key Vault Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
                              "name":  "Client Type Management",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "47397d83-32ba-4ef0-8988-ef72539bfe36",
                              "name":  "Client Type Management Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "cc441290-a967-4601-9a7d-b4209339415b",
                              "name":  "Environment Information Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          },
                          {
                              "id":  "815d5c15-02bd-4d58-a010-b66033de6625",
                              "name":  "DotNet Aliases Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
+                         },
+                         {
+                            "id":  "40860557-a18d-42ad-aecb-22b7dd80dc80",
+                            "name":  "Permissions Mock",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                         },
+                         {
+                            "id":  "03ecb409-cce1-4f5b-b194-6ad3ad3d7378",
+                            "name":  "Satisfaction Survey Test Library",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
                          }
                      ],
     "screenshots":  [

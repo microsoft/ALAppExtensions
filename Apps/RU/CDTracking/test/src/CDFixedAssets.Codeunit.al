@@ -23,13 +23,8 @@ codeunit 147104 "CD Fixed Assets"
     //   j. Create a new sale order for FA
     //   k. Create sales return order
     //   l. Check VAT Purchase Ledger Lines
-
+    TestPermissions = NonRestrictive;
     Subtype = Test;
-
-    trigger OnRun()
-    begin
-        isInitialized := false;
-    end;
 
     var
         LibraryPurchase: Codeunit "Library - Purchase";

@@ -68,20 +68,6 @@ codeunit 1460 SignedXml
     end;
 
     /// <summary>
-    /// Adds a AddXmlDsigExcC14NTransformToReference object to the list of transforms to be performed on the data before passing it to the digest algorithm.
-    /// </summary>
-    procedure AddXmlDsigExcC14NTransformToReference()
-    begin
-        SignedXmlImpl.AddXmlDsigExcC14NTransformToReference();
-    end;
-    /// <summary>
-    /// Adds a AddXmlDsigEnvelopedSignatureTransform object to the list of transforms to be performed on the data before passing it to the digest algorithm.
-    /// </summary>
-    procedure AddXmlDsigEnvelopedSignatureTransform()
-    begin
-        SignedXmlImpl.AddXmlDsigEnvelopedSignatureTransform();
-    end;
-    /// <summary>
     /// Sets the canonicalization algorithm that is used before signing for the current SignedInfo object.
     /// </summary>
     /// <param name="CanonicalizationMethod">The canonicalization algorithm used before signing for the current SignedInfo object.</param>
@@ -123,6 +109,21 @@ codeunit 1460 SignedXml
     procedure AddClause(KeyInfoNodeXmlElement: XmlElement)
     begin
         SignedXmlImpl.AddClause(KeyInfoNodeXmlElement);
+    end;
+
+    /// <summary>
+    /// Adds a AddXmlDsigExcC14NTransformToReference object to the list of transforms to be performed on the data before passing it to the digest algorithm.
+    /// </summary>
+    procedure AddXmlDsigExcC14NTransformToReference()
+    begin
+        SignedXmlImpl.AddXmlDsigExcC14NTransformToReference();
+    end;
+    /// <summary>
+    /// Adds a AddXmlDsigEnvelopedSignatureTransform object to the list of transforms to be performed on the data before passing it to the digest algorithm.
+    /// </summary>
+    procedure AddXmlDsigEnvelopedSignatureTransform()
+    begin
+        SignedXmlImpl.AddXmlDsigEnvelopedSignatureTransform();
     end;
 
     /// <summary>

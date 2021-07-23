@@ -12,6 +12,7 @@ codeunit 133101 "Data Out Of Geo. App Test"
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         LibraryAssert: Codeunit "Library Assert";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        PermissionsMock: Codeunit "Permissions Mock";
         RandAppTxt: Label '6e090e55-9b7e-465c-85bc-6831a3037cd5';
         GeoNotificationNewAppsMsg: Label 'This app may transfer data to other geographies than the current geography of your Dynamics 365 Business Central environment. This is to ensure proper functionality of the app.';
 
@@ -23,6 +24,8 @@ codeunit 133101 "Data Out Of Geo. App Test"
     var
         MarketPlaceExtnDeployment: Page "Marketplace Extn Deployment";
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         LibraryVariableStorage.Clear();
 
         // [GIVEN] That the environment is onprem.
@@ -48,6 +51,8 @@ codeunit 133101 "Data Out Of Geo. App Test"
     var
         MarketPlaceExtnDeployment: Page "Marketplace Extn Deployment";
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         LibraryVariableStorage.Clear();
 
         // [GIVEN] That the environment is onprem.
@@ -70,6 +75,8 @@ codeunit 133101 "Data Out Of Geo. App Test"
     var
         MarketPlaceExtnDeployment: Page "Marketplace Extn Deployment";
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         LibraryVariableStorage.Clear();
 
         // [GIVEN] That the environment is Saas
@@ -103,6 +110,8 @@ codeunit 133101 "Data Out Of Geo. App Test"
     var
         ModuleInfo: ModuleInfo;
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         LibraryVariableStorage.Clear();
         NavApp.GetCurrentModuleInfo(ModuleInfo);
 
@@ -126,6 +135,8 @@ codeunit 133101 "Data Out Of Geo. App Test"
     var
         ModuleInfo: ModuleInfo;
     begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
         LibraryVariableStorage.Clear();
         NavApp.GetCurrentModuleInfo(ModuleInfo);
 

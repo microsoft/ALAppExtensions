@@ -19,6 +19,11 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies whether the system does or does not check the dimension setup by closing operation depending on whether the field is checked.';
             }
+            field("Acc. Schedule Results Nos. CZL"; Rec."Acc. Schedule Results Nos. CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the code for the number series that will be used to assign numbers to account schedule results.';
+            }
         }
         addlast(content)
         {
@@ -59,6 +64,14 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the date for the inventory rounding adjustment by inventory adjustement';
+            }
+        }
+        addlast(Reporting)
+        {
+            field("Shared Account Schedule CZL"; Rec."Shared Account Schedule CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies to share the account schedule in general ledger setup.';
             }
         }
     }

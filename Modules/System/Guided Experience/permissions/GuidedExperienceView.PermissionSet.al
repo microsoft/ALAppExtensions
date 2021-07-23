@@ -1,10 +1,16 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 PermissionSet 1992 "Guided Experience - View"
 {
     Access = Public;
     Assignable = false;
 
     IncludedPermissionSets = "Guided Experience - Read",
-                             "Upgrade Tags - View";
+                             "Upgrade Tags - View",
+                             "Translation - Edit";
 
     Permissions = tabledata AllObj = r,
 #if not CLEAN16

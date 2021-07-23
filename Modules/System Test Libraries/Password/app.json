@@ -1,0 +1,32 @@
+{
+    "id":  "47f9b8b5-9aae-4384-8101-4519f7115381",
+    "name":  "Password Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Test objects for the Password module.",
+    "description":  "Test objects for the Password module.",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "a2ca2793-e1b4-461d-8251-dbe934daec78",
+                            "name":  "Password",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "idRanges": [
+        {
+            "from": 135033,
+            "to": 135033
+        }
+    ],
+    "platform":  "18.0.0.0",
+    "target":  "OnPrem"
+}

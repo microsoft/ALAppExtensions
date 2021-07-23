@@ -29,6 +29,7 @@ page 20360 "Use Case Archival Log Entries"
                 {
                     ToolTip = 'Specifies the version of the use case.';
                     ApplicationArea = Basic, Suite;
+                    Editable = false;
                 }
                 field("Log Date-Time"; Rec."Log Date-Time")
                 {
@@ -38,6 +39,7 @@ page 20360 "Use Case Archival Log Entries"
                 field("Active Version"; Rec."Active Version")
                 {
                     ToolTip = 'Specifies whether this version of use case is active or not.';
+                    Visible = false;
                     ApplicationArea = Basic, Suite;
                 }
                 field("Changed by"; Rec."Changed by")

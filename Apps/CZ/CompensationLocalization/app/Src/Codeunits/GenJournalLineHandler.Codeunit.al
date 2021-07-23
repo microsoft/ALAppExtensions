@@ -1,5 +1,8 @@
 codeunit 31274 "Gen. Journal Line Handler CZC"
 {
+    Permissions = tabledata "Cust. Ledger Entry" = rimd,
+                  tabledata "Vendor Ledger Entry" = rimd;
+
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterClearCustVendApplnEntry', '', false, false)]
     local procedure ClearOnHoldOnAfterClearCustVendApplnEntry(var GenJournalLine: Record "Gen. Journal Line"; xGenJournalLine: Record "Gen. Journal Line"; AccType: Enum "Gen. Journal Account Type"; AccNo: Code[20])
     var

@@ -267,7 +267,6 @@ codeunit 4509 "Email - Outlook API Helper"
     var
         OutlookAccounts: Record "Email - Outlook Account";
     begin
-        OutlookAccounts.ChangeCompany(CompanyName);
         OutlookAccounts.DeleteAll();
     end;
 

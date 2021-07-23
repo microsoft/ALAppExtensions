@@ -1,6 +1,7 @@
 codeunit 148074 "Cash Desk Reports CZP"
 {
     Subtype = Test;
+    TestPermissions = NonRestrictive;
 
     var
         CashDeskCZP: Record "Cash Desk CZP";

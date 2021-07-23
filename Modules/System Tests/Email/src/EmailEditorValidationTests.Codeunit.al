@@ -6,9 +6,12 @@
 codeunit 134696 "Email Editor Validation Tests"
 {
     SubType = Test;
+    Permissions = tabledata "Email Outbox" = rd,
+                  tabledata "Sent Email" = rd;
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         Any: Codeunit Any;
         InvalidEmailAddressErr: Label 'The email address "%1" is not valid.', Locked = true;
 
@@ -23,6 +26,7 @@ codeunit 134696 "Email Editor Validation Tests"
         Editor: TestPage "Email Editor";
     begin
         // [SCENARIO] A new email message cannot be sent out if there is no "from" account set.
+        PermissionsMock.Set('Email Edit');
 
         // [GIVEN] There are no outbox or sent email entries
         Outbox.DeleteAll();
@@ -40,8 +44,8 @@ codeunit 134696 "Email Editor Validation Tests"
         Editor.Close();
 
         // [THEN] No outbox or sent emails entries have been created
-        Assert.TableIsEmpty(Database::"Email Outbox");
-        Assert.TableIsEmpty(Database::"Sent Email");
+        Assert.AreEqual(0, Outbox.Count(), 'No records in Email Outbox were expected');
+        Assert.AreEqual(0, SentEmail.Count(), 'No records in Sent Email were expected');
     end;
 
     [Test]
@@ -64,6 +68,8 @@ codeunit 134696 "Email Editor Validation Tests"
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempEmailAccount);
 
+        PermissionsMock.Set('Email Edit');
+
         // [GIVEN] The Email Editor pages opens up and no details are filled
         Editor.Trap();
         EmailEditor.Run();
@@ -78,8 +84,8 @@ codeunit 134696 "Email Editor Validation Tests"
         Editor.Close();
 
         // [THEN] No outbox and sent emails entries are created.
-        Assert.TableIsEmpty(Database::"Email Outbox");
-        Assert.TableIsEmpty(Database::"Sent Email");
+        Assert.AreEqual(0, Outbox.Count(), 'No records in Email Outbox were expected');
+        Assert.AreEqual(0, SentEmail.Count(), 'No records in Sent Email were expected');
     end;
 
     [Test]
@@ -104,6 +110,8 @@ codeunit 134696 "Email Editor Validation Tests"
         ConnectorMock.AddAccount(TempEmailAccount);
         ValidEmailAddress := Any.Email();
         InvalidEmailAddress := 'invalid email address';
+
+        PermissionsMock.Set('Email Edit');
 
         // [GIVEN] The Email Editor pages opens up and no details are filled
         Editor.Trap();
@@ -161,8 +169,8 @@ codeunit 134696 "Email Editor Validation Tests"
         Assert.ExpectedError(StrSubstNo(InvalidEmailAddressErr, InvalidEmailAddress));
 
         // [THEN] No outbox and sent emails entries are created.
-        Assert.TableIsEmpty(Database::"Email Outbox");
-        Assert.TableIsEmpty(Database::"Sent Email");
+        Assert.AreEqual(0, Outbox.Count(), 'No records in Email Outbox were expected');
+        Assert.AreEqual(0, SentEmail.Count(), 'No records in Sent Email were expected');
 
         Editor.Close();
     end;
@@ -188,6 +196,8 @@ codeunit 134696 "Email Editor Validation Tests"
         ConnectorMock.AddAccount(TempEmailAccount);
         ValidEmailAddress := Any.Email();
 
+        PermissionsMock.Set('Email Edit');
+
         // [GIVEN] The Email Editor pages opens up and no details are filled
         Editor.Trap();
         EmailEditor.Run();
@@ -201,8 +211,8 @@ codeunit 134696 "Email Editor Validation Tests"
         Editor.Close();
 
         // [THEN] No outbox and sent emails entries are created.
-        Assert.TableIsEmpty(Database::"Email Outbox");
-        Assert.TableIsEmpty(Database::"Sent Email");
+        Assert.AreEqual(0, Outbox.Count(), 'No records in Email Outbox were expected');
+        Assert.AreEqual(0, SentEmail.Count(), 'No records in Sent Email were expected');
     end;
 
     [Test]
@@ -226,6 +236,8 @@ codeunit 134696 "Email Editor Validation Tests"
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempEmailAccount);
         ValidEmailAddress := Any.Email();
+
+        PermissionsMock.Set('Email Edit');
 
         // [GIVEN] The Email Editor pages opens up and no details are filled
         Editor.Trap();

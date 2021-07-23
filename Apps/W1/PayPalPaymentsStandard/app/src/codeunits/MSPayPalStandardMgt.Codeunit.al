@@ -27,7 +27,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         PayPalStandardBusinessSetupDescriptionTxt: Label 'Set up and enable the PayPal Payments Standard service.';
         YourReferenceTxt: Label 'Your Ref.', Comment = 'Ref. is short for reference from Your Reference field. After Ref there will be a number';
         TermsOfServiceURLTxt: Label 'https://www.paypal.com/%1/webapps/mpp/ua/useragreement-full', Locked = true;
-        LogoURLTxt: Label 'https://cdn-bc.dynamics.com/common/images/extensionslogos/paypal_colour_v1.png', Locked = true;
+        LogoURLTxt: Label 'https://bc-cdn.dynamics.com/common/images/extensionslogos/paypal_colour_v1.png', Locked = true;
         PayPalBaseURLTok: Label 'https://www.paypal.com/us/cgi-bin/webscr?cmd=_xclick&charset=UTF-8&page_style=primary', Locked = true;
         PayPalMandatoryParametersTok: Label 'business=%1&amount=%2&item_name=%3&invoice=%4&currency_code=%5&notify_url=%6', Locked = true;
         TargetURLCannotBeChangedInDemoCompanyErr: Label 'You cannot change the target URL in the demonstration company.';

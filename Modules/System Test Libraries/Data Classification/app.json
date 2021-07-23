@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Library function to initialize test data for the Data Classification module",
     "description":  "Library function to initialize test data for the Data Classification module",
-    "version":  "18.2.0.0",
+    "version":  "18.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "370dcef7-9c6d-4a32-94b1-754230578672",
                              "name":  "Data Classification",
                              "publisher":  "Microsoft",
-                             "version":  "18.2.0.0"
+                             "version":  "18.3.0.0"
                          }
                      ],
     "screenshots":  [

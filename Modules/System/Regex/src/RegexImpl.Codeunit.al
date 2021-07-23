@@ -14,6 +14,7 @@ codeunit 3961 "Regex Impl."
         DotNetGroupCollection: DotNet GroupCollection;
         DotNetCaptureCollection: DotNet CaptureCollection;
         TimeoutTooLowErr: Label 'The regular expression timeout should be at least 1000 ms';
+        TimeoutTooHighErr: Label 'The regular expression timeout should be at most 10000 ms';
 
     procedure GetCacheSize(): Integer
     begin
@@ -141,13 +142,14 @@ codeunit 3961 "Regex Impl."
 
     procedure Replace(Input: Text; Pattern: Text; Replacement: Text): Text
     begin
-        exit(DotNetRegex.Replace(Input, Pattern, Replacement));
+        Regex(Pattern);
+        exit(DotNetRegex.Replace(Input, Replacement));
     end;
 
     procedure Replace(Input: Text; Pattern: Text; Replacement: Text; var RegexOptions: Record "Regex Options"): Text
     begin
-        DotNetRegexOptions := RegexOptions.GetRegexOptions();
-        exit(DotNetRegex.Replace(Input, Pattern, Replacement, DotNetRegexOptions));
+        Regex(Pattern, RegexOptions);
+        exit(DotNetRegex.Replace(Input, Replacement));
     end;
 
     procedure Split(Input: Text; Pattern: Text; "Count": Integer; var "Array": List of [Text])
@@ -235,10 +237,15 @@ codeunit 3961 "Regex Impl."
     end;
 
     procedure Regex(Pattern: Text; var RegexOptions: Record "Regex Options")
+    var
+        TimeoutDuration: DotNet TimeSpan;
     begin
         DotNetRegexOptions := RegexOptions.GetRegexOptions();
-        if RegexOptions.MatchTimeoutInMs < 1000 then Error(TimeoutTooLowErr);
-        DotNetRegex := DotNetRegex.Regex(Pattern, DotNetRegexOptions, RegexOptions.MatchTimeoutInMs)
+        if RegexOptions.MatchTimeoutInMs < 1000 then
+            Error(TimeoutTooLowErr);
+        if RegexOptions.MatchTimeoutInMs > 10000 then
+            Error(TimeoutTooHighErr);
+        DotNetRegex := DotNetRegex.Regex(Pattern, DotNetRegexOptions, TimeoutDuration.FromMilliseconds(RegexOptions.MatchTimeoutInMs));
     end;
 
     local procedure Match(Input: Text; StartAt: Integer; var Matches: Record Matches)

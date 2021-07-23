@@ -7,12 +7,12 @@ codeunit 132548 "Page Summary Provider Test"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;
-    TestPermissions = NonRestrictive;
 
     var
         LibraryAssert: Codeunit "Library Assert";
         PageSummaryProvider: Codeunit "Page Summary Provider";
         PageSummaryProviderTest: Codeunit "Page Summary Provider Test";
+        PermissionsMock: Codeunit "Permissions Mock";
         OverrideFields: List of [Integer];
         HandleOnAfterGetSummaryFields: Boolean;
         HandleOnBeforeGetPageSummary: Boolean;
@@ -31,6 +31,7 @@ codeunit 132548 "Page Summary Provider Test"
         PageSummaryJsonObject: JsonObject;
         Bookmark: Text;
     begin
+        PermissionsMock.Set('Page Summary Read');
         Init();
 
         // [Given] A record
@@ -40,7 +41,7 @@ codeunit 132548 "Page Summary Provider Test"
         PageProviderSummaryTest.TestDateTime := CurrentDateTime();
         PageProviderSummaryTest.Insert();
 
-        Bookmark := ExtractBookmarkForPageProviderTestCard(PageProviderSummaryTest.RecordId);
+        Bookmark := ExtractBookmarkForPageProviderTestCard(PageProviderSummaryTest.RecordId());
 
         // [When] We get the summary for a page for that record
         PageSummaryJsonObject.ReadFrom(PageSummaryProvider.GetPageSummary(Page::"Page Summary Test Card", Bookmark));
@@ -64,6 +65,7 @@ codeunit 132548 "Page Summary Provider Test"
         PageProviderSummaryTest: Record "Page Provider Summary Test";
         PageSummaryJsonObject: JsonObject;
     begin
+        PermissionsMock.Set('Page Summary Read');
         Init();
 
         // [Given] A record
@@ -98,6 +100,7 @@ codeunit 132548 "Page Summary Provider Test"
         Bookmark: Text;
         Bookmark2: Text;
     begin
+        PermissionsMock.Set('Page Summary Read');
         Init();
 
         // [Given] A record
@@ -156,6 +159,7 @@ codeunit 132548 "Page Summary Provider Test"
         PageSummaryJsonObject: JsonObject;
         SystemId: Guid;
     begin
+        PermissionsMock.Set('Page Summary Read');
         Init();
 
         // [Given] 2 records
@@ -212,6 +216,7 @@ codeunit 132548 "Page Summary Provider Test"
         PageSummaryJsonObject: JsonObject;
         Bookmark: Text;
     begin
+        PermissionsMock.Set('Page Summary Read');
         Init();
 
         // [Given] A record
@@ -244,6 +249,7 @@ codeunit 132548 "Page Summary Provider Test"
         PageSummaryJsonObject: JsonObject;
         Bookmark: Text;
     begin
+        PermissionsMock.Set('Page Summary Read');
         // Verifies whether strings are translated or not
         Init();
 
@@ -282,6 +288,7 @@ codeunit 132548 "Page Summary Provider Test"
         PageSummaryJsonObject: JsonObject;
         Bookmark: Text;
     begin
+        PermissionsMock.Set('Page Summary Read');
         // Verifies whether strings are translated or not
         Init();
 
@@ -317,6 +324,7 @@ codeunit 132548 "Page Summary Provider Test"
         fieldNo: Integer;
         fieldsSkipped: Integer;
     begin
+        PermissionsMock.Set('Page Summary Read');
         // Verifies whether strings are translated or not
         Init();
 
@@ -360,6 +368,7 @@ codeunit 132548 "Page Summary Provider Test"
         PageSummaryJsonObject: JsonObject;
         Bookmark: Text;
     begin
+        PermissionsMock.Set('Page Summary Read');
         // Verifies whether strings are translated or not
         Init();
 
@@ -397,6 +406,7 @@ codeunit 132548 "Page Summary Provider Test"
         PageSummaryJsonObject: JsonObject;
         Bookmark: Text;
     begin
+        PermissionsMock.Set('Page Summary Read');
         // Verifies whether strings are translated or not
         Init();
 

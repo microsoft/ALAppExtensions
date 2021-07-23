@@ -11,6 +11,7 @@ codeunit 148109 "SAF-T Export Tests"
     var
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryUtility: Codeunit "Library - Utility";
         SAFTTestHelper: Codeunit "SAF-T Test Helper";
         Assert: Codeunit Assert;
         SAFTMappingType: Enum "SAF-T Mapping Type";
@@ -30,7 +31,8 @@ codeunit 148109 "SAF-T Export Tests"
         Initialize();
 
         // [GIVEN] SAF-T setup with "Folder Path" = "X" and "Disable Zip File Generation" option enabled
-        InitSAFTExportScenario(SAFTExportHeader, FileMgt.ServerCreateTempSubDirectory(), true, false);
+        // TFS ID 398455: Manage files with path's length more than 250 chars
+        InitSAFTExportScenario(SAFTExportHeader, CreateLongServerDirectory(), true, false);
 
         // [WHEN] Run SAF-T Export
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
@@ -58,7 +60,8 @@ codeunit 148109 "SAF-T Export Tests"
         Initialize();
 
         // [GIVEN] SAF-T setup with "Folder Path" = "X" and "Disable Zip File Generation" option disabled
-        InitSAFTExportScenario(SAFTExportHeader, FileMgt.ServerCreateTempSubDirectory(), false, false);
+        // TFS ID 398455: Manage files with path's length more than 250 chars
+        InitSAFTExportScenario(SAFTExportHeader, CreateLongServerDirectory(), false, false);
 
         // [WHEN] Run SAF-T Export
         SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
@@ -88,7 +91,8 @@ codeunit 148109 "SAF-T Export Tests"
         Initialize();
 
         // [GIVEN] SAF-T setup with "Folder Path" = "X" and "Create Multiple Zip Files" option enabled
-        InitSAFTExportScenario(SAFTExportHeader, FileMgt.ServerCreateTempSubDirectory(), false, true);
+        // TFS ID 398455: Manage files with path's length more than 250 chars
+        InitSAFTExportScenario(SAFTExportHeader, CreateLongServerDirectory(), false, true);
         // [GIVEN] Multiple G/L entries posted in each month
         PostingDate := SAFTExportHeader."Starting Date";
         for i := 1 to 12 do begin
@@ -216,6 +220,15 @@ codeunit 148109 "SAF-T Export Tests"
         repeat
             FileMgt.DeleteServerFile(TempNameValueBuffer.Name);
         until TempNameValueBuffer.Next() = 0;
+    end;
+
+    local procedure CreateLongServerDirectory() Folder: Text
+    var
+        FileMgt: Codeunit "File Management";
+    begin
+        Folder := FileMgt.CombinePath(FileMgt.ServerCreateTempSubDirectory(), LibraryUtility.GenerateRandomAlphabeticText(30, 0));
+        FileMgt.ServerCreateDirectory(Folder);
+        exit(Folder);
     end;
 
     [ConfirmHandler]

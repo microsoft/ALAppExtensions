@@ -5,6 +5,8 @@
 
 Codeunit 138049 "User Login Test Library"
 {
+    Permissions = tabledata "User Login" = rim;
+
     /// <summary>
     /// Creates login information for a user.
     /// </summary>

@@ -104,11 +104,12 @@ codeunit 18436 "GST Reverse Trans. Handler"
         GSTReverseTransSessionMgt.SetReversalEntry(ReversalEntry);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Reverse", 'OnAfterPostReverse', '', false, false)]
-    local procedure GenJnlPostReverseOnAfterPostReverse(var GenJournalLine: Record "Gen. Journal Line")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Reverse", 'OnReverseOnBeforeFinishPosting', '', false, false)]
+    local procedure GenJnlPostReverseOnAfterPostReverse(var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
         TempReversalEntry: Record "Reversal Entry" temporary;
         GSTLedgerEntry: Record "GST Ledger Entry";
+        GSTTdsTcsEntry: Record "GST TDS/TCS Entry";
         GSTReverseTransSessionMgt: Codeunit "GST Reverse Trans. Session Mgt";
         NextTransactionNo: Integer;
     begin
@@ -120,18 +121,43 @@ codeunit 18436 "GST Reverse Trans. Handler"
                     GSTLedgerEntry.Reset();
                     GSTLedgerEntry.SetRange("Transaction No.", TempReversalEntry."Transaction No.");
                     if GSTLedgerEntry.FindSet() then
-                        ReverseGST(GSTLedgerEntry, NextTransactionNo);
+                        ReverseGST(GSTLedgerEntry, GenJnlPostLine.GetNextTransactionNo());
+                end;
+
+                if TempReversalEntry."Reversal Type" = TempReversalEntry."Reversal Type"::Transaction then begin
+                    GSTTdsTcsEntry.Reset();
+                    GSTTdsTcsEntry.SetRange("Transaction No.", TempReversalEntry."Transaction No.");
+                    if GSTTdsTcsEntry.FindSet() then
+                        ReverseGSTTDSTCS(GSTTdsTcsEntry, GenJnlPostLine.GetNextTransactionNo());
                 end;
             until TempReversalEntry.Next() = 0;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnContinuePostingOnBeforeCalculateCurrentBalance', '', false, false)]
-    local procedure OnContinuePostingOnBeforeCalculateCurrentBalance(
-        var GenJournalLine: Record "Gen. Journal Line";
-        var NextTransactionNo: Integer)
+    local procedure ReverseGSTTDSTCS(var GSTTdsTcsEntry: Record "GST TDS/TCS Entry"; NextTransactionNo: Integer)
     var
-        GSTReverseTransSessionMgt: Codeunit "GST Reverse Trans. Session Mgt";
+        NewGSTTdsTcsEntry: Record "GST TDS/TCS Entry";
+        GSTTdsTcsEntrytoModify: Record "GST TDS/TCS Entry";
     begin
-        GSTReverseTransSessionMgt.SetReversalNextTransactionNo(NextTransactionNo);
+        if GSTTdsTcsEntry.FindSet() then
+            repeat
+                GSTTdsTcsEntry.TestField(Paid, FALSE);
+                GSTTdsTcsEntry.TestField("Certificate Received", FALSE);
+                Clear(NewGSTTdsTcsEntry);
+
+                NewGSTTdsTcsEntry.Init();
+                NewGSTTdsTcsEntry.TransferFields(GSTTdsTcsEntry);
+                NewGSTTdsTcsEntry."Entry No." := 0;
+                NewGSTTdsTcsEntry."Transaction No." := NextTransactionNo;
+                NewGSTTdsTcsEntry."GST TDS/TCS Base Amount (LCY)" := -NewGSTTdsTcsEntry."GST TDS/TCS Base Amount (LCY)";
+                NewGSTTdsTcsEntry."GST TDS/TCS Amount (LCY)" := -NewGSTTdsTcsEntry."GST TDS/TCS Amount (LCY)";
+                NewGSTTdsTcsEntry.Reversed := true;
+                NewGSTTdsTcsEntry.Insert();
+
+                GSTTdsTcsEntrytoModify.Reset();
+                GSTTdsTcsEntrytoModify.SetRange("Entry No.", GSTTdsTcsEntry."Entry No.");
+                GSTTdsTcsEntrytoModify.FindFirst();
+                GSTTdsTcsEntrytoModify.Reversed := true;
+                GSTTdsTcsEntrytoModify.Modify();
+            until GSTTdsTcsEntry.Next() = 0;
     end;
 }

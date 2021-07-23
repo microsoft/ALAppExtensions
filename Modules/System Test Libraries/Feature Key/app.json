@@ -1,0 +1,32 @@
+{
+    "id":  "b5b9aea8-a0f3-4666-b755-c9996789f5bc",
+    "name":  "Feature Key Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Test objects for the Feature Key module.",
+    "description":  "Test objects for the Feature Key module.",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                            "id":  "ae59aed1-040c-453c-9585-fe9da2f8211e",
+                            "name":  "Feature Key",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "idRanges": [
+        {
+            "from": 135003,
+            "to": 135003
+        }
+    ],
+    "platform":  "18.0.0.0",
+    "target":  "OnPrem"
+}

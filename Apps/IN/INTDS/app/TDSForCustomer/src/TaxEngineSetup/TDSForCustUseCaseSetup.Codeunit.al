@@ -7,6 +7,8 @@ codeunit 18662 "TDS For Cust Use Case Setup"
         TaxJsonDeserialization: Codeunit "Tax Json Deserialization";
     begin
         TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.SkipUseCaseIndentation(true);
         TaxJsonDeserialization.ImportUseCases(TDSForCustomerUseCases.GetText());
     end;
 }

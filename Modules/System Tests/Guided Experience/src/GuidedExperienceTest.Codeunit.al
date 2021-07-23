@@ -1,10 +1,10 @@
 codeunit 132594 "Guided Experience Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
 
     [Test]
     [Scope('OnPrem')]
@@ -29,6 +29,8 @@ codeunit 132594 "Guided Experience Test"
     begin
         // [GIVEN] The Guided Experience Item table is empty
         GuidedExperienceItem.DeleteAll();
+
+        PermissionsMock.Set('Guided Exp Edit');
 
         // [WHEN] Inserting a new assisted setup
         Title := 'This is the title of the guided experience item';
@@ -111,6 +113,8 @@ codeunit 132594 "Guided Experience Test"
         // [GIVEN] The Guided Experience Item table is empty
         GuidedExperienceItem.DeleteAll();
 
+        PermissionsMock.Set('Guided Exp Edit');
+
         // [WHEN] Inserting a new manual setup
         Title := 'This is the title of the guided experience item';
         ShortTitle := 'Short title';
@@ -184,6 +188,8 @@ codeunit 132594 "Guided Experience Test"
         // [GIVEN] The Guided Experience Item table is empty
         GuidedExperienceItem.DeleteAll();
 
+        PermissionsMock.Set('Guided Exp Edit');
+
         // [WHEN] Inserting a new learn page
         Title := 'This is the title of the guided experience item';
         ShortTitle := 'Short title';
@@ -254,6 +260,8 @@ codeunit 132594 "Guided Experience Test"
     begin
         // [GIVEN] The Guided Experience Item table is empty
         GuidedExperienceItem.DeleteAll();
+
+        PermissionsMock.Set('Guided Exp Edit');
 
         // [WHEN] Inserting a new learn link
         Title := 'This is the title of the guided experience item';

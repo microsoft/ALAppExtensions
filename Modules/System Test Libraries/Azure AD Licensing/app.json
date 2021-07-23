@@ -1,0 +1,32 @@
+{
+    "id":  "b9663d62-d331-481d-9c06-38b6ebfb586b",
+    "name":  "Azure AD Licensing Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Test objects for the Azure AD Licensing module.",
+    "description":  "Test objects for the Azure AD Licensing module.",
+    "version":  "18.3.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                            "id":  "b70307d1-2c71-40ec-aeea-5deb7d0434c8",
+                            "name":  "Azure AD Licensing",
+                            "publisher":  "Microsoft",
+                            "version":  "18.3.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "idRanges": [
+        {
+            "from": 138458,
+            "to": 138458
+        }
+    ],
+    "platform":  "18.0.0.0",
+    "target":  "OnPrem"
+}

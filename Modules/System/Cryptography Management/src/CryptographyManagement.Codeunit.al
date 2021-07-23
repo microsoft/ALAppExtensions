@@ -171,6 +171,18 @@ codeunit 1266 "Cryptography Management"
     end;
 
     /// <summary>
+    /// Generates keyed base64 encoded hash from provided string based on provided hash algorithm and base64 key.
+    /// </summary>
+    /// <param name="InputString">Input string.</param>
+    /// <param name="Key">Key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithmType">The available hash algorithms include HMACMD5, HMACSHA1, HMACSHA256, HMACSHA384, and HMACSHA512.</param>
+    /// <returns>Hashed value.</returns>
+    procedure GenerateBase64KeyedHash(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
+    begin
+        exit(CryptographyManagementImpl.GenerateBase64KeyedHash(InputString, Key, HashAlgorithmType));
+    end;
+
+    /// <summary>
     /// Computes the hash value of the specified string and signs it.
     /// </summary>
     /// <param name="InputString">Input string for signing.</param>

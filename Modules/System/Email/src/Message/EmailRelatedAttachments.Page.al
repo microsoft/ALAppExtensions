@@ -28,6 +28,12 @@ page 8890 "Email Related Attachments"
                     Caption = 'Filename';
                     ToolTip = 'Specifies the name of the attachment';
                 }
+                field(Source; Rec."Attachment Source")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Source';
+                    ToolTip = 'Specifies source record of the attachment.';
+                }
             }
         }
     }

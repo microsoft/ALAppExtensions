@@ -1,10 +1,7 @@
 codeunit 147109 "CD Job"
 {
     Subtype = Test;
-
-    trigger OnRun()
-    begin
-    end;
+    TestPermissions = NonRestrictive;
 
     var
         LibraryRandom: Codeunit "Library - Random";

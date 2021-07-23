@@ -43,7 +43,12 @@ codeunit 31057 "Gen.Jnl. - Post Acc. Group CZL"
         BalanceCheckAccountGroupConsistent := true;
         for Loop := 1 to 2 do
             BalanceCheckAccountGroupConsistent := BalanceCheckAccountGroupConsistent and (BalanceCheckAccountGroupAmount[Loop] = 0);
-        Clear(BalanceCheckAccountGroupAmount);
         exit(BalanceCheckAccountGroupConsistent);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeStartPosting', '', false, false)]
+    local procedure ClearBalanceCheckAccountAmount()
+    begin
+        Clear(BalanceCheckAccountGroupAmount);
     end;
 }

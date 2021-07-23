@@ -4,12 +4,19 @@
     "publisher":  "Microsoft",
     "brief":  "Sets and verifies passwords",
     "description":  "This module provides the functionality for generating and validating passwords, introduces a dialog for the user to enter a password.",
-    "version":  "18.2.0.0",
+    "version":  "18.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
     "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "",
+    "internalsVisibleTo": [
+                            {
+                                "id":  "47f9b8b5-9aae-4384-8101-4519f7115381",
+                                "name":  "Password Test Library",
+                                "publisher":  "Microsoft"
+                            }
+                          ],
     "dependencies":  [
 
                      ],
