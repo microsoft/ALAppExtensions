@@ -1,9 +1,17 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Page to view address entities
+/// </summary>
 page 8945 "Email Address Entity"
 {
     PageType = List;
     ApplicationArea = All;
     UsageCategory = Administration;
-    SourceTable = "Email Address";
+    SourceTable = "Address Entity";
     Caption = 'Entities';
     Extensible = false;
     InsertAllowed = false;
@@ -28,7 +36,7 @@ page 8945 "Email Address Entity"
         }
     }
 
-    internal procedure GetSelectedAddresses(var EmailAddress: Record "Email Address")
+    internal procedure GetSelectedAddresses(var AddressEntity: Record "Address Entity")
     begin
         CurrPage.SetSelectionFilter(Rec);
 
@@ -36,17 +44,17 @@ page 8945 "Email Address Entity"
             exit;
 
         repeat
-            EmailAddress.Copy(Rec);
-            EmailAddress.Insert();
+            AddressEntity.Copy(Rec);
+            AddressEntity.Insert();
         until Rec.Next() = 0;
     end;
 
-    internal procedure InsertAddresses(var EmailAddress: Record "Email Address")
+    internal procedure InsertAddresses(var AddressEntity: Record "Address Entity")
     begin
-        if EmailAddress.FindSet() then
+        if AddressEntity.FindSet() then
             repeat
-                Rec.Copy(EmailAddress);
+                Rec.Copy(AddressEntity);
                 Rec.Insert();
-            until EmailAddress.Next() = 0;
+            until AddressEntity.Next() = 0;
     end;
 }

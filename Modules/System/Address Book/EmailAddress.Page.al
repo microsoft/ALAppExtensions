@@ -1,9 +1,17 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Page to view addresses
+/// </summary>
 page 8944 "Email Address"
 {
     PageType = List;
     ApplicationArea = All;
     UsageCategory = Administration;
-    SourceTable = "Email Address";
+    SourceTable = Address;
     Caption = 'Suggested Contacts';
     Extensible = false;
     InsertAllowed = false;
@@ -58,7 +66,7 @@ page 8944 "Email Address"
 
                 trigger OnAction()
                 var
-                    EmailAddress: Codeunit "Addressbook Impl";
+                    EmailAddress: Codeunit "Address Book Impl";
                 begin
                     EmailAddress.EmailAddressLookup(Rec)
                 end;
@@ -66,7 +74,7 @@ page 8944 "Email Address"
         }
     }
 
-    internal procedure GetSelectedAddresses(var EmailAddress: Record "Email Address")
+    internal procedure GetSelectedAddresses(var EmailAddress: Record Address)
     begin
         CurrPage.SetSelectionFilter(Rec);
 
@@ -79,31 +87,12 @@ page 8944 "Email Address"
         until Rec.Next() = 0;
     end;
 
-    procedure InsertAddresses(var EmailAddress: Record "Email Address")
+    procedure InsertAddresses(var EmailAddress: Record Address)
     begin
         if EmailAddress.FindSet() then
             repeat
                 Rec.Copy(EmailAddress);
                 Rec.Insert();
-            until EmailAddress.Next() = 0;
-    end;
-
-    procedure foo(var EmailAddress: Record "Email Address"; var Recipients: Text)
-    begin
-        // Open Addressbook in Lookupmode
-        InsertAddresses(EmailAddress);
-        CurrPage.LookupMode(true);
-        if CurrPage.RunModal() <> Action::LookupOK then
-            exit;
-
-        // Return selected addresses
-        EmailAddress.DeleteAll();
-        //GetSelectedAddresses(EmailAddress);
-        if (StrLen(Recipients) > 0) and (not Recipients.EndsWith(';')) then
-            Recipients += ';';
-        if Rec.FindSet() then
-            repeat
-                Recipients += Rec."E-Mail Address" + ';';
             until EmailAddress.Next() = 0;
     end;
 }
