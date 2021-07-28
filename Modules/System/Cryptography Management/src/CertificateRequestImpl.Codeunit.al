@@ -80,6 +80,14 @@ codeunit 1450 "CertificateRequest Impl."
             DotNetX509KeyUsageExtension.X509KeyUsageExtension(DotNetX509KeyUsageFlags, Critical));
     end;
 
+    procedure GetX509CertificateRequestExtensionCount(): Integer
+    begin
+        if IsNull(DotNetCertificateRequest.CertificateExtensions) then
+            exit(0);
+        exit(DotNetCertificateRequest.CertificateExtensions.Count());
+    end;
+
+
     procedure CreateSigningRequest(var SigningRequestPemString: Text)
     var
         Base64Convert: Codeunit "Base64 Convert";
@@ -123,7 +131,6 @@ codeunit 1450 "CertificateRequest Impl."
 
     procedure CreateSelfSigned(NotBefore: DateTime; NotAfter: DateTime; X509ContentType: Enum "X509 Content Type"; var CertBase64Value: Text)
     var
-        Base64Convert: Codeunit "Base64 Convert";
         DotNetNotBefore: DotNet DateTimeOffset;
         DotNetNotAfter: DotNet DateTimeOffset;
         DotNetX509Certificate2: DotNet X509Certificate2;

@@ -39,6 +39,8 @@ codeunit 132572 "CertificateRequestTests"
             GetSubjectName(), HashAlgorithm::SHA256, RSASignaturePadding::Pkcs1);
 
         CertSigningRequest.AddX509BasicConstraintToCertificateRequest(false, false, 0, true);
+
+        Assert.AreEqual(1, CertSigningRequest.GetX509CertificateRequestExtensionCount(), 'Adding a X509BasicConstraint to the Certificate Signing Request failed.');
     end;
 
     [Test]
@@ -55,6 +57,8 @@ codeunit 132572 "CertificateRequestTests"
             GetSubjectName(), HashAlgorithm::SHA256, RSASignaturePadding::Pkcs1);
 
         CertSigningRequest.AddX509KeyUsageToCertificateRequest(16 + 128, false);
+
+        Assert.AreEqual(1, CertSigningRequest.GetX509CertificateRequestExtensionCount(), 'Adding a X509BasicConstraint to the Certificate Signing Request failed.');
     end;
 
     [Test]
@@ -73,6 +77,8 @@ codeunit 132572 "CertificateRequestTests"
 
         Oids.Add('1.3.6.1.5.5.7.3.2');
         CertSigningRequest.AddX509EnhancedKeyUsageToCertificateRequest(Oids, false);
+
+        Assert.AreEqual(1, CertSigningRequest.GetX509CertificateRequestExtensionCount(), 'Adding a X509BasicConstraint to the Certificate Signing Request failed.');
     end;
 
     [Test]

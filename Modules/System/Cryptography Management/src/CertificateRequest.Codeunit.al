@@ -66,7 +66,16 @@ codeunit 1449 CertificateRequest
     end;
 
     /// <summary>
-    /// Creates an ASN.1 DER-encoded PKCS#10 CertificationRequest and returns a Base 64 encoded string.
+    /// Gets how many X509Extensions that has been added to the X509CertificateRequest.
+    /// </summary>
+    /// <returns>The number of added extensions.</returns>
+    procedure GetX509CertificateRequestExtensionCount(): Integer
+    begin
+        exit(CertSigningRequestImpl.GetX509CertificateRequestExtensionCount());
+    end;
+
+    /// <summary>
+    /// Creates an ASN.1 DER-encoded PKCS#10 CertificateRequest and returns a Base 64 encoded string.
     /// </summary>
     /// <param name="SigningRequestPemString">Returns the SigningRequest in Base 64 string format.</param>
     procedure CreateSigningRequest(var SigningRequestPemString: Text)
@@ -75,7 +84,7 @@ codeunit 1449 CertificateRequest
     end;
 
     /// <summary>
-    /// Creates an ASN.1 DER-encoded PKCS#10 CertificationRequest and returns it in an OutStream.
+    /// Creates an ASN.1 DER-encoded PKCS#10 CertificateRequest and returns it in an OutStream.
     /// </summary>
     /// <param name="SigningRequestOutStream">OutStream.</param>
     procedure CreateSigningRequest(SigningRequestOutStream: OutStream)
