@@ -1206,6 +1206,70 @@ codeunit 134685 "Email Test"
         Assert.ExpectedError(EmailMessageOpenPermissionErr);
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure GetSourceRecordInOutbox()
+    var
+        EmailOutbox: Record "Email Outbox";
+        ResultEmailOutbox: Record "Email Outbox";
+        EmailMessage: Codeunit "Email Message";
+        Any: Codeunit Any;
+        EmailTest: Codeunit "Email Test";
+        TableId: Integer;
+        SystemId: Guid;
+    begin
+        BindSubscription(EmailTest);
+
+        PermissionsMock.Set('Email Edit');
+
+        // [Scenario] Emails with source document, GetEmailOutboxForRecord procedure will return Outbox Emails
+        // [Given] An Email with table id and source system id
+        TableId := Any.IntegerInRange(1, 10000);
+        SystemId := Any.GuidValue();
+
+        // [When] The email is created and saved as draft
+        CreateEmailWithSource(EmailMessage, TableId, SystemId);
+
+        // [When] The email is created and saved as draft
+        Email.SaveAsDraft(EmailMessage, EmailOutbox);
+
+        // [Then] GetEmailOutboxForRecord procedure return Email Outbox
+        ResultEmailOutbox := Email.GetEmailOutboxForRecord(TableId, SystemId);
+        Assert.IsTrue(EmailOutbox.Id = ResultEmailOutbox.Id, 'Email Outbox Id should be the same');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure GetEmailOutboxRecordStatus()
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailMessage: Codeunit "Email Message";
+        Any: Codeunit Any;
+        EmailTest: Codeunit "Email Test";
+        EmailStatus: Enum "Email Status";
+        TableId: Integer;
+        SystemId: Guid;
+    begin
+        BindSubscription(EmailTest);
+
+        PermissionsMock.Set('Email Edit');
+
+        // [Scenario] Emails with source document, GetOutboxEmailRecordStatus will return Outbox Email Status
+        // [Given] An Email with table id and source system id
+        TableId := Any.IntegerInRange(1, 10000);
+        SystemId := Any.GuidValue();
+
+        // [When] The email is created and saved as draft
+        CreateEmailWithSource(EmailMessage, TableId, SystemId);
+
+        // [When] The email is created and saved as draft
+        Email.SaveAsDraft(EmailMessage, EmailOutbox);
+
+        // [Then] Email Status of created Email Outbox record is equal to GetOutboxEmailRecordStatus result
+        EmailStatus := Email.GetOutboxEmailRecordStatus(EmailOutbox."Message Id");
+        Assert.AreEqual(EmailStatus, EmailOutbox.Status, 'Email Status should be the same as on Email Outbox record');
+    end;
+
     local procedure CreateEmail(var EmailMessage: Codeunit "Email Message")
     var
         Any: Codeunit Any;

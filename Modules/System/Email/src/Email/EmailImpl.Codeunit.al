@@ -320,6 +320,50 @@ codeunit 8900 "Email Impl"
         until EmailRelatedRecord.Next() = 0;
     end;
 
+    procedure GetEmailOutboxForRecord(TableId: Integer; SystemId: Guid) ResultEmailOutbox: Record "Email Outbox" temporary;
+    begin
+        GetEmailOutboxForRecord(TableId, SystemId, ResultEmailOutbox);
+    end;
+
+    procedure GetEmailOutboxForRecord(TableId: Integer; SystemId: Guid; var ResultEmailOutbox: Record "Email Outbox" temporary)
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailRelatedRecord: Record "Email Related Record";
+        EmailAccountImpl: Codeunit "Email Account Impl.";
+    begin
+        EmailRelatedRecord.SetRange("Table Id", TableId);
+        EmailRelatedRecord.SetRange("System Id", SystemId);
+
+        if not EmailRelatedRecord.FindSet() then
+            exit;
+
+        if not EmailAccountImpl.IsUserEmailAdmin() then
+            EmailOutbox.SetRange("User Security Id", UserSecurityId());
+
+        repeat
+            EmailOutbox.SetCurrentKey("Message Id");
+            EmailOutbox.SetRange("Message Id", EmailRelatedRecord."Email Message Id");
+            if EmailOutbox.FindFirst() then begin
+                ResultEmailOutbox := EmailOutbox;
+                ResultEmailOutbox.Insert();
+            end;
+        until EmailRelatedRecord.Next() = 0;
+    end;
+
+    procedure GetOutboxEmailRecordStatus(MessageId: Guid) ResultStatus: Enum "Email Status"
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailAccountImpl: Codeunit "Email Account Impl.";
+    begin
+        if not EmailAccountImpl.IsUserEmailAdmin() then
+            EmailOutbox.SetRange("User Security Id", UserSecurityId());
+
+        EmailOutbox.SetCurrentKey("Message Id");
+        EmailOutbox.SetRange("Message Id", MessageId);
+        if EmailOutbox.FindFirst() then
+            exit(EmailOutbox.Status);
+    end;
+
     internal procedure CountEmailsInOutbox(EmailStatus: Enum "Email Status"; IsAdmin: Boolean): Integer
     var
         EmailOutbox: Record "Email Outbox";

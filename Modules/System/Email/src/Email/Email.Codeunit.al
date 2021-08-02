@@ -240,6 +240,17 @@ codeunit 8901 "Email"
     end;
 
     ///<summary>
+    /// Gets the outbox emails related to a record.
+    ///</summary>
+    ///<param name="TableId">The table ID of the record.</param>
+    ///<param name="SystemId">The system ID of the record.</param>
+    ///<returns>The outbox emails related to a record.</returns>
+    procedure GetEmailOutboxForRecord(TableId: Integer; SystemId: Guid) ResultEmailOutbox: Record "Email Outbox" temporary;
+    begin
+        exit(EmailImpl.GetEmailOutboxForRecord(TableId, SystemId));
+    end;
+
+    ///<summary>
     /// Open the sent emails page for a source record given by its table ID and system ID.
     ///</summary>
     ///<param name="TableId">The table ID of the record.</param>
@@ -247,6 +258,16 @@ codeunit 8901 "Email"
     procedure OpenSentEmails(TableId: Integer; SystemId: Guid)
     begin
         EmailImpl.OpenSentEmails(TableId, SystemId);
+    end;
+
+    ///<summary>
+    /// Gets the outbox email status.
+    ///</summary>
+    ///<param name="MessageId">The MessageId of the record.</param>
+    ///<returns>Email Status of the record.</returns>
+    procedure GetOutboxEmailRecordStatus(MessageId: Guid) ResultStatus: Enum "Email Status";
+    begin
+        exit(EmailImpl.GetOutboxEmailRecordStatus(MessageId));
     end;
 
     ///<summary>
