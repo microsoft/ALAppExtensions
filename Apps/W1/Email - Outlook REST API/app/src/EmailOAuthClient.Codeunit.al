@@ -169,7 +169,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         AccessToken: Text;
     begin
         Initialize();
-        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), GraphResourceURLTxt, AccessToken) and (AccessToken <> ''))
+        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, StrSubstNo(RedirectURL, TenantId), StrSubstNo(OAuthAuthorityUrlTxt, TenantId), GraphResourceURLTxt, AccessToken) and (AccessToken <> ''))
     end;
 
     internal procedure SignInUsingAuthorizationCode(): Boolean
@@ -179,7 +179,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         OAuthErr: Text;
     begin
         Initialize();
-        exit(OAuth2.AcquireTokenByAuthorizationCode(ClientID, ClientSecret, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), RedirectURL, GraphResourceURLTxt, Enum::"Prompt Interaction"::"Select Account", AccessToken, OAuthErr) and (AccessToken <> ''));
+        exit(OAuth2.AcquireTokenByAuthorizationCode(ClientID, ClientSecret, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), StrSubstNo(RedirectURL, TenantId), GraphResourceURLTxt, Enum::"Prompt Interaction"::"Select Account", AccessToken, OAuthErr) and (AccessToken <> ''));
     end;
 
     var
