@@ -210,6 +210,9 @@ page 4509 "Email - Outlook API Setup"
         EmailOAuthClient: Codeunit "Email - OAuth Client";
         OAuth2: Codeunit "OAuth2";
         RedirectURLTxt: Text;
+        TenantInformation: Codeunit "Tenant Information";
+        EnvInfo: Codeunit "Environment Information";
+
     begin
         if not Rec.Get() then
             Rec.Insert();
@@ -227,7 +230,10 @@ page 4509 "Email - Outlook API Setup"
         end;
 
         if Rec.TenantID = '' then begin
-            Rec.TenantID := CopyStr(DefaultTenantId, 1, MaxStrLen(Rec.TenantID));
+            if EnvInfo.IsSaaS() then
+                Rec.TenantID := TenantInformation.GetTenantId()
+            else
+                Rec.TenantID := CopyStr(DefaultTenantId, 1, MaxStrLen(Rec.TenantID));
             Rec.Modify();
         end;
 
