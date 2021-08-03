@@ -126,6 +126,15 @@ codeunit 1460 SignedXml
     end;
 
     /// <summary>
+    /// Loads a SignedXml state from an XML element.
+    /// </summary>
+    /// <param name="SignatureElement">The XML element to load the SignedXml state from.</param>
+    procedure LoadXml(SignatureElement: XmlElement)
+    begin
+        SignedXmlImpl.LoadXml(SignatureElement);
+    end;
+
+    /// <summary>
     /// Computes an Xml digital signature from Xml document.
     /// </summary>
     procedure ComputeSignature()
@@ -140,6 +149,37 @@ codeunit 1460 SignedXml
     procedure GetXml(): XmlElement
     begin
         exit(SignedXmlImpl.GetXml());
+    end;
+
+    /// <summary>
+    /// Determines whether the signature verifies using the public key in the signature.
+    /// </summary>
+    /// <returns>true if the signature verifies; otherwise, false.</returns>
+    procedure CheckSignature(): Boolean
+    begin
+        exit(SignedXmlImpl.CheckSignature());
+    end;
+
+    /// <summary>
+    /// Determines whether the Signature property verifies for the specified key.
+    /// </summary>
+    /// <param name="SignatureKey">The signature key that holds the key to be used to verify the signature.</param>
+    /// <returns>true if the signature verifies; otherwise, false.</returns>
+    procedure CheckSignature(var SignatureKey: Record "Signature Key"): Boolean
+    begin
+        exit(SignedXmlImpl.CheckSignature(SignatureKey));
+    end;
+
+    /// <summary>
+    /// Determines whether the signature verifies for the specified X509Certificate2 and, optionally, whether the certificate is valid.
+    /// </summary>
+    /// <param name="X509CertBase64Value">The X509Certificate2 in Base64 format to use to verify the signature.</param>
+    /// <param name="X509CertPassword">The password to the X509Certificate2.</param>
+    /// <param name="VerifySignatureOnly">true to verify the signature only; false to verify both the signature and certificate.</param>
+    /// <returns>true if the signature verifies; otherwise, false.</returns>
+    procedure CheckSignature(X509CertBase64Value: Text; X509CertPassword: Text; VerifySignatureOnly: Boolean): Boolean
+    begin
+        exit(SignedXmlImpl.CheckSignature(X509CertBase64Value, X509CertPassword, VerifySignatureOnly));
     end;
 
     /// <summary>

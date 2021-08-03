@@ -147,6 +147,13 @@ codeunit 1461 "SignedXml Impl."
 
     procedure CheckSignature(): Boolean
     begin
+        exit(DotNetSignedXml.CheckSignature());
+    end;
+
+    procedure CheckSignature(var SignatureKey: Record "Signature Key"): Boolean
+    begin
+        if not SignatureKey.TryGetInstance(DotNetAsymmetricAlgorithm) then
+            exit(false);
         exit(DotNetSignedXml.CheckSignature(DotNetAsymmetricAlgorithm));
     end;
 

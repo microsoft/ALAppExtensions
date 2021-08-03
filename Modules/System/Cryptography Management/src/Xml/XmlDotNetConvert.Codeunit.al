@@ -10,10 +10,13 @@ codeunit 1462 "Xml DotNet Convert"
     [TryFunction]
     procedure ToDotNet(InputXmlDocument: XmlDocument; var OutputXmlDocument: DotNet XmlDocument)
     var
+        XmlWriteOptions: XmlWriteOptions;
         Xml: Text;
     begin
-        InputXmlDocument.WriteTo(Xml);
+        XmlWriteOptions.PreserveWhitespace := true;
+        InputXmlDocument.WriteTo(XmlWriteOptions, Xml);
         OutputXmlDocument := OutputXmlDocument.XmlDocument();
+        OutputXmlDocument.PreserveWhitespace := true;
         OutputXmlDocument.LoadXml(Xml);
     end;
 
@@ -21,10 +24,13 @@ codeunit 1462 "Xml DotNet Convert"
     procedure ToDotNet(InputXmlElement: XmlElement; var OutputXmlElement: DotNet XmlElement)
     var
         OutputXmlDocument: DotNet XmlDocument;
+        XmlWriteOptions: XmlWriteOptions;
         Xml: Text;
     begin
-        InputXmlElement.WriteTo(Xml);
+        XmlWriteOptions.PreserveWhitespace := true;
+        InputXmlElement.WriteTo(XmlWriteOptions, Xml);
         OutputXmlDocument := OutputXmlDocument.XmlDocument();
+        OutputXmlDocument.PreserveWhitespace := true;
         OutputXmlDocument.LoadXml(Xml);
         OutputXmlElement := OutputXmlDocument.FirstChild();
     end;
