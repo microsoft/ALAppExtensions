@@ -40,7 +40,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
                 if OAuth2.AcquireOnBehalfOfToken('', GraphResourceURLTxt, AccessToken) then;
         end else begin
             Initialize();
-            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), GraphResourceURLTxt, AccessToken)) or (AccessToken = '') or Force then
+            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, StrSubstNo(RedirectURL, TenantId), StrSubstNo(OAuthAuthorityUrlTxt, TenantId), GraphResourceURLTxt, AccessToken)) or (AccessToken = '') or Force then
                 OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), StrSubstNo(RedirectURL, TenantId), GraphResourceURLTxt, Enum::"Prompt Interaction"::None, AccessToken, OAuthErr);
         end;
 
@@ -184,7 +184,6 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
 
     var
         OAuth2: Codeunit OAuth2;
-        
         [NonDebuggable]
         ClientId: Text;
         [NonDebuggable]
