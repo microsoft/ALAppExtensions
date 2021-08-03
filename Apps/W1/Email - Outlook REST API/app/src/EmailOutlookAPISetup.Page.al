@@ -230,7 +230,7 @@ page 4509 "Email - Outlook API Setup"
         end;
 
         if Rec.TenantID = '' then begin
-            if EnvInfo.IsSaaS() then
+            if EnvInfo.IsSaaSInfrastructure() then
                 Rec.TenantID := TenantInformation.GetTenantId()
             else
                 Rec.TenantID := CopyStr(DefaultTenantId, 1, MaxStrLen(Rec.TenantID));
