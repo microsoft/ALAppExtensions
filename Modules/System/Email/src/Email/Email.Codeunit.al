@@ -240,6 +240,17 @@ codeunit 8901 "Email"
     end;
 
     ///<summary>
+    /// Gets the sent emails related to a record.
+    ///</summary>
+    ///<param name="RecRef">RecordRef of Source Record.</param>
+    ///<param name="ResultSentEmails">The sent email related to a record.</param>
+    procedure GetSentEmailsForRecord(RecRef: RecordRef; var ResultSentEmails: Record "Sent Email" temporary);
+    begin
+
+        EmailImpl.GetSentEmailsForRecord(RecRef, ResultSentEmails);
+    end;
+
+    ///<summary>
     /// Gets the outbox emails related to a record.
     ///</summary>
     ///<param name="TableId">The table ID of the record.</param>
@@ -248,6 +259,16 @@ codeunit 8901 "Email"
     procedure GetEmailOutboxForRecord(TableId: Integer; SystemId: Guid) ResultEmailOutbox: Record "Email Outbox" temporary;
     begin
         exit(EmailImpl.GetEmailOutboxForRecord(TableId, SystemId));
+    end;
+
+    ///<summary>
+    /// Gets the outbox emails related to a record.
+    ///</summary>
+    ///<param name="RecRef">RecordRef of Source Record.</param>
+    ///<param name="ResultEmailOutbox">The outbox emails related to a record.</param>
+    procedure GetEmailOutboxForRecord(RecRef: RecordRef; var ResultEmailOutbox: Record "Email Outbox" temporary);
+    begin
+        EmailImpl.GetEmailOutboxForRecord(RecRef, ResultEmailOutbox);
     end;
 
     ///<summary>

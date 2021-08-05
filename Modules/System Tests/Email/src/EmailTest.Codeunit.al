@@ -1210,13 +1210,17 @@ codeunit 134685 "Email Test"
     [Scope('OnPrem')]
     procedure GetSourceRecordInOutbox()
     var
+        Company: Record Company;
         EmailOutbox: Record "Email Outbox";
-        ResultEmailOutbox: Record "Email Outbox";
+        TempEmailOutbox: Record "Email Outbox" temporary;
         EmailMessage: Codeunit "Email Message";
         Any: Codeunit Any;
         EmailTest: Codeunit "Email Test";
-        TableId: Integer;
+        MessageIds: List of [Guid];
         SystemId: Guid;
+        TableId: Integer;
+        NumberOfEmails, i : Integer;
+        RecRef: RecordRef;
     begin
         BindSubscription(EmailTest);
 
@@ -1224,18 +1228,35 @@ codeunit 134685 "Email Test"
 
         // [Scenario] Emails with source document, GetEmailOutboxForRecord procedure will return Outbox Emails
         // [Given] An Email with table id and source system id
-        TableId := Any.IntegerInRange(1, 10000);
+        TableId := Any.IntegerInRange(1, 1000);
         SystemId := Any.GuidValue();
 
-        // [When] The email is created and saved as draft
-        CreateEmailWithSource(EmailMessage, TableId, SystemId);
+        Company.FindFirst();
+        TableId := Database::Company;
+        SystemId := Company.SystemId;
+        // [When] Several emails are created and saved as draft
+        NumberOfEmails := Any.IntegerInRange(2, 5);
 
-        // [When] The email is created and saved as draft
-        Email.SaveAsDraft(EmailMessage, EmailOutbox);
+        for i := 1 to NumberOfEmails do begin
+            Clear(EmailOutbox);
+            CreateEmailWithSource(EmailMessage, TableId, SystemId);
+            Email.SaveAsDraft(EmailMessage, EmailOutbox);
+            MessageIds.Add(EmailMessage.GetId());
+        end;
 
         // [Then] GetEmailOutboxForRecord procedure return Email Outbox
-        ResultEmailOutbox := Email.GetEmailOutboxForRecord(TableId, SystemId);
-        Assert.IsTrue(EmailOutbox.Id = ResultEmailOutbox.Id, 'Email Outbox Id should be the same');
+        RecRef.Open(TableId);
+        RecRef.GetBySystemId(SystemId);
+
+
+        Email.GetEmailOutboxForRecord(RecRef, TempEmailOutbox);
+        Assert.AreEqual(NumberOfEmails, TempEmailOutbox.Count(), 'Email Outbox count is not equal to Number of Emails created.');
+
+        for i := 1 to NumberOfEmails do begin
+            TempEmailOutbox.SetCurrentKey("Message Id");
+            TempEmailOutbox.SetRange("Message Id", MessageIds.Get(i));
+            Assert.AreEqual(1, TempEmailOutbox.Count(), 'Did not find the email in Email Outbox');
+        end;
     end;
 
     [Test]

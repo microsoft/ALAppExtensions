@@ -295,6 +295,14 @@ codeunit 8900 "Email Impl"
         GetSentEmailsForRecord(TableId, SystemId, ResultSentEmails);
     end;
 
+    procedure GetSentEmailsForRecord(RecRef: RecordRef; var ResultSentEmails: Record "Sent Email" temporary)
+    var
+        FieldRef: FieldRef;
+    begin
+        FieldRef := RecRef.field(RecRef.SystemIdNo);
+        GetSentEmailsForRecord(RecRef.Number, FieldRef.Value, ResultSentEmails);
+    end;
+
     procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid; var ResultSentEmails: Record "Sent Email" temporary)
     var
         SentEmails: Record "Sent Email";
@@ -325,6 +333,14 @@ codeunit 8900 "Email Impl"
         GetEmailOutboxForRecord(TableId, SystemId, ResultEmailOutbox);
     end;
 
+    procedure GetEmailOutboxForRecord(RecRef: RecordRef; var ResultEmailOutbox: Record "Email Outbox" temporary)
+    var
+        FieldRef: FieldRef;
+    begin
+        FieldRef := RecRef.field(RecRef.SystemIdNo);
+        GetEmailOutboxForRecord(RecRef.Number, FieldRef.Value, ResultEmailOutbox);
+    end;
+
     procedure GetEmailOutboxForRecord(TableId: Integer; SystemId: Guid; var ResultEmailOutbox: Record "Email Outbox" temporary)
     var
         EmailOutbox: Record "Email Outbox";
@@ -337,11 +353,7 @@ codeunit 8900 "Email Impl"
         if not EmailRelatedRecord.FindSet() then
             exit;
 
-        if not EmailAccountImpl.IsUserEmailAdmin() then
-            EmailOutbox.SetRange("User Security Id", UserSecurityId());
-
         repeat
-            EmailOutbox.SetCurrentKey("Message Id");
             EmailOutbox.SetRange("Message Id", EmailRelatedRecord."Email Message Id");
             if EmailOutbox.FindFirst() then begin
                 ResultEmailOutbox := EmailOutbox;
