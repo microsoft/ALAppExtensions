@@ -1228,9 +1228,6 @@ codeunit 134685 "Email Test"
 
         // [Scenario] Emails with source document, GetEmailOutboxForRecord procedure will return Outbox Emails
         // [Given] An Email with table id and source system id
-        TableId := Any.IntegerInRange(1, 1000);
-        SystemId := Any.GuidValue();
-
         Company.FindFirst();
         TableId := Database::Company;
         SystemId := Company.SystemId;
@@ -1247,8 +1244,6 @@ codeunit 134685 "Email Test"
         // [Then] GetEmailOutboxForRecord procedure return Email Outbox
         RecRef.Open(TableId);
         RecRef.GetBySystemId(SystemId);
-
-
         Email.GetEmailOutboxForRecord(RecRef, TempEmailOutbox);
         Assert.AreEqual(NumberOfEmails, TempEmailOutbox.Count(), 'Email Outbox count is not equal to Number of Emails created.');
 
