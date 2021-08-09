@@ -169,7 +169,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         OIOUBLXMLGenerator.InsertItem(CrMemoLineElement, SalesCrMemoLine.Description, SalesCrMemoLine."No.");
         OIOUBLXMLGenerator.InsertPrice(
             CrMemoLineElement,
-            Round((SalesCrMemoLine.Amount + SalesCrMemoLine."Inv. Discount Amount") / SalesCrMemoLine.Quantity),
+            Round((SalesCrMemoLine.Amount + SalesCrMemoLine."Inv. Discount Amount") / SalesCrMemoLine.Quantity, Currency."Unit-Amount Rounding Precision"),
             SalesCrMemoLine."Unit of Measure Code", CurrencyCode);
 
         CrMemoElement.Add(CrMemoLineElement);
@@ -208,6 +208,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         else begin
             Currency.GET(CurrencyCode);
             Currency.TESTFIELD("Amount Rounding Precision");
+            Currency.TestField("Unit-Amount Rounding Precision");
         end;
 
         SalesCrMemoLine.SETRANGE("Document No.", SalesCrMemoHeader."No.");

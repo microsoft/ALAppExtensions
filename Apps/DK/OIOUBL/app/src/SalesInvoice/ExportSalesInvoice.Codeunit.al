@@ -211,7 +211,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         OIOUBLXMLGenerator.InsertItem(InvoiceLineElement, SalesInvoiceLine.Description, SalesInvoiceLine."No.");
         OIOUBLXMLGenerator.InsertPrice(
             InvoiceLineElement,
-            Round((SalesInvoiceLine.Amount + SalesInvoiceLine."Inv. Discount Amount") / SalesInvoiceLine.Quantity),
+            Round((SalesInvoiceLine.Amount + SalesInvoiceLine."Inv. Discount Amount") / SalesInvoiceLine.Quantity, Currency."Unit-Amount Rounding Precision"),
             SalesInvoiceLine."Unit of Measure Code", CurrencyCode);
 
         InvoiceElement.Add(InvoiceLineElement);
@@ -252,6 +252,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         else begin
             Currency.GET(CurrencyCode);
             Currency.TESTFIELD("Amount Rounding Precision");
+            Currency.TestField("Unit-Amount Rounding Precision");
         end;
 
         SalesInvLine.SETRANGE("Document No.", SalesInvoiceHeader."No.");

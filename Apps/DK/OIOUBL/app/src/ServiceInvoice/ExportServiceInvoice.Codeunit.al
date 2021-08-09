@@ -186,7 +186,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         OIOUBLXMLGenerator.InsertItem(InvoiceLineElement, ServiceInvoiceLine.Description, ServiceInvoiceLine."No.");
         OIOUBLXMLGenerator.InsertPrice(
             InvoiceLineElement,
-            Round((ServiceInvoiceLine.Amount + ServiceInvoiceLine."Inv. Discount Amount") / ServiceInvoiceLine.Quantity),
+            Round((ServiceInvoiceLine.Amount + ServiceInvoiceLine."Inv. Discount Amount") / ServiceInvoiceLine.Quantity, Currency."Unit-Amount Rounding Precision"),
             UnitOfMeasureCode, CurrencyCode);
 
         InvoiceElement.Add(InvoiceLineElement);
@@ -223,6 +223,14 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
             CurrencyCode := GLSetup."LCY Code"
         else
             CurrencyCode := ServiceInvoiceHeader."Currency Code";
+
+        if CurrencyCode = GLSetup."LCY Code" then
+            Currency.InitRoundingPrecision()
+        else begin
+            Currency.GET(CurrencyCode);
+            Currency.TESTFIELD("Amount Rounding Precision");
+            Currency.TestField("Unit-Amount Rounding Precision");
+        end;
 
         ServInvLine.SETRANGE("Document No.", ServiceInvoiceHeader."No.");
         ServInvLine.SETFILTER(Type, '>%1', 0);
