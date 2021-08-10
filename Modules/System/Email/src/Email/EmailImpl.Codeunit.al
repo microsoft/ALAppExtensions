@@ -328,11 +328,6 @@ codeunit 8900 "Email Impl"
         until EmailRelatedRecord.Next() = 0;
     end;
 
-    procedure GetEmailOutboxForRecord(TableId: Integer; SystemId: Guid) ResultEmailOutbox: Record "Email Outbox" temporary;
-    begin
-        GetEmailOutboxForRecord(TableId, SystemId, ResultEmailOutbox);
-    end;
-
     procedure GetEmailOutboxForRecord(RecRef: RecordRef; var ResultEmailOutbox: Record "Email Outbox" temporary)
     var
         FieldRef: FieldRef;
@@ -370,10 +365,9 @@ codeunit 8900 "Email Impl"
         if not EmailAccountImpl.IsUserEmailAdmin() then
             EmailOutbox.SetRange("User Security Id", UserSecurityId());
 
-        EmailOutbox.SetCurrentKey("Message Id");
         EmailOutbox.SetRange("Message Id", MessageId);
-        if EmailOutbox.FindFirst() then
-            exit(EmailOutbox.Status);
+        EmailOutbox.FindFirst();
+        exit(EmailOutbox.Status);
     end;
 
     internal procedure CountEmailsInOutbox(EmailStatus: Enum "Email Status"; IsAdmin: Boolean): Integer

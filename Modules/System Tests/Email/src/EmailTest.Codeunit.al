@@ -1210,8 +1210,7 @@ codeunit 134685 "Email Test"
     [Scope('OnPrem')]
     procedure GetSourceRecordInOutbox()
     var
-        Company: Record Company;
-        EmailOutbox: Record "Email Outbox";
+        SourceEmailOutbox, EmailOutbox : Record "Email Outbox";
         TempEmailOutbox: Record "Email Outbox" temporary;
         EmailMessage: Codeunit "Email Message";
         Any: Codeunit Any;
@@ -1227,10 +1226,12 @@ codeunit 134685 "Email Test"
         PermissionsMock.Set('Email Edit');
 
         // [Scenario] Emails with source document, GetEmailOutboxForRecord procedure will return Outbox Emails
-        // [Given] An Email with table id and source system id
-        Company.FindFirst();
-        TableId := Database::Company;
-        SystemId := Company.SystemId;
+        // [Given] Source Record - Email Outbox used as a source record for test email
+        CreateEmail(EmailMessage);
+        Email.SaveAsDraft(EmailMessage, SourceEmailOutbox);
+        TableId := Database::"Email Outbox";
+        SystemId := SourceEmailOutbox.SystemId;
+
         // [When] Several emails are created and saved as draft
         NumberOfEmails := Any.IntegerInRange(2, 5);
 
@@ -1241,10 +1242,8 @@ codeunit 134685 "Email Test"
             MessageIds.Add(EmailMessage.GetId());
         end;
 
-        // [Then] GetEmailOutboxForRecord procedure return Email Outbox
-        RecRef.Open(TableId);
-        RecRef.GetBySystemId(SystemId);
-        Email.GetEmailOutboxForRecord(RecRef, TempEmailOutbox);
+        // [Then] GetEmailOutboxForRecord procedure return related Email Outbox
+        Email.GetEmailOutboxForRecord(SourceEmailOutbox, TempEmailOutbox);
         Assert.AreEqual(NumberOfEmails, TempEmailOutbox.Count(), 'Email Outbox count is not equal to Number of Emails created.');
 
         for i := 1 to NumberOfEmails do begin
@@ -1284,6 +1283,50 @@ codeunit 134685 "Email Test"
         // [Then] Email Status of created Email Outbox record is equal to GetOutboxEmailRecordStatus result
         EmailStatus := Email.GetOutboxEmailRecordStatus(EmailOutbox."Message Id");
         Assert.AreEqual(EmailStatus, EmailOutbox.Status, 'Email Status should be the same as on Email Outbox record');
+    end;
+
+    [Test]
+    procedure GetSentEmailsForRecordByVariant()
+    var
+        SourceEmailOutbox: Record "Email Outbox";
+        TempSentEmail: Record "Sent Email" temporary;
+        Account: Record "Email Account";
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        Any: Codeunit Any;
+        SystemId: Guid;
+        TableId, NumberOfEmails, i : Integer;
+        MessageIds: List of [Guid];
+    begin
+        // [Scenario] When successfuly sending an email with source, GetSentEmailsForRecord return related Sent Emails. 
+        PermissionsMock.Set('Email Edit');
+
+        // [Given] An email with source and an email account
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(Account);
+        TableId := Database::"Email Account";
+        SystemId := Account.SystemId;
+
+        NumberOfEmails := Any.IntegerInRange(2, 5);
+
+        for i := 1 to NumberOfEmails do begin
+            CreateEmailWithSource(EmailMessage, TableId, SystemId);
+            Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
+            MessageIds.Add(EmailMessage.GetId());
+
+            // [When] The email is Sent
+            Assert.IsTrue(Email.Send(EmailMessage, Account), 'Sending an email should have succeeded');
+        end;
+
+        // [Then] GetSentEmailsForRecord procedure return related Sent Email records
+        Email.GetSentEmailsForRecord(Account, TempSentEmail);
+        Assert.AreEqual(NumberOfEmails, TempSentEmail.Count(), 'Sent Emails count is not equal to Number of Emails sent.');
+
+        for i := 1 to NumberOfEmails do begin
+            TempSentEmail.SetCurrentKey("Message Id");
+            TempSentEmail.SetRange("Message Id", MessageIds.Get(i));
+            Assert.AreEqual(1, TempSentEmail.Count(), 'Did not find the email in Sent Emails ');
+        end;
     end;
 
     local procedure CreateEmail(var EmailMessage: Codeunit "Email Message")

@@ -242,32 +242,26 @@ codeunit 8901 "Email"
     ///<summary>
     /// Gets the sent emails related to a record.
     ///</summary>
-    ///<param name="RecRef">RecordRef of Source Record.</param>
+    ///<param name="RecordVariant">Source Record.</param>
     ///<param name="ResultSentEmails">The sent email related to a record.</param>
-    procedure GetSentEmailsForRecord(RecRef: RecordRef; var ResultSentEmails: Record "Sent Email" temporary);
+    procedure GetSentEmailsForRecord(RecordVariant: Variant; var ResultSentEmails: Record "Sent Email" temporary);
+    var
+        RecRef: RecordRef;
     begin
-
+        RecRef.GetTable(RecordVariant);
         EmailImpl.GetSentEmailsForRecord(RecRef, ResultSentEmails);
     end;
 
     ///<summary>
     /// Gets the outbox emails related to a record.
     ///</summary>
-    ///<param name="TableId">The table ID of the record.</param>
-    ///<param name="SystemId">The system ID of the record.</param>
-    ///<returns>The outbox emails related to a record.</returns>
-    procedure GetEmailOutboxForRecord(TableId: Integer; SystemId: Guid) ResultEmailOutbox: Record "Email Outbox" temporary;
-    begin
-        exit(EmailImpl.GetEmailOutboxForRecord(TableId, SystemId));
-    end;
-
-    ///<summary>
-    /// Gets the outbox emails related to a record.
-    ///</summary>
-    ///<param name="RecRef">RecordRef of Source Record.</param>
+    ///<param name="RecordVariant">Source Record.</param>
     ///<param name="ResultEmailOutbox">The outbox emails related to a record.</param>
-    procedure GetEmailOutboxForRecord(RecRef: RecordRef; var ResultEmailOutbox: Record "Email Outbox" temporary);
+    procedure GetEmailOutboxForRecord(RecordVariant: Variant; var ResultEmailOutbox: Record "Email Outbox" temporary);
+    var
+        RecRef: RecordRef;
     begin
+        RecRef.GetTable(RecordVariant);
         EmailImpl.GetEmailOutboxForRecord(RecRef, ResultEmailOutbox);
     end;
 
