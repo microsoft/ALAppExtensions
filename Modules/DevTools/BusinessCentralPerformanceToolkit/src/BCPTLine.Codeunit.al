@@ -200,6 +200,7 @@ codeunit 149005 "BCPT Line"
         Dimensions.Add('endTime', Format(BCPTLogEntry."End Time"));
         Dimensions.Add('duration', Format(BCPTLogEntry."Duration (ms)"));
         Dimensions.Add('sessionNo', Format(BCPTLogEntry."Session No."));
+        Dimensions.Add('message', BCPTLogEntry.Message);
         Session.LogMessage(
             '0000DGF',
             StrSubstNo(TelemetryLogLbl, BCPTLogEntry."BCPT Code", BCPTRoleWrapperImpl.GetScenarioLbl(), BCPTLogEntry.Status),
