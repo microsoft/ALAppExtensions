@@ -1553,7 +1553,7 @@ dotnet
         Culture = 'neutral';
         PublicKeyToken = 'b77a5c561934e089';
 
-        type("System.Collections.Generic.SortedDictionary`2"; "SortedDictionary2")
+        type("System.Collections.Generic.SortedDictionary`2"; "GenericSortedDictionary2")
         {
         }
 
