@@ -290,15 +290,12 @@ codeunit 8900 "Email Impl"
         EmailRelatedRecord.MarkedOnly(true);
     end;
 
-    procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid) ResultSentEmails: Record "Sent Email" temporary;
-    begin
-        GetSentEmailsForRecord(TableId, SystemId, ResultSentEmails);
-    end;
-
-    procedure GetSentEmailsForRecord(RecRef: RecordRef; var ResultSentEmails: Record "Sent Email" temporary)
+    procedure GetSentEmailsForRecord(RecordVariant: Variant; var ResultSentEmails: Record "Sent Email" temporary)
     var
+        RecRef: RecordRef;
         FieldRef: FieldRef;
     begin
+        RecRef.GetTable(RecordVariant);
         FieldRef := RecRef.field(RecRef.SystemIdNo);
         GetSentEmailsForRecord(RecRef.Number, FieldRef.Value, ResultSentEmails);
     end;
@@ -328,10 +325,12 @@ codeunit 8900 "Email Impl"
         until EmailRelatedRecord.Next() = 0;
     end;
 
-    procedure GetEmailOutboxForRecord(RecRef: RecordRef; var ResultEmailOutbox: Record "Email Outbox" temporary)
+    procedure GetEmailOutboxForRecord(RecordVariant: Variant; var ResultEmailOutbox: Record "Email Outbox" temporary)
     var
+        RecRef: RecordRef;
         FieldRef: FieldRef;
     begin
+        RecRef.GetTable(RecordVariant);
         FieldRef := RecRef.field(RecRef.SystemIdNo);
         GetEmailOutboxForRecord(RecRef.Number, FieldRef.Value, ResultEmailOutbox);
     end;
@@ -340,7 +339,6 @@ codeunit 8900 "Email Impl"
     var
         EmailOutbox: Record "Email Outbox";
         EmailRelatedRecord: Record "Email Related Record";
-        EmailAccountImpl: Codeunit "Email Account Impl.";
     begin
         EmailRelatedRecord.SetRange("Table Id", TableId);
         EmailRelatedRecord.SetRange("System Id", SystemId);
