@@ -1135,8 +1135,7 @@ codeunit 134685 "Email Test"
         UnBindSubscription(EmailTest);
         UnBindSubscription(TestClientType);
     end;
-
-
+    
     [Test]
     [Scope('OnPrem')]
     procedure SendEmailInBackgroundSuccessSubscriberFailsTest()
@@ -1244,6 +1243,7 @@ codeunit 134685 "Email Test"
             Assert.AreEqual(1, TempEmailOutbox.Count(), 'Did not find the email in Email Outbox');
         end;
     end;
+    
     [Test]
     procedure GetEmailOutboxRecordStatus()
     var
@@ -1269,6 +1269,7 @@ codeunit 134685 "Email Test"
         EmailStatus := Email.GetOutboxEmailRecordStatus(EmailOutbox."Message Id");
         Assert.AreEqual(EmailStatus, EmailOutbox.Status, 'Email Status should be the same as on Email Outbox record');
     end;
+    
     [Test]
     procedure GetSentEmailsForRecordByVariant()
     var
