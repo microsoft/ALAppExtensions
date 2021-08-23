@@ -20,7 +20,7 @@ codeunit 1461 "SignedXml Impl."
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
         DotNetXmlDocument: DotNet XmlDocument;
     begin
-        XmlDotNetConvert.ToDotNet(SigningXmlDocument, DotNetXmlDocument);
+        XmlDotNetConvert.ToDotNet(SigningXmlDocument, DotNetXmlDocument, true);
         DotNetSignedXml := DotNetSignedXml.SignedXml(DotNetXmlDocument);
     end;
 
@@ -29,7 +29,7 @@ codeunit 1461 "SignedXml Impl."
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
         DotNetXmlElement: DotNet XmlElement;
     begin
-        XmlDotNetConvert.ToDotNet(SigningXmlElement, DotNetXmlElement);
+        XmlDotNetConvert.ToDotNet(SigningXmlElement, DotNetXmlElement, true);
         DotNetSignedXml := DotNetSignedXml.SignedXml(DotNetXmlElement);
     end;
     #endregion
@@ -103,7 +103,7 @@ codeunit 1461 "SignedXml Impl."
         DotNetKeyInfoNode: DotNet KeyInfoNode;
         DotNetXmlElement: DotNet XmlElement;
     begin
-        XmlDotNetConvert.ToDotNet(KeyInfoNodeXmlElement, DotNetXmlElement);
+        XmlDotNetConvert.ToDotNet(KeyInfoNodeXmlElement, DotNetXmlElement, true);
         DotNetKeyInfoNode := DotNetKeyInfoNode.KeyInfoNode(DotNetXmlElement);
         AddClause(DotNetKeyInfoNode);
     end;
@@ -119,7 +119,7 @@ codeunit 1461 "SignedXml Impl."
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
         DotNetXmlElement: DotNet XmlElement;
     begin
-        XmlDotNetConvert.ToDotNet(SignatureElement, DotNetXmlElement);
+        XmlDotNetConvert.ToDotNet(SignatureElement, DotNetXmlElement, true);
         DotNetSignedXml.LoadXml(DotNetXmlElement);
     end;
 
