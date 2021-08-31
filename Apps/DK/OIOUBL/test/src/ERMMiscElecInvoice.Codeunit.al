@@ -1577,7 +1577,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         GeneralLedgerSetup.Get();
         GeneralLedgerSetup.Validate("Unit-Amount Decimal Places", '2:5');
         GeneralLedgerSetup.Validate("Unit-Amount Rounding Precision", 0.00001);
-        GeneralLedgerSetup.Modify();
+        GeneralLedgerSetup.Modify(true);
     end;
 
     local procedure SuggestFinanceChargeMemoLines(No: Code[20]);
