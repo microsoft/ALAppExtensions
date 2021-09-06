@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Provides functionality for encrypting and decrypting xml documents.
+/// Provides functionality for encrypting and decrypting XML documents.
 /// </summary>
 codeunit 1465 EncryptedXml
 {
