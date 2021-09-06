@@ -29,7 +29,7 @@ codeunit 1466 "EncryptedXml Impl."
         //Convert XmlDocument to DotNet XmlDocument preserving whitespace
         XmlDotNetConvert.ToDotNet(XmlDocument, DotNetXmlDocument, true);
 
-        //Get the DotNet XmlElement to encrypt
+        //Get the DotNet XML element to encrypt
         DotNetXmlElementToEncrypt := DotNetXmlDocument.GetElementsByTagName(ElementToEncrypt).Item(0);
         if IsNull(DotNetXmlElementToEncrypt) then
             Error(ElementNotFoundErr, ElementToEncrypt);
@@ -68,51 +68,51 @@ codeunit 1466 "EncryptedXml Impl."
         //Initialize EncryptedXml
         DotNetEncryptedXml := DotNetEncryptedXml.EncryptedXml();
 
-        //Convert XmlDocument to DotNet XmlDocument preserving whitespace
+        //Convert the XML document to a DotNet XML document and preserve whitespace
         XmlDotNetConvert.ToDotNet(XmlDocument, DotNetXmlDocument, true);
 
-        //Get the DotNet XmlElement to encrypt
+        //Get the DotNet XML element to encrypt
         DotNetXmlElementToEncrypt := DotNetXmlDocument.GetElementsByTagName(ElementToEncrypt).Item(0);
         if IsNull(DotNetXmlElementToEncrypt) then
             Error(ElementNotFoundErr, ElementToEncrypt);
 
-        //Initialize an instance of a DotNet SymmetricAlgorithm
+        //Initialize an instance of a DotNet symmetric algorithm
         SymmetricAlgorithmInterface := SymmetricAlgorithm;
         SymmetricAlgorithmInterface.GetInstance(DotNetSymmetricAlgorithm);
 
-        //Encrypt the data using the AssymetricAlgorithm
+        //Encrypt the data using the asymetric algorithm
         DotNetEncryptedDataBytes :=
             DotNetEncryptedXml.EncryptData(DotNetXmlElementToEncrypt, DotNetSymmetricAlgorithm, false);
 
-        //Create a EncryptedData xml element
+        //Create a EncryptedData XML element
         DotNetEncryptedData := DotNetEncryptedData.EncryptedData();
         DotNetEncryptedData.CipherData().CipherValue := DotNetEncryptedDataBytes;
         DotNetEncryptedData.Type := XmlEncElementUrlTok;
         DotNetEncryptedData.EncryptionMethod :=
             DotNetEncryptionMethod.EncryptionMethod(SymmetricAlgorithmInterface.XmlEncrypmentMethodUrl());
 
-        //Encrypt the SymmetricAlgorithm key using the public key from a X509Certificate2.
+        //Encrypt the symmetric algorithm key using the public key from a X509Certificate2.
         X509CertificateImpl.InitializeX509Certificate(X509CertBase64Value, '', DotNetX509Certificate2);
         DotNetRSA := DotNetX509Certificate2.PublicKey."Key"();
         DotNetEncryptedKeyBytes := DotNetEncryptedXml.EncryptKey(DotNetSymmetricAlgorithm."Key", DotNetRSA, false);
 
-        //Create a EncryptedKey xml element
+        //Create an EncryptedKey XML element
         DotNetEncryptedKey := DotNetEncryptedKey.EncryptedKey();
         DotNetEncryptedKey.CipherData := DotNetCipherData.CipherData(DotNetEncryptedKeyBytes);
         DotNetEncryptedKey.EncryptionMethod := DotNetEncryptionMethod.EncryptionMethod(XmlEncRSA15UrlTok);
         DotNetKeyInfoX509Data := DotNetKeyInfoX509Data.KeyInfoX509Data(DotNetX509Certificate2.RawData);
         DotNetEncryptedKey.KeyInfo.AddClause(DotNetKeyInfoX509Data);
 
-        //Create a KeyInfo xml element and add the EncryptedKey to it
+        //Create a KeyInfo XML element and add the EncryptedKey to it
         DotNetKeyInfo := DotNetKeyInfo.KeyInfo();
         DotNetKeyInfoEncryptedKey := DotNetKeyInfoEncryptedKey.KeyInfoEncryptedKey(DotNetEncryptedKey);
         DotNetKeyInfo.AddClause(DotNetKeyInfoEncryptedKey);
         DotNetEncryptedData.KeyInfo := DotNetKeyInfo;
 
-        //Replace the original xml element with the encypted one
+        //Replace the original XML element with the encypted one
         DotNetEncryptedXml.ReplaceElement(DotNetXmlElementToEncrypt, DotNetEncryptedData, false);
 
-        //Convert the encrypted DotNet XmlDocument to a XmlDocument.
+        //Convert the encrypted DotNet XML Document to an XML document
         XmlDotNetConvert.FromDotNet(DotNetXmlDocument, XmlDocument);
     end;
 
@@ -129,18 +129,18 @@ codeunit 1466 "EncryptedXml Impl."
         //Convert the XmlDocument to a DotNet XmlDocument
         XmlDotNetConvert.ToDotNet(EncryptedDocument, DotNetXmlDocument, true);
 
-        //Get the AssymtricAlgorithm instance to be used for decrypting the symmetric session key
+        //Get the assymtric algorithm instance to be used for decrypting the symmetric session key
         if not EncryptionKey.TryGetInstance(DotNetAsymmetricAlgorithm) then
             exit(false);
 
-        //Find all EncryptedData elements and decrypt them
+        //Find all encrypted data elements and decrypt them
         NamespaceManager := NamespaceManager.XmlNamespaceManager(DotNetXmlDocument.NameTable);
         NamespaceManager.AddNamespace('xenc', XmlEncUrlTok);
         DotNetEncryptedNodes := DotNetXmlDocument.SelectNodes('//xenc:EncryptedData', NamespaceManager);
         foreach DotNetEncryptedNode in DotNetEncryptedNodes do
             DecryptDataElement(DotNetEncryptedNode, DotNetAsymmetricAlgorithm);
 
-        //Convert the decrypted DotNet XmlDocument to a XmlDocument
+        //Convert the decrypted DotNet XML document to an XML document
         XmlDotNetConvert.FromDotNet(DotNetXmlDocument, EncryptedDocument, true);
 
         exit(true);
@@ -162,7 +162,7 @@ codeunit 1466 "EncryptedXml Impl."
         DotNetEncryptedData := DotNetEncryptedData.EncryptedData();
         DotNetEncryptedData.LoadXml(DotNetXmlElement);
 
-        //Get SymmetricAlgorithm implementation from KeyAlgorithm url.
+        //Get the symmetric algorithm implementation from the KeyAlgorithm URL.
         foreach Ordinal in Enum::SymmetricAlgorithm.Ordinals() do begin
             SymmetricAlgorithmInterface := Enum::SymmetricAlgorithm.FromInteger(Ordinal);
             if SymmetricAlgorithmInterface.XmlEncrypmentMethodUrl() = DotNetEncryptedData.EncryptionMethod.KeyAlgorithm then begin
@@ -191,7 +191,7 @@ codeunit 1466 "EncryptedXml Impl."
         DotNetEncryptedXml := DotNetEncryptedXml.EncryptedXml();
         DecryptedData := DotNetEncryptedXml.DecryptData(DotNetEncryptedData, DotNetSymmetricAlgorithm);
 
-        //Replace the encrypted data with the decrypted xml
+        //Replace the encrypted data with the decrypted XML
         DotNetEncryptedXml.ReplaceData(DotNetXmlElement, DecryptedData);
 
         exit(true);
@@ -209,11 +209,11 @@ codeunit 1466 "EncryptedXml Impl."
         DotNetX509Certificate2: Dotnet X509Certificate2;
         DotNetAsymmetricAlgorithm: DotNet AsymmetricAlgorithm;
     begin
-        //Get the AssymtricAlgorithm instance to be used for decrypting the key
+        //Get the asymtric algorithm instance to be used for decrypting the key
         if not EncryptionKey.TryGetInstance(DotNetAsymmetricAlgorithm) then
             exit(false);
 
-        //Get the XmlDocument of the XmlElement
+        //Get the XML document of the XML element
         if not EncryptedKey.GetDocument(XmlDocument) then
             exit(false);
 
