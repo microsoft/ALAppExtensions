@@ -14,8 +14,8 @@ codeunit 1465 EncryptedXml
         EncryptedXmlImpl: Codeunit "EncryptedXml Impl.";
 
     /// <summary>
-    /// Encryptes a XmlDocument by creating a symmetric session key to encrypt the document and then 
-    /// uses the X.509 certificate to embed an encrypted version of the session key into the XML document.
+    /// Creates a symmetric session key to encrypt an XML document and then 
+    /// uses the X.509 certificate to embed an encrypted version of the session key in the XML document.
     /// </summary>
     /// <param name="XmlDocument">The XmlDocument to encrypt.</param>
     /// <param name="ElementToEncrypt">The name of the element to encrypt.</param>
@@ -27,11 +27,11 @@ codeunit 1465 EncryptedXml
 
     /// <summary>
     /// Like the Encrypt(var XmlDocument, ElementToEncrypt, X509CertBase64Value) procedure but with
-    /// the possibility to use another Symmetric Algorithm than Advanced Encryption Standard (AES).
+    /// the possibility to use another symmetric algorithm than the Advanced Encryption Standard (AES).
     /// </summary>
     /// <param name="XmlDocument">The XmlDocument to encrypt.</param>
     /// <param name="ElementToEncrypt">The name of the element to encrypt.</param>
-    /// <param name="SymmetricAlgorithm">The symmetric algorithm to be used when </param>
+    /// <param name="SymmetricAlgorithm">The symmetric algorithm to be used when encrypting.</param>
     /// <param name="X509CertBase64Value">The X509Certificate2 to use for the asymmetric encryption.</param>
     procedure Encrypt(var XmlDocument: XmlDocument; ElementToEncrypt: Text; X509CertBase64Value: Text; SymmetricAlgorithm: Enum SymmetricAlgorithm)
     begin
@@ -39,10 +39,10 @@ codeunit 1465 EncryptedXml
     end;
 
     /// <summary>
-    /// Decrypts all EncryptedData elements of the XML document using the specified Assymetric Key.
+    /// Decrypts all EncryptedData elements of the XML document using the specified asymetric key.
     /// </summary>
-    /// <param name="EncryptedDocument">The XmlDcoument to decrypt.</param>
-    /// <param name="EncryptionKey">The Asymmtric Key to use to decrypt the Symmetric Keys in the document.</param>
+    /// <param name="EncryptedDocument">The XML dcoument to decrypt.</param>
+    /// <param name="EncryptionKey">The asymmtric key to use to decrypt the symmetric keys in the document.</param>
     /// <returns>Returns true if decryption was successful, otherwise false.</returns>
     procedure DecryptDocument(var EncryptedDocument: XmlDocument; EncryptionKey: Record "Signature Key"): Boolean
     begin
@@ -50,9 +50,9 @@ codeunit 1465 EncryptedXml
     end;
 
     /// <summary>
-    /// Decrypts an EncryptedKey xml element using an asymmetric algorithm.
+    /// Decrypts an EncryptedKey XML element using an asymmetric algorithm.
     /// </summary>
-    /// <param name="EncryptedKey">The EncryptedKey xml element with the key to be decrypted.</param>
+    /// <param name="EncryptedKey">The EncryptedKey XML element with the key to be decrypted.</param>
     /// <param name="EncryptionKey">The asymmetric key used to decrypt the symmetric key.</param>
     /// <param name="UseOAEP">A value that specifies whether to use Optimal Asymmetric Encryption Padding (OAEP).</param>
     /// <param name="KeyBase64Value">The Base64 encoded decrypted key value.</param>
