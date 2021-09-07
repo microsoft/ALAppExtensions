@@ -17,7 +17,7 @@ enum 9047 "ABS Blob Type"
     /// </summary>
     value(0; BlockBlob)
     {
-        Caption = 'BlockBlob';
+        Caption = 'BlockBlob', Locked = true;
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ enum 9047 "ABS Blob Type"
     /// </summary>
     value(1; PageBlob)
     {
-        Caption = 'PageBlob';
+        Caption = 'PageBlob', Locked = true;
     }
 
     /// <summary>
@@ -33,6 +33,6 @@ enum 9047 "ABS Blob Type"
     /// </summary>
     value(2; AppendBlob)
     {
-        Caption = 'AppendBlob';
+        Caption = 'AppendBlob', Locked = true;
     }
 }

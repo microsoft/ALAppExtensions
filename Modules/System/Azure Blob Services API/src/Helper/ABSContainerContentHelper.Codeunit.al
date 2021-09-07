@@ -7,6 +7,7 @@ codeunit 9054 "ABS Container Content Helper"
 {
     Access = Internal;
 
+    [NonDebuggable]
     procedure AddNewEntryFromNode(var ContainerContent: Record "ABS Container Content"; var Node: XmlNode; XPathName: Text)
     var
         HelperLibrary: Codeunit "ABS Helper Library";
@@ -25,6 +26,7 @@ codeunit 9054 "ABS Container Content Helper"
             AddNewEntry(ContainerContent, NameFromXml, OuterXml, ChildNodes);
     end;
 
+    [NonDebuggable]
     procedure AddNewEntry(var ContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text)
     var
         ChildNodes: XmlNodeList;
@@ -32,6 +34,7 @@ codeunit 9054 "ABS Container Content Helper"
         AddNewEntry(ContainerContent, NameFromXml, OuterXml, ChildNodes);
     end;
 
+    [NonDebuggable]
     procedure AddNewEntry(var ContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList)
     var
         NextEntryNo: Integer;
@@ -56,6 +59,7 @@ codeunit 9054 "ABS Container Content Helper"
         ContainerContent.Insert(true);
     end;
 
+    [NonDebuggable]
     local procedure AddParentEntry(var ContainerContent: Record "ABS Container Content"; NameFromXml: Text)
     var
         NextEntryNo: Integer;
@@ -73,6 +77,7 @@ codeunit 9054 "ABS Container Content Helper"
         ContainerContent.Insert(true);
     end;
 
+    [NonDebuggable]
     local procedure SetPropertyFields(var ContainerContent: Record "ABS Container Content"; ChildNodes: XmlNodeList)
     var
         FormatHelper: Codeunit "ABS Format Helper";
@@ -105,6 +110,7 @@ codeunit 9054 "ABS Container Content Helper"
         end;
     end;
 
+    [NonDebuggable]
     local procedure GetNextEntryNo(var ContainerContent: Record "ABS Container Content"): Integer
     begin
         if ContainerContent.FindLast() then
@@ -113,6 +119,7 @@ codeunit 9054 "ABS Container Content Helper"
             exit(1);
     end;
 
+    [NonDebuggable]
     local procedure GetLevel(Name: Text): Integer
     var
         StringSplit: List of [Text];
@@ -123,6 +130,7 @@ codeunit 9054 "ABS Container Content Helper"
         exit(StringSplit.Count() - 1);
     end;
 
+    [NonDebuggable]
     local procedure GetName(Name: Text): Text[250]
     var
         StringSplit: List of [Text];
@@ -133,6 +141,7 @@ codeunit 9054 "ABS Container Content Helper"
         exit(CopyStr(StringSplit.Get(StringSplit.Count()), 1, 250));
     end;
 
+    [NonDebuggable]
     local procedure GetDirectParentName(Name: Text): Text[250]
     var
         StringSplit: List of [Text];
@@ -152,6 +161,7 @@ codeunit 9054 "ABS Container Content Helper"
     /// Use this function to retrieve the original name of the blob (read from saved XmlNode)
     /// </summary>
     /// <returns>The Full name of the Blob, recovered from saved XmlNode</returns>
+    [NonDebuggable]
     internal procedure GetFullNameFromXML(var ContainerContent: Record "ABS Container Content"): Text
     var
         HelperLibrary: Codeunit "ABS Helper Library";
@@ -163,6 +173,7 @@ codeunit 9054 "ABS Container Content Helper"
         exit(NameFromXml);
     end;
 
+    [NonDebuggable]
     local procedure GetXmlNodeForEntry(var ContainerContent: Record "ABS Container Content"; var Node: XmlNode)
     var
         InStr: InStream;

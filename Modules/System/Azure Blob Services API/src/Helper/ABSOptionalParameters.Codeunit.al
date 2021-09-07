@@ -17,7 +17,7 @@ codeunit 9047 "ABS Optional Parameters"
     /// <param name="Value">Guid value specifying the LeaseID</param>
     procedure LeaseId("Value": Guid)
     begin
-        SetRequestHeader('x-ms-lease-id', BlobAPIFormatHelper.RemoveCurlyBracketsFromString(Format("Value").ToLower()));
+        SetRequestHeader('x-ms-lease-id', ABSFormatHelper.RemoveCurlyBracketsFromString(Format("Value").ToLower()));
     end;
 
     /// <summary>
@@ -101,7 +101,7 @@ codeunit 9047 "ABS Optional Parameters"
     /// <param name="Value">DateTime value specifying the HttpHeader value</param>
     procedure SourceIfModifiedSince("Value": DateTime)
     begin
-        SetRequestHeader('x-ms-source-if-modified-since', Format("Value")); // TODO: Check DateTime-format for URI
+        SetRequestHeader('x-ms-source-if-modified-since', ABSFormatHelper.GetRfc1123DateTime("Value"));
     end;
 
     /// <summary>
@@ -110,7 +110,7 @@ codeunit 9047 "ABS Optional Parameters"
     /// <param name="Value">DateTime value specifying the HttpHeader value</param>
     procedure SourceIfUnmodifiedSince("Value": DateTime)
     begin
-        SetRequestHeader('x-ms-source-if-unmodified-since', Format("Value")); // TODO: Check DateTime-format for URI
+        SetRequestHeader('x-ms-source-if-unmodified-since', ABSFormatHelper.GetRfc1123DateTime("Value"));
     end;
 
     /// <summary>
@@ -173,7 +173,7 @@ codeunit 9047 "ABS Optional Parameters"
     /// <param name="Value">DateTime value specifying the HttpHeader value</param>
     procedure BlobExpiryTime("Value": DateTime)
     begin
-        SetRequestHeader('x-ms-expiry-time', BlobAPIFormatHelper.GetRfc1123DateTime(("Value"))); // Either an RFC 1123 datetime or miliseconds-value
+        SetRequestHeader('x-ms-expiry-time', ABSFormatHelper.GetRfc1123DateTime("Value")); // Either an RFC 1123 datetime or miliseconds-value
     end;
 
     /// <summary>
@@ -256,7 +256,7 @@ codeunit 9047 "ABS Optional Parameters"
     /// <param name="Value">The DateTime identifying the version</param>
     procedure VersionId("Value": DateTime)
     begin
-        SetParameter('versionid', Format("Value")); // TODO: Check DateTime-format for URI
+        SetParameter('versionid', ABSFormatHelper.GetRfc1123DateTime("Value"));
     end;
 
     /// <summary>
@@ -265,7 +265,7 @@ codeunit 9047 "ABS Optional Parameters"
     /// <param name="Value">The DateTime identifying the Snapshot</param>
     procedure Snapshot("Value": DateTime)
     begin
-        SetParameter('snapshot', Format("Value")); // TODO: Check DateTime-format for URI
+        SetParameter('snapshot', ABSFormatHelper.GetRfc1123DateTime("Value"));
     end;
 
     /// <summary>
@@ -328,7 +328,7 @@ codeunit 9047 "ABS Optional Parameters"
     #endregion
 
     var
-        BlobAPIFormatHelper: Codeunit "ABS Format Helper";
+        ABSFormatHelper: Codeunit "ABS Format Helper";
         RequestHeaders: Dictionary of [Text, Text];
         Parameters: Dictionary of [Text, Text];
 }

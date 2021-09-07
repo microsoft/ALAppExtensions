@@ -10,227 +10,227 @@ enum 9048 "ABS Operation"
 
     value(0; ListContainers)
     {
-        Caption = 'List Containers';
+        Caption = 'List Containers', Locked = true;
     }
 
     value(1; SetBlobServiceProperties)
     {
-        Caption = 'Set Blob Service Properties';
+        Caption = 'Set Blob Service Properties', Locked = true;
     }
 
     value(2; GetBlobServiceProperties)
     {
-        Caption = 'Get Blob Service Properties';
+        Caption = 'Get Blob Service Properties', Locked = true;
     }
 
     value(3; PreflightBlobRequest)
     {
-        Caption = 'Preflight Blob Request';
+        Caption = 'Preflight Blob Request', Locked = true;
     }
 
     value(4; GetBlobServiceStats)
     {
-        Caption = 'Get Blob Service Stats';
+        Caption = 'Get Blob Service Stats', Locked = true;
     }
 
     value(5; GetAccountInformation)
     {
-        Caption = 'Get Account Information';
+        Caption = 'Get Account Information', Locked = true;
     }
 
     value(6; GetUserDelegationKey)
     {
-        Caption = 'Get User Delegation Key';
+        Caption = 'Get User Delegation Key', Locked = true;
     }
 
     value(20; CreateContainer)
     {
-        Caption = 'Create Container';
+        Caption = 'Create Container', Locked = true;
     }
 
     value(21; GetContainerProperties)
     {
-        Caption = 'Get Container Properties';
+        Caption = 'Get Container Properties', Locked = true;
     }
 
     value(22; GetContainerMetadata)
     {
-        Caption = 'Get Container Metadata';
+        Caption = 'Get Container Metadata', Locked = true;
     }
 
     value(23; SetContainerMetadata)
     {
-        Caption = 'Set Container Metadata';
+        Caption = 'Set Container Metadata', Locked = true;
     }
 
     value(24; GetContainerAcl)
     {
-        Caption = 'Get Container ACL';
+        Caption = 'Get Container ACL', Locked = true;
     }
 
     value(25; SetContainerAcl)
     {
-        Caption = 'Set Container ACL';
+        Caption = 'Set Container ACL', Locked = true;
     }
 
     value(26; DeleteContainer)
     {
-        Caption = 'Delete Container';
+        Caption = 'Delete Container', Locked = true;
     }
 
     value(27; LeaseContainer)
     {
-        Caption = 'Lease Container';
+        Caption = 'Lease Container', Locked = true;
     }
 
     value(29; ListBlobs)
     {
-        Caption = 'List Blobs';
+        Caption = 'List Blobs', Locked = true;
     }
 
     value(40; PutBlob)
     {
-        Caption = 'Upload Blob';
+        Caption = 'Upload Blob', Locked = true;
     }
 
     value(41; PutBlobFromURL)
     {
-        Caption = 'Upload Blob';
+        Caption = 'Upload Blob', Locked = true;
     }
 
     value(42; GetBlob)
     {
-        Caption = 'Get Blob';
+        Caption = 'Get Blob', Locked = true;
     }
 
     value(43; GetBlobProperties)
     {
-        Caption = 'Get Blob Properties';
+        Caption = 'Get Blob Properties', Locked = true;
     }
 
     value(44; SetBlobProperties)
     {
-        Caption = 'Set Blob Properties';
+        Caption = 'Set Blob Properties', Locked = true;
     }
 
     value(45; GetBlobMetadata)
     {
-        Caption = 'Get Blob Metadata';
+        Caption = 'Get Blob Metadata', Locked = true;
     }
 
     value(46; SetBlobMetadata)
     {
-        Caption = 'Set Blob Metadata';
+        Caption = 'Set Blob Metadata', Locked = true;
     }
 
     value(47; GetBlobTags)
     {
-        Caption = 'Get Blob Tags';
+        Caption = 'Get Blob Tags', Locked = true;
     }
 
     value(48; SetBlobTags)
     {
-        Caption = 'Set Blob Tags';
+        Caption = 'Set Blob Tags', Locked = true;
     }
 
     value(49; FindBlobByTags)
     {
-        Caption = 'Find Blobs by Tags';
+        Caption = 'Find Blobs by Tags', Locked = true;
     }
 
     value(50; LeaseBlob)
     {
-        Caption = 'Lease Blob';
+        Caption = 'Lease Blob', Locked = true;
     }
     value(51; SnapshotBlob)
     {
-        Caption = 'Snapshot Blob';
+        Caption = 'Snapshot Blob', Locked = true;
     }
 
     value(52; CopyBlob)
     {
-        Caption = 'Copy Blob';
+        Caption = 'Copy Blob', Locked = true;
     }
 
     value(53; CopyBlobFromUrl)
     {
-        Caption = 'Copy Blob from URL';
+        Caption = 'Copy Blob from URL', Locked = true;
     }
 
     value(54; AbortCopyBlob)
     {
-        Caption = 'Abort Copy Blob';
+        Caption = 'Abort Copy Blob', Locked = true;
     }
 
     value(55; DeleteBlob)
     {
-        Caption = 'Delete Blob';
+        Caption = 'Delete Blob', Locked = true;
     }
     value(56; UndeleteBlob)
     {
-        Caption = 'Undelete Blob';
+        Caption = 'Undelete Blob', Locked = true;
     }
 
     value(57; SetBlobTier)
     {
-        Caption = 'Set Blob Tier';
+        Caption = 'Set Blob Tier', Locked = true;
     }
 
     value(70; PutBlock)
     {
-        Caption = 'Put Block';
+        Caption = 'Put Block', Locked = true;
     }
 
     value(71; PutBlockFromURL)
     {
-        Caption = 'Put Block from URL';
+        Caption = 'Put Block from URL', Locked = true;
     }
 
     value(72; PutBlockList)
     {
-        Caption = 'Put Block List';
+        Caption = 'Put Block List', Locked = true;
     }
 
     value(73; GetBlockList)
     {
-        Caption = 'Get Block List';
+        Caption = 'Get Block List', Locked = true;
     }
     value(74; QueryBlobContents)
     {
-        Caption = 'Query Blob Contents';
+        Caption = 'Query Blob Contents', Locked = true;
     }
 
     value(80; PutPage)
     {
-        Caption = 'Put Page';
+        Caption = 'Put Page', Locked = true;
     }
 
     value(81; PutPageFromURL)
     {
-        Caption = 'Put Page from URL';
+        Caption = 'Put Page from URL', Locked = true;
     }
 
     value(82; GetPageRanges)
     {
-        Caption = 'Get Page Ranges';
+        Caption = 'Get Page Ranges', Locked = true;
     }
 
     value(83; IncrementalCopyBlob)
     {
-        Caption = 'Incremental Copy Blob';
+        Caption = 'Incremental Copy Blob', Locked = true;
     }
 
     value(100; AppendBlock)
     {
-        Caption = 'Append Block';
+        Caption = 'Append Block', Locked = true;
     }
     value(101; AppendBlockFromURL)
     {
-        Caption = 'Append Block from URL';
+        Caption = 'Append Block from URL', Locked = true;
     }
 
     value(120; SetBlobExpiry)
     {
-        Caption = 'Set Blob Expiry';
+        Caption = 'Set Blob Expiry', Locked = true;
     }
 }

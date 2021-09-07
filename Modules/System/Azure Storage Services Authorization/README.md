@@ -1,4 +1,8 @@
-This module exposes functionality to assist with Authentication against the [Azure Storage Services REST API](https://docs.microsoft.com/en-us/rest/api/storageservices/).
+This module provides functionality for authenticating to the [Azure Storage Services REST API](https://docs.microsoft.com/en-us/rest/api/storageservices/).
+
+> This module does not store credentials for Azure Storage services.  
+> Use caution when you store and pass credentials.  
+> We recommend that you familiarize yourself with [Azure security baseline for Azure Storage](https://docs.microsoft.com/en-us/security/benchmark/azure/baselines/storage-security-baseline).
 
 ### Access Key / Shared Key
 An access key is one possible way to authenticate requests against the API. See [Authorize with Shared Key](https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key) for more information.

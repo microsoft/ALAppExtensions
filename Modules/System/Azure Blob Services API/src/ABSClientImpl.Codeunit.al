@@ -32,6 +32,7 @@ codeunit 9051 "ABS Client Impl."
         ExpiryOperationNotSuccessfulErr: Label 'Could not set expiration on %1.', Comment = '%1 = Blob';
     #endregion
 
+    [NonDebuggable]
     procedure Initialize(StorageAccountName: Text; ContainerName: Text; BlobName: Text; Authorization: Interface "Storage Service Authorization"; ApiVersion: Enum "Storage Service API Version")
     begin
         OperationPayload.Initialize(StorageAccountName, ContainerName, BlobName, Authorization, ApiVersion);
@@ -42,6 +43,7 @@ codeunit 9051 "ABS Client Impl."
         OperationPayload.SetBaseUrl(BaseUrl);
     end;
 
+    [NonDebuggable]
     procedure ListContainers(var Container: Record "ABS Container"; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
         OperationResponse: Codeunit "ABS Operation Response";
@@ -89,6 +91,7 @@ codeunit 9051 "ABS Client Impl."
         exit(OperationResponse);
     end;
 
+    [NonDebuggable]
     procedure ListBlobs(var ContainerContent: Record "ABS Container Content"; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
         OperationResponse: Codeunit "ABS Operation Response";
@@ -118,6 +121,7 @@ codeunit 9051 "ABS Client Impl."
     begin
         if UploadIntoStream('*.*', SourceStream) then
             OperationResponse := PutBlobBlockBlobStream(Filename, SourceStream, OptionalParameters);
+
         exit(OperationResponse);
     end;
 
@@ -454,8 +458,11 @@ codeunit 9051 "ABS Client Impl."
     begin
         OperationPayload.SetOperation(Operation::FindBlobByTags);
         OperationPayload.AddUriParameter('where', SearchExpression);
+
         OperationResponse := BlobAPIWebRequestHelper.GetOperationAsText(OperationPayload, ResponseText, FindBlobsByTagsOperationNotSuccessfulErr);
+
         FoundBlobs := FormatHelper.TextToXmlDocument(ResponseText);
+
         exit(OperationResponse);
     end;
 
@@ -469,6 +476,7 @@ codeunit 9051 "ABS Client Impl."
         OperationPayload.SetBlobName(BlobName);
 
         OperationResponse := BlobAPIWebRequestHelper.DeleteOperation(OperationPayload, StrSubstNo(DeleteBlobOperationNotSuccessfulErr, OperationPayload.GetBlobName(), OperationPayload.GetContainerName(), 'Delete'));
+
         exit(OperationResponse);
     end;
 

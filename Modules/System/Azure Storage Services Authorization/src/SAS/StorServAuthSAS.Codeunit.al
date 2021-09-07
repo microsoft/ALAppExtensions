@@ -7,6 +7,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
 {
     Access = Internal;
 
+    [NonDebuggable]
     procedure Authorize(var HttpRequest: HttpRequestMessage; StorageAccount: Text)
     var
         Uri: Codeunit Uri;
@@ -29,6 +30,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
         HttpRequest.SetRequestUri(Uri.GetAbsoluteUri());
     end;
 
+    [NonDebuggable]
     procedure SetStorageAccountName(NewStorageAccountName: Text)
     begin
         StorageAccountName := NewStorageAccountName;
@@ -78,11 +80,16 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
         Permissions := SignedPermissions;
     end;
 
-    procedure SetProtocol(Protocol: Text)
+    procedure SetProtocol(SignedProtocol: Option "https&http","https")
     begin
-        Protocols.Add(Protocol);
+        Clear(Protocols);
+        Protocols.Add('https');
+
+        if SignedProtocol = SignedProtocol::"https&http" then
+            Protocols.Add('http');
     end;
 
+    [NonDebuggable]
     procedure GetSharedAccessSignature(): Text
     var
         StringToSign: Text;
@@ -96,6 +103,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
         exit(SharedAccessSignature);
     end;
 
+    [NonDebuggable]
     local procedure CreateSharedAccessSignatureStringToSign(AccountName: Text; ApiVersion: Enum "Storage Service API Version"; StartDate: DateTime; EndDate: DateTime; Services: List of [Enum "SAS Service Type"]; Resources: List of [Enum "SAS Resource Type"]; Permissions: List of [Enum "SAS Permission"]; Protocols: List of [Text]; IPRange: Text): Text
     var
         StringToSign: Text;
@@ -149,6 +157,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
         exit(Builder.ToText());
     end;
 
+    [NonDebuggable]
     procedure CreateSasUrlString(ApiVersion: Enum "Storage Service API Version"; StartDate: DateTime; EndDate: DateTime; Services: List of [Enum "SAS Service Type"]; Resources: List of [Enum "SAS Resource Type"]; Permissions: List of [Enum "SAS Permission"]; Protocols: List of [Text]; IPRange: Text; Signature: Text): Text
     var
         Uri: Codeunit Uri;
@@ -209,6 +218,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
 
     var
         AuthFormatHelper: Codeunit "Auth. Format Helper";
+        [NonDebuggable]
         StorageAccountName: Text;
         [NonDebuggable]
         SigningKey: Text;

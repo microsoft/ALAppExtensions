@@ -97,51 +97,18 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
     // see https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key#constructing-the-canonicalized-headers-string
     local procedure GetCanonicalizedHeaders(Headers: HttpHeaders): Text
     var
-        AzureStorageServiceHeaders: List of [Text];
         HeaderKey: Text;
         HeaderValue: array[1] of Text;
         CanonicalizedHeaders: Text;
-        KeyValuePairLbl: Label '%1:%2', Comment = '%1 = Key; %2 = Value';
+        KeyValuePairLbl: Label '%1:%2', Comment = '%1 = Key; %2 = Value', Locked = true;
     begin
-        // TODO uptake Keys() property when it's available in the HttpHeaders object
-        AzureStorageServiceHeaders.Add('x-ms-access-tier');
-        AzureStorageServiceHeaders.Add('x-ms-account-kind');
-        AzureStorageServiceHeaders.Add('x-ms-blob-content-length');
-        AzureStorageServiceHeaders.Add('x-ms-blob-public-access');
-        AzureStorageServiceHeaders.Add('x-ms-blob-type');
-        AzureStorageServiceHeaders.Add('x-ms-client-request-id');
-        AzureStorageServiceHeaders.Add('x-ms-copy-action');
-        AzureStorageServiceHeaders.Add('x-ms-copy-id');
-        AzureStorageServiceHeaders.Add('x-ms-copy-source');
-        AzureStorageServiceHeaders.Add('x-ms-date');
-        AzureStorageServiceHeaders.Add('x-ms-expiry-time');
-        AzureStorageServiceHeaders.Add('x-ms-expiry-option');
-        AzureStorageServiceHeaders.Add('x-ms-expiry-time');
-        AzureStorageServiceHeaders.Add('x-ms-lease-action');
-        AzureStorageServiceHeaders.Add('x-ms-lease-break-period');
-        AzureStorageServiceHeaders.Add('x-ms-lease-duration');
-        AzureStorageServiceHeaders.Add('x-ms-lease-id');
-        AzureStorageServiceHeaders.Add('x-ms-lease-state');
-        AzureStorageServiceHeaders.Add('x-ms-page-write');
-        AzureStorageServiceHeaders.Add('x-ms-proposed-lease-id');
-        AzureStorageServiceHeaders.Add('x-ms-range');
-        AzureStorageServiceHeaders.Add('x-ms-rehydrate-priority');
-        AzureStorageServiceHeaders.Add('x-ms-requires-sync');
-        AzureStorageServiceHeaders.Add('x-ms-sku-name');
-        AzureStorageServiceHeaders.Add('x-ms-snapshot');
-        AzureStorageServiceHeaders.Add('x-ms-source-if-unmodified-since');
-        AzureStorageServiceHeaders.Add('x-ms-source-if-match');
-        AzureStorageServiceHeaders.Add('x-ms-source-if-none-match');
-        AzureStorageServiceHeaders.Add('x-ms-source-range');
-        AzureStorageServiceHeaders.Add('x-ms-tags');
-        AzureStorageServiceHeaders.Add('x-ms-version');
-
-        foreach HeaderKey in AzureStorageServiceHeaders do
-            if Headers.GetValues(HeaderKey, HeaderValue) then begin
-                if CanonicalizedHeaders <> '' then
-                    CanonicalizedHeaders += NewLine();
-                CanonicalizedHeaders += StrSubstNo(KeyValuePairLbl, HeaderKey.ToLower(), HeaderValue[1])
-            end;
+        foreach HeaderKey in Headers.Keys() do
+            if HeaderKey.StartsWith('x-ms-') then
+                if Headers.GetValues(HeaderKey, HeaderValue) then begin
+                    if CanonicalizedHeaders <> '' then
+                        CanonicalizedHeaders += NewLine();
+                    CanonicalizedHeaders += StrSubstNo(KeyValuePairLbl, HeaderKey.ToLower(), HeaderValue[1])
+                end;
 
         exit(CanonicalizedHeaders);
     end;
@@ -198,21 +165,24 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
 
         NewSortedDictionary := NewSortedDictionary.SortedDictionary();
 
-        foreach Segment in Segments do begin
-            GetKeyValueFromQueryParameter(Segment, CurrIdentifier, CurrValue);
-            NewSortedDictionary.Add(CurrIdentifier, CurrValue);
-        end;
+        foreach Segment in Segments do
+            if GetKeyValueFromQueryParameter(Segment, CurrIdentifier, CurrValue) then
+                NewSortedDictionary.Add(CurrIdentifier, CurrValue);
     end;
 
-    local procedure GetKeyValueFromQueryParameter(QueryString: Text; var CurrIdentifier: Text; var CurrValue: Text)
+    local procedure GetKeyValueFromQueryParameter(QueryString: Text; var CurrIdentifier: Text; var CurrValue: Text): Boolean
     var
         Split: List of [Text];
     begin
         Split := QueryString.Split('=');
+
         if Split.Count() <> 2 then
-            Error('This should not happen'); // TODO: Make better error
+            exit(false); // This should not happen
+
         CurrIdentifier := Split.Get(1);
         CurrValue := Split.Get(2);
+
+        exit(true);
     end;
 
     local procedure NewLine(): Text

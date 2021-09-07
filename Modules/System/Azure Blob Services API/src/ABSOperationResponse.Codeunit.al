@@ -11,26 +11,6 @@ codeunit 9050 "ABS Operation Response"
     Access = Public;
 
     /// <summary>
-    /// Gets the result of a ABS client operation as text, 
-    /// </summary>
-    /// <returns>The content of the response.</returns>
-    [TryFunction]
-    procedure GetResultAsText(var Result: Text);
-    begin
-        Response.Content.ReadAs(Result);
-    end;
-
-    /// <summary>
-    /// Gets the result of a ABS client operation as stream, 
-    /// </summary>
-    /// <returns>The content of the response.</returns>
-    [TryFunction]
-    procedure GetResultAsStream(var Result: InStream)
-    begin
-        Response.Content.ReadAs(Result);
-    end;
-
-    /// <summary>
     /// Checks whether the operation was successful.
     /// </summary>    
     /// <returns>True if the operation was successful; otherwise - false.</returns>
@@ -53,34 +33,36 @@ codeunit 9050 "ABS Operation Response"
         ResponseError := Error;
     end;
 
+    /// <summary>
+    /// Gets the result of a ABS client operation as text, 
+    /// </summary>
+    /// <returns>The content of the response.</returns>
+    [NonDebuggable]
+    [TryFunction]
+    internal procedure GetResultAsText(var Result: Text);
+    begin
+        Response.Content.ReadAs(Result);
+    end;
+
+    /// <summary>
+    /// Gets the result of a ABS client operation as stream, 
+    /// </summary>
+    /// <returns>The content of the response.</returns>
+    [NonDebuggable]
+    [TryFunction]
+    internal procedure GetResultAsStream(var Result: InStream)
+    begin
+        Response.Content.ReadAs(Result);
+    end;
+
+    [NonDebuggable]
     internal procedure SetHttpResponse(NewResponse: HttpResponseMessage)
     begin
         Response := NewResponse;
     end;
 
-    internal procedure GetHttpResponseHeaders(): HttpHeaders
-    begin
-        exit(Response.Headers);
-    end;
-
-    internal procedure GetHttpResponse(): HttpResponseMessage
-    begin
-        exit(Response);
-    end;
-
-    internal procedure GetHeaderValueFromResponseHeaders(HeaderName: Text): Text
     var
-        Headers: HttpHeaders;
-        Values: array[100] of Text;
-    begin
-        Headers := GetHttpResponseHeaders();
-        if not Headers.GetValues(HeaderName, Values) then
-            exit('');
-
-        exit(Values[1]);
-    end;
-
-    var
+        [NonDebuggable]
         Response: HttpResponseMessage;
         ResponseError: Text;
 }

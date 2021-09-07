@@ -15,7 +15,6 @@ table 9064 "SAS Parameters"
 
     fields
     {
-        // TODO check how api-version is different from SignedVersion
         /// <summary>
         /// Specifies the storage service version to use to execute the request made using the account SAS URI.
         /// </summary>
@@ -48,8 +47,8 @@ table 9064 "SAS Parameters"
         field(4; SignedProtocol; Option)
         {
             DataClassification = SystemMetadata;
-            OptionMembers = "https &http","https";
-            OptionCaption = '"https,http",https', Locked = true; // TODO this will probably not work
+            OptionMembers = "https&http","https";
+            OptionCaption = '"https and http",https', Locked = true;
         }
     }
 }

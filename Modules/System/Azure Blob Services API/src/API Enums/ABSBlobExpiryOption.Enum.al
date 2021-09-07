@@ -13,18 +13,18 @@ enum 9045 "ABS Blob Expiry Option"
 
     value(0; RelativeToCreation)
     {
-        Caption = 'RelativeToCreation';
+        Caption = 'RelativeToCreation', Locked = true;
     }
     value(1; RelativeToNow)
     {
-        Caption = 'RelativeToNow';
+        Caption = 'RelativeToNow', Locked = true;
     }
     value(2; Absolute)
     {
-        Caption = 'Absolute';
+        Caption = 'Absolute', Locked = true;
     }
     value(3; NeverExpire)
     {
-        Caption = 'NeverExpire';
+        Caption = 'NeverExpire', Locked = true;
     }
 }

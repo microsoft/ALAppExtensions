@@ -7,6 +7,7 @@ codeunit 9048 "ABS HttpHeader Helper"
 {
     Access = Internal;
 
+    [NonDebuggable]
     procedure HandleRequestHeaders(HttpRequestType: Enum "Http Request Type"; var Request: HttpRequestMessage; var OperationPayload: Codeunit "ABS Operation Payload")
     var
         FormatHelper: Codeunit "ABS Format Helper";
@@ -29,6 +30,7 @@ codeunit 9048 "ABS HttpHeader Helper"
         end;
     end;
 
+    [NonDebuggable]
     procedure HandleContentHeaders(var Content: HttpContent; var OperationPayload: Codeunit "ABS Operation Payload"): Boolean
     var
         Headers: HttpHeaders;

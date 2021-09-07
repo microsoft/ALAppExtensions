@@ -7,6 +7,7 @@ codeunit 9044 "ABS Format Helper"
 {
     Access = Internal;
 
+    [NonDebuggable]
     procedure AppendToUri(var Uri: Text; ParameterIdentifier: Text; ParameterValue: Text)
     var
         ConcatChar: Text;
@@ -22,16 +23,19 @@ codeunit 9044 "ABS Format Helper"
             Uri += StrSubstNo(AppendType2Lbl, ConcatChar, ParameterValue)
     end;
 
+    [NonDebuggable]
     procedure RemoveCurlyBracketsFromString("Value": Text): Text
     begin
         exit(DelChr("Value", '=', '{}'));
     end;
 
+    [NonDebuggable]
     procedure GetBase64BlockId(): Text
     begin
         exit(GetBase64BlockId(RemoveCurlyBracketsFromString(Format(CreateGuid()))));
     end;
 
+    [NonDebuggable]
     procedure GetBase64BlockId(BlockId: Text): Text
     var
         Base64Convert: Codeunit "Base64 Convert";
@@ -40,6 +44,7 @@ codeunit 9044 "ABS Format Helper"
         exit(Uri.EscapeDataString(Base64Convert.ToBase64(BlockId)));
     end;
 
+    [NonDebuggable]
     procedure BlockDictionariesToBlockListDictionary(CommitedBlocks: Dictionary of [Text, Integer]; UncommitedBlocks: Dictionary of [Text, Integer]; var BlockList: Dictionary of [Text, Text]; OverwriteValueToLatest: Boolean)
     var
         Keys: List of [Text];
@@ -61,23 +66,7 @@ codeunit 9044 "ABS Format Helper"
             BlockList.Add("Key", "Value");
     end;
 
-    procedure CreateUserDelegationKeyBody(StartDateTime: DateTime; ExpiryDateTime: DateTime): XmlDocument
-    var
-        Document: XmlDocument;
-        KeyInfoNode: XmlNode;
-        ValueNode: XmlNode;
-    begin
-        XmlDocument.ReadFrom('<?xml version="1.0" encoding="utf-8"?><KeyInfo></KeyInfo>', Document);
-        Document.SelectSingleNode('/KeyInfo', KeyInfoNode);
-        if StartDateTime <> 0DT then begin
-            ValueNode := XmlElement.Create('Start', '', GetIso8601DateTime(StartDateTime)).AsXmlNode();
-            KeyInfoNode.AsXmlElement().Add(ValueNode);
-        end;
-        ValueNode := XmlElement.Create('Expiry', '', GetIso8601DateTime(ExpiryDateTime)).AsXmlNode();
-        KeyInfoNode.AsXmlElement().Add(ValueNode);
-        exit(Document);
-    end;
-
+    [NonDebuggable]
     procedure BlockListDictionaryToXmlDocument(BlockList: Dictionary of [Text, Text]): XmlDocument
     var
         Document: XmlDocument;
@@ -96,6 +85,7 @@ codeunit 9044 "ABS Format Helper"
         exit(Document);
     end;
 
+    [NonDebuggable]
     procedure TagsDictionaryToXmlDocument(Tags: Dictionary of [Text, Text]): XmlDocument
     var
         Document: XmlDocument;
@@ -121,6 +111,7 @@ codeunit 9044 "ABS Format Helper"
         exit(Document);
     end;
 
+    [NonDebuggable]
     procedure TagsDictionaryToSearchExpression(Tags: Dictionary of [Text, Text]): Text
     var
         Helper: Codeunit "Uri";
@@ -141,6 +132,7 @@ codeunit 9044 "ABS Format Helper"
         exit(Expression);
     end;
 
+    [NonDebuggable]
     procedure QueryExpressionToQueryBlobContent(QueryExpression: Text): XmlDocument
     var
         Document: XmlDocument;
@@ -157,6 +149,7 @@ codeunit 9044 "ABS Format Helper"
         exit(Document);
     end;
 
+    [NonDebuggable]
     local procedure GetOperatorFromValue("Value": Text): Text
     var
         NewValue: Text;
@@ -165,6 +158,7 @@ codeunit 9044 "ABS Format Helper"
         exit(NewValue.Trim());
     end;
 
+    [NonDebuggable]
     local procedure GetValueWithoutOperator("Value": Text): Text
     var
         NewValue: Text;
@@ -173,6 +167,7 @@ codeunit 9044 "ABS Format Helper"
         exit(NewValue.Trim());
     end;
 
+    [NonDebuggable]
     procedure TextToXmlDocument(SourceText: Text): XmlDocument
     var
         Document: XmlDocument;
