@@ -9,14 +9,16 @@ codeunit 1466 "EncryptedXml Impl."
 
     var
         ElementNotFoundErr: Label 'The "%1" element was not found.', Comment = '%1: The name of the xml element that could not be found.';
+        UnsupportedSymmetricAlgorithmErr: Label 'Unsupported symmetric algorithm.';
         XmlEncElementUrlTok: Label 'http://www.w3.org/2001/04/xmlenc#Element', Locked = true;
         XmlEncRSA15UrlTok: Label 'http://www.w3.org/2001/04/xmlenc#rsa-1_5', Locked = true;
         XmlEncUrlTok: Label 'http://www.w3.org/2001/04/xmlenc#', Locked = true;
 
+    [NonDebuggable]
     procedure Encrypt(var XmlDocument: XmlDocument; ElementToEncrypt: Text; X509CertBase64Value: Text)
     var
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
-        X509CertificateImpl: Codeunit "X509Certificate2 Impl.";
+        X509Certificate2Impl: Codeunit "X509Certificate2 Impl.";
         DotNetEncryptedXml: DotNet EncryptedXml;
         DotNetX509Certificate2: DotNet X509Certificate2;
         DotNetXmlDocument: DotNet XmlDocument;
@@ -35,7 +37,7 @@ codeunit 1466 "EncryptedXml Impl."
             Error(ElementNotFoundErr, ElementToEncrypt);
 
         //Initialize a X509Certificate2.
-        X509CertificateImpl.InitializeX509Certificate(X509CertBase64Value, '', DotNetX509Certificate2);
+        X509Certificate2Impl.InitializeX509Certificate(X509CertBase64Value, '', DotNetX509Certificate2);
 
         //Encrypt the element
         DotNetEncryptedData := DotNetEncryptedXml.Encrypt(DotNetXmlElementToEncrypt, DotNetX509Certificate2);
@@ -45,10 +47,11 @@ codeunit 1466 "EncryptedXml Impl."
         XmlDotNetConvert.FromDotNet(DotNetXmlDocument, XmlDocument);
     end;
 
+    [NonDebuggable]
     procedure Encrypt(var XmlDocument: XmlDocument; ElementToEncrypt: Text; X509CertBase64Value: Text; SymmetricAlgorithm: Enum SymmetricAlgorithm)
     var
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
-        X509CertificateImpl: Codeunit "X509Certificate2 Impl.";
+        X509Certificate2Impl: Codeunit "X509Certificate2 Impl.";
         SymmetricAlgorithmInterface: Interface SymmetricAlgorithm;
         DotNetEncryptedXml: DotNet EncryptedXml;
         DotNetXmlDocument: DotNet XmlDocument;
@@ -92,7 +95,7 @@ codeunit 1466 "EncryptedXml Impl."
             DotNetEncryptionMethod.EncryptionMethod(SymmetricAlgorithmInterface.XmlEncrypmentMethodUrl());
 
         //Encrypt the symmetric algorithm key using the public key from a X509Certificate2.
-        X509CertificateImpl.InitializeX509Certificate(X509CertBase64Value, '', DotNetX509Certificate2);
+        X509Certificate2Impl.InitializeX509Certificate(X509CertBase64Value, '', DotNetX509Certificate2);
         DotNetRSA := DotNetX509Certificate2.PublicKey."Key"();
         DotNetEncryptedKeyBytes := DotNetEncryptedXml.EncryptKey(DotNetSymmetricAlgorithm."Key", DotNetRSA, false);
 
@@ -116,11 +119,11 @@ codeunit 1466 "EncryptedXml Impl."
         XmlDotNetConvert.FromDotNet(DotNetXmlDocument, XmlDocument);
     end;
 
+    [NonDebuggable]
     procedure DecryptDocument(var EncryptedDocument: XmlDocument; EncryptionKey: Record "Signature Key"): Boolean
     var
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
-        SymmetricAlgorithmInterface: Interface SymmetricAlgorithm;
-        NamespaceManager: DotNet XmlNamespaceManager;
+        DotNetXmlNamespaceManager: DotNet XmlNamespaceManager;
         DotNetXmlDocument: DotNet XmlDocument;
         DotNetEncryptedNodes: DotNet XmlNodeList;
         DotNetEncryptedNode: DotNet XmlNode;
@@ -134,9 +137,9 @@ codeunit 1466 "EncryptedXml Impl."
             exit(false);
 
         //Find all encrypted data elements and decrypt them
-        NamespaceManager := NamespaceManager.XmlNamespaceManager(DotNetXmlDocument.NameTable);
-        NamespaceManager.AddNamespace('xenc', XmlEncUrlTok);
-        DotNetEncryptedNodes := DotNetXmlDocument.SelectNodes('//xenc:EncryptedData', NamespaceManager);
+        DotNetXmlNamespaceManager := DotNetXmlNamespaceManager.XmlNamespaceManager(DotNetXmlDocument.NameTable);
+        DotNetXmlNamespaceManager.AddNamespace('xenc', XmlEncUrlTok);
+        DotNetEncryptedNodes := DotNetXmlDocument.SelectNodes('//xenc:EncryptedData', DotNetXmlNamespaceManager);
         foreach DotNetEncryptedNode in DotNetEncryptedNodes do
             DecryptDataElement(DotNetEncryptedNode, DotNetAsymmetricAlgorithm);
 
@@ -172,7 +175,7 @@ codeunit 1466 "EncryptedXml Impl."
         end;
 
         if IsNull(DotNetSymmetricAlgorithm) then
-            Error('Unsupported symmetric algorithm.');
+            Error(UnsupportedSymmetricAlgorithmErr);
 
         //Find EncryptedKey KeyInfo
         foreach DotNetKeyInfoClause in DotNetEncryptedData.KeyInfo do begin
@@ -197,16 +200,15 @@ codeunit 1466 "EncryptedXml Impl."
         exit(true);
     end;
 
+    [NonDebuggable]
     procedure DecryptKey(EncryptedKey: XmlElement; EncryptionKey: Record "Signature Key"; UseOAEP: Boolean; var KeyBase64Value: Text): Boolean
     var
-        X509CertificateImpl: Codeunit "X509Certificate2 Impl.";
         XmlDocument: XmlDocument;
-        NamespaceManager: XmlNamespaceManager;
+        XmlNamespaceManager: XmlNamespaceManager;
         CipherValue: XmlNode;
         DotNetEncryptedXml: DotNet EncryptedXml;
         DotNetCipherBytes, DotNetKeyBytes : DotNet Array;
         DotNetConvert: Dotnet Convert;
-        DotNetX509Certificate2: Dotnet X509Certificate2;
         DotNetAsymmetricAlgorithm: DotNet AsymmetricAlgorithm;
     begin
         //Get the asymtric algorithm instance to be used for decrypting the key
@@ -218,9 +220,9 @@ codeunit 1466 "EncryptedXml Impl."
             exit(false);
 
         //Create a XmlNamespaceManager and find the CipherValue (the Base64 encoded encrypted key)
-        NamespaceManager.NameTable := XmlDocument.NameTable;
-        NamespaceManager.AddNamespace('xenc', XmlEncUrlTok);
-        if not EncryptedKey.SelectSingleNode('//xenc:CipherValue', NamespaceManager, CipherValue) then
+        XmlNamespaceManager.NameTable := XmlDocument.NameTable;
+        XmlNamespaceManager.AddNamespace('xenc', XmlEncUrlTok);
+        if not EncryptedKey.SelectSingleNode('//xenc:CipherValue', XmlNamespaceManager, CipherValue) then
             exit(false);
 
         //Get key bytes

@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-codeunit 132611 "EncryptedXml Tests"
+codeunit 132611 "EncryptedXml Test"
 {
     Subtype = Test;
 
@@ -13,14 +13,21 @@ codeunit 132611 "EncryptedXml Tests"
     [Test]
     procedure EncryptXmlDocument()
     var
-        EncryptionKey: Record "Signature Key";
+        EncryptionSignatureKey: Record "Signature Key";
         XmlDocumentToEncrypt: XmlDocument;
         NamespaceManager: XmlNamespaceManager;
         EncryptedKey: XmlNode;
     begin
+        // [GIVEN] The XmlDocument to encrypt
         GetXml(XmlDocumentToEncrypt);
+
+        // [GIVEN] The private key used to decrypt to verify the encryption
+        EncryptionSignatureKey.FromXmlString(GetPrivateKey());
+
+        // [WHEN] Encrypt the document
         EncryptedXml.Encrypt(XmlDocumentToEncrypt, 'Login', GetCertificateData());
 
+        // [THEN] Check that there is a EncryptedKey element present in the encrypted XmlDocument
         NamespaceManager.NameTable := XmlDocumentToEncrypt.NameTable;
         NamespaceManager.AddNamespace('xenc', 'http://www.w3.org/2001/04/xmlenc#');
         LibraryAssert.IsTrue(
@@ -28,27 +35,33 @@ codeunit 132611 "EncryptedXml Tests"
                 '//xenc:EncryptedKey', NamespaceManager, EncryptedKey),
             'Could not find EncryptedKey element.');
 
-        EncryptionKey.FromXmlString(GetPrivateKey());
-
+        // [THEN] Check that the encrypted XmlDocument can be decrypted
         LibraryAssert.IsTrue(
             EncryptedXml.DecryptDocument(
-                XmlDocumentToEncrypt, EncryptionKey),
+                XmlDocumentToEncrypt, EncryptionSignatureKey),
             'Could not decrypt encrypted xml.');
     end;
 
     [Test]
     procedure EncryptXmlDocumentTripleDES()
     var
-        EncryptionKey: Record "Signature Key";
+        EncryptionSignatureKey: Record "Signature Key";
         XmlDocumentToEncrypt: XmlDocument;
         NamespaceManager: XmlNamespaceManager;
         EncryptedKey: XmlNode;
         KeyBase64Data: Text;
         SymmetricAlgorithm: Enum SymmetricAlgorithm;
     begin
+        // [GIVEN] The XmlDocument to encrypt
         GetXml(XmlDocumentToEncrypt);
+
+        // [GIVEN] The private key used to decrypt to verify the encryption
+        EncryptionSignatureKey.FromXmlString(GetPrivateKey());
+
+        // [WHEN] Encrypt the document
         EncryptedXml.Encrypt(XmlDocumentToEncrypt, 'Login', GetCertificateData(), SymmetricAlgorithm::TripleDES);
 
+        // [THEN] Check that there is a EncryptedKey element present in the encrypted XmlDocument
         NamespaceManager.NameTable := XmlDocumentToEncrypt.NameTable;
         NamespaceManager.AddNamespace('xenc', 'http://www.w3.org/2001/04/xmlenc#');
         LibraryAssert.IsTrue(
@@ -56,65 +69,76 @@ codeunit 132611 "EncryptedXml Tests"
                 '//xenc:EncryptedKey', NamespaceManager, EncryptedKey),
             'Could not find EncryptedKey element.');
 
-        EncryptionKey.FromXmlString(GetPrivateKey());
-
+        // [THEN] Check that the encrypted XmlDocument can be decrypted
         LibraryAssert.IsTrue(
             EncryptedXml.DecryptDocument(
-                XmlDocumentToEncrypt, EncryptionKey),
+                XmlDocumentToEncrypt, EncryptionSignatureKey),
             'Could not decrypt encrypted xml.');
     end;
 
     [Test]
     procedure DecryptXmlDocument()
     var
-        EncryptionKey: Record "Signature Key";
+        EncryptionSignatureKey: Record "Signature Key";
         XmlDocumentToDecrypt: XmlDocument;
         XmlWriteOptions: XmlWriteOptions;
-        XmlString: Text;
+        DecryptedXmlString, ExpectedXmlString : Text;
+        Result: Boolean;
     begin
+        // [GIVEN] The encrypted XmlDocument to decrypt
         GetEncryptedXml(XmlDocumentToDecrypt);
 
-        EncryptionKey.FromXmlString(GetPrivateKey());
+        // [GIVEN] The private key used to decrypt the XmlDocument
+        EncryptionSignatureKey.FromXmlString(GetPrivateKey());
 
-        LibraryAssert.IsTrue(
-            EncryptedXml.DecryptDocument(XmlDocumentToDecrypt, EncryptionKey),
-            'The xml document could not be decrypted.');
+        // [GIVEN] The expected result
+        ExpectedXmlString := GetXmlString();
 
+        // [WHEN] Encrypt the document
+        Result := EncryptedXml.DecryptDocument(XmlDocumentToDecrypt, EncryptionSignatureKey);
+
+        // [THEN] Check that the decryption was successful
+        LibraryAssert.IsTrue(Result, 'The xml document could not be decrypted.');
+
+        // [THEN] Check the decrypted XmlDocument content
         XmlWriteOptions.PreserveWhitespace := true;
-        XmlDocumentToDecrypt.WriteTo(XmlWriteOptions, XmlString);
+        XmlDocumentToDecrypt.WriteTo(XmlWriteOptions, DecryptedXmlString);
 
         LibraryAssert.AreEqual(
-            GetXmlString(), XmlString, 'The decrypted document is incorrect.');
+            ExpectedXmlString, DecryptedXmlString, 'The decrypted document is incorrect.');
     end;
 
     [Test]
     procedure DecryptKey()
     var
-        EncryptionKey: Record "Signature Key";
+        EncryptionSignatureKey: Record "Signature Key";
         XmlDocumentToDecrypt: XmlDocument;
         NamespaceManager: XmlNamespaceManager;
         EncryptedKey: XmlNode;
         KeyBase64Value: Text;
+        Result: Boolean;
     begin
+        // [GIVEN] The XmlDocument with the encrypted key to decrypt
         GetEncryptedXml(XmlDocumentToDecrypt);
 
-        EncryptionKey.FromXmlString(GetPrivateKey());
+        // [GIVEN] The private key used to decrypt the XmlDocument
+        EncryptionSignatureKey.FromXmlString(GetPrivateKey());
 
+        // [GIVEN] Get the encrypted key element
         NamespaceManager.NameTable := XmlDocumentToDecrypt.NameTable;
         NamespaceManager.AddNamespace('xenc', 'http://www.w3.org/2001/04/xmlenc#');
-        LibraryAssert.IsTrue(
-            XmlDocumentToDecrypt.SelectSingleNode(
-                '//xenc:EncryptedKey', NamespaceManager, EncryptedKey),
-            'Could not find EncryptedKey element.');
+        XmlDocumentToDecrypt.SelectSingleNode('//xenc:EncryptedKey', NamespaceManager, EncryptedKey);
 
-        EncryptionKey.FromXmlString(GetPrivateKey());
+        // [WHEN] Decrypt the key
+        Result := EncryptedXml.DecryptKey(
+            EncryptedKey.AsXmlElement(), EncryptionSignatureKey, false, KeyBase64Value);
 
-        LibraryAssert.IsTrue(
-            EncryptedXml.DecryptKey(
-                EncryptedKey.AsXmlElement(), EncryptionKey, false, KeyBase64Value),
-            'Could not decrypt key.');
+        // [THEN] Check that the decryption was successful
+        LibraryAssert.IsTrue(Result, 'Could not decrypt key.');
 
-        LibraryAssert.AreNotEqual('', KeyBase64Value, 'Incorrect decrypted key value.');
+        // [THEN] Check that the key has the correct value
+        LibraryAssert.AreEqual(
+            '3kQNj9cC02pUxTE5Cy+2a1wP/5bKYLup', KeyBase64Value, 'Incorrect decrypted key value.');
     end;
 
     local procedure GetXml(var XmlDoc: XmlDocument)

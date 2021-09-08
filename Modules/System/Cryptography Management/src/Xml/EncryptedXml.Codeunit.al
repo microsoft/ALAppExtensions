@@ -14,7 +14,7 @@ codeunit 1465 EncryptedXml
         EncryptedXmlImpl: Codeunit "EncryptedXml Impl.";
 
     /// <summary>
-    /// Creates a symmetric session key to encrypt an XML document and then 
+    /// Creates a symmetric session key to encrypt a XML document and then 
     /// uses the X.509 certificate to embed an encrypted version of the session key in the XML document.
     /// </summary>
     /// <param name="XmlDocument">The XmlDocument to encrypt.</param>
@@ -26,8 +26,8 @@ codeunit 1465 EncryptedXml
     end;
 
     /// <summary>
-    /// Like the Encrypt(var XmlDocument, ElementToEncrypt, X509CertBase64Value) procedure but with
-    /// the possibility to use another symmetric algorithm than the Advanced Encryption Standard (AES).
+    /// Creates a symmetric session key using the specified SymmetricAlgorithm to encrypt a XML document and then
+    /// uses the X.509 certificate to embed an encrypted version of the session key in the XML document.
     /// </summary>
     /// <param name="XmlDocument">The XmlDocument to encrypt.</param>
     /// <param name="ElementToEncrypt">The name of the element to encrypt.</param>
