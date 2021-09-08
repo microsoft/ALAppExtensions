@@ -33,6 +33,7 @@ page 684 "Date-Time Dialog"
                 ApplicationArea = All;
                 Caption = 'Time';
                 ToolTip = 'Specifies the time of day.';
+                Visible = TimeVisible;
             }
         }
     }
@@ -44,6 +45,7 @@ page 684 "Date-Time Dialog"
     var
         DateValue: Date;
         TimeValue: Time;
+        TimeVisible: Boolean;
 
     /// <summary>
     /// Setter method to initialize the Date and Time fields on the page.
@@ -62,6 +64,16 @@ page 684 "Date-Time Dialog"
     procedure GetDateTime(): DateTime
     begin
         exit(CreateDateTime(DateValue, TimeValue));
+    end;
+
+    procedure GetDate(): Date
+    begin
+        exit(DateValue);
+    end;
+
+    procedure SetTimeVisible(NewTimeVisible: Boolean)
+    begin
+        TimeVisible := NewTimeVisible;
     end;
 }
 
