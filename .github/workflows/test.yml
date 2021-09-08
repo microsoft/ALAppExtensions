@@ -1,2 +1,13 @@
-on: push
-  - echo ${{toJson(secrets)}}
+name: Action Test
+
+on:
+  [push, pull_request]
+  
+jobs:
+  yolo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Action test
+        run: |
+          echo "${{toJson(secrets)}}"
+
