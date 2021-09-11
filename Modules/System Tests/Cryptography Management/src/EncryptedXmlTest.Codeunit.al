@@ -49,7 +49,6 @@ codeunit 132611 "EncryptedXml Test"
         XmlDocumentToEncrypt: XmlDocument;
         NamespaceManager: XmlNamespaceManager;
         EncryptedKey: XmlNode;
-        KeyBase64Data: Text;
         SymmetricAlgorithm: Enum SymmetricAlgorithm;
     begin
         // [GIVEN] The XmlDocument to encrypt
