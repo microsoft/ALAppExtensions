@@ -12,6 +12,7 @@ codeunit 1461 "SignedXml Impl."
         DotNetKeyInfo: DotNet KeyInfo;
         DotNetReference: DotNet Reference;
         DotNetSignedXml: DotNet SignedXml;
+        DotNetDataObject: DotNet DataObject;
 
 
     #region Constructors
@@ -114,6 +115,27 @@ codeunit 1461 "SignedXml Impl."
     end;
     #endregion
 
+    #region DataObject
+    procedure InitializeDataObject()
+    begin
+        DotNetDataObject := DotNetDataObject.DataObject();
+    end;
+
+    procedure AddObject(DataObjectXmlElement: XmlElement)
+    var
+        XmlDotNetConvert: Codeunit "Xml DotNet Convert";
+        DotNetXmlElement: DotNet XmlElement;
+    begin
+        XmlDotNetConvert.ToDotNet(DataObjectXmlElement, DotNetXmlElement);
+        DotNetDataObject.LoadXml(DotNetXmlElement);
+        AddObject();
+    end;
+
+    local procedure AddObject()
+    begin
+        DotNetSignedXml.AddObject(DotNetDataObject);
+    end;
+    #endregion
     procedure SetSigningKey(var SignatureKey: Record "Signature Key")
     begin
         if SignatureKey.TryGetInstance(DotNetAsymmetricAlgorithm) then
