@@ -45,6 +45,8 @@ page 684 "Date-Time Dialog"
     var
         DateValue: Date;
         TimeValue: Time;
+
+        [InDataSet]
         TimeVisible: Boolean;
 
     /// <summary>
@@ -66,14 +68,23 @@ page 684 "Date-Time Dialog"
         exit(CreateDateTime(DateValue, TimeValue));
     end;
 
+    /// <summary>
+    /// Setter method to initialize the Date on the page.
+    /// </summary>
+    /// <param name="Date">The value to set.</param>
+    procedure SetDate(Date: Date)
+    begin
+        DateValue := Date;
+        TimeVisible := false;
+    end;
+
+    /// <summary>
+    /// Getter method for the entered date value.
+    /// </summary>
+    /// <returns>The value that is set on the page.</returns>
     procedure GetDate(): Date
     begin
         exit(DateValue);
-    end;
-
-    procedure SetTimeVisible(NewTimeVisible: Boolean)
-    begin
-        TimeVisible := NewTimeVisible;
     end;
 }
 
