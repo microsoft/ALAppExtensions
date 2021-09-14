@@ -15,7 +15,7 @@ codeunit 1466 "EncryptedXml Impl."
         XmlEncUrlTok: Label 'http://www.w3.org/2001/04/xmlenc#', Locked = true;
 
     [NonDebuggable]
-    procedure Encrypt(var XmlDocument: XmlDocument; ElementToEncrypt: Text; X509CertBase64Value: Text)
+    procedure Encrypt(var XmlDocument: XmlDocument; ElementToEncrypt: Text; X509CertBase64Value: Text; X509CertPassword: Text)
     var
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
         X509Certificate2Impl: Codeunit "X509Certificate2 Impl.";
@@ -37,7 +37,7 @@ codeunit 1466 "EncryptedXml Impl."
             Error(ElementNotFoundErr, ElementToEncrypt);
 
         //Initialize a X509Certificate2.
-        X509Certificate2Impl.InitializeX509Certificate(X509CertBase64Value, '', DotNetX509Certificate2);
+        X509Certificate2Impl.InitializeX509Certificate(X509CertBase64Value, X509CertPassword, DotNetX509Certificate2);
 
         //Encrypt the element
         DotNetEncryptedData := DotNetEncryptedXml.Encrypt(DotNetXmlElementToEncrypt, DotNetX509Certificate2);
@@ -48,7 +48,7 @@ codeunit 1466 "EncryptedXml Impl."
     end;
 
     [NonDebuggable]
-    procedure Encrypt(var XmlDocument: XmlDocument; ElementToEncrypt: Text; X509CertBase64Value: Text; SymmetricAlgorithm: Enum SymmetricAlgorithm)
+    procedure Encrypt(var XmlDocument: XmlDocument; ElementToEncrypt: Text; X509CertBase64Value: Text; X509CertPassword: Text; SymmetricAlgorithm: Enum SymmetricAlgorithm)
     var
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
         X509Certificate2Impl: Codeunit "X509Certificate2 Impl.";
@@ -95,7 +95,7 @@ codeunit 1466 "EncryptedXml Impl."
             DotNetEncryptionMethod.EncryptionMethod(SymmetricAlgorithmInterface.XmlEncrypmentMethodUrl());
 
         //Encrypt the symmetric algorithm key using the public key from a X509Certificate2.
-        X509Certificate2Impl.InitializeX509Certificate(X509CertBase64Value, '', DotNetX509Certificate2);
+        X509Certificate2Impl.InitializeX509Certificate(X509CertBase64Value, X509CertPassword, DotNetX509Certificate2);
         DotNetRSA := DotNetX509Certificate2.PublicKey."Key"();
         DotNetEncryptedKeyBytes := DotNetEncryptedXml.EncryptKey(DotNetSymmetricAlgorithm."Key", DotNetRSA, false);
 

@@ -20,10 +20,11 @@ codeunit 1465 EncryptedXml
     /// <param name="XmlDocument">The XmlDocument to encrypt.</param>
     /// <param name="ElementToEncrypt">The name of the element to encrypt.</param>
     /// <param name="X509CertBase64Value">The X509Certificate2 to use for the asymmetric encryption.</param>
+    /// <param name="X509CertPassword">Password to the X509Certificate2.</param>
     [NonDebuggable]
-    procedure Encrypt(var XmlDocument: XmlDocument; ElementToEncrypt: Text; X509CertBase64Value: Text)
+    procedure Encrypt(var XmlDocument: XmlDocument; ElementToEncrypt: Text; X509CertBase64Value: Text; X509CertPassword: Text)
     begin
-        EncryptedXmlImpl.Encrypt(XmlDocument, ElementToEncrypt, X509CertBase64Value);
+        EncryptedXmlImpl.Encrypt(XmlDocument, ElementToEncrypt, X509CertBase64Value, X509CertPassword);
     end;
 
     /// <summary>
@@ -32,12 +33,13 @@ codeunit 1465 EncryptedXml
     /// </summary>
     /// <param name="XmlDocument">The XmlDocument to encrypt.</param>
     /// <param name="ElementToEncrypt">The name of the element to encrypt.</param>
-    /// <param name="SymmetricAlgorithm">The symmetric algorithm to be used when encrypting.</param>
     /// <param name="X509CertBase64Value">The X509Certificate2 to use for the asymmetric encryption.</param>
+    /// <param name="X509CertPassword">Password to the X509Certificate2.</param>
+    /// <param name="SymmetricAlgorithm">The symmetric algorithm to be used when encrypting.</param>
     [NonDebuggable]
-    procedure Encrypt(var XmlDocument: XmlDocument; ElementToEncrypt: Text; X509CertBase64Value: Text; SymmetricAlgorithm: Enum SymmetricAlgorithm)
+    procedure Encrypt(var XmlDocument: XmlDocument; ElementToEncrypt: Text; X509CertBase64Value: Text; X509CertPassword: Text; SymmetricAlgorithm: Enum SymmetricAlgorithm)
     begin
-        EncryptedXmlImpl.Encrypt(XmlDocument, ElementToEncrypt, X509CertBase64Value, SymmetricAlgorithm);
+        EncryptedXmlImpl.Encrypt(XmlDocument, ElementToEncrypt, X509CertBase64Value, X509CertPassword, SymmetricAlgorithm);
     end;
 
     /// <summary>
