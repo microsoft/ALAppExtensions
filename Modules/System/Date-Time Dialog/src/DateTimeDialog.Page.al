@@ -57,6 +57,7 @@ page 684 "Date-Time Dialog"
     begin
         DateValue := DT2Date(DateTime);
         TimeValue := DT2Time(DateTime);
+        TimeVisible := true;
     end;
 
     /// <summary>
