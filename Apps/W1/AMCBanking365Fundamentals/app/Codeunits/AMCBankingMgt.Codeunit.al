@@ -41,6 +41,14 @@ codeunit 20105 "AMC Banking Mgt."
         AMCBankingPmtTypeCode9Tok: Label 'EurAcc2AccSepa', Locked = true;
         AMCBankingPmtTypeDesc9Txt: Label 'SEPA credit transfer';
         NoDetailsMsg: Label 'The log does not contain any more details.';
+<<<<<<< HEAD
+=======
+        ResultPathTxt: Label '/amc:%1/return/syslog[syslogtype[text()="error"]]', Locked = true;
+        FinstaPathTxt: Label '/amc:%1/return/finsta/statement/finstatransus', Locked = true;
+        HeaderErrPathTxt: Label '/amc:%1/return/header/result[text()="error"]', Locked = true;
+        ConvErrPathTxt: Label '/amc:%1/return/pack/convertlog[syslogtype[text()="error"]]', Locked = true;
+        DataPathTxt: Label '/amc:%1/return/pack/data/text()', Locked = true;
+>>>>>>> bc89b8e0... AMC Banking 365 Fundamentals V19.1
         LicenserverNameTxt: Label 'https://license.amcbanking.com', Locked = true;
         TestLicenserverNameTxt: Label 'https://licensetest.amcbanking.com', Locked = true;
         LicenseRegisterTagTxt: Label '/api/v1/register/customer', Locked = true;
@@ -470,6 +478,7 @@ codeunit 20105 "AMC Banking Mgt."
                 exit(true);
 
         exit(false);
+<<<<<<< HEAD
     end;
 
     [IntegrationEvent(false, false)]
@@ -477,6 +486,15 @@ codeunit 20105 "AMC Banking Mgt."
     begin
     end;
 
+=======
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnGetModulePostFix(var PostFixValue: Text; AMCBankingSetup: Record "AMC Banking Setup")
+    begin
+    end;
+
+>>>>>>> bc89b8e0... AMC Banking 365 Fundamentals V19.1
 
     procedure GetDemoSolutionCode(): Text[50];
     begin
@@ -649,6 +667,10 @@ codeunit 20105 "AMC Banking Mgt."
 
     internal procedure GetBankFileName(BankAccount: Record "Bank Account"): Text[250]
     var
+<<<<<<< HEAD
+=======
+
+>>>>>>> bc89b8e0... AMC Banking 365 Fundamentals V19.1
     begin
 
         if (BankAccount."AMC Bank File Name" <> '') then begin

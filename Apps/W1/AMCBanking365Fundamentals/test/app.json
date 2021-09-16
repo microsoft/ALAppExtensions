@@ -24,12 +24,12 @@
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2101583",
     "logo":  "./AppResources/amctestlogo.png",
     "dependencies":  [
-                         {
-                             "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
-                             "name":  "AMC Banking 365 Fundamentals",
-                             "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
-                         },
+                            {
+                                "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
+                                "name":  "AMC Banking 365 Fundamentals",
+                                "publisher":  "Microsoft",
+                                "version":  "21.0.0.0"
+                            },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
@@ -88,11 +88,15 @@
     "platform":  "21.0.0.0",
     "target":  "OnPrem",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3a0cb740 (AMC Banking 365 Fundamentals V19.1)
     "resourceExposurePolicy": {
         "allowDebugging": false,
         "allowDownloadingSource": true,
         "includeSourceInSymbolFile": true
     },
+<<<<<<< HEAD
     "application":  "19.1.0.0"
 }
 =======
@@ -114,3 +118,7 @@
     "application":  "21.1.0.0"
 }
 >>>>>>> 642e512b (Update to 21.1)
+=======
+    "application":  "21.1.0.0"
+}
+>>>>>>> 3a0cb740 (AMC Banking 365 Fundamentals V19.1)
