@@ -3,7 +3,11 @@ codeunit 20100 "AMC Bank Import Bank STMT"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'Replaced by the new implementation in V19.1 of "AMC Bank Process Statement"';
+<<<<<<< HEAD
     ObsoleteTag = '20.0';
+=======
+    ObsoleteTag = '19.1';
+>>>>>>> bc89b8e0... AMC Banking 365 Fundamentals V19.1
 
     Permissions = TableData "Data Exch. Field" = rimd;
     TableNo = "Data Exch.";

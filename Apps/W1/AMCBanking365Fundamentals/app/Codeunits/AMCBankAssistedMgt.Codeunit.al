@@ -65,6 +65,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AMCBankImpBankListHndl: Codeunit "AMC Bank Imp.BankList Hndl";
         LongTimeout: Integer;
         ShortTimeout: Integer;
+        AMCBoughtModule: Boolean;
         AMCSolution: text;
         AMCSpecificURL: Text;
         AMCSignUpURL: Text;
@@ -99,7 +100,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         end
         else
             if (CallLicenseServer) then
-                GetModuleInfoFromWebservice(AMCSpecificURL, AMCSignUpURL, AMCSupportURL, AMCSolution, ShortTimeout);
+                AMCBoughtModule := GetModuleInfoFromWebservice(AMCSpecificURL, AMCSignUpURL, AMCSupportURL, AMCSolution, ShortTimeout);
 
         if (AMCSolution <> '') then begin
             AMCBankingSetup.Solution := CopyStr(AMCSolution, 1, 50);
@@ -682,6 +683,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
     begin
     end;
 #endif
+
     [IntegrationEvent(false, false)]
     procedure OnAfterRunBasisSetupV19(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
                                    UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];

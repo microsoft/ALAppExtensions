@@ -81,6 +81,10 @@ codeunit 20116 "AMC Bank Install"
     var
         AMCBankingSetup: Record "AMC Banking Setup";
         AMCBankingMgt: codeunit "AMC Banking Mgt.";
+<<<<<<< HEAD
+=======
+        AMCServiceUrl: Text;
+>>>>>>> bc89b8e0... AMC Banking 365 Fundamentals V19.1
         ApiPos: Integer;
     begin
         if (AMCBankingSetup.Get()) then
