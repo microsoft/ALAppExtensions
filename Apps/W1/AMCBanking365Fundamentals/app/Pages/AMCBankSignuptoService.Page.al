@@ -5,7 +5,7 @@ page 20109 "AMC Bank Signup to Service"
     PageType = StandardDialog;
     SourceTable = "Company Information";
     UsageCategory = None;
-    ContextSensitiveHelpPage = '999'; //TODO
+    ContextSensitiveHelpPage = '403';
 
     layout
     {
@@ -233,6 +233,7 @@ page 20109 "AMC Bank Signup to Service"
 
         //Send Request to webservice
         Handled := false;
+        AMCBankRESTRequestMgt.OnBeforeSendRestRequest(Handled, HttpRequestMessage, HttpResponseMessage, restcall, AMCBankingMgt.GetAppCaller(), true);
         AMCBankRESTRequestMgt.SendRestRequest(Handled, HttpRequestMessage, HttpResponseMessage, restcall, AMCBankingMgt.GetAppCaller(), true);
         AMCBankRESTRequestMgt.GetRestResponse(HttpResponseMessage, EasyRegistrationTempBlob);
         if (not AMCBankRESTRequestMgt.HasResponseErrors(EasyRegistrationTempBlob, restcall, 'syslog', ResponseResult, AMCBankingMgt.GetAppCaller())) then begin
@@ -253,23 +254,16 @@ page 20109 "AMC Bank Signup to Service"
 
     local procedure GetModulePostFix(AMCBankingSetup: Record "AMC Banking Setup"): Text
     var
-        AMCBankingSetup_RecordRef: RecordRef;
-        PostFixUser_FieldRef: FieldRef;
+        PostFixValue: Text;
     begin
-        if (AMCBankingMgt.IsAMCBusinessInstalled()) then begin
-            AMCBankingSetup_RecordRef.OPEN(DATABASE::"AMC Banking Setup");
-            if (AMCBankingSetup_RecordRef.FIELDEXIST(70093950)) then begin
-                AMCBankingSetup_RecordRef.GetTable(AMCBankingSetup);
-                PostFixUser_FieldRef := AMCBankingSetup_RecordRef.FIELD(70093950);
-                exit(PostFixUser_FieldRef.Value());
-            end
-            else
-                exit('');
-        end
-        else
-            exit('');
 
+        PostFixValue := '';
+        AMCBankingMgt.OnGetModulePostFix(PostFixValue, AMCBankingSetup);
+
+        exit(PostFixValue);
     end;
+
+
 
     local procedure GetVatIdwithCountryId(CountryRegion: Record "Country/Region"; CompanyInfomation: Record "Company Information"): Text[20]
     var

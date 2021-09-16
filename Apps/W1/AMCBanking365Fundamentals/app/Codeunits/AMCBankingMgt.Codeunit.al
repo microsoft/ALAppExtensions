@@ -46,13 +46,17 @@ codeunit 20105 "AMC Banking Mgt."
         HeaderErrPathTxt: Label '/amc:%1/return/header/result[text()="error"]', Locked = true;
         ConvErrPathTxt: Label '/amc:%1/return/pack/convertlog[syslogtype[text()="error"]]', Locked = true;
         DataPathTxt: Label '/amc:%1/return/pack/data/text()', Locked = true;
+        LicenserverNameTxt: Label 'https://license.amcbanking.com', Locked = true;
+        LicenseRegisterTagTxt: Label '/api/v1/register/customer', Locked = true;
+
+        FileExtTxt: Label '.txt';
 
     procedure InitDefaultURLs(var AMCBankingSetup: Record "AMC Banking Setup")
     var
         EnvironmentInformation: Codeunit "Environment Information";
     begin
 
-        AMCBankingSetup."Sign-up URL" := 'https://licensetest.amcbanking.com/api/v1/register/customer'; //TODO 'https://license.amcbanking.com/register';
+        AMCBankingSetup."Sign-up URL" := GetLicenseServerName() + GetLicenseRegisterTag();
         if ((AMCBankingSetup.Solution = GetDemoSolutionCode()) or
             (AMCBankingSetup.Solution = '')) then
             AMCBankingSetup."Service URL" := GetServiceURL('https://demoxtl.amcbanking.com/', ApiVersion())
@@ -76,6 +80,16 @@ codeunit 20105 "AMC Banking Mgt."
     procedure GetNamespace(): Text
     begin
         exit('http://' + ApiVersion() + '.soap.xml.link.amc.dk/');
+    end;
+
+    procedure GetLicenseServerName(): Text
+    begin
+        exit(LicenserverNameTxt);
+    end;
+
+    procedure GetLicenseRegisterTag(): Text
+    begin
+        exit(LicenseRegisterTagTxt);
     end;
 
     procedure IsSolutionSandbox(AMCBankingSetup: Record "AMC Banking Setup"): Boolean
@@ -393,8 +407,8 @@ codeunit 20105 "AMC Banking Mgt."
                 Init();
                 Insert(true);
             end;
-            if "Sign-up URL" <> 'https://license.amcbanking.com/register' then begin
-                "Sign-up URL" := 'https://license.amcbanking.com/register';
+            if "Sign-up URL" <> GetLicenseServerName() + GetLicenseRegisterTag() then begin
+                "Sign-up URL" := GetLicenseServerName() + GetLicenseRegisterTag();
                 Modify();
             end;
         end;
@@ -447,28 +461,33 @@ codeunit 20105 "AMC Banking Mgt."
         if (EnvironmentInformation.IsSaaS()) then begin
             LicenseNumber := CopyStr(AzureADTenant.GetAadTenantId(), 1, 40);
             if (LicenseNumber = '') then
-                LicenseNumber := 'common2'; //TODO remove after testing
+                LicenseNumber := 'common';
         end
         else begin
             LicenseNumber := CopyStr(DELCHR(SerialNumber(), '<', ' '), 1, 40);
             LicenseNumber := CopyStr(DELCHR(SerialNumber(), '>', ' '), 1, 40);
         end;
 
-        exit(CopyStr('BC' + LicenseNumber, 1, 40)) //TODO - Leave only this line after testing
+        exit(CopyStr('BC' + LicenseNumber, 1, 40))
 
-        //exit('BCcommon1'); //TODO - Delete this line after testing
     end;
 
     internal procedure IsAMCBusinessInstalled(): Boolean
     var
         AppInfo: ModuleInfo;
     begin
-        NavApp.GetModuleInfo('b7a9d320-4dac-4e5b-b35f-adcb8626bfe2', AppInfo);
-        if (AppInfo.Name = 'AMC Banking 365 Business') then
-            exit(true)
-        else
-            exit(false);
+        if (NavApp.GetModuleInfo('b7a9d320-4dac-4e5b-b35f-adcb8626bfe2', AppInfo)) then
+            if (AppInfo.Name = 'AMC Banking 365 Business') then
+                exit(true);
+
+        exit(false);
     end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnGetModulePostFix(var PostFixValue: Text; AMCBankingSetup: Record "AMC Banking Setup")
+    begin
+    end;
+
 
     procedure GetDemoSolutionCode(): Text[50];
     begin
@@ -652,7 +671,7 @@ codeunit 20105 "AMC Banking Mgt."
 
     internal procedure GetBankFileName(BankAccount: Record "Bank Account"): Text[250]
     var
-        FileExtTxt: Label '.txt';
+
     begin
 
         if (BankAccount."AMC Bank File Name" <> '') then begin

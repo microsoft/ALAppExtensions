@@ -1,8 +1,8 @@
 codeunit 20102 "AMC Bank Pre&Post Process"
 {
     ObsoleteState = Pending;
-    ObsoleteReason = 'Replaced by the new implementation in V18.2 of Pre & Post process.';
-    ObsoleteTag = '18.2';
+    ObsoleteReason = 'Replaced by the new implementation in V19.1 of Pre & Post process.';
+    ObsoleteTag = '19.1';
     trigger OnRun()
     begin
     end;

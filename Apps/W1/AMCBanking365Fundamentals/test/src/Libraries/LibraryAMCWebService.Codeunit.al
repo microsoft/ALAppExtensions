@@ -203,6 +203,8 @@ codeunit 130103 "Library - Amc Web Service"
 
         AMCBankingSetup.Init();
         AMCBankingSetup.Insert(true);
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
     end;
 
     [Scope('OnPrem')]

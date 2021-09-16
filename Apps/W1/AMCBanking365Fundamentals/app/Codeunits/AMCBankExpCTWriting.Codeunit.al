@@ -1,8 +1,8 @@
 codeunit 20110 "AMC Bank Exp. CT Writing"
 {
     ObsoleteState = Pending;
-    ObsoleteReason = 'Replaced by the new implementation in V18.2 of credit transfer writing.';
-    ObsoleteTag = '18.2';
+    ObsoleteReason = 'Replaced by the new implementation in V19.1 of credit transfer writing.';
+    ObsoleteTag = '19.1';
 
     Permissions = TableData "Data Exch. Field" = rimd;
     TableNo = "Data Exch.";

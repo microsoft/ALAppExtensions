@@ -90,6 +90,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
             ReadContentFromResponse(PaymentFileTempBlob);
     end;
 
+    [NonDebuggable]
     local procedure PrepareSOAPRequestBody(var PaymentHttpRequestMessage: HttpRequestMessage; var TempBlob: Codeunit "Temp Blob")
     var
         AMCBankingSetup: Record "AMC Banking Setup";

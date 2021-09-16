@@ -1,4 +1,4 @@
-codeunit 20125 "AMC Bank Import Statement" //NEW V17.5
+codeunit 20125 "AMC Bank Import Statement"
 {
     Permissions = TableData "Data Exch. Field" = rimd;
     TableNo = "Data Exch.";

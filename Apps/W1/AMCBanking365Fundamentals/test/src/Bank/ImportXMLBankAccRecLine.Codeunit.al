@@ -10,6 +10,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
     end;
 
     var
+        AMCBankingSetup: Record "AMC Banking Setup";
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryERM: Codeunit "Library - ERM";
@@ -408,6 +409,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         VerifyBankAccRec(BankAccReconciliation, DMY2Date(2, 2, 2016), 150.75);
 
         // Cleanup Data Exchange Def
+        LibraryLowerPermissions.SetO365Full();
         LibraryAmcWebService.CleanupAMCBankingDataExch(AMCBankingMgt.GetDataExchDef_STMT())
     end;
 
@@ -449,6 +451,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         BankAccReconciliationTestPage.StatementEndingBalance.AssertEquals(Format(150.75));
 
         // Cleanup Data Exchange Def
+        LibraryLowerPermissions.SetO365Full();
         LibraryAmcWebService.CleanupAMCBankingDataExch(AMCBankingMgt.GetDataExchDef_STMT());
     end;
 
@@ -495,6 +498,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         // Verify: in confirm handler.
 
         // Cleanup Data Exchange Def
+        LibraryLowerPermissions.SetO365Full();
         LibraryAmcWebService.CleanupAMCBankingDataExch(AMCBankingMgt.GetDataExchDef_STMT())
     end;
 
@@ -541,6 +545,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         // Verify: no confirm dialog.
 
         // Cleanup Data Exchange Def
+        LibraryLowerPermissions.SetO365Full();
         LibraryAmcWebService.CleanupAMCBankingDataExch(AMCBankingMgt.GetDataExchDef_STMT())
 
     end;
@@ -589,6 +594,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         // Verify: confirm handler.
 
         // Cleanup Data Exchange Def
+        LibraryLowerPermissions.SetO365Full();
         LibraryAmcWebService.CleanupAMCBankingDataExch(AMCBankingMgt.GetDataExchDef_STMT())
     end;
 
@@ -884,6 +890,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         // Verify: In message handler.
 
         // Cleanup Data Exchange Def
+        LibraryLowerPermissions.SetO365Full();
         LibraryAmcWebService.CleanupAMCBankingDataExch(AMCBankingMgt.GetDataExchDef_STMT())
     end;
 
@@ -968,6 +975,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         Initialize();
 
         // Setup.
+        LibraryLowerPermissions.SetOutsideO365Scope();
         SetupBankAccRecForImport(BankAccReconciliation);
         BankAccReconciliation.ImportBankStatement();
         ApplyBankRecLines(BankAccReconciliation);
@@ -990,6 +998,15 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         LibraryVariableStorage.Clear();
         if IsInitialized then
             exit;
+
+        if not AMCBankingSetup.Get() then begin
+            AMCBankingSetup.Init();
+            AMCBankingSetup.Insert(true);
+            Commit();
+        end;
+
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
 
         CurrTxt := 'EUR';
         IBANTxt := '15415024154';

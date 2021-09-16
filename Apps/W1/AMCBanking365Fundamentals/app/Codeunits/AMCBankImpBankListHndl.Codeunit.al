@@ -66,6 +66,7 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
 
     end;
 
+    [NonDebuggable]
     local procedure PrepareSOAPRequestBody(var BankListExchHttpRequestMessage: HttpRequestMessage; CountryFilter: Text)
     var
         AMCBankingSetup: Record "AMC Banking Setup";
@@ -100,6 +101,7 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
     local procedure InsertBankData(TempBlob: Codeunit "Temp Blob"; CountryFilter: Text)
     var
         AMCBankBanks: Record "AMC Bank Banks";
+        TempAMCBankBanks: Record "AMC Bank Banks" temporary;
         ResponseXMLDoc: XmlDocument;
         BankListXmlNodeList: XmlNodeList;
         ChildNode: XmlNode;
@@ -117,6 +119,9 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
                 if CountryFilter <> '' then
                     AMCBankBanks.SetRange("Country/Region Code", CountryFilter);
 
+                Clear(TempAMCBankBanks);
+                SetTempAMCBankBanks(TempAMCBankBanks, AMCBankBanks);
+
                 AMCBankBanks.DeleteAll();
 
                 for ChildCounter := 1 to BankListXmlNodeList.Count() do begin
@@ -126,6 +131,7 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
                     EVALUATE(AMCBankBanks.Bank, COPYSTR(AMCBankServiceRequestMgt.getNodeValue(ChildNode, './bank'), 1, 50));
                     EVALUATE(AMCBankBanks."Bank Name", COPYSTR(AMCBankServiceRequestMgt.getNodeValue(ChildNode, './bankname'), 1, 50));
                     EVALUATE(AMCBankBanks."Country/Region Code", COPYSTR(AMCBankServiceRequestMgt.getNodeValue(ChildNode, './countryoforigin'), 1, 50));
+                    AMCBankBanks."Bank Ownreference" := GetOwnRefOnBankNameList(TempAMCBankBanks, AMCBankBanks);
                     AMCBankBanks."Last Update Date" := TODAY();
                     AMCBankBanks.Insert(true);
                 end;
@@ -156,6 +162,29 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
             end;
             Error(ErrorText);
         end;
+    end;
+
+    local procedure SetTempAMCBankBanks(var TempAMCBankBanks: record "AMC Bank Banks" temporary; AMCBankBanks: record "AMC Bank Banks")
+    begin
+        if (AMCBankBanks.FindSet()) then
+            repeat
+                if (AMCBankBanks."Bank Ownreference" <> AMCBankBanks."Bank Ownreference"::"Recipient Name") then begin
+                    TempAMCBankBanks := AMCBankBanks;
+                    TempAMCBankBanks.Insert();
+                end;
+            until AMCBankBanks.Next() = 0;
+    end;
+
+    local procedure GetOwnRefOnBankNameList(var TempAMCBankBanks: record "AMC Bank Banks" temporary; AMCBankBanks: record "AMC Bank Banks"): Enum AMCBankOwnreference
+    var
+    begin
+        TempAMCBankBanks.Reset();
+        TempAMCBankBanks.SetFilter(TempAMCBankBanks.Bank, AMCBankBanks.Bank);
+        if (TempAMCBankBanks.FindFirst()) then
+            exit(TempAMCBankBanks."Bank Ownreference");
+
+
+        exit(AMCBankBanks."Bank Ownreference");
     end;
 }
 

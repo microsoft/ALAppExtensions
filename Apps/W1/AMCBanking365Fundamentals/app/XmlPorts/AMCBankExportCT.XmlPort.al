@@ -1,4 +1,4 @@
-xmlport 20101 "AMC Bank Export CT"  //V17.5 Changed api04 and structure to match api04
+xmlport 20101 "AMC Bank Export CT"
 {
     Caption = 'AMC Banking Export CreditTransfer';
     Namespaces = ns1 = 'http://api04.soap.xml.link.amc.dk/';

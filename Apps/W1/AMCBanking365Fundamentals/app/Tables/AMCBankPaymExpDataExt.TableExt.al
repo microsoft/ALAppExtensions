@@ -6,6 +6,7 @@ tableextension 20108 "AMC Bank Paym. Exp. Data Ext" extends "Payment Export Data
         {
             Caption = 'Recipient Bank Account Currency';
             TableRelation = Currency;
+            DataClassification = CustomerContent;
         }
     }
 

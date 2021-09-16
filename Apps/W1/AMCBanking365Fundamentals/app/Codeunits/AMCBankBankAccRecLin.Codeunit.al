@@ -2,7 +2,7 @@ codeunit 20101 "AMC Bank Bank Acc. Rec Lin"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'Codeunit 1248 is used.';
-    ObsoleteTag = '18.2';
+    ObsoleteTag = '19.1';
 
     Permissions = TableData "Data Exch." = rimd;
     TableNo = "Bank Acc. Reconciliation Line";
@@ -41,7 +41,7 @@ codeunit 20101 "AMC Bank Bank Acc. Rec Lin"
 
         ProgressWindowDialog.Open(ProgressWindowMsg);
 
-        CreateBankAccountRecLineTemplate(TempBankAccReconciliationLine, BankAccReconciliation, DataExch);
+        CreateBankAccRecLineTemplate(TempBankAccReconciliationLine, BankAccReconciliation, DataExch);
         DataExchLineDef.SetRange("Data Exch. Def Code", DataExchDef.Code);
         DataExchLineDef.FindFirst();
 
@@ -62,7 +62,7 @@ codeunit 20101 "AMC Bank Bank Acc. Rec Lin"
         exit(true);
     end;
 
-    procedure CreateBankAccountRecLineTemplate(var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; BankAccReconciliation: Record "Bank Acc. Reconciliation"; DataExch: Record "Data Exch.")
+    procedure CreateBankAccRecLineTemplate(var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; BankAccReconciliation: Record "Bank Acc. Reconciliation"; DataExch: Record "Data Exch.")
     begin
         BankAccReconciliationLine.Init();
         BankAccReconciliationLine."Statement Type" := BankAccReconciliation."Statement Type";

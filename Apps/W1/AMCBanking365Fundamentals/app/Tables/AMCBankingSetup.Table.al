@@ -57,6 +57,18 @@ table 20101 "AMC Banking Setup"
             Caption = 'Solution';
             DataClassification = CustomerContent;
         }
+        field(20108; "AMC Enabled"; Boolean)
+        {
+            Caption = 'Enabled';
+            DataClassification = SystemMetadata;
+            trigger OnValidate()
+            var
+                CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+            begin
+                if not xRec."AMC Enabled" and Rec."AMC Enabled" then
+                    Rec."AMC Enabled" := CustomerConsentMgt.ConfirmUserConsent();
+            end;
+        }
     }
 
     keys
@@ -123,6 +135,7 @@ table 20101 "AMC Banking Setup"
         exit(ServiceUserName);
     end;
 
+    [NonDebuggable]
     internal procedure GetPassword(): Text
     var
         Value: Text;

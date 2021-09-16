@@ -1,8 +1,8 @@
 codeunit 20100 "AMC Bank Import Bank STMT"
 {
     ObsoleteState = Pending;
-    ObsoleteReason = 'Replaced by the new implementation in V18.2 of "AMC Bank Process Statement"';
-    ObsoleteTag = '18.2';
+    ObsoleteReason = 'Replaced by the new implementation in V19.1 of "AMC Bank Process Statement"';
+    ObsoleteTag = '19.1';
 
     Permissions = TableData "Data Exch. Field" = rimd;
     TableNo = "Data Exch.";

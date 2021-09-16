@@ -1,4 +1,4 @@
-codeunit 20126 "AMC Bank Process Statement" //NEW V17.5
+codeunit 20126 "AMC Bank Process Statement"
 {
     Permissions = TableData "Data Exch." = rimd;
     TableNo = "Bank Acc. Reconciliation Line";

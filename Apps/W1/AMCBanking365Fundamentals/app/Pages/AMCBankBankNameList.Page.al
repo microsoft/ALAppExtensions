@@ -1,7 +1,9 @@
 page 20100 "AMC Bank Bank Name List"
 {
     Caption = 'AMC Banking Bank Name List';
-    Editable = false;
+    Editable = true;
+    InsertAllowed = false;
+    DeleteAllowed = false;
     PageType = List;
     PromotedActionCategories = 'New,Process,Page,Setup';
     SourceTable = "AMC Bank Banks";
@@ -17,21 +19,25 @@ page 20100 "AMC Bank Bank Name List"
                 field(Bank; Rec.Bank)
                 {
                     ApplicationArea = Basic, Suite;
+                    Editable = false;
                     ToolTip = 'Specifies the name of the bank, and potentially its country/region code, that supports your setup for import/export of bank data using the AMC Banking feature.';
                 }
                 field("Bank Name"; Rec."Bank Name")
                 {
                     ApplicationArea = Basic, Suite;
+                    Editable = false;
                     ToolTip = 'Specifies the name of the bank that supports your setup for import/export of bank data using the AMC Banking feature.';
                 }
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {
                     ApplicationArea = Basic, Suite;
+                    Editable = false;
                     ToolTip = 'Specifies the country/region of the address.';
                 }
                 field("Last Update Date"; Rec."Last Update Date")
                 {
                     ApplicationArea = Basic, Suite;
+                    Editable = false;
                     ToolTip = 'Specifies the last time the list of supported banks was updated.';
                 }
             }
@@ -81,7 +87,7 @@ page 20100 "AMC Bank Bank Name List"
     begin
         CountryRegionCode := IdentifyCountryRegionCode(Rec, GetFilter("Country/Region Code"));
 
-        if IsEmpty() then begin
+        if Rec.IsEmpty() then begin
             AMCBankImpBankListHndl.GetBankListFromWebService(HideErrors, CountryRegionCode, ShortTimeout, AMCBankingMgt.GetAppCaller());
             exit;
         end;

@@ -18,6 +18,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Bank Name - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Table 3203079048 - Field 2393092549 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Ownreference</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Bank Banks - Field Bank Ownreference - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Table 3203079048 - Field 284764054 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Country/Region Code</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -52,6 +57,11 @@
           <source>AMC Banking Setup</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table AMC Banking Setup - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 3704095706 - Field 3844794838 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Enabled</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table AMC Banking Setup - Field AMC Enabled - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 3704095706 - Field 4006456467 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Namespace API Version</source>
@@ -138,10 +148,20 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Assisted Mgt. - NamedType DontShowThisAgainMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3725545329 - NamedType 3313543012" size-unit="char" translate="yes" xml:space="preserve">
+          <source>To setup AMC Banking, you need to enable it.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Assisted Mgt. - NamedType EnableSetupNeededNotificationTxt</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3725545329 - NamedType 82900180" size-unit="char" translate="yes" xml:space="preserve">
           <source>The Web Service Setup User Name (%1) does not match the License number (%2) or the (%3)</source>
           <note from="Developer" annotates="general" priority="2">%1=UserName, %2=License numnber, %3=DemoUser</note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Assisted Mgt. - NamedType NotCorrectUserLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3725545329 - NamedType 658909975" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Please run the Assisted setup action to complete the AMC Banking setup.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Assisted Mgt. - NamedType PleaseRunAssistedSetupNotificationActionTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 3725545329 - NamedType 1098773093" size-unit="char" translate="yes" xml:space="preserve">
           <source>The web service returned an error message:\</source>
@@ -348,6 +368,11 @@
           <note from="Developer" annotates="general" priority="2">#1 = Linenumber</note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Process Statement - NamedType ProgressMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 1658105548 - NamedType 2400363345" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking 365 Fundamentals feature is not enabled. You can enable the feature on the AMC Banking Setup page by turning on the Enabled toggle, or by using the assisted setup guide.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank REST Request Mgt. - NamedType FeatureConsentErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 1658105548 - NamedType 2671141422" size-unit="char" translate="yes" xml:space="preserve">
           <source>Please wait while the server is processing your request.\This may take several minutes.</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -367,6 +392,11 @@
           <source>The expected data was not received from the web service.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType ExpectedResponseNotReceivedErrLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 4228874151 - NamedType 2400363345" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The AMC Banking 365 Fundamentals feature is not enabled. You can enable the feature on the AMC Banking Setup page by turning on the Enabled toggle, or by using the assisted setup guide.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Bank Service Request Mgt. - NamedType FeatureConsentErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 4228874151 - NamedType 320118130" size-unit="char" translate="yes" xml:space="preserve">
           <source>Please wait while the server is processing your request.\This may take several minutes.</source>
@@ -438,6 +468,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Mgt. - NamedType CreditTransMsgNameTxt</note>
         </trans-unit>
+        <trans-unit id="Codeunit 2568490811 - NamedType 540628993" size-unit="char" translate="yes" xml:space="preserve">
+          <source>.txt</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Mgt. - NamedType FileExtTxt</note>
+        </trans-unit>
         <trans-unit id="Codeunit 2568490811 - NamedType 2591510851" size-unit="char" translate="yes" xml:space="preserve">
           <source>The user name and password must be filled in %1 page.</source>
           <note from="Developer" annotates="general" priority="2">%1=Pagename</note>
@@ -452,11 +487,6 @@
           <source>The log does not contain any more details.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Mgt. - NamedType NoDetailsMsg</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 2568490811 - Method 886752099 - NamedType 540628993" size-unit="char" translate="yes" xml:space="preserve">
-          <source>.txt</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit AMC Banking Mgt. - Method GetBankFileName - NamedType FileExtTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 2568490811 - Method 3011157210 - NamedType 2491202904" size-unit="char" translate="yes" xml:space="preserve">
           <source>Austrian BLZ number</source>
@@ -1343,6 +1373,16 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page AMC Banking Setup - NamedType EncryptionIsNotActivatedQst</note>
         </trans-unit>
+        <trans-unit id="Page 3704095706 - Control 2891538263 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies whether the AMC Banking 365 Fundamentals feature is enabled.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Banking Setup - Control Enabled - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 3704095706 - Control 2891538263 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Enabled</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Banking Setup - Control Enabled - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 3704095706 - Control 470245246 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Solution information</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1562,6 +1602,31 @@
           <source>Bank Pmt. Type</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension AMC Bank Paym. Method Ext - Field AMC Bank Pmt. Type - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 946689240 - EnumValue 3858383409 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Journal Description</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum AMCBankOwnreference - EnumValue Journal Description - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 946689240 - EnumValue 2889102768 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Recipient Name</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum AMCBankOwnreference - EnumValue Recipient Name - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 946689240 - EnumValue 3741870728 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Recipient No.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum AMCBankOwnreference - EnumValue Recipient No. - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 946689240 - EnumValue 1570125936 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Recipient No. &amp; Name</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum AMCBankOwnreference - EnumValue Recipient No./Name - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 946689240 - EnumValue 3045810516 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Transaction unique reference</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum AMCBankOwnreference - EnumValue Transaction unique ref. - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 2195179419 - EnumValue 3826689261 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Failed</source>

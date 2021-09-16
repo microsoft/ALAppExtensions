@@ -15,6 +15,7 @@ codeunit 20130 "AMC Bank REST Request Mgt."
         WebLoadErrorLbl: Label 'Status code: %1', Comment = '%1=Http Statuscode';
         ProcessingDialogMsg: Label 'Please wait while the server is processing your request.\This may take several minutes.';
         ContentTypeTxt: Label 'application/json; charset=utf-8', Locked = true;
+        FeatureConsentErr: Label 'The AMC Banking 365 Fundamentals feature is not enabled. You can enable the feature on the AMC Banking Setup page by turning on the Enabled toggle, or by using the assisted setup guide.';
 
     local procedure disposeGLBHttpVariable();
     begin
@@ -126,12 +127,17 @@ codeunit 20130 "AMC Bank REST Request Mgt."
 
     procedure SendRestRequest(Handled: Boolean; Var RestHttpRequestMessage: HttpRequestMessage; Var HttpResponseMessage: HttpResponseMessage; webCall: Text; AppCaller: text[30]; CheckHttpStatus: Boolean): Boolean;
     var
+        AMCBankingSetup: Record "AMC Banking Setup";
         HttpClient: HttpClient;
         RequestHttpContent: HttpContent;
         ProcessingDialog: Dialog;
     begin
         if (Handled) then //Only used for mockup for testautomation
             exit(true);
+
+        AMCBankingSetup.Get();
+        if not AMCBankingSetup."AMC Enabled" then
+            Error(FeatureConsentErr);
 
         if GlobalProgressDialogEnabled then
             ProcessingDialog.Open(ProcessingDialogMsg);
@@ -149,6 +155,11 @@ codeunit 20130 "AMC Bank REST Request Mgt."
             exit(CheckHttpCallStatus(webCall, AppCaller, HttpResponseMessage))
         else
             exit(true);
+    end;
+
+    [IntegrationEvent(true, false)] //Used for mockup testing
+    procedure OnBeforeSendRestRequest(var Handled: Boolean; Var RestHttpRequestMessage: HttpRequestMessage; Var HttpResponseMessage: HttpResponseMessage; webCall: Text; AppCaller: text[30]; CheckHttpStatus: Boolean)
+    begin
     end;
 
     procedure CheckHttpCallStatus(webCall: Text; AppCaller: text[30]; Var HttpResponseMessage: HttpResponseMessage): Boolean;

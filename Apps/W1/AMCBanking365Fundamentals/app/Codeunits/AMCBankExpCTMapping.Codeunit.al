@@ -1,8 +1,8 @@
 codeunit 20108 "AMC Bank Exp. CT Mapping"
 {
     ObsoleteState = Pending;
-    ObsoleteReason = 'Replaced by the new implementation in V18.2 of credit transfer mapping.';
-    ObsoleteTag = '18.0';
+    ObsoleteReason = 'Replaced by the new implementation in V19.1 of credit transfer mapping.';
+    ObsoleteTag = '19.1';
     Permissions = TableData "Data Exch." = rimd;
     TableNo = "Data Exch.";
 

@@ -1,8 +1,8 @@
 codeunit 20104 "AMC Bank Imp.-Post-Mapping"
 {
     ObsoleteState = Pending;
-    ObsoleteReason = 'Replaced by the new implementation in V18.2 of AMC Bank Imp.-Post-Process';
-    ObsoleteTag = '18.2';
+    ObsoleteReason = 'Replaced by the new implementation in V19.1 of AMC Bank Imp.-Post-Process';
+    ObsoleteTag = '19.1';
 
     TableNo = "Bank Acc. Reconciliation Line";
 

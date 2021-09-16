@@ -13,8 +13,10 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         UseBCLicenseLbl: Label '1. Please register the User Name (%1) using the Sign-up URL %2', Comment = '%1=User Name, %2=Sign-up URL';
         UseDemoUserLbl: Label '2. Delete the Web Service setup record using the Trash can symbol and reopen the page to use (%1)', Comment = '%1=DemoUser';
         TryLoadErrorLbl: Label 'The web service returned an error message:\';
+        EnableSetupNeededNotificationTxt: Label 'To setup AMC Banking, you need to enable it.';
         AssistedSetupNeededNotificationTxt: Label 'The AMC Banking 365 Fundamentals extension needs some information.';
         AssistedSetupNotificationActionTxt: Label 'Do you want to open the AMC Banking Setup page to run the Assisted Setup action?';
+        PleaseRunAssistedSetupNotificationActionTxt: Label 'Please run the Assisted setup action to complete the AMC Banking setup.';
 
         DemoSolutionNotificationTxt: Label 'The AMC Banking 365 Fundamentals extension is in Demo mode.';
         DemoSolutionNotificationActionTxt: Label 'Do you want to open the AMC Banking 365 Fundamentals extension setup page?';
@@ -91,6 +93,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AMCBankImpBankListHndl: Codeunit "AMC Bank Imp.BankList Hndl";
         LongTimeout: Integer;
         ShortTimeout: Integer;
+        AMCBoughtModule: Boolean;
         AMCSolution: text;
         AMCSpecificURL: Text;
         AMCSignUpURL: Text;
@@ -125,7 +128,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         end
         else
             if (CallLicenseServer) then
-                GetModuleInfoFromWebservice(AMCSpecificURL, AMCSignUpURL, AMCSupportURL, AMCSolution, ShortTimeout);
+                AMCBoughtModule := GetModuleInfoFromWebservice(AMCSpecificURL, AMCSignUpURL, AMCSupportURL, AMCSolution, ShortTimeout);
 
         if (AMCSolution <> '') then begin
             AMCBankingSetup.Solution := CopyStr(AMCSolution, 1, 50);
@@ -145,7 +148,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
                 if (UpperCase(AMCBankingSetup.Solution) <> UpperCase(AMCBankingMgt.GetEnterPriseSolutionCode())) then
                     AMCBankingMgt.SetURLsToDefault(AMCBankingSetup);
 
-                if ((AMCSpecificURL <> '') or (AMCSignUpURL <> '') or (AMCSupportURL <> '')) then begin
+                if ((AMCSpecificURL <> '') or (AMCSignUpURL <> '') or (AMCSupportURL <> '')) and (not AMCBankingMgt.IsSolutionSandbox(AMCBankingSetup)) then begin
                     if ((AMCSpecificURL <> '') and (UpperCase(AMCBankingSetup.Solution) <> UpperCase(AMCBankingMgt.GetEnterPriseSolutionCode()))) then
                         AMCBankingSetup."Service URL" := AMCBankingMgt.GetServiceURL(AMCSpecificURL, AMCBankingSetup."Namespace API Version");
 
@@ -229,7 +232,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         exit(GetDataExchDefsFromWebservice(DataExchDefFilter, ApplVersion, BuildNumber, Timeout, AMCBankingMgt.GetAppCaller()));
     end;
 
-    [Obsolete('This method is obsolete. Will be removed in future release', '18.0')]
+    [Obsolete('This method is obsolete. Will be removed in future release', '19.1')]
     procedure GetDataExchDefsFromWebservice(DataExchDefFilter: Text; ApplVersion: Text; BuildNumber: Text; Timeout: Integer; AppCaller: Text[30]): Boolean;
     var
         TempBlob: Codeunit "Temp Blob";
@@ -331,6 +334,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
 
     procedure GetModuleInfoFromWebservice(Var XTLUrl: Text; Var SignUpUrl: Text; var SupportUrl: Text; Var Solution: Text; Timeout: Integer): Boolean;
     var
+        AMCBankingSetup: Record "AMC Banking Setup";
         ModuleTempBlob: Codeunit "Temp Blob";
         HttpRequestMessage: HttpRequestMessage;
         HttpResponseMessage: HttpResponseMessage;
@@ -340,8 +344,9 @@ codeunit 20117 "AMC Bank Assisted Mgt."
 
         webcall := ModuleWebCallTxt;
         AMCBankingMgt.CheckCredentials();
+        AMCBankingSetup.Get();
 
-        AMCBankServiceRequestMgt.InitializeHttp(HttpRequestMessage, 'https://license.amcbanking.com/' + AMCBankingMgt.GetLicenseXmlApi(), 'POST');
+        AMCBankServiceRequestMgt.InitializeHttp(HttpRequestMessage, AMCBankingMgt.GetLicenseServerName() + '/' + AMCBankingMgt.GetLicenseXmlApi(), 'POST');
 
         PrepareSOAPRequestBodyModuleCreate(HttpRequestMessage);
 
@@ -395,6 +400,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
             exit(true);
     end;
 
+    [NonDebuggable]
     local procedure PrepareSOAPRequestBodyModuleCreate(var HttpRequestMessage: HttpRequestMessage);
     var
         AMCBankingSetup: Record "AMC Banking Setup";
@@ -463,7 +469,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
 
     local procedure GetModuleInfoData(TempBlob: Codeunit "Temp Blob"; Var XTLUrl: Text; Var SignupUrl: Text; Var SupportUrl: Text; Var Solution: Text; Appcaller: Text[30]): Boolean;
     var
-        HttpContent: HttpContent;
+        ResponseHttpContent: HttpContent;
         XMLDocOut: XmlDocument;
         ModuleXMLNodeList: XmlNodeList;
         ModuleXMLNodeCount: Integer;
@@ -472,7 +478,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         DataXMLAttributeCollection: XMLAttributeCollection;
         DataXmlAttribute: XmlAttribute;
         AttribCounter: Integer;
-        InStream: InStream;
+        ResponseInStream: InStream;
         XPath: Text;
         XResultPath: Text;
         ModuleName: Text;
@@ -482,9 +488,9 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         ResultUrl: Text;
     begin
 
-        TempBlob.CreateInStream(InStream);
-        XmlDocument.ReadFrom(InStream, XMLDocOut);
-        HttpContent.WriteFrom(InStream);
+        TempBlob.CreateInStream(ResponseInStream);
+        XmlDocument.ReadFrom(ResponseInStream, XMLDocOut);
+        ResponseHttpContent.WriteFrom(ResponseInStream);
 
         XResultPath := 'amcwebservice//functionfeedback/header/answer';
         if (XMLDocOut.SelectSingleNode(XResultPath, ResultXMLNode)) then
@@ -520,7 +526,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
                     end;
                 end;
             end;
-            AMCBankServiceRequestMgt.LogHttpActivity('amcwebservice', AppCaller, ResultText, '', ResultUrl, HttpContent, Result);
+            AMCBankServiceRequestMgt.LogHttpActivity('amcwebservice', AppCaller, ResultText, '', ResultUrl, ResponseHttpContent, Result);
             error(ResultText);
         end;
 
@@ -552,7 +558,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
                             Erp := DataXmlAttribute.Value();
                     end;
                 end;
-                AMCBankServiceRequestMgt.LogHttpActivity('amcwebservice', AppCaller, Result, '', '', HttpContent, Result);
+                AMCBankServiceRequestMgt.LogHttpActivity('amcwebservice', AppCaller, Result, '', '', ResponseHttpContent, Result);
                 if ((LowerCase(ModuleName) = LowerCase('AMC-Banking')) and
                     (LowerCase(Erp) = LowerCase('Dyn. NAV'))) then
                     exit(true)
@@ -569,6 +575,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         exit(false);
     end;
 
+    [NonDebuggable]
     local procedure PrepareSOAPRequestBodyDataExchangeDef(var HttpRequestMessage: HttpRequestMessage; ApplVersion: Text; BuildNumber: Text);
     var
         AMCBankingSetup: Record "AMC Banking Setup";
@@ -612,15 +619,15 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         XMLDocOut: XmlDocument;
         DataExchXMLNodeList: XmlNodeList;
         DataExchXMLNodeCount: Integer;
-        InStream: InStream;
+        ResponseInStream: InStream;
         OutStream: OutStream;
         ChildNode: XmlNode;
 
         DataExchDefCode: Code[20];
         Base64String: Text;
     begin
-        TempBlob.CreateInStream(InStream);
-        XmlDocument.ReadFrom(InStream, XMLDocOut);
+        TempBlob.CreateInStream(ResponseInStream);
+        XmlDocument.ReadFrom(ResponseInStream, XMLDocOut);
 
         if (XMLDocOut.selectNodes(ReturnPathTxt, DataExchXMLNodeList)) then //V17.5
             IF DataExchXMLNodeList.Count() > 0 THEN
@@ -723,11 +730,21 @@ codeunit 20117 "AMC Bank Assisted Mgt."
     end;
 
     [IntegrationEvent(false, false)]
+    [Obsolete('This IntegrationEvent is obsolete. A new OnAfterRunBasisSetupV19 IntegrationEvent is available, with the an extra parameters (var BasisSetupRanOK) to control if setup ran ok.', '19.1')]
     procedure OnAfterRunBasisSetupV16(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
                                    UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];
                                    UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean;
                                    UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
                                    UpdBankClearStd: Boolean; UpdBankAccounts: Boolean; var TempOnlineBankAccLink: Record "Online Bank Acc. Link"; CallLicenseServer: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnAfterRunBasisSetupV19(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
+                                   UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];
+                                   UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean;
+                                   UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
+                                   UpdBankClearStd: Boolean; UpdBankAccounts: Boolean; var TempOnlineBankAccLink: Record "Online Bank Acc. Link"; CallLicenseServer: Boolean; var BasisSetupRanOK: Boolean)
     begin
     end;
 
@@ -749,9 +766,12 @@ codeunit 20117 "AMC Bank Assisted Mgt."
     var
         BankExportImportSetup: Record "Bank Export/Import Setup";
     begin
-        if (BankExportImportSetup.Get(DataExchDefCode)) then
+        if (BankExportImportSetup.Get(DataExchDefCode)) then begin
             if (BankExportImportSetup."Processing Codeunit ID" = Codeunit::"AMC Bank Upg. Notification") then
                 exit(true);
+        end
+        else
+            exit(true);
 
         exit(false);
     end;
@@ -775,6 +795,46 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         Notification.Message := AssistedSetupNeededNotificationTxt;
         Notification.AddAction(AssistedSetupNotificationActionTxt, Codeunit::"AMC Bank Assisted Mgt.", 'DisplayAssistedSetupWizard');
         Notification.Send();
+    end;
+
+    local procedure CallAMCEnabledAssistedSetupNotification(NotificationId: GUID)
+    var
+        Notification: Notification;
+    begin
+        Notification.Id := NotificationId;
+        Notification.Scope := NotificationScope::LocalScope;
+        Notification.Message := PleaseRunAssistedSetupNotificationActionTxt;
+        Notification.Send();
+    end;
+
+    local procedure CallAMCEnabledSetupNotification(NotificationId: GUID)
+    var
+        Notification: Notification;
+    begin
+        Notification.Id := NotificationId;
+        Notification.Scope := NotificationScope::LocalScope;
+        Notification.Message := EnableSetupNeededNotificationTxt;
+        Notification.Send();
+    end;
+
+    local procedure ClearAMCEnabledSetupNotification(NotificationId: GUID)
+    var
+        Notification: Notification;
+    begin
+        Notification.Id := NotificationId;
+        Notification.Scope := NotificationScope::LocalScope;
+        Notification.Message := '';
+        Notification.Recall();
+    end;
+
+    local procedure ClearAssistedSetupNotification(NotificationId: GUID)
+    var
+        Notification: Notification;
+    begin
+        Notification.Id := NotificationId;
+        Notification.Scope := NotificationScope::LocalScope;
+        Notification.Message := '';
+        Notification.Recall();
     end;
 
     local procedure CallDemoSolutionNotification(NotificationId: GUID)
@@ -817,15 +877,45 @@ codeunit 20117 "AMC Bank Assisted Mgt."
             MyNotifications.InsertDefault(Notification.Id(), DemoSolutionNotificationNameTok, DemoSolutionNotificationDescTok, false);
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"AMC Banking Setup", 'OnOpenPageEvent', '', true, true)]
+    [EventSubscriber(ObjectType::Page, Page::"AMC Banking Setup", 'OnAfterGetCurrRecordEvent', '', true, true)]
     local procedure ShowAssistedSetupNotificationAMCBankingSetup(var Rec: Record "AMC Banking Setup")
     var
-
     begin
-        if (UpgradeNotificationIsNeeded(AMCBankingMgt.GetDataExchDef_CT()) or
-            UpgradeNotificationIsNeeded(AMCBankingMgt.GetDataExchDef_STMT())) then
-            CallAssistedSetupNotification(rec.SystemId);
+        if (Rec."AMC Enabled") then begin
+            if (UpgradeNotificationIsNeeded(AMCBankingMgt.GetDataExchDef_CT()) or
+                UpgradeNotificationIsNeeded(AMCBankingMgt.GetDataExchDef_STMT())) then
+                CallAMCEnabledAssistedSetupNotification(rec.SystemId)
+            else begin
+                ClearAssistedSetupNotification(rec.SystemId);
+                ClearAMCEnabledSetupNotification(rec.SystemId);
+            end
+        end
+        else
+            CallAMCEnabledSetupNotification(Rec.SystemId);
     end;
+
+
+    [EventSubscriber(ObjectType::Page, Page::"AMC Banking Setup", 'OnBeforeValidateEvent', 'Enabled', true, true)]
+    local procedure ShowAssistedSetupNotificationValidateAMCBankingSetup(var Rec: Record "AMC Banking Setup")
+    var
+        BankExportImportSetup: Record "Bank Export/Import Setup";
+    begin
+        if (rec."AMC Enabled") then begin
+            ClearAMCEnabledSetupNotification(rec.SystemId);
+            if ((not BankExportImportSetup.Get(AMCBankingMgt.GetDataExchDef_CT())) or
+                 (not BankExportImportSetup.Get(AMCBankingMgt.GetDataExchDef_STMT())) or
+                 ((BankExportImportSetup.Get(AMCBankingMgt.GetDataExchDef_CT()) and
+                  (BankExportImportSetup."Processing Codeunit ID" = Codeunit::"AMC Bank Upg. Notification"))) or
+                 ((BankExportImportSetup.Get(AMCBankingMgt.GetDataExchDef_STMT()) and
+                  (BankExportImportSetup."Processing Codeunit ID" = Codeunit::"AMC Bank Upg. Notification")))) then
+                CallAMCEnabledAssistedSetupNotification(rec.SystemId);
+        end
+        else begin
+            ClearAssistedSetupNotification(rec.SystemId);
+            CallAMCEnabledSetupNotification(Rec.SystemId);
+        end;
+    end;
+
 
     [EventSubscriber(ObjectType::Page, Page::"AMC Bank Bank Name List", 'OnOpenPageEvent', '', true, true)]
     local procedure ShowAssistedSetupNotificationAMCBankBanks(var rec: Record "AMC Bank Banks")
@@ -833,9 +923,10 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
         AMCBankingSetup.get();
-        if (UpgradeNotificationIsNeeded(AMCBankingMgt.GetDataExchDef_CT()) or
-            UpgradeNotificationIsNeeded(AMCBankingMgt.GetDataExchDef_STMT())) then
-            CallAssistedSetupNotification(AMCBankingSetup.SystemId);
+        if (AMCBankingSetup."AMC Enabled") then
+            if (UpgradeNotificationIsNeeded(AMCBankingMgt.GetDataExchDef_CT()) or
+                UpgradeNotificationIsNeeded(AMCBankingMgt.GetDataExchDef_STMT())) then
+                CallAssistedSetupNotification(AMCBankingSetup.SystemId);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Payment Journal", 'OnAfterGetCurrRecordEvent', '', true, true)]
@@ -845,23 +936,26 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         BankAccount: Record "Bank Account";
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
-        //Show notification if Assisted setup has to run after upgrade
-        if (GenJournalBatch.Get(Rec."Journal Template Name", rec."Journal Batch Name")) then
-            if (GenJournalBatch."Bal. Account Type" = GenJournalBatch."Bal. Account Type"::"Bank Account") then
-                if (BankAccount.get(GenJournalBatch."Bal. Account No.")) then
-                    if (UpgradeNotificationIsNeeded(BankAccount."Payment Export Format")) then begin
-                        CallAssistedSetupNotification(GetBankExportNotificationId(BankAccount."Payment Export Format"));
-                        exit;
-                    end;
-
-        //Show notification if AMC Banking service is demo solution
-        if (AMCBankingSetup.Get()) then
+        if (AMCBankingSetup.Get()) then;
+        if (AMCBankingSetup."AMC Enabled") then begin
+            //Show notification if Assisted setup has to run after upgrade
             if (GenJournalBatch.Get(Rec."Journal Template Name", rec."Journal Batch Name")) then
                 if (GenJournalBatch."Bal. Account Type" = GenJournalBatch."Bal. Account Type"::"Bank Account") then
                     if (BankAccount.get(GenJournalBatch."Bal. Account No.")) then
-                        if ((BankAccount."Payment Export Format" = AMCBankingMgt.GetDataExchDef_CT()) and
-                           (AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode())) then
-                            CallDemoSolutionNotification(GetBankExportNotificationId(BankAccount."Payment Export Format"));
+                        if (UpgradeNotificationIsNeeded(BankAccount."Payment Export Format")) then begin
+                            CallAssistedSetupNotification(GetBankExportNotificationId(BankAccount."Payment Export Format"));
+                            exit;
+                        end;
+
+            //Show notification if AMC Banking service is demo solution
+            if (not AMCBankingSetup.IsEmpty()) then
+                if (GenJournalBatch.Get(Rec."Journal Template Name", rec."Journal Batch Name")) then
+                    if (GenJournalBatch."Bal. Account Type" = GenJournalBatch."Bal. Account Type"::"Bank Account") then
+                        if (BankAccount.get(GenJournalBatch."Bal. Account No.")) then
+                            if ((BankAccount."Payment Export Format" = AMCBankingMgt.GetDataExchDef_CT()) and
+                               (AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode())) then
+                                CallDemoSolutionNotification(GetBankExportNotificationId(BankAccount."Payment Export Format"));
+        end;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Pmt. Reconciliation Journals", 'OnAfterGetCurrRecordEvent', '', true, true)]
@@ -870,19 +964,23 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         BankAccount: Record "Bank Account";
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
-        //Show notification if Assisted setup has to run after upgrade
-        if (BankAccount.get(rec."Bank Account No.")) then
-            if (UpgradeNotificationIsNeeded(BankAccount."Bank Statement Import Format")) then begin
-                CallAssistedSetupNotification(GetBankExportNotificationId(BankAccount."Bank Statement Import Format"));
-                exit;
-            end;
+        if (AMCBankingSetup.Get()) then;
 
-        //Show notification if AMC Banking service is demo solution
-        if (AMCBankingSetup.Get()) then
+        if (AMCBankingSetup."AMC Enabled") then begin
+            //Show notification if Assisted setup has to run after upgrade
             if (BankAccount.get(rec."Bank Account No.")) then
-                if ((BankAccount."Bank Statement Import Format" = AMCBankingMgt.GetDataExchDef_STMT()) and
-                    (AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode())) then
-                    CallDemoSolutionNotification(AMCBankingSetup.SystemId);
+                if (UpgradeNotificationIsNeeded(BankAccount."Bank Statement Import Format")) then begin
+                    CallAssistedSetupNotification(GetBankExportNotificationId(BankAccount."Bank Statement Import Format"));
+                    exit;
+                end;
+
+            //Show notification if AMC Banking service is demo solution
+            if (not AMCBankingSetup.IsEmpty()) then
+                if (BankAccount.get(rec."Bank Account No.")) then
+                    if ((BankAccount."Bank Statement Import Format" = AMCBankingMgt.GetDataExchDef_STMT()) and
+                        (AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode())) then
+                        CallDemoSolutionNotification(AMCBankingSetup.SystemId);
+        end;
     end;
 
 
@@ -892,18 +990,21 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         BankAccount: Record "Bank Account";
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
-        //Show notification if Assisted setup has to run after upgrade
-        if (BankAccount.get(rec."Bank Account No.")) then
-            if (UpgradeNotificationIsNeeded(BankAccount."Bank Statement Import Format")) then begin
-                CallAssistedSetupNotification(GetBankExportNotificationId(BankAccount."Bank Statement Import Format"));
-                exit;
-            end;
-        //Show notification if AMC Banking service is demo solution
-        if (AMCBankingSetup.Get()) then
+        if (AMCBankingSetup.Get()) then;
+        if (AMCBankingSetup."AMC Enabled") then begin
+            //Show notification if Assisted setup has to run after upgrade
             if (BankAccount.get(rec."Bank Account No.")) then
-                if ((BankAccount."Bank Statement Import Format" = AMCBankingMgt.GetDataExchDef_STMT()) and
-                   (AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode())) then
-                    CallDemoSolutionNotification(AMCBankingSetup.SystemId);
+                if (UpgradeNotificationIsNeeded(BankAccount."Bank Statement Import Format")) then begin
+                    CallAssistedSetupNotification(GetBankExportNotificationId(BankAccount."Bank Statement Import Format"));
+                    exit;
+                end;
+            //Show notification if AMC Banking service is demo solution
+            if (AMCBankingSetup.Get()) then
+                if (BankAccount.get(rec."Bank Account No.")) then
+                    if ((BankAccount."Bank Statement Import Format" = AMCBankingMgt.GetDataExchDef_STMT()) and
+                       (AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode())) then
+                        CallDemoSolutionNotification(AMCBankingSetup.SystemId);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Bank Acc. Reconciliation List", 'OnAfterGetCurrRecordEvent', '', true, true)]
@@ -912,19 +1013,22 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         BankAccount: Record "Bank Account";
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
-        //Show notification if Assisted setup has to run after upgrade
-        if (BankAccount.get(rec."Bank Account No.")) then
-            if (UpgradeNotificationIsNeeded(BankAccount."Bank Statement Import Format")) then begin
-                CallAssistedSetupNotification(GetBankExportNotificationId(BankAccount."Bank Statement Import Format"));
-                exit;
-            end;
-
-        //Show notification if AMC Banking service is demo solution
-        if (AMCBankingSetup.Get()) then
+        if (AMCBankingSetup.Get()) then;
+        if (AMCBankingSetup."AMC Enabled") then begin
+            //Show notification if Assisted setup has to run after upgrade
             if (BankAccount.get(rec."Bank Account No.")) then
-                if ((BankAccount."Bank Statement Import Format" = AMCBankingMgt.GetDataExchDef_STMT()) and
-                   (AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode())) then
-                    CallDemoSolutionNotification(AMCBankingSetup.SystemId);
+                if (UpgradeNotificationIsNeeded(BankAccount."Bank Statement Import Format")) then begin
+                    CallAssistedSetupNotification(GetBankExportNotificationId(BankAccount."Bank Statement Import Format"));
+                    exit;
+                end;
+
+            //Show notification if AMC Banking service is demo solution
+            if (not AMCBankingSetup.IsEmpty) then
+                if (BankAccount.get(rec."Bank Account No.")) then
+                    if ((BankAccount."Bank Statement Import Format" = AMCBankingMgt.GetDataExchDef_STMT()) and
+                       (AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode())) then
+                        CallDemoSolutionNotification(AMCBankingSetup.SystemId);
+        end
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Bank Acc. Reconciliation", 'OnAfterGetCurrRecordEvent', '', true, true)]
@@ -933,28 +1037,34 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         BankAccount: Record "Bank Account";
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
-        //Show notification if Assisted setup has to run after upgrade
-        if (BankAccount.get(rec."Bank Account No.")) then
-            if (UpgradeNotificationIsNeeded(BankAccount."Bank Statement Import Format")) then begin
-                CallAssistedSetupNotification(GetBankExportNotificationId(BankAccount."Bank Statement Import Format"));
-                exit;
-            end;
-
-        //Show notification if AMC Banking service is demo solution
-        if (AMCBankingSetup.Get()) then
+        if (AMCBankingSetup.Get()) then;
+        if (AMCBankingSetup."AMC Enabled") then begin
+            //Show notification if Assisted setup has to run after upgrade
             if (BankAccount.get(rec."Bank Account No.")) then
-                if ((BankAccount."Bank Statement Import Format" = AMCBankingMgt.GetDataExchDef_STMT()) and
-                   (AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode())) then
-                    CallDemoSolutionNotification(AMCBankingSetup.SystemId);
+                if (UpgradeNotificationIsNeeded(BankAccount."Bank Statement Import Format")) then begin
+                    CallAssistedSetupNotification(GetBankExportNotificationId(BankAccount."Bank Statement Import Format"));
+                    exit;
+                end;
+
+            //Show notification if AMC Banking service is demo solution
+            if (not AMCBankingSetup.IsEmpty()) then
+                if (BankAccount.get(rec."Bank Account No.")) then
+                    if ((BankAccount."Bank Statement Import Format" = AMCBankingMgt.GetDataExchDef_STMT()) and
+                       (AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode())) then
+                        CallDemoSolutionNotification(AMCBankingSetup.SystemId);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Bank Export/Import Setup", 'OnAfterGetCurrRecordEvent', '', true, true)]
     local procedure ShowAssistedSetupNotificationBankExportImportSetup(var Rec: Record "Bank Export/Import Setup")
     var
+        AMCBankingSetup: Record "AMC Banking Setup";
     begin
+        if (AMCBankingSetup.Get()) then;
         //Show notification if Assisted setup has to run after upgrade
-        if (UpgradeNotificationIsNeeded(Rec.Code)) then
-            CallAssistedSetupNotification(Rec.SystemId);
+        if (AMCBankingSetup."AMC Enabled") then
+            if (UpgradeNotificationIsNeeded(Rec.Code)) then
+                CallAssistedSetupNotification(Rec.SystemId);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnRegister', '', true, true)]

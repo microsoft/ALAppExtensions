@@ -1,8 +1,8 @@
 codeunit 20103 "AMC Bank Imp.-Pre-Mapping"
 {
     ObsoleteState = Pending;
-    ObsoleteReason = 'Replaced by the new implementation in V18.2 of AMC Bank Imp.-Pre-Process';
-    ObsoleteTag = '18.2';
+    ObsoleteReason = 'Replaced by the new implementation in V19.1 of AMC Bank Imp.-Pre-Process';
+    ObsoleteTag = '19.1';
 
     TableNo = "Bank Acc. Reconciliation Line";
 

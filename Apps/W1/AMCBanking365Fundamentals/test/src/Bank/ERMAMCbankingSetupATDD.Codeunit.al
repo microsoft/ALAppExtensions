@@ -127,6 +127,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         AMCBankingSetup.Init();
         AMCBankingSetup.Validate("User Name", UserNameAMC);
         AMCBankingSetup.SavePassword(PasswordAMC);
+        AMCBankingSetup."AMC Enabled" := true;
         AMCBankingSetup.Insert();
         AMCBankingSetup.SetURLsToDefault();
 
@@ -592,6 +593,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         AMCBankingSetup.Validate("User Name",
           LibraryUtility.GenerateRandomCode(AMCBankingSetup.FieldNo("User Name"), DATABASE::"AMC Banking Setup"));
         AMCBankingSetup.SavePassword(GenerateRandomPassword());
+        AMCBankingSetup."AMC Enabled" := true;
         AMCBankingSetup.Insert(true);
     end;
 
@@ -618,7 +620,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
     var
         AMCBankingMgt: Codeunit "AMC Banking Mgt.";
     begin
-        Assert.AreEqual('https://license.amcbanking.com/register', AMCBankingSetup."Sign-up URL", 'Sign-up invalid');
+        Assert.AreEqual(AMCBankingMgt.GetLicenseServerName() + AMCBankingMgt.GetLicenseRegisterTag(), AMCBankingSetup."Sign-up URL", 'Sign-up invalid');
         if ((AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode()) or
            (AMCBankingSetup.Solution = '')) then
             Assert.AreEqual('https://demoxtl.amcbanking.com/api04', AMCBankingSetup."Service URL", 'Service URL invalid') //V17.5
