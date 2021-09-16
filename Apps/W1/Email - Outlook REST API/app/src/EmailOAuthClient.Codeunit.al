@@ -12,25 +12,19 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
     [NonDebuggable]
     procedure GetAccessToken(var AccessToken: Text)
     begin
-        TryGetAccessTokenInternal(AccessToken, false);
+        TryGetAccessTokenInternal(AccessToken);
     end;
 
     [NonDebuggable]
     procedure TryGetAccessToken(var AccessToken: Text): Boolean
     begin
-        exit(TryGetAccessToken(AccessToken, false));
-    end;
-
-    [NonDebuggable]
-    procedure TryGetAccessToken(var AccessToken: Text; Force: Boolean): Boolean
-    begin
-        exit(TryGetAccessTokenInternal(AccessToken, Force));
+        exit(TryGetAccessTokenInternal(AccessToken));
     end;
 
     // Interfaces do not support properties for the procedures, so using an internal function
     [TryFunction]
     [NonDebuggable]
-    local procedure TryGetAccessTokenInternal(var AccessToken: Text; Force: Boolean)
+    local procedure TryGetAccessTokenInternal(var AccessToken: Text)
     var
         EnvironmentInformation: Codeunit "Environment Information";
         OAuthErr: Text;
@@ -40,7 +34,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
                 if OAuth2.AcquireOnBehalfOfToken('', Scopes, AccessToken) then;
         end else begin
             Initialize();
-            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), Scopes, AccessToken)) or (AccessToken = '') or Force then
+            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), Scopes, AccessToken)) or (AccessToken = '') then
                 OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), RedirectURL, Scopes, Enum::"Prompt Interaction"::None, AccessToken, OAuthErr);
         end;
 
@@ -50,6 +44,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
 
     local procedure Initialize()
     var
+        EmailOutlookAPISetup: Record "Email - Outlook API Setup";
         EnvironmentInformation: Codeunit "Environment Information";
         EmailOutlookAPIHelper: Codeunit "Email - Outlook API Helper";
     begin
@@ -61,7 +56,8 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
             RedirectURL := EmailOutlookAPIHelper.GetRedirectURL();
             if RedirectURL = '' then
                 OAuth2.GetDefaultRedirectUrl(RedirectURL);
-            TenantId := EmailOutlookAPIHelper.GetTenantID();
+            EmailOutlookAPISetup.Get();
+            TenantId := EmailOutlookAPISetup.GetTenantIDAsText();
         end;
 
         Scopes.Add('https://graph.microsoft.com/User.Read');

@@ -113,11 +113,22 @@ page 4509 "Email - Outlook API Setup"
                         end;
                     }
 
-                    field(TenantID; Rec.TenantID)
+                    field(TenantIDText; TenantIDText)
                     {
                         ApplicationArea = All;
                         ToolTip = 'Specifies the Tenant ID.';
                         Caption = 'Tenant ID';
+
+                        trigger OnValidate()
+                        var
+                            DummyGuid: Guid;
+                        begin
+                            if TenantIDText.ToLower() = Rec.GetNullGuidDefaultValue() then
+                                Rec.TenantID := DummyGuid
+                            else
+                                if TenantIDText <> '' then
+                                    Rec.TenantID := TenantIDText
+                        end;
                     }
                 }
             }
@@ -194,7 +205,7 @@ page 4509 "Email - Outlook API Setup"
                     Rec.ClientId := DummyGuid;
                     Rec.ClientSecret := DummyGuid;
                     Rec.RedirectURL := '';
-                    Rec.TenantID := '';
+                    Rec.TenantID := DummyGuid;
                     ClientSecretText := '';
                     ClientIdText := '';
 
@@ -212,6 +223,7 @@ page 4509 "Email - Outlook API Setup"
         RedirectURLTxt: Text;
         TenantInformation: Codeunit "Tenant Information";
         EnvInfo: Codeunit "Environment Information";
+        DummyGuid: Guid;
 
     begin
         if not Rec.Get() then
@@ -229,13 +241,16 @@ page 4509 "Email - Outlook API Setup"
             Rec.Modify();
         end;
 
-        if Rec.TenantID = '' then begin
+        if IsNullGuid(Rec.TenantID) or (DummyGuid = Rec.TenantID) then begin
             if EnvInfo.IsSaaSInfrastructure() then
-                Rec.TenantID := TenantInformation.GetTenantId()
-            else
-                Rec.TenantID := CopyStr(DefaultTenantId, 1, MaxStrLen(Rec.TenantID));
+                Rec.TenantID := TenantInformation.GetTenantId();
             Rec.Modify();
         end;
+
+        if DummyGuid = Rec.TenantID then
+            TenantIDText := Rec.GetNullGuidDefaultValue
+        else
+            TenantIDText := Rec.GetTenantIDAsText();
 
         if MediaResources.Get('ASSISTEDSETUP-NOTEXT-400PX.PNG') and (CurrentClientType = ClientType::Web) then
             TopBannerVisible := MediaResources."Media Reference".HasValue;
@@ -268,7 +283,7 @@ page 4509 "Email - Outlook API Setup"
         [NonDebuggable]
         AccessToken: Text;
     begin
-        if not EmailOAuthClient.TryGetAccessToken(AccessToken, true) then
+        if not EmailOAuthClient.TryGetAccessToken(AccessToken) then
             Message(UnsuccessfulTestMsg)
         else
             Message(SuccessfulTestMsg);
@@ -278,6 +293,7 @@ page 4509 "Email - Outlook API Setup"
         MediaResources: Record "Media Resources";
         ClientIdText: Text;
         ClientSecretText: Text;
+        TenantIDText: Text;
         DocumentationAzureUlrTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2134620', Locked = true;
         DocumentationBCUlrTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2134520', Locked = true;
         AppRegistrationsLbl: Label 'Learn more about app registration';
@@ -287,7 +303,6 @@ page 4509 "Email - Outlook API Setup"
         UnsuccessfulTestMsg: Label 'We could not get access token with the current setup.\\Please verify the values on the page and try again.';
         SuccessfulTestMsg: Label 'Success! Your authentication was verified.';
         HiddenValueTxt: Label '******', Locked = true;
-        DefaultTenantId: Label 'Common', Locked = true;
         TopBannerVisible: Boolean;
         [InDataSet]
         IsUserLoggedIn: Boolean;
