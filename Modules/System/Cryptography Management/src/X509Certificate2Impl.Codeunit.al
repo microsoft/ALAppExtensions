@@ -105,7 +105,7 @@ codeunit 1285 "X509Certificate2 Impl."
         CertBase64Value := Convert.ToBase64String(X509Certificate2.Export(X509ContType));
     end;
 
-    local procedure InitializeX509Certificate(CertBase64Value: Text; Password: Text; var X509Certificate2: DotNet X509Certificate2)
+    internal procedure InitializeX509Certificate(CertBase64Value: Text; Password: Text; var X509Certificate2: DotNet X509Certificate2)
     begin
         if not TryInitializeCertificate(CertBase64Value, Password, X509Certificate2) then
             Error(CertInitializeErr);
