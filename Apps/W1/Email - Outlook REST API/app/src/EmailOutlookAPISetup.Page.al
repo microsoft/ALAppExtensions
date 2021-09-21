@@ -112,6 +112,24 @@ page 4509 "Email - Outlook API Setup"
                             ValidateUri(Rec.RedirectURL);
                         end;
                     }
+
+                    field(TenantIDText; TenantIDText)
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the Tenant ID.';
+                        Caption = 'Tenant ID';
+
+                        trigger OnValidate()
+                        var
+                            DummyGuid: Guid;
+                        begin
+                            if TenantIDText.ToLower() = Rec.GetNullGuidDefaultValue() then
+                                Rec.TenantID := DummyGuid
+                            else
+                                if TenantIDText <> '' then
+                                    Rec.TenantID := TenantIDText
+                        end;
+                    }
                 }
             }
         }
@@ -187,6 +205,7 @@ page 4509 "Email - Outlook API Setup"
                     Rec.ClientId := DummyGuid;
                     Rec.ClientSecret := DummyGuid;
                     Rec.RedirectURL := '';
+                    Rec.TenantID := DummyGuid;
                     ClientSecretText := '';
                     ClientIdText := '';
 
@@ -202,6 +221,10 @@ page 4509 "Email - Outlook API Setup"
         EmailOAuthClient: Codeunit "Email - OAuth Client";
         OAuth2: Codeunit "OAuth2";
         RedirectURLTxt: Text;
+        TenantInformation: Codeunit "Tenant Information";
+        EnvInfo: Codeunit "Environment Information";
+        DummyGuid: Guid;
+
     begin
         if not Rec.Get() then
             Rec.Insert();
@@ -217,6 +240,17 @@ page 4509 "Email - Outlook API Setup"
             Rec.RedirectURL := CopyStr(RedirectURLTxt, 1, MaxStrLen(Rec.RedirectURL));
             Rec.Modify();
         end;
+
+        if IsNullGuid(Rec.TenantID) or (DummyGuid = Rec.TenantID) then begin
+            if EnvInfo.IsSaaSInfrastructure() then
+                Rec.TenantID := TenantInformation.GetTenantId();
+            Rec.Modify();
+        end;
+
+        if DummyGuid = Rec.TenantID then
+            TenantIDText := Rec.GetNullGuidDefaultValue
+        else
+            TenantIDText := Rec.GetTenantIDAsText();
 
         if MediaResources.Get('ASSISTEDSETUP-NOTEXT-400PX.PNG') and (CurrentClientType = ClientType::Web) then
             TopBannerVisible := MediaResources."Media Reference".HasValue;
@@ -259,6 +293,7 @@ page 4509 "Email - Outlook API Setup"
         MediaResources: Record "Media Resources";
         ClientIdText: Text;
         ClientSecretText: Text;
+        TenantIDText: Text;
         DocumentationAzureUlrTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2134620', Locked = true;
         DocumentationBCUlrTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2134520', Locked = true;
         AppRegistrationsLbl: Label 'Learn more about app registration';

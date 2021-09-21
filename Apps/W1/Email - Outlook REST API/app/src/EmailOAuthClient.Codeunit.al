@@ -31,11 +31,11 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
     begin
         if EnvironmentInformation.IsSaaSInfrastructure() then begin
             if (not AcquireOnBehalfOfTokenFromStoredTokenCache(AccessToken)) or (AccessToken = '') then
-                if OAuth2.AcquireOnBehalfOfToken('', GraphResourceURLTxt, AccessToken) then;
+                if OAuth2.AcquireOnBehalfOfToken('', Scopes, AccessToken) then;
         end else begin
             Initialize();
-            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrlTxt, GraphResourceURLTxt, AccessToken)) or (AccessToken = '') then
-                OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, OAuthAuthorityUrlTxt, RedirectURL, GraphResourceURLTxt, Enum::"Prompt Interaction"::None, AccessToken, OAuthErr);
+            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), Scopes, AccessToken)) or (AccessToken = '') then
+                OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), RedirectURL, Scopes, Enum::"Prompt Interaction"::None, AccessToken, OAuthErr);
         end;
 
         if AccessToken = '' then
@@ -44,6 +44,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
 
     local procedure Initialize()
     var
+        EmailOutlookAPISetup: Record "Email - Outlook API Setup";
         EnvironmentInformation: Codeunit "Environment Information";
         EmailOutlookAPIHelper: Codeunit "Email - Outlook API Helper";
     begin
@@ -55,7 +56,14 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
             RedirectURL := EmailOutlookAPIHelper.GetRedirectURL();
             if RedirectURL = '' then
                 OAuth2.GetDefaultRedirectUrl(RedirectURL);
+            EmailOutlookAPISetup.Get();
+            TenantId := EmailOutlookAPISetup.GetTenantIDAsText();
         end;
+
+        Scopes.Add('https://graph.microsoft.com/User.Read');
+        Scopes.Add('https://graph.microsoft.com/mail.ReadWrite');
+        Scopes.Add('https://graph.microsoft.com/mail.send');
+        Scopes.Add('https://graph.microsoft.com/offline_access');
 
         IsInitialized := true;
     end;
@@ -74,7 +82,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
             exit(false);
         end;
 
-        if (not OAuth2.AcquireOnBehalfOfTokenByTokenCache(User."Authentication Email", '', GraphResourceURLTxt, TokenCache, AccessToken, NewTokenCache)) or (AccessToken = '') then begin
+        if (not OAuth2.AcquireOnBehalfOfTokenByTokenCache(User."Authentication Email", '', Scopes, TokenCache, AccessToken, NewTokenCache)) or (AccessToken = '') then begin
             Session.LogMessage('000040B', StrSubstNo(CouldNotAcquireAccessTokenFromCacheErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
             if not IsolatedStorage.Delete(TokenCacheTok + UserSecurityId()) then
                 Session.LogMessage('000040C', StrSubstNo(CouldNotDeleteTokenCacheTxt, UserSecurityId()), Verbosity::Warning, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
@@ -133,7 +141,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         AccessToken: Text;
         TokenCache: Text;
     begin
-        if not OAuth2.AcquireOnBehalfAccessTokenAndTokenCache(OAuthAuthorityUrlTxt, '', GraphResourceURLTxt, AccessToken, TokenCache) then begin
+        if not OAuth2.AcquireOnBehalfAccessTokenAndTokenCache(StrSubstNo(OAuthAuthorityUrlTxt, TenantId), '', Scopes, AccessToken, TokenCache) then begin
             Session.LogMessage('000040E', StrSubstNo(CouldNotAcquireOnBehalfOfAccessTokenErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
             exit(false);
         end else
@@ -162,7 +170,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         AccessToken: Text;
     begin
         Initialize();
-        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrlTxt, GraphResourceURLTxt, AccessToken) and (AccessToken <> ''))
+        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), Scopes, AccessToken) and (AccessToken <> ''))
     end;
 
     internal procedure SignInUsingAuthorizationCode(): Boolean
@@ -172,19 +180,20 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         OAuthErr: Text;
     begin
         Initialize();
-        exit(OAuth2.AcquireTokenByAuthorizationCode(ClientID, ClientSecret, OAuthAuthorityUrlTxt, RedirectURL, GraphResourceURLTxt, Enum::"Prompt Interaction"::"Select Account", AccessToken, OAuthErr) and (AccessToken <> ''));
+        exit(OAuth2.AcquireTokenByAuthorizationCode(ClientID, ClientSecret, StrSubstNo(OAuthAuthorityUrlTxt, TenantId), RedirectURL, Scopes, Enum::"Prompt Interaction"::"Select Account", AccessToken, OAuthErr) and (AccessToken <> ''));
     end;
 
     var
         OAuth2: Codeunit OAuth2;
-
         [NonDebuggable]
         ClientId: Text;
         [NonDebuggable]
         ClientSecret: Text;
         RedirectURL: Text;
         IsInitialized: Boolean;
-        OAuthAuthorityUrlTxt: Label 'https://login.microsoftonline.com/common/oauth2', Locked = true;
+        TenantId: Text;
+        Scopes: List of [Text];
+        OAuthAuthorityUrlTxt: Label 'https://login.microsoftonline.com/%1/oauth2', Locked = true;
         GraphResourceURLTxt: Label 'https://graph.microsoft.com/', Locked = true;
         TokenCacheTok: Label 'TokenCache', Locked = true;
         CouldNotGetAccessTokenErr: Label 'Could not get access token. Please, try to log out and log in again.';

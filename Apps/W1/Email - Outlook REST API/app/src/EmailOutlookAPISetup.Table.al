@@ -29,6 +29,11 @@ table 4509 "Email - Outlook API Setup"
             Caption = 'Redirect URL';
             DataClassification = CustomerContent;
         }
+        field(5; TenantID; Guid)
+        {
+            Caption = 'TenantID';
+            DataClassification = CustomerContent;
+        }
     }
 
     keys
@@ -38,4 +43,25 @@ table 4509 "Email - Outlook API Setup"
             Clustered = true;
         }
     }
+
+    procedure GetNullGuidDefaultValue(): Text
+    var
+        DefaultTenantId: Label 'common', Locked = true;
+    begin
+        exit(DefaultTenantId);
+    end;
+
+    procedure GetTenantIDAsText(): Text
+    var
+        Setup: Record "Email - Outlook API Setup";
+        DummyGuid: Guid;
+        TExt2: Text;
+    begin
+        if Setup.Get() then
+            if IsNullGuid(Setup.TenantID) or (DummyGuid = Setup.TenantID) then
+                Setup.GetNullGuidDefaultValue()
+            else
+                // Remove braces
+                exit(format(Setup.TenantID).Substring(2, StrLen(Setup.TenantID) - 2));
+    end;
 }
