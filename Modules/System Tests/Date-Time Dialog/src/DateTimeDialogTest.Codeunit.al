@@ -71,5 +71,61 @@ codeunit 134684 "Date-Time Dialog Test"
 
         DateTimeDialog.OK().Invoke();
     end;
+
+    [Test]
+    [HandlerFunctions('DateDialogHandler')]
+    procedure TestDateDialog()
+    var
+        DateTimeDialog: Page "Date-Time Dialog";
+    begin
+        // [GIVEN] DateTimeDialog is initialized with an arbitrary value.
+        DateTimeDialog.SetDate(22221212D);
+
+        // [WHEN] The page is run.
+        DateTimeDialog.RunModal();
+
+        // [THEN] The value was changed in the handler.
+        Assert.AreEqual(Format(00110101D), Format(DateTimeDialog.GetDate()), '');
+    end;
+
+    [Test]
+    [HandlerFunctions('DateDialogHandlerBlankDate')]
+    procedure TestDateDialogBlankDate()
+    var
+        DateTimeDialog: Page "Date-Time Dialog";
+    begin
+        // [GIVEN] DateTimeDialog is initialized with the blank value.
+        DateTimeDialog.SetDate(0D);
+
+        // [WHEN] The page is run.
+        DateTimeDialog.RunModal();
+
+        // [THEN] The value was changed in the handler.
+        Assert.AreEqual(Format(00110101D), Format(DateTimeDialog.GetDate()), '');
+    end;
+
+    [ModalPageHandler]
+    procedure DateDialogHandler(var DateTimeDialog: TestPage "Date-Time Dialog")
+    begin
+        // Validate initial values.
+        Assert.AreEqual(22221212D, DateTimeDialog.Date.AsDate(), '');
+
+        // Assign new values.
+        DateTimeDialog.Date.Value := Format(00110101D);
+
+        DateTimeDialog.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure DateDialogHandlerBlankDate(var DateTimeDialog: TestPage "Date-Time Dialog")
+    begin
+        // Validate initial values.
+        Assert.AreEqual(0D, DateTimeDialog.Date.AsDate(), '');
+
+        // Assign new values.
+        DateTimeDialog.Date.Value := Format(00110101D);
+
+        DateTimeDialog.OK().Invoke();
+    end;
 }
 
