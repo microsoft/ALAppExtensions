@@ -47,4 +47,28 @@ codeunit 1445 "RSACryptoServiceProvider"
     begin
         exit(RSACryptoServiceProviderImpl.VerifyData(XmlString, DataInStream, HashAlgorithm, SignatureInStream));
     end;
+
+    /// <summary>
+    /// Encrypts the specified text.
+    /// </summary>
+    /// <param name="XmlString">The XML string containing RSA key information.</param>
+    /// <param name="PlainTextInStream">The input stream to encrypt.</param>
+    /// <param name="RSAEncryptionPadding">The RSA encryption padding to use to encrypt the specified text.</param>
+    /// <param name="EncryptedTextOutStream">The RSA encryption stream for the specified text.</param>
+    procedure Encrypt(XmlString: Text; PlainTextInStream: InStream; RSAEncryptionPadding: Enum RSAEncryptionPadding; EncryptedTextOutStream: OutStream)
+    begin
+        RSACryptoServiceProviderImpl.Encrypt(XmlString, PlainTextInStream, RSAEncryptionPadding, EncryptedTextOutStream);
+    end;
+
+    /// <summary>
+    /// Decrypts the specified text.
+    /// </summary>
+    /// <param name="XmlString">The XML string containing RSA key information.</param>
+    /// <param name="EncryptedTextInStream">The input stream to decrypt.</param>
+    /// <param name="RSAEncryptionPadding">The RSA encryption padding to use to decrypt the specified text.</param>
+    /// <param name="DecryptedTextOutStream">The RSA decryption stream for the specified text.</param>
+    procedure Decrypt(XmlString: Text; EncryptedTextInStream: InStream; RSAEncryptionPadding: Enum RSAEncryptionPadding; DecryptedTextOutStream: OutStream)
+    begin
+        RSACryptoServiceProviderImpl.Decrypt(XmlString, EncryptedTextInStream, RSAEncryptionPadding, DecryptedTextOutStream);
+    end;
 }
