@@ -111,7 +111,7 @@ codeunit 1446 "RSACryptoServiceProvider Impl." implements SignatureAlgorithm
         FromXmlString(XmlString);
         InStreamToArray(EncryptedTextInStream, EncryptedTextBytes);
         SetRSAEncryptionPadding(DotNetRSAEncryptionPadding, RSAEncryptionPadding);
-        DecryptedTextBytes := DotNetRSACryptoServiceProvider.Decrypt(EncryptedTextBytes, DotNetRSAEncryptionPadding.Pkcs1);
+        DecryptedTextBytes := DotNetRSACryptoServiceProvider.Decrypt(EncryptedTextBytes, DotNetRSAEncryptionPadding);
         ArrayToOutStream(DecryptedTextBytes, DecryptedTextOutStream);
     end;
 
