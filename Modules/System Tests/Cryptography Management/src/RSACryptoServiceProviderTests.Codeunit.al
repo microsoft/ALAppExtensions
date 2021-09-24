@@ -150,7 +150,7 @@ codeunit 132602 RSACryptoServiceProviderTests
         RSACryptoServiceProvider.Encrypt(PublicKeyXmlString, EncryptingInStream, true, EncryptedOutStream);
         EncryptedTempBlob.CreateInStream(EncryptedInStream);
 
-        // [WHEN] Decrypt encrypted text stream using different padding
+        // [WHEN] Decrypt encrypted text stream using PKCS#1 padding.
         DecryptingTempBlob.CreateOutStream(DecryptedOutStream);
         asserterror RSACryptoServiceProvider.Decrypt(PrivateKeyXmlString, EncryptedInStream, false, DecryptedOutStream);
 
