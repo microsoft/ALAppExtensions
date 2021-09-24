@@ -1990,6 +1990,9 @@ dotnet
         type("System.Security.Cryptography.Xml.XmlLicenseTransform"; "XmlLicenseTransform")
         {
         }
+        type("System.Security.Cryptography.Xml.DataObject"; DataObject)
+        {
+        }
     }
 
     assembly("System.ServiceModel")
