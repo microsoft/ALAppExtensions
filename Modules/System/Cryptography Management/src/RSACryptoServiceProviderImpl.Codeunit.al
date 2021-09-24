@@ -88,47 +88,27 @@ codeunit 1446 "RSACryptoServiceProvider Impl." implements SignatureAlgorithm
     #endregion
 
     #region Encryption
-    procedure Encrypt(XmlString: Text; PlainTextInStream: InStream; RSAEncryptionPadding: Enum RSAEncryptionPadding; EncryptedTextOutStream: OutStream)
+    procedure Encrypt(XmlString: Text; PlainTextInStream: InStream; OaepPadding: Boolean; EncryptedTextOutStream: OutStream)
     var
         PlainTextBytes: DotNet Array;
         EncryptedTextBytes: DotNet Array;
-        DotNetRSAEncryptionPadding: DotNet RSAEncryptionPadding;
     begin
         FromXmlString(XmlString);
         InStreamToArray(PlainTextInStream, PlainTextBytes);
-        SetRSAEncryptionPadding(DotNetRSAEncryptionPadding, RSAEncryptionPadding);
-        EncryptedTextBytes := DotNetRSACryptoServiceProvider.Encrypt(PlainTextBytes, DotNetRSAEncryptionPadding);
+        EncryptedTextBytes := DotNetRSACryptoServiceProvider.Encrypt(PlainTextBytes, OaepPadding);
         ArrayToOutStream(EncryptedTextBytes, EncryptedTextOutStream);
     end;
 
 
-    procedure Decrypt(XmlString: Text; EncryptedTextInStream: InStream; RSAEncryptionPadding: Enum RSAEncryptionPadding; DecryptedTextOutStream: OutStream)
+    procedure Decrypt(XmlString: Text; EncryptedTextInStream: InStream; OaepPadding: Boolean; DecryptedTextOutStream: OutStream)
     var
         EncryptedTextBytes: DotNet Array;
         DecryptedTextBytes: DotNet Array;
-        DotNetRSAEncryptionPadding: DotNet RSAEncryptionPadding;
     begin
         FromXmlString(XmlString);
         InStreamToArray(EncryptedTextInStream, EncryptedTextBytes);
-        SetRSAEncryptionPadding(DotNetRSAEncryptionPadding, RSAEncryptionPadding);
-        DecryptedTextBytes := DotNetRSACryptoServiceProvider.Decrypt(EncryptedTextBytes, DotNetRSAEncryptionPadding);
+        DecryptedTextBytes := DotNetRSACryptoServiceProvider.Decrypt(EncryptedTextBytes, OaepPadding);
         ArrayToOutStream(DecryptedTextBytes, DecryptedTextOutStream);
-    end;
-
-    local procedure SetRSAEncryptionPadding(var DotNetRSAEncryptionPadding: DotNet RSAEncryptionPadding; RSAEncryptionPadding: Enum RSAEncryptionPadding)
-    begin
-        case RSAEncryptionPadding of
-            RSAEncryptionPadding::OaepSHA1:
-                DotNetRSAEncryptionPadding := DotNetRSAEncryptionPadding.OaepSHA1;
-            RSAEncryptionPadding::OaepSHA256:
-                DotNetRSAEncryptionPadding := DotNetRSAEncryptionPadding.OaepSHA256;
-            RSAEncryptionPadding::OaepSHA384:
-                DotNetRSAEncryptionPadding := DotNetRSAEncryptionPadding.OaepSHA384;
-            RSAEncryptionPadding::OaepSHA512:
-                DotNetRSAEncryptionPadding := DotNetRSAEncryptionPadding.OaepSHA512;
-            RSAEncryptionPadding::Pkcs1:
-                DotNetRSAEncryptionPadding := DotNetRSAEncryptionPadding.Pkcs1;
-        end;
     end;
     #endregion
 
