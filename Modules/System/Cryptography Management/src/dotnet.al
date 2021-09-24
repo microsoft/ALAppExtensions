@@ -19,7 +19,6 @@ dotnet
         type("System.Security.Cryptography.SymmetricAlgorithm"; "Cryptography.SymmetricAlgorithm") { }
         type("System.Security.Cryptography.DESCryptoServiceProvider"; "Cryptography.DESCryptoServiceProvider") { }
         type("System.Security.Cryptography.RSASignaturePadding"; RSASignaturePadding) { }
-        type("System.Security.Cryptography.RSAEncryptionPadding"; RSAEncryptionPadding) { }
     }
 
     assembly("System")
