@@ -136,6 +136,7 @@ codeunit 1461 "SignedXml Impl."
         DotNetSignedXml.AddObject(DotNetDataObject);
     end;
     #endregion
+    
     procedure SetSigningKey(var SignatureKey: Record "Signature Key")
     begin
         if SignatureKey.TryGetInstance(DotNetAsymmetricAlgorithm) then
