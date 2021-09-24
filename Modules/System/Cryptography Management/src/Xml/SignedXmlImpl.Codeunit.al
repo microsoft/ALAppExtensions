@@ -128,11 +128,6 @@ codeunit 1461 "SignedXml Impl."
     begin
         XmlDotNetConvert.ToDotNet(DataObjectXmlElement, DotNetXmlElement);
         DotNetDataObject.LoadXml(DotNetXmlElement);
-        AddObject();
-    end;
-
-    local procedure AddObject()
-    begin
         DotNetSignedXml.AddObject(DotNetDataObject);
     end;
     #endregion
