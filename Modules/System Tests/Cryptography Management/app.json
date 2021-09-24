@@ -30,6 +30,18 @@
                              "version":  "18.3.0.0"
                          },
                          {
+                            "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                            "name": "Tests-TestLibraries",
+                            "publisher": "Microsoft",
+                            "version": "18.3.0.0"   
+                         },
+                         {
+                            "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+                            "name": "Library Variable Storage",
+                            "publisher": "Microsoft",
+                            "version": "18.3.0.0"
+                         },
+                         {
                              "id":  "0846d207-5dec-4c1b-afd8-6a25e1e14b9d",
                              "name":  "Base64 Convert",
                              "publisher":  "Microsoft",
@@ -68,6 +80,10 @@
                      {
                         "from":  132601,
                         "to":  132601
+                     },
+                     {
+                        "from": 132602,
+                        "to": 132602  
                      }
                  ]
 }

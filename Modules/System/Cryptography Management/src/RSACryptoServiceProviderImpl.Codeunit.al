@@ -87,6 +87,30 @@ codeunit 1446 "RSACryptoServiceProvider Impl." implements SignatureAlgorithm
     end;
     #endregion
 
+    #region Encryption
+    procedure Encrypt(XmlString: Text; PlainTextInStream: InStream; OaepPadding: Boolean; EncryptedTextOutStream: OutStream)
+    var
+        PlainTextBytes: DotNet Array;
+        EncryptedTextBytes: DotNet Array;
+    begin
+        FromXmlString(XmlString);
+        InStreamToArray(PlainTextInStream, PlainTextBytes);
+        EncryptedTextBytes := DotNetRSACryptoServiceProvider.Encrypt(PlainTextBytes, OaepPadding);
+        ArrayToOutStream(EncryptedTextBytes, EncryptedTextOutStream);
+    end;
+
+    procedure Decrypt(XmlString: Text; EncryptedTextInStream: InStream; OaepPadding: Boolean; DecryptedTextOutStream: OutStream)
+    var
+        EncryptedTextBytes: DotNet Array;
+        DecryptedTextBytes: DotNet Array;
+    begin
+        FromXmlString(XmlString);
+        InStreamToArray(EncryptedTextInStream, EncryptedTextBytes);
+        DecryptedTextBytes := DotNetRSACryptoServiceProvider.Decrypt(EncryptedTextBytes, OaepPadding);
+        ArrayToOutStream(DecryptedTextBytes, DecryptedTextOutStream);
+    end;
+    #endregion
+
     #region XmlString
     procedure ToXmlString(IncludePrivateParameters: Boolean): Text
     begin
