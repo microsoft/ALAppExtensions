@@ -158,7 +158,6 @@ codeunit 132602 RSACryptoServiceProviderTests
         LibraryAssert.ExpectedError('A call to System.Security.Cryptography.RSACryptoServiceProvider.Decrypt failed with this message: The parameter is incorrect.\');
     end;
 
-
     local procedure EnqueueRandomPlainTextAndSaveToOutStream(_OutStream: OutStream)
     var
         PlainText: Text;

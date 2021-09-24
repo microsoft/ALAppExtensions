@@ -99,7 +99,6 @@ codeunit 1446 "RSACryptoServiceProvider Impl." implements SignatureAlgorithm
         ArrayToOutStream(EncryptedTextBytes, EncryptedTextOutStream);
     end;
 
-
     procedure Decrypt(XmlString: Text; EncryptedTextInStream: InStream; OaepPadding: Boolean; DecryptedTextOutStream: OutStream)
     var
         EncryptedTextBytes: DotNet Array;
