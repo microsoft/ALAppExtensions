@@ -30,12 +30,6 @@
                              "version":  "18.3.0.0"
                          },
                          {
-                            "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                            "name": "Tests-TestLibraries",
-                            "publisher": "Microsoft",
-                            "version": "18.3.0.0"   
-                         },
-                         {
                             "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
                             "name": "Library Variable Storage",
                             "publisher": "Microsoft",

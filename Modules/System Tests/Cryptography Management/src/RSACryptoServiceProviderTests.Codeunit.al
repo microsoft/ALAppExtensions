@@ -8,16 +8,15 @@ codeunit 132602 RSACryptoServiceProviderTests
 
     var
         LibraryAssert: Codeunit "Library Assert";
-        LibraryRandom: Codeunit "Library - Random";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         RSACryptoServiceProvider: Codeunit RSACryptoServiceProvider;
+        Any: Codeunit Any;
         IsInitialized: Boolean;
         PrivateKeyXmlString: Text;
         PublicKeyXmlString: Text;
 
     local procedure Initialize()
     begin
-        LibraryRandom.Init();
         LibraryVariableStorage.Clear();
         if IsInitialized then
             exit;
@@ -168,7 +167,7 @@ codeunit 132602 RSACryptoServiceProviderTests
 
     local procedure SaveRandomTextToOutStream(_OutStream: OutStream) PlainText: Text
     begin
-        PlainText := LibraryRandom.RandText(LibraryRandom.RandInt(80));
+        PlainText := Any.AlphanumericText(Any.IntegerInRange(80));
         _OutStream.WriteText(PlainText);
     end;
 
