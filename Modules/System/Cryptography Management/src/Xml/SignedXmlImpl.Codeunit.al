@@ -12,6 +12,7 @@ codeunit 1461 "SignedXml Impl."
         DotNetKeyInfo: DotNet KeyInfo;
         DotNetReference: DotNet Reference;
         DotNetSignedXml: DotNet SignedXml;
+        DotNetDataObject: DotNet DataObject;
 
 
     #region Constructors
@@ -111,6 +112,23 @@ codeunit 1461 "SignedXml Impl."
     local procedure AddClause(DotNetKeyInfoClause: DotNet KeyInfoClause)
     begin
         DotNetKeyInfo.AddClause(DotNetKeyInfoClause);
+    end;
+    #endregion
+
+    #region DataObject
+    procedure InitializeDataObject()
+    begin
+        DotNetDataObject := DotNetDataObject.DataObject();
+    end;
+
+    procedure AddObject(DataObjectXmlElement: XmlElement)
+    var
+        XmlDotNetConvert: Codeunit "Xml DotNet Convert";
+        DotNetXmlElement: DotNet XmlElement;
+    begin
+        XmlDotNetConvert.ToDotNet(DataObjectXmlElement, DotNetXmlElement);
+        DotNetDataObject.LoadXml(DotNetXmlElement);
+        DotNetSignedXml.AddObject(DotNetDataObject);
     end;
     #endregion
 

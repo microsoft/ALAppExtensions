@@ -1932,6 +1932,10 @@ dotnet
         Culture = 'neutral';
         PublicKeyToken = 'b03f5f7f11d50a3a';
 
+        type("System.Security.Cryptography.Xml.DataObject"; DataObject)
+        {
+        }
+
         type("System.Security.Cryptography.Xml.KeyInfo"; "KeyInfo")
         {
         }
