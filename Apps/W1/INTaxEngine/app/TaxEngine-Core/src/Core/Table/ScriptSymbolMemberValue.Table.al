@@ -53,7 +53,7 @@ table 20131 "Script Symbol Member Value"
         }
         field(113; "RecordID Value"; RecordID)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'RecordID Value';
         }
         field(114; "DateTime Value"; DateTime)

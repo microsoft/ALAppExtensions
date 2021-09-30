@@ -26,20 +26,30 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
     [NonDebuggable]
     local procedure TryGetAccessTokenInternal(var AccessToken: Text)
     var
+        AzureAdMgt: Codeunit "Azure AD Mgt.";
+        UrlHelper: Codeunit "Url Helper";
         EnvironmentInformation: Codeunit "Environment Information";
         OAuthErr: Text;
     begin
+        Initialize();
+
         if EnvironmentInformation.IsSaaSInfrastructure() then begin
-            if (not AcquireOnBehalfOfTokenFromStoredTokenCache(AccessToken)) or (AccessToken = '') then
-                if OAuth2.AcquireOnBehalfOfToken('', GraphResourceURLTxt, AccessToken) then;
-        end else begin
-            Initialize();
-            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrlTxt, GraphResourceURLTxt, AccessToken)) or (AccessToken = '') then
-                OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, OAuthAuthorityUrlTxt, RedirectURL, GraphResourceURLTxt, Enum::"Prompt Interaction"::None, AccessToken, OAuthErr);
-        end;
+            AccessToken := AzureAdMgt.GetAccessToken(UrlHelper.GetGraphUrl(), '', false);
+            if AccessToken = '' then begin
+                Session.LogMessage('000040Z', CouldNotAcquireAccessTokenErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+                if OAuth2.AcquireOnBehalfOfToken('', Scopes, AccessToken) then;
+            end;
+        end else
+            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrlTxt, Scopes, AccessToken)) or (AccessToken = '') then
+                OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, OAuthAuthorityUrlTxt, RedirectURL, Scopes, Enum::"Prompt Interaction"::None, AccessToken, OAuthErr);
 
         if AccessToken = '' then
             Error(CouldNotGetAccessTokenErr);
+    end;
+
+    internal procedure GetLastAuthorizationErrorMessage(): Text
+    begin
+        exit(OAuth2.GetLastErrorMessage());
     end;
 
     local procedure Initialize()
@@ -50,6 +60,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         if IsInitialized then
             exit;
 
+        Scopes.Add(GraphScopesLbl);
         if not EnvironmentInformation.IsSaaSInfrastructure() then begin
             EmailOutlookAPIHelper.GetClientIDAndSecret(ClientId, ClientSecret);
             RedirectURL := EmailOutlookAPIHelper.GetRedirectURL();
@@ -60,109 +71,13 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         IsInitialized := true;
     end;
 
-    [NonDebuggable]
-    local procedure AcquireOnBehalfOfTokenFromStoredTokenCache(var AccessToken: Text): Boolean
-    var
-        User: Record User;
-        TokenCache: Text;
-        NewTokenCache: Text;
-    begin
-        User.Get(UserSecurityId());
-
-        if not IsolatedStorage.Get(TokenCacheTok + UserSecurityId(), DataScope::Module, TokenCache) then begin
-            Session.LogMessage('000040A', StrSubstNo(NoStoredTokenCacheErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-            exit(false);
-        end;
-
-        if (not OAuth2.AcquireOnBehalfOfTokenByTokenCache(User."Authentication Email", '', GraphResourceURLTxt, TokenCache, AccessToken, NewTokenCache)) or (AccessToken = '') then begin
-            Session.LogMessage('000040B', StrSubstNo(CouldNotAcquireAccessTokenFromCacheErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-            if not IsolatedStorage.Delete(TokenCacheTok + UserSecurityId()) then
-                Session.LogMessage('000040C', StrSubstNo(CouldNotDeleteTokenCacheTxt, UserSecurityId()), Verbosity::Warning, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-            exit(false);
-        end;
-
-        if NewTokenCache <> TokenCache then
-            StoreTokenCacheState(NewTokenCache);
-
-        exit(true);
-    end;
-
-    [NonDebuggable]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterInitialization', '', false, false)]
-    local procedure UpdateTokenCacheForUserOnLogin()
-    begin
-        StoreTokenCacheOnLogin();
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnGetBodyForTestEmail', '', false, false)]
-    local procedure UpdateTokenCacheForUserOnSendingTestEmail()
-    var
-        EnvironmentInformation: Codeunit "Environment Information";
-    begin
-        if not EnvironmentInformation.IsSaaSInfrastructure() then
-            exit;
-
-        StoreTokenCacheState();
-    end;
-
-    [NonDebuggable]
-    local procedure StoreTokenCacheOnLogin()
-    var
-        EnvironmentInformation: Codeunit "Environment Information";
-    begin
-        if not EnvironmentInformation.IsSaaSInfrastructure() then
-            exit;
-
-        if not (Session.CurrentClientType() in [ClientType::Web, ClientType::Windows, ClientType::Desktop, ClientType::Tablet, ClientType::Phone]) then
-            exit;
-
-        if IsolatedStorage.Contains(TokenCacheTok + UserSecurityId()) then
-            exit;
-
-        if not StoreTokenCacheState() then
-            Session.LogMessage('000040D', StrSubstNo(SoringTokenCacheFailedErr, GetLastErrorText()), Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-
-        // populate the entry in isolated storage to not spend time on the next log in
-        if not IsolatedStorage.Contains(TokenCacheTok + UserSecurityId()) then
-            IsolatedStorage.Set(TokenCacheTok + UserSecurityId(), '', DataScope::Module);
-    end;
-
-    [NonDebuggable]
-    local procedure StoreTokenCacheState(): Boolean
-    var
-        AccessToken: Text;
-        TokenCache: Text;
-    begin
-        if not OAuth2.AcquireOnBehalfAccessTokenAndTokenCache(OAuthAuthorityUrlTxt, '', GraphResourceURLTxt, AccessToken, TokenCache) then begin
-            Session.LogMessage('000040E', StrSubstNo(CouldNotAcquireOnBehalfOfAccessTokenErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-            exit(false);
-        end else
-            exit(StoreTokenCacheState(TokenCache));
-    end;
-
-    [NonDebuggable]
-    local procedure StoreTokenCacheState(TokenCacheState: Text): Boolean
-    begin
-        if TokenCacheState = '' then begin
-            Session.LogMessage('000040F', StrSubstNo(EmptyTokenCacheErr, UserSecurityId()), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-            exit(false);
-        end else begin
-            Session.LogMessage('000040G', StrSubstNo(StoredTokenCacheTxt, UserSecurityId()), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-            if IsolatedStorage.Set(TokenCacheTok + UserSecurityId(), TokenCacheState, DataScope::Module) then
-                exit(true);
-
-            Session.LogMessage('000040H', StrSubstNo(FailedToSaveTokenCacheTxt, UserSecurityId()), Verbosity::Warning, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-            exit(false);
-        end;
-    end;
-
     internal procedure AuthorizationCodeTokenCacheExists(): Boolean
     var
         [NonDebuggable]
         AccessToken: Text;
     begin
         Initialize();
-        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrlTxt, GraphResourceURLTxt, AccessToken) and (AccessToken <> ''))
+        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrlTxt, Scopes, AccessToken) and (AccessToken <> ''))
     end;
 
     internal procedure SignInUsingAuthorizationCode(): Boolean
@@ -172,7 +87,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         OAuthErr: Text;
     begin
         Initialize();
-        exit(OAuth2.AcquireTokenByAuthorizationCode(ClientID, ClientSecret, OAuthAuthorityUrlTxt, RedirectURL, GraphResourceURLTxt, Enum::"Prompt Interaction"::"Select Account", AccessToken, OAuthErr) and (AccessToken <> ''));
+        exit(OAuth2.AcquireTokenByAuthorizationCode(ClientID, ClientSecret, OAuthAuthorityUrlTxt, RedirectURL, Scopes, Enum::"Prompt Interaction"::"Select Account", AccessToken, OAuthErr) and (AccessToken <> ''));
     end;
 
     var
@@ -184,17 +99,10 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         ClientSecret: Text;
         RedirectURL: Text;
         IsInitialized: Boolean;
+        Scopes: List of [Text];
         OAuthAuthorityUrlTxt: Label 'https://login.microsoftonline.com/common/oauth2', Locked = true;
-        GraphResourceURLTxt: Label 'https://graph.microsoft.com/', Locked = true;
-        TokenCacheTok: Label 'TokenCache', Locked = true;
+        GraphScopesLbl: Label 'https://graph.microsoft.com/.default', Locked = true;
         CouldNotGetAccessTokenErr: Label 'Could not get access token. Please, try to log out and log in again.';
         EmailCategoryLbl: Label 'EmailOAuth', Locked = true;
-        NoStoredTokenCacheErr: Label 'Failed to get token cache from the isolated storage for user security ID: %1.', Locked = true;
-        StoredTokenCacheTxt: Label 'Stored token cache in the isolated storage for user security ID: %1.', Locked = true;
-        FailedToSaveTokenCacheTxt: Label 'Failed to save the token cache to isolated starage for user security ID: %1.', Locked = true;
-        SoringTokenCacheFailedErr: Label 'Failed to run the storing token cache codeunit. Error: %1.', Locked = true;
-        CouldNotDeleteTokenCacheTxt: Label 'Failed to delete the token cache from isolated starage for user security ID: %1.', Locked = true;
-        CouldNotAcquireAccessTokenFromCacheErr: Label 'Could not acquire a new access token by token cache for user: %1.', Locked = true;
-        EmptyTokenCacheErr: Label 'The acquired token cache is empty. User: %1.', Locked = true;
-        CouldNotAcquireOnBehalfOfAccessTokenErr: Label 'Failed to acquire an on-belaf-of access token for user security ID: %1', Locked = true;
+        CouldNotAcquireAccessTokenErr: Label 'Failed to acquire access token.', Locked = true;
 }

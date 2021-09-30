@@ -128,6 +128,9 @@ codeunit 20232 "Tax Type Object Helper"
     begin
         if TaxType.FindSet() then
             repeat
+                if TaxType.Status <> TaxType.Status::Released then
+                    TaxType.Validate(Status, TaxType.Status::Released);
+
                 TaxType.Validate(Enabled, true);
                 TaxType.Modify(true);
             until TaxType.Next() = 0;
@@ -137,6 +140,7 @@ codeunit 20232 "Tax Type Object Helper"
     begin
         if TaxType.FindSet() then
             repeat
+                TaxType.Status := TaxType.Status::Draft;
                 TaxType.Validate(Enabled, false);
                 TaxType.Modify(true);
             until TaxType.Next() = 0;
@@ -269,6 +273,11 @@ codeunit 20232 "Tax Type Object Helper"
         TaxUseCase.SetRange(id, CaseID);
         TaxUseCase.FindFirst();
         OpenTaxTypeTableLookup(TableID, TableName, SearchText, TaxUseCase."Tax Type");
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnBeforeValidateIfUpdateIsAllowed(TaxType: Code[20])
+    begin
     end;
 
     var

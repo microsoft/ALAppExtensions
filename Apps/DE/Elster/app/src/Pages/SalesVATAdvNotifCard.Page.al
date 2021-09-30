@@ -212,7 +212,7 @@ page 11016 "Sales VAT Adv. Notif. Card"
                             VATStatementName.Get("Statement Template Name", "Statement Name");
                         VATStatementPreviewPage.SetRecord(VATStatementName);
                         VATStatementPreviewPage.SetParameters(
-                            "Incl. VAT Entries (Closing)", "Incl. VAT Entries (Period)", StrSubstNo(DateFilterLbl, "Starting Date"));
+                            "Incl. VAT Entries (Closing)", "Incl. VAT Entries (Period)", GetDateFilter());
                         VATStatementPreviewPage.Run();
                     end;
                 }
@@ -289,8 +289,9 @@ page 11016 "Sales VAT Adv. Notif. Card"
         VATStatementName: Record "VAT Statement Name";
         ReportPrint: Codeunit "Test Report-Print";
         Text1140000Lbl: Label 'Selection of the XSL-File';
+#if not CLEAN17
         Text1140001Lbl: Label 'Extensible Stylesheet-Files|*.xsl|All Files|*.*';
-        DateFilterLbl: Label '%1..', Locked = true;
+#endif
         IsWindowsClient: Boolean;
 }
 

@@ -13,7 +13,7 @@ codeunit 8905 "Email Message Impl."
                   tabledata "Email Recipient" = rid,
                   tabledata "Email Message Attachment" = rid,
                   tabledata "Email Related Record" = rd,
-                  tabledata "Tenant Media" = r;
+                  tabledata "Tenant Media" = rm;
 
     procedure Create(EmailMessage: Codeunit "Email Message Impl.")
     var
@@ -224,6 +224,7 @@ codeunit 8905 "Email Message Impl."
 
         MediaID := EmailAttachment.Data.ImportStream(AttachmentInStream, '', EmailAttachment."Content Type");
         TenantMedia.Get(MediaID);
+        TenantMedia.CalcFields(Content);
         EmailAttachment.Length := TenantMedia.Content.Length;
 
         EmailAttachment.Insert();
@@ -323,6 +324,17 @@ codeunit 8905 "Email Message Impl."
         end;
     end;
 
+    procedure Attachments_DeleteContent(): Boolean
+    var
+        MediaId: Guid;
+    begin
+        MediaId := Attachments.Data.MediaId();
+        TenantMedia.Get(MediaID);
+        Clear(TenantMedia.Content);
+        TenantMedia.Modify();
+        exit(not TenantMedia.Content.HasValue());
+    end;
+
     procedure Attachments_First(): Boolean
     begin
         Attachments.SetRange("Email Message Id", Message.Id);
@@ -342,12 +354,21 @@ codeunit 8905 "Email Message Impl."
 
     procedure Attachments_GetContent(var InStream: InStream)
     var
+        EmailMessage: Codeunit "Email Message";
         MediaID: Guid;
+        Handled: Boolean;
     begin
         MediaID := Attachments.Data.MediaId();
         TenantMedia.Get(MediaID);
         TenantMedia.CalcFields(Content);
-        TenantMedia.Content.CreateInStream(InStream)
+
+        if TenantMedia.Content.HasValue() then
+            TenantMedia.Content.CreateInStream(InStream)
+        else begin
+            EmailMessage.OnGetAttachmentContent(MediaID, InStream, Handled);
+            if not Handled then
+                Error(EmailMessageGetAttachmentContentErr);
+        end;
     end;
 
     procedure Attachments_GetContentBase64(): Text
@@ -596,6 +617,7 @@ codeunit 8905 "Email Message Impl."
         EmailMessageSentCannotDeleteRecipientErr: Label 'Cannot delete the recipient because the email has already been sent.';
         EmailMessageQueuedCannotInsertRecipientErr: Label 'Cannot add a recipient because the email is queued to be sent.';
         EmailMessageSentCannotInsertRecipientErr: Label 'Cannot add the recipient because the email has already been sent.';
+        EmailMessageGetAttachmentContentErr: Label 'The attachment content was not found.';
         NoAccountErr: Label 'You must specify a valid email account to send the message to.';
         RgbReplacementTok: Label 'rgb($1, $2, $3)', Locked = true;
         RbgaPatternTok: Label 'rgba\((\d+), ?(\d+), ?(\d+), ?\d+\)', Locked = true;

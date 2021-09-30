@@ -1,3 +1,4 @@
+
 Codeunit 18015 "GST Posting Management"
 {
     SingleInstance = true;
@@ -5,6 +6,9 @@ Codeunit 18015 "GST Posting Management"
     var
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         RecordIDNotAvailableErr: Label 'Table %1 not handled', comment = '%1 = Table Caption';
+        PurchasePaytoVendorNo: Code[20];
+        GSTRegNo: code[20];
+        State: Code[10];
         GSTAmountFCY: Decimal;
         GSTBaseAmountFCY: Decimal;
         UseCaseID: Guid;
@@ -81,6 +85,36 @@ Codeunit 18015 "GST Posting Management"
     procedure GetGSTTrackingEntryNo(): Integer
     begin
         exit(GSTTrackingEntryNo);
+    end;
+
+    procedure SetPaytoVendorNo(PaytoVendorNo: Code[20])
+    begin
+        PurchasePaytoVendorNo := PaytoVendorNo;
+    end;
+
+    procedure GetPaytoVendorNo(): Code[20]
+    begin
+        exit(PurchasePaytoVendorNo);
+    end;
+
+    procedure SetBuyerSellerRegNo(PayGSTRegNo: code[20])
+    begin
+        GSTRegNo := PayGSTRegNo;
+    end;
+
+    procedure GetBuyerSellerRegNo(): Code[20]
+    begin
+        exit(GSTRegNo);
+    end;
+
+    procedure SetBuyerSellerStateCode(PayStateCode: Code[10])
+    begin
+        State := PayStateCode;
+    end;
+
+    procedure GetBuyerSellerStateCode(): Code[10]
+    begin
+        exit(state);
     end;
 }
 

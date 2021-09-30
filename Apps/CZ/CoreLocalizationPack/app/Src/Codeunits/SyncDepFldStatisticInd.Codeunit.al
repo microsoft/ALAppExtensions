@@ -56,7 +56,8 @@ codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
             StatisticIndicationCZL.Init();
             StatisticIndicationCZL."Tariff No." := Rec."Tariff No.";
             StatisticIndicationCZL.Code := Rec.Code;
-            StatisticIndicationCZL.Insert(false);
+            StatisticIndicationCZL.SystemId := Rec.SystemId;
+            StatisticIndicationCZL.Insert(false, true);
         end;
         StatisticIndicationCZL.Description := Rec.Description;
         StatisticIndicationCZL."Description EN" := CopyStr(Rec."Full Name ENG", 1, MaxStrLen(StatisticIndicationCZL."Description EN"));
@@ -131,7 +132,8 @@ codeunit 31196 "Sync.Dep.Fld-StatisticInd CZL"
             StatisticIndication.Init();
             StatisticIndication."Tariff No." := Rec."Tariff No.";
             StatisticIndication.Code := Rec.Code;
-            StatisticIndication.Insert(false);
+            StatisticIndication.SystemId := Rec.SystemId;
+            StatisticIndication.Insert(false, true);
         end;
         StatisticIndication.Description := CopyStr(Rec.Description, 1, MaxStrLen(StatisticIndication.Description));
         StatisticIndication."Full Name ENG" := Rec."Description EN";

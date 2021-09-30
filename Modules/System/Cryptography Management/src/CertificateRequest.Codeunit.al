@@ -6,24 +6,24 @@
 /// <summary> 
 /// Provides helper functionality for creating Certificate Signing Requests (CSR:s) and Self Signed Certificates.
 /// </summary>
-codeunit 1449 CertificateRequest
+codeunit 1463 CertificateRequest
 {
     var
         CertSigningRequestImpl: Codeunit "CertificateRequest Impl.";
 
     /// <summary>
-    /// Initializes a new instance of RSACryptoServiceProvider class with the specified key size and returns the key as a xml string.
+    /// Initializes a new instance of RSACryptoServiceProvider with the specified key size and returns the key as an XML string. 
     /// </summary>
     /// <param name="KeySize">The size of the key in bits.</param>
-    /// <param name="IncludePrivateParameters">true to include a public and private RSA key in KeyAsXmlString; false to include only the public key.</param>
-    /// <param name="KeyAsXmlString">Returns an XML string containing the key of the created RSA object.</param>
+    /// <param name="IncludePrivateParameters">True to include a public and private RSA key in KeyAsXmlString. False to include only the public key.</param>  
+    /// <param name="KeyAsXmlString">Returns an XML string that contains the key of the RSA object that was created.</param>
     procedure InitializeRSA(KeySize: Integer; IncludePrivateParameters: Boolean; var KeyAsXmlString: Text)
     begin
         CertSigningRequestImpl.InitializeRSA(KeySize, IncludePrivateParameters, KeyAsXmlString);
     end;
 
     /// <summary>
-    /// Initializes a new instance of the CertificateRequest class with the specified parameters and the initialized RSA key.
+    /// Initializes a new instance of the CertificateRequest with the specified parameters and the initialized RSA key.
     /// </summary>
     /// <param name="SubjectName">The string representation of the subject name for the certificate or certificate request.</param>
     /// <param name="HashAlgorithm">The hash algorithm to use when signing the certificate or certificate request.</param>
@@ -36,10 +36,10 @@ codeunit 1449 CertificateRequest
     /// <summary> 
     /// Adds a X509BasicConstraint to the Certificate Request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509basicconstraintsextension
     /// </summary>
-    /// <param name="CertificateAuthority">true if the certificate is a certificate authority (CA) certificate; otherwise, false.</param>
-    /// <param name="HasPathLengthConstraint">true if the certificate has a restriction on the number of path levels it allows; otherwise, false.</param>
+    /// <param name="CertificateAuthority">True if the certificate is from a certificate authority (CA). Otherwise, false.</param>
+    /// <param name="HasPathLengthConstraint">True if the certificate has a restriction on the number of path levels it allows; otherwise, false.</param>
     /// <param name="PathLengthConstraint">The number of levels allowed in a certificate's path.</param>
-    /// <param name="Critical">true if the extension is critical; otherwise, false.</param>
+    /// <param name="Critical">True if the extension is critical. Otherwise, false.</param>
     procedure AddX509BasicConstraintToCertificateRequest(CertificateAuthority: Boolean; HasPathLengthConstraint: Boolean; PathLengthConstraint: Integer; Critical: Boolean)
     begin
         CertSigningRequestImpl.AddX509BasicConstraintToCertificateRequest(CertificateAuthority, HasPathLengthConstraint, PathLengthConstraint, Critical);
@@ -49,33 +49,24 @@ codeunit 1449 CertificateRequest
     /// Adds a X509EnhancedKeyUsage to the Certificate Request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509enhancedkeyusageextension
     /// </summary>
     /// <param name="OidValues">List of Oid values (for example '1.3.6.1.5.5.7.3.2') to add.</param>
-    /// <param name="Critical">true if the extension is critical; otherwise, false.</param>
+    /// <param name="Critical">True if the extension is critical; otherwise, false.</param>
     procedure AddX509EnhancedKeyUsageToCertificateRequest(OidValues: List of [Text]; Critical: Boolean)
     begin
         CertSigningRequestImpl.AddX509EnhancedKeyUsageToCertificateRequest(OidValues, Critical);
     end;
 
     /// <summary>
-    /// Adds a X509KeyUsage to the Certificate Request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509keyusageextension
+    /// Adds a X509KeyUsage to the certificate request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509keyusageextension
     /// </summary>
     /// <param name="X509KeyUsageFlags">The sum of all flag values that are to be added. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509keyusageflags</param>
-    /// <param name="Critical">true if the extension is critical; otherwise, false.</param>
+    /// <param name="Critical">True if the extension is critical; otherwise, false.</param>
     procedure AddX509KeyUsageToCertificateRequest(X509KeyUsageFlags: Integer; Critical: Boolean)
     begin
         CertSigningRequestImpl.AddX509KeyUsageToCertificateRequest(X509KeyUsageFlags, Critical);
     end;
 
     /// <summary>
-    /// Gets how many X509Extensions that has been added to the X509CertificateRequest.
-    /// </summary>
-    /// <returns>The number of added extensions.</returns>
-    procedure GetX509CertificateRequestExtensionCount(): Integer
-    begin
-        exit(CertSigningRequestImpl.GetX509CertificateRequestExtensionCount());
-    end;
-
-    /// <summary>
-    /// Creates an ASN.1 DER-encoded PKCS#10 CertificateRequest and returns a Base 64 encoded string.
+    /// Creates an ASN.1 DER-encoded PKCS#10 CertificationRequest and returns a Base 64 encoded string.
     /// </summary>
     /// <param name="SigningRequestPemString">Returns the SigningRequest in Base 64 string format.</param>
     procedure CreateSigningRequest(var SigningRequestPemString: Text)
@@ -84,7 +75,16 @@ codeunit 1449 CertificateRequest
     end;
 
     /// <summary>
-    /// Creates an ASN.1 DER-encoded PKCS#10 CertificateRequest and returns it in an OutStream.
+    /// Gets how many X509Extensions have been added to the X509CertificateRequest.
+    /// </summary>
+    /// <returns>The number of added extensions.</returns>
+    procedure GetX509CertificateRequestExtensionCount(): Integer
+    begin
+        exit(CertSigningRequestImpl.GetX509CertificateRequestExtensionCount());
+    end;
+
+    /// <summary>
+    /// Creates an ASN.1 DER-encoded PKCS#10 CertificationRequest and returns it in an OutStream.
     /// </summary>
     /// <param name="SigningRequestOutStream">OutStream.</param>
     procedure CreateSigningRequest(SigningRequestOutStream: OutStream)

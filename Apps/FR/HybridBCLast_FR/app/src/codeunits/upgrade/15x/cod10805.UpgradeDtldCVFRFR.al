@@ -21,8 +21,15 @@ codeunit 10805 "Upgrade Dtld. CV FR"
     end;
 
     local procedure UpgradeDetailedCVLedgerEntries()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetUpgradeDetailedCVLedgerEntriesTag()) then
+            exit;
+
         Codeunit.Run(Codeunit::"Update Dtld. CV Ledger Entries");
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetUpgradeDetailedCVLedgerEntriesTag());
     end;
 }
 

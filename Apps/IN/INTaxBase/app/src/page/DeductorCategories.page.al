@@ -67,10 +67,10 @@ page 18545 "Deductor Categories"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     DeductorCategoryCodeLbl: Label 'Code eq %1', Comment = '%1= Deductory Code';
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'Deductor Categories',
                         CurrPage.ObjectId(false),
                         StrSubstNo(DeductorCategoryCodeLbl, Rec.Code));

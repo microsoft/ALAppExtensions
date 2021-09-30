@@ -27,26 +27,40 @@ codeunit 12105 "Detailed Ledger Entries IT"
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTags: Codeunit "Upgrade Tag Def - Country";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTags.GetFixRemainingAmountVLEUpgradeTag()) then
+            exit;
+
         if VendorLedgerEntry.FindSet() then
             repeat
                 DetailedVendorLedgEntry.SetRange("Vendor Ledger Entry No.", VendorLedgerEntry."Entry No.");
                 DetailedVendorLedgEntry.ModifyAll("Original Document No.", VendorLedgerEntry."Document No.");
                 DetailedVendorLedgEntry.ModifyAll("Original Document Type", VendorLedgerEntry."Document Type");
             until VendorLedgerEntry.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTags.GetFixRemainingAmountVLEUpgradeTag());
     end;
 
     procedure UpgradeDetailedCustomerLedgerEntries();
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTags: Codeunit "Upgrade Tag Def - Country";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTags.GetFixRemainingAmountCLEUpgradeTag()) then
+            exit;
+
         if CustLedgerEntry.FindSet() then
             repeat
                 DetailedCustLedgEntry.SetRange("Cust. Ledger Entry No.", CustLedgerEntry."Entry No.");
                 DetailedCustLedgEntry.ModifyAll("Original Document No.", CustLedgerEntry."Document No.");
                 DetailedCustLedgEntry.ModifyAll("Original Document Type", CustLedgerEntry."Document Type");
             until CustLedgerEntry.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTags.GetFixRemainingAmountCLEUpgradeTag());
     end;
 }
 

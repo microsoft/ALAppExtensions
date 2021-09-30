@@ -13,7 +13,7 @@ pageextension 13675 "OIOUBL-Service Lines" extends "Service Lines"
             {
                 Visible = false;
                 ApplicationArea = Service;
-                ToolTip = 'Specifies the account code of the customer.';
+                ToolTip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
             }
         }
     }

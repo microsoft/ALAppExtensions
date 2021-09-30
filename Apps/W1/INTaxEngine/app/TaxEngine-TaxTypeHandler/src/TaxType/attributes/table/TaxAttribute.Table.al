@@ -192,11 +192,28 @@ table 20241 "Tax Attribute"
         GenericAttributeValue.DeleteAll();
     end;
 
+    trigger OnInsert()
+    var
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
+    trigger OnModify()
+    var
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
     trigger OnDelete();
     var
         EntityAttributeMapping: Record "Entity Attribute Mapping";
         RecordAttributeMapping: Record "Record Attribute Mapping";
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
     begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+
         if HasBeenUsed() then
             if not Confirm(DeleteUsedAttributeQst) then
                 Error('');

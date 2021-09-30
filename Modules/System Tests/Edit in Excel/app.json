@@ -1,0 +1,36 @@
+{
+    "id": "78ab7f3c-f374-42b5-aa2f-6c9253655ed7",
+    "name": "Edit in Excel Tests",
+    "publisher": "Microsoft",
+    "brief": "",
+    "description": "Tests for edit in excel.",
+    "version": "19.0.0.0",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help": "",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo": "",
+    "dependencies": [
+        {
+            "id": "5d848063-d779-42ed-8086-5400b3380378",
+            "name": "Edit in Excel",
+            "publisher": "Microsoft",
+            "version": "19.0.0.0"
+        },
+        {
+            "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+            "name": "Library Assert",
+            "publisher": "Microsoft",
+            "version": "19.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "19.0.0.0",
+    "idRanges": [
+        {
+            "from": 132525,
+            "to": 132526
+        }
+    ],
+    "target": "OnPrem"
+}

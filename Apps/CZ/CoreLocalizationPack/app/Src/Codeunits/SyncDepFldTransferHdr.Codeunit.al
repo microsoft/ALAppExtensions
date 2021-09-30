@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31216 "Sync.Dep.Fld-TransferHdr CZL"
 {
@@ -29,3 +30,4 @@ codeunit 31216 "Sync.Dep.Fld-TransferHdr CZL"
         SyncDepFldUtilities.SyncFields(Rec."Intrastat Exclude", Rec."Intrastat Exclude CZL", PreviousRecord."Intrastat Exclude", PreviousRecord."Intrastat Exclude CZL");
     end;
 }
+#endif

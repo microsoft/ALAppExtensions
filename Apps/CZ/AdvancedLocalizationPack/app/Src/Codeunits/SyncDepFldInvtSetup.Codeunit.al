@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AA0072
 codeunit 31280 "Sync.Dep.Fld-InvtSetup CZA"
 {
     Access = Internal;
@@ -29,3 +30,4 @@ codeunit 31280 "Sync.Dep.Fld-InvtSetup CZA"
         SyncDepFldUtilities.SyncFields(Rec."Exact Cost Reversing Mandatory", Rec."Exact Cost Revers. Mandat. CZA", PreviousRecord."Exact Cost Reversing Mandatory", PreviousRecord."Exact Cost Revers. Mandat. CZA");
     end;
 }
+#endif

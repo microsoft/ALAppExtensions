@@ -56,7 +56,8 @@ codeunit 31178 "Sync.Dep.Fld-VatCtrlRepLn CZL"
             VATCtrlReportLineCZL.Init();
             VATCtrlReportLineCZL."VAT Ctrl. Report No." := Rec."Control Report No.";
             VATCtrlReportLineCZL."Line No." := Rec."Line No.";
-            VATCtrlReportLineCZL.Insert(false);
+            VATCtrlReportLineCZL.SystemId := Rec.SystemId;
+            VATCtrlReportLineCZL.Insert(false, true);
         end;
         VATCtrlReportLineCZL."VAT Ctrl. Report Section Code" := Rec."VAT Control Rep. Section Code";
         VATCtrlReportLineCZL."Posting Date" := Rec."Posting Date";
@@ -155,7 +156,8 @@ codeunit 31178 "Sync.Dep.Fld-VatCtrlRepLn CZL"
             VATControlReportLine.Init();
             VATControlReportLine."Control Report No." := Rec."VAT Ctrl. Report No.";
             VATControlReportLine."Line No." := Rec."Line No.";
-            VATControlReportLine.Insert(false);
+            VATControlReportLine.SystemId := Rec.SystemId;
+            VATControlReportLine.Insert(false, true);
         end;
         VATControlReportLine."VAT Control Rep. Section Code" := Rec."VAT Ctrl. Report Section Code";
         VATControlReportLine."Posting Date" := Rec."Posting Date";

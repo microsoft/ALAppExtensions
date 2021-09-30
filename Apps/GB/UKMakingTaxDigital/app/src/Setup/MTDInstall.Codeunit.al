@@ -130,6 +130,7 @@ codeunit 10539 "MTD Install"
         DataClassificationMgt.SetFieldToPersonal(Database::"MTD Session Fraud Prev. Hdr", MTDSessionFraudPrevHdr.FieldNo(Value));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD OAuth Setup Option"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Gov Test Scenario"));
+        DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Enabled"));
 #if not CLEAN19
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Disable FraudPrev. Headers"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP WinClient Due DateTime"));

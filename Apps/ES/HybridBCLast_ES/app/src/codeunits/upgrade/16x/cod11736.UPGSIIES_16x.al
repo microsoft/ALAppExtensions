@@ -20,12 +20,19 @@ codeunit 11736 "UPG SII ES 16X"
     local procedure PopulatedNewFields()
     var
         SIISetup: Record "SII Setup";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetUpdateSIICertificateTag()) then
+            exit;
+
         // This code is based on app upgrade logic for ES.
         // Matching file: .\App\Layers\ES\BaseApp\Upgrade\UPGSII.Codeunit.al
         // Based on commit: 2c1c901e
         if SIISetup.Get() then
             SIISetup.SetDefaults();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetUpdateSIICertificateTag());
     end;
 }
 

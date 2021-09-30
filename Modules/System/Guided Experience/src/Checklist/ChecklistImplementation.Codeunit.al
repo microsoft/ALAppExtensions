@@ -11,8 +11,9 @@ codeunit 1993 "Checklist Implementation"
                     tabledata "Checklist Item User" = rimd,
                     tabledata "Checklist Item Role" = rimd,
                     tabledata "User Checklist Status" = rim,
-                    tabledata "Checklist Setup" = rim,
-                    tabledata "User Personalization" = r;
+                    tabledata "Checklist Setup" = rimd,
+                    tabledata "User Personalization" = r,
+                    tabledata Company = r;
 
     var
         ChecklistItemInsertedLbl: Label 'Checklist item inserted.', Locked = true;
@@ -25,7 +26,7 @@ codeunit 1993 "Checklist Implementation"
         MicrosoftLearnDescriptionLbl: Label 'Explore the free e-learning material for Business Central on the Microsoft Learn site in a new browser tab.', MaxLength = 180, Comment = '*Onboarding Checklist*';
         ShowChecklistLbl: Label 'Show checklist on the role center';
 
-    procedure Insert(GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; Link: Text[250]; ShouldEveryoneComplete: Boolean; OrderID: Integer; var TempAllProfile: Record "All Profile" temporary; var TempUsers: Record User temporary)
+    procedure Insert(GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; Link: Text[250]; SpotlightTourType: Enum "Spotlight Tour Type"; ShouldEveryoneComplete: Boolean; OrderID: Integer; var TempAllProfile: Record "All Profile" temporary; var TempUsers: Record User temporary)
     var
         CompletionRequirements: Enum "Checklist Completion Requirements";
     begin
@@ -34,16 +35,19 @@ codeunit 1993 "Checklist Implementation"
         else
             CompletionRequirements := CompletionRequirements::Anyone;
 
-        Insert(GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, Link, CompletionRequirements, OrderID, TempAllProfile, TempUsers);
+        Insert(GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, Link, SpotlightTourType, CompletionRequirements, OrderID, TempAllProfile, TempUsers);
     end;
 
-    procedure Insert(GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; Link: Text[250]; CompletionRequirements: Enum "Checklist Completion Requirements"; OrderID: Integer; var TempAllProfile: Record "All Profile" temporary; var TempUsers: Record User temporary)
+    procedure Insert(GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; Link: Text[250]; SpotlightTourType: Enum "Spotlight Tour Type"; CompletionRequirements: Enum "Checklist Completion Requirements"; OrderID: Integer; var TempAllProfile: Record "All Profile" temporary; var TempUsers: Record User temporary)
     var
         GuidedExperienceItem: Record "Guided Experience Item";
         ChecklistItem: Record "Checklist Item";
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
+        VideoUrl: Text[250];
     begin
-        GuidedExperienceImpl.FilterGuidedExperienceItem(GuidedExperienceItem, GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, Link);
+        GetLinkAndVideoUrl(Link, VideoUrl, GuidedExperienceType);
+
+        GuidedExperienceImpl.FilterGuidedExperienceItem(GuidedExperienceItem, GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, Link, VideoUrl, SpotlightTourType);
 
         if not GuidedExperienceItem.FindLast() then
             exit;
@@ -104,13 +108,16 @@ codeunit 1993 "Checklist Implementation"
             end;
     end;
 
-    procedure Delete(GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; Link: Text[250])
+    procedure Delete(GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; Link: Text[250]; SpotlightTourType: Enum "Spotlight Tour Type")
     var
         GuidedExperienceItem: Record "Guided Experience Item";
         ChecklistItem: Record "Checklist Item";
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
+        VideoUrl: Text[250];
     begin
-        GuidedExperienceImpl.FilterGuidedExperienceItem(GuidedExperienceItem, GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, Link);
+        GetLinkAndVideoUrl(link, VideoUrl, GuidedExperienceType);
+
+        GuidedExperienceImpl.FilterGuidedExperienceItem(GuidedExperienceItem, GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, Link, VideoUrl, SpotlightTourType);
 
         if not GuidedExperienceItem.FindLast() then
             exit;
@@ -137,7 +144,7 @@ codeunit 1993 "Checklist Implementation"
             ChecklistItemUser.DeleteAll();
     end;
 
-    procedure ShouldInitializeChecklist(): Boolean
+    procedure ShouldInitializeChecklist(ShouldSkipForEvaluationCompany: Boolean): Boolean
     var
         Company: Record Company;
         ChecklistSetup: Record "Checklist Setup";
@@ -148,8 +155,9 @@ codeunit 1993 "Checklist Implementation"
         if not Company.Get(CompanyName()) then
             exit(false);
 
-        if Company."Evaluation Company" then
-            exit(false);
+        if ShouldSkipForEvaluationCompany then
+            if Company."Evaluation Company" then
+                exit(false);
 
         if ChecklistSetup.IsEmpty() then
             exit(true);
@@ -163,31 +171,40 @@ codeunit 1993 "Checklist Implementation"
         ChecklistSetup: Record "Checklist Setup";
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         Dimensions: Dictionary of [Text, Text];
+        IsTest: Boolean;
     begin
-        if not IsCallerModuleBaseApp(CallerModuleInfo) then
-            exit;
+        OnBeforeChecklistProcedure(IsTest);
 
-        if ChecklistSetup.FindFirst() then begin
-            ChecklistSetup."Is Setup Done" := true;
-            ChecklistSetup.Modify();
-        end else begin
-            ChecklistSetup."Is Setup Done" := true;
-            ChecklistSetup.Insert();
-        end;
+        if not (IsCallerModuleBaseApp(CallerModuleInfo) or IsCallerModuleSystemApp(CallerModuleInfo) or IsTest) then
+            exit;
 
         GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
         Session.LogMessage('0000E9U', ChecklistInitializedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+
+        if ChecklistSetup.FindFirst() then begin
+            if ChecklistSetup."Is Setup Done" then
+                exit;
+
+            ChecklistSetup.Delete();
+        end;
+
+        ChecklistSetup."Is Setup Done" := true;
+        ChecklistSetup.Insert();
     end;
 
     procedure InitializeGuidedExperienceItems(CallerModuleInfo: ModuleInfo)
     var
         GuidedExperience: Codeunit "Guided Experience";
+        IsTest: Boolean;
     begin
-        if not (IsCallerModuleBaseApp(CallerModuleInfo) or IsCallerModuleSystemApp(CallerModuleInfo)) then
+        OnBeforeChecklistProcedure(IsTest);
+
+        if not (IsCallerModuleBaseApp(CallerModuleInfo) or IsCallerModuleSystemApp(CallerModuleInfo) or IsTest) then
             exit;
 
         GuidedExperience.OnRegisterAssistedSetup();
         GuidedExperience.OnRegisterManualSetup();
+        GuidedExperience.OnRegisterGuidedExperienceItem();
 
         GuidedExperience.InsertLearnLink(MicrosoftLearnLongTitleLbl, MicrosoftLearnShortTitleLbl, MicrosoftLearnDescriptionLbl,
             10, 'https://go.microsoft.com/fwlink/?linkid=2152979');
@@ -271,6 +288,19 @@ codeunit 1993 "Checklist Implementation"
             Database::"User Checklist Status":
                 ChangeUserForUserChecklistStatus(RecRef, Company, UserName);
         end;
+    end;
+
+    local procedure GetLinkAndVideoUrl(var Link: Text[250]; var VideoUrl: Text[250]; GuidedExperienceType: Enum "Guided Experience Type")
+    begin
+        if Link = '' then
+            VideoUrl := ''
+        else
+            if GuidedExperienceType = GuidedExperienceType::Learn then
+                VideoUrl := ''
+            else begin
+                VideoUrl := Link;
+                Link := '';
+            end;
     end;
 
     local procedure ChangeUserForChecklistItemUser(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50])
@@ -444,18 +474,30 @@ codeunit 1993 "Checklist Implementation"
         UserChecklistStatus.Insert();
     end;
 
+    procedure IsChecklistVisible(): Boolean
+    var
+        UserChecklistStatus: Record "User Checklist Status";
+    begin
+        if not GetUserChecklistStatusForCurrentRole(UserChecklistStatus) then
+            exit(false);
+
+        exit(UserChecklistStatus."Is Visible");
+    end;
+
     local procedure InsertChecklistItemUsers(var TempUsers: Record User temporary; Code: Code[300])
     begin
-        repeat
-            InsertChecklistItemUser(Code, TempUsers."User Name");
-        until TempUsers.Next() = 0;
+        if TempUsers.FindSet() then
+            repeat
+                InsertChecklistItemUser(Code, TempUsers."User Name");
+            until TempUsers.Next() = 0;
     end;
 
     local procedure InsertChecklistItemRoles(var TempAllProfile: Record "All Profile" temporary; Code: Code[300])
     begin
-        repeat
-            InsertChecklistItemRole(Code, TempAllProfile."Profile ID");
-        until TempAllProfile.Next() = 0;
+        if TempAllProfile.FindSet() then
+            repeat
+                InsertChecklistItemRole(Code, TempAllProfile."Profile ID");
+            until TempAllProfile.Next() = 0;
     end;
 
     local procedure UpdateChecklistItem(ChecklistItem: Record "Checklist Item"; CompletionRequirements: Enum "Checklist Completion Requirements"; OrderID: Integer)
@@ -525,10 +567,11 @@ codeunit 1993 "Checklist Implementation"
         TempAllProfileCopy.DeleteAll();
 
         TempAllProfile.Reset();
-        repeat
-            TempAllProfileCopy.TransferFields(TempAllProfile);
-            TempAllProfileCopy.Insert();
-        until TempAllProfile.Next() = 0;
+        if TempAllProfile.FindSet() then
+            repeat
+                TempAllProfileCopy.TransferFields(TempAllProfile);
+                TempAllProfileCopy.Insert();
+            until TempAllProfile.Next() = 0;
     end;
 
     local procedure GetUsersListCopy(var TempUsers: Record User temporary; var UsersCopyTemp: Record User temporary)
@@ -536,10 +579,11 @@ codeunit 1993 "Checklist Implementation"
         UsersCopyTemp.DeleteAll();
 
         TempUsers.Reset();
-        repeat
-            UsersCopyTemp.TransferFields(TempUsers);
-            UsersCopyTemp.Insert();
-        until TempUsers.Next() = 0;
+        if TempUsers.FindSet() then
+            repeat
+                UsersCopyTemp.TransferFields(TempUsers);
+                UsersCopyTemp.Insert();
+            until TempUsers.Next() = 0;
     end;
 
     local procedure GetUserRole(UserID: Code[50]): Code[30]
@@ -589,24 +633,18 @@ codeunit 1993 "Checklist Implementation"
         OldChecklistItemUser.DeleteAll();
     end;
 
-    local procedure IsChecklistVisible(): Boolean
-    var
-        UserChecklistStatus: Record "User Checklist Status";
-    begin
-        if not GetUserChecklistStatusForCurrentRole(UserChecklistStatus) then
-            exit(false);
-
-        exit(UserChecklistStatus."Is Visible");
-    end;
-
     local procedure IsCallerModuleBaseApp(CallerModuleInfo: ModuleInfo): Boolean
     begin
         exit(CallerModuleInfo.Id = '437dbf0e-84ff-417a-965d-ed2bb9650972');
     end;
 
     local procedure IsCallerModuleSystemApp(CallerModuleInfo: ModuleInfo): Boolean
+    var
+        CurrentModuleInfo: ModuleInfo;
     begin
-        exit(CallerModuleInfo.Id = '63ca2fa4-4f03-4f2b-a480-172fef340d3f');
+        NavApp.GetCurrentModuleInfo(CurrentModuleInfo);
+
+        exit(CallerModuleInfo.Id = CurrentModuleInfo.Id);
     end;
 
     local procedure LogMessageOnDatabaseEvent(Code: Code[300]; Tag: Text; Message: Text)
@@ -628,12 +666,23 @@ codeunit 1993 "Checklist Implementation"
     [EventSubscriber(ObjectType::Table, Database::"Checklist Item", 'OnAfterInsertEvent', '', true, true)]
     local procedure OnAfterChecklistItemInsert(var Rec: Record "Checklist Item")
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         LogMessageOnDatabaseEvent(Rec.Code, '0000EIO', ChecklistItemInsertedLbl);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Checklist Item", 'OnAfterDeleteEvent', '', true, true)]
     local procedure OnAfterChecklistItemDelete(var Rec: Record "Checklist Item")
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         LogMessageOnDatabaseEvent(Rec.Code, '0000EIP', ChecklistItemDeletedLbl);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeChecklistProcedure(var IsTest: Boolean)
+    begin
     end;
 }

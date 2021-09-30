@@ -26,7 +26,7 @@ procedure Play(Url: Text)
  The link to the video.
 
 ### Register (Method) <a name="Register"></a> 
- Adds a link to a video to the Product Videos page. 
+ Adds a link to a video to the Product Videos page.
  
 
 #### Syntax
@@ -47,7 +47,7 @@ procedure Register(AppID: Guid; Title: Text[250]; VideoUrl: Text[2048])
  The link to the video.
 
 ### Register (Method) <a name="Register"></a> 
- Adds a link to a video to the Product Videos page. 
+ Adds a link to a video to the Product Videos page.
  
 
 #### Syntax
@@ -72,7 +72,7 @@ procedure Register(AppID: Guid; Title: Text[250]; VideoUrl: Text[2048]; Category
  The video category.
 
 ### Register (Method) <a name="Register"></a> 
- Adds a link to a video to the Product Videos page. 
+ Adds a link to a video to the Product Videos page.
  
 
 #### Syntax
@@ -98,12 +98,12 @@ procedure Register(AppID: Guid; Title: Text[250]; VideoUrl: Text[2048]; TableNum
 
 *SystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
 
- The system id of the record related to this video. This is 
- used to raise the OnVideoPlayed event with that record once the video is 
+ The system id of the record related to this video. This is
+ used to raise the OnVideoPlayed event with that record once the video is
  played.
 
 ### Register (Method) <a name="Register"></a> 
- Adds a link to a video to the Product Videos page. 
+ Adds a link to a video to the Product Videos page.
  
 
 #### Syntax
@@ -133,8 +133,8 @@ procedure Register(AppID: Guid; Title: Text[250]; VideoUrl: Text[2048]; Category
 
 *SystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
 
- The system id of the record related to this video. This is 
- used to raise the OnVideoPlayed event with that record once the video is 
+ The system id of the record related to this video. This is
+ used to raise the OnVideoPlayed event with that record once the video is
  played.
 
 ### Show (Method) <a name="Show"></a> 

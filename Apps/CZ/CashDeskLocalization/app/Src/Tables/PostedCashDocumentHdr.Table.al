@@ -5,7 +5,7 @@ table 11737 "Posted Cash Document Hdr. CZP"
     DataCaptionFields = "Cash Desk No.", "Document Type", "No.", "Pay-to/Receive-from Name";
     DrillDownPageID = "Posted Cash Document List CZP";
     LookupPageID = "Posted Cash Document List CZP";
-    Permissions = TableData "Posted Cash Document Line CZP" = rd;
+    Permissions = tabledata "Posted Cash Document Line CZP" = rd;
 
     fields
     {

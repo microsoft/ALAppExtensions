@@ -87,6 +87,17 @@ codeunit 20294 "Use Case Mgmt."
         Page.Run(Page::"Use Cases", TaxUseCase);
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Tax Type", 'OnAfterActionEvent', 'UseCases', false, false)]
+    local procedure OnAfterActionTaxTypeUseCases(var Rec: Record "Tax Type")
+    var
+        TaxUseCase: Record "Tax Use Case";
+    begin
+        TaxUseCase.FilterGroup(4);
+        TaxUseCase.SetRange("Tax Type", Rec.Code);
+        TaxUseCase.FilterGroup(0);
+        Page.Run(Page::"Use Cases", TaxUseCase);
+    end;
+
     [IntegrationEvent(false, false)]
     procedure OnAfterExportUseCases(var TaxUseCase: Record "Tax Use Case")
     begin

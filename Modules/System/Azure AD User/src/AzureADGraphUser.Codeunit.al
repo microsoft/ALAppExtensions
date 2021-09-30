@@ -99,6 +99,17 @@ codeunit 9024 "Azure AD Graph User"
     end;
 
     /// <summary>    
+    /// Returns whether the current user is Delegated Admin.
+    /// </summary>
+    /// <returns>True if the current user is Delegated Admin, false otherwise.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure IsUserDelegatedAdmin(): Boolean
+    begin
+        exit(AzureADGraphUserImpl.IsUserDelegatedAdmin());
+    end;
+
+    /// <summary>    
     /// Updates the user record with information from Azure AD.
     /// </summary>
     /// <param name="User">The user record to update.</param>

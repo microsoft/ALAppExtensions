@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AA0072
 codeunit 31283 "Sync.Dep.Fld-AssemblyHdr. CZA"
 {
     Access = Internal;
@@ -32,3 +33,4 @@ codeunit 31283 "Sync.Dep.Fld-AssemblyHdr. CZA"
         Rec."Gen. Bus. Posting Group CZA" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Gen. Bus. Posting Group CZA"));
     end;
 }
+#endif

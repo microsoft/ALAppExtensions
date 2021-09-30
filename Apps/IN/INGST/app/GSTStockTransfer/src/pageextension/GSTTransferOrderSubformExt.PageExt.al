@@ -71,6 +71,30 @@ pageextension 18396 "GST Transfer Order Subform Ext" extends "Transfer Order Sub
                     TaxCaseExecution.HandleEvent('OnAfterTransferPrirce', Rec, '', 0);
                 end;
             }
+            field("GST Group Code"; Rec."GST Group Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the GST Group code for the calculation of GST on transfer line.';
+
+                trigger OnValidate()
+                var
+                    TaxCaseExecution: Codeunit "Use Case Execution";
+                begin
+                    TaxCaseExecution.HandleEvent('OnAfterTransferPrirce', Rec, '', 0);
+                end;
+            }
+            field("HSN/SAC Code"; Rec."HSN/SAC Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the HSN/SAC code for the calculation of GST on transfer line.';
+
+                trigger OnValidate()
+                var
+                    TaxCaseExecution: Codeunit "Use Case Execution";
+                begin
+                    TaxCaseExecution.HandleEvent('OnAfterTransferPrirce', Rec, '', 0);
+                end;
+            }
         }
     }
 }

@@ -60,10 +60,10 @@ page 18661 "Customer Allowed Sections"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     TDSSectionCodeLbl: Label 'Code eq %1', Comment = '%1= TDS Section Code';
                 begin
-                    ODataUtility.EditWorksheetInExcel('Allowed Sections', CurrPage.ObjectId(false), TDSSectionCodeLbl);
+                    EditinExcel.EditPageInExcel('Allowed Sections', CurrPage.ObjectId(false), TDSSectionCodeLbl);
                 end;
             }
         }

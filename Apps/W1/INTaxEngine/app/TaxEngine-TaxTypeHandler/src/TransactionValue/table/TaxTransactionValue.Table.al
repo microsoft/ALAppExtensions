@@ -8,7 +8,7 @@ table 20261 "Tax Transaction Value"
     {
         field(1; "Tax Record ID"; RecordId)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Tax Record ID';
         }
         field(3; "Column Name"; Text[250])

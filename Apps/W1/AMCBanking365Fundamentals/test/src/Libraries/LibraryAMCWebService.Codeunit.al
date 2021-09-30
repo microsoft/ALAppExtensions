@@ -177,6 +177,8 @@ codeunit 130103 "Library - Amc Web Service"
 
         AMCBankServiceSetup.Init();
         AMCBankServiceSetup.Insert(true);
+        AMCBankServiceSetup."AMC Enabled" := true;
+        AMCBankServiceSetup.Modify();
     end;
 
     [Scope('OnPrem')]
@@ -232,13 +234,13 @@ codeunit 130103 "Library - Amc Web Service"
 
         if (DataExchCode = AMCBankingMgt.GetDataExchDef_STMT()) and
            (not DataExchDefExists(DataExchCode)) then
-            BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetup(true, true, '', LocalhostURLTxt, '', false, false, '', '',
+            BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetupV162(true, true, '', LocalhostURLTxt, '', false, false, '', '',
                                                                 true, false, false, true, false, '', '',
                                                                 false, false, TempOnlineBankAccLink, false);
 
         if (DataExchCode = AMCBankingMgt.GetDataExchDef_CT()) and
            (not DataExchDefExists(DataExchCode)) then
-            BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetup(true, true, '', LocalhostURLTxt, '', false, false, '', '',
+            BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetupV162(true, true, '', LocalhostURLTxt, '', false, false, '', '',
                                                                 true, true, false, false, false, '', '',
                                                                 false, false, TempOnlineBankAccLink, false);
 

@@ -2,6 +2,15 @@ pageextension 31030 "Finance Charge Memo CZL" extends "Finance Charge Memo"
 {
     layout
     {
+        addafter(ContactEmail)
+        {
+            field("Posting Description CZL"; Rec."Posting Description")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
+            }
+
+        }
         addlast(Posting)
         {
             field("Customer Posting Group CZL"; Rec."Customer Posting Group")

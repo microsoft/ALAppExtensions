@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31198 "Sync.Dep.Fld-TariffNo CZL"
 {
@@ -27,6 +28,7 @@ codeunit 31198 "Sync.Dep.Fld-TariffNo CZL"
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
 
+#if not CLEAN17
         DepFieldTxt := Rec."Statement Code";
         NewFieldTxt := Rec."Statement Code CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Statement Code", PreviousRecord."Statement Code CZL");
@@ -43,6 +45,7 @@ codeunit 31198 "Sync.Dep.Fld-TariffNo CZL"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Statement Limit Code", PreviousRecord."Statement Limit Code CZL");
         Rec."Statement Limit Code" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Statement Limit Code"));
         Rec."Statement Limit Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Statement Limit Code CZL"));
+#endif
         DepFieldTxt := Rec."Supplem. Unit of Measure Code";
         NewFieldTxt := Rec."Suppl. Unit of Meas. Code CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Supplem. Unit of Measure Code", PreviousRecord."Suppl. Unit of Meas. Code CZL");
@@ -50,3 +53,4 @@ codeunit 31198 "Sync.Dep.Fld-TariffNo CZL"
         Rec."Suppl. Unit of Meas. Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Suppl. Unit of Meas. Code CZL"));
     end;
 }
+#endif

@@ -45,12 +45,12 @@ page 149003 "BCPT Log Entries"
                     Visible = false;
                     ApplicationArea = All;
                 }
-                field(StartTime; Rec."Start Time") // Format("Start Time", 0, '<Year4>-<Month,2>-<Day,2> <Hours24>:<Minutes,2>:<Seconds,2>'))
+                field(StartTime; Format("Start Time", 0, '<Year4>-<Month,2>-<Day,2> <Hours24>:<Minutes,2>:<Seconds,2><Second dec.>'))
                 {
                     ToolTip = 'Specifies the start time of the BCPT scenario.';
                     ApplicationArea = All;
                 }
-                field(EndTime; Rec."End Time")  // Format("End Time", 0, '<Year4>-<Month,2>-<Day,2> <Hours24>:<Minutes,2>:<Seconds,2>'))
+                field(EndTime; Format("End Time", 0, '<Year4>-<Month,2>-<Day,2> <Hours24>:<Minutes,2>:<Seconds,2><Second dec.>'))
                 {
                     ToolTip = 'Specifies the end time of the BCPT scenario.';
                     ApplicationArea = All;

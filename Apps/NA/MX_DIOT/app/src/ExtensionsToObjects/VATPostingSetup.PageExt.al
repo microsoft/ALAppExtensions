@@ -6,7 +6,7 @@ pageextension 27038 "DIOT VAT Posting Setup" extends "VAT Posting Setup"
         {
             field("DIOT WHT %"; "DIOT WHT %")
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = BasicMX;
                 ToolTip = 'Specifies the withholding tax percentage to be used with this VAT posting setup when exporting the DIOT report. Important: This field only affects the DIOT report.';
             }
         }

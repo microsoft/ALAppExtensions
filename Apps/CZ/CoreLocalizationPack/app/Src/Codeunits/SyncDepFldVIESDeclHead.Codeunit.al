@@ -55,7 +55,8 @@ codeunit 31140 "Sync.Dep.Fld-VIESDeclHead CZL"
         if not VIESDeclarationHeaderCZL.Get(Rec."No.") then begin
             VIESDeclarationHeaderCZL.Init();
             VIESDeclarationHeaderCZL."No." := Rec."No.";
-            VIESDeclarationHeaderCZL.Insert(false);
+            VIESDeclarationHeaderCZL.SystemId := Rec.SystemId;
+            VIESDeclarationHeaderCZL.Insert(false, true);
         end;
         VIESDeclarationHeaderCZL."VAT Registration No." := Rec."VAT Registration No.";
         VIESDeclarationHeaderCZL."Trade Type" := Rec."Trade Type";
@@ -162,7 +163,8 @@ codeunit 31140 "Sync.Dep.Fld-VIESDeclHead CZL"
         if not VIESDeclarationHeader.Get(Rec."No.") then begin
             VIESDeclarationHeader.Init();
             VIESDeclarationHeader."No." := Rec."No.";
-            VIESDeclarationHeader.Insert(false);
+            VIESDeclarationHeader.SystemId := Rec.SystemId;
+            VIESDeclarationHeader.Insert(false, true);
         end;
         VIESDeclarationHeader."VAT Registration No." := Rec."VAT Registration No.";
         VIESDeclarationHeader."Trade Type" := Rec."Trade Type";

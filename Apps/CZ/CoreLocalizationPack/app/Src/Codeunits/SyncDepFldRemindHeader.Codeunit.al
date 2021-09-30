@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31181 "Sync.Dep.Fld-RemindHeader CZL"
 {
@@ -77,6 +78,7 @@ codeunit 31181 "Sync.Dep.Fld-RemindHeader CZL"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."SWIFT Code", PreviousRecord."SWIFT Code CZL");
         Rec."SWIFT Code" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."SWIFT Code"));
         Rec."SWIFT Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."SWIFT Code CZL"));
+#if not CLEAN17
         DepFieldTxt := Rec."Registration No.";
         NewFieldTxt := Rec."Registration No. CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Registration No.", PreviousRecord."Registration No. CZL");
@@ -87,6 +89,7 @@ codeunit 31181 "Sync.Dep.Fld-RemindHeader CZL"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Tax Registration No.", PreviousRecord."Tax Registration No. CZL");
         Rec."Tax Registration No." := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Tax Registration No."));
         Rec."Tax Registration No. CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Tax Registration No. CZL"));
+#endif
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Reminder Header", 'OnAfterValidateEvent', 'Bank No.', false, false)]
@@ -115,3 +118,4 @@ codeunit 31181 "Sync.Dep.Fld-RemindHeader CZL"
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Reminder Header", Rec.FieldNo("Bank No."));
     end;
 }
+#endif

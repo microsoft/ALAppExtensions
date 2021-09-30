@@ -107,11 +107,27 @@ table 20246 "Tax Component"
     trigger OnDelete()
     var
         TaxTypeObjHelper: Codeunit "Tax Type Object Helper";
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
     begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
         if not IsNullGuid("Formula ID") then begin
             TaxTypeObjHelper.DeleteComponentFormula("Formula ID");
             Clear("Formula ID");
         end;
+    end;
+
+    trigger OnInsert()
+    var
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
+    trigger OnModify()
+    var
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
     end;
 
     local procedure CheckNameUniqueness(TaxComponent: Record "Tax Component"; NameToCheck: Text[250]; TaxType: Code[20]);

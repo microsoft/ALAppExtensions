@@ -36,13 +36,11 @@ table 10682 "SAF-T Export Header"
         {
             DataClassification = CustomerContent;
             Caption = 'Starting Date';
-            Editable = false;
         }
         field(4; "Ending Date"; Date)
         {
             DataClassification = CustomerContent;
             Caption = 'Ending Date';
-            Editable = false;
         }
         field(5; "Parallel Processing"; Boolean)
         {

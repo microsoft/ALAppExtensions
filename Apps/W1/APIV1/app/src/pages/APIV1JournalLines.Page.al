@@ -246,11 +246,17 @@ page 20049 "APIV1 - JournalLines"
         GraphMgtComplexTypes: Codeunit "Graph Mgt - Complex Types";
         DimensionManagement: Codeunit DimensionManagement;
         NewDimensionSetId: Integer;
+        JSONDimensionSetId: Integer;
+        DimSetIdArr: array[10] of Integer;
     begin
         if not DimensionsSet then
             exit;
 
-        GraphMgtComplexTypes.GetDimensionSetFromJSON(DimensionsJSON, "Dimension Set ID", NewDimensionSetId);
+        GraphMgtComplexTypes.GetDimensionSetFromJSON(DimensionsJSON, "Dimension Set ID", JSONDimensionSetId);
+        DimSetIdArr[1] := "Dimension Set ID";
+        DimSetIdArr[2] := JSONDimensionSetId;
+        NewDimensionSetId := DimensionManagement.GetCombinedDimensionSetID(DimSetIdArr, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
+
         if "Dimension Set ID" <> NewDimensionSetId then begin
             "Dimension Set ID" := NewDimensionSetId;
             DimensionManagement.UpdateGlobalDimFromDimSetID(NewDimensionSetId, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");

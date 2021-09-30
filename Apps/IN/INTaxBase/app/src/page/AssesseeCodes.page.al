@@ -47,10 +47,10 @@ page 18543 "Assessee Codes"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     AssesseeCodeLbl: Label 'Code eq %1', Comment = '%1= Assessee Code';
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'Assesse Codes',
                         CurrPage.ObjectId(false),
                         StrSubstNo(AssesseeCodeLbl, Rec.Code));

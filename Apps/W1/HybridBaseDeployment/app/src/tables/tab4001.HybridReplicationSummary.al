@@ -34,8 +34,8 @@ table 4001 "Hybrid Replication Summary"
         field(5; "Status"; Option)
         {
             Description = 'The status of the replication run.';
-            OptionMembers = Failed,InProgress,Completed;
-            OptionCaption = 'Failed,In Progress,Completed';
+            OptionMembers = Failed,InProgress,Completed,UpgradePending,UpgradeInProgress,UpgradeFailed;
+            OptionCaption = 'Failed,In Progress,Completed,Upgrade Pending,Upgrade in Progress,Upgrade Failed';
             DataClassification = SystemMetadata;
         }
         field(6; "Tables Successful"; Integer)

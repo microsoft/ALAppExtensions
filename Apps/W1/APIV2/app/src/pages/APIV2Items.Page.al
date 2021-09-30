@@ -216,10 +216,63 @@ page 30008 "APIV2 - Items"
                         RegisterFieldSet(FieldNo("Base Unit of Measure"));
                     end;
                 }
+                field(generalProductPostingGroupId; "Gen. Prod. Posting Group Id")
+                {
+                    Caption = 'General Product Posting Group Id';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Gen. Prod. Posting Group Id"));
+                    end;
+                }
+                field(generalProductPostingGroupCode; "Gen. Prod. Posting Group")
+                {
+                    Caption = 'General Product Posting Group Code';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Gen. Prod. Posting Group"));
+                    end;
+                }
+                field(inventoryPostingGroupId; "Inventory Posting Group Id")
+                {
+                    Caption = 'Inventory Posting Group Id';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Inventory Posting Group Id"));
+                    end;
+                }
+                field(inventoryPostingGroupCode; "Inventory Posting Group")
+                {
+                    Caption = 'Inventory Posting Group Code';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Inventory Posting Group"));
+                    end;
+                }
                 field(lastModifiedDateTime; SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                     Editable = false;
+                }
+
+                part(inventoryPostingGroup; "APIV2 - Inventory Post. Group")
+                {
+                    Caption = 'Inventory Posting Group';
+                    Multiplicity = ZeroOrOne;
+                    EntityName = 'inventoryPostingGroup';
+                    EntitySetName = 'inventoryPostingGroups';
+                    SubPageLink = SystemId = Field("Inventory Posting Group Id");
+                }
+                part(generalProductPostingGroup; "APIV2 - Gen. Prod. Post. Group")
+                {
+                    Caption = 'General Product Posting Group';
+                    Multiplicity = ZeroOrOne;
+                    EntityName = 'generalProductPostingGroup';
+                    EntitySetName = 'generalProductPostingGroups';
+                    SubPageLink = SystemId = Field("Gen. Prod. Posting Group Id");
                 }
                 part(baseUnitOfMeasure; "APIV2 - Units of Measure")
                 {

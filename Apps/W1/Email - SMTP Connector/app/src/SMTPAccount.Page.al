@@ -191,6 +191,7 @@ page 4512 "SMTP Account"
         UserIDEditable: Boolean;
         [InDataSet]
         PasswordEditable: Boolean;
+        [NonDebuggable]
         [InDataSet]
         Password: Text;
         [InDataSet]

@@ -1,12 +1,16 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31211 "Sync.Dep.Fld-RegNoSvcConf CZL"
 {
+#if not CLEAN17
     Permissions = tabledata "Reg. No. Srv Config" = rimd,
                   tabledata "Reg. No. Service Config CZL" = rimd;
+#endif
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '18.0';
 
+#if not CLEAN17
     [EventSubscriber(ObjectType::Table, Database::"Reg. No. Srv Config", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenameRegNoSrvConfig(var Rec: Record "Reg. No. Srv Config"; var xRec: Record "Reg. No. Srv Config")
     var
@@ -54,7 +58,8 @@ codeunit 31211 "Sync.Dep.Fld-RegNoSvcConf CZL"
         if not RegNoServiceConfigCZL.Get(Rec."Entry No.") then begin
             RegNoServiceConfigCZL.Init();
             RegNoServiceConfigCZL."Entry No." := Rec."Entry No.";
-            RegNoServiceConfigCZL.Insert(false);
+            RegNoServiceConfigCZL.SystemId := Rec.SystemId;
+            RegNoServiceConfigCZL.Insert(false, true);
         end;
         RegNoServiceConfigCZL."Service Endpoint" := Rec."Service Endpoint";
         RegNoServiceConfigCZL.Modify(false);
@@ -127,7 +132,8 @@ codeunit 31211 "Sync.Dep.Fld-RegNoSvcConf CZL"
         if not RegNoSrvConfig.Get(Rec."Entry No.") then begin
             RegNoSrvConfig.Init();
             RegNoSrvConfig."Entry No." := Rec."Entry No.";
-            RegNoSrvConfig.Insert(false);
+            RegNoSrvConfig.SystemId := Rec.SystemId;
+            RegNoSrvConfig.Insert(false, true);
         end;
         RegNoSrvConfig."Service Endpoint" := Rec."Service Endpoint";
         RegNoSrvConfig.Modify(false);
@@ -159,4 +165,6 @@ codeunit 31211 "Sync.Dep.Fld-RegNoSvcConf CZL"
     begin
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
+#endif
 }
+#endif

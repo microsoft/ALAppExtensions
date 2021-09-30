@@ -18,7 +18,7 @@ codeunit 3061 "Uri Builder"
     /// <param name="Uri">A URI string.</param>
     procedure Init(Uri: Text)
     begin
-        UriBuilder := UriBuilder.UriBuilder(Uri);
+        UriBuilderImpl.Init(Uri);
     end;
 
     /// <summary>
@@ -28,7 +28,7 @@ codeunit 3061 "Uri Builder"
     /// <param name="Scheme">A string that represents the scheme name to set.</param>
     procedure SetScheme(Scheme: Text)
     begin
-        UriBuilder.Scheme := Scheme;
+        UriBuilderImpl.SetScheme(Scheme);
     end;
 
     /// <summary>
@@ -38,7 +38,7 @@ codeunit 3061 "Uri Builder"
     /// <returns>The scheme name of the URI.</returns>
     procedure GetScheme(): Text
     begin
-        exit(UriBuilder.Scheme);
+        exit(UriBuilderImpl.GetScheme());
     end;
 
     /// <summary>
@@ -48,7 +48,7 @@ codeunit 3061 "Uri Builder"
     /// <param name="Host">A string that represents the host name to set.</param>
     procedure SetHost(Host: Text)
     begin
-        UriBuilder.Host := Host;
+        UriBuilderImpl.SetHost(Host);
     end;
 
     /// <summary>
@@ -58,7 +58,7 @@ codeunit 3061 "Uri Builder"
     /// <returns>The host name of the URI.</returns>
     procedure GetHost(): Text
     begin
-        exit(UriBuilder.Host);
+        exit(UriBuilderImpl.GetHost());
     end;
 
     /// <summary>
@@ -68,7 +68,7 @@ codeunit 3061 "Uri Builder"
     /// <param name="Port">An integer that represents the port number to set.</param>
     procedure SetPort(Port: Integer)
     begin
-        UriBuilder.Port := Port;
+        UriBuilderImpl.SetPort(Port);
     end;
 
     /// <summary>
@@ -78,7 +78,7 @@ codeunit 3061 "Uri Builder"
     /// <returns>The port number of the URI.</returns>
     procedure GetPort(): Integer
     begin
-        exit(UriBuilder.Port);
+        exit(UriBuilderImpl.GetPort());
     end;
 
     /// <summary>
@@ -88,7 +88,7 @@ codeunit 3061 "Uri Builder"
     /// <param name="Path">A string that represents the path to set.</param>
     procedure SetPath(Path: Text)
     begin
-        UriBuilder.Path := Path;
+        UriBuilderImpl.SetPath(Path);
     end;
 
     /// <summary>
@@ -98,7 +98,7 @@ codeunit 3061 "Uri Builder"
     /// <returns>The path to the resource referenced by the URI.</returns>
     procedure GetPath(): Text
     begin
-        exit(UriBuilder.Path);
+        exit(UriBuilderImpl.GetPath());
     end;
 
     /// <summary>
@@ -108,7 +108,7 @@ codeunit 3061 "Uri Builder"
     /// <param name="Query">A string that represents the query information to set.</param>
     procedure SetQuery(Query: Text)
     begin
-        UriBuilder.Query := Query;
+        UriBuilderImpl.SetQuery(Query);
     end;
 
     /// <summary>
@@ -118,7 +118,7 @@ codeunit 3061 "Uri Builder"
     /// <returns>The query information included in the URI.</returns>
     procedure GetQuery(): Text
     begin
-        exit(UriBuilder.Query);
+        exit(UriBuilderImpl.GetQuery());
     end;
 
     /// <summary>
@@ -128,7 +128,7 @@ codeunit 3061 "Uri Builder"
     /// <param name="Fragment">A string that represents the fragment portion to set.</param>
     procedure SetFragment(Fragment: Text)
     begin
-        UriBuilder.Fragment := Fragment;
+        UriBuilderImpl.SetFragment(Fragment);
     end;
 
     /// <summary>
@@ -138,7 +138,7 @@ codeunit 3061 "Uri Builder"
     /// <returns>The fragment portion of the URI.</returns>
     procedure GetFragment(): Text
     begin
-        exit(UriBuilder.Fragment);
+        exit(UriBuilderImpl.GetFragment());
     end;
 
     /// <summary>
@@ -148,9 +148,61 @@ codeunit 3061 "Uri Builder"
     /// <param name="Uri">A Uri that contains the URI constructed by the Uri Builder.</param>
     procedure GetUri(var Uri: Codeunit Uri)
     begin
-        Uri.SetUri(UriBuilder.Uri);
+        UriBuilderImpl.GetUri(Uri);
+    end;
+
+    /// <summary>
+    /// Adds a flag to the query string of this UriBuilder. In case the same query flag exists already, the action in <paramref name="DuplicateAction"/> is taken.
+    /// </summary>
+    /// <param name="Flag">A flag to add to the query string of this UriBuilder. This value will be encoded before being added to the URI query string. Cannot be empty.</param>
+    /// <param name="DuplicateAction">Specifies which action to take if the flag already exist.</param>
+    /// <error>If the provided <paramref name="Flag"/> is empty.</error>
+    /// <error>If the provided <paramref name="DuplicateAction"/> is <c>"Throw Error"</c> and the flag already exists in the URI.</error>
+    /// <error>If the provided <paramref name="DuplicateAction"/> is not a valid value for the enum.</error>
+    /// <remarks>This function could alter the order of the existing query string parts. For example, if the previous URL was "https://microsoft.com?foo=bar&amp;john=doe" and the new flag is "contoso", the result could be "https://microsoft.com?john=doe&amp;foo=bar&amp;contoso".</remarks>
+    procedure AddQueryFlag(Flag: Text; DuplicateAction: Enum "Uri Query Duplicate Behaviour")
+    begin
+        UriBuilderImpl.AddQueryFlag(Flag, DuplicateAction);
+    end;
+
+    /// <summary>
+    /// Adds a flag to the query string of this UriBuilder. In case the same query flag exists already, only one occurrence is kept.
+    /// </summary>
+    /// <param name="Flag">A flag to add to the query string of this UriBuilder. This value will be encoded before being added to the URI query string. Cannot be empty.</param>
+    /// <error>If the provided <paramref name="Flag"/> is empty.</error>
+    /// <remarks>This function could alter the order of the existing query string parts. For example, if the previous URL was "https://microsoft.com?foo=bar&amp;john=doe" and the new flag is "contoso", the result could be "https://microsoft.com?john=doe&amp;foo=bar&amp;contoso".</remarks>
+    procedure AddQueryFlag(Flag: Text)
+    begin
+        UriBuilderImpl.AddQueryFlag(Flag, Enum::"Uri Query Duplicate Behaviour"::"Overwrite All Matching");
+    end;
+
+    /// <summary>
+    /// Adds a parameter key-value pair to the query string of this UriBuilder (in the form <c>ParameterKey=ParameterValue</c>). In case the same query key exists already, the action in <paramref name="DuplicateAction"/> is taken.
+    /// </summary>
+    /// <param name="ParameterKey">The key for the new query parameter. This value will be encoded before being added to the URI query string. Cannot be empty.</param>
+    /// <param name="ParameterValue">The value for the new query parameter. This value will be encoded before being added to the URI query string. Can be empty.</param>
+    /// <param name="DuplicateAction">Specifies which action to take if the ParameterKey specified already exist.</param>
+    /// <error>If the provided <paramref name="ParameterKey"/> is empty.</error>
+    /// <error>If the provided <paramref name="DuplicateAction"/> is <c>"Throw Error"</c>.</error>
+    /// <error>If the provided <paramref name="DuplicateAction"/> is not a valid value for the enum.</error>
+    /// <remarks>This function could alter the order of the existing query string parts. For example, if the previous URL was "https://microsoft.com?foo=bar&amp;john=doe" and the new flag is "contoso=42", the result could be "https://microsoft.com?john=doe&amp;foo=bar&amp;contoso=42".</remarks>
+    procedure AddQueryParameter(ParameterKey: Text; ParameterValue: Text; DuplicateAction: Enum "Uri Query Duplicate Behaviour")
+    begin
+        UriBuilderImpl.AddQueryParameter(ParameterKey, ParameterValue, DuplicateAction);
+    end;
+
+    /// <summary>
+    /// Adds a parameter key-value pair to the query string of this UriBuilder (in the form <c>ParameterKey=ParameterValue</c>). In case the same query key exists already, its value is overwritten.
+    /// </summary>
+    /// <param name="ParameterKey">The key for the new query parameter. This value will be encoded before being added to the URI query string. Cannot be empty.</param>
+    /// <param name="ParameterValue">The value for the new query parameter. This value will be encoded before being added to the URI query string. Can be empty.</param>
+    /// <error>If the provided <paramref name="ParameterKey"/> is empty.</error>
+    /// <remarks>This function could alter the order of the existing query string parts. For example, if the previous URL was "https://microsoft.com?foo=bar&amp;john=doe" and the new flag is "contoso=42", the result could be "https://microsoft.com?john=doe&amp;foo=bar&amp;contoso=42".</remarks>
+    procedure AddQueryParameter(ParameterKey: Text; ParameterValue: Text)
+    begin
+        UriBuilderImpl.AddQueryParameter(ParameterKey, ParameterValue, Enum::"Uri Query Duplicate Behaviour"::"Overwrite All Matching");
     end;
 
     var
-        UriBuilder: DotNet UriBuilder;
+        UriBuilderImpl: Codeunit "Uri Builder Impl.";
 }

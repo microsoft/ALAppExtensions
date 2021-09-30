@@ -1,0 +1,42 @@
+{
+    "id": "c0380f61-b75f-497c-a7f6-e5a2f5f19994",
+    "name": "Edit in Excel Test Library",
+    "publisher": "Microsoft",
+    "brief": "",
+    "description": "Test library for edit in excel internals.",
+    "version": "19.0.0.0",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help": "",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo": "",
+    "dependencies": [
+        {
+            "id": "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+            "name": "DotNet Aliases",
+            "publisher": "Microsoft",
+            "version": "19.0.0.0"
+        },
+        {
+            "id": "5d848063-d779-42ed-8086-5400b3380378",
+            "name": "Edit in Excel",
+            "publisher": "Microsoft",
+            "version": "19.0.0.0"
+        },
+        {
+            "id": "9bc20107-0927-405d-abec-ed877f67c2a3",
+            "name": "Web Service Management",
+            "publisher": "Microsoft",
+            "version": "19.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "19.0.0.0",
+    "idRanges": [
+        {
+            "from": 132524,
+            "to": 132524
+        }
+    ],
+    "target": "OnPrem"
+}

@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31167 "Sync.Dep.Fld-GenJnlLine CZL"
 {
@@ -22,7 +23,9 @@ codeunit 31167 "Sync.Dep.Fld-GenJnlLine CZL"
         PreviousRecord: Record "Gen. Journal Line";
         SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
         PreviousRecordRef: RecordRef;
+#if not CLEAN17
         DepFieldInt, NewFieldInt : Integer;
+#endif
         DepFieldTxt, NewFieldTxt : Text;
     begin
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
@@ -68,6 +71,7 @@ codeunit 31167 "Sync.Dep.Fld-GenJnlLine CZL"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."SWIFT Code", PreviousRecord."SWIFT Code CZL");
         Rec."SWIFT Code" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."SWIFT Code"));
         Rec."SWIFT Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."SWIFT Code CZL"));
+#if not CLEAN17
         SyncDepFldUtilities.SyncFields(Rec."VAT Date", Rec."VAT Date CZL", PreviousRecord."VAT Date", PreviousRecord."VAT Date CZL");
         DepFieldTxt := Rec."Registration No.";
         NewFieldTxt := Rec."Registration No. CZL";
@@ -98,8 +102,10 @@ codeunit 31167 "Sync.Dep.Fld-GenJnlLine CZL"
         Rec."Currency Code VAT" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Currency Code VAT"));
         Rec."VAT Currency Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."VAT Currency Code CZL"));
         SyncDepFldUtilities.SyncFields(Rec."VAT Delay", Rec."VAT Delay CZL", PreviousRecord."VAT Delay", PreviousRecord."VAT Delay CZL");
+#endif
     end;
 
+#if not CLEAN17
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterValidateEvent', 'VAT Date', false, false)]
     local procedure SyncOnAfterValidateVatDate(var Rec: Record "Gen. Journal Line")
     begin
@@ -123,4 +129,6 @@ codeunit 31167 "Sync.Dep.Fld-GenJnlLine CZL"
     begin
         Rec."Original Document VAT Date" := Rec."Original Doc. VAT Date CZL";
     end;
+#endif
 }
+#endif

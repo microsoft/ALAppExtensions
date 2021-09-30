@@ -1,0 +1,62 @@
+{
+    "id": "5d848063-d779-42ed-8086-5400b3380378",
+    "name": "Edit in Excel",
+    "publisher": "Microsoft",
+    "brief": "Handles the edit in excel functionality",
+    "description": "Contains functionality for using edit in excel.",
+    "version": "19.0.0.0",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help": "",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo": "",
+    "dependencies": [
+        {
+            "id": "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+            "name": "DotNet Aliases",
+            "publisher": "Microsoft",
+            "version": "19.0.0.0"
+        },
+        {
+            "id": "9bc20107-0927-405d-abec-ed877f67c2a3",
+            "name": "Web Service Management",
+            "publisher": "Microsoft",
+            "version": "19.0.0.0"
+        },
+        {
+            "id": "2673d810-273e-402f-9093-2eaef7e03b83",
+            "name": "Environment Information",
+            "publisher": "Microsoft",
+            "version": "19.0.0.0"
+        },
+        {
+            "id": "95025170-61fc-4808-9505-4ba1fe1d05d9",
+            "name": "Azure AD Tenant",
+            "publisher": "Microsoft",
+            "version": "19.0.0.0"
+        },
+        {
+            "id": "c64d75f0-e9f1-4d0f-9949-cd453b9b1466",
+            "name": "Guided Experience",
+            "publisher": "Microsoft",
+            "version": "19.0.0.0"
+        }
+    ],
+    "internalsVisibleTo": [
+        {
+            "id": "c0380f61-b75f-497c-a7f6-e5a2f5f19994",
+            "name": "Edit in Excel Test Library",
+            "publisher": "Microsoft"
+        }
+    ],
+    "screenshots": [],
+    "platform": "19.0.0.0",
+    "target": "OnPrem",
+    "idRanges": [
+        {
+            "from": 1480,
+            "to": 1482
+        }
+    ],
+    "contextSensitiveHelpUrl": "https://docs.microsoft.com/dynamics365/business-central/"
+}

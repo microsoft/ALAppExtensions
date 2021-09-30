@@ -27,7 +27,7 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
         }
         addafter("Balance (LCY)")
         {
-            field(BalanceOfCustomerCZL; BalanceAsCustomer)
+            field(BalanceOfCustomerCYL; BalanceAsCustomer)
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Balance As Customer (LCY)';

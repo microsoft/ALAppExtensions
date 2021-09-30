@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31223 "Sync.Dep.Fld-IntrastJnlLn CZL"
 {
@@ -75,3 +76,4 @@ codeunit 31223 "Sync.Dep.Fld-IntrastJnlLn CZL"
         Rec."Base Unit of Measure CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Base Unit of Measure CZL"));
     end;
 }
+#endif

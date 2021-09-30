@@ -14,6 +14,7 @@ codeunit 134696 "Email Editor Validation Tests"
         PermissionsMock: Codeunit "Permissions Mock";
         Any: Codeunit Any;
         InvalidEmailAddressErr: Label 'The email address "%1" is not valid.', Locked = true;
+        AttachmentDefaultContentTypeTxt: Label 'application/vnd.openxmlformats-officedocument.wordprocessingml.document(.docx)', Locked = true;
 
     [Test]
     [HandlerFunctions('DiscardEmailEditorHandler')]
@@ -258,6 +259,97 @@ codeunit 134696 "Email Editor Validation Tests"
         Assert.AreEqual(TempEmailAccount."Email Address", SentEmail."Sent From", 'A different sent from was expected');
         Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", SentEmail.Connector, 'A different connector was expected');
     end;
+
+    [Test]
+    [HandlerFunctions('WordTemplateToBodyModalHandler')]
+    procedure EmailEditorApplyWordTemplate()
+    var
+        TempEmailAccount: Record "Email Account";
+        ConnectorMock: Codeunit "Connector Mock";
+        WordTemplateCreator: Codeunit "Word Template Creator";
+        Email: Codeunit Email;
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageImpl: Codeunit "Email Message Impl.";
+        EmailEditor: Codeunit "Email Editor";
+        EmailEditorTest: TestPage "Email Editor";
+        TableId: Integer;
+        Text: Text;
+    begin
+
+        // [GIVEN] A connector is installed, an account is added, and a template exists for the Table ID.
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempEmailAccount);
+        PermissionsMock.Set('Email Word Template');
+        TableId := Database::"Test Email Account";
+        WordTemplateCreator.CreateCustomerWordTemplate(TableId);
+
+        // [WHEN] A email is created and a word template is applied to the email.
+        EmailMessage.Create(Any.Email(), Any.UnicodeText(50), Any.UnicodeText(250), true);
+        Email.AddRelation(EmailMessage, TableId, Any.GuidValue(), Enum::"Email Relation Type"::"Primary Source");
+        EmailMessageImpl.Get(EmailMessage.GetId());
+        EmailEditorTest.Trap();
+        EmailEditor.LoadWordTemplate(EmailMessageImpl, EmailMessage.GetId());
+
+        // [Then] The email body is filled with the html contents that make up the word template.
+        Text := EmailMessage.GetBody();
+        Assert.IsTrue(StrLen(Text) > 0, 'Failed to load template to email body');
+        Assert.IsTrue(Text.Contains('Test Text'), 'Failed to load correct template');
+    end;
+
+    [Test]
+    [HandlerFunctions('WordTemplateAttachmentModalHandler')]
+    procedure EmailEditorAttachWordTemplate()
+    var
+        TempEmailAccount: Record "Email Account";
+        ConnectorMock: Codeunit "Connector Mock";
+        WordTemplateCreator: Codeunit "Word Template Creator";
+        Email: Codeunit Email;
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageImpl: Codeunit "Email Message Impl.";
+        EmailEditor: Codeunit "Email Editor";
+        EmailEditorTest: TestPage "Email Editor";
+        TableId: Integer;
+    begin
+
+        // [GIVEN] A connector is installed, an account is added, and a template exists for the Table ID.
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempEmailAccount);
+        PermissionsMock.Set('Email Word Template');
+        TableId := Database::"Test Email Account";
+        WordTemplateCreator.CreateCustomerWordTemplate(TableId);
+
+        // [WHEN] A email is created and a word template is atached as an attachment.
+        EmailMessage.Create(Any.Email(), Any.UnicodeText(50), Any.UnicodeText(250), true);
+        Email.AddRelation(EmailMessage, TableId, Any.GuidValue(), Enum::"Email Relation Type"::"Primary Source");
+        EmailMessageImpl.Get(EmailMessage.GetId());
+        EmailEditorTest.Trap();
+        EmailEditor.AttachFromWordTemplate(EmailMessageImpl, EmailMessage.GetId());
+
+        // [Then] The email message contains an attachment of correct type, that has the contents of the word template.
+        Assert.IsTrue(EmailMessageImpl.Attachments_First(), 'Failed to find attachment');
+        Assert.IsTrue(EmailMessageImpl.Attachments_GetLength() > 0, 'Failed to load template to email body');
+        Assert.AreEqual(EmailMessageImpl.Attachments_GetContentType(), AttachmentDefaultContentTypeTxt, 'Wrong default type of email attachment');
+
+    end;
+
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure WordTemplateToBodyModalHandler(var WordTemplate: TestPage "Word Template To Text Wizard")
+    begin
+        WordTemplate.First();
+        WordTemplate.Finish.Invoke();
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure WordTemplateAttachmentModalHandler(var WordTemplate: TestPage "Word Template Selection Wizard")
+    begin
+        WordTemplate.First();
+        WordTemplate.Next.Invoke();
+        WordTemplate.Finish.Invoke();
+    end;
+
 
     [ModalPageHandler]
     [Scope('OnPrem')]

@@ -9,6 +9,11 @@ pageextension 31146 "FA Depr. Books Subform CZF" extends "FA Depreciation Books 
                 ApplicationArea = FixedAssets;
                 ToolTip = 'Specifies group code for tax depreciation of assets.';
             }
+            field("Default FA Deprec. Book CZF"; Rec."Default FA Depreciation Book")
+            {
+                ApplicationArea = FixedAssets;
+                ToolTip = 'Specifies the default fixed asset depreciation book.';
+            }
         }
         addlast(Control1)
         {

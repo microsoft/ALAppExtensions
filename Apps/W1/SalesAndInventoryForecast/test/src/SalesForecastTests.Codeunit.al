@@ -167,9 +167,9 @@ codeunit 139540 "Sales Forecast Tests"
         PurchaseHeader: Record "Purchase Header";
         Vendor: Record Vendor;
         PurchaseInvoice: TestPage "Purchase Invoice";
-        MySettings: TestPage "My Settings";
+        UserSettings: TestPage "User Settings";
     begin
-        // [Scenario] User opens my settings and enables the sales and inventory forecast notification for a specific vendor No. Notification should be shown for that vendor
+        // [Scenario] User opens user settings and enables the sales and inventory forecast notification for a specific vendor No. Notification should be shown for that vendor
         Initialize();
         SalesForecastLib.Setup();
         LibraryVariableStorage.Enqueue(true);
@@ -180,9 +180,9 @@ codeunit 139540 "Sales Forecast Tests"
 
         PreparePurchaseHeader(PurchaseHeader, Vendor);
 
-        // [Given] Opened page "My Settings" and enabled the notification for this vendorNo see MyNotificationsModalPageHandler and VendorFilterSettingsModalPageHandler
-        MySettings.OpenEdit();
-        MySettings.MyNotificationsLbl.Drilldown();
+        // [Given] Opened page "User Settings" and enabled the notification for this vendorNo see MyNotificationsModalPageHandler and VendorFilterSettingsModalPageHandler
+        UserSettings.OpenEdit();
+        UserSettings.MyNotificationsLbl.Drilldown();
 
         // [Given] Purchase invoice page is opened with the purchase header
         PurchaseInvoice.Trap();
@@ -674,9 +674,9 @@ codeunit 139540 "Sales Forecast Tests"
         MyNotifications: Record "My Notifications";
         SalesForecastNotifier: Codeunit "Sales Forecast Notifier";
         PurchaseInvoice: TestPage "Purchase Invoice";
-        MySettings: TestPage "My Settings";
+        UserSettings: TestPage "User Settings";
     begin
-        // [Scenario] User opens my settings and enables the sales and inventory forecast notification for a specific vendor No. 
+        // [Scenario] User opens user settings and enables the sales and inventory forecast notification for a specific vendor No. 
         // Notification should not be shown for another vendor.
         Initialize();
         SalesForecastLib.Setup();
@@ -692,9 +692,9 @@ codeunit 139540 "Sales Forecast Tests"
 
         PreparePurchaseHeader(PurchaseHeader, Vendor);
 
-        // [Given] Opened page "My Settings" and enabled the notification for Vendor2."No."
-        MySettings.OpenEdit();
-        MySettings.MyNotificationsLbl.Drilldown();
+        // [Given] Opened page "User Settings" and enabled the notification for Vendor2."No."
+        UserSettings.OpenEdit();
+        UserSettings.MyNotificationsLbl.Drilldown();
 
         // [Given] Purchase invoice page is opened with the purchase header
         PurchaseInvoice.Trap();
@@ -712,7 +712,7 @@ codeunit 139540 "Sales Forecast Tests"
         PurchaseHeader: Record "Purchase Header";
         Vendor: Record Vendor;
         PurchaseInvoice: TestPage "Purchase Invoice";
-        MySettings: TestPage "My Settings";
+        UserSettings: TestPage "User Settings";
     begin
         // [Scenario] When the Item Sales Forecast Notification is disabled.
         Initialize();
@@ -724,9 +724,9 @@ codeunit 139540 "Sales Forecast Tests"
 
         PreparePurchaseHeader(PurchaseHeader, Vendor);
 
-        // [Given] Opened page "My Settings" and disabled the item sales forecast notification see MyNotificationsModalPageHandler
-        MySettings.OpenEdit();
-        MySettings.MyNotificationsLbl.DrillDown();
+        // [Given] Opened page "User Settings" and disabled the item sales forecast notification see MyNotificationsModalPageHandler
+        UserSettings.OpenEdit();
+        UserSettings.MyNotificationsLbl.DrillDown();
 
         // [Given] Purchase invoice page is opened with the purchase header
         PurchaseInvoice.Trap();
@@ -736,9 +736,9 @@ codeunit 139540 "Sales Forecast Tests"
 
         // [Then] The notification is not sent.
 
-        // [Cleanup] Opened page "My Settings" and enable the item sales forecast notification see MyNotificationsModalPageHandler
+        // [Cleanup] Opened page "User Settings" and enable the item sales forecast notification see MyNotificationsModalPageHandler
         LibraryVariableStorage.Enqueue(true);
-        MySettings.MyNotificationsLbl.DrillDown();
+        UserSettings.MyNotificationsLbl.DrillDown();
     end;
 
     [Test]
@@ -929,14 +929,14 @@ codeunit 139540 "Sales Forecast Tests"
     local procedure CreateForecastData(Item: Record Item; Qty: Decimal);
     var
         MSSalesForecast: Record "MS - Sales Forecast";
-        PeriodFormManagement: Codeunit PeriodFormManagement;
+        PeriodPageManagement: Codeunit PeriodPageManagement;
         StockoutWarningDate: Date;
     begin
         MSSalesForecast.Init();
         MSSalesForecast."Item No." := Item."No.";
 
         StockoutWarningDate :=
-          PeriodFormManagement.MoveDateByPeriod(WorkDate(), MSSalesForecastSetup."Period Type",
+          PeriodPageManagement.MoveDateByPeriod(WorkDate(), MSSalesForecastSetup."Period Type",
             MSSalesForecastSetup."Stockout Warning Horizon");
         MSSalesForecast.Date := StockoutWarningDate - 1;
         MSSalesForecast.Quantity := Qty;

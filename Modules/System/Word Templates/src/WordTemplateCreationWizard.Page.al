@@ -40,6 +40,7 @@ page 9995 "Word Template Creation Wizard"
                     ShowCaption = false;
                     ToolTip = ' ';
                     Editable = false;
+                    Visible = TableFilterExpression = '';
 
                     trigger OnDrillDown()
                     var
@@ -92,7 +93,7 @@ page 9995 "Word Template Creation Wizard"
 
                     trigger OnDrillDown()
                     begin
-                        Currpage.RelatedTables.Page.AddRelatedTable(Rec."Table ID", true);
+                        Currpage.RelatedTables.Page.AddRelatedTable(WordTemplate."Table ID", true);
                     end;
                 }
 
@@ -105,7 +106,7 @@ page 9995 "Word Template Creation Wizard"
 
                     trigger OnDrillDown()
                     begin
-                        Currpage.RelatedTables.Page.AddRelatedTable(Rec."Table ID", false);
+                        Currpage.RelatedTables.Page.AddRelatedTable(WordTemplate."Table ID", false);
                     end;
                 }
 
@@ -206,7 +207,6 @@ page 9995 "Word Template Creation Wizard"
                         Editable = false;
                         Caption = 'Uploaded file';
                         ToolTip = 'The name of the file that was uploaded.';
-
                     }
 
                     field(TemplateEntity; WordTemplate."Table Caption")
@@ -355,7 +355,7 @@ page 9995 "Word Template Creation Wizard"
             {
                 ApplicationArea = All;
                 Image = PreviousRecord;
-                Visible = (Step <> Step::Select) and not (TableSetExternally and (Step = Step::Download));
+                Visible = Step <> Step::Select;
                 InFooterBar = true;
 
                 trigger OnAction()
@@ -393,9 +393,9 @@ page 9995 "Word Template Creation Wizard"
                                 if Rec."Table ID" = 0 then
                                     Error(MissingEntityErr);
 
-                                WordTemplate."Table ID" := Rec."Table ID";
                                 TableSetSkipped := false;
-                                CurrPage.RelatedTables.Page.SetTableNo(Rec."Table ID");
+                                WordTemplate."Table ID" := Rec."Table ID";
+                                CurrPage.RelatedTables.Page.SetTableNo(WordTemplate."Table ID");
                                 Step := Step::SelectRelated;
                             end;
                         Step::SelectRelated:
@@ -473,15 +473,41 @@ page 9995 "Word Template Creation Wizard"
 
     trigger OnOpenPage()
     begin
-        if WordTemplate."Table ID" <> 0 then
-            Step := Step::Download;
+        if WordTemplate."Table ID" <> 0 then begin
+            Rec.SetFilter("Table ID", TableFilterExpression);
+            Rec.Get(WordTemplate."Table ID");
+            CurrPage.Update(false);
+        end;
+    end;
+
+    procedure SetMultipleTableNo(TableIds: List of [Integer]; SelectedTable: Integer)
+    var
+        WordTemplateImpl: Codeunit "Word Template Impl.";
+        I: Integer;
+        FilterBuilder: TextBuilder;
+    begin
+        TableSetExternally := true;
+        for I := 1 to TableIds.Count() do begin
+            WordTemplateImpl.AddTable(TableIds.Get(I));
+            FilterBuilder.Append(Format(TableIds.Get(I)));
+            if I <> TableIds.Count() then
+                FilterBuilder.Append('|');
+        end;
+        OnSetTableNo(SelectedTable);
+        // As this method populates the page, before it is run, 
+        // we commit to make sure that database transactions are done.
+        Commit();
+
+        TableFilterExpression := FilterBuilder.ToText();
+        WordTemplate."Table ID" := SelectedTable;
     end;
 
     procedure SetTableNo(Value: Integer)
+    var
+        TableNos: List of [Integer];
     begin
-        WordTemplate."Table ID" := Value;
-        TableSetExternally := true;
-        OnSetTableNo(Value);
+        TableNos.Add(Value);
+        SetMultipleTableNo(TableNos, Value);
     end;
 
     procedure SetRelatedTable(RelatedTableId: Integer; FieldNo: Integer; RelatedCode: Code[5])
@@ -509,7 +535,7 @@ page 9995 "Word Template Creation Wizard"
 
     var
         WordTemplate: Record "Word Template";
-        UploadedFileName: Text;
+        UploadedFileName, TableFilterExpression : Text;
         TableSetExternally, TableSetSkipped : Boolean;
         TemplateUploaded: Boolean;
         AddNewEntityLbl: Label 'Add new entity';

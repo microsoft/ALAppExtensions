@@ -72,6 +72,9 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
         }
     }
 
+#if not CLEAN19
+#pragma warning disable AL0432
+    [Obsolete('Replaced by GetVATAccountNo in "Calc. and Post VAT Settl. CZL" report', '19.0')]
     procedure GetVATAccountNoCZL(Type: Enum "General Posting Type"; Advance: Boolean): Code[20]
     begin
         case Type of
@@ -94,6 +97,8 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
         end;
     end;
 
+#pragma warning restore AL0432
+#endif
     procedure GetLCYCorrRoundingAccCZL(): Code[20]
     var
         PostingSetupManagement: Codeunit PostingSetupManagement;

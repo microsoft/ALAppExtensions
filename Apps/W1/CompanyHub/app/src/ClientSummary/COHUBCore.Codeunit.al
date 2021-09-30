@@ -1,4 +1,4 @@
-codeunit 1151 "COHUB Core"
+﻿codeunit 1151 "COHUB Core"
 {
     TableNo = "COHUB Enviroment";
     Access = Internal;
@@ -31,6 +31,11 @@ codeunit 1151 "COHUB Core"
         ProductionEnviromentTxt: Label 'Production', Locked = true;
         COHUBEnviromentExistsErr: Label 'An environment with the specified link already exists. Enviroment number %1, name %2.', Comment = '%1 No. field, %2 Name of enviroment';
         CompanyHubNotSupportedOnPremMsg: Label 'Company Hub extension is not supported in the On-Prem enviroment.';
+        NoEnviromentsMsg: Label 'The company hub is empty. Go ahead and add the first environment.';
+        EnterEnviromentsTxt: Label 'Setup';
+        DontShowAgainTok: Label 'Don''t show again';
+        DontShowAgainSetupCompanyHubNotificationTxt: Label 'Company Hub Setup Notification', MaxLength = 128;
+        DontShowAgainSetupCompanyHubNotificationDescriptionTxt: Label 'This notification is raised to help set up the company hub if no enviroments have been added.';
 
     procedure GoToCompany(COHUBEnviroment: Record "COHUB Enviroment"; Company: Text)
     var
@@ -66,6 +71,29 @@ codeunit 1151 "COHUB Core"
         end;
     end;
 
+    procedure ShowSetupCompanyHubNotification()
+    var
+        MyNotifications: Record "My Notifications";
+        NoEnviromentsEnteredNotification: Notification;
+    begin
+        if MyNotifications.Get(UserId, GetShowSetupCompanyHubNotificationId()) then
+            if not MyNotifications.Enabled then
+                exit;
+
+        NoEnviromentsEnteredNotification.Message(NoEnviromentsMsg);
+        NoEnviromentsEnteredNotification.Id := GetShowSetupCompanyHubNotificationId();
+        if NoEnviromentsEnteredNotification.Recall() then;
+        NoEnviromentsEnteredNotification.Scope := NotificationScope::LocalScope;
+        NoEnviromentsEnteredNotification.AddAction(EnterEnviromentsTxt, Codeunit::"COHUB Core", 'OpenEnviroment');
+        NoEnviromentsEnteredNotification.AddAction(DontShowAgainTok, Codeunit::"COHUB Core", 'DontShowAgainSetupCompanyHubNotification');
+        NoEnviromentsEnteredNotification.Send();
+    end;
+
+    local procedure GetShowSetupCompanyHubNotificationId(): Guid
+    begin
+        exit('896f743d-d47e-4193-a651-178209df33e3');
+    end;
+
     procedure UpdateAllCompanies(UpdatateAsync: Boolean)
     var
         COHUBEnviroment: Record "COHUB Enviroment";
@@ -88,6 +116,14 @@ codeunit 1151 "COHUB Core"
     procedure OpenEnviroment(NoClientsEnteredNotification: Notification)
     begin
         Page.Run(Page::"COHUB Enviroment List");
+    end;
+
+    procedure DontShowAgainSetupCompanyHubNotification(SetupCompanyHubNotification: Notification)
+    var
+        MyNotifications: Record "My Notifications";
+    begin
+        MyNotifications.InsertDefault(SetupCompanyHubNotification.Id, DontShowAgainSetupCompanyHubNotificationTxt,
+                          DontShowAgainSetupCompanyHubNotificationDescriptionTxt, false);
     end;
 
     procedure ValidateEnviromentUrl(COHUBEnviroment: Record "COHUB Enviroment"): Boolean;
@@ -217,6 +253,7 @@ codeunit 1151 "COHUB Core"
         exit(URLHelper.GetFixedClientEndpointBaseUrl());
     end;
 
+    [Obsolete('Replaced with GetResourceURL', '19.0')]
     procedure GetResoureUrl(): Text[100];
     var
     begin

@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31201 "Sync.Dep.Fld-SubstCustPGrp CZL"
 {
@@ -55,7 +56,8 @@ codeunit 31201 "Sync.Dep.Fld-SubstCustPGrp CZL"
             SubstCustPostingGroupCZL.Init();
             SubstCustPostingGroupCZL."Parent Customer Posting Group" := Rec."Parent Cust. Posting Group";
             SubstCustPostingGroupCZL."Customer Posting Group" := Rec."Customer Posting Group";
-            SubstCustPostingGroupCZL.Insert(false);
+            SubstCustPostingGroupCZL.SystemId := Rec.SystemId;
+            SubstCustPostingGroupCZL.Insert(false, true);
         end;
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Subst. Cust. Posting Group CZL");
     end;
@@ -127,7 +129,8 @@ codeunit 31201 "Sync.Dep.Fld-SubstCustPGrp CZL"
             SubstCustomerPostingGroup.Init();
             SubstCustomerPostingGroup."Parent Cust. Posting Group" := Rec."Parent Customer Posting Group";
             SubstCustomerPostingGroup."Customer Posting Group" := Rec."Customer Posting Group";
-            SubstCustomerPostingGroup.Insert(false);
+            SubstCustomerPostingGroup.SystemId := Rec.SystemId;
+            SubstCustomerPostingGroup.Insert(false, true);
         end;
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Subst. Customer Posting Group");
     end;
@@ -158,3 +161,4 @@ codeunit 31201 "Sync.Dep.Fld-SubstCustPGrp CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

@@ -37,7 +37,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         UserNotTenantAdminMsg: Label 'User is not a tenant admin.', Locked = true;
 #pragma warning disable AA0240
         CompanyAdminRoleTemplateIdTok: Label '62e90394-69f5-4237-9190-012177145e10', Locked = true;
-#pragma warning restore
+#pragma warning restore AA0240
         UserSetupCategoryTxt: Label 'User Setup', Locked = true;
         UserCreatedMsg: Label 'User %1 has been created', Locked = true;
         AuthenticationEmailUpdateShouldBeTheFirstForANewUserErr: Label 'Authentication email should be the first entity to update.';
@@ -51,7 +51,8 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         AddingInformationForAnExistingUserTxt: Label 'Adding changes for an existing user [%1].', Comment = '%1 = user security ID', Locked = true;
         AddingInformationForARemovedUserTxt: Label 'Adding changes for a user removed / de-licensed in Office with user security ID [%1].', Comment = '%1 = User security ID', Locked = true;
         PlanNamesPerUserFromGraphTxt: Label 'User with AAD Object ID [%1] has plans [%2].', Comment = '%1 = authentication object ID (guid); %2 = list of plans for the user (text)', Locked = true;
-        ProcessingUserTxt: Label 'Procesing the user %1.', Comment = '%1 - Display name', Locked = true;
+        ProcessingUserTxt: Label 'Processing the user %1.', Comment = '%1 - Display name', Locked = true;
+        UserCannotBeDeletedAlreadyLoggedInErr: Label 'The user "%1" cannot be deleted because the user has been logged on to the system. To deactivate a user, set the user''s state to Disabled.', Comment = 'Shown when trying to delete a user that has been logged onto the system. %1 = UserName.';
         DelimiterTxt: Label '|', Locked = true;
 
     [NonDebuggable]
@@ -76,7 +77,10 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             exit;
 
         if AzureADGraphUser.GetUserAuthenticationObjectId(ForUserSecurityId) = '' then
-            exit;
+            if AzureADGraphUser.IsUserDelegatedAdmin() then begin
+                AzureADPlan.AssignDelegatedAdminPlanAndUserGroups();
+                exit;
+            end;
 
         AzureADPlan.RefreshUserPlanAssignments(ForUserSecurityId);
     end;
@@ -159,7 +163,13 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     var
         GraphUser: DotNet UserInfo;
         GraphRoleInfo: DotNet RoleInfo;
+        IsUserTenantAdmin, Handled : Boolean;
     begin
+        OnIsUserTenantAdmin(IsUserTenantAdmin, Handled);
+
+        if Handled then
+            exit(IsUserTenantAdmin);
+
         if not AzureADGraphUser.GetGraphUser(UserSecurityId(), GraphUser) then begin
             Session.LogMessage('0000728', CouldNotGetUserErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserCategoryTxt);
             exit(false);
@@ -190,16 +200,6 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         AzureADGraphUser.GetGraphUser(User."User Security ID", GraphUser);
         IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
         exit(IsUserModified);
-    end;
-
-    [NonDebuggable]
-    procedure UpdateUserFromGraph(var User: Record User)
-    var
-        AzureADGraphUserToFetch: Codeunit "Azure AD Graph User";
-        GraphUser: DotNet UserInfo;
-    begin
-        if AzureADGraphUserToFetch.GetGraphUser(User."User Security ID", GraphUser) then
-            AzureADGraphUserToFetch.UpdateUserFromAzureGraph(User, GraphUser);
     end;
 
     [NonDebuggable]
@@ -650,4 +650,26 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         MyList := InputText.Split(DelimiterTxt);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::User, 'OnBeforeDeleteEvent', '', true, true)]
+    local procedure OnBeforeDeleteUser(var Rec: Record User; RunTrigger: Boolean)
+    var
+        UserPersonalization: Record "User Personalization";
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        // Allow deletion of users only if they have never logged in.
+        if not UserLoginTimeTracker.IsFirstLogin(Rec."User Security ID") then
+            Error(UserCannotBeDeletedAlreadyLoggedInErr, Rec."User Name");
+
+        // Access control and user property are cleaned-up in the platform.
+        // Clean-up user personalization.
+        if UserPersonalization.Get(Rec."User Security ID") then
+            UserPersonalization.Delete();
+    end;
+
+    [InternalEvent(false)]
+    local procedure OnIsUserTenantAdmin(var IsUserTenantAdmin: Boolean; var Handled: Boolean)
+    begin
+    end;
 }

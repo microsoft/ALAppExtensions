@@ -55,7 +55,8 @@ codeunit 31156 "Sync.Dep.Fld-UnrelPayerEnt CZL"
         if not UnreliablePayerEntryCZL.Get(Rec."Entry No.") then begin
             UnreliablePayerEntryCZL.Init();
             UnreliablePayerEntryCZL."Entry No." := Rec."Entry No.";
-            UnreliablePayerEntryCZL.Insert(false);
+            UnreliablePayerEntryCZL.SystemId := Rec.SystemId;
+            UnreliablePayerEntryCZL.Insert(false, true);
         end;
         UnreliablePayerEntryCZL."Vendor No." := Rec."Vendor No.";
         UnreliablePayerEntryCZL."Check Date" := Rec."Check Date";
@@ -140,7 +141,8 @@ codeunit 31156 "Sync.Dep.Fld-UnrelPayerEnt CZL"
         if not UncertaintyPayerEntry.Get(Rec."Entry No.") then begin
             UncertaintyPayerEntry.Init();
             UncertaintyPayerEntry."Entry No." := Rec."Entry No.";
-            UncertaintyPayerEntry.Insert(false);
+            UncertaintyPayerEntry.SystemId := Rec.SystemId;
+            UncertaintyPayerEntry.Insert(false, true);
         end;
         UncertaintyPayerEntry."Vendor No." := Rec."Vendor No.";
         UncertaintyPayerEntry."Check Date" := Rec."Check Date";

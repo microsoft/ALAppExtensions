@@ -29,12 +29,15 @@ codeunit 31077 "Job Journal Line Handler CZL"
         JobJournalLine."Country/Reg. of Orig. Code CZL" := Item."Country/Region of Origin Code";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Job Journal Line", 'OnCheckJobJournalTemplateUserRestrictions', '', false, false)]
-    local procedure CheckJobJournalTemplateUserRestrictions(JournalTemplateName: Code[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::JobJnlManagement, 'OnBeforeOpenJnl', '', false, false)]
+    local procedure JournalTemplateUserRestrictionsOnBeforeOpenJnl(var JobJournalLine: Record "Job Journal Line")
     var
-        DummyUserSetupLineCZL: Record "User Setup Line CZL";
         UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+        UserSetupLineTypeCZL: Enum "User Setup Line Type CZL";
+        JournalTemplateName: Code[10];
     begin
-        UserSetupAdvManagementCZL.CheckJournalTemplate(DummyUserSetupLineCZL.Type::"Job Journal", JournalTemplateName);
+        JournalTemplateName := JobJournalLine.GetRangeMax("Journal Template Name");
+        UserSetupLineTypeCZL := UserSetupLineTypeCZL::"Job Journal";
+        UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
 }

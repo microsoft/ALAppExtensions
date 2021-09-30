@@ -150,4 +150,21 @@ codeunit 31239 "FA Deprec. Book Handler CZF"
     begin
         exit(NAVAppInstalledApp.Get(AppID));
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"FA Depreciation Book", 'OnBeforeValidateEvent', 'FA Posting Group', false, false)]
+    local procedure CheckFALedgerEntriesExistOnBeforeFAPostingGroup(var Rec: Record "FA Depreciation Book"; var xRec: Record "FA Depreciation Book")
+    var
+        FALedgerEntry: Record "FA Ledger Entry";
+        FAPostingGroupCanNotBeChangedErr: Label 'FA Posting Group can not be changed if there is at least one FA Entry for Fixed Asset and Deprecation Book.';
+    begin
+        if Rec."FA Posting Group" = xRec."FA Posting Group" then
+            exit;
+        if Rec."FA No." = '' then
+            exit;
+        FALedgerEntry.SetCurrentKey("FA No.", "Depreciation Book Code");
+        FALedgerEntry.SetRange("FA No.", Rec."FA No.");
+        FALedgerEntry.SetRange("Depreciation Book Code", Rec."Depreciation Book Code");
+        if not FALedgerEntry.IsEmpty() then
+            Error(FAPostingGroupCanNotBeChangedErr);
+    end;
 }

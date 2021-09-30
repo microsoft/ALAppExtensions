@@ -2,7 +2,9 @@ pageextension 31012 "Vendor Posting Groups CZL" extends "Vendor Posting Groups"
 {
     actions
     {
+#pragma warning disable AL0432
         addlast(navigation)
+#pragma warning restore AL0432
         {
             group("Posting Group CZL")
             {

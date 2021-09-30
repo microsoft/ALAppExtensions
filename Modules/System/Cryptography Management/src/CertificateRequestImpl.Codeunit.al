@@ -3,13 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 1450 "CertificateRequest Impl."
+codeunit 1464 "CertificateRequest Impl."
 {
     Access = Internal;
 
     var
         DotNetRSACryptoServiceProvider: DotNet RSACryptoServiceProvider;
         DotNetCertificateRequest: DotNet CertificateRequest;
+        BeginCertReqTok: Label '-----BEGIN CERTIFICATE REQUEST-----', Locked = true;
+        EndCertReqTok: Label '-----END CERTIFICATE REQUEST-----', Locked = true;
+        DepricatedHashAlgorithmsMsg: Label 'In compliance with the Microsoft Secure Hash Algorithm deprecation policy SHA1 and MD5 hash alghoritms have been deprecated.';
 
     procedure InitializeRSA(KeySize: Integer; IncludePrivateParameters: Boolean; var KeyAsXmlString: Text)
     begin
@@ -31,10 +34,8 @@ codeunit 1450 "CertificateRequest Impl."
         end;
 
         case HashAlgorithm of
-            HashAlgorithm::MD5:
-                DotNetHashAlgorithmName := DotNetHashAlgorithmName.MD5();
-            HashAlgorithm::SHA1:
-                DotNetHashAlgorithmName := DotNetHashAlgorithmName.SHA1();
+            HashAlgorithm::MD5, HashAlgorithm::SHA1:
+                Error(DepricatedHashAlgorithmsMsg);
             HashAlgorithm::SHA256:
                 DotNetHashAlgorithmName := DotNetHashAlgorithmName.SHA256();
             HashAlgorithm::SHA384:
@@ -87,7 +88,6 @@ codeunit 1450 "CertificateRequest Impl."
         exit(DotNetCertificateRequest.CertificateExtensions.Count());
     end;
 
-
     procedure CreateSigningRequest(var SigningRequestPemString: Text)
     var
         Base64Convert: Codeunit "Base64 Convert";
@@ -97,8 +97,7 @@ codeunit 1450 "CertificateRequest Impl."
         Pem: TextBuilder;
         B64: Text;
         Pos: Integer;
-        BeginCertReqTok: Label '-----BEGIN CERTIFICATE REQUEST-----', Locked = true;
-        EndCertReqTok: Label '-----END CERTIFICATE REQUEST-----', Locked = true;
+        B64Length: Integer;
     begin
         TempBlob.CreateOutStream(SigningRequestOutStream);
         TempBlob.CreateInStream(SigningRequestInStream);
@@ -107,7 +106,8 @@ codeunit 1450 "CertificateRequest Impl."
 
         Pos := 1;
         Pem.AppendLine(BeginCertReqTok);
-        while Pos < StrLen(B64) do begin
+        B64Length := StrLen(B64);
+        while Pos < B64Length do begin
             Pem.AppendLine(CopyStr(B64, Pos, 64));
             Pos += 64;
         end;
@@ -138,7 +138,7 @@ codeunit 1450 "CertificateRequest Impl."
         DotNetNotBefore := DotNetNotBefore.DateTimeOffset(NotBefore);
         DotNetNotAfter := DotNetNotBefore.DateTimeOffset(NotAfter);
         DotNetX509Certificate2 := DotNetCertificateRequest.CreateSelfSigned(DotNetNotBefore, DotNetNotAfter);
-        TryExportToBase64String(DotNetX509Certificate2, X509ContentType, CertBase64Value)
+        TryExportToBase64String(DotNetX509Certificate2, X509ContentType, CertBase64Value);
     end;
 
     local procedure ArrayToOutStream(DotNetBytes: DotNet Array; OutputOutStream: OutStream)

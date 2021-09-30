@@ -1,7 +1,13 @@
 codeunit 148073 "Cash Desk Service CZP"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
+    TestPermissions = Disabled;
+
+    trigger OnRun()
+    begin
+        // [FEATURE] [Cash Desk] [Service]
+        isInitialized := false;
+    end;
 
     var
         CashDeskCZP: Record "Cash Desk CZP";
@@ -15,10 +21,14 @@ codeunit 148073 "Cash Desk Service CZP"
         isInitialized: Boolean;
 
     local procedure Initialize()
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Cash Desk Service CZP");
         LibraryRandom.Init();
         if isInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Cash Desk Service CZP");
 
         LibraryCashDeskCZP.CreateCashDeskCZP(CashDeskCZP);
         LibraryCashDeskCZP.SetupCashDeskCZP(CashDeskCZP, false);
@@ -26,30 +36,31 @@ codeunit 148073 "Cash Desk Service CZP"
 
         isInitialized := true;
         Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Cash Desk Service CZP");
     end;
 
     [Test]
-    procedure CreatingReceiptCashDocumentFromPurchaseInvoice()
+    procedure CreatingReceiptCashDocumentFromServiceInvoice()
     begin
         // [SCENARIO] Create Cash Documents in Service Invoice
-        ReceiptCashDocumentFromPurchaseInvoice(CashDocumentActionCZP::Create);
+        ReceiptCashDocumentFromServiceInvoice(CashDocumentActionCZP::Create);
     end;
 
     [Test]
-    procedure ReleasingReceiptCashDocumentFromPurchaseInvoice()
+    procedure ReleasingReceiptCashDocumentFromServiceInvoice()
     begin
         // [SCENARIO] Release Cash Documents in Service Invoice
-        ReceiptCashDocumentFromPurchaseInvoice(CashDocumentActionCZP::Release);
+        ReceiptCashDocumentFromServiceInvoice(CashDocumentActionCZP::Release);
     end;
 
     [Test]
-    procedure PostingReceiptCashDocumentFromPurchaseInvoice()
+    procedure PostingReceiptCashDocumentFromServiceInvoice()
     begin
         // [SCENARIO] Post Cash Documents in Service Invoice
-        ReceiptCashDocumentFromPurchaseInvoice(CashDocumentActionCZP::Post);
+        ReceiptCashDocumentFromServiceInvoice(CashDocumentActionCZP::Post);
     end;
 
-    local procedure ReceiptCashDocumentFromPurchaseInvoice(CashDocumentActionCZP: Enum "Cash Document Action CZP")
+    local procedure ReceiptCashDocumentFromServiceInvoice(CashDocumentActionCZP: Enum "Cash Document Action CZP")
     var
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
@@ -60,7 +71,6 @@ codeunit 148073 "Cash Desk Service CZP"
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
         PostDocNo: Code[20];
     begin
-        // [FEATURE] Cash Desk
         Initialize();
 
         // [GIVEN] New Payment method is created and used in Service Invoice
@@ -114,27 +124,27 @@ codeunit 148073 "Cash Desk Service CZP"
     end;
 
     [Test]
-    procedure CreatingWithdrawalCashDocumentFromPurchaseCrMemo()
+    procedure CreatingWithdrawalCashDocumentFromServiceCrMemo()
     begin
         // [SCENARIO] Create Cash Documents in Service Credit Memo
-        WithdrawalCashDocumentFromPurchaseCrMemo(CashDocumentActionCZP::Create);
+        WithdrawalCashDocumentFromServiceCrMemo(CashDocumentActionCZP::Create);
     end;
 
     [Test]
-    procedure ReleasingWithdrawalCashDocumentFromPurchaseCrMemo()
+    procedure ReleasingWithdrawalCashDocumentFromServiceCrMemo()
     begin
         // [SCENARIO] Release Cash Documents in Service Credit Memo
-        WithdrawalCashDocumentFromPurchaseCrMemo(CashDocumentActionCZP::Release);
+        WithdrawalCashDocumentFromServiceCrMemo(CashDocumentActionCZP::Release);
     end;
 
     [Test]
-    procedure PostingWithdrawalCashDocumentFromPurchaseCrMemo()
+    procedure PostingWithdrawalCashDocumentFromServiceCrMemo()
     begin
         // [SCENARIO] Post Cash Documents in Service Credit Memo
-        WithdrawalCashDocumentFromPurchaseCrMemo(CashDocumentActionCZP::Post);
+        WithdrawalCashDocumentFromServiceCrMemo(CashDocumentActionCZP::Post);
     end;
 
-    local procedure WithdrawalCashDocumentFromPurchaseCrMemo(CashDocumentActionCZP: Enum "Cash Document Action CZP")
+    local procedure WithdrawalCashDocumentFromServiceCrMemo(CashDocumentActionCZP: Enum "Cash Document Action CZP")
     var
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
@@ -145,7 +155,6 @@ codeunit 148073 "Cash Desk Service CZP"
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
         PostDocNo: Code[20];
     begin
-        // [FEATURE] Cash Desk
         Initialize();
 
         // [GIVEN] New Payment method is created and used in Service Credit Memo

@@ -1,7 +1,7 @@
 table 31110 "VAT Ctrl. Report Ent. Link CZL"
 {
     Caption = 'VAT Control Report Entry Link';
-    Permissions = TableData "VAT Ctrl. Report Ent. Link CZL" = rimd;
+    Permissions = tabledata "VAT Ctrl. Report Ent. Link CZL" = rimd;
 
     fields
     {

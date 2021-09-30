@@ -378,6 +378,24 @@ page 30037 "APIV2 - Sales Quotes"
                         RegisterFieldSet(FieldNo("Ship-to Post Code"));
                     end;
                 }
+                field(shortcutDimension1Code; "Shortcut Dimension 1 Code")
+                {
+                    Caption = 'Shortcut Dimension 1 Code';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Shortcut Dimension 1 Code"));
+                    end;
+                }
+                field(shortcutDimension2Code; "Shortcut Dimension 2 Code")
+                {
+                    Caption = 'Shortcut Dimension 2 Code';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Shortcut Dimension 2 Code"));
+                    end;
+                }
                 field(currencyId; "Currency Id")
                 {
                     Caption = 'Currency Id';

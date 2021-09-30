@@ -11,7 +11,7 @@ pageextension 13686 "OIOUBL-Sales Cr. Memo Subform" extends "Sales Cr. Memo Subf
         {
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer.';
+                Tooltip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
                 Visible = false;
             }

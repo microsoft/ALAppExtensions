@@ -10,16 +10,24 @@ codeunit 31332 "Upgrade Application CZB"
     trigger OnUpgradePerDatabase()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
-
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZB.GetDataVersion180PerDatabaseUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZB.GetDataVersion180PerDatabaseUpgradeTag());
+        SetDatabaseUpgradeTags();
     end;
 
     trigger OnUpgradePerCompany()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
+        SetCompanyUpgradeTags();
+    end;
 
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZB.GetDataVersion180PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZB.GetDataVersion180PerCompanyUpgradeTag());
+    local procedure SetDatabaseUpgradeTags();
+    begin
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZB.GetDataVersion190PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZB.GetDataVersion190PerDatabaseUpgradeTag());
+    end;
+
+    local procedure SetCompanyUpgradeTags();
+    begin
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZB.GetDataVersion190PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZB.GetDataVersion190PerCompanyUpgradeTag());
     end;
 }

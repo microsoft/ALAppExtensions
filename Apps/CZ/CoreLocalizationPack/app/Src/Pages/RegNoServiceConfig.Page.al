@@ -33,11 +33,17 @@ page 11755 "Reg. No. Service Config CZL"
                     ToolTip = 'Specifies if the service is enabled.';
 
                     trigger OnValidate()
+                    var
+                        CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                     begin
                         if Rec.Enabled = xRec.Enabled then
                             exit;
 
                         if Rec.Enabled then begin
+                            if not CustomerConsentMgt.ConfirmUserConsent() then begin
+                                Rec.Enabled := false;
+                                exit;
+                            end;
                             Rec.TestField("Service Endpoint");
                             Message(TermsAndAgreementMsg);
                         end;

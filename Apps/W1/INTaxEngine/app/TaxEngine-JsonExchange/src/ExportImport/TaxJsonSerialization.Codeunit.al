@@ -57,6 +57,9 @@ codeunit 20362 "Tax Json Serialization"
         AddJsonProperty(TaxTypeJObject, 'Code', TaxType.Code);
         AddJsonProperty(TaxTypeJObject, 'TaxTypeDescription', TaxType.Description);
         AddJsonProperty(TaxTypeJObject, 'Enable', TaxType.Enabled);
+        AddJsonProperty(TaxTypeJObject, 'Version', TaxType."Major Version");
+        AddJsonProperty(TaxTypeJObject, 'MinorVersion', TaxType."Minor Version");
+        AddJsonProperty(TaxTypeJObject, 'ChangedBy', TaxType."Changed By");
 
         WriteTaxTypeEntities(TaxType.Code, JArray);
         UpdateTaxTypeProgressWindow(TaxType.Code, 'Tax Entities');

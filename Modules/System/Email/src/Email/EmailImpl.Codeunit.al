@@ -274,6 +274,14 @@ codeunit 8900 "Email Impl"
             Error(SourceRecordErr);
     end;
 
+    procedure HasSourceRecord(EmailMessageId: Guid): Boolean;
+    var
+        EmailRelatedRecord: Record "Email Related Record";
+    begin
+        EmailRelatedRecord.SetRange("Email Message Id", EmailMessageId);
+        exit(not EmailRelatedRecord.IsEmpty());
+    end;
+
     procedure FilterRemovedSourceRecords(var EmailRelatedRecord: Record "Email Related Record")
     var
         AllObj: Record AllObj;

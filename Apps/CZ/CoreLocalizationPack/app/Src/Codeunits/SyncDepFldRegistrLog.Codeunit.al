@@ -29,7 +29,7 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
         RegistrationLogCZL.ChangeCompany(Rec.CurrentCompany);
         RegistrationLogCZL.Init();
         RegistrationLogCZL."Registration No." := Rec."Registration No.";
-        RegistrationLogCZL."Account Type" := Rec."Account Type";
+        RegistrationLogCZL."Account Type" := Enum::"Reg. Log Account Type CZL".FromInteger(Rec."Account Type");
         RegistrationLogCZL."Account No." := Rec."Account No.";
         RegistrationLogCZL."User ID" := Rec."User ID";
         RegistrationLogCZL.Status := Rec.Status;
@@ -40,7 +40,8 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
         RegistrationLogCZL."Verified VAT Registration No." := Rec."Verified VAT Registration No.";
         RegistrationLogCZL."Verified Date" := Rec."Verified Date";
         RegistrationLogCZL."Verified Result" := Rec."Verified Result";
-        RegistrationLogCZL.Insert(false);
+        RegistrationLogCZL.SystemId := Rec.SystemId;
+        RegistrationLogCZL.Insert(false, true);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Registration Log CZL");
     end;
 
@@ -65,7 +66,7 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
         RegistrationLog.ChangeCompany(Rec.CurrentCompany);
         RegistrationLog.Init();
         RegistrationLog."Registration No." := Rec."Registration No.";
-        RegistrationLog."Account Type" := Rec."Account Type";
+        RegistrationLog."Account Type" := Rec."Account Type".AsInteger();
         RegistrationLog."Account No." := Rec."Account No.";
         RegistrationLog."User ID" := Rec."User ID";
         RegistrationLog.Status := Rec.Status;
@@ -76,7 +77,8 @@ codeunit 31153 "Sync.Dep.Fld-RegistrLog CZL"
         RegistrationLog."Verified VAT Registration No." := Rec."Verified VAT Registration No.";
         RegistrationLog."Verified Date" := Rec."Verified Date";
         RegistrationLog."Verified Result" := Rec."Verified Result";
-        RegistrationLog.Insert(false);
+        RegistrationLog.SystemId := Rec.SystemId;
+        RegistrationLog.Insert(false, true);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Registration Log");
     end;
 

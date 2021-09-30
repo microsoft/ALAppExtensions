@@ -1,6 +1,6 @@
 codeunit 31098 "EET Status Management CZL"
 {
-    Permissions = TableData "EET Entry Status Log CZL" = rimd;
+    Permissions = tabledata "EET Entry Status Log CZL" = rimd;
 
     [EventSubscriber(ObjectType::Table, Database::"EET Entry CZL", 'OnAfterChangeStatus', '', false, false)]
     local procedure LogStatusChangeOnAfterChangeStatus(var EETEntryCZL: Record "EET Entry CZL"; NewStatus: Enum "EET Status CZL"; NewDescription: Text; var TempErrorMessage: Record "Error Message")

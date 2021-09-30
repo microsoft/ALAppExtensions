@@ -11,7 +11,7 @@ pageextension 13664 "OIOUBL-IssuedFinChrgMemoLines" extends "Issued Fin. Charge 
         {
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer.';
+                Tooltip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
                 Visible = false;
             }

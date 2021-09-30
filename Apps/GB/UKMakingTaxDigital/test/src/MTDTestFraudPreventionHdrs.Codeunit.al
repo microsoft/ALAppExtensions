@@ -21,7 +21,6 @@ codeunit 148089 "MTD Test Fraud Prevention Hdrs"
         IsInitialized: Boolean;
         NoMissingHeaderMsg: Label 'All required fraud prevention headers were provided in the latest HMRC request.';
         MissingHeadersMsg: Label 'The following fraud prevention headers were missing in the latest HMRC request:\\%1';
-        OpenHeadersSetupMsg: Label 'Communication with HMRC without fraud prevention headers is not allowed. Set up the missing headers in the HMRC Fraud Prevention Headers Setup page, and specify a default value for each of them. Choose the Get Current Headers action to see which headers cannot be retrieved automatically.';
 
     [Test]
     procedure MTDMissingFraudPrevHdr_GetHeadersListString()
@@ -130,119 +129,6 @@ codeunit 148089 "MTD Test Fraud Prevention Hdrs"
         LibraryVariableStorage.AssertEmpty();
     end;
 
-    [Test]
-    procedure InvokeRequest_RetrieveVATReturnPeriods_MissingHeaders()
-    var
-        MTDConnection: Codeunit "MTD Connection";
-        ResponseJson: Text;
-        HttpError: Text;
-    begin
-        // [FEATURE] [UI]
-        // [SCENARIO 349684] An error about missing headers is thrown on Invoke Get VAT Return Periods in case of not enough default setup
-        Initialize();
-        MockAllRequiredSessionHeaders();
-        asserterror MTDConnection.InvokeRequest_RetrieveVATReturnPeriods(WorkDate(), WorkDate(), ResponseJson, HttpError, false);
-        VerifyMissingHeadersErrorAfterInvokeRequest();
-    end;
-
-    [Test]
-    procedure InvokeRequest_RetrieveLiabilities_MissingHeaders()
-    var
-        MTDConnection: Codeunit "MTD Connection";
-        ResponseJson: Text;
-        HttpError: Text;
-    begin
-        // [FEATURE] [UI]
-        // [SCENARIO 349684] An error about missing headers is thrown on Retrieve Liabilities in case of not enough default setup
-        Initialize();
-        MockAllRequiredSessionHeaders();
-        asserterror MTDConnection.InvokeRequest_RetrieveLiabilities(WorkDate(), WorkDate(), ResponseJson, HttpError);
-        VerifyMissingHeadersErrorAfterInvokeRequest();
-    end;
-
-    [Test]
-    procedure InvokeRequest_RetrievePayments_MissingHeaders()
-    var
-        MTDConnection: Codeunit "MTD Connection";
-        ResponseJson: Text;
-        HttpError: Text;
-    begin
-        // [FEATURE] [UI]
-        // [SCENARIO 349684] An error about missing headers is thrown on Retrieve Payments in case of not enough default setup
-        Initialize();
-        MockAllRequiredSessionHeaders();
-        asserterror MTDConnection.InvokeRequest_RetrievePayments(WorkDate(), WorkDate(), ResponseJson, HttpError);
-        VerifyMissingHeadersErrorAfterInvokeRequest();
-    end;
-
-    [Test]
-    procedure InvokeRequest_RetrieveVATReturns_MissingHeaders()
-    var
-        MTDConnection: Codeunit "MTD Connection";
-        ResponseJson: Text;
-        HttpError: Text;
-    begin
-        // [FEATURE] [UI]
-        // [SCENARIO 349684] An error about missing headers is thrown on Retrieve VAT Returns in case of not enough default setup
-        Initialize();
-        MockAllRequiredSessionHeaders();
-        asserterror MTDConnection.InvokeRequest_RetrieveVATReturns('', ResponseJson, true, HttpError, true);
-        VerifyMissingHeadersErrorAfterInvokeRequest();
-    end;
-
-    [Test]
-    procedure InvokeRequest_SubmitVATReturn_MissingHeaders()
-    var
-        MTDConnection: Codeunit "MTD Connection";
-        ResponseJson: Text;
-        RequestJson: Text;
-        HttpError: Text;
-    begin
-        // [FEATURE] [UI]
-        // [SCENARIO 349684] An error about missing headers is thrown on Submit VAT Return in case of not enough default setup
-        Initialize();
-        MockAllRequiredSessionHeaders();
-        asserterror MTDConnection.InvokeRequest_SubmitVATReturn(ResponseJson, RequestJson, HttpError, true);
-        VerifyMissingHeadersErrorAfterInvokeRequest();
-    end;
-
-    [Test]
-    procedure InvokeRequest_RefreshAccessToken_MissingHeaders()
-    var
-        MTDConnection: Codeunit "MTD Connection";
-        HttpError: Text;
-    begin
-        // [FEATURE] [UI]
-        // [SCENARIO 349684] An error about missing headers is thrown on Refresh Access Token in case of not enough default setup
-        Initialize();
-        MockAllRequiredSessionHeaders();
-        asserterror MTDConnection.InvokeRequest_RefreshAccessToken(HttpError, true);
-        VerifyMissingHeadersErrorAfterInvokeRequest();
-    end;
-
-    [Test]
-    [HandlerFunctions('ConfirmHandler')]
-    procedure InvokeRequest_RetrieveVATReturnPeriods_DenyConfirm()
-    var
-        TestClientTypeMgtSubscriber: Codeunit "Test Client Type Subscriber";
-        MTDConnection: Codeunit "MTD Connection";
-        ResponseJson: Text;
-        HttpError: Text;
-    begin
-        // [FEATURE] [UI]
-        // [SCENARIO 349684] Deny confirm about sending fraud prevention headers on Invoke Get VAT Return Periods
-        Initialize();
-        TestClientTypeMgtSubscriber.SetClientType(ClientType::Web);
-
-        MockAllRequiredSessionHeaders();
-        LibraryMakingTaxDigital.SetupDefaultFPHeaders();
-        LibraryVariableStorage.Enqueue(false); // deny confirm
-        BindSubscription(TestClientTypeMgtSubscriber);
-
-        asserterror MTDConnection.InvokeRequest_RetrieveVATReturnPeriods(WorkDate(), WorkDate(), ResponseJson, HttpError, false);
-
-        VerifyDenyConfirmAfterInvokeRequest();
-    end;
 
     local procedure Initialize()
     var
@@ -263,65 +149,9 @@ codeunit 148089 "MTD Test Fraud Prevention Hdrs"
         Commit();
     end;
 
-    local procedure MockAllRequiredSessionHeaders()
-    var
-        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
-    begin
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Public-IP', 'Gov-Client-Public-IP');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Local-IPs', 'Gov-Client-Local-IPs');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Public-IP-Timestamp', 'Gov-Client-Public-IP-Timestamp');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Local-IPs-Timestamp', 'Gov-Client-Local-IPs-Timestamp');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-MAC-Addresses', 'ov-Client-MAC-Addresses');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Device-ID', 'Gov-Client-Device-ID');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-User-IDs', 'Gov-Client-User-IDs');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Timezone', 'Gov-Client-Timezone');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Screens', 'Gov-Client-Screens');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-User-Agent', 'Gov-Client-User-Agent');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Multi-Factor', 'Gov-Client-Multi-Factor');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Vendor-Public-IP', 'Gov-Vendor-Public-IP');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Public-Port', 'Gov-Client-Public-Port');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Window-Size', 'Gov-Client-Window-Size');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Browser-Plugins', 'Gov-Client-Browser-Plugins');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Browser-JS-User-Agent', 'Gov-Client-Browser-JS-User-Agent');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Browser-Do-Not-Track', 'Gov-Client-Browser-Do-Not-Track');
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Vendor-Forwarded', 'Gov-Vendor-Forwarded');
-    end;
-
-    local procedure VerifyMissingHeadersErrorAfterInvokeRequest()
-    var
-        MTDMissingFraudPrevHdr: Record "MTD Missing Fraud Prev. Hdr";
-        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
-    begin
-        Assert.ExpectedErrorCode('Dialog');
-        Assert.ExpectedError(StrSubstNo(MissingHeadersMsg, 'GOV-'));
-        Assert.ExpectedError(OpenHeadersSetupMsg);
-        Assert.RecordIsNotEmpty(MTDMissingFraudPrevHdr);
-        Assert.RecordIsEmpty(MTDSessionFraudPrevHdr);
-    end;
-
-    local procedure VerifyDenyConfirmAfterInvokeRequest()
-    var
-        MTDMissingFraudPrevHdr: Record "MTD Missing Fraud Prev. Hdr";
-        MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
-    begin
-        Assert.ExpectedErrorCode('Dialog');
-        Assert.ExpectedError('');
-        Assert.ExpectedMessage('GOV-CLIENT-BROWSER-PLUGINS: Chromium%20PDF%20Viewer', LibraryVariableStorage.DequeueText());
-        LibraryVariableStorage.AssertEmpty();
-        Assert.RecordIsEmpty(MTDMissingFraudPrevHdr);
-        Assert.RecordIsEmpty(MTDSessionFraudPrevHdr);
-    end;
-
     [MessageHandler]
     procedure MessageHandler(Message: Text[1024])
     begin
         LibraryVariableStorage.Enqueue(Message);
-    end;
-
-    [ConfirmHandler]
-    procedure ConfirmHandler(Question: Text; var Reply: Boolean)
-    begin
-        LibraryVariableStorage.Enqueue(Question);
-        Reply := LibraryVariableStorage.DequeueBoolean();
     end;
 }

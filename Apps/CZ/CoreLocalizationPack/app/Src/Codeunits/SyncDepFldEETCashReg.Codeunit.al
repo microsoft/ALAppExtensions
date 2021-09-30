@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31137 "Sync.Dep.Fld-EETCashReg CZL"
 {
@@ -55,7 +56,8 @@ codeunit 31137 "Sync.Dep.Fld-EETCashReg CZL"
             EETCashRegisterCZL.Init();
             EETCashRegisterCZL."Business Premises Code" := EETCashRegister."Business Premises Code";
             EETCashRegisterCZL.Code := EETCashRegister.Code;
-            EETCashRegisterCZL.Insert();
+            EETCashRegisterCZL.SystemId := EETCashRegister.SystemId;
+            EETCashRegisterCZL.Insert(false, true);
         end;
         EETCashRegisterCZL."Cash Register Type" := "EET Cash Register Type CZL".FromInteger(EETCashRegister."Register Type");
         EETCashRegisterCZL."Cash Register No." := EETCashRegister."Register No.";
@@ -132,7 +134,8 @@ codeunit 31137 "Sync.Dep.Fld-EETCashReg CZL"
             EETCashRegister.Init();
             EETCashRegister."Business Premises Code" := EETCashRegisterCZL."Business Premises Code";
             EETCashRegister.Code := EETCashRegisterCZL.Code;
-            EETCashRegister.Insert();
+            EETCashRegister.SystemId := EETCashRegisterCZL.SystemId;
+            EETCashRegister.Insert(false, true);
         end;
         EETCashRegister."Register Type" := EETCashRegisterCZL."Cash Register Type".AsInteger();
         EETCashRegister."Register No." := EETCashRegisterCZL."Cash Register No.";
@@ -168,3 +171,4 @@ codeunit 31137 "Sync.Dep.Fld-EETCashReg CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

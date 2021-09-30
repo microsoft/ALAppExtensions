@@ -57,7 +57,8 @@ codeunit 31303 "Sync.Dep.Fld-UserSetupLine CZL"
             UserSetupLineCZL."User ID" := Rec."User ID";
             UserSetupLineCZL.Type := Rec.Type;
             UserSetupLineCZL."Line No." := Rec."Line No.";
-            UserSetupLineCZL.Insert(false);
+            UserSetupLineCZL.SystemId := Rec.SystemId;
+            UserSetupLineCZL.Insert(false, true);
         end;
         UserSetupLineCZL."Code / Name" := Rec."Code / Name";
         UserSetupLineCZL.Modify(false);
@@ -135,7 +136,8 @@ codeunit 31303 "Sync.Dep.Fld-UserSetupLine CZL"
             UserSetupLine."User ID" := Rec."User ID";
             UserSetupLine.Type := Rec.Type;
             UserSetupLine."Line No." := Rec."Line No.";
-            UserSetupLine.Insert(false);
+            UserSetupLine.SystemId := Rec.SystemId;
+            UserSetupLine.Insert(false, true);
         end;
         UserSetupLine."Code / Name" := Rec."Code / Name";
         UserSetupLine.Modify(false);

@@ -13,35 +13,49 @@ codeunit 1996 "Checklist Banner"
                   tabledata "Guided Experience Item" = ri,
                   tabledata "Checklist Item User" = rim,
                   tabledata "Checklist Item Role" = r,
-                  tabledata User = r;
+                  tabledata "Spotlight Tour Text" = r,
+                  tabledata User = r,
+                  tabledata "User Personalization" = r,
+                  tabledata "All Profile" = r,
+                  tabledata Company = r;
 
     var
         CompletedStepLbl: Label 'You completed this step';
         SkippedStepLbl: Label 'You skipped this step';
         BannerTitleLbl: Label 'Get started', MaxLength = 50, Comment = '*Onboarding Checklist*';
         CollapsedBannerTitleLbl: Label 'Get started:', MaxLength = 50, Comment = '*Onboarding Checklist*';
-        BannerHeaderWelcomeLbl: Label 'Hi%1, ready to set up your business?', MaxLength = 50, Comment = '*Onboarding Checklist* %1 = The user''s name';
+        BannerHeaderWelcomeLbl: Label 'Hi, ready to set up your business?', MaxLength = 50, Comment = '*Onboarding Checklist* %1 = The user''s name';
+        BannerHeaderWelcomeEvaluationLbl: Label 'Hi, meet Business Central!', MaxLength = 50, Comment = '*Onboarding Checklist* %1 = The user''s name';
         BannerHeader0To50CompletedLbl: Label 'Here are a few steps that make you ready for business', MaxLength = 60, Comment = '*Onboarding Checklist*';
+        BannerHeaderInProgressEvaluationLbl: Label 'Here are a few things you can try out', MaxLength = 60, Comment = '*Onboarding Checklist*';
         BannerHeader50To75CompletedLbl: Label 'Continue the steps to get ready for business', MaxLength = 60, Comment = '*Onboarding Checklist*';
         BannerHeader75To100CompletedLbl: Label 'Complete the last steps to get ready for business', MaxLength = 60, Comment = '*Onboarding Checklist*';
         BannerHeaderCompletedLbl: Label 'All set, ready for business!', MaxLength = 50, Comment = '*Onboarding Checklist*';
+        BannerHeaderCompletedEvaluationLbl: Label 'Thank you for trying Business Central!', MaxLength = 50, Comment = '*Onboarding Checklist*';
         CollapsedBannerHeaderWelcomeLbl: Label 'Complete a few steps to get ready for business', MaxLength = 60, Comment = '*Onboarding Checklist*';
+        CollapsedBannerHeaderWelcomeEvaluationLbl: Label 'Here are a few things you can try out', MaxLength = 60, Comment = '*Onboarding Checklist*';
         CollapsedBannerHeader0To50CompletedLbl: Label 'Complete a few steps to get ready for business', MaxLength = 60, Comment = '*Onboarding Checklist*';
         CollapsedBannerHeader50To75CompletedLbl: Label 'Continue the steps to get ready for business', MaxLength = 60, Comment = '*Onboarding Checklist*';
         CollapsedBannerHeader75To100CompletedLbl: Label 'Complete the last steps to get ready for business', MaxLength = 60, Comment = '*Onboarding Checklist*';
         BannerDescriptionWelcomeLbl: Label 'We''ve prepared a few activities to get you and your team quickly started.', MaxLength = 125, Comment = '*Onboarding Checklist*';
+        BannerDescriptionWelcomeEvaluationLbl: Label 'You''re all set to try out our demo company, Cronus. Go explore on your own, or take a quick tour first.', MaxLength = 125, Comment = '*Onboarding Checklist*';
+        BannerDescriptionInProgressEvaluationLbl: Label 'The Cronus company data you are using is for demonstration, evaluation, and training purposes.', MaxLength = 125, Comment = '*Onboarding Checklist*';
         BannerDescriptionCompletedLbl: Label 'Start exploring Business Central now. You can revisit the checklist later and enable additional features as you need them.', MaxLength = 125, Comment = '*Onboarding Checklist*';
+        BannerDescriptionCompletedEvaluationLbl: Label 'Continue exploring the Cronus demo company to learn more.​', MaxLength = 125, Comment = '*Onboarding Checklist*';
         UserChecklistStatusUpdateLbl: Label 'User checklist status updated: %1 to %2', Locked = true;
         ChecklistItemStatusUpdateLbl: Label 'Checklist item status updated: %1 to %2', Locked = true;
 
     procedure GetAllChecklistItems(var ChecklistItemBufferTemp: Record "Checklist Item Buffer" temporary)
     var
         ChecklistItem: Record "Checklist Item";
+        RandomRoleID: Code[30];
     begin
+        RandomRoleID := CopyStr(CreateGuid(), 1, MaxStrLen(RandomRoleID));
+
         ChecklistItem.SetCurrentKey("Order ID");
         if ChecklistItem.FindSet() then
             repeat
-                AddChecklistItemToBuffer(ChecklistItemBufferTemp, ChecklistItem.Code, 0, true, ChecklistItemBufferTemp.Status::"Not Started");
+                AddChecklistItemToBuffer(ChecklistItemBufferTemp, ChecklistItem.Code, 0, true, ChecklistItemBufferTemp.Status::"Not Started", RandomRoleID);
             until ChecklistItem.Next() = 0;
 
         ChecklistItemBufferTemp.Reset();
@@ -146,22 +160,41 @@ codeunit 1996 "Checklist Banner"
             exit(UserChecklistStatus."Checklist Status" = UserChecklistStatus."Checklist Status"::Completed);
     end;
 
-    procedure ExecuteChecklistItem(var ChecklistItemBuffer: Record "Checklist Item Buffer"; IsLastChecklistItem: Boolean): Boolean
+    procedure ExecuteChecklistItem(var ChecklistItemBuffer: Record "Checklist Item Buffer"; Tour: DotNet Tour; IsLastChecklistItem: Boolean; IsEvaluationCompany: Boolean): Boolean
     var
         GuidedExperienceItem: Record "Guided Experience Item";
+        ChecklistItemStatus: Enum "Checklist Item Status";
+        IsChecklistItemComplete: Boolean;
     begin
         if not GuidedExperienceItem.Get(ChecklistItemBuffer.Code, ChecklistItemBuffer.Version) then
             exit;
 
-        if (GuidedExperienceItem."Object Type to Run" <> GuidedExperienceItem."Object Type to Run"::Uninitialized)
-            and (GuidedExperienceItem."Object ID to Run" <> 0)
-        then
-            exit(RunObject(GuidedExperienceItem, ChecklistItemBuffer));
-
-        if GuidedExperienceItem.Link <> '' then begin
-            RunLink(ChecklistItemBuffer, IsLastChecklistItem);
-            exit(true);
+        case GuidedExperienceItem."Guided Experience Type" of
+            "Guided Experience Type"::"Assisted Setup", "Guided Experience Type"::"Manual Setup", "Guided Experience Type"::"Application Feature":
+                IsChecklistItemComplete := RunObject(GuidedExperienceItem, ChecklistItemBuffer);
+            "Guided Experience Type"::Tour:
+                RunTour(ChecklistItemBuffer, Tour);
+            "Guided Experience Type"::"Spotlight Tour":
+                RunSpotlightTour(GuidedExperienceItem, Tour);
+            "Guided Experience Type"::Learn:
+                if GuidedExperienceItem.Link <> '' then begin
+                    RunLink(ChecklistItemBuffer, IsLastChecklistItem);
+                    IsChecklistItemComplete := not IsLastChecklistItem;
+                end else
+                    IsChecklistItemComplete := RunObject(GuidedExperienceItem, ChecklistItemBuffer);
+            "Guided Experience Type"::Video:
+                RunVideo(GuidedExperienceItem."Video Url");
         end;
+
+        if IsEvaluationCompany then
+            if not (GuidedExperienceItem."Guided Experience Type"
+                in ["Guided Experience Type"::Tour, "Guided Experience Type"::"Spotlight Tour"])
+            then begin
+                UpdateChecklistItemUserStatus(ChecklistItemBuffer, UserId(), ChecklistItemStatus::Completed);
+                exit(true);
+            end;
+
+        exit(IsChecklistItemComplete);
     end;
 
     procedure OnChecklistBannerOpen(var ChecklistItemBuffer: Record "Checklist Item Buffer"; var IsChecklistInProgress: Boolean; var IsChecklistDisplayed: Boolean)
@@ -185,13 +218,23 @@ codeunit 1996 "Checklist Banner"
         SetChecklistStatusOnBannerOpen(IsChecklistInProgress, IsChecklistDisplayed);
     end;
 
-    procedure UpdateBannerLabels(var ChecklistItemBuffer: Record "Checklist Item Buffer"; var TitleTxt: Text; var TitleCollapsedTxt: Text; var HeaderTxt: Text; var HeaderCollapsedTxt: Text; var DescriptionTxt: Text; IsSetupStarted: Boolean; AreAllItemsSkippedOrCompleted: Boolean)
+    procedure UpdateBannerLabels(IsEvaluationCompany: Boolean; var ChecklistItemBuffer: Record "Checklist Item Buffer"; var TitleTxt: Text; var TitleCollapsedTxt: Text; var HeaderTxt: Text; var HeaderCollapsedTxt: Text; var DescriptionTxt: Text; IsSetupStarted: Boolean; AreAllItemsSkippedOrCompleted: Boolean)
     begin
         TitleTxt := BannerTitleLbl;
         TitleCollapsedTxt := CollapsedBannerTitleLbl;
 
+        if IsEvaluationCompany then
+            UpdateBannerLabelsForEvaluationCompany(HeaderTxt, HeaderCollapsedTxt, DescriptionTxt,
+                IsSetupStarted, AreAllItemsSkippedOrCompleted)
+        else
+            UpdateBannerLabelsForNonEvaluationCompany(ChecklistItemBuffer, HeaderTxt, HeaderCollapsedTxt,
+                DescriptionTxt, IsSetupStarted, AreAllItemsSkippedOrCompleted);
+    end;
+
+    local procedure UpdateBannerLabelsForNonEvaluationCompany(var ChecklistItemBuffer: Record "Checklist Item Buffer"; var HeaderTxt: Text; var HeaderCollapsedTxt: Text; var DescriptionTxt: Text; IsSetupStarted: Boolean; AreAllItemsSkippedOrCompleted: Boolean)
+    begin
         if not IsSetupStarted and not AreAllItemsSkippedOrCompleted then begin
-            HeaderTxt := GetWelcomeHeaderText();
+            HeaderTxt := GetWelcomeHeaderText(false);
             HeaderCollapsedTxt := CollapsedBannerHeaderWelcomeLbl;
             DescriptionTxt := BannerDescriptionWelcomeLbl;
         end else
@@ -207,6 +250,30 @@ codeunit 1996 "Checklist Banner"
                 HeaderTxt := BannerHeaderCompletedLbl;
                 HeaderCollapsedTxt := BannerHeaderCompletedLbl;
                 DescriptionTxt := BannerDescriptionCompletedLbl;
+            end;
+    end;
+
+    local procedure UpdateBannerLabelsForEvaluationCompany(var HeaderTxt: Text; var HeaderCollapsedTxt: Text; var DescriptionTxt: Text; IsSetupStarted: Boolean; AreAllItemsSkippedOrCompleted: Boolean)
+    begin
+        if not IsSetupStarted and not AreAllItemsSkippedOrCompleted then begin
+            HeaderTxt := GetWelcomeHeaderText(true);
+            HeaderCollapsedTxt := CollapsedBannerHeaderWelcomeEvaluationLbl;
+            DescriptionTxt := BannerDescriptionWelcomeEvaluationLbl;
+        end else
+            if IsSetupStarted then begin
+                if not AreAllItemsSkippedOrCompleted then begin
+                    HeaderTxt := BannerHeaderInProgressEvaluationLbl;
+                    HeaderCollapsedTxt := BannerHeaderInProgressEvaluationLbl;
+                    DescriptionTxt := BannerDescriptionInProgressEvaluationLbl;
+                end else begin
+                    HeaderTxt := BannerHeaderCompletedEvaluationLbl;
+                    HeaderCollapsedTxt := BannerHeaderCompletedEvaluationLbl;
+                    DescriptionTxt := '';
+                end;
+            end else begin
+                HeaderTxt := BannerHeaderCompletedEvaluationLbl;
+                HeaderCollapsedTxt := BannerHeaderCompletedEvaluationLbl;
+                DescriptionTxt := BannerDescriptionCompletedEvaluationLbl;
             end;
     end;
 
@@ -229,7 +296,7 @@ codeunit 1996 "Checklist Banner"
         exit(CompletedCount / TotalCount);
     end;
 
-    local procedure AddChecklistItemToBuffer(var ChecklistItemBuffer: Record "Checklist Item Buffer"; Code: Code[300]; Version: Integer; CheckForDuplicate: Boolean; Status: Enum "Checklist Item Status")
+    local procedure AddChecklistItemToBuffer(var ChecklistItemBuffer: Record "Checklist Item Buffer"; Code: Code[300]; Version: Integer; CheckForDuplicate: Boolean; Status: Enum "Checklist Item Status"; RoleID: Code[30])
     var
         GuidedExperienceItem: Record "Guided Experience Item";
         ChecklistItem: Record "Checklist Item";
@@ -241,7 +308,7 @@ codeunit 1996 "Checklist Banner"
 
         if GuidedExperienceItem.FindLast() then begin
             if CheckForDuplicate then
-                if ChecklistItemHasDuplicateInBuffer(ChecklistItemBuffer, GuidedExperienceItem) then
+                if ChecklistItemHasDuplicateInBuffer(ChecklistItemBuffer, GuidedExperienceItem, RoleID) then
                     exit;
 
             if not ChecklistItem.Get(Code) then
@@ -251,7 +318,7 @@ codeunit 1996 "Checklist Banner"
                 if HasTheItemBeenCompleted(GuidedExperienceItem, ChecklistItem) then
                     Status := Status::Completed;
 
-            InsertChecklistItemInBuffer(ChecklistItemBuffer, GuidedExperienceItem, Status, ChecklistItem);
+            InsertChecklistItemInBuffer(ChecklistItemBuffer, GuidedExperienceItem, Status, ChecklistItem, RoleID);
         end;
     end;
 
@@ -275,25 +342,40 @@ codeunit 1996 "Checklist Banner"
         exit(not ChecklistItemUser.IsEmpty());
     end;
 
-    local procedure ChecklistItemHasDuplicateInBuffer(var ChecklistItemBuffer: Record "Checklist Item Buffer"; GuidedExperienceItem: Record "Guided Experience Item"): Boolean
+    local procedure ChecklistItemHasDuplicateInBuffer(var ChecklistItemBuffer: Record "Checklist Item Buffer"; GuidedExperienceItem: Record "Guided Experience Item"; RoleID: Code[30]): Boolean
     begin
         ChecklistItemBuffer.SetRange("Guided Experience Type", GuidedExperienceItem."Guided Experience Type");
         ChecklistItemBuffer.SetRange("Object Type to Run", GuidedExperienceItem."Object Type to Run");
-        ChecklistItemBuffer.SetRange("Object ID to Run", GuidedExperienceItem."Object ID to Run");
         ChecklistItemBuffer.SetRange(Link, GuidedExperienceItem.Link);
+        ChecklistItemBuffer.SetRange("Spotlight Tour Type", GuidedExperienceItem."Spotlight Tour Type");
+        ChecklistItemBuffer.SetRange("Video Url", GuidedExperienceItem."Video Url");
+
+        if GuidedExperienceItem."Guided Experience Type" = GuidedExperienceItem."Guided Experience Type"::Tour then
+            ChecklistItemBuffer.SetRange("Object ID to Run", GetPageIDForTour(RoleID, GuidedExperienceItem."Object ID to Run"))
+        else
+            ChecklistItemBuffer.SetRange("Object ID to Run", GuidedExperienceItem."Object ID to Run");
+
         exit(not ChecklistItemBuffer.IsEmpty());
     end;
 
-    local procedure InsertChecklistItemInBuffer(var ChecklistItemBuffer: Record "Checklist Item Buffer"; GuidedExperienceItem: Record "Guided Experience Item"; Status: Enum "Checklist Item Status"; ChecklistItem: Record "Checklist Item")
+    local procedure InsertChecklistItemInBuffer(var ChecklistItemBuffer: Record "Checklist Item Buffer"; GuidedExperienceItem: Record "Guided Experience Item"; Status: Enum "Checklist Item Status"; ChecklistItem: Record "Checklist Item"; RoleID: Code[30])
     begin
         ChecklistItemBuffer.ID := CreateGuid();
         ChecklistItemBuffer.Code := GuidedExperienceItem.Code;
         ChecklistItemBuffer.Version := GuidedExperienceItem.Version;
+
         ChecklistItemBuffer."Object Type to Run" := GuidedExperienceItem."Object Type to Run";
-        ChecklistItemBuffer."Object ID to Run" := GuidedExperienceItem."Object ID to Run";
+
+        if GuidedExperienceItem."Guided Experience Type" = GuidedExperienceItem."Guided Experience Type"::Tour then
+            ChecklistItemBuffer."Object ID to Run" := GetPageIDForTour(RoleID, GuidedExperienceItem."Object ID to Run")
+        else
+            ChecklistItemBuffer."Object ID to Run" := GuidedExperienceItem."Object ID to Run";
+
         ChecklistItemBuffer.Link := GuidedExperienceItem.Link;
         ChecklistItemBuffer."Expected Duration" := GuidedExperienceItem."Expected Duration";
         ChecklistItemBuffer."Guided Experience Type" := GuidedExperienceItem."Guided Experience Type";
+        ChecklistItemBuffer."Spotlight Tour Type" := GuidedExperienceItem."Spotlight Tour Type";
+        ChecklistItemBuffer."Video Url" := GuidedExperienceItem."Video Url";
 
         GetTranslationsForTitlesAndDescription(ChecklistItemBuffer, GuidedExperienceItem);
 
@@ -307,6 +389,22 @@ codeunit 1996 "Checklist Banner"
         SetAssignedTo(ChecklistItemBuffer);
 
         ChecklistItemBuffer.Insert();
+    end;
+
+    local procedure GetPageIDForTour(RoleID: Code[30]; ObjectIDToRun: Integer): Integer
+    var
+        AllProfile: Record "All Profile";
+    begin
+        // if the tour is running on the same page as the checklist we don't want to refresh the page, 
+        // as the checklist will appear in a wrong state afterwards, so we need to run the tour for object ID 0
+
+        AllProfile.SetRange("Role Center ID", ObjectIDToRun);
+        AllProfile.SetRange("Profile ID", RoleID);
+
+        if not AllProfile.IsEmpty() then
+            exit(0);
+
+        exit(ObjectIDToRun);
     end;
 
     local procedure GetTranslationsForTitlesAndDescription(var ChecklistItemBuffer: Record "Checklist Item Buffer"; GuidedExperienceItem: Record "Guided Experience Item")
@@ -356,7 +454,8 @@ codeunit 1996 "Checklist Banner"
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
     begin
         exit(GuidedExperienceImpl.GetTranslationForField(GuidedExperienceItem."Guided Experience Type",
-            GuidedExperienceItem."Object Type to Run", GuidedExperienceItem."Object ID to Run", GuidedExperienceItem.Link, FieldNo));
+            GuidedExperienceItem."Object Type to Run", GuidedExperienceItem."Object ID to Run",
+            GuidedExperienceItem.Link, GuidedExperienceItem."Video Url", GuidedExperienceItem."Spotlight Tour Type", FieldNo));
     end;
 
     local procedure SetAssignedTo(var ChecklistItemBuffer: Record "Checklist Item Buffer")
@@ -485,6 +584,18 @@ codeunit 1996 "Checklist Banner"
         ChecklistItemBuffer.Modify();
     end;
 
+    local procedure RunTour(ChecklistItemBuffer: Record "Checklist Item Buffer"; Tour: DotNet Tour)
+    begin
+        Tour.StartTour(ChecklistItemBuffer."Object ID to Run", ChecklistItemBuffer.Code);
+    end;
+
+    local procedure RunVideo(VideoUrl: Text[250])
+    var
+        Video: Codeunit Video;
+    begin
+        Video.Play(VideoUrl);
+    end;
+
     local procedure RunObject(ObjectType: Enum "Guided Experience Object Type"; ObjectID: Integer)
     begin
         Commit(); //needed before the RunModal
@@ -499,6 +610,58 @@ codeunit 1996 "Checklist Banner"
             ObjectType::XmlPort:
                 Xmlport.Run(ObjectID);
         end
+    end;
+
+    local procedure RunSpotlightTour(GuidedExperienceItem: Record "Guided Experience Item"; Tour: DotNet Tour)
+    var
+        SpotlightTour: DotNet SpotlightTour;
+        TourDictionary: DotNet GenericDictionary2;
+    begin
+        GetSpolightTour(SpotlightTour, GuidedExperienceItem."Spotlight Tour Type");
+
+        GetTourDictionary(TourDictionary, GuidedExperienceItem);
+
+        Tour.StartSpotlightTour(GuidedExperienceItem."Object ID to Run", SpotlightTour, TourDictionary, GuidedExperienceItem.Code);
+    end;
+
+    local procedure GetSpolightTour(var SpotlightTour: DotNet SpotlightTour; SpotlightTourType: Enum "Spotlight Tour Type")
+    begin
+        case SpotlightTourType of
+            SpotlightTourType::"Open in Excel":
+                SpotlightTour := SpotlightTour::OpenInExcel;
+            SpotlightTourType::"Share to Teams":
+                SpotlightTour := SpotlightTour::ShareToTeams;
+            else
+                SpotlightTour := SpotlightTour::None;
+        end;
+    end;
+
+    local procedure GetTourDictionary(var TourDictionary: DotNet GenericDictionary2; GuidedExperienceItem: Record "Guided Experience Item")
+    var
+        SpotlightTourText: Record "Spotlight Tour Text";
+    begin
+        TourDictionary := TourDictionary.Dictionary();
+
+        SpotlightTourText.SetRange("Guided Experience Item Code", GuidedExperienceItem.Code);
+        SpotlightTourText.SetRange("Guided Experience Item Version", GuidedExperienceItem.Version);
+
+        if SpotlightTourText.FindSet() then
+            repeat
+                TourDictionary.Add(Format(SpotlightTourText."Spotlight Tour Step"), GetTranslatedSpotlightTourText(SpotlightTourText));
+            until SpotlightTourText.Next() = 0;
+    end;
+
+    local procedure GetTranslatedSpotlightTourText(SpotlightTourText: Record "Spotlight Tour Text"): Text
+    var
+        Translation: Codeunit Translation;
+        TranslatedText: Text;
+    begin
+        TranslatedText := Translation.Get(SpotlightTourText, SpotlightTourText.FieldNo("Spotlight Tour Text"), GlobalLanguage);
+
+        if TranslatedText <> '' then
+            exit(TranslatedText);
+
+        exit(SpotlightTourText."Spotlight Tour Text");
     end;
 
     local procedure OpenLink(Link: Text[250])
@@ -542,13 +705,13 @@ codeunit 1996 "Checklist Banner"
         ChecklistItemUser.SetRange("Is Visible", true);
         if ChecklistItemUser.FindSet() then
             repeat
-                AddChecklistItemToBuffer(ChecklistItemBuffer, ChecklistItemUser.Code, ChecklistItemUser.Version, false, ChecklistItemUser."Checklist Item Status");
+                AddChecklistItemToBuffer(ChecklistItemBuffer, ChecklistItemUser.Code, ChecklistItemUser.Version, false, ChecklistItemUser."Checklist Item Status", RoleID);
             until ChecklistItemUser.Next() = 0;
 
         ChecklistItemRole.SetRange("Role ID", RoleID);
         if ChecklistItemRole.FindSet() then
             repeat
-                AddChecklistItemToBuffer(ChecklistItemBuffer, ChecklistItemRole.Code, 0, true, ChecklistItemUser."Checklist Item Status"::"Not Started");
+                AddChecklistItemToBuffer(ChecklistItemBuffer, ChecklistItemRole.Code, 0, true, ChecklistItemUser."Checklist Item Status"::"Not Started", RoleID);
             until ChecklistItemRole.Next() = 0;
 
         ChecklistItemBuffer.Reset();
@@ -568,19 +731,16 @@ codeunit 1996 "Checklist Banner"
         end;
     end;
 
-    local procedure GetWelcomeHeaderText(): Text
+    local procedure GetWelcomeHeaderText(IsEvaluationCompany: Boolean): Text
     var
-        User: Record User;
+        BannerText: Text;
     begin
-        if User.Get(UserSecurityId()) then
-            exit(StrSubstNo(BannerHeaderWelcomeLbl, ' ' + GetFirstName(User."Full Name")));
+        if IsEvaluationCompany then
+            BannerText := BannerHeaderWelcomeEvaluationLbl
+        else
+            BannerText := BannerHeaderWelcomeLbl;
 
-        exit(StrSubstNo(BannerHeaderWelcomeLbl, ''));
-    end;
-
-    local procedure GetFirstName(FullName: Text): Text
-    begin
-        exit(FullName.Split(' ').Get(1));
+        exit(BannerText);
     end;
 
     local procedure GetHeaderLabelsBasedOnProgressToCompletion(var HeaderTxt: Text; var HeaderCollapsedTxt: Text; ProgressToCompletion: Decimal)
@@ -640,6 +800,11 @@ codeunit 1996 "Checklist Banner"
     begin
         Dimensions.Add('OldStatus', OldStatus);
         Dimensions.Add('NewStatus', NewStatus);
+    end;
+
+    internal procedure GetRoleCenterBannerPartID(var PartID: Integer)
+    begin
+        OnGetRoleCenterBannerPartID(PartID);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetRoleCenterBannerPartID', '', true, true)]

@@ -36,21 +36,33 @@ codeunit 11751 "Contact Handler CZL"
             (Contact."Tax Registration No. CZL" <> xContact."Tax Registration No. CZL");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustVendBank-Update", 'OnAfterUpdateCustomer', '', false, false)]
-    local procedure RegNoLogInitOnAfterUpdateCustomer(var Customer: Record Customer; Contact: Record Contact)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustVendBank-Update", 'OnBeforeCustCopyFieldsFromCont', '', false, false)]
+    local procedure SaveRegistrationNoOnBeforeCustCopyFieldsFromCont(var Customer: Record Customer)
+    begin
+        Customer.SaveRegistrationNoCZL();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustVendBank-Update", 'OnAfterUpdateCustomerProcedure', '', false, false)]
+    local procedure RegNoLogInitOnAfterUpdateCustomer(var Customer: Record Customer)
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
     begin
-        if Contact."Registration No. CZL" <> '' then
+        if (Customer."Registration No. CZL" <> '') and (Customer.GetSavedRegistrationNoCZL() <> Customer."Registration No. CZL") then
             RegistrationLogMgtCZL.LogCustomer(Customer);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustVendBank-Update", 'OnAfterUpdateVendor', '', false, false)]
-    local procedure RegNoLogInitOnAfterUpdateVendor(var Vendor: Record Vendor; Contact: Record Contact)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustVendBank-Update", 'OnBeforeVendCopyFieldsFromCont', '', false, false)]
+    local procedure SaveRegistrationNoOnBeforeVendCopyFieldsFromCont(var Vendor: Record Vendor)
+    begin
+        Vendor.SaveRegistrationNoCZL();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustVendBank-Update", 'OnAfterUpdateVendorProcedure', '', false, false)]
+    local procedure RegNoLogInitOnAfterUpdateVendorProcedure(var Vendor: Record Vendor)
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
     begin
-        if Contact."Registration No. CZL" <> '' then
+        if (Vendor."Registration No. CZL" <> '') and (Vendor.GetSavedRegistrationNoCZL() <> Vendor."Registration No. CZL") then
             RegistrationLogMgtCZL.LogVendor(Vendor);
     end;
 }

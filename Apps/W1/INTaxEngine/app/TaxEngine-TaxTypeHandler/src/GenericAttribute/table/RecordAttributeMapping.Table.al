@@ -8,7 +8,7 @@ table 20233 "Record Attribute Mapping"
     {
         field(1; "Attribute Record ID"; RecordId)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Attribute Record ID';
         }
         field(2; "Attribute ID"; Integer)
@@ -92,6 +92,21 @@ table 20233 "Record Attribute Mapping"
             ValueTxt,
             UseCaseDataTypeMgmt.GetAttributeDataTypeToVariableDataType(TaxAttribute.Type));
         exit(CopyStr(LocalValue, 1, 250));
+    end;
+
+    trigger OnInsert()
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
+    trigger OnDelete()
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
+    trigger OnModify()
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
     end;
 
     var

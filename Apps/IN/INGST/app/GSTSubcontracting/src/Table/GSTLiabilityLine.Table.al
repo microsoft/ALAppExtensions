@@ -303,11 +303,17 @@ table 18470 "GST Liability Line"
         {
             Caption = 'GST Group Code';
             TableRelation = "GST Group";
+            Editable = false;
             DataClassification = CustomerContent;
+            trigger OnValidate()
+            begin
+                Rec."HSN/SAC Code" := '';
+            end;
         }
         field(103; "HSN/SAC Code"; Code[10])
         {
             Caption = 'HSN/SAC Code';
+            Editable = false;
             TableRelation = "HSN/SAC".Code WHERE("GST Group Code" = FIELD("GST Group Code"));
             DataClassification = CustomerContent;
         }

@@ -238,8 +238,12 @@ codeunit 148005 "C5 Item Migrator Test"
         DefaultDimension: Record "Default Dimension";
         DimensionValue: Record "Dimension Value";
         CustomerDiscountGroup: Record "Customer Discount Group";
+#if not CLEAN19
         SalesLineDiscount: Record "Sales Line Discount";
         SalesPrice: Record "Sales Price";
+#else
+        PriceListLine: Record "Price List Line";
+#endif
         CustomerPriceGroup: Record "Customer Price Group";
         GenJournalLine: Record "Gen. Journal Line";
         C5InvenBom: Record "C5 InvenBOM";
@@ -253,11 +257,17 @@ codeunit 148005 "C5 Item Migrator Test"
         CustomerDiscountGroup.DeleteAll();
         Vendor.DeleteAll();
         TariffNumber.DeleteAll();
+#if not CLEAN19
         SalesLineDiscount.DeleteAll();
+#endif
         ItemTrackingCode.DeleteAll();
         DefaultDimension.DeleteAll();
         DimensionValue.DeleteAll();
+#if not CLEAN19
         SalesPrice.DeleteAll();
+#else
+        PriceListLine.DeleteAll();
+#endif
         CustomerPriceGroup.DeleteAll();
         GenJournalLine.DeleteAll();
         C5InvenBom.DeleteAll();
@@ -482,8 +492,12 @@ codeunit 148005 "C5 Item Migrator Test"
         ItemTrackingCode: Record "Item Tracking Code";
         DefaultDimension: Record "Default Dimension";
         CustomerDiscountGroup: Record "Customer Discount Group";
+#if not CLEAN19
         SalesLineDiscount: Record "Sales Line Discount";
         SalesPrice: Record "Sales Price";
+#else
+        PriceListLine: Record "Price List Line";
+#endif
         CustomerPriceGroup: Record "Customer Price Group";
         GenProductPostingSetup: Record "General Posting Setup";
         InventoryPostingSetup: Record "Inventory Posting Setup";
@@ -514,12 +528,21 @@ codeunit 148005 "C5 Item Migrator Test"
         Assert.AreEqual('Super amazing discount cust', CustomerDiscountGroup.Description, 'CustomerDiscountGroup.Description');
 
         // check inven cust disc
+#if not CLEAN19
         SalesLineDiscount.SetRange(Type, SalesLineDiscount.Type::Item);
         SalesLineDiscount.SetRange(Code, ItemNumTxt);
         SalesLineDiscount.SetRange("Sales Type", SalesLineDiscount."Sales Type"::"Customer Disc. Group");
         SalesLineDiscount.SetRange("Sales Code", 'SuperC');
         SalesLineDiscount.SetRange("Line Discount %", 12.1);
         Assert.IsFalse(SalesLineDiscount.IsEmpty(), 'The discount was not created.');
+#else
+        PriceListLine.SetRange("Asset Type", "Price Asset Type"::Item);
+        PriceListLine.SetRange("Asset No.", ItemNumTxt);
+        PriceListLine.SetRange("Source Type", "Price Source Type"::"Customer Disc. Group");
+        PriceListLine.SetRange("Source No.", 'SuperC');
+        PriceListLine.SetRange("Line Discount %", 12.1);
+        Assert.IsFalse(PriceListLine.IsEmpty(), 'The discount was not created.');
+#endif
 
         Assert.AreEqual(Item."Costing Method"::FIFO, Item."Costing Method", 'Costing Method incorrect');
         Assert.AreEqual(111.11, Item."Unit Cost", 'Unit Cost incorrect');
@@ -561,12 +584,22 @@ codeunit 148005 "C5 Item Migrator Test"
         Assert.IsTrue(Item.PreventNegativeInventory(), 'PreventNegativeInventory incorrect');
 
         // check price is created
+#if not CLEAN19
         SalesPrice.SetRange("Sales Code", 'PREMIUM');
         SalesPrice.SetRange("Sales Type", SalesPrice."Sales Type"::"Customer Price Group");
         SalesPrice.SetRange("Item No.", ItemNumTxt);
         SalesPrice.SetRange("Unit Price", 1600.80);
         SalesPrice.SetRange("Currency Code", 'EUR');
         Assert.IsFalse(SalesPrice.IsEmpty(), 'The price was not created.');
+#else
+        PriceListLine.SetRange("Source No.", 'PREMIUM');
+        PriceListLine.SetRange("Source Type", "Price Source Type"::"Customer Price Group");
+        PriceListLine.SetRange("Asset Type", "Price Asset Type"::Item);
+        PriceListLine.SetRange("Asset No.", ItemNumTxt);
+        PriceListLine.SetRange("Unit Price", 1600.80);
+        PriceListLine.SetRange("Currency Code", 'EUR');
+        Assert.IsFalse(PriceListLine.IsEmpty(), 'The discount was not created.');
+#endif
 
         // check customer price group is created
         CustomerPriceGroup.Get('Premium');

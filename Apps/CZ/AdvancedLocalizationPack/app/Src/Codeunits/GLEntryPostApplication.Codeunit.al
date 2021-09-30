@@ -1,7 +1,7 @@
 codeunit 31370 "G/L Entry Post Application CZA"
 {
-    Permissions = TableData "G/L Entry" = rm,
-                  TableData "Detailed G/L Entry CZA" = rim;
+    Permissions = tabledata "G/L Entry" = rm,
+                  tabledata "Detailed G/L Entry CZA" = rim;
 
     var
         GLEntry: Record "G/L Entry";

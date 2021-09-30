@@ -56,8 +56,11 @@ pageextension 18441 "GST Service Lines" extends "Service Lines"
             field("GST Group Code"; Rec."GST Group Code")
             {
                 ApplicationArea = Basic, Suite;
-                Editable = false;
                 ToolTip = 'Specifies an identifier for the GST Group  used to calculate and post GST.';
+                trigger OnValidate()
+                begin
+                    CalculateTax.CallTaxEngineOnServiceLine(Rec, xRec);
+                end;
             }
             field("GST Group Type"; Rec."GST Group Type")
             {
@@ -68,8 +71,11 @@ pageextension 18441 "GST Service Lines" extends "Service Lines"
             field("HSN/SAC Code"; Rec."HSN/SAC Code")
             {
                 ApplicationArea = Basic, Suite;
-                Editable = false;
                 ToolTip = 'Specifies an unique identifier for the type of HSN or SAC that is used to calculate and post GST.';
+                trigger OnValidate()
+                begin
+                    CalculateTax.CallTaxEngineOnServiceLine(Rec, xRec);
+                end;
             }
             field("GST Jurisdiction Type"; Rec."GST Jurisdiction Type")
             {

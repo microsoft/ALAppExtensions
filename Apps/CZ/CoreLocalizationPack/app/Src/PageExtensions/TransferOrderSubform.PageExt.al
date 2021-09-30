@@ -22,6 +22,12 @@ pageextension 31129 "Transfer Order Subform CZL" extends "Transfer Order Subform
                 ToolTip = 'Specifies the statistic indication code.';
                 Visible = false;
             }
+            field("Net Weight CZL"; Rec."Net Weight")
+            {
+                ApplicationArea = Location;
+                ToolTip = 'Specifies the net weight of the item.';
+                Visible = false;
+            }
         }
     }
 }

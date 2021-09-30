@@ -16,8 +16,10 @@ permissionset 2147 "D365 Automation APIV2"
                   page "APIV2 - Aut. Extension Upload" = X,
                   page "APIV2 - Aut. Extensions" = X,
                   page "APIV2 - Aut. Permission Sets" = X,
+                  page "APIV2 - Aut. Profiles" = X,
                   page "APIV2 - Aut. Scheduled Jobs" = X,
                   page "APIV2 - Aut. User Gr. Members" = X,
+                  page "APIV2 - Aut. User Group Perm." = X,
                   page "APIV2 - Aut. User Groups" = X,
                   page "APIV2 - Aut. User Permissions" = X,
                   page "APIV2 - Aut. Users" = X;

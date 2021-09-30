@@ -49,10 +49,10 @@ page 18812 "TCS Posting Setup"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     CodeLbl: Label 'Code eq ''%1''', Comment = '%1=TCS Nature of Collection Code';
                 begin
-                    ODataUtility.EditWorksheetInExcel('TCS Posting Setup', CurrPage.ObjectId(false), StrSubstNo(CodeLbl, Rec."TCS Nature of Collection"));
+                    EditinExcel.EditPageInExcel('TCS Posting Setup', CurrPage.ObjectId(false), StrSubstNo(CodeLbl, Rec."TCS Nature of Collection"));
                 end;
             }
         }

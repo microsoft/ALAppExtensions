@@ -63,8 +63,8 @@ The ID of the page that the query navigation opens.
 *LinkingDataItemName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
 
- The optional name of the data item within the source query that is used to generate linking filters. 
- This restricts the records on the target page based on the data within the selected query row when the 
+ The optional name of the data item within the source query that is used to generate linking filters.
+ This restricts the records on the target page based on the data within the selected query row when the
  navigation item is selected.
  
 
@@ -174,9 +174,9 @@ The ID of the SmartList query that is being edited.
 ### OnBeforeDefaultOnInvalidQueryNavigation (Event) <a name="OnBeforeDefaultOnInvalidQueryNavigation"></a> 
 
  Notiifes that the Default On Invalid Query Navigation procedure has been invoked.
- This occurs when a Query Navigation action has been invoked but its definition is 
+ This occurs when a Query Navigation action has been invoked but its definition is
  found to be invalid. Most commonly this would be a result of an extension that the
- action depended upon being uninstalled. 
+ action depended upon being uninstalled.
  
 
 #### Syntax

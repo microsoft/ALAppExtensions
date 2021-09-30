@@ -189,6 +189,7 @@ codeunit 20341 "Tax Document GL Posting"
                         GenJnlLine."Amount (LCY)",
                         GenJnlLine."Currency Factor");
                 end;
+                GenJnlLine."Sales/Purch. (LCY)" := TaxJnlMgmt.GetSalesPurchLcy();
                 if CommitSupresed then
                     GenJnlLine.SetSuppressCommit(false);
             end;

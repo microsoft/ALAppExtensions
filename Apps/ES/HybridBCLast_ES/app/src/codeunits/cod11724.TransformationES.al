@@ -56,10 +56,15 @@ codeunit 11724 "Transformation ES"
     var
         StgReportSelections: Record "Stg Report Selections";
         TempStgReportSelections: Record "Stg Report Selections" temporary;
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
         // This code is based on app upgrade logic for ES.
         // Matching file: .\App\Layers\ES\BaseApp\Upgrade\UPGReportSelections.Codeunit.al
         // Based on commit: 2c1c901e
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetUpdateReportSelectionsTag()) THEN
+            exit;
+
         StgReportSelections.SetRange(Usage, 58);
         if StgReportSelections.FindSet() then
             repeat

@@ -20,18 +20,18 @@ page 1154 "COHUB My User Tasks"
                     ToolTip = 'Specifies the display name of the company.';
                     Visible = true;
                 }
-                field("Enviroment Name"; EnviromentName)
+                field("Enviroment Name"; EnvironmentName)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Enviroment Name';
-                    ToolTip = 'Specifies the name of the enviroment.';
+                    Caption = 'Environment Name';
+                    ToolTip = 'Specifies the name of the environment.';
                     Visible = false;
                 }
                 field(Title; Rec.Title)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Title';
-                    ToolTip = 'Specifies the name of the enviroment.';
+                    ToolTip = 'Specifies the name of the environment.';
                     DrillDown = true;
                     Visible = true;
 
@@ -187,7 +187,7 @@ page 1154 "COHUB My User Tasks"
     begin
         StyleTxt := SetStyle();
         COHUBEnviroment.Get(Rec."Enviroment No.");
-        EnviromentName := COHUBEnviroment.Name;
+        EnvironmentName := COHUBEnviroment.Name;
     end;
 
     trigger OnOpenPage();
@@ -200,7 +200,7 @@ page 1154 "COHUB My User Tasks"
 
     var
         StyleTxt: Text;
-        EnviromentName: Text;
+        EnvironmentName: Text;
         GoToCompanyIsEnabled: Boolean;
         FilterForMyUserTasksListTxt: Label '&filter=''ShouldShowPendingTasks'' IS ''1''', Locked = true;
 

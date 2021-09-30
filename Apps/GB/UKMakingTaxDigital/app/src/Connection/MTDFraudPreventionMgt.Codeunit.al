@@ -51,7 +51,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         ConnectionMethodBatchClientTxt: Label 'BATCH_PROCESS_DIRECT', Locked = true;
         ProdNameTxt: Label 'Microsoft Dynamics 365 Business Central', Locked = true;
         ProdNameOnPremSuffixTxt: Label ' OnPrem', Locked = true;
-        DefaultProdVersionTxt: Label '18.0.0.0', Locked = true;
+        DefaultProdVersionTxt: Label '19.0.0.0', Locked = true;
         DefaultOSFamilyTxt: Label 'Windows', Locked = true;
         WMI_OSInfo_FieldTxt: Label 'Version,CurrentTimeZone', Locked = true;
         WMI_OSInfo_WhereTxt: Label 'Primary=''true'' and Name like ''%Windows%''', Locked = true;
@@ -99,24 +99,25 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
     var
         MTDDefaultFraudPrevHdr: Record "MTD Default Fraud Prev. Hdr";
     begin
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Public-IP', GovClientPublicIPDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Local-IPs', GovClientLocalIPsDescTxt, '');
+        MTDDefaultFraudPrevHdr.DeleteAll();
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Public-IP', GovClientPublicIPDescTxt, '51.145.159.126');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Local-IPs', GovClientLocalIPsDescTxt, '192.168.1.1');
         MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Public-IP-Timestamp', GovClientPublicIPTimestampDescTxt, '');
         MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Local-IPs-Timestamp', GovClientLocalIPsTimestampDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-MAC-Addresses', GovClientMACAddressesDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Device-ID', GovClientDeviceIDDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-MAC-Addresses', GovClientMACAddressesDescTxt, '18%3A60%3A24%3A95%3AE9%3A46');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Device-ID', GovClientDeviceIDDescTxt, 'D4F4EA59-CBD8-FD2A-0856-2779013B105C');
         MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-User-IDs', GovClientUserIDsDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Timezone', GovClientTimezoneDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Screens', GovClientScreensDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-User-Agent', GovClientUserAgentDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Timezone', GovClientTimezoneDescTxt, 'UTC+01:00');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Screens', GovClientScreensDescTxt, 'width=1920&height=1080&scaling-factor=1&colour-depth=32');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-User-Agent', GovClientUserAgentDescTxt, 'os-family=Windows&os-version=10.0.19043&device-manufacturer=HP&device-model=HP+EliteDesk+800+G3+SFF');
         MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Multi-Factor', GovClientMultiFactorDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Vendor-Public-IP', GovVendorPublicIPDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Public-Port', GovClientPublicPortDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Window-Size', GovClientWindowSizeDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-Plugins', GovClientBrowserPluginsDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-JS-User-Agent', GovClientBrowserJSUserAgentDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-Do-Not-Track', GovClientBrowserDoNotTrackDescTxt, '');
-        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Vendor-Forwarded', GovVendorForwardedDescTxt, '');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Vendor-Public-IP', GovVendorPublicIPDescTxt, '51.145.159.126');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Public-Port', GovClientPublicPortDescTxt, '7045');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Window-Size', GovClientWindowSizeDescTxt, 'width=1920&height=1080');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-Plugins', GovClientBrowserPluginsDescTxt, '-');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-JS-User-Agent', GovClientBrowserJSUserAgentDescTxt, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Client-Browser-Do-Not-Track', GovClientBrowserDoNotTrackDescTxt, 'false');
+        MTDDefaultFraudPrevHdr.SafeInsert('Gov-Vendor-Forwarded', GovVendorForwardedDescTxt, 'by=51.145.159.126&for=51.145.159.126');
     end;
 
     procedure CheckForMissingHeadersFromSetup()
@@ -156,7 +157,6 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
         JToken: JsonToken;
         JObject: JsonObject;
-        ErrorMessage: Text;
     begin
         if JObject.ReadFrom(RequestJSON) then;
         if JObject.SelectToken('Header', JToken) then
@@ -165,19 +165,13 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
 
         Init();
         MTDMissingFraudPrevHdr.DeleteAll();
+        CheckInitDefaultHeadersList();
         ConfirmHeaders := ConfirmHeaders and GuiAllowed() and MTDSessionFraudPrevHdr.IsEmpty();
         if MTDSessionFraudPrevHdr.IsEmpty() then begin
             InvokeWMIQueries();
             GenerateSessionHeaders();
             ApplyDefaultToMissing();
         end;
-
-        if ConfirmHeaders then
-            if not CheckForMissingHeadersAndConfirm(ErrorMessage) then begin
-                MTDSessionFraudPrevHdr.DeleteAll();
-                Commit();
-                Error(ErrorMessage);
-            end;
 
         CopySessionHeaders(JObject);
         JObject.WriteTo(RequestJSON);
@@ -381,7 +375,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
             if not GetUserId(Result) then
                 exit(false);
 
-        Result := StrSubstNo('os=%1', TypeHelper.UrlEncode(Result));
+        Result := StrSubstNo('%1=%2', GetProdName(), TypeHelper.UrlEncode(Result));
         exit(Result <> '');
     end;
 

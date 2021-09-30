@@ -6,7 +6,7 @@ pageextension 27036 "DIOT Payment Journal" extends "Payment Journal"
         {
             field("DIOT Type of Operation"; "DIOT Type of Operation")
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = BasicMX;
                 Caption = 'DIOT Type of Operation';
                 ToolTip = 'Specifies the DIOT operation type for this document.';
             }

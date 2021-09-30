@@ -222,8 +222,12 @@ page 13 "Email Editor"
                     end;
                 end;
             }
+#if not CLEAN19
             action(Upload)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Action Upload moved under attachments';
+                ObsoleteTag = '19.0';
                 ApplicationArea = All;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -232,6 +236,7 @@ page 13 "Email Editor"
                 Enabled = not EmailScheduled;
                 Caption = 'Attach File';
                 ToolTip = 'Attach files, such as documents or images, to the email.';
+                Visible = false;
 
                 trigger OnAction()
                 begin
@@ -241,7 +246,24 @@ page 13 "Email Editor"
                     CurrPage.Attachments.Page.Update();
                 end;
             }
+#endif
+            action(WordTemplate)
+            {
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Image = Word;
+                Caption = 'Use Word Template';
+                ToolTip = 'Use a Word template with data from the entity to fill the email body.';
+                Enabled = HasSourceRecord;
 
+                trigger OnAction()
+                var
+                begin
+                    EmailEditor.LoadWordTemplate(EmailMessage, Rec."Message Id");
+                end;
+            }
             action(ShowSourceRecord)
             {
                 ApplicationArea = All;
@@ -251,17 +273,19 @@ page 13 "Email Editor"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
+                Enabled = HasSourceRecord;
 
                 trigger OnAction()
-                var
-                    EmailImpl: Codeunit "Email Impl";
                 begin
                     EmailImpl.ShowSourceRecord(Rec."Message Id");
                 end;
             }
-
+#if not CLEAN19
             action(SourceAttachments)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Action SourceAttachments moved under attachments';
+                ObsoleteTag = '19.0';
                 ApplicationArea = All;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -270,12 +294,14 @@ page 13 "Email Editor"
                 Caption = 'Get Source Attachments';
                 ToolTip = 'Attach a file that was originally attached to the source document.';
                 Scope = Page;
+                Visible = false;
 
                 trigger OnAction()
                 begin
                     EmailEditor.AttachFromRelatedRecords(Rec."Message Id");
                 end;
             }
+#endif
         }
     }
 
@@ -299,6 +325,7 @@ page 13 "Email Editor"
             CurrPage.Caption(PageCaptionTxt); // fallback to default caption
 
         EmailScheduled := Rec.Status in [Enum::"Email Status"::Queued, Enum::"Email Status"::Processing];
+        HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
         IsHTMLFormatted := EmailMessage.IsBodyHTMLFormatted();
         CurrPage.Attachments.Page.UpdateValues(EmailMessage.GetId());
     end;
@@ -373,11 +400,13 @@ page 13 "Email Editor"
         TempEmailAccount: Record "Email Account" temporary;
         EmailMessage: Codeunit "Email Message Impl.";
         EmailEditor: Codeunit "Email Editor";
+        EmailImpl: Codeunit "Email Impl";
         EmailAction: Enum "Email Action";
         FromDisplayName: Text;
         ToRecipient, CcRecipient, BccRecipient : Text;
         EmailScheduled: Boolean;
         IsNewOutbox: Boolean;
+        HasSourceRecord: Boolean;
         EmailBody, EmailSubject : Text;
         [InDataSet]
         IsHTMLFormatted: Boolean;

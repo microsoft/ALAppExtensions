@@ -1,45 +1,63 @@
 codeunit 31251 "Upgrade Application CZA"
 {
     Subtype = Upgrade;
+    Permissions = tabledata "Detailed G/L Entry CZA" = im,
+                  tabledata "G/L Entry" = m,
+                  tabledata "Inventory Setup" = m,
+                  tabledata "Manufacturing Setup" = m;
 
     var
         DataUpgradeMgt: Codeunit "Data Upgrade Mgt.";
         UpgradeTag: Codeunit "Upgrade Tag";
         UpgradeTagDefinitionsCZA: Codeunit "Upgrade Tag Definitions CZA";
+        InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
+        AppInfo: ModuleInfo;
 
     trigger OnUpgradePerDatabase()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
-
-        UpdatePermission();
-
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerDatabaseUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerDatabaseUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerDatabaseUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerDatabaseUpgradeTag());
+        UpgradePermission();
+        SetDatabaseUpgradeTags();
     end;
 
     trigger OnUpgradePerCompany()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
-
-        UpdateDetailedGLEntry();
-        UpdateGLEntry();
-        UpdateDefaultDimension();
-        UpdateInventorySetup();
-        UpgradeManufacturingSetup();
-
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerCompanyUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerCompanyUpgradeTag());
+        BindSubscription(InstallApplicationsMgtCZL);
+        UpgradeUsage();
+        UpgradeData();
+        UnbindSubscription(InstallApplicationsMgtCZL);
+        SetCompanyUpgradeTags();
     end;
 
-    local procedure UpdateDetailedGLEntry()
+    local procedure UpgradePermission()
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag()) then
+            exit;
+
+        NavApp.GetCurrentModuleInfo(AppInfo);
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Detailed G/L Entry", Database::"Detailed G/L Entry CZA");
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag());
+    end;
+
+    local procedure UpgradeUsage()
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag()) then
+            exit;
+
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Detailed G/L Entry", Database::"Detailed G/L Entry CZA");
+    end;
+
+    local procedure UpgradeData()
+    begin
+        UpgradeDetailedGLEntry();
+        UpgradeGLEntry();
+        UpgradeDefaultDimension();
+        UpgradeInventorySetup();
+        UpgradeManufacturingSetup();
+    end;
+
+    local procedure UpgradeDetailedGLEntry()
     var
         DetailedGLEntry: Record "Detailed G/L Entry";
         DetailedGLEntryCZA: Record "Detailed G/L Entry CZA";
@@ -52,7 +70,8 @@ codeunit 31251 "Upgrade Application CZA"
                 if not DetailedGLEntryCZA.Get(DetailedGLEntry."Entry No.") then begin
                     DetailedGLEntryCZA.Init();
                     DetailedGLEntryCZA."Entry No." := DetailedGLEntry."Entry No.";
-                    DetailedGLEntryCZA.Insert();
+                    DetailedGLEntryCZA.SystemId := DetailedGLEntry.SystemId;
+                    DetailedGLEntryCZA.Insert(false, true);
                 end;
                 DetailedGLEntryCZA."G/L Entry No." := DetailedGLEntry."G/L Entry No.";
                 DetailedGLEntryCZA."Applied G/L Entry No." := DetailedGLEntry."Applied G/L Entry No.";
@@ -68,7 +87,7 @@ codeunit 31251 "Upgrade Application CZA"
             until DetailedGLEntry.Next() = 0;
     end;
 
-    local procedure UpdateGLEntry();
+    local procedure UpgradeGLEntry();
     var
         GLEntry: Record "G/L Entry";
     begin
@@ -84,7 +103,7 @@ codeunit 31251 "Upgrade Application CZA"
             until GLEntry.Next() = 0;
     end;
 
-    local procedure UpdateDefaultDimension();
+    local procedure UpgradeDefaultDimension();
     var
         DefaultDimension: Record "Default Dimension";
     begin
@@ -118,7 +137,7 @@ codeunit 31251 "Upgrade Application CZA"
             until DefaultDimension.Next() = 0;
     end;
 
-    local procedure UpdateInventorySetup();
+    local procedure UpgradeInventorySetup();
     var
         InventorySetup: Record "Inventory Setup";
     begin
@@ -144,36 +163,23 @@ codeunit 31251 "Upgrade Application CZA"
         end;
     end;
 
-    local procedure UpdatePermission()
+    local procedure SetDatabaseUpgradeTags();
     begin
-        UpdatePermissionVersion182();
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerDatabaseUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerDatabaseUpgradeTag());
     end;
 
-    local procedure UpdatePermissionVersion182()
+    local procedure SetCompanyUpgradeTags();
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag()) then
-            exit;
-
-        InsertTableDataPermissions(Database::"Detailed G/L Entry", Database::"Detailed G/L Entry CZA");
-        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag());
-    end;
-
-    local procedure InsertTableDataPermissions(OldTableID: Integer; NewTableID: Integer)
-    var
-        Permission: Record Permission;
-        NewPermission: Record Permission;
-    begin
-        Permission.SetRange("Object Type", Permission."Object Type"::"Table Data");
-        Permission.SetRange("Object ID", OldTableID);
-        if not Permission.FindSet() then
-            exit;
-        repeat
-            if not NewPermission.Get(Permission."Role ID", Permission."Object Type", NewTableID) then begin
-                NewPermission.Init();
-                NewPermission := Permission;
-                NewPermission."Object ID" := NewTableID;
-                if NewPermission.Insert() then;
-            end;
-        until Permission.Next() = 0;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerCompanyUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerCompanyUpgradeTag());
     end;
 }

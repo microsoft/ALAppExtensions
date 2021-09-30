@@ -55,6 +55,8 @@ codeunit 20365 "Use Case Archival Mgmt."
     begin
         TaxJsonSerialization.ExportUseCases(UseCase, JArray);
         JArray.WriteTo(JsonText);
+        if StrLen(JsonText) = 0 then
+            exit;
         TempBlob.CreateOutStream(OStream);
         OStream.WriteText(JsonText);
         FileText := UseCase."Tax Type" + '.json';
@@ -94,6 +96,8 @@ codeunit 20365 "Use Case Archival Mgmt."
         EntityJsonSerialization.SetCanExportUseCases(Confirm(ExportUseCaseQst));
         EntityJsonSerialization.ExportTaxTypes(TaxType, JArray);
         JArray.WriteTo(JsonText);
+        if StrLen(JsonText) = 0 then
+            exit;
         TempBlob.CreateOutStream(OStream);
         OStream.WriteText(JsonText);
         FileText := StrSubstNo(TaxConfigLbl, CompanyName());
@@ -125,7 +129,7 @@ codeunit 20365 "Use Case Archival Mgmt."
     var
         TaxUseCase: Record "Tax Use Case";
         TypeHelper: Codeunit "Type Helper";
-        RestoreUseCaseQst: Label 'If you restore this version and current version will be deleted. Do you want continue ?';
+        RestoreUseCaseQst: Label 'If you restore this version then current version will be deleted. Do you want continue ?';
         IStream: InStream;
         OldVersion: Decimal;
         JsonText: Text;
@@ -146,6 +150,11 @@ codeunit 20365 "Use Case Archival Mgmt."
         UseCaseArchivalLogEntry."Configuration Data".CreateInStream(IStream);
         JsonText := TypeHelper.ReadAsTextWithSeparator(IStream, '');
         RestoreUseCase(JsonText, UseCaseArchivalLogEntry."Case ID", OldVersion);
+    end;
+
+    procedure SetIfChangedByMicrosoft(NewChangedByMicrosoft: Boolean)
+    begin
+        ChangedByMicrosoft := NewChangedByMicrosoft;
     end;
 
     local procedure RestoreUseCase(JsonText: Text; CaseID: Guid; OldVersion: Decimal)
@@ -173,7 +182,8 @@ codeunit 20365 "Use Case Archival Mgmt."
         TaxUseCase: Record "Tax Use Case";
     begin
         TaxUseCase.SetFilter("Minor Version", '<>%1', 0);
-        ExportUseCases(TaxUseCase);
+        if not TaxUseCase.IsEmpty() then
+            ExportUseCases(TaxUseCase);
     end;
 
     local procedure ArchiveUseCase(var TaxUseCase: Record "Tax Use Case")
@@ -201,7 +211,9 @@ codeunit 20365 "Use Case Archival Mgmt."
         UpdateTaxUseCase(TaxUseCase, UseCaseArchivalLogEntry);
     end;
 
-    local procedure UpdateTaxUseCase(var TaxUseCase: Record "Tax Use Case"; UseCaseArchivalLogEntry: Record "Use Case Archival Log Entry")
+    local procedure UpdateTaxUseCase(
+        var TaxUseCase: Record "Tax Use Case";
+        UseCaseArchivalLogEntry: Record "Use Case Archival Log Entry")
     begin
         RemoveIsActiveFromLastLog(TaxUseCase.ID, UseCaseArchivalLogEntry."Entry No.");
         TaxUseCase.Validate("Effective From", UseCaseArchivalLogEntry."Log Date-Time");
@@ -306,6 +318,7 @@ codeunit 20365 "Use Case Archival Mgmt."
     end;
 
     var
+        ChangedByMicrosoft: Boolean;
         ChangedByPartnerLbl: Label 'Partner';
         ExportUseCaseQst: Label 'Do you want to Export Use Cases as well?';
 }

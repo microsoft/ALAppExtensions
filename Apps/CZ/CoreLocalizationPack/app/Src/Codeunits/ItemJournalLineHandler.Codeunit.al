@@ -152,13 +152,15 @@ codeunit 31078 "Item Journal Line Handler CZL"
         ItemJnlLine.CopyFromServiceShipmentLineCZL(ServShptLine);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnCheckItemJournalTemplateUserRestrictions', '', false, false)]
-    local procedure CheckItemJournalTemplateUserRestrictions(JournalTemplateName: Code[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::ItemJnlManagement, 'OnBeforeOpenJnl', '', false, false)]
+    local procedure JournalTemplateUserRestrictionsOnBeforeOpenJnl(var ItemJnlLine: Record "Item Journal Line")
     var
-        DummyUserSetupLineCZL: Record "User Setup Line CZL";
         UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+        UserSetupLineTypeCZL: Enum "User Setup Line Type CZL";
+        JournalTemplateName: Code[10];
     begin
-        UserSetupAdvManagementCZL.CheckJournalTemplate(DummyUserSetupLineCZL.Type::"Item Journal", JournalTemplateName);
+        JournalTemplateName := ItemJnlLine.GetRangeMax("Journal Template Name");
+        UserSetupLineTypeCZL := UserSetupLineTypeCZL::"Item Journal";
+        UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
-
 }

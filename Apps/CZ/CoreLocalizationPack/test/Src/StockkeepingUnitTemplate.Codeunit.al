@@ -3,6 +3,12 @@ codeunit 148058 "Stockkeeping Unit Template CZL"
     Subtype = Test;
     TestPermissions = Disabled;
 
+    trigger OnRun()
+    begin
+        // [FEATURE] [Core] [Stockkeeping Unit Template]
+        isInitialized := false;
+    end;
+
     var
         ConfigTemplateHeader: Record "Config. Template Header";
         ConfigTemplateLine: Record "Config. Template Line";
@@ -19,32 +25,23 @@ codeunit 148058 "Stockkeeping Unit Template CZL"
         isInitialized: Boolean;
 
     local procedure Initialize();
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Stockkeeping Unit Template CZL");
         LibraryRandom.Init();
         if isInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Stockkeeping Unit Template CZL");
 
-        isInitialized := true;
-        Commit();
-    end;
-
-    [Test]
-    [HandlerFunctions('HandleCreateSKUReport,MessageCreateSKUReport')]
-    procedure CreateSKUwithTemplate()
-    begin
-        // [FEATURE] Stockkeeping Unit Templates
-        Initialize();
-
-        // [GIVEN] New Config. Template Header created
+        // New Config. Template Header
         ConfigTemplateHeader.Init();
-        ConfigTemplateHeader.Code := CopyStr(
-            LibraryUtility.GenerateRandomCode(ConfigTemplateHeader.FieldNo(Code), DATABASE::"Config. Template Header"),
-            1,
-            MaxStrLen(ConfigTemplateHeader.Code));
+        ConfigTemplateHeader.Code := CopyStr(LibraryUtility.GenerateRandomCode(ConfigTemplateHeader.FieldNo(Code), DATABASE::"Config. Template Header"),
+                                             1, MaxStrLen(ConfigTemplateHeader.Code));
         ConfigTemplateHeader."Table ID" := Database::"Stockkeeping Unit";
         ConfigTemplateHeader.Insert();
 
-        // [GIVEN] New Config. Template Line created
+        // New Config. Template Line
         ConfigTemplateLine.Init();
         ConfigTemplateLine."Data Template Code" := ConfigTemplateHeader.Code;
         ConfigTemplateLine."Line No." := 1;
@@ -53,7 +50,7 @@ codeunit 148058 "Stockkeeping Unit Template CZL"
         ConfigTemplateLine."Default Value" := Format(StockkeepingUnit."Reordering Policy"::"Fixed Reorder Qty.");
         ConfigTemplateLine.Insert();
 
-        // [GIVEN] New Config. Template Line created
+        // New Config. Template Line
         ConfigTemplateLine.Init();
         ConfigTemplateLine."Data Template Code" := ConfigTemplateHeader.Code;
         ConfigTemplateLine."Line No." := 2;
@@ -62,7 +59,7 @@ codeunit 148058 "Stockkeeping Unit Template CZL"
         ConfigTemplateLine."Default Value" := Format(StockkeepingUnit."Replenishment System"::Purchase);
         ConfigTemplateLine.Insert();
 
-        // [GIVEN] New Config. Template Line created
+        // New Config. Template Line
         ConfigTemplateLine.Init();
         ConfigTemplateLine."Data Template Code" := ConfigTemplateHeader.Code;
         ConfigTemplateLine."Line No." := 3;
@@ -71,7 +68,7 @@ codeunit 148058 "Stockkeeping Unit Template CZL"
         ConfigTemplateLine."Default Value" := '100.00';
         ConfigTemplateLine.Insert();
 
-        // [GIVEN] New Config. Template Line created
+        // New Config. Template Line
         ConfigTemplateLine.Init();
         ConfigTemplateLine."Data Template Code" := ConfigTemplateHeader.Code;
         ConfigTemplateLine."Line No." := 4;
@@ -80,7 +77,7 @@ codeunit 148058 "Stockkeeping Unit Template CZL"
         ConfigTemplateLine."Default Value" := '150.00';
         ConfigTemplateLine.Insert();
 
-        // [GIVEN] New Config. Template Line created
+        // New Config. Template Line
         ConfigTemplateLine.Init();
         ConfigTemplateLine."Data Template Code" := ConfigTemplateHeader.Code;
         ConfigTemplateLine."Line No." := 5;
@@ -89,32 +86,45 @@ codeunit 148058 "Stockkeeping Unit Template CZL"
         ConfigTemplateLine."Default Value" := '7D';
         ConfigTemplateLine.Insert();
 
-        // [GIVEN] New Item Category created
+        isInitialized := true;
+        Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Stockkeeping Unit Template CZL");
+    end;
+
+    [Test]
+    [HandlerFunctions('HandleCreateSKUReport,MessageCreateSKUReport')]
+    procedure CreateSKUbyTemplate()
+    begin
+        // [SCENARIO] Create Stockkeeping Unit by Stockkeeping Unit Template
+        Initialize();
+
+        // [GIVEN] New Item Category has been created
         LibraryInventory.CreateItemCategory(ItemCategory);
 
-        // [GIVEN] New Location created
+        // [GIVEN] New Location has been created
         LibraryWarehouse.CreateLocation(Location);
 
-        // [GIVEN] New SKU Template created
+        // [GIVEN] New SKU Template has been created
         StockkeepingUnitTemplateCZL.Init();
         StockkeepingUnitTemplateCZL."Item Category Code" := ItemCategory.Code;
         StockkeepingUnitTemplateCZL."Location Code" := Location.Code;
         StockkeepingUnitTemplateCZL."Configuration Template Code" := ConfigTemplateHeader.Code;
         StockkeepingUnitTemplateCZL.Insert();
 
-        // [GIVEN] New Item created
+        // [GIVEN] New Item has been created
         LibraryInventory.CreateItem(Item);
         Item."Item Category Code" := ItemCategory.Code;
         Item.Modify();
         Commit();
 
-        // [WHEN] Run Create Stockkeeping Unit CZL Report
+        // [WHEN] Run Create Stockkeeping Unit report
         Item.SetRange("No.", Item."No.");
         Report.RunModal(Report::"Create Stockkeeping Unit CZL", true, true, Item);
 
-        // [THEN] Stockkeeping Unit is created
+        // [THEN] Stockkeeping Unit will be created
         StockkeepingUnit.Get(Location.Code, Item."No.", '');
-        // [THEN] Stockkeeping Unit is updated
+
+        // [THEN] Stockkeeping Unit will be updated
         Assert.AreEqual(StockkeepingUnit."Reordering Policy"::"Fixed Reorder Qty.", StockkeepingUnit."Reordering Policy", StockkeepingUnit.FieldCaption(StockkeepingUnit."Reordering Policy"));
         Assert.AreEqual(StockkeepingUnit."Replenishment System"::Purchase, StockkeepingUnit."Replenishment System", StockkeepingUnit.FieldCaption(StockkeepingUnit."Replenishment System"));
         Assert.AreEqual(100.00, StockkeepingUnit."Reorder Point", StockkeepingUnit.FieldCaption(StockkeepingUnit."Reorder Point"));

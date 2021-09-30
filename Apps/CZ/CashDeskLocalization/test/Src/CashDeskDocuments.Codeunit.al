@@ -1,8 +1,13 @@
-#pragma warning disable AA0210
 codeunit 148070 "Cash Desk Documents CZP"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
+    TestPermissions = Disabled;
+
+    trigger OnRun()
+    begin
+        // [FEATURE] [Cash Desk] [Documents]
+        isInitialized := false;
+    end;
 
     var
         CashDeskCZP: Record "Cash Desk CZP";
@@ -22,10 +27,14 @@ codeunit 148070 "Cash Desk Documents CZP"
         isInitialized: Boolean;
 
     local procedure Initialize()
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Cash Desk Documents CZP");
         LibraryRandom.Init();
         if isInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Cash Desk Documents CZP");
 
         LibraryCashDeskCZP.CreateCashDeskCZP(CashDeskCZP);
         LibraryCashDeskCZP.SetupCashDeskCZP(CashDeskCZP, true);
@@ -33,42 +42,7 @@ codeunit 148070 "Cash Desk Documents CZP"
 
         isInitialized := true;
         Commit();
-    end;
-
-    [Test]
-    [HandlerFunctions('YesConfirmHandler')]
-    procedure ReceiptCashDocumentCreation()
-    var
-        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
-    begin
-        // [SCENARIO] Test if the system allows to create a new Receipt Cash Document
-        CashDocumentCreation(CashDocumentHeaderCZP."Document Type"::Receipt);
-    end;
-
-    [Test]
-    [HandlerFunctions('YesConfirmHandler')]
-    procedure WithdrawalCashDocumentCreation()
-    var
-        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
-    begin
-        // [SCENARIO] Test if the system allows to create a new Withdrawal Cash Document
-        CashDocumentCreation(CashDocumentHeaderCZP."Document Type"::Withdrawal);
-    end;
-
-    local procedure CashDocumentCreation(CashDocType: Enum "Cash Document Type CZP")
-    var
-        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
-        CashDocumentLineCZP: Record "Cash Document Line CZP";
-    begin
-        // [FEATURE] Cash Desk
-        Initialize();
-
-        // [WHEN] Create Withdrawal Cash Document
-        CreateCashDocument(CashDocumentHeaderCZP, CashDocumentLineCZP, CashDocType, CashDeskCZP."No.");
-
-        // [THEN] Verify
-        CashDocumentHeaderCZP.SetRange("Cash Desk No.", CashDeskCZP."No.");
-        Assert.RecordIsNotEmpty(CashDocumentLineCZP);
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Cash Desk Documents CZP");
     end;
 
     [Test]
@@ -77,7 +51,7 @@ codeunit 148070 "Cash Desk Documents CZP"
     var
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
     begin
-        // [SCEANRIO] Test the release of Receipt Cash Document
+        // [SCEANRIO] Release of Receipt Cash Document
         TestReleaseCashDocument(CashDocumentHeaderCZP."Document Type"::Receipt);
     end;
 
@@ -87,7 +61,7 @@ codeunit 148070 "Cash Desk Documents CZP"
     var
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
     begin
-        // [SCEANRIO] Test the release of Withdrawal Cash Document
+        // [SCEANRIO] Release of Withdrawal Cash Document
         TestReleaseCashDocument(CashDocumentHeaderCZP."Document Type"::Withdrawal);
     end;
 
@@ -96,16 +70,15 @@ codeunit 148070 "Cash Desk Documents CZP"
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
     begin
-        // [FEATURE] Cash Desk
         Initialize();
 
-        // [GIVEN] Create Cash Document
+        // [GIVEN] Cash Document has been created
         CreateCashDocument(CashDocumentHeaderCZP, CashDocumentLineCZP, CashDocType, CashDeskCZP."No.");
 
         // [WHEN] Release Cash Document
         ReleaseCashDocumentCZP(CashDocumentHeaderCZP);
 
-        // [THEN] Verify
+        // [THEN] Cash Document Status will be Released
         Assert.IsTrue(CashDocumentHeaderCZP.Status = CashDocumentHeaderCZP.Status::Released, CashDocStatusErr);
     end;
 
@@ -116,11 +89,10 @@ codeunit 148070 "Cash Desk Documents CZP"
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
     begin
-        // [SCENARIO] Test error occurs on release of Receipt Cash Document with great amount
-        // [FEATURE] Cash Desk
+        // [SCENARIO] Error occurs on release of Receipt Cash Document with great amount
         Initialize();
 
-        // [GIVEN] Create Receipt Cash Document
+        // [GIVEN] Create Receipt Cash Document with great amount
         CreateCashDocument(CashDocumentHeaderCZP, CashDocumentLineCZP, CashDocumentHeaderCZP."Document Type"::Receipt, CashDeskCZP."No.");
         CashDocumentLineCZP.Validate(Amount, CashDeskCZP."Cash Receipt Limit" * 2); // Modify amount over the limit
         CashDocumentLineCZP.Modify(true);
@@ -128,7 +100,7 @@ codeunit 148070 "Cash Desk Documents CZP"
         // [WHEN] Release Cash Document
         asserterror ReleaseCashDocumentCZP(CashDocumentHeaderCZP);
 
-        // [THEN] Verify
+        // [THEN] Verify Error
         Assert.ExpectedError(StrSubstNo(AmountLimitErr, CashDeskCZP."Cash Receipt Limit"));
     end;
 
@@ -141,8 +113,7 @@ codeunit 148070 "Cash Desk Documents CZP"
         PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
         GLEntry: Record "G/L Entry";
     begin
-        // [SCENARIO] Test the posting of Receipt Cash Document
-        // [FEATURE] Cash Desk
+        // [SCENARIO] Posting of Receipt Cash Document
         Initialize();
 
         // [GIVEN] Create Receipt Cash Document
@@ -151,10 +122,11 @@ codeunit 148070 "Cash Desk Documents CZP"
         // [WHEN] Post Cash Document
         PostCashDocumentCZP(CashDocumentHeaderCZP);
 
-        // [THEN] Check Posted Cash Document exist
+        // [THEN] Check Posted Cash Document exists
         PostedCashDocumentHdrCZP.SetRange("Cash Desk No.", CashDeskCZP."No.");
         Assert.IsTrue(PostedCashDocumentHdrCZP.FindLast(), PostCashDocNotExistErr);
 
+        // [THEN] Check Bank Account G/L Entry exists for Posted Cash Document
         GLEntry.SetCurrentKey("Document No.", "Posting Date");
         GLEntry.SetRange("Document No.", PostedCashDocumentHdrCZP."No.");
         GLEntry.SetRange("Posting Date", PostedCashDocumentHdrCZP."Posting Date");
@@ -164,6 +136,7 @@ codeunit 148070 "Cash Desk Documents CZP"
         GLEntry.TestField("G/L Account No.", BankAccountPostingGroup."G/L Account No.");
         GLEntry.TestField("Debit Amount", CashDocumentLineCZP.Amount);
 
+        // [THEN] Check Cash Document Line G/L Entry exists for Posted Cash Document
         GLEntry.Next();
         GLEntry.TestField("G/L Account No.", CashDocumentLineCZP."Account No.");
         GLEntry.TestField("Credit Amount", CashDocumentLineCZP.Amount);
@@ -182,15 +155,16 @@ codeunit 148070 "Cash Desk Documents CZP"
         RangeAmount: Decimal;
         i: Integer;
     begin
-        // [SCENARIO] Test the posting of Withdrawal Cash Document
-        // [FEATURE] Cash Desk
+        // [SCENARIO] Posting of Withdrawal Cash Document
         Initialize();
 
         // [GIVEN] Create Withdrawal Cash Document
+        LibraryCashDocumentCZP.CreateCashDocumentHeaderCZP(CashDocumentHeaderCZP, CashDocumentHeaderCZP."Document Type"::Withdrawal, CashDeskCZP."No.");
+
+        // [GIVEN] Create Cash Desk Event
         LibraryCashDeskCZP.CreateCashDeskEventCZP(
           CashDeskEventCZP, CashDeskCZP."No.", CashDocumentHeaderCZP."Document Type"::Withdrawal,
           CashDeskEventCZP."Account Type"::"G/L Account", LibraryCashDocumentCZP.GetNewGLAccountNo(true));
-        LibraryCashDocumentCZP.CreateCashDocumentHeaderCZP(CashDocumentHeaderCZP, CashDocumentHeaderCZP."Document Type"::Withdrawal, CashDeskCZP."No.");
 
         // [GIVEN] Create Withdrawal Cash Document Line 1
         LibraryCashDocumentCZP.CreateCashDocumentLineCZPWithCashDeskEvent(
@@ -209,7 +183,7 @@ codeunit 148070 "Cash Desk Documents CZP"
         // [WHEN] Post Cash Document
         PostCashDocumentCZP(CashDocumentHeaderCZP);
 
-        // [THEN] Check Posted Cash Document exist
+        // [THEN] Check Posted Cash Document exists
         PostedCashDocumentHdrCZP.SetRange("Cash Desk No.", CashDeskCZP."No.");
         Assert.IsTrue(PostedCashDocumentHdrCZP.FindLast(), PostCashDocNotExistErr);
 
@@ -250,8 +224,7 @@ codeunit 148070 "Cash Desk Documents CZP"
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
     begin
-        // [SCENARIO] Test the release of Withdrawal Cash Document with rounding
-        // [FEATURE] Cash Desk
+        // [SCENARIO] Release of Withdrawal Cash Document with rounding
         Initialize();
 
         // [GIVEN] Create Withdrawal Cash Document
@@ -280,8 +253,7 @@ codeunit 148070 "Cash Desk Documents CZP"
         GLEntry: Record "G/L Entry";
         FALedgerEntry: Record "FA Ledger Entry";
     begin
-        // [SCENARIO] Test the posting of Withdrawal Cash Document with fixed asset
-        // [FEATURE] Cash Desk
+        // [SCENARIO] Posting of Withdrawal Cash Document with Fixed Asset
         Initialize();
 
         // [GIVEN] Create Withdrawal Cash Document
@@ -290,11 +262,11 @@ codeunit 148070 "Cash Desk Documents CZP"
         // [WHEN] Post Cash Document
         PostCashDocumentCZP(CashDocumentHeaderCZP);
 
-        // [THEN] Check Posted Cash Document exist
+        // [THEN] Check Posted Cash Document exists
         PostedCashDocumentHdrCZP.SetRange("Cash Desk No.", CashDeskCZP."No.");
         Assert.IsTrue(PostedCashDocumentHdrCZP.FindLast(), PostCashDocNotExistErr);
 
-        // [THEN] Check G/L Entry
+        // [THEN] Check G/L Entries
         GLEntry.SetCurrentKey("Document No.", "Posting Date");
         GLEntry.SetRange("Document No.", PostedCashDocumentHdrCZP."No.");
         GLEntry.SetRange("Posting Date", PostedCashDocumentHdrCZP."Posting Date");
@@ -325,8 +297,7 @@ codeunit 148070 "Cash Desk Documents CZP"
         AppliedCustomerEntries: TestPage "Applied Customer Entries";
         PostDocNo: Code[20];
     begin
-        // [SCENARIO] Check that Posted Sales Invoice was correct closing after posting Receipt Cash Document
-        // [FEATURE] Cash Desk
+        // [SCENARIO] Check that Posted Sales Invoice was closed after posting Receipt Cash Document
         Initialize();
 
         // [GIVEN] Create Sales Invoice
@@ -336,10 +307,12 @@ codeunit 148070 "Cash Desk Documents CZP"
         PostDocNo := PostSalesDocument(SalesHeader);
 
         // [GIVEN] Create Receipt Cash Document
+        LibraryCashDocumentCZP.CreateCashDocumentHeaderCZP(CashDocumentHeaderCZP, CashDocumentHeaderCZP."Document Type"::Receipt, CashDeskCZP."No.");
+
+        // [GIVEN] Create Cash Desk Event
         LibraryCashDeskCZP.CreateCashDeskEventCZP(
           CashDeskEventCZP, CashDeskCZP."No.", CashDocumentHeaderCZP."Document Type"::Receipt,
           CashDeskEventCZP."Account Type"::Customer, '');
-        LibraryCashDocumentCZP.CreateCashDocumentHeaderCZP(CashDocumentHeaderCZP, CashDocumentHeaderCZP."Document Type"::Receipt, CashDeskCZP."No.");
 
         // [GIVEN] Create Receipt Cash Document Line
         LibraryCashDocumentCZP.CreateCashDocumentLineCZPWithCashDeskEvent(
@@ -353,7 +326,7 @@ codeunit 148070 "Cash Desk Documents CZP"
         // [WHEN] Post Cash Document
         PostCashDocumentCZP(CashDocumentHeaderCZP);
 
-        // [THEN] Verify
+        // [THEN] Verify Customer Ledger Entry
         PostedCashDocumentHdrCZP.SetRange("Cash Desk No.", CashDeskCZP."No.");
         Assert.IsTrue(PostedCashDocumentHdrCZP.FindLast(), PostCashDocNotExistErr);
 
@@ -364,6 +337,7 @@ codeunit 148070 "Cash Desk Documents CZP"
         CustomerLedgerEntries."Customer No.".AssertEquals(SalesHeader."Bill-to Customer No.");
         CustomerLedgerEntries.Amount.AssertEquals(-SalesLine."Amount Including VAT");
 
+        // [THEN] Verify Applied Customer Ledger Entry
         AppliedCustomerEntries.Trap();
         CustomerLedgerEntries.AppliedEntries.Invoke();
 
@@ -402,7 +376,6 @@ codeunit 148070 "Cash Desk Documents CZP"
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
     begin
-        // [FEATURE] Cash Desk
         Initialize();
 
         // [GIVEN] Create cash document with negative amount
@@ -410,10 +383,10 @@ codeunit 148070 "Cash Desk Documents CZP"
         CashDocumentLineCZP.Validate(Amount, -CashDocumentLineCZP.Amount);
         CashDocumentLineCZP.Modify();
 
-        // [WHEN] Release cash document
+        // [WHEN] Release Cash Document
         asserterror ReleaseCashDocumentCZP(CashDocumentHeaderCZP);
 
-        // [THEN] Error occur
+        // [THEN] Error Occurs
         Assert.ExpectedError(StrSubstNo(AmountMustBePositiveErr, CashDeskCZP."No.", CashDocumentHeaderCZP."No."));
     end;
 
@@ -423,24 +396,23 @@ codeunit 148070 "Cash Desk Documents CZP"
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         PermissionErr: Label 'You don''t have permission to create Cash Document Header.';
     begin
-        // [SCENARIO] The error must occur if the user doesn't have permisions to create a cash document
-        // [FEATURE] Cash Desk
+        // [SCENARIO] The error must occur if the user doesn't have permisions to create Cash Document
         Initialize();
 
-        // [GIVEN] Create Cash Desk
+        // [GIVEN] Create Cash Desk User
         LibraryCashDeskCZP.CreateCashDeskUserCZP(CashDeskUserCZP, CashDeskCZP."No.", false, true, true);
 
         // [WHEN] Create Cash Document
         asserterror LibraryCashDocumentCZP.CreateCashDocumentHeaderCZP(
             CashDocumentHeaderCZP, CashDocumentHeaderCZP."Document Type"::Receipt, CashDeskCZP."No.");
 
-        // [THEN] Error occur
+        // [THEN] Error Occurs
         Assert.ExpectedError(PermissionErr);
     end;
 
     [Test]
     [HandlerFunctions('YesConfirmHandler,CashDocumentStatisticsCZPModalPageHandler')]
-    procedure TestVATRounding()
+    procedure TestDocumentRounding()
     var
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
@@ -449,7 +421,6 @@ codeunit 148070 "Cash Desk Documents CZP"
         AmountNotMatchErr: Label 'Amount of rounding doesn''t match.';
     begin
         // [SCENARIO] The rounding amount in cash document line is recalculated only if the amount in cash document lines is changes
-        // [FEATURE] Cash Desk
         Initialize();
 
         // [GIVEN] Create Receipt Cash Document
@@ -472,9 +443,11 @@ codeunit 148070 "Cash Desk Documents CZP"
         RoundingCashDocumentLineCZP.Reset();
         RoundingCashDocumentLineCZP.SetRange("Cash Desk No.", CashDocumentHeaderCZP."Cash Desk No.");
         RoundingCashDocumentLineCZP.SetRange("Cash Document No.", CashDocumentHeaderCZP."No.");
+#pragma warning disable AA0210
         RoundingCashDocumentLineCZP.SetRange("Account Type", CashDocumentLineCZP."Account Type"::"G/L Account");
         RoundingCashDocumentLineCZP.SetFilter("Account No.", '%1|%2', CashDeskCZP."Debit Rounding Account", CashDeskCZP."Credit Rounding Account");
         RoundingCashDocumentLineCZP.SetRange("System-Created Entry", true);
+#pragma warning restore
         RoundingCashDocumentLineCZP.FindFirst();
         Assert.AreEqual(0.29, RoundingCashDocumentLineCZP.Amount, AmountNotMatchErr);
 
@@ -514,11 +487,9 @@ codeunit 148070 "Cash Desk Documents CZP"
     begin
         // [SCENARIO] When the payment tolerance is enabled and Cash Document is applying e.g. Sales Invoice with different amount
         // which is posted by Sales Invoice then Detailed Customer Ledger Entry with payment tolerance type must be created.
-
-        // [FEATURE] Cash Desk
         Initialize();
 
-        // [GIVEN] Enable payment tolerance
+        // [GIVEN] Enable Payment Tolerance
         EnablePaymentTolerance();
 
         // [GIVEN] Create Sales Invoice
@@ -528,9 +499,6 @@ codeunit 148070 "Cash Desk Documents CZP"
         PostDocNo := PostSalesDocument(SalesHeader);
 
         // [GIVEN] Create Receipt Cash Document
-        LibraryCashDeskCZP.CreateCashDeskEventCZP(
-          CashDeskEventCZP, CashDeskCZP."No.", CashDocumentHeaderCZP."Document Type"::Receipt,
-          CashDeskEventCZP."Account Type"::Customer, '');
         LibraryCashDocumentCZP.CreateCashDocumentHeaderCZP(CashDocumentHeaderCZP, CashDocumentHeaderCZP."Document Type"::Receipt, CashDeskCZP."No.");
 
         // [GIVEN] Create Receipt Cash Document Line with application to created invoice and round the amount to an integer

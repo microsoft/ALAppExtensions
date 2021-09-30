@@ -9,7 +9,6 @@
 codeunit 130443 "Word Templates Test"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
 
     var
         PermissionsMock: Codeunit "Permissions Mock";
@@ -175,10 +174,24 @@ codeunit 130443 "Word Templates Test"
         WordTemplates.GetDocument(InStream);
         InStream.Read(OutputText);
 
+        Assert.IsTrue(WordTemplates.GetDocumentSize() > 0, 'Document do not have a size');
         Assert.IsTrue(OutputText.Contains('Darrick'), 'Darrick is missing from the document');
         Assert.IsTrue(OutputText.Contains('Copenhagen'), 'Copenhagen is missing from the document');
         Assert.IsTrue(OutputText.Contains('FTæst'), 'FTæst is missing from the document');
     end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGetTemplateName()
+    var
+        WordTemplateImpl: Codeunit "Word Template Impl.";
+    begin
+        // [SCENARIO] Check that reserved characters are removed from the template name.
+        PermissionsMock.Set('Word Templates Edit');
+        WordTemplateImpl.Create(130443); // Caption = Word Templates Test / Table "<>:/\|?*
+        Assert.AreEqual('Word Templates Test _ Table __________Template.docx', WordTemplateImpl.GetTemplateName('docx'), 'Template name is incorrect.');
+    end;
+
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]

@@ -53,7 +53,8 @@ codeunit 31197 "Sync.Dep.Fld-Commodity CZL"
         if not CommodityCZL.Get(Rec.Code) then begin
             CommodityCZL.Init();
             CommodityCZL.Code := Rec.Code;
-            CommodityCZL.Insert(false);
+            CommodityCZL.SystemId := Rec.SystemId;
+            CommodityCZL.Insert(false, true);
         end;
         CommodityCZL.Description := Rec.Description;
         CommodityCZL.Modify(false);
@@ -126,7 +127,8 @@ codeunit 31197 "Sync.Dep.Fld-Commodity CZL"
         if not Commodity.Get(Rec.Code) then begin
             Commodity.Init();
             Commodity.Code := Rec.Code;
-            Commodity.Insert(false);
+            Commodity.SystemId := Rec.SystemId;
+            Commodity.Insert(false, true);
         end;
         Commodity.Description := Rec.Description;
         Commodity.Modify(false);

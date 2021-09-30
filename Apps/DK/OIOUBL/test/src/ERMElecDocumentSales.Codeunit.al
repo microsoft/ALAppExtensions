@@ -1275,7 +1275,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
             exit;
 
         UpdateSalesReceivablesSetup();
-        UpdateGeneralLedgerSetup();
         UpdateOIOUBLCountryRegionCode();
 
         LibraryERM.DisableMyNotifications(CopyStr(UserId(), 1, 50), SalesHeader.GetModifyCustomerAddressNotificationId());
@@ -1605,17 +1604,15 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
     local procedure GetAmountsSalesCrMemoLines(SalesCrMemoHeaderNo: Code[20]; var LineExtensionAmounts: List of [Decimal]; var PriceAmounts: List of [Decimal]; var TotalAllowanceChargeAmount: Decimal)
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
     begin
-        GeneralLedgerSetup.Get();
         TotalAllowanceChargeAmount := 0;
         with SalesCrMemoLine do begin
             SetRange("Document No.", SalesCrMemoHeaderNo);
             FindSet();
             repeat
                 LineExtensionAmounts.Add(Amount + "Inv. Discount Amount");
-                PriceAmounts.Add(Round((Amount + "Inv. Discount Amount") / Quantity, GeneralLederSetup."Unit-Amount Rounding Permissions"));
+                PriceAmounts.Add(Round((Amount + "Inv. Discount Amount") / Quantity));
                 TotalAllowanceChargeAmount += "Inv. Discount Amount";
             until Next() = 0;
         end;
@@ -1623,11 +1620,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
     local procedure GetAmountsSalesCrMemoLinesPricesInclVAT(SalesCrMemoHeaderNo: Code[20]; var LineExtensionAmounts: List of [Decimal]; var PriceAmounts: List of [Decimal]; var TotalAllowanceChargeAmount: Decimal)
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
         ExclVATFactor: Decimal;
     begin
-        GeneralLederSetup.Get();
         TotalAllowanceChargeAmount := 0;
         with SalesCrMemoLine do begin
             SetRange("Document No.", SalesCrMemoHeaderNo);
@@ -1635,7 +1630,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
             repeat
                 ExclVATFactor := 1 + "VAT %" / 100;
                 LineExtensionAmounts.Add(Amount + Round("Inv. Discount Amount" / ExclVATFactor));
-                PriceAmounts.Add(Round((Amount + Round("Inv. Discount Amount" / ExclVATFactor)) / Quantity, GeneralLederSetup."Unit-Amount Rounding Permissions"));
+                PriceAmounts.Add(Round((Amount + Round("Inv. Discount Amount" / ExclVATFactor)) / Quantity));
                 TotalAllowanceChargeAmount += Round("Inv. Discount Amount" / ExclVATFactor);
             until Next() = 0;
         end;
@@ -1763,17 +1758,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
             Validate("OIOUBL-Default Profile Code", CreateOIOUBLProfile());
             Modify(true);
         end;
-    end;
-
-    local procedure UpdateGeneralLedgerSetup();
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-    begin
-        // Make sure that G/L Setup has move then 2 decimal places
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup.Validate("Unit-Amount Decimal Places", '2:5');
-        GeneralLedgerSetup.Validate("Unit-Amount Rounding Precision", 0.00001);
-        GeneralLedgerSetup.Modify(true);
     end;
 
     local procedure UpdateCompanySwiftCode()

@@ -6,7 +6,7 @@ pageextension 27031 "DIOT Vendor Card" extends "Vendor Card"
         {
             field("DIOT Type of Operation"; "DIOT Type of Operation")
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = BasicMX;
                 Caption = 'DIOT Type of Operation';
                 ToolTip = 'Specifies the DIOT operation type to be used for all documents with this vendor.';
             }

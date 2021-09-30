@@ -11,7 +11,7 @@ pageextension 13647 "OIOUBL-Posted Sales Inv Sub" extends "Posted Sales Invoice 
         {
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer who you will send the invoice to.';
+                Tooltip = 'Specifies the account code of the customer who you will send the invoice to. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
                 Visible = false;
             }

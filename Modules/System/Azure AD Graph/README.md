@@ -24,6 +24,7 @@ This module is meant for on-premises use only.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetUser(UserPrincipalName: Text; var UserInfo: DotNet UserInfo)
 ```
 #### Parameters
@@ -43,6 +44,7 @@ The user to return.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetCurrentUser(var UserInfo: DotNet UserInfo)
 ```
 #### Parameters
@@ -58,6 +60,7 @@ The user to return.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetUserByAuthorizationEmail(AuthorizationEmail: Text; var UserInfo: DotNet UserInfo)
 ```
 #### Parameters
@@ -77,6 +80,7 @@ The user to return.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetUserByObjectId(ObjectId: Text; var UserInfo: DotNet UserInfo)
 ```
 #### Parameters
@@ -96,6 +100,7 @@ The user to return.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure TryGetUserByObjectId(ObjectId: Text; var UserInfo: DotNet UserInfo): Boolean
 ```
 #### Parameters
@@ -121,6 +126,7 @@ If the provided user is null, the output parameter holding the assigned plans re
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetUserAssignedPlans(UserInfo: DotNet UserInfo; var UserAssignedPlans: DotNet GenericList1)
 ```
 #### Parameters
@@ -142,6 +148,7 @@ If the provided user is null, the output parameter holding the user roles remain
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetUserRoles(UserInfo: DotNet UserInfo; var UserRoles: DotNet GenericIEnumerable1)
 ```
 #### Parameters
@@ -161,6 +168,7 @@ The user's roles.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetDirectorySubscribedSkus(var DirectorySubscribedSkus: DotNet GenericIEnumerable1)
 ```
 #### Parameters
@@ -176,6 +184,7 @@ The list of subscriptions to return.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetDirectoryRoles(var DirectoryRoles: DotNet GenericIEnumerable1)
 ```
 #### Parameters
@@ -191,6 +200,7 @@ The directory roles to return.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetTenantDetail(var TenantInfo: DotNet TenantInfo)
 ```
 #### Parameters
@@ -206,6 +216,7 @@ The tenant details to return.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetUsersPage(NumberOfUsers: Integer; var UserInfoPage: DotNet UserInfoPage)
 ```
 #### Parameters
@@ -225,6 +236,7 @@ The list of users to return.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure SetTestInProgress(TestInProgress: Boolean)
 ```
 #### Parameters
@@ -241,6 +253,7 @@ The value to be set to the flag.
 ```
 [IntegrationEvent(false, false)]
 [Scope('OnPrem')]
+[NonDebuggable]
 internal procedure OnInitialize(var GraphQuery: DotNet GraphQuery)
 ```
 #### Parameters

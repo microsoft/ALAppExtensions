@@ -7,7 +7,7 @@ Contains functionality that enables a user to manage printers.
 
 ### OnOpenPrinterSettings (Event) <a name="OnOpenPrinterSettings"></a> 
 
- Integration event that is called to view and edit the settings of a printer. 
+ Integration event that is called to view and edit the settings of a printer.
  Subscribe to this event if you want to introduce user configurable settings for a printer.
  
 
@@ -27,7 +27,7 @@ Stores whether the operation was successful.
 
 ### OnSetAsDefaultPrinter (Event) <a name="OnSetAsDefaultPrinter"></a> 
 
- Integration event that is called to set the default printer for all reports. 
+ Integration event that is called to set the default printer for all reports.
   Subscribe to this event to specify a value in the Printer Name field and leave the User ID and Report ID fields blank in Printers Selection.
  
 

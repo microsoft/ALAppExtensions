@@ -32,5 +32,16 @@ codeunit 9843 "User Selection"
     begin
         UserSelectionImpl.ValidateUserName(UserName);
     end;
+
+    /// <summary>
+    /// Sets Filter on the given User Record to exclude external users.
+    /// </summary>
+    /// <param name="User">The User Record to return.</param>
+    procedure HideExternalUsers(var User: Record User)
+    var
+        UserSelectionImpl: Codeunit "User Selection Impl.";
+    begin
+        UserSelectionImpl.HideExternalUsers(User);
+    end;
 }
 

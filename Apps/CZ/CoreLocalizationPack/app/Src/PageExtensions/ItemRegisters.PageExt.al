@@ -2,8 +2,9 @@ pageextension 31010 "Item Registers CZL" extends "Item Registers"
 {
     actions
     {
-
+#pragma warning disable AL0432
         addlast(reporting)
+#pragma warning restore AL0432
         {
             action(ItemRegisterQuantityCZL)
             {

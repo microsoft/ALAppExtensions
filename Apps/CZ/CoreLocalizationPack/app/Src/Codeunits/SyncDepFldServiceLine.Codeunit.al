@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31147 "Sync.Dep.Fld-ServiceLine CZL"
 {
@@ -28,6 +29,7 @@ codeunit 31147 "Sync.Dep.Fld-ServiceLine CZL"
             PreviousRecordRef.SetTable(PreviousRecord);
 
         SyncDepFldUtilities.SyncFields(Rec."Physical Transfer", Rec."Physical Transfer CZL", PreviousRecord."Physical Transfer", PreviousRecord."Physical Transfer CZL");
+#if not CLEAN17
         DepFieldTxt := Rec."Tariff No.";
         NewFieldTxt := Rec."Tariff No. CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Tariff No.", PreviousRecord."Tariff No. CZL");
@@ -38,6 +40,7 @@ codeunit 31147 "Sync.Dep.Fld-ServiceLine CZL"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Statistic Indication", PreviousRecord."Statistic Indication CZL");
         Rec."Statistic Indication" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Statistic Indication"));
         Rec."Statistic Indication CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Statistic Indication CZL"));
+#endif
         DepFieldTxt := Rec."Country/Region of Origin Code";
         NewFieldTxt := Rec."Country/Reg. of Orig. Code CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Country/Region of Origin Code", PreviousRecord."Country/Reg. of Orig. Code CZL");
@@ -45,3 +48,4 @@ codeunit 31147 "Sync.Dep.Fld-ServiceLine CZL"
         Rec."Country/Reg. of Orig. Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Country/Reg. of Orig. Code CZL"));
     end;
 }
+#endif

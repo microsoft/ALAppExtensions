@@ -1,3 +1,4 @@
+#if not CLEAN18
 pageextension 20618 "Customer Template Card BF" extends "Customer Template Card"
 {
     layout
@@ -35,3 +36,4 @@ pageextension 20618 "Customer Template Card BF" extends "Customer Template Card"
         }
     }
 }
+#endif

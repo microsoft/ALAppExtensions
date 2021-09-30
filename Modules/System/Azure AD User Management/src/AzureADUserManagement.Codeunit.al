@@ -41,17 +41,6 @@ codeunit 9010 "Azure AD User Management"
         AzureADUserMgmtImpl.CreateNewUserFromGraphUser(GraphUser);
     end;
 
-    /// <summary>
-    /// Updates details about the user with information from Office 365.
-    /// </summary>
-    /// <param name="User">The user whose information will be updated.</param>
-    [Scope('OnPrem')]
-    [NonDebuggable]
-    procedure UpdateUserFromGraph(var User: Record User)
-    begin
-        AzureADUserMgmtImpl.UpdateUserFromGraph(User);
-    end;
-
     /// <summary>    
     /// Synchronizes a user with the Azure AD user corresponding to the authentication 
     /// email that is passed as a parameter. If the user record does not exist, it gets created.

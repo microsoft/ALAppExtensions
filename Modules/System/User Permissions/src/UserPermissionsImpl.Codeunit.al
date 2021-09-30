@@ -47,6 +47,9 @@ codeunit 153 "User Permissions Impl."
     var
         EnvironmentInfo: Codeunit "Environment Information";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if not EnvironmentInfo.IsSaaS() then
             exit;
 
@@ -64,6 +67,9 @@ codeunit 153 "User Permissions Impl."
     var
         EnvironmentInfo: Codeunit "Environment Information";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if not EnvironmentInfo.IsSaaS() then
             exit;
 
@@ -82,6 +88,9 @@ codeunit 153 "User Permissions Impl."
     [EventSubscriber(ObjectType::Table, Database::User, 'OnBeforeModifyEvent', '', true, true)]
     local procedure CheckSuperPermissionsBeforeModifyUser(var Rec: Record User; var xRec: Record User; RunTrigger: Boolean)
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if not IsSuper(Rec."User Security ID") then
             exit;
 

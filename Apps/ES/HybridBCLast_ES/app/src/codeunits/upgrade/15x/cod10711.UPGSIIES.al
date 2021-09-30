@@ -23,14 +23,19 @@ codeunit 10711 "UPG SII ES"
     local procedure UpdateEmployeeNewNames()
     var
         Employee: Record "Employee";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
-        if not Employee.FindSet() then
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetUpdateEmployeeNewNamesTag()) then
             exit;
 
-        repeat
-            Employee.UpdateNamesFromOldFields();
-            Employee.Modify();
-        until Employee.Next() = 0;
+        if Employee.FindSet() then
+            repeat
+                Employee.UpdateNamesFromOldFields();
+                Employee.Modify();
+            until Employee.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetUpdateEmployeeNewNamesTag());
     end;
 }
 

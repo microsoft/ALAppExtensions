@@ -58,7 +58,9 @@ codeunit 31025 "Intrastat Jnl.Line Handler CZL"
             exit;
         if Sender."Tariff No." <> '' then begin
             TariffNumber.Get(Sender."Tariff No.");
+#if not CLEAN18
             TariffNumber.CalcFields("Supplementary Units");
+#endif
             if TariffNumber."Supplementary Units" then begin
                 TariffNumber.TestField("Suppl. Unit of Meas. Code CZL");
                 Sender."Supplem. UoM Code CZL" := TariffNumber."Suppl. Unit of Meas. Code CZL";
@@ -74,12 +76,15 @@ codeunit 31025 "Intrastat Jnl.Line Handler CZL"
         IsHandled := true;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Intrastat Jnl. Line", 'OnCheckIntrastatJnlTemplateUserRestrictions', '', false, false)]
-    local procedure CheckIntrastatJnlTemplateUserRestrictions(JournalTemplateName: Code[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::IntraJnlManagement, 'OnBeforeOpenJnl', '', false, false)]
+    local procedure JournalTemplateUserRestrictionsOnBeforeOpenJnl(var IntrastatJnlLine: Record "Intrastat Jnl. Line")
     var
-        DummyUserSetupLineCZL: Record "User Setup Line CZL";
         UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+        UserSetupLineTypeCZL: Enum "User Setup Line Type CZL";
+        JournalTemplateName: Code[10];
     begin
-        UserSetupAdvManagementCZL.CheckJournalTemplate(DummyUserSetupLineCZL.Type::"Intrastat Journal", JournalTemplateName);
+        JournalTemplateName := IntrastatJnlLine.GetRangeMax("Journal Template Name");
+        UserSetupLineTypeCZL := UserSetupLineTypeCZL::"Intrastat Journal";
+        UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
 }

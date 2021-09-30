@@ -186,6 +186,9 @@ codeunit 20292 "Use Case Entity Mgmt."
     [EventSubscriber(ObjectType::Table, Database::"Tax Use Case", 'OnBeforeModifyEvent', '', false, false)]
     local procedure OnBeforeModifyTaxUseCase(var Rec: Record "Tax Use Case"; var xRec: Record "Tax Use Case"; RunTrigger: Boolean)
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if not RunTrigger then
             exit;
 

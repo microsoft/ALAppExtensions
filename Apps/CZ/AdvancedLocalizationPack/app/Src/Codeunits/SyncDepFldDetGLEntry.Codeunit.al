@@ -51,7 +51,8 @@ codeunit 31376 "Sync.Dep.Fld-DetGLEntry CZA"
         if not DetailedGLEntryCZA.Get(DetailedGLEntry."Entry No.") then begin
             DetailedGLEntryCZA.Init();
             DetailedGLEntryCZA."Entry No." := DetailedGLEntry."Entry No.";
-            DetailedGLEntryCZA.Insert();
+            DetailedGLEntryCZA.SystemId := DetailedGLEntry.SystemId;
+            DetailedGLEntryCZA.Insert(false, true);
         end;
         DetailedGLEntryCZA."G/L Entry No." := DetailedGLEntry."G/L Entry No.";
         DetailedGLEntryCZA."Applied G/L Entry No." := DetailedGLEntry."Applied G/L Entry No.";
@@ -133,7 +134,8 @@ codeunit 31376 "Sync.Dep.Fld-DetGLEntry CZA"
         if not DetailedGLEntry.Get(DetailedGLEntryCZA."Entry No.") then begin
             DetailedGLEntry.Init();
             DetailedGLEntry."Entry No." := DetailedGLEntryCZA."Entry No.";
-            DetailedGLEntry.Insert();
+            DetailedGLEntry.SystemId := DetailedGLEntryCZA.SystemId;
+            DetailedGLEntry.Insert(false, true);
         end;
         DetailedGLEntry."G/L Entry No." := DetailedGLEntryCZA."G/L Entry No.";
         DetailedGLEntry."Applied G/L Entry No." := DetailedGLEntryCZA."Applied G/L Entry No.";

@@ -42,6 +42,7 @@ codeunit 1379 DESCryptoServiceProvider
         DecryptedText := DESCryptoServiceProviderImpl.DecryptText(EncryptedText, Password, Salt);
     end;
 
+#if not CLEAN18
     /// <summary>
     /// Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
     /// </summary>
@@ -67,6 +68,7 @@ codeunit 1379 DESCryptoServiceProvider
     begin
         DESCryptoServiceProviderImpl.DecryptStream(Password, Password, InputInstream, OutputOutstream);
     end;
+#endif
 
     /// <summary>
     /// Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider

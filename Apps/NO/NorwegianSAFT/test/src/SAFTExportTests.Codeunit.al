@@ -184,6 +184,30 @@ codeunit 148109 "SAF-T Export Tests"
         LibraryVariableStorage.AssertEmpty();
     end;
 
+    [Test]
+    procedure DatesAreEditableInSAFTExport()
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportCard: TestPage "SAF-T Export Card";
+    begin
+        // [SCENARIO 405028] Stan can change "Starting Date" and "Ending Date" in SAF-T Export
+
+        Initialize();
+
+        // [GIVEN] SAF-T Export created
+        InitSAFTExportScenario(SAFTExportHeader, '', false, true);
+
+        // [GIVEN] SAF-T Export Card opened
+        SAFTExportCard.OpenEdit();
+        SAFTExportCard.Filter.SetFilter(ID, Format(SAFTExportHeader.ID));
+
+        // [WHEN] Change "Starting Date" and "Ending Date"
+        Assert.IsTrue(SAFTExportCard.StartingDate.Editable(), 'Starting date is not visible');
+        Assert.IsTrue(SAFTExportCard.EndingDate.Editable(), 'Starting date is not visible');
+
+        SAFTExportCard.Close();
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"SAF-T Export Tests");

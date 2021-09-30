@@ -81,11 +81,28 @@ table 20252 "Tax Rate Column Setup"
         key(Sequence; Sequence) { }
         key(ColumnName; "Column Name") { }
     }
+    trigger OnInsert()
+    var
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
+    trigger OnModify()
+    var
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
     trigger OnDelete()
     var
         TaxRate: Record "Tax Rate";
         TaxRateValue: Record "Tax Rate Value";
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
     begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+
         TaxRateValue.SetRange("Tax Type", "Tax Type");
         TaxRateValue.SetRange("Column ID", "Column ID");
         if TaxRateValue.IsEmpty then

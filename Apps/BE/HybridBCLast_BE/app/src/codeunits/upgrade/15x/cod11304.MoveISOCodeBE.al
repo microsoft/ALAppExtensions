@@ -24,7 +24,12 @@ codeunit 11304 "Move ISO Code BE"
     local procedure MoveCurrencyISOCode()
     var
         Currency: Record "Currency";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetMoveCurrencyISOCodeTag()) then
+            exit;
+
         with Currency do begin
             SetFilter("ISO Currency Code", '<>%1', '');
             if FindSet() then
@@ -34,12 +39,19 @@ codeunit 11304 "Move ISO Code BE"
                     Modify();
                 until Next() = 0;
         end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetMoveCurrencyISOCodeTag());
     end;
 
     local procedure UpdateCountryISOCode()
     var
         CountryRegion: Record "Country/Region";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetUpdateCountyNameTag()) then
+            exit;
+
         with CountryRegion do begin
             SetFilter("ISO Country/Region Code", '<>%1', '');
             if FindSet() then
@@ -49,6 +61,8 @@ codeunit 11304 "Move ISO Code BE"
                     Modify();
                 until Next() = 0;
         end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetUpdateCountyNameTag());
     end;
 }
 
